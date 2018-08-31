@@ -11,7 +11,7 @@ class FileCommander extends React.Component {
             currentCommanderItems: this.props.currentCommanderItems,
             // currentPath: [0, 'subFolders'],
             // allFolders: this.props.folderTree,
-            // namePath: this.props.namePath,
+            namePath: this.props.namePath,
             // activeParent: {folder:'', bucket: '', name: ''}
         }
     }
@@ -19,8 +19,8 @@ class FileCommander extends React.Component {
     componentDidUpdate(prevProps) {
         if(this.props.currentCommanderItems !== prevProps.currentCommanderItems) {
             this.setState({ currentCommanderItems: this.props.currentCommanderItems}) }
-        // if(this.props.namePath !== prevProps.namePath) {
-        //     this.setState({ namePath: this.props.namePath}) }
+        if(this.props.namePath !== prevProps.namePath) {
+            this.setState({ namePath: this.props.namePath}) }
     }
 
     render() {
@@ -29,11 +29,14 @@ class FileCommander extends React.Component {
         return (
             <div id="FileCommander">
                 <div id="FileCommander-info">
-                    {/* {
+                    {
                         this.state.namePath.length > 1 &&
-                        <div id="FileCommander-backTo" onClick={this.props.handleFolderTraverseUp.bind(this)}>&lt; {this.state.namePath[this.state.namePath.length - 2]}</div>
+                        <div id="FileCommander-backTo" onClick={this.props.handleFolderTraverseUp.bind(this)}>&lt; {this.state.namePath[this.state.namePath.length - 2].name}</div>
                     }
-                    <div id="FileCommander-path" >{this.state.namePath[this.state.namePath.length - 1]}</div> */}
+                    {
+                        this.state.namePath.length > 1 &&
+                        <div id="FileCommander-path" >{this.state.namePath[this.state.namePath.length - 1].name}</div>
+                    }
                 </div>
                 <div id="FileCommander-items">
                     {

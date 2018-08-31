@@ -16,7 +16,8 @@ class App extends Component {
       token: "",
       user: {},
       currentFolderId: null,
-      currentCommanderItems: []
+      currentCommanderItems: [],
+      namePath: []
     }
     var civicSip = new civic.sip({ appId: 'Skzcny80G' }); // eslint-disable-line no-undef
     if (!sessionStorage.getItem('xToken')) {
@@ -59,6 +60,7 @@ class App extends Component {
         console.log('Error message = ' + error.message);
     });
     this.openFolder = this.openFolder.bind(this)
+    this.getFolderContent = this.getFolderContent.bind(this)
     this.createFolder = this.createFolder.bind(this)
     this.openUploadFile = this.openUploadFile.bind(this)
     this.openUploadFile = this.openUploadFile.bind(this)
@@ -66,7 +68,7 @@ class App extends Component {
     this.downloadFile = this.downloadFile.bind(this)
   }
 
-  getFolderContent(rootId) {
+  getFolderContent(rootId, up) {
     fetch(`/api/storage/folder/${rootId}`, {
       method: 'get',
       headers: {
@@ -75,10 +77,17 @@ class App extends Component {
       }
     })
     .then(response => response.json())
-    .then(data => this.setState({
-      currentCommanderItems: _.concat(_.map(data.children, o => _.extend({type: 'Folder'}, o)), data.files),
-      currentFolderId: data.id
-    }))
+    .then(data => {
+      this.setState({
+        currentCommanderItems: _.concat(_.map(data.children, o => _.extend({type: 'Folder'}, o)), data.files),
+        currentFolderId: data.id
+      })
+      if (!up) {
+        this.setState(prevState => ({
+          namePath: [...prevState.namePath, {name: data.name, id: data.id}]
+        }))
+      }
+    })
   }
 
   openFolder(e) {
@@ -135,6 +144,18 @@ class App extends Component {
     })
   }
 
+  popNamePath() {
+    return (previousState, currentProps) => {
+      return { ...previousState, namePath: _.dropRight(previousState.namePath) };
+    }
+  }
+
+  folderTraverseUp() {
+    this.setState(this.popNamePath(), () => {
+      this.getFolderContent(_.last(this.state.namePath).id, true)
+    })
+  }
+
   render() {
     return (
       <div className="App">
@@ -148,8 +169,8 @@ class App extends Component {
           currentCommanderItems={this.state.currentCommanderItems}
           openFolder={this.openFolder}
           downloadFile={this.downloadFile}
-          //   namePath={this.state.namePath}
-          //   handleFolderTraverseUp={this.folderTraverseUp}
+          namePath={this.state.namePath}
+            handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
         />
       </div>
     );
