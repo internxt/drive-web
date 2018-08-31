@@ -1,0 +1,53 @@
+.FileCommanderItem {
+    width: 175px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 10px;
+}
+
+.FileCommanderItem:hover {
+    border-radius: 10px;
+    background-color: #f0f3ff;
+}
+
+.FileCommanderItem .type {
+    width: 75px;
+    height: 64px;
+    border-radius: 5.5px;
+    /* box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.06); */
+    background-color: #fcfcfc;
+    border: solid 1px #5291ff;
+    margin: 0 auto 22px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: #5291ff;
+    font-size: 14px;
+    padding-bottom: 11px;
+}
+
+.FileCommanderItem .name {
+    font-size: 15px;
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 18px;
+    letter-spacing: -0.1px;
+    text-align: center;
+    color: #000000;
+    letter-spacing: normal;
+    word-break: break-all;
+}
+
+.FileCommanderItem .created {
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #2a5fc9;
+}
