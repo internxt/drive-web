@@ -52,9 +52,7 @@ class FileCommander extends React.Component {
                                     </span>
                                 )
                             })
-                        ) : (
-                            <h1>Empty</h1>
-                        )
+                        ) : null
                     }
                 </div>
             </div>

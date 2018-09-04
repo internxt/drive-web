@@ -17,12 +17,24 @@ class App extends Component {
       user: {},
       currentFolderId: null,
       currentCommanderItems: [],
-      namePath: []
+      namePath: [],
+      isAuthorized: false
     }
+    this.openFolder = this.openFolder.bind(this)
+    this.getFolderContent = this.getFolderContent.bind(this)
+    this.createFolder = this.createFolder.bind(this)
+    this.openUploadFile = this.openUploadFile.bind(this)
+    this.openUploadFile = this.openUploadFile.bind(this)
+    this.uploadFile = this.uploadFile.bind(this)
+    this.downloadFile = this.downloadFile.bind(this)
+  }
+
+  componentDidMount() {
     var civicSip = new civic.sip({ appId: 'Skzcny80G' }); // eslint-disable-line no-undef
     if (!sessionStorage.getItem('xToken')) {
       civicSip.signup({ style: 'popup', scopeRequest: civicSip.ScopeRequests.BASIC_SIGNUP }); // eslint-disable-line no-undef
     } else {
+      this.setState({isAuthorized: true})
       this.getFolderContent(JSON.parse(sessionStorage.getItem('xUser')).root_folder_id)
     }
     civicSip.on('auth-code-received', (event) => {
@@ -43,6 +55,7 @@ class App extends Component {
         sessionStorage.setItem('xToken', token)
         sessionStorage.setItem('xUser', JSON.stringify(user))
         this.setState({token, user})
+        this.setState({isAuthorized: true})
         this.getFolderContent(user.root_folder_id)
       })
     });
@@ -59,13 +72,6 @@ class App extends Component {
         console.log('Error type = ' + error.type);
         console.log('Error message = ' + error.message);
     });
-    this.openFolder = this.openFolder.bind(this)
-    this.getFolderContent = this.getFolderContent.bind(this)
-    this.createFolder = this.createFolder.bind(this)
-    this.openUploadFile = this.openUploadFile.bind(this)
-    this.openUploadFile = this.openUploadFile.bind(this)
-    this.uploadFile = this.uploadFile.bind(this)
-    this.downloadFile = this.downloadFile.bind(this)
   }
 
   getFolderContent(rootId, up) {
@@ -83,8 +89,9 @@ class App extends Component {
         currentFolderId: data.id
       })
       if (!up) {
+        const folderName = data.name.includes('ROOT') ? 'Root' : data.name
         this.setState(prevState => ({
-          namePath: [...prevState.namePath, {name: data.name, id: data.id}]
+          namePath: [...prevState.namePath, {name: folderName, id: data.id}]
         }))
       }
     })
@@ -157,13 +164,19 @@ class App extends Component {
   }
 
   render() {
+    const isAuthorized = this.state.isAuthorized
     return (
       <div className="App">
-        <Header 
-          createFolder={this.createFolder}
-          uploadFile={this.openUploadFile}
-          uploadHandler={this.uploadFile}
-        />
+        {
+          isAuthorized ? (
+            <Header 
+              createFolder={this.createFolder}
+              uploadFile={this.openUploadFile}
+              uploadHandler={this.uploadFile}
+              style
+            />
+          ) : null
+        }
         <FileCommander 
           //   folderTree={this.state.folderTree} 
           currentCommanderItems={this.state.currentCommanderItems}
