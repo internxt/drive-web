@@ -29,3 +29,11 @@
     border-top: solid 1px #f2f2f2;
     flex-wrap: wrap;
 }
+
+.noItems {
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    height: 50vh;
+}

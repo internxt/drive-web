@@ -26,7 +26,7 @@ const Header = props => {
                 <HeaderButton icon={uploadFile} name="Upload file" clickHandler={props.uploadFile} />
                 <HeaderButton icon={newFolder} name="New folder" clickHandler={props.createFolder} />
                 <HeaderButton icon={downloadFile} name="Download" />
-                <HeaderButton icon={deleteFile} name="Delete" />
+                <HeaderButton icon={deleteFile} name="Delete" clickHandler={props.deleteItems} />
                 <HeaderButton icon={share} name="Share" />
             </div>
             <div className="header-right">

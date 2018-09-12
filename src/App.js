@@ -4,6 +4,7 @@ import fileDownload from 'js-file-download';
 import React, { Component } from 'react';
 import Header from './Header';
 import FileCommander from './FileCommander';
+import update from 'immutability-helper';
 // import logo from './logo.svg';
 import './App.css';
 
@@ -16,9 +17,11 @@ class App extends Component {
       token: "",
       user: {},
       currentFolderId: null,
+      currentFolderBucket: null,
       currentCommanderItems: [],
       namePath: [],
-      isAuthorized: false
+      isAuthorized: false,
+      selectedItems: []
     }
     this.openFolder = this.openFolder.bind(this)
     this.getFolderContent = this.getFolderContent.bind(this)
@@ -27,6 +30,8 @@ class App extends Component {
     this.openUploadFile = this.openUploadFile.bind(this)
     this.uploadFile = this.uploadFile.bind(this)
     this.downloadFile = this.downloadFile.bind(this)
+    this.deleteItems = this.deleteItems.bind(this)
+    this.selectCommanderItem = this.selectCommanderItem.bind(this)
   }
 
   componentDidMount() {
@@ -74,7 +79,7 @@ class App extends Component {
     });
   }
 
-  getFolderContent(rootId, up) {
+  getFolderContent(rootId, updateNamePath = true) {
     fetch(`/api/storage/folder/${rootId}`, {
       method: 'get',
       headers: {
@@ -84,15 +89,18 @@ class App extends Component {
     })
     .then(response => response.json())
     .then(data => {
+      this.deselectAll()
       this.setState({
         currentCommanderItems: _.concat(_.map(data.children, o => _.extend({type: 'Folder'}, o)), data.files),
-        currentFolderId: data.id
+        currentFolderId: data.id,
+        currentFolderBucket: data.bucket,
+        selectedItems: []
       })
-      if (!up) {
+      if (updateNamePath) {
         const folderName = data.name.includes('ROOT') ? 'Root' : data.name
-        this.setState(prevState => ({
-          namePath: [...prevState.namePath, {name: folderName, id: data.id}]
-        }))
+        this.setState({
+          namePath: this.pushNamePath({name: folderName, id: data.id, bucket: data.bucket})
+        })
       }
     })
   }
@@ -115,7 +123,7 @@ class App extends Component {
           "folderName": folderName
         })
       }).then(() => {
-        this.getFolderContent(this.state.currentFolderId)
+        this.getFolderContent(this.state.currentFolderId, false)
       })
     }
   }
@@ -151,6 +159,60 @@ class App extends Component {
     })
   }
 
+  deleteItems() {
+    const selectedItems = this.state.selectedItems
+    const bucket = _.last(this.state.namePath).bucket
+    const fetchOptions = {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${sessionStorage.getItem('xToken')}` }
+    }
+    if (selectedItems.length === 0) return
+    const deletionRequests = _.map(selectedItems, (v, i) => {
+      const url = v.type === 'Folder' ? `/api/storage/folder/${v.id}` : `/api/storage/bucket/${bucket}/file/${v.bucket}`
+      return fetch(url, fetchOptions)
+    })
+    Promise.all(deletionRequests)
+      .then((result) => {
+        console.log('about to delete');
+        setTimeout(() => {
+          console.log('deleteing');
+          this.getFolderContent(this.state.currentFolderId, false)
+        }, 100)
+      }).catch((err) => {
+        throw new Error(err)
+      });
+  }
+
+  selectCommanderItem(i, e) {
+    const selectedItems = this.state.selectedItems
+    const id = e.target.getAttribute('data-id')
+    const type = e.target.getAttribute('data-type')
+    const bucket = e.target.getAttribute('data-bucket')
+    if (_.some(selectedItems, { id })) {
+      const indexOf = _.findIndex(selectedItems, o => o.id === id)
+      console.log(indexOf);
+      this.setState({
+        selectedItems: update(selectedItems, { $splice: [[indexOf, 1]] })
+      })
+    } else {
+      this.setState({
+        selectedItems: update(selectedItems, { $push: [{ type, id, bucket }] })
+      })
+    }
+    e.target.classList.toggle('selected')
+  }
+
+  deselectAll() {
+    const el = document.getElementsByClassName('FileCommanderItem')
+    for (let e of el) {
+      e.classList.remove('selected')
+    }
+  }
+
+  pushNamePath(path) {
+    return update(this.state.namePath, { $push: [path] })
+  }
+
   popNamePath() {
     return (previousState, currentProps) => {
       return { ...previousState, namePath: _.dropRight(previousState.namePath) };
@@ -159,7 +221,7 @@ class App extends Component {
 
   folderTraverseUp() {
     this.setState(this.popNamePath(), () => {
-      this.getFolderContent(_.last(this.state.namePath).id, true)
+      this.getFolderContent(_.last(this.state.namePath).id, false)
     })
   }
 
@@ -173,15 +235,17 @@ class App extends Component {
               createFolder={this.createFolder}
               uploadFile={this.openUploadFile}
               uploadHandler={this.uploadFile}
+              deleteItems={this.deleteItems}
               style
             />
           ) : null
         }
         <FileCommander 
-          //   folderTree={this.state.folderTree} 
+          //   folderTree={this.state.folderTree}
           currentCommanderItems={this.state.currentCommanderItems}
           openFolder={this.openFolder}
           downloadFile={this.downloadFile}
+          selectCommanderItem={this.selectCommanderItem}
           namePath={this.state.namePath}
             handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
         />

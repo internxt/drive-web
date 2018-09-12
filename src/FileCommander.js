@@ -14,6 +14,7 @@ class FileCommander extends React.Component {
             namePath: this.props.namePath,
             // activeParent: {folder:'', bucket: '', name: ''}
         }
+        this.myRef = React.createRef()
     }
 
     componentDidUpdate(prevProps) {
@@ -23,8 +24,11 @@ class FileCommander extends React.Component {
             this.setState({ namePath: this.props.namePath}) }
     }
 
+
+
     render() {
         const list = this.state.currentCommanderItems || 0
+        const inRoot = this.state.namePath.length === 1
 
         return (
             <div id="FileCommander">
@@ -45,14 +49,44 @@ class FileCommander extends React.Component {
                                 return (
                                     <span key={i} >
                                         {item.type === 'Folder'  ? 
-                                            <FileCommanderItem name={item.name} type={item.type} created={moment(item.created).format('dddd')} id={item.id} clickHandler={this.props.openFolder.bind(null, item.id)} />
+                                            <FileCommanderItem 
+                                                ref={this.myRef} 
+                                                id={item.id} 
+                                                name={item.name} 
+                                                type={item.type} 
+                                                bucket={item.bucket} 
+                                                created={moment(item.created).format('dddd')} 
+                                                clickHandler={this.props.openFolder.bind(null, item.id)} 
+                                                selectHandler={(e) => this.props.selectCommanderItem(i, e)}
+                                            />
                                             :
-                                            <FileCommanderItem name={item.name} created={moment(item.created).format('dddd')} clickHandler={this.props.downloadFile.bind(null, item.bucketId)} />
+                                            <FileCommanderItem 
+                                                ref={this.myRef} 
+                                                id={item.id} 
+                                                name={item.name} 
+                                                type={item.type} 
+                                                bucket={item.bucketId}
+                                                created={moment(item.created).format('dddd')} 
+                                                clickHandler={this.props.downloadFile.bind(null, item.bucketId)} 
+                                                selectHandler={(e) => this.props.selectCommanderItem(i, e)}
+                                            />
                                         }   
                                     </span>
                                 )
                             })
-                        ) : null
+                        ): (
+                            inRoot ? (
+                                <div className="noItems">
+                                    <h1>Your X Cloud is empty.</h1>
+                                    <h4>Click the upload button to get started.</h4>
+                                </div>
+                                ) : (
+                                    
+                                <div className="noItems">
+                                    <h1>This folder is empty.</h1>
+                                </div>
+                            )
+                        )
                     }
                 </div>
             </div>

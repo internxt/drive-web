@@ -10,6 +10,15 @@
 .FileCommanderItem:hover {
     border-radius: 10px;
     background-color: #f0f3ff;
+    border: 1px solid #f0f3ff;
+    box-sizing: border-box;
+}
+
+.FileCommanderItem.selected {
+    border-radius: 10px;
+    border: 1px solid #839cff;
+    background-color: #f0f3ff;
+    box-sizing: border-box;
 }
 
 .FileCommanderItem .type {
@@ -26,6 +35,13 @@
     color: #5291ff;
     font-size: 14px;
     padding-bottom: 11px;
+    pointer-events: none;
+    text-transform: uppercase;
+}
+
+.FileCommanderItem img {
+    margin-bottom: 20px;
+    pointer-events: none;
 }
 
 .FileCommanderItem .name {
@@ -39,6 +55,11 @@
     color: #000000;
     letter-spacing: normal;
     word-break: break-all;
+    cursor: pointer;
+}
+
+.FileCommanderItem .name:hover {
+    text-decoration: underline;
 }
 
 .FileCommanderItem .created {
