@@ -152,10 +152,10 @@ class App extends Component {
       headers: {
           "Authorization": `Bearer ${sessionStorage.getItem('xToken')}`
       }
-    }).then(data => {
-      return { file: data.blob(), name: data.headers.get('x-file-name') }
-    }).then(data => {
-      fileDownload(data.file, data.name)
+    }).then(async (data) => {
+      const blob = await data.blob()
+      const name = data.headers.get('x-file-name')
+      fileDownload(blob, name)
     })
   }
 
