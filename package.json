@@ -9,8 +9,10 @@
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "react": "^16.4.2",
+    "react-device-detect": "^1.6.1",
     "react-dom": "^16.4.2",
-    "react-scripts": "1.1.5"
+    "react-scripts": "1.1.5",
+    "reactjs-popup": "^1.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

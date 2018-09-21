@@ -5,6 +5,8 @@ import React, { Component } from 'react';
 import Header from './Header';
 import FileCommander from './FileCommander';
 import update from 'immutability-helper';
+import {isMobile} from 'react-device-detect';
+import Popup from "reactjs-popup";
 // import logo from './logo.svg';
 import './App.css';
 
@@ -21,7 +23,8 @@ class App extends Component {
       currentCommanderItems: [],
       namePath: [],
       isAuthorized: false,
-      selectedItems: []
+      selectedItems: [],
+      chooserModalOpen: false
     }
     this.openFolder = this.openFolder.bind(this)
     this.getFolderContent = this.getFolderContent.bind(this)
@@ -32,6 +35,7 @@ class App extends Component {
     this.downloadFile = this.downloadFile.bind(this)
     this.deleteItems = this.deleteItems.bind(this)
     this.selectCommanderItem = this.selectCommanderItem.bind(this)
+    this.closeModal = this.closeModal.bind(this)
   }
 
   componentDidMount() {
@@ -55,6 +59,9 @@ class App extends Component {
         return response.json()
       })
       .then(response => {
+        if (true) {
+          this.setState({chooserModalOpen: true})
+        }
         var token = response.token
         var user = response.user
         sessionStorage.setItem('xToken', token)
@@ -224,6 +231,10 @@ class App extends Component {
       this.getFolderContent(_.last(this.state.namePath).id, false)
     })
   }
+  
+  closeModal() {
+    this.setState({chooserModalOpen: false})
+  }
 
   render() {
     const isAuthorized = this.state.isAuthorized
@@ -249,6 +260,14 @@ class App extends Component {
           namePath={this.state.namePath}
             handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
         />
+        <Popup
+          open={this.state.chooserModalOpen}
+          closeOnDocumentClick
+          onClose={this.closeModal}
+        >
+          <a href={'xcloud://?token=' + this.state.token}>Open mobile app</a>
+          <a onClick={this.closeModal}>Use web app</a>
+        </Popup>
       </div>
     );
   }

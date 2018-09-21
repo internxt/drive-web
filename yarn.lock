@@ -5659,6 +5659,10 @@ react-dev-utils@^5.0.2:
     strip-ansi "3.0.1"
     text-table "0.2.0"
 
+react-device-detect@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/react-device-detect/-/react-device-detect-1.6.1.tgz#3730e74e25fd79be19ac99fc6a07e751255b9232"
+
 react-dom@^16.4.2:
   version "16.4.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.4.2.tgz#4afed569689f2c561d2b8da0b819669c38a0bda4"
@@ -5725,6 +5729,10 @@ react@^16.4.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.0"
+
+reactjs-popup@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/reactjs-popup/-/reactjs-popup-1.2.0.tgz#93acb988f8dacf3ba139085df457b03d23e8e926"
 
 read-pkg-up@^1.0.1:
   version "1.0.1"

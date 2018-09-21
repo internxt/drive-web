@@ -27,3 +27,34 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  padding: 50px !important;
+}
+
+.popup-overlay a {
+  width: 150px;
+  height: 30px;
+  display: block;
+  margin: 0 auto;
+  background-color:#79bbff;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #84bbf3;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:6px 24px;
+  text-decoration:none;
+}
+
+.popup-overlay a:first-child {
+  margin-bottom: 30px;
+}
