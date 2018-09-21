@@ -59,7 +59,7 @@ class App extends Component {
         return response.json()
       })
       .then(response => {
-        if (true) {
+        if (isMobile) {
           this.setState({chooserModalOpen: true})
         }
         var token = response.token
