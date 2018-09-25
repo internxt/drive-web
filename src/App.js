@@ -265,7 +265,7 @@ class App extends Component {
           closeOnDocumentClick
           onClose={this.closeModal}
         >
-          <a href={'xcloud://?token=' + this.state.token}>Open mobile app</a>
+          <a href={'xcloud://' + this.state.token + '://' + JSON.stringify(this.state.user)}>Open mobile app</a>
           <a onClick={this.closeModal}>Use web app</a>
         </Popup>
       </div>
