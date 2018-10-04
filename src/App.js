@@ -7,7 +7,7 @@ import FileCommander from './FileCommander';
 import update from 'immutability-helper';
 import {isMobile} from 'react-device-detect';
 import Popup from "reactjs-popup";
-// import logo from './logo.svg';
+import Logo from './Logo';
 import './App.css';
 
 class App extends Component {
@@ -251,15 +251,23 @@ class App extends Component {
             />
           ) : null
         }
-        <FileCommander 
-          //   folderTree={this.state.folderTree}
-          currentCommanderItems={this.state.currentCommanderItems}
-          openFolder={this.openFolder}
-          downloadFile={this.downloadFile}
-          selectCommanderItem={this.selectCommanderItem}
-          namePath={this.state.namePath}
+        {
+          isAuthorized ? (
+          <FileCommander
+            //   folderTree={this.state.folderTree}
+            currentCommanderItems={this.state.currentCommanderItems}
+            openFolder={this.openFolder}
+            downloadFile={this.downloadFile}
+            selectCommanderItem={this.selectCommanderItem}
+            namePath={this.state.namePath}
             handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
-        />
+          />
+        ) : (
+          <div className="loader__wrapper full-height">
+            <Logo className="App-logo" color="#4385F4 "height={320} width={320}/>
+          </div>
+        )
+        }
         <Popup
           open={this.state.chooserModalOpen}
           closeOnDocumentClick
