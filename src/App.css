@@ -4,10 +4,6 @@
   height: 100%;
 }
 
-.App-logo {
-  animation: App-logo-loader infinite 2s ease-out;
-}
-
 .App-header {
   background-color: #222;
   height: 150px;
@@ -21,12 +17,6 @@
 
 .App-intro {
   font-size: large;
-}
-
-@keyframes App-logo-loader {
-  0% { opacity: 0.5; }
-  50% { opacity: 1; }
-  100% { opacity: 0.5; }
 }
 
 .popup-content {
