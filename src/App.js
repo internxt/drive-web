@@ -7,7 +7,7 @@ import FileCommander from './FileCommander';
 import update from 'immutability-helper';
 import {isMobile} from 'react-device-detect';
 import Popup from "reactjs-popup";
-// import logo from './logo.svg';
+import Loader from './Loader';
 import './App.css';
 
 class App extends Component {
@@ -43,7 +43,6 @@ class App extends Component {
     if (!sessionStorage.getItem('xToken')) {
       civicSip.signup({ style: 'popup', scopeRequest: civicSip.ScopeRequests.BASIC_SIGNUP }); // eslint-disable-line no-undef
     } else {
-      this.setState({isAuthorized: true})
       this.getFolderContent(JSON.parse(sessionStorage.getItem('xUser')).root_folder_id)
     }
     civicSip.on('auth-code-received', (event) => {
@@ -67,7 +66,6 @@ class App extends Component {
         sessionStorage.setItem('xToken', token)
         sessionStorage.setItem('xUser', JSON.stringify(user))
         this.setState({token, user})
-        this.setState({isAuthorized: true})
         this.getFolderContent(user.root_folder_id)
       })
     });
@@ -106,7 +104,8 @@ class App extends Component {
       if (updateNamePath) {
         const folderName = data.name.includes('ROOT') ? 'Root' : data.name
         this.setState({
-          namePath: this.pushNamePath({name: folderName, id: data.id, bucket: data.bucket})
+          namePath: this.pushNamePath({name: folderName, id: data.id, bucket: data.bucket}),
+          isAuthorized: true
         })
       }
     })
@@ -251,15 +250,23 @@ class App extends Component {
             />
           ) : null
         }
-        <FileCommander 
-          //   folderTree={this.state.folderTree}
-          currentCommanderItems={this.state.currentCommanderItems}
-          openFolder={this.openFolder}
-          downloadFile={this.downloadFile}
-          selectCommanderItem={this.selectCommanderItem}
-          namePath={this.state.namePath}
+        {
+          isAuthorized ? (
+          <FileCommander
+            //   folderTree={this.state.folderTree}
+            currentCommanderItems={this.state.currentCommanderItems}
+            openFolder={this.openFolder}
+            downloadFile={this.downloadFile}
+            selectCommanderItem={this.selectCommanderItem}
+            namePath={this.state.namePath}
             handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
-        />
+          />
+        ) : (
+          <div className="loader__wrapper full-height">
+            <Loader className="loader"/>
+          </div>
+        )
+        }
         <Popup
           open={this.state.chooserModalOpen}
           closeOnDocumentClick
