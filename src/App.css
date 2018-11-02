@@ -23,7 +23,7 @@
   display: flex;
   flex-direction: column;
   align-content: center;
-  padding: 50px !important;
+  border-radius: 10px;
 }
 
 .popup-overlay a {
@@ -58,4 +58,57 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.buttons-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  margin-top: 20px;
+  border-top: #ededed 1px solid;
+}
+
+.message-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  padding: 20px !important;
+}
+
+.default-button {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 0.5rem;
+
+  min-width: 100px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px transparent solid;
+
+  color: #222;
+  font-family: "Cerebri Sans", Arial, sans-serif;
+  letter-spacing: 0;
+
+  cursor: pointer;
+  text-align: center;
+  transition: background 250ms ease-in-out, transform 150ms ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+.default-button:hover {
+  border: 1px #222 solid
+}
+
+.button-primary {
+  color: #4b66ff;
+}
+
+.button-primary:hover {
+  border-color: #4b66ff;
 }
