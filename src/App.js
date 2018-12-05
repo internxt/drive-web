@@ -9,6 +9,7 @@ import {isMobile} from 'react-device-detect';
 import Popup from "reactjs-popup";
 import Loader from './Loader';
 import './App.css';
+import KeyPage from './KeyPage';
 
 class App extends Component {
   
@@ -292,6 +293,7 @@ class App extends Component {
   }
 
   render() {
+    // return <KeyPage user={this.state.user} />;
     const isAuthorized = this.state.isAuthorized
     return (
       <div className="App">

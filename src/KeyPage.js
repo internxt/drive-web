@@ -19,6 +19,7 @@ class KeyPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      user: {},
       token: null,
       saveOptionSelected: null
     };
@@ -26,12 +27,15 @@ class KeyPage extends React.Component {
     this.handleSaveOptionClick = this.handleSaveOptionClick.bind(this);
     this.handleContinueClick = this.handleContinueClick.bind(this);
     this.handleRepeatClick = this.handleRepeatClick.bind(this);
+    this.saveMnemonicToDatabase = this.saveMnemonicToDatabase.bind(this);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    // TODO: Move componentDidMount logic from App.js here
+  }
 
   handleRepeatClick() {
-      console.log('get new token');
+    console.log("get new token");
   }
 
   handleSaveOptionClick(saveOptionSelected) {
@@ -39,7 +43,35 @@ class KeyPage extends React.Component {
   }
 
   handleContinueClick() {
-    console.log('continue');
+    const { saveOptionSelected } = this.state;
+
+    // Redirect user without saving mnemoic
+    if (saveOptionSelected === "USER") {
+      // TODO: Redirect
+      return;
+    }
+
+    this.saveMnemonicToDatabase()
+      .then(() => {
+        // TODO: Redirect
+      })
+      .catch(() => console.error("Error saving key"));
+  }
+
+  saveMnemonicToDatabase() {
+    const { user } = this.props;
+
+    return fetch(`/api/auth/mnemonic`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("xToken")}`,
+        "content-type": "application/json; charset=utf-8"
+      },
+      body: JSON.stringify({
+        id: user.id,
+        mnemonic: sessionStorage.getItem("xMnemonic")
+      })
+    });
   }
 
   render() {
