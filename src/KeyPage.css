@@ -1,0 +1,110 @@
+.key {
+  display: flex;
+  justify-content: center;
+  font-family: "Cerebri Sans", Arial, sans-serif;
+}
+
+.key-inner {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+}
+
+.key-title {
+  font-size: 50px;
+  font-weight: 900;
+  margin-bottom: 0;
+  letter-spacing: -1.5px;
+  text-align: center;
+  color: #000000;
+}
+
+.key-subtitle {
+  opacity: 0.84;
+  font-size: 24px;
+  line-height: 1.54;
+  letter-spacing: -0.2px;
+  text-align: center;
+  color: #404040;
+}
+
+.mnemoic-container {
+  width: 100%;
+  height: 73px;
+  margin-top: 20px;
+  margin-bottom: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px dashed #979797;
+}
+
+.mnemoic-value {
+  opacity: 0.57;
+  font-size: 18px;
+  letter-spacing: -0.2px;
+  color: #000000;
+}
+
+.button-repeat {
+  width: 44px;
+  height: 44px;
+  margin-left: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 22px;
+  background-color: #f7f7f7;
+  cursor: pointer;
+}
+
+.save-key-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.button-save-key {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 73px;
+  width: 339px;
+  border-radius: 8px;
+  border: 1px solid #c9c9c9;
+  cursor: pointer;
+}
+
+.button-save-key.selected {
+    border: 1px solid #4385f4;
+}
+
+.button-save-key .label {
+  opacity: 0.57;
+  font-size: 18px;
+  letter-spacing: -0.2px;
+  color: #000000;
+}
+
+.button-save-key .icon-info {
+  margin-left: 20px;
+}
+
+.button-continue {
+  width: 100%;
+  height: 73px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  background-color: #4385f4;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: -0.1px;
+  color: #ffffff;
+  cursor: pointer;
+}
