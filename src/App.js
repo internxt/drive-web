@@ -25,7 +25,8 @@ class App extends Component {
       isAuthorized: false,
       selectedItems: [],
       chooserModalOpen: false,
-      mnemonicModal: true
+      mnemonicModal: false,
+      rateLimitModal: false
     }
     this.openFolder = this.openFolder.bind(this)
     this.getFolderContent = this.getFolderContent.bind(this)
@@ -38,6 +39,7 @@ class App extends Component {
     this.selectCommanderItem = this.selectCommanderItem.bind(this)
     this.closeModal = this.closeModal.bind(this)
     this.closeMnemonicModal = this.closeMnemonicModal.bind(this)
+    this.closeRateLimitModal = this.closeRateLimitModal.bind(this)
     this.saveMnemonicToDataase = this.saveMnemonicToDataase.bind(this)
     this.setHeaders = this.setHeaders.bind(this)
   }
@@ -129,6 +131,10 @@ class App extends Component {
     this.setState({mnemonicModal: false})
     this.getFolderContent(JSON.parse(sessionStorage.getItem('xUser')).root_folder_id)
   }
+  
+  closeRateLimitModal() {
+    this.setState({ rateLimitModal: false })
+  }
 
   getFolderContent(rootId, updateNamePath = true) {
     const headers = this.setHeaders();
@@ -183,13 +189,18 @@ class App extends Component {
   uploadFile(e) {
     const data = new FormData();
     const headers = this.setHeaders();
+    delete headers['content-type'];
     data.append('xfile', e.target.files[0]);
     fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
       method: 'post',
       headers: headers,
       body: data
-    }).then(() => {
-      this.getFolderContent(this.state.currentFolderId)
+    }).then((response) => {
+      if (response.status === 402){
+        this.setState({rateLimitModal: true})
+        return; 
+      }
+      this.getFolderContent(this.state.currentFolderId);
     })
   }
 
@@ -199,6 +210,10 @@ class App extends Component {
       method: 'get',
       headers: headers
     }).then(async (data) => {
+      if (data.status === 402){
+        this.setState({rateLimitModal: true})
+        return; 
+      }
       const blob = await data.blob()
       const name = data.headers.get('x-file-name')
       fileDownload(blob, name)
@@ -338,6 +353,32 @@ class App extends Component {
               <div className="default-button button-primary" onClick={this.saveMnemonicToDataase}>
                 Save mnemonic
           </div>
+            </div>
+          </div>
+        </Popup>
+
+        <Popup
+          open={this.state.rateLimitModal}
+          closeOnDocumentClick
+          onClose={this.closeRateLimitModal}
+          className="popup--full-screen"
+        >
+          <div className="popup--full-screen__content">
+            <div className="popup--full-screen__close-button-wrapper">
+                <div className="close-button" onClick={this.closeRateLimitModal}>
+                  X
+                </div>
+            </div>
+            <div className="message-wrapper">
+              <h1>
+              You have run out of storage space!
+              </h1>
+              <h2>Get more storage space by upgrading your storage plan on your settings page.</h2>
+            </div>
+            <div className="buttons-wrapper">
+              <div className="default-button button-primary" onClick={this.goToSettings}>
+                Take me there
+              </div>
             </div>
           </div>
         </Popup>
