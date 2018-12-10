@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import Header from './Header';
 import FileCommander from './FileCommander';
 import update from 'immutability-helper';
+import Popup from "reactjs-popup";
 import Loader from './Loader';
 import KeyPage from './KeyPage';
 import './App.css';
@@ -233,40 +234,62 @@ class App extends Component {
     this.getFolderContent(user.root_folder_id);
   }
 
+  openChooserModal() {
+    this.setState({chooserModalOpen: true})
+  }
+
+  closeModal() {
+    this.setState({chooserModalOpen: false})
+  }
+
   render() {
     const { keyPageVisible, isAuthorized } = this.state;
 
     if (keyPageVisible) {
-      return <KeyPage onContinue={this.handleKeySaved} />;
+      return <KeyPage onContinue={this.handleKeySaved} onChooserModal={this.openChooserModal} />;
     }
 
     return (
       <div className="App">
-        {isAuthorized ? (
-          <React.Fragment>
-            <Header
+        {
+          isAuthorized ? (
+            <Header 
               createFolder={this.createFolder}
               uploadFile={this.openUploadFile}
               uploadHandler={this.uploadFile}
               deleteItems={this.deleteItems}
               style
             />
-            <FileCommander
-              //   folderTree={this.state.folderTree}
-              currentCommanderItems={this.state.currentCommanderItems}
-              openFolder={this.openFolder}
-              downloadFile={this.downloadFile}
-              selectCommanderItem={this.selectCommanderItem}
-              namePath={this.state.namePath}
-              handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
-            />
-          </React.Fragment>) : (
-            <div className="loader__wrapper full-height">
-              <Loader className="loader" />
-            </div>
-          )}
-
-          <Popup
+          ) : null
+        }
+        {
+          isAuthorized ? (
+          <FileCommander
+            //   folderTree={this.state.folderTree}
+            currentCommanderItems={this.state.currentCommanderItems}
+            openFolder={this.openFolder}
+            downloadFile={this.downloadFile}
+            selectCommanderItem={this.selectCommanderItem}
+            namePath={this.state.namePath}
+            handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
+          />
+        ) : (
+          <div className="loader__wrapper full-height">
+            <Loader className="loader"/>
+          </div>
+        )
+        }
+        <Popup
+            open={this.state.chooserModalOpen}
+            closeOnDocumentClick
+            onClose={this.closeModal}
+          >
+          <div>
+            <a href={'xcloud://' + this.state.token + '://' + JSON.stringify(this.state.user)}>Open mobile app</a>
+            <a onClick={this.closeModal}>Use web app</a>
+          </div>
+        </Popup>
+        <Popup
             open={this.state.rateLimitModal}
             closeOnDocumentClick
             onClose={this.closeRateLimitModal}
@@ -294,6 +317,8 @@ class App extends Component {
 
       </div>
     );
+
+    
   }
 }
 

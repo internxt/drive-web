@@ -1,4 +1,5 @@
 import * as React from "react";
+import {isMobile} from 'react-device-detect';
 
 import "./KeyPage.css";
 import repeatIcon from "./assets/Dashboard-Icons/Repeat.svg";
@@ -21,7 +22,8 @@ class KeyPage extends React.Component {
     this.state = {
       user: {},
       token: null,
-      saveOptionSelected: null
+      saveOptionSelected: null,
+      chooserModalOpen: false
     };
 
     this.handleSaveOptionClick = this.handleSaveOptionClick.bind(this);
@@ -55,6 +57,9 @@ class KeyPage extends React.Component {
       })
         .then(response => response.json())
         .then(response => {
+          if (isMobile) {
+            this.props.onChooserModal();
+          }
           const { token, user } = response;
 
           sessionStorage.setItem("xToken", token);
