@@ -34,6 +34,7 @@
   height: 73px;
   margin-top: 20px;
   margin-bottom: 50px;
+  padding: 10px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,13 +47,16 @@
   font-size: 18px;
   letter-spacing: -0.2px;
   color: #000000;
+  margin-left: 20px;
+  text-align: center;
 }
 
 .button-repeat {
   width: 44px;
   height: 44px;
-  margin-left: 20px;
+  margin: 0 20px;
   display: flex;
+  flex-shrink: 0;
   justify-content: center;
   align-items: center;
   border-radius: 22px;

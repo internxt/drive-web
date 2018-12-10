@@ -7,23 +7,13 @@ import infoIcon from "./assets/Dashboard-Icons/Info.svg";
 const SAVE_OPTIONS = [
   {
     label: "I have copied and saved my key",
-    value: "USER"
+    value: "USER" // do nothing. user will save pass manually
   },
   {
     label: "I want to save my key online",
-    value: "ONLINE"
+    value: "ONLINE" // save on server
   }
 ];
-
-// MOCK /api/auth
-const MOCK_RESPONSE = {
-  user: {
-    id: 0,
-    name: "Mock User Name",
-    mnemonic: "MOCK Dog Horse Yacht Snow Rain Sun Wind Shoes Money Moose MOCK"
-  },
-  token: "mock token"
-};
 
 class KeyPage extends React.Component {
   constructor(props) {
@@ -31,7 +21,6 @@ class KeyPage extends React.Component {
     this.state = {
       user: {},
       token: null,
-      mnemonic: null,
       saveOptionSelected: null
     };
 
@@ -43,14 +32,11 @@ class KeyPage extends React.Component {
 
   componentDidMount() {
     const civicSip = new civic.sip({ appId: "Skzcny80G" }); // eslint-disable-line no-undef
-    const xToken = sessionStorage.getItem("xToken");
-    if (xToken) {
+    const xMnemonic = sessionStorage.getItem("xMnemonic");
+    if (xMnemonic) {
       const { onContinue } = this.props;
       const user = JSON.parse(sessionStorage.getItem("xUser"));
-
-      // TODO: Remove next line after testing. No need to update state, component wont be visible
-      this.setState({ token: xToken, user, mnemonic: user.mnemonic });
-      onContinue(user, xToken);
+      onContinue(user);
       return;
     }
 
@@ -67,16 +53,14 @@ class KeyPage extends React.Component {
           "content-type": "application/json; charset=utf-8"
         }
       })
+        .then(response => response.json())
         .then(response => {
-          console.log("/api/auth response", response);
-          // TODO: Remove mock with real data from response.
-          const { token, user } = MOCK_RESPONSE;
-          const { mnemonic } = user;
-          // TODO: Add support for multiple tokens in session storage (e.g. user__id)
+          const { token, user } = response;
+
           sessionStorage.setItem("xToken", token);
           sessionStorage.setItem("xUser", JSON.stringify(user));
-          sessionStorage.setItem("xMnemonic", mnemonic);
-          this.setState({ token, user, mnemonic });
+          sessionStorage.setItem("xMnemonic", user.mnemonic);
+          this.setState({ token, user });
         })
         .catch(err => {
           console.error("Auth error", err);
@@ -101,19 +85,18 @@ class KeyPage extends React.Component {
   }
 
   handleContinueClick() {
-    const { saveOptionSelected, user, token } = this.state;
+    const { saveOptionSelected, user } = this.state;
     const { onContinue } = this.props;
 
     // Redirect user without saving mnemonic
     if (saveOptionSelected === "USER") {
-      onContinue(user, token);
+      onContinue(user);
       return;
     }
 
     this.saveMnemonicToDatabase()
       .then(() => {
-        console.log("User mnemonic saved to database");
-        onContinue(user, token);
+        onContinue(user);
       })
       .catch(err => console.error("Error saving key", err));
   }
@@ -136,7 +119,6 @@ class KeyPage extends React.Component {
 
   render() {
     const { saveOptionSelected, user } = this.state;
-    console.log(user);
 
     return (
       <div className="key">

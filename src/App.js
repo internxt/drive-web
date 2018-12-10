@@ -5,16 +5,13 @@ import React, { Component } from 'react';
 import Header from './Header';
 import FileCommander from './FileCommander';
 import update from 'immutability-helper';
-import Popup from "reactjs-popup";
 import Loader from './Loader';
-import './App.css';
 import KeyPage from './KeyPage';
+import './App.css';
 
 class App extends Component {
-  
-  
   constructor() {
-    super()
+    super();
 
     this.state = {
       token: "",
@@ -40,20 +37,21 @@ class App extends Component {
     this.selectCommanderItem = this.selectCommanderItem.bind(this)
     this.closeModal = this.closeModal.bind(this)
     this.closeRateLimitModal = this.closeRateLimitModal.bind(this)
-    this.saveMnemonicToDataase = this.saveMnemonicToDataase.bind(this)
     this.setHeaders = this.setHeaders.bind(this)
     this.handleKeySaved = this.handleKeySaved.bind(this);
   }
 
   setHeaders() {
     let headers = {
-      "Authorization": `Bearer ${sessionStorage.getItem('xToken')}`,
-      'content-type': 'application/json; charset=utf-8',
-    }
+      Authorization: `Bearer ${sessionStorage.getItem("xToken")}`,
+      "content-type": "application/json; charset=utf-8"
+    };
     if (!this.state.user.mnemonic) {
-      headers = Object.assign(headers, { 'internxt-mnemonic': sessionStorage.getItem('xMnemonic') });
+      headers = Object.assign(headers, {
+        "internxt-mnemonic": sessionStorage.getItem("xMnemonic")
+      });
     }
-    return headers
+    return headers;
   }
 
   closeRateLimitModal() {
@@ -63,30 +61,37 @@ class App extends Component {
   getFolderContent(rootId, updateNamePath = true) {
     const headers = this.setHeaders();
     fetch(`/api/storage/folder/${rootId}`, {
-      method: 'get',
+      method: "get",
       headers: headers
     })
-    .then(response => response.json())
-    .then(data => {
-      this.deselectAll()
-      this.setState({
-        currentCommanderItems: _.concat(_.map(data.children, o => _.extend({type: 'Folder'}, o)), data.files),
-        currentFolderId: data.id,
-        currentFolderBucket: data.bucket,
-        selectedItems: []
-      })
-      if (updateNamePath) {
-        const folderName = data.name.includes('root') ? 'Root' : data.name
+      .then(response => response.json())
+      .then(data => {
+        this.deselectAll();
         this.setState({
-          namePath: this.pushNamePath({name: folderName, id: data.id, bucket: data.bucket}),
-          isAuthorized: true
-        })
-      }
-    })
+          currentCommanderItems: _.concat(
+            _.map(data.children, o => _.extend({ type: "Folder" }, o)),
+            data.files
+          ),
+          currentFolderId: data.id,
+          currentFolderBucket: data.bucket,
+          selectedItems: []
+        });
+        if (updateNamePath) {
+          const folderName = data.name.includes("root") ? "Root" : data.name;
+          this.setState({
+            namePath: this.pushNamePath({
+              name: folderName,
+              id: data.id,
+              bucket: data.bucket
+            }),
+            isAuthorized: true
+          });
+        }
+      });
   }
 
   openFolder(e) {
-    this.getFolderContent(e)
+    this.getFolderContent(e);
   }
 
   createFolder() {
@@ -94,20 +99,20 @@ class App extends Component {
     var headers = this.setHeaders();
     if (folderName != null) {
       fetch(`/api/storage/folder`, {
-        method: 'post',
+        method: "post",
         headers: headers,
         body: JSON.stringify({
-          "parentFolderId": this.state.currentFolderId,
-          "folderName": folderName
+          parentFolderId: this.state.currentFolderId,
+          folderName: folderName
         })
       }).then(() => {
-        this.getFolderContent(this.state.currentFolderId, false)
-      })
+        this.getFolderContent(this.state.currentFolderId, false);
+      });
     }
   }
 
   openUploadFile() {
-    $('input#uploadFile').trigger('click')
+    $("input#uploadFile").trigger("click");
   }
 
   uploadFile(e) {
@@ -116,7 +121,7 @@ class App extends Component {
     delete headers['content-type'];
     data.append('xfile', e.target.files[0]);
     fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
-      method: 'post',
+      method: "post",
       headers: headers,
       body: data
     }).then((response) => {
@@ -131,7 +136,7 @@ class App extends Component {
   downloadFile(id) {
     const headers = this.setHeaders();
     fetch(`/api/storage/file/${id}`, {
-      method: 'get',
+      method: "get",
       headers: headers
     }).then(async (data) => {
       if (data.status === 402){
@@ -145,78 +150,84 @@ class App extends Component {
   }
 
   deleteItems() {
-    const selectedItems = this.state.selectedItems
-    const bucket = _.last(this.state.namePath).bucket
+    const selectedItems = this.state.selectedItems;
+    const bucket = _.last(this.state.namePath).bucket;
     const headers = this.setHeaders();
     const fetchOptions = {
       method: "DELETE",
       headers: headers
-    }
-    if (selectedItems.length === 0) return
+    };
+    if (selectedItems.length === 0) return;
     const deletionRequests = _.map(selectedItems, (v, i) => {
-      const url = v.type === 'Folder' ? `/api/storage/folder/${v.id}` : `/api/storage/bucket/${bucket}/file/${v.bucket}`
-      return fetch(url, fetchOptions)
-    })
+      const url =
+        v.type === "Folder"
+          ? `/api/storage/folder/${v.id}`
+          : `/api/storage/bucket/${bucket}/file/${v.bucket}`;
+      return fetch(url, fetchOptions);
+    });
     Promise.all(deletionRequests)
-      .then((result) => {
-        console.log('about to delete');
+      .then(result => {
+        console.log("about to delete");
         setTimeout(() => {
-          console.log('deleteing');
-          this.getFolderContent(this.state.currentFolderId, false)
-        }, 100)
-      }).catch((err) => {
-        throw new Error(err)
+          console.log("deleteing");
+          this.getFolderContent(this.state.currentFolderId, false);
+        }, 100);
+      })
+      .catch(err => {
+        throw new Error(err);
       });
   }
 
   selectCommanderItem(i, e) {
-    const selectedItems = this.state.selectedItems
-    const id = e.target.getAttribute('data-id')
-    const type = e.target.getAttribute('data-type')
-    const bucket = e.target.getAttribute('data-bucket')
+    const selectedItems = this.state.selectedItems;
+    const id = e.target.getAttribute("data-id");
+    const type = e.target.getAttribute("data-type");
+    const bucket = e.target.getAttribute("data-bucket");
     if (_.some(selectedItems, { id })) {
-      const indexOf = _.findIndex(selectedItems, o => o.id === id)
+      const indexOf = _.findIndex(selectedItems, o => o.id === id);
       console.log(indexOf);
       this.setState({
         selectedItems: update(selectedItems, { $splice: [[indexOf, 1]] })
-      })
+      });
     } else {
       this.setState({
         selectedItems: update(selectedItems, { $push: [{ type, id, bucket }] })
-      })
+      });
     }
-    e.target.classList.toggle('selected')
+    e.target.classList.toggle("selected");
   }
 
   deselectAll() {
-    const el = document.getElementsByClassName('FileCommanderItem')
+    const el = document.getElementsByClassName("FileCommanderItem");
     for (let e of el) {
-      e.classList.remove('selected')
+      e.classList.remove("selected");
     }
   }
 
   pushNamePath(path) {
-    return update(this.state.namePath, { $push: [path] })
+    return update(this.state.namePath, { $push: [path] });
   }
 
   popNamePath() {
     return (previousState, currentProps) => {
-      return { ...previousState, namePath: _.dropRight(previousState.namePath) };
-    }
+      return {
+        ...previousState,
+        namePath: _.dropRight(previousState.namePath)
+      };
+    };
   }
 
   folderTraverseUp() {
     this.setState(this.popNamePath(), () => {
-      this.getFolderContent(_.last(this.state.namePath).id, false)
-    })
+      this.getFolderContent(_.last(this.state.namePath).id, false);
+    });
   }
 
-  handleKeySaved(user, token) {
-    this.setState({ 
-      keyPageVisible: false, 
-      isAuthorized: true, 
-      user, 
-      token 
+  handleKeySaved(user) {
+    this.setState({
+      keyPageVisible: false,
+      isAuthorized: true,
+      user
     });
 
     this.getFolderContent(user.root_folder_id);
@@ -231,7 +242,6 @@ class App extends Component {
 
     return (
       <div className="App">
-
         {isAuthorized ? (
           <React.Fragment>
             <Header
