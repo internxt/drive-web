@@ -26,6 +26,70 @@
   border-radius: 10px;
 }
 
+.popup-content.popup--full-screen {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.popup--full-screen__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+
+  width: 80%;
+}
+
+.popup--full-screen__content .message-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup--full-screen__content .message-wrapper h1 {
+  font-size: 50px;
+}
+
+.popup--full-screen__content .message-wrapper h2 {
+  opacity: 0.84;
+  font-size: 24px;
+  color: #404040;
+  font-weight: 500;
+  margin: 0;
+}
+
+.popup--full-screen__content .button-primary {
+  width: 175px;
+  height: 52px;
+  border-radius: 4px;
+  background-color: #4385f4;
+  
+  color: white;
+  font-size: 19px;
+}
+
+.popup--full-screen__content .buttons-wrapper {
+  border: 0px;
+  justify-content: center;
+}
+
+
+.popup--full-screen__close-button-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  align-items: center
+}
+
 .popup-overlay a {
   width: 150px;
   height: 30px;
@@ -111,4 +175,30 @@
 
 .button-primary:hover {
   border-color: #4b66ff;
+}
+
+.close-button {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  font-family: "Cerebri Sans", Arial, sans-serif;
+  letter-spacing: 0;
+
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  background-color: #cccccc;
+
+  cursor: pointer;
+  text-align: center;
+  transition: background 250ms ease-in-out, transform 150ms ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  font-size: 24px;
+  font-weight: 700;
+
 }
