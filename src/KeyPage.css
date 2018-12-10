@@ -29,7 +29,7 @@
   color: #404040;
 }
 
-.mnemoic-container {
+.mnemonic-container {
   width: 100%;
   height: 73px;
   margin-top: 20px;
@@ -41,7 +41,7 @@
   border: 1px dashed #979797;
 }
 
-.mnemoic-value {
+.mnemonic-value {
   opacity: 0.57;
   font-size: 18px;
   letter-spacing: -0.2px;

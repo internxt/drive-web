@@ -15,12 +15,23 @@ const SAVE_OPTIONS = [
   }
 ];
 
+// MOCK /api/auth
+const MOCK_RESPONSE = {
+  user: {
+    id: 0,
+    name: "Mock User Name",
+    mnemonic: "MOCK Dog Horse Yacht Snow Rain Sun Wind Shoes Money Moose MOCK"
+  },
+  token: "mock token"
+};
+
 class KeyPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       user: {},
       token: null,
+      mnemonic: null,
       saveOptionSelected: null
     };
 
@@ -31,7 +42,54 @@ class KeyPage extends React.Component {
   }
 
   componentDidMount() {
-    // TODO: Move componentDidMount logic from App.js here
+    const civicSip = new civic.sip({ appId: "Skzcny80G" }); // eslint-disable-line no-undef
+    const xToken = sessionStorage.getItem("xToken");
+    if (xToken) {
+      const { onContinue } = this.props;
+      const user = JSON.parse(sessionStorage.getItem("xUser"));
+
+      // TODO: Remove next line after testing. No need to update state, component wont be visible
+      this.setState({ token: xToken, user, mnemonic: user.mnemonic });
+      onContinue(user, xToken);
+      return;
+    }
+
+    civicSip.signup({
+      style: "popup",
+      scopeRequest: civicSip.ScopeRequests.BASIC_SIGNUP
+    });
+
+    civicSip.on("auth-code-received", ({ response: civicToken }) => {
+      fetch("/api/auth", {
+        method: "get",
+        headers: {
+          civicToken,
+          "content-type": "application/json; charset=utf-8"
+        }
+      })
+        .then(response => {
+          console.log("/api/auth response", response);
+          // TODO: Remove mock with real data from response.
+          const { token, user } = MOCK_RESPONSE;
+          const { mnemonic } = user;
+          // TODO: Add support for multiple tokens in session storage (e.g. user__id)
+          sessionStorage.setItem("xToken", token);
+          sessionStorage.setItem("xUser", JSON.stringify(user));
+          sessionStorage.setItem("xMnemonic", mnemonic);
+          this.setState({ token, user, mnemonic });
+        })
+        .catch(err => {
+          console.error("Auth error", err);
+        });
+    });
+
+    civicSip.on("user-cancelled", event => {});
+
+    civicSip.on("read", event => {});
+
+    civicSip.on("civic-sip-error", error => {
+      console.error(`Error type: ${error.type}. Message: ${error.message}`);
+    });
   }
 
   handleRepeatClick() {
@@ -43,39 +101,43 @@ class KeyPage extends React.Component {
   }
 
   handleContinueClick() {
-    const { saveOptionSelected } = this.state;
+    const { saveOptionSelected, user, token } = this.state;
+    const { onContinue } = this.props;
 
-    // Redirect user without saving mnemoic
+    // Redirect user without saving mnemonic
     if (saveOptionSelected === "USER") {
-      // TODO: Redirect
+      onContinue(user, token);
       return;
     }
 
     this.saveMnemonicToDatabase()
       .then(() => {
-        // TODO: Redirect
+        console.log("User mnemonic saved to database");
+        onContinue(user, token);
       })
-      .catch(() => console.error("Error saving key"));
+      .catch(err => console.error("Error saving key", err));
   }
 
   saveMnemonicToDatabase() {
-    const { user } = this.props;
+    const { user, token } = this.state;
 
     return fetch(`/api/auth/mnemonic`, {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("xToken")}`,
+        Authorization: `Bearer ${token}`,
         "content-type": "application/json; charset=utf-8"
       },
       body: JSON.stringify({
         id: user.id,
-        mnemonic: sessionStorage.getItem("xMnemonic")
+        mnemonic: user.mnemonic
       })
     });
   }
 
   render() {
-    const { saveOptionSelected } = this.state;
+    const { saveOptionSelected, user } = this.state;
+    console.log(user);
+
     return (
       <div className="key">
         <div className="key-inner">
@@ -87,10 +149,8 @@ class KeyPage extends React.Component {
             with a new device. Choose one of the options below.
           </h3>
 
-          <div className="mnemoic-container">
-            <div className="mnemoic-value">
-              Cat Dog Horse Yacht Snow Rain Sun Wind Shoes Money Moose Card
-            </div>
+          <div className="mnemonic-container">
+            <div className="mnemonic-value">{user.mnemonic}</div>
             <div onClick={this.handleRepeatClick} className="button-repeat">
               <img src={repeatIcon} alt="Repeat" className="icon-repeat" />
             </div>
