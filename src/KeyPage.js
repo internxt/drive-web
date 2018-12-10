@@ -92,6 +92,7 @@ class KeyPage extends React.Component {
   handleContinueClick() {
     const { saveOptionSelected, user } = this.state;
     const { onContinue } = this.props;
+    if (!saveOptionSelected) return; // TODO: Add disable state to Continue button
 
     // Redirect user without saving mnemonic
     if (saveOptionSelected === "USER") {
