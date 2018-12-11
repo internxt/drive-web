@@ -110,5 +110,11 @@
   font-weight: bold;
   letter-spacing: -0.1px;
   color: #ffffff;
-  cursor: pointer;
+  border: none;
+}
+
+.button-continue:disabled,
+.button-continue[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
