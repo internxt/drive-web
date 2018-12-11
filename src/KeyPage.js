@@ -23,7 +23,8 @@ class KeyPage extends React.Component {
       user: {},
       token: null,
       saveOptionSelected: null,
-      chooserModalOpen: false
+      chooserModalOpen: false,
+      civicPopupActive: true
     };
 
     this.handleSaveOptionClick = this.handleSaveOptionClick.bind(this);
@@ -65,7 +66,7 @@ class KeyPage extends React.Component {
           sessionStorage.setItem("xToken", token);
           sessionStorage.setItem("xUser", JSON.stringify(user));
           sessionStorage.setItem("xMnemonic", user.mnemonic);
-          this.setState({ token, user });
+          this.setState({ token, user, civicPopupActive: false });
         })
         .catch(err => {
           console.error("Auth error", err);
@@ -124,10 +125,10 @@ class KeyPage extends React.Component {
   }
 
   render() {
-    const { saveOptionSelected, user } = this.state;
+    const { saveOptionSelected, user, civicPopupActive } = this.state;
 
     return (
-      <div className="key">
+      <div className={`key ${civicPopupActive ? 'popup-active' : ''}`}>
         <div className="key-inner">
           <h2 className="key-title">
             Your encryption key is below. Please save your key!
