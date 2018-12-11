@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "copy-to-clipboard": "^3.0.8",
     "immutability-helper": "^2.7.1",
     "jquery": "^3.3.1",
     "js-file-download": "^0.4.1",

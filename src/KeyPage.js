@@ -4,6 +4,7 @@ import {isMobile} from 'react-device-detect';
 import "./KeyPage.css";
 import repeatIcon from "./assets/Dashboard-Icons/Repeat.svg";
 import infoIcon from "./assets/Dashboard-Icons/Info.svg";
+import { copyToClipboard } from "./utils";
 
 const SAVE_OPTIONS = [
   {
@@ -28,7 +29,7 @@ class KeyPage extends React.Component {
 
     this.handleSaveOptionClick = this.handleSaveOptionClick.bind(this);
     this.handleContinueClick = this.handleContinueClick.bind(this);
-    this.handleRepeatClick = this.handleRepeatClick.bind(this);
+    this.handleRepeatClick = this.handleCopyToClipboard.bind(this);
     this.saveMnemonicToDatabase = this.saveMnemonicToDatabase.bind(this);
   }
 
@@ -81,8 +82,8 @@ class KeyPage extends React.Component {
     });
   }
 
-  handleRepeatClick() {
-    console.log("get new token");
+  handleCopyToClipboard() {
+    copyToClipboard(this.state.user.mnemonic);
   }
 
   handleSaveOptionClick(saveOptionSelected) {
@@ -92,7 +93,7 @@ class KeyPage extends React.Component {
   handleContinueClick() {
     const { saveOptionSelected, user } = this.state;
     const { onContinue } = this.props;
-    if (!saveOptionSelected) return; // TODO: Add disable state to Continue button
+    if (!saveOptionSelected) return;
 
     // Redirect user without saving mnemonic
     if (saveOptionSelected === "USER") {
@@ -139,7 +140,7 @@ class KeyPage extends React.Component {
 
           <div className="mnemonic-container">
             <div className="mnemonic-value">{user.mnemonic}</div>
-            <div onClick={this.handleRepeatClick} className="button-repeat">
+            <div onClick={this.handleCopyToClipboard} className="button-repeat">
               <img src={repeatIcon} alt="Repeat" className="icon-repeat" />
             </div>
           </div>
