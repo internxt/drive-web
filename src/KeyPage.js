@@ -1,5 +1,5 @@
 import * as React from "react";
-import {isMobile} from 'react-device-detect';
+import { isMobile } from "react-device-detect";
 
 import "./KeyPage.css";
 import repeatIcon from "./assets/Dashboard-Icons/Repeat.svg";
@@ -162,9 +162,14 @@ class KeyPage extends React.Component {
             })}
           </div>
 
-          <div onClick={this.handleContinueClick} className="button-continue">
+          <button
+            type="button"
+            onClick={this.handleContinueClick}
+            className="button-continue"
+            disabled={!saveOptionSelected}
+          >
             Continue
-          </div>
+          </button>
         </div>
       </div>
     );
