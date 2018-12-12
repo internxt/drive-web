@@ -1,7 +1,19 @@
 .key {
   display: flex;
+  height: 100vh;
+  position: relative;
   justify-content: center;
   font-family: "Cerebri Sans", Arial, sans-serif;
+}
+
+.key.popup-active ::after {
+  position: absolute;
+  content: '';
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
 }
 
 .key-inner {
