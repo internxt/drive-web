@@ -45,13 +45,9 @@ class App extends Component {
   setHeaders() {
     let headers = {
       Authorization: `Bearer ${sessionStorage.getItem("xToken")}`,
-      "content-type": "application/json; charset=utf-8"
+      "content-type": "application/json; charset=utf-8",
+      "internxt-mnemonic": this.state.user.mnemonic
     };
-    if (!this.state.user.mnemonic) {
-      headers = Object.assign(headers, {
-        "internxt-mnemonic": sessionStorage.getItem("xMnemonic")
-      });
-    }
     return headers;
   }
 
@@ -246,7 +242,7 @@ class App extends Component {
     const { keyPageVisible, isAuthorized } = this.state;
 
     if (keyPageVisible) {
-      return <KeyPage onContinue={this.handleKeySaved} onChooserModal={this.openChooserModal} />;
+      return <KeyPage xMnemonic={this.state.user.mnemonic} onContinue={this.handleKeySaved} onChooserModal={this.openChooserModal} />;
     }
 
     return (

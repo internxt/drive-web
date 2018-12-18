@@ -36,7 +36,7 @@ class KeyPage extends React.Component {
 
   componentDidMount() {
     const civicSip = new civic.sip({ appId: "Skzcny80G" }); // eslint-disable-line no-undef
-    const xMnemonic = sessionStorage.getItem("xMnemonic");
+    const xMnemonic = this.props.xMnemonic;
     if (xMnemonic) {
       const { onContinue } = this.props;
       const user = JSON.parse(sessionStorage.getItem("xUser"));
@@ -66,7 +66,6 @@ class KeyPage extends React.Component {
 
           sessionStorage.setItem("xToken", token);
           sessionStorage.setItem("xUser", JSON.stringify(user));
-          sessionStorage.setItem("xMnemonic", user.mnemonic);
           this.setState({ token, user, civicPopupActive: false });
         })
         .catch(err => {
