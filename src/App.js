@@ -78,7 +78,7 @@ class App extends Component {
           selectedItems: []
         });
         if (updateNamePath) {
-          const folderName = data.name.includes("root") ? "Root" : data.name;
+          const folderName = data.name.includes("root") ? "Home" : data.name;
           this.setState({
             namePath: this.pushNamePath({
               name: folderName,
