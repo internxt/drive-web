@@ -1,0 +1,247 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: space-between;
+  flex-direction: column;
+}
+
+.body-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.payment-methods--container {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  justify-content: flex-start;
+  margin-left: 2rem;
+  max-width: 765px;
+}
+
+.payment-form--container {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  justify-content: flex-start;
+  margin-top: 2rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.input-field {
+  border: 1px solid #c9c9c9;
+  background-image: none;
+  background-color: transparent;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+
+  display: flex;
+  width: 340px;
+  height: 75px;
+  margin-top: 0.5rem;
+  border-radius: 8px;
+  font-size: 18px;
+  padding-left: 1rem;
+}
+
+.input-field::placeholder {
+  font-size: 18px;
+}
+
+.payment-method,
+.button-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: space-between;
+  align-items: flex-end; 
+  width: 100%;
+}
+
+.round-button {
+  border: 0;
+  /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
+  line-height: normal;
+
+  /* Corrects font smoothing for webkit */
+  -webkit-font-smoothing: inherit;
+  -moz-osx-font-smoothing: inherit;
+
+  /* Corrects inability to style clickable `input` types in iOS */
+  -webkit-appearance: none;
+
+  display: flex;
+  align-self: center;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+
+  position: relative;
+  width: 39px;
+  height: 39px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.07);
+  background-color: #f7f7f7;
+  border-radius: 50%;
+
+  cursor: pointer;
+}
+
+.round-button--wrapper {
+  margin-top: 0.67em;
+  font-size: 2em;
+}
+
+.round-button:before {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: 14px;
+  border-radius: 3px;
+  border-right: 10px solid #404040;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+}
+
+.round-button:after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: 13px;
+  border-right: 6px solid #f7f7f7;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.payment-button {
+  height: 73px;
+  border-radius: 5px;
+  background-color: #f7f7f7;
+  font-size: 20px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: -0.2px;
+  text-align: left;
+  color: #404040;
+  flex: 1 1 auto
+}
+
+.payment-button:nth-child(1) {
+    margin-left: 0px;
+}
+.payment-button:nth-child(3) {
+    margin-right: 0px;
+}
+
+.payment-button:hover {
+  background: #4385f4;
+  border-color: #4385f4;
+  color: white;
+}
+
+.agree-terms-row {
+  display: flex;
+  align-content: center;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-direction: row;
+
+  color: #404040;
+}
+
+.agree-terms-container {
+  position: relative;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+
+  padding-left: 35px;
+  margin-top: 2rem;
+  min-height: 25px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.agree-terms-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.agree-terms {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.agree-terms-container:hover input ~ .agree-terms {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.agree-terms-container input:checked ~ .agree-terms {
+  background-color: #2196f3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.agree-terms:after {
+  content: '';
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.agree-terms-container input:checked ~ .agree-terms:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.agree-terms-container .agree-terms:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.buy-button-row {
+    margin-top: 2rem;
+}
+
+.full-width-button {
+    width: 100%;
+    background:#4385f4;
+    color: white;
+    font-weight: bold;
+    font-size: 22px;
+    min-height: 70px;
+    margin: 0;
+    padding: 0;
+}
