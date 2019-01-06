@@ -44,12 +44,12 @@ class App extends Component {
 
   setHeaders() {
     let headers = {
-      Authorization: `Bearer ${sessionStorage.getItem("xToken")}`,
+      Authorization: `Bearer ${localStorage.getItem("xToken")}`,
       "content-type": "application/json; charset=utf-8"
     };
     if (!this.state.user.mnemonic) {
       headers = Object.assign(headers, {
-        "internxt-mnemonic": sessionStorage.getItem("xMnemonic")
+        "internxt-mnemonic": localStorage.getItem("xMnemonic")
       });
     }
     return headers;
