@@ -36,10 +36,10 @@ class KeyPage extends React.Component {
 
   componentDidMount() {
     const civicSip = new civic.sip({ appId: "Skzcny80G" }); // eslint-disable-line no-undef
-    const xMnemonic = sessionStorage.getItem("xMnemonic");
+    const xMnemonic = localStorage.getItem("xMnemonic");
     if (xMnemonic) {
       const { onContinue } = this.props;
-      const user = JSON.parse(sessionStorage.getItem("xUser"));
+      const user = JSON.parse(localStorage.getItem("xUser"));
       onContinue(user);
       return;
     }
@@ -64,10 +64,10 @@ class KeyPage extends React.Component {
           }
           const { token, user } = response;
 
-          sessionStorage.setItem("xToken", token);
-          sessionStorage.setItem("xUser", JSON.stringify(user));
-          sessionStorage.setItem("xMnemonic", user.mnemonic);
-          this.setState({ token, user, civicPopupActive: false });
+          localStorage.setItem("xToken", token);
+          localStorage.setItem("xUser", JSON.stringify(user));
+          localStorage.setItem("xMnemonic", user.mnemonic);
+          this.setState({ token, user });
         })
         .catch(err => {
           console.error("Auth error", err);
