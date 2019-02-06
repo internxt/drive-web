@@ -50,6 +50,8 @@ class KeyPage extends React.Component {
     });
 
     civicSip.on("auth-code-received", ({ response: civicToken }) => {
+      const { onContinue } = this.props;
+
       fetch("/api/auth", {
         method: "get",
         headers: {
@@ -66,8 +68,19 @@ class KeyPage extends React.Component {
 
           localStorage.setItem("xToken", token);
           localStorage.setItem("xUser", JSON.stringify(user));
-          localStorage.setItem("xMnemonic", user.mnemonic);
-          this.setState({ token, user });
+          if(user.isCreated == false) {
+            // If user exists, ask for his mnemonic, storage in local and continue to XCloud
+            var inputMnemonic = prompt("Please enter yout mnemonic key");
+            if (inputMnemonic == user.mnemonic) {
+              localStorage.setItem("xMnemonic", user.mnemonic);
+              this.setState({ token, user });
+              onContinue(user);
+              return;
+            } else { alert("Wrong mnemonic key entered"); }
+          } else {
+            localStorage.setItem("xMnemonic", user.mnemonic);
+            this.setState({ token, user }); 
+          }
         })
         .catch(err => {
           console.error("Auth error", err);

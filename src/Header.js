@@ -30,7 +30,13 @@ const Header = props => {
                 <HeaderButton icon={share} name="Share" />
             </div>
             <div className="header-right">
-                <HeaderButton icon={account} name="Menu" />
+                <HeaderButton icon={account} name="Menu">
+			  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="#">Action</a>
+    <a class="dropdown-item" href="#">Another action</a>
+    <a class="dropdown-item" href="#">Something else here</a>
+  </div>
+		</HeaderButton>
             </div>
             <input id="uploadFile" type="file" onChange={props.uploadHandler}/>
         </header>
