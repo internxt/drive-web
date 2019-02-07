@@ -2,6 +2,8 @@ import _ from 'lodash';
 import $ from 'jquery';
 import fileDownload from 'js-file-download';
 import React, { Component } from 'react';
+import { Switch, Route } from 'react-router-dom';
+
 import Header from './Header';
 import FileCommander from './FileCommander';
 import update from 'immutability-helper';
@@ -9,6 +11,10 @@ import Popup from "reactjs-popup";
 import Loader from './Loader';
 import KeyPage from './KeyPage';
 import './App.css';
+import Login from './Login';
+import Register from './Register';
+import NotFound from './NotFound';
+import Maintenance from './Maintenance';
 
 class App extends Component {
   constructor() {
@@ -234,6 +240,10 @@ class App extends Component {
     this.getFolderContent(user.root_folder_id);
   }
 
+  userHasAuthenticated(authenticated) {
+    this.setState({ isAuthorized: authenticated });
+  }
+
   openChooserModal() {
     this.setState({chooserModalOpen: true})
   }
@@ -244,12 +254,27 @@ class App extends Component {
 
   render() {
     const { keyPageVisible, isAuthorized } = this.state;
+    const props = { isAuthenticated: this.state.isAuthenticated, userHasAuthenticated: this.userHasAuthenticated }
+    // Show login page
+    if (isAuthorized == false){
+      return (
+        <div>
+          <Switch>
+            <Route path='/register' render={ (props) => <Register {...props} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
+            <Route path='/login' render={ (props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
+            <Route path='/' component={ Maintenance }/>
+            <Route component={ NotFound } />
+          </Switch>
+        </div>
+      )
+    }
 
     if (keyPageVisible) {
       return <KeyPage onContinue={this.handleKeySaved} onChooserModal={this.openChooserModal} />;
     }
 
     return (
+      !this.state.isAuthorized &&
       <div className="App">
         {
           isAuthorized ? (
