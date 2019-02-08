@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import { isMobile } from "react-device-detect";
 
@@ -81,37 +81,22 @@ class Login extends React.Component {
   render() {
     return (
       <div className="Login">
-          <div className="LoginHeader">
+        <div className="LoginHeader">
             <h2> Login into X-Cloud</h2>
-            <p>or <Link to="/register">Create a new account on X-Cloud</Link></p>
-          </div>
-        <form onSubmit={this.handleSubmit} className="Login form">
-          <FormGroup controlId="email" bsSize="large">
-            <FormLabel>Email</FormLabel>
-            <FormControl
-              type="email"
-              value={this.state.email}
-              onChange={this.handleChange}
-            />
-          </FormGroup>
-          <FormGroup controlId="password" bsSize="large">
-            <FormLabel>Password</FormLabel>
-            <FormControl
-              type="password"
-              value={this.state.password}
-              onChange={this.handleChange}
-            />
-          </FormGroup>
-          <Button
-            block
-            bsSize="large"
-            disabled={!this.validateForm()}
-            type="submit"
-          >
-            Login
-          </Button>
-        </form> 
-    </div>
+            <p>or <Link to="/register">Create a new account</Link> on X-Cloud</p>
+      </div>
+        <Form className="formBlock" onSubmit={this.handleSubmit}>
+          <Form.Group controlId="email">
+            <Form.Label >Email</Form.Label>
+            <Form.Control type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
+          </Form.Group>
+          <Form.Group controlId="password">
+            <Form.Label>Password</Form.Label>
+            <Form.Control type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
+          </Form.Group>
+          <Button disabled={!this.validateForm()} type="submit" > Login </Button>
+        </Form> 
+      </div>
     );
   }
 }

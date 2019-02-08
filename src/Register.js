@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import { isMobile } from "react-device-detect";
 
@@ -50,7 +50,13 @@ class Register extends React.Component {
   }
 
   handleSubmit = event => {
-    event.preventDefault();
+    // Form validation
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.setState({ validated: true });
 
     let loginValid = false;
     fetch("/api/register", {
@@ -87,59 +93,41 @@ class Register extends React.Component {
 
   render() {
     return (
-      <div className="LoginBlock">
+      <div className="Login">
           <div className="LoginHeader">
             <h2> Create your X-Cloud account </h2>
-            <p>or <Link to="/login">Sign in with your existent account</Link></p>
+            <p>or <Link to="/login">Sign in</Link> with your existent account</p>
           </div>
-      <form onSubmit={this.handleSubmit}>
-        <FormGroup controlId="name" bsSize="large">
-          <FormLabel>First Name</FormLabel>
-          <FormControl
-            autoFocus
-            value={this.state.name}
-            onChange={this.handleChange}/>
-        </FormGroup>
-        <FormGroup controlId="lastname" bsSize="large">
-          <FormLabel>Last Name</FormLabel>
-          <FormControl
-            value={this.state.lastname}
-            onChange={this.handleChange}/>
-        </FormGroup>
-        <FormGroup controlId="email" bsSize="large">
-          <FormLabel>Email</FormLabel>
-          <FormControl
-            type="email"
-            value={this.state.email}
-            onChange={this.handleChange}
-          />
-        </FormGroup>
-        <FormGroup controlId="password" bsSize="large">
-          <FormLabel>Password</FormLabel>
-          <FormControl
-            type="password"
-            value={this.state.password}
-            onChange={this.handleChange}
-          />
-        </FormGroup>
-        <FormGroup controlId="confirmPassword" bsSize="large">
-          <FormLabel>Confirm your password</FormLabel>
-          <FormControl
-            type="password"
-            value={this.state.confirmPassword}
-            onChange={this.handleChange}
-          />
-        </FormGroup>
-        <Button
-          block
-          bsSize="large"
-          disabled={!this.validateForm()}
-          type="submit"
-        >
-          Register
-        </Button>
-      </form> 
-    </div>
+        <Form className="formBlock" onSubmit={e => this.handleSubmit(e)}>
+          <Form.Group controlId="name">
+            <Form.Label>First Name</Form.Label>
+            <Form.Control autoFocus required placeholder="First Name" value={this.state.name} onChange={this.handleChange}/>
+          </Form.Group>
+          <Form.Group controlId="lastname">
+            <Form.Label>Last Name</Form.Label>
+            <Form.Control required placeholder="Last Name" value={this.state.lastname} onChange={this.handleChange}/>
+          </Form.Group>
+          <Form.Group controlId="email">
+            <Form.Label>Email</Form.Label>
+            <Form.Control required type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
+          </Form.Group>
+          <Form.Group controlId="password">
+            <Form.Label>Password</Form.Label>
+            <Form.Control required type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
+          </Form.Group>
+          <Form.Group controlId="confirmPassword">
+            <Form.Label>Confirm your password</Form.Label>
+            <Form.Control required type="password" placeholder="Confirm your password" value={this.state.confirmPassword} onChange={this.handleChange} />
+          </Form.Group>
+          <Form.Group controlId="terms">
+            <Form.Check id="terms">
+              <Form.Check.Input required className="checkbox" feedback="You must agree before submitting."/>
+              <Form.Check.Label>  Agree <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></Form.Check.Label>
+            </Form.Check>
+          </Form.Group>
+          <Button type="submit"> Register </Button>
+        </Form> 
+      </div>
     );
   }
 }
