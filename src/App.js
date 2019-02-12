@@ -21,16 +21,13 @@ class App extends Component {
     this.state = {
       token: "",
       user: {},
-      isAuthenticated: false,
-      chooserModalOpen: false,
-      keyPageVisible: true
+      isAuthenticated: false
     }
     this.handleKeySaved = this.handleKeySaved.bind(this);
   }
 
   handleKeySaved(user) {
     this.setState({
-      keyPageVisible: false,
       isAuthenticated: true,
       user
     });
@@ -41,9 +38,6 @@ class App extends Component {
   }
 
   render() {
-    if (this.state.keyPageVisible) {
-      return <KeyPage onContinue={this.handleKeySaved} onChooserModal={this.openChooserModal} />;
-    }
     return (
       <div>
         <Switch>
@@ -51,6 +45,7 @@ class App extends Component {
           <Route path='/login' render={ (props) => <Login {...props} history={this.props.history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
           <Route path='/plans' render={ (props) => <Plans /> }/>
           <Route path='/pay' render={ (props) => <PayMethods /> }/> 
+          <Route path='/keyPage' render={ (props) => <KeyPage history={this.props.history} isAuthenticated={this.state.isAuthenticated} /> }/>
           <Route path='/app' render={ (props) => <XCloud {...props} history={this.props.history} isAuthenticated={this.state.isAuthenticated} user={this.state.user}/>} />
           <Route path='/' component={ Maintenance }/>
           <Route component={ NotFound } />
