@@ -9,14 +9,21 @@ class CreditCard extends React.Component {
         this.state = {
             stripe: null,
             onToken: (token) => {
-                // Purchase request recieved from Stripe Checkout
-                let checkoutInfo = JSON.stringify(token);
+                this.setState({
+                    statusMessage: 'Purchasing...'
+                });
 
-                let stripePay = require('./StripePayment');
+                fetch('/buy', {
+                    method: 'POST',
+                    body: JSON.stringify(token),
+                }).then(response => {
+                    response.json().then(data => {
+                        alert(`We are in business, ${data.email}`);
+                    });
+                });
 
-                console.log(stripePay);
-
-            }
+            },
+            statusMessage: ''
         };
     }
 
@@ -30,6 +37,8 @@ class CreditCard extends React.Component {
     render() {
         return (
             <Container>
+                {this.state.statusMessage}
+
                 <StripeCheckout
                     name="Internxt SLU"
                     description="X Cloud Plan"
@@ -38,7 +47,7 @@ class CreditCard extends React.Component {
 
                     bitcoin={false}
 
-                    stripeKey=""
+                    stripeKey="pk_test_wmWArhhCKGZWNPUF8z38Eupd"
                     token={this.state.onToken}>
                     <Button
                         variant="primary" type="submit" block size="lg"
