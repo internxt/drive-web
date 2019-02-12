@@ -12,6 +12,7 @@ import Maintenance from './Maintenance';
 import Plans from './components/Plans';
 import PayMethods from './components/PayMethods';
 
+import history from './history';
 import {StripeProvider} from 'react-stripe-elements';
 
 class App extends Component {
@@ -41,12 +42,12 @@ class App extends Component {
     return (
       <div>
         <Switch>
-          <Route path='/register' render={ (props) => <Register {...props} history={this.props.history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
-          <Route path='/login' render={ (props) => <Login {...props} history={this.props.history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
+          <Route path='/register' render={ (props) => <Register {...props} history={history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
+          <Route path='/login' render={ (props) => <Login {...props} history={history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
           <Route path='/plans' render={ (props) => <Plans /> }/>
           <Route path='/pay' render={ (props) => <PayMethods /> }/> 
-          <Route path='/keyPage' render={ (props) => <KeyPage history={this.props.history} isAuthenticated={this.state.isAuthenticated} /> }/>
-          <Route path='/app' render={ (props) => <XCloud {...props} history={this.props.history} isAuthenticated={this.state.isAuthenticated} user={this.state.user}/>} />
+          <Route path='/keyPage' render={ (props) => <KeyPage history={history} isAuthenticated={this.state.isAuthenticated} /> }/>
+          <Route path='/app' render={ (props) => <XCloud {...props} history={history} isAuthenticated={this.state.isAuthenticated} user={this.state.user}/>} />
           <Route path='/' component={ Maintenance }/>
           <Route component={ NotFound } />
         </Switch>

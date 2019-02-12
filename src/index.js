@@ -5,14 +5,13 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
-import { createBrowserHistory } from 'history';
+import history from './history';
 
 // Router history for navigate through components
-const history = createBrowserHistory();
 
 ReactDOM.render(
-    <Router>
-      <App history={history}/>
+    <Router history={history}>
+      <App />
     </Router>,
     document.getElementById("root")
   );
