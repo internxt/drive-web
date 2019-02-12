@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link } from 'react-router-dom';
 import $ from 'jquery';
+import _ from 'lodash';
 import fileDownload from 'js-file-download';
 
 import Header from './Header';
@@ -236,7 +237,7 @@ class XCloud extends React.Component {
 
   render() {
     // Check authentication
-    if(props.isAuthenticated) {
+    if(this.props.isAuthenticated) {
       return (
         <div className="App">
           <Header 
