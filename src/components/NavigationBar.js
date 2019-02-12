@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { Nav, Navbar } from 'react-bootstrap';
 
 // Assets
 import account from '../assets/Dashboard-Icons/Account.svg';

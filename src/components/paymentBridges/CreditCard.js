@@ -1,31 +1,53 @@
 import React from 'react';
-import { Container, Form, FormText, Row, Col, Button } from 'react-bootstrap';
+import { Container, Form, Row, Col, Button, FormGroup } from 'react-bootstrap';
+import StripeCheckout from 'react-stripe-checkout';
 
-const CreditCard = props =>
-    <Container className="mt-5">
-        <h3>Enter your card details.</h3>
-        <Form>
-            <Row>
-                <Col>
-                    <Form.Control size="lg" type="text" placeholder="Card holder's name" />
-                </Col>
-                <Col>
-                    <Form.Control size="lg" type="text" placeholder="Card number" />
-                </Col>
-            </Row>
-            <Row className="mt-4">
-                <Col>
-                    <Form.Control size="lg" type="text" placeholder="Card expiration date" />
-                </Col>
-                <Col>
-                    <Form.Control size="lg" type="text" placeholder="CVC number" />
-                </Col>
-            </Row>
+class CreditCard extends React.Component {
 
-            <Form.Check type="checkbox" label="I agree to the X Cloud Terms" />
+    constructor(props) {
+        super(props);
+        this.state = {
+            stripe: null,
+            onToken: (token) => {
+                // Purchase request recieved from Stripe Checkout
+                let checkoutInfo = JSON.stringify(token);
 
-            <Button variant="primary" type="submit" block size="lg" className="mt-4">Buy now</Button>
-        </Form>
-    </Container>;
+                let stripePay = require('./StripePayment');
+
+                console.log(stripePay);
+
+            }
+        };
+    }
+
+    componentDidMount() {
+    }
+
+    submit(event) {
+        event.preventDefault();
+    }
+    //               
+    render() {
+        return (
+            <Container>
+                <StripeCheckout
+                    name="Internxt SLU"
+                    description="X Cloud Plan"
+                    image="https://internxt.com/img/logos/internxtcircle.png"
+                    currency="EUR"
+
+                    bitcoin={false}
+
+                    stripeKey=""
+                    token={this.state.onToken}>
+                    <Button
+                        variant="primary" type="submit" block size="lg"
+                        className="mt-4">Buy now</Button>
+
+                </StripeCheckout>
+            </Container>
+        );
+    }
+}
 
 export default CreditCard;

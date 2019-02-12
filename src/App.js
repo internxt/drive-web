@@ -15,6 +15,10 @@ import Login from './Login';
 import Register from './Register';
 import NotFound from './NotFound';
 import Maintenance from './Maintenance';
+import Plans from './components/Plans';
+import PayMethods from './components/PayMethods';
+
+import {StripeProvider} from 'react-stripe-elements';
 
 class App extends Component {
   constructor() {
@@ -27,7 +31,7 @@ class App extends Component {
       currentFolderBucket: null,
       currentCommanderItems: [],
       namePath: [],
-      isAuthorized: false,
+      isAuthorized: true,
       selectedItems: [],
       chooserModalOpen: false,
       rateLimitModal: false,
@@ -256,25 +260,30 @@ class App extends Component {
     const { keyPageVisible, isAuthorized } = this.state;
     const props = { isAuthenticated: this.state.isAuthenticated, userHasAuthenticated: this.userHasAuthenticated }
     // Show login page
+    /*
     if (isAuthorized == false){
+      */
       return (
         <div>
           <Switch>
-            <Route path='/register' render={ (props) => <Register {...props} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
+          <Route path='/plans' render={ (props) => <Plans /> }/>
+          <Route path='/pay' render={ (props) => <PayMethods /> }/>
+          <Route path='/register' render={ (props) => <Register {...props} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
             <Route path='/login' render={ (props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
             <Route path='/' component={ Maintenance }/>
             <Route component={ NotFound } />
           </Switch>
         </div>
       )
+      /*
     }
-
+4*/
     if (keyPageVisible) {
       return <KeyPage onContinue={this.handleKeySaved} onChooserModal={this.openChooserModal} />;
     }
 
     return (
-      !this.state.isAuthorized &&
+      false &&
       <div className="App">
         {
           isAuthorized ? (

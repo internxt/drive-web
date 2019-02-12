@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Container, Dropdown, Card, Row, Col } from 'react-bootstrap';
+import React from 'react';
+import { Container, Card, Row, Col } from 'react-bootstrap';
 import NavigationBar from "./NavigationBar";
 import './PayMethods.css';
 
@@ -57,8 +57,9 @@ class PayMethods extends React.Component {
                         }
                     </Row>
 
-                    {this.state.choosedPayMethod ? this.state.choosedPayMethod : ''}
-
+                    <Row className="mt-5">
+                        {this.state.choosedPayMethod ? this.state.choosedPayMethod : ''}
+                    </Row>
                 </Container>
 
             </Container>

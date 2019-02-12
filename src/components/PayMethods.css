@@ -14,10 +14,12 @@
 }
 
 .card-header:hover {
-    background-color: #4da3ff !important;
+    background-color: #4385f4 !important;
+    color: white;
     cursor: pointer;
 }
 
 .card-header-selected {
-    background-color: #4da3ff !important;
+    background-color: #4385f4 !important;
+    color: white !important;
 }
