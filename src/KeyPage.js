@@ -24,8 +24,7 @@ class KeyPage extends React.Component {
       user: {},
       token: null,
       saveOptionSelected: null,
-      chooserModalOpen: false,
-      civicPopupActive: true
+      chooserModalOpen: false
     };
 
     this.handleSaveOptionClick = this.handleSaveOptionClick.bind(this);
@@ -35,7 +34,6 @@ class KeyPage extends React.Component {
   }
 
   componentDidMount() {
-    const civicSip = new civic.sip({ appId: "Skzcny80G" }); // eslint-disable-line no-undef
     const xMnemonic = localStorage.getItem("xMnemonic");
     if (xMnemonic) {
       const { onContinue } = this.props;
@@ -43,57 +41,6 @@ class KeyPage extends React.Component {
       onContinue(user);
       return;
     }
-
-    civicSip.signup({
-      style: "popup",
-      scopeRequest: civicSip.ScopeRequests.BASIC_SIGNUP
-    });
-
-    civicSip.on("auth-code-received", ({ response: civicToken }) => {
-      const { onContinue } = this.props;
-
-      fetch("/api/auth", {
-        method: "get",
-        headers: {
-          civicToken,
-          "content-type": "application/json; charset=utf-8"
-        }
-      })
-        .then(response => response.json())
-        .then(response => {
-          if (isMobile) {
-            this.props.onChooserModal();
-          }
-          const { token, user } = response;
-
-          localStorage.setItem("xToken", token);
-          localStorage.setItem("xUser", JSON.stringify(user));
-          if(user.isCreated == false) {
-            // If user exists, ask for his mnemonic, storage in local and continue to XCloud
-            var inputMnemonic = prompt("Please enter yout mnemonic key");
-            if (inputMnemonic == user.mnemonic) {
-              localStorage.setItem("xMnemonic", user.mnemonic);
-              this.setState({ token, user });
-              onContinue(user);
-              return;
-            } else { alert("Wrong mnemonic key entered"); }
-          } else {
-            localStorage.setItem("xMnemonic", user.mnemonic);
-            this.setState({ token, user }); 
-          }
-        })
-        .catch(err => {
-          console.error("Auth error", err);
-        });
-    });
-
-    civicSip.on("user-cancelled", event => {});
-
-    civicSip.on("read", event => {});
-
-    civicSip.on("civic-sip-error", error => {
-      console.error(`Error type: ${error.type}. Message: ${error.message}`);
-    });
   }
 
   handleCopyToClipboard() {
@@ -139,10 +86,10 @@ class KeyPage extends React.Component {
   }
 
   render() {
-    const { saveOptionSelected, user, civicPopupActive } = this.state;
+    const { saveOptionSelected, user } = this.state;
 
     return (
-      <div className={`key ${civicPopupActive ? 'popup-active' : ''}`}>
+      <div className={`key `}>
         <div className="key-inner">
           <h2 className="key-title">
             Your encryption key is below. Please save your key!
