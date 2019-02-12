@@ -15,8 +15,8 @@ import PayMethods from './components/PayMethods';
 import {StripeProvider} from 'react-stripe-elements';
 
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       token: "",
@@ -47,11 +47,11 @@ class App extends Component {
     return (
       <div>
         <Switch>
-          <Route path='/register' render={ (props) => <Register {...props} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
-          <Route path='/login' render={ (props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
+          <Route path='/register' render={ (props) => <Register {...props} history={this.props.history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
+          <Route path='/login' render={ (props) => <Login {...props} history={this.props.history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
           <Route path='/plans' render={ (props) => <Plans /> }/>
           <Route path='/pay' render={ (props) => <PayMethods /> }/> 
-          <Route path='/app' render={ (props) => <XCloud {...props} isAuthenticated={this.state.isAuthenticated} user={this.state.user}/>} />
+          <Route path='/app' render={ (props) => <XCloud {...props} history={this.props.history} isAuthenticated={this.state.isAuthenticated} user={this.state.user}/>} />
           <Route path='/' component={ Maintenance }/>
           <Route component={ NotFound } />
         </Switch>

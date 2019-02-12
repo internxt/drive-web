@@ -81,7 +81,7 @@ class Login extends React.Component {
               isAuthenticated: true, 
               token: body.token,
               user: { email: this.state.email } });
-            history.push('/app');
+            this.props.history.push('/app');
           });
         } else if(response.status == 204) {
           // Manage username / password do not match
