@@ -25,10 +25,10 @@ class App extends Component {
       user: {},
       isAuthenticated: false
     }
-    this.handleKeySaved = this.handleKeySaved.bind(this);
   }
 
-  handleKeySaved(user) {
+  // Method for set user and notice login
+  handleKeySaved = (user) => {
     this.setState({
       isAuthenticated: true,
       user
@@ -44,7 +44,12 @@ class App extends Component {
       <div>
         <Switch>
           <Route path='/register' render={ (props) => <Register {...props} history={history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
-          <Route path='/login' render={ (props) => <Login {...props} history={history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
+          <Route path='/login' render={ (props) => <Login {...props} 
+            history={history} 
+            isAuthenticated={this.state.isAuthenticated} 
+            userHasAuthenticated={this.userHasAuthenticated}
+            handleKeySaved={this.handleKeySaved} /> 
+          }/>
           <Route path='/settings' render={ (props) => <Settings /> }/> 
           <Route path='/keyPage' render={ (props) => <KeyPage history={history} isAuthenticated={this.state.isAuthenticated} /> }/>
           <Route path='/app' render={ (props) => <XCloud {...props} history={history} isAuthenticated={this.state.isAuthenticated} user={this.state.user}/>} />
