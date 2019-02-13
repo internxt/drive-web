@@ -1,16 +1,17 @@
 import React from 'react';
 import { Container, Card, Row, Col } from 'react-bootstrap';
-import NavigationBar from "./NavigationBar";
 import './PayMethods.css';
 
 import CreditCard from "./paymentBridges/CreditCard";
 import PayPal from "./paymentBridges/PayPal";
 import INXT from "./paymentBridges/INXT";
+import NavigationBar from './navigationBar/NavigationBar';
 
 const AvailablePayMethods = [
     {
         name: 'Credit Card',
-        component: <CreditCard />
+        component: <CreditCard />,
+        stripePlan: null
     },
     {
         name: 'PayPal',
@@ -27,22 +28,25 @@ class PayMethods extends React.Component {
         super(props);
 
         this.state = {
-            choosedPayMethod: null
+            choosedPayMethod: null,
+            choosedPlan: props.choosedPlan
         };
+
     }
 
     componentDidMount() {
+        AvailablePayMethods.find(f => f.name == 'Credit Card').stripePlan = this.state.choosedPlan.stripePlan;
+        AvailablePayMethods.find(f => f.name == 'Credit Card').component = <CreditCard plan={this.state.choosedPlan.stripePlan} />
     }
 
     render() {
         return (
             <Container fluid>
 
-                <NavigationBar navbarItems={<h3>Settings</h3>} />
-
                 <Container className="mt-3" style={{ maxWidth: '784px' }}>
-                    <h2><strong>Choose a payment method.</strong></h2>
-
+                    <Row>
+                        <h2><strong>Choose a payment method.</strong></h2>
+                    </Row>
 
                     <Row className="mt-5">
                         {
