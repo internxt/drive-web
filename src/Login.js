@@ -23,6 +23,12 @@ class Login extends React.Component {
   // TO-DO If user have login token, continue to x-cloud
   //}
 
+  componentDidUpdate() {
+    if (this.state.isAuthenticated == true && this.state.token) { 
+      history.push('/app') 
+    }
+  }
+
   validateForm() {
     let isValid = true;
 
@@ -50,13 +56,14 @@ class Login extends React.Component {
     .then(response => {
         if (response.status == 200) {
           // Manage succesfull login
-          response.json().then(function (body) {
+          response.json().then( (body) => {
             localStorage.setItem('xToken',body.token);
-            history.push('/app');
             this.setState({ 
               isAuthenticated: true, 
               token: body.token,
-              user: { email: this.state.email } });
+              user: { email: this.state.email } 
+            });
+            history.push('/app') 
           });
         } else if(response.status == 204) {
           // Manage username / password do not match
