@@ -22,7 +22,8 @@ class CreditCard extends React.Component {
             stripePlan: props.plan,
             onToken: this.onTokenHandler,
             planName: PlanNames.find(f => f.code == props.plan).name,
-            statusMessage: ''
+            statusMessage: '',
+            testFunction: this.testFunction
         };
     }
 
@@ -31,16 +32,22 @@ class CreditCard extends React.Component {
             statusMessage: 'Purchasing...'
         });
 
-        fetch('/buy', {
+        fetch('/api/buy', {
             method: 'POST',
-            body: {
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
                 token: JSON.stringify(token),
                 plan: this.state.stripePlan
-            }
+            })
         }).then(response => {
+
+            console.log('Respuesta');
+
+            /*
             response.json().then(data => {
                 alert(`We are in business, ${data.email}`);
             });
+            */
         });
     }
 
