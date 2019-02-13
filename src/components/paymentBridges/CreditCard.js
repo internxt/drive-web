@@ -2,29 +2,46 @@ import React from 'react';
 import { Container, Form, Row, Col, Button, FormGroup } from 'react-bootstrap';
 import StripeCheckout from 'react-stripe-checkout';
 
+const PlanNames = [
+    {
+        name: 'X Cloud Plan (€4.49)',
+        code: 'plan_EUaU5KuX0bbmMZ'
+    },
+    {
+        name: 'X Cloud Plan (€9.45)',
+        code: 'plan_EUaULpk2iX6695'
+    },
+];
+
 class CreditCard extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             stripe: null,
-            onToken: (token) => {
-                this.setState({
-                    statusMessage: 'Purchasing...'
-                });
-
-                fetch('/buy', {
-                    method: 'POST',
-                    body: JSON.stringify(token),
-                }).then(response => {
-                    response.json().then(data => {
-                        alert(`We are in business, ${data.email}`);
-                    });
-                });
-
-            },
+            stripePlan: props.plan,
+            onToken: this.onTokenHandler,
+            planName: PlanNames.find(f => f.code == props.plan).name,
             statusMessage: ''
         };
+    }
+
+    onTokenHandler = (token) => {
+        this.setState({
+            statusMessage: 'Purchasing...'
+        });
+
+        fetch('/buy', {
+            method: 'POST',
+            body: {
+                token: JSON.stringify(token),
+                plan: this.state.stripePlan
+            }
+        }).then(response => {
+            response.json().then(data => {
+                alert(`We are in business, ${data.email}`);
+            });
+        });
     }
 
     componentDidMount() {
@@ -41,7 +58,7 @@ class CreditCard extends React.Component {
 
                 <StripeCheckout
                     name="Internxt SLU"
-                    description="X Cloud Plan"
+                    description={this.state.planName}
                     image="https://internxt.com/img/logos/internxtcircle.png"
                     currency="EUR"
 

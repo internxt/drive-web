@@ -14,6 +14,7 @@ import PayMethods from './components/PayMethods';
 
 import history from './history';
 import {StripeProvider} from 'react-stripe-elements';
+import Settings from './components/Settings';
 
 class App extends Component {
   constructor(props) {
@@ -44,8 +45,7 @@ class App extends Component {
         <Switch>
           <Route path='/register' render={ (props) => <Register {...props} history={history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
           <Route path='/login' render={ (props) => <Login {...props} history={history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
-          <Route path='/plans' render={ (props) => <Plans /> }/>
-          <Route path='/pay' render={ (props) => <PayMethods /> }/> 
+          <Route path='/settings' render={ (props) => <Settings /> }/> 
           <Route path='/keyPage' render={ (props) => <KeyPage history={history} isAuthenticated={this.state.isAuthenticated} /> }/>
           <Route path='/app' render={ (props) => <XCloud {...props} history={history} isAuthenticated={this.state.isAuthenticated} user={this.state.user}/>} />
           <Route path='/' component={ Maintenance }/>
