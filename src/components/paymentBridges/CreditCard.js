@@ -10,7 +10,7 @@ const PlanNames = [
     {
         name: 'X Cloud Plan (€9.45)',
         code: 'plan_EUaULpk2iX6695'
-    },
+    }
 ];
 
 class CreditCard extends React.Component {
@@ -71,7 +71,7 @@ class CreditCard extends React.Component {
 
                     bitcoin={false}
 
-                    stripeKey="pk_test_wmWArhhCKGZWNPUF8z38Eupd"
+                    stripeKey=""
                     token={this.state.onToken}>
                     <Button
                         variant="primary" type="submit" block size="lg"
