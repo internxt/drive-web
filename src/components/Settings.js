@@ -18,7 +18,8 @@ class Settings extends React.Component {
     }
 
     payMethodLoader = (plan) => {
-        if (plan.stripePlan != null) {
+        console.log(plan);
+        if (plan.stripe_plan_id != null) {
             this.setState({
                 page: <PayMethods choosedPlan={plan} />
             });

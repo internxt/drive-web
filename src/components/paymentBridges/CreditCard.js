@@ -2,29 +2,20 @@ import React from 'react';
 import { Container, Form, Row, Col, Button, FormGroup } from 'react-bootstrap';
 import StripeCheckout from 'react-stripe-checkout';
 
-const PlanNames = [
-    {
-        name: 'X Cloud Plan (€4.49)',
-        code: 'plan_EUaU5KuX0bbmMZ'
-    },
-    {
-        name: 'X Cloud Plan (€9.45)',
-        code: 'plan_EUaULpk2iX6695'
-    }
-];
-
 class CreditCard extends React.Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
             stripe: null,
-            stripePlan: props.plan,
+            plan: props.plan,
             onToken: this.onTokenHandler,
-            planName: PlanNames.find(f => f.code == props.plan).name,
-            statusMessage: '',
-            testFunction: this.testFunction
+            planName: '',
+            statusMessage: ''
         };
+
+        this.state.planName = 'X Cloud ' + props.plan.name + ' Plan (€' + props.plan.price_eur + ')';
     }
 
     onTokenHandler = (token) => {
@@ -37,7 +28,7 @@ class CreditCard extends React.Component {
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({
                 token: JSON.stringify(token),
-                plan: this.state.stripePlan
+                plan: this.state.plan.stripe_plan_id
             })
         }).then(response => {
 
@@ -68,11 +59,10 @@ class CreditCard extends React.Component {
                     description={this.state.planName}
                     image="https://internxt.com/img/logos/internxtcircle.png"
                     currency="EUR"
-
                     bitcoin={false}
-
                     stripeKey=""
                     token={this.state.onToken}>
+                    
                     <Button
                         variant="primary" type="submit" block size="lg"
                         className="mt-4">Buy now</Button>
