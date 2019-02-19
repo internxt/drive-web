@@ -18,6 +18,7 @@ class XCloud extends React.Component {
     this.state = {
       email: '',
       isAuthenticated: false,
+      isInitialized: false,
       token: "",
       chooserModalOpen: false,
       rateLimitModal: false,
@@ -25,27 +26,26 @@ class XCloud extends React.Component {
       currentFolderBucket: null,
       currentCommanderItems: [],
       namePath: [],
-      selectedItems: []
+      selectedItems: [],
+      user: this.props.user
     };
-
-    this.setHeaders = this.setHeaders.bind(this)
-    this.createFolder = this.createFolder.bind(this)
-    this.openFolder = this.openFolder.bind(this)
-    this.getFolderContent = this.getFolderContent.bind(this)
-    this.downloadFile = this.downloadFile.bind(this)
-    this.openUploadFile = this.openUploadFile.bind(this)
-    this.uploadFile = this.uploadFile.bind(this)
-    this.deleteItems = this.deleteItems.bind(this)
-    this.selectCommanderItem = this.selectCommanderItem.bind(this)
-    this.closeModal = this.closeModal.bind(this)
-    this.closeRateLimitModal = this.closeRateLimitModal.bind(this)
   }
 
   componentDidMount() {
-    this.getFolderContent(this.props.user.root_folder_id);
+    if (!this.state.user.root_folder_id) {
+      // If user is not defined redirect to login page
+      if (!this.state.isAuthenticated) {
+        history.push('/login');
+      } else {
+        // Initialize user in case that is not done yet
+        userInitialization();
+      }
+    } else {
+      this.getFolderContent(this.state.user.root_folder_id);
+    }
   }
 
-  setHeaders() {
+  setHeaders = () => {
     let headers = {
       Authorization: `Bearer ${localStorage.getItem("xToken")}`,
       "content-type": "application/json; charset=utf-8"
@@ -58,7 +58,28 @@ class XCloud extends React.Component {
     return headers;
   }
 
-  createFolder() {
+  userInitialization = () => {
+    fetch('/api/initialize', {
+      method: "post",
+      headers: { "content-type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ 
+        email: this.state.user.email
+      })
+    }).then( response => {
+      if (response.status == 200) {
+        // Successfull intialization
+        this.setState({ isInitialized: true });
+        // TO-DO Now go to mnemonic page and do things :D
+      } else {
+        alert('User initialization error');
+        history.push('/login');
+      }
+    }).catch(error => {
+      console.error('User initialization error: ' + error);
+    }
+  }
+
+  createFolder = () => {
     var folderName = prompt("Please enter folder name");
     var headers = this.setHeaders();
     if (folderName != null) {
@@ -75,11 +96,11 @@ class XCloud extends React.Component {
     }
   }
 
-  openFolder(e) {
+  openFolder = (e) => {
     this.getFolderContent(e);
   }
 
-  getFolderContent(rootId, updateNamePath = true) {
+  getFolderContent = (rootId, updateNamePath = true) => {
     const headers = this.setHeaders();
     fetch(`/api/storage/folder/${rootId}`, {
       method: "get",
@@ -111,7 +132,7 @@ class XCloud extends React.Component {
       });
   }
 
-  downloadFile(id) {
+  downloadFile = (id) => {
     const headers = this.setHeaders();
     fetch(`/api/storage/file/${id}`, {
       method: "get",
@@ -127,11 +148,11 @@ class XCloud extends React.Component {
     })
   }
 
-  openUploadFile() {
+  openUploadFile = () => {
     $("input#uploadFile").trigger("click");
   }
 
-  uploadFile(e) {
+  uploadFile = (e) => {
     const data = new FormData();
     const headers = this.setHeaders();
     delete headers['content-type'];
@@ -149,7 +170,7 @@ class XCloud extends React.Component {
     })
   }
 
-  deleteItems() {
+  deleteItems = () => {
     const selectedItems = this.state.selectedItems;
     const bucket = _.last(this.state.namePath).bucket;
     const headers = this.setHeaders();
@@ -178,7 +199,7 @@ class XCloud extends React.Component {
       });
   }
 
-  selectCommanderItem(i, e) {
+  selectCommanderItem = (i, e) => {
     const selectedItems = this.state.selectedItems;
     const id = e.target.getAttribute("data-id");
     const type = e.target.getAttribute("data-type");
@@ -227,17 +248,17 @@ class XCloud extends React.Component {
     this.setState({chooserModalOpen: true})
   }
 
-  closeModal() {
+  closeModal = () => {
     this.setState({chooserModalOpen: false})
   }
 
-  closeRateLimitModal() {
+  closeRateLimitModal = () => {
     this.setState({ rateLimitModal: false })
   }
 
   render() {
     // Check authentication
-    if(this.props.isAuthenticated) {
+    if(this.props.isAuthenticated && this.state.isInitialized) {
       return (
         <div className="App">
           <Header 
@@ -284,7 +305,7 @@ class XCloud extends React.Component {
       );
     } else {
       return (
-        <h2>Please <Link to='/login'>login</Link> into your X Cloud account</h2>
+        <h2 className="App">Please <Link to='/login'>login</Link> into your X Cloud account</h2>
       )
     }
   }

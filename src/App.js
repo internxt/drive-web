@@ -7,6 +7,7 @@ import './App.css';
 import Login from './Login';
 import Register from './Register';
 import XCloud from './XCloud';
+import Activation from './Activation';
 import NotFound from './NotFound';
 import Maintenance from './Maintenance';
 import Plans from './components/Plans';
@@ -23,31 +24,49 @@ class App extends Component {
     this.state = {
       token: "",
       user: {},
-      isAuthenticated: false
+      isAuthenticated: false,
+      isActivated: false
     }
-    this.handleKeySaved = this.handleKeySaved.bind(this);
   }
 
-  handleKeySaved(user) {
+  // Method for set user and notice login
+  handleKeySaved = (user) => {
     this.setState({
       isAuthenticated: true,
       user
     });
   }
 
-  userHasAuthenticated(authenticated) {
+  userHasAuthenticated = (authenticated) => {
     this.setState({ isAuthenticated: authenticated });
+  }
+
+  userHasActivated = (activated) => {
+    this.setState({ isActivated: activated });
   }
 
   render() {
     return (
       <div>
         <Switch>
-          <Route path='/register' render={ (props) => <Register {...props} history={history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
-          <Route path='/login' render={ (props) => <Login {...props} history={history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
+          <Route path='/register' render={ (props) => <Register {...props}  
+            isAuthenticated={this.state.isAuthenticated} 
+            userHasAuthenticated={this.userHasAuthenticated}
+            isActivated={this.state.isActivated}/> 
+          }/>
+          <Route path='/login' render={ (props) => <Login {...props}  
+            isAuthenticated={this.state.isAuthenticated} 
+            userHasAuthenticated={this.userHasAuthenticated}
+            handleKeySaved={this.handleKeySaved}
+            isActivated={this.state.isActivated}/> 
+          }/>
+          <Route path='/activations/:token' render={ (props) => <Activation /> }/>
           <Route path='/settings' render={ (props) => <Settings /> }/> 
-          <Route path='/keyPage' render={ (props) => <KeyPage history={history} isAuthenticated={this.state.isAuthenticated} /> }/>
-          <Route path='/app' render={ (props) => <XCloud {...props} history={history} isAuthenticated={this.state.isAuthenticated} user={this.state.user}/>} />
+          <Route path='/keyPage' render={ (props) => <KeyPage isAuthenticated={this.state.isAuthenticated} /> }/>
+          <Route path='/app' render={ (props) => <XCloud {...props} 
+            isAuthenticated={this.state.isAuthenticated} 
+            user={this.state.user}
+            isActivated={this.state.isActivated}/>} />
           <Route path='/' component={ Maintenance }/>
           <Route component={ NotFound } />
         </Switch>

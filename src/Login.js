@@ -57,17 +57,19 @@ class Login extends React.Component {
         if (response.status == 200) {
           // Manage succesfull login
           response.json().then( (body) => {
+            const user = { email: this.state.email, mnemonic: body.user.mnemonic, root_folder_id: body.user.root_folder_id };
             localStorage.setItem('xToken',body.token);
+            localStorage.setItem('xMnemonic', body.user.mnemonic);
+            this.props.handleKeySaved(user)
             this.setState({ 
               isAuthenticated: true, 
               token: body.token,
-              user: { email: this.state.email } 
+              user: user
             });
-            history.push('/app') 
           });
         } else if(response.status == 204) {
           // Manage username / password do not match
-          response.json().then(function (body) {
+          response.json().then( (body) => {
             alert(body.message);
           });
         } else {
