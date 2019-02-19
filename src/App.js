@@ -43,16 +43,18 @@ class App extends Component {
     return (
       <div>
         <Switch>
-          <Route path='/register' render={ (props) => <Register {...props} history={history} isAuthenticated={this.state.isAuthenticated} userHasAuthenticated={this.userHasAuthenticated}/> }/>
-          <Route path='/login' render={ (props) => <Login {...props} 
-            history={history} 
+          <Route path='/register' render={ (props) => <Register {...props}  
+            isAuthenticated={this.state.isAuthenticated} 
+            userHasAuthenticated={this.userHasAuthenticated}/> 
+          }/>
+          <Route path='/login' render={ (props) => <Login {...props}  
             isAuthenticated={this.state.isAuthenticated} 
             userHasAuthenticated={this.userHasAuthenticated}
             handleKeySaved={this.handleKeySaved} /> 
           }/>
           <Route path='/settings' render={ (props) => <Settings /> }/> 
-          <Route path='/keyPage' render={ (props) => <KeyPage history={history} isAuthenticated={this.state.isAuthenticated} /> }/>
-          <Route path='/app' render={ (props) => <XCloud {...props} history={history} isAuthenticated={this.state.isAuthenticated} user={this.state.user}/>} />
+          <Route path='/keyPage' render={ (props) => <KeyPage isAuthenticated={this.state.isAuthenticated} /> }/>
+          <Route path='/app' render={ (props) => <XCloud {...props} isAuthenticated={this.state.isAuthenticated} user={this.state.user}/>} />
           <Route path='/' component={ Maintenance }/>
           <Route component={ NotFound } />
         </Switch>

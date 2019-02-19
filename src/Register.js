@@ -3,6 +3,7 @@ import { Button, Form } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import { isMobile } from "react-device-detect";
 
+import history from './history';
 import "./Login.css";
 
 class Register extends React.Component {
@@ -17,18 +18,8 @@ class Register extends React.Component {
       confirmPassword: '',
       isAuthenticated: false,
       isLogin: false,
-      token: ""
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  componentDidMount() {
-    // If user have login cookies, continue to x-cloud
-    if (localStorage.getItem("isAuthenticated") == true) {
-      this.props.userHasAuthenticated(true);
-      return;
+      token: "",
+      user: {}
     };
   }
 
@@ -52,13 +43,12 @@ class Register extends React.Component {
   handleSubmit = event => {
     // Form validation
     const form = event.currentTarget;
-    if (form.checkValidity() === false) {
+    if (form.checkValidity() == false) {
       event.preventDefault();
       event.stopPropagation();
     }
-    this.setState({ validated: true });
+    let registerValid = false;
 
-    let loginValid = false;
     fetch("/api/register", {
       method: "post",
       headers: { "content-type": "application/json; charset=utf-8" },
@@ -70,26 +60,35 @@ class Register extends React.Component {
       })
     }).then(response => {
         if (response.status == 200) {
-          // Manage succesfull register
-          const { token } = response;
-          localStorage.setItem('xToken',token);
-          this.setState({ isAuthenticated: true, token });
-          loginValid = true;
+          response.json().then( (body) => {
+            // Manage succesfull register
+            const { token, user } = body;
+            localStorage.setItem('xToken',token);
+            this.setState({ 
+              validated: true,
+              isAuthenticated: true, 
+              token,
+              user 
+            });
+            registerValid = true;
+          });
         } else {
-          // Manage account already exists
-          const { message } = response;
-          alert(message);
+          response.json().then( (body) => {
+            // Manage account already exists
+            const { message } = body;
+            alert(message);
+          })
         }
       })
       .catch(err => {
         console.error("Login error", err);
       });
-    }
 
-    if(loginValid) {
-      this.props.userHasAuthenticated(true);
-      return;
+    if(registerValid) {
+      // If register is succesfull go to Login page
+      history.push('/login');
     }
+  }
 
   render() {
     return (
@@ -98,7 +97,7 @@ class Register extends React.Component {
             <h2> Create your X-Cloud account </h2>
             <p>or <Link to="/login">Sign in</Link> with your existent account</p>
           </div>
-        <Form className="formBlock" onSubmit={e => this.handleSubmit(e)}>
+        <Form className="formBlock" onSubmit={this.handleSubmit}>
           <Form.Group controlId="name">
             <Form.Label>First Name</Form.Label>
             <Form.Control autoFocus required placeholder="First Name" value={this.state.name} onChange={this.handleChange}/>

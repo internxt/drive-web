@@ -69,7 +69,7 @@ class Login extends React.Component {
           });
         } else if(response.status == 204) {
           // Manage username / password do not match
-          response.json().then(function (body) {
+          response.json().then( (body) => {
             alert(body.message);
           });
         } else {
