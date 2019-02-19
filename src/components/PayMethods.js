@@ -11,7 +11,6 @@ const AvailablePayMethods = [
     {
         name: 'Credit Card',
         component: <CreditCard />,
-        stripePlan: null
     },
     {
         name: 'PayPal',
@@ -35,8 +34,7 @@ class PayMethods extends React.Component {
     }
 
     componentDidMount() {
-        AvailablePayMethods.find(f => f.name == 'Credit Card').stripePlan = this.state.choosedPlan.stripePlan;
-        AvailablePayMethods.find(f => f.name == 'Credit Card').component = <CreditCard plan={this.state.choosedPlan.stripePlan} />
+        AvailablePayMethods.find(f => f.name == 'Credit Card').component = <CreditCard plan={this.state.choosedPlan} />
     }
 
     render() {
