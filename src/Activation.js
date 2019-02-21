@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from 'react-router-dom';
+import { Alert } from 'react-bootstrap';
 
 import history from './history';
 import "./App.css";
@@ -48,7 +49,7 @@ class Activation extends React.Component {
 
   sendActivationEmail = () => {
     // Check if passed one day from last email request
-    if (checkRequestAvailable()) {
+    if (this.checkRequestAvailable()) {
       // Request new activation email
       //fetch('', {});
       // TO-DO Use or build in api a function to re-send activation email
@@ -58,25 +59,27 @@ class Activation extends React.Component {
   }
 
   render() {
-    <div>
-      {
-        this.state.isActivated ? (
-          <Alert variant="success">
-            <h3>Your account has successfully activated!</h3>
-            <p>Now you will be redirected to <Link to="/login">login</Link>...</p>
-            <script>setTimeout(() => { history.push('/app') }, 5000);</script>
-          </Alert>
-        ) : (
-          <Alert variant="danger">
-            <h3>Your account needs to be activated!</h3>
-            <p> 
-              Search your mail inbox for activation mail or use below
-              button for request another activatión email (one each 24h max).
-            </p>
-          </Alert>
-        )
-      }
-    </div>
+    return(
+      <div>
+        {
+          this.state.isActivated ? (
+            <Alert variant="success">
+              <h3>Your account has successfully activated!</h3>
+              <p>Now you will be redirected to <Link to="/login">login</Link>...</p>
+              <script>setTimeout(() => { history.push('/app') }, 5000);</script>
+            </Alert>
+          ) : (
+            <Alert variant="danger">
+              <h3>Your account needs to be activated!</h3>
+              <p> 
+                Search your mail inbox for activation mail or use below
+                button for request another activatión email (one each 24h max).
+              </p>
+            </Alert>
+          )
+        }
+      </div>
+    )
   }
 }
 

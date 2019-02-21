@@ -51,7 +51,6 @@ class App extends Component {
         <Switch>
           <Route path='/register' render={ (props) => <Register {...props}  
             isAuthenticated={this.state.isAuthenticated} 
-            userHasAuthenticated={this.userHasAuthenticated}
             isActivated={this.state.isActivated}/> 
           }/>
           <Route path='/login' render={ (props) => <Login {...props}  
@@ -60,7 +59,7 @@ class App extends Component {
             handleKeySaved={this.handleKeySaved}
             isActivated={this.state.isActivated}/> 
           }/>
-          <Route path='/activations/:token' render={ (props) => <Activation /> }/>
+          <Route path='/activations/:token' render={ (props) => <Activation {...props} /> }/>
           <Route path='/settings' render={ (props) => <Settings /> }/> 
           <Route path='/keyPage' render={ (props) => <KeyPage isAuthenticated={this.state.isAuthenticated} /> }/>
           <Route path='/app' render={ (props) => <XCloud {...props} 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Alert } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import { isMobile } from "react-device-detect";
 
@@ -18,11 +18,12 @@ class Register extends React.Component {
       confirmPassword: '',
       isAuthenticated: false,
       token: "",
+      validated: true,
       user: {}
     };
   }
 
-  validateForm() {
+  validateForm = () => {
     let isValid = true;
 
     if (this.state.name.length < 1 && this.state.lastname.length < 1) isValid = false;
@@ -42,11 +43,11 @@ class Register extends React.Component {
   handleSubmit = event => {
     // Form validation
     const form = event.currentTarget;
-    if (form.checkValidity() == false) {
+    if (this.validateForm() == false) {
+      this.setState({ validated: false })
       event.preventDefault();
       event.stopPropagation();
     }
-    let registerValid = false;
 
     fetch("/api/register", {
       method: "post",
@@ -63,17 +64,22 @@ class Register extends React.Component {
             // Manage succesfull register
             const { token, user } = body;
             localStorage.setItem('xToken',token);
+            
             this.setState({ 
+              name: '',
+              lastname: '',
+              email: '',
+              password: '',
+              confirmPassword: '',
               validated: true,
               isAuthenticated: true, 
               token,
               user 
             });
-            registerValid = true;
           });
         } else {
           response.json().then( (body) => {
-            // Manage account already exists
+            // Manage account already exists (error 400)
             const { message } = body;
             alert(message);
           })
@@ -82,8 +88,16 @@ class Register extends React.Component {
       .catch(err => {
         console.error("Login error", err);
       });
-      // When register is valid set state to authenticated but no activated
-      this.props.userHasAuthenticated(true);
+  }
+
+  clearFields = () => {
+    this.setState({
+      name: '',
+      lastname: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    });
   }
 
   render() {
@@ -97,7 +111,7 @@ class Register extends React.Component {
             <Alert.Heading>Account registered succesfully!</Alert.Heading>
             <p> Now you need to go to your mail and follow instructions on activation email for start using X Cloud. </p>
           </Alert>
-        <Form className="formBlock" onSubmit={this.handleSubmit}>
+        <Form className="formBlock" validated={this.state.validated} onSubmit={this.handleSubmit}>
           <Form.Group controlId="name">
             <Form.Label>First Name</Form.Label>
             <Form.Control autoFocus required placeholder="First Name" value={this.state.name} onChange={this.handleChange}/>

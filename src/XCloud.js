@@ -8,7 +8,7 @@ import Header from './Header';
 import FileCommander from './FileCommander';
 import update from 'immutability-helper';
 import Popup from "reactjs-popup";
-
+import history from './history';
 import "./App.css";
 
 class XCloud extends React.Component {
@@ -17,7 +17,7 @@ class XCloud extends React.Component {
 
     this.state = {
       email: '',
-      isAuthenticated: false,
+      isAuthorized: false,
       isInitialized: false,
       token: "",
       chooserModalOpen: false,
@@ -32,16 +32,17 @@ class XCloud extends React.Component {
   }
 
   componentDidMount() {
-    if (!this.state.user.root_folder_id) {
+    if (!this.props.user.root_folder_id) {
       // If user is not defined redirect to login page
-      if (!this.state.isAuthenticated) {
+      if (!this.props.isAuthenticated) {
         history.push('/login');
       } else {
         // Initialize user in case that is not done yet
-        userInitialization();
+        this.userInitialization();
       }
     } else {
       this.getFolderContent(this.state.user.root_folder_id);
+      this.setState({ isInitialized: true });
     }
   }
 
@@ -76,7 +77,7 @@ class XCloud extends React.Component {
       }
     }).catch(error => {
       console.error('User initialization error: ' + error);
-    }
+    });
   }
 
   createFolder = () => {

@@ -65,10 +65,12 @@ class Login extends React.Component {
               isAuthenticated: true, 
               token: body.token,
               user: user
-            });
+            })
+            history.push('/app')
           });
-        } else if(response.status == 204) {
-          // Manage username / password do not match
+        } else if(response.status == 400) {
+          // Manage other cases:
+          // username / password do not match, user activation required...
           response.json().then( (body) => {
             alert(body.message);
           });
