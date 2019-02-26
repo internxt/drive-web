@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from 'react-router-dom';
+import { Alert } from 'react-bootstrap';
 import $ from 'jquery';
 import _ from 'lodash';
 import fileDownload from 'js-file-download';
@@ -19,6 +20,7 @@ class XCloud extends React.Component {
       email: '',
       isAuthorized: false,
       isInitialized: false,
+      isActivated: false,
       token: "",
       chooserModalOpen: false,
       rateLimitModal: false,
@@ -32,17 +34,25 @@ class XCloud extends React.Component {
   }
 
   componentDidMount() {
-    if (!this.props.user.root_folder_id) {
-      // If user is not defined redirect to login page
-      if (!this.props.isAuthenticated) {
-        history.push('/login');
-      } else {
-        // Initialize user in case that is not done yet
-        this.userInitialization();
-      }
+    // When user is not signed in, redirect to login
+    if (!this.props.user || !this.props.isAuthenticated) {
+      history.push('/login');
     } else {
-      this.getFolderContent(this.state.user.root_folder_id);
-      this.setState({ isInitialized: true });
+      this.isUserActivated(this.props.user.email).then(data => {
+        // If user is signed in but is not activated set property isActivated to false
+        const isActivated = data.activated
+        if (isActivated) {
+          if (!this.props.user.root_folder_id) {
+            // Initialize user in case that is not done yet
+            this.userInitialization();
+          } else {
+            this.getFolderContent(this.state.user.root_folder_id);
+          }
+          this.setState({ isActivated, isInitialized: true });
+        }
+      }).catch(error => {
+        console.log('Error getting user activation status: ' + error)
+      })
     }
   }
 
@@ -78,6 +88,17 @@ class XCloud extends React.Component {
     }).catch(error => {
       console.error('User initialization error: ' + error);
     });
+  }
+
+  isUserActivated = (email) => {
+    let headers = this.setHeaders();
+    headers = Object.assign(headers, { "xEmail": email });
+
+    return fetch('/api/user/isactivated', {
+      method: 'get',
+      headers
+    }).then(response => response.json())
+    .catch(error => error)
   }
 
   createFolder = () => {
@@ -189,9 +210,7 @@ class XCloud extends React.Component {
     });
     Promise.all(deletionRequests)
       .then(result => {
-        console.log("about to delete");
         setTimeout(() => {
-          console.log("deleteing");
           this.getFolderContent(this.state.currentFolderId, false);
         }, 100);
       })
@@ -259,7 +278,7 @@ class XCloud extends React.Component {
 
   render() {
     // Check authentication
-    if(this.props.isAuthenticated && this.state.isInitialized) {
+    if(this.props.isAuthenticated && this.state.isActivated && this.state.isInitialized) {
       return (
         <div className="App">
           <Header 
@@ -305,9 +324,27 @@ class XCloud extends React.Component {
       </div>
       );
     } else {
-      return (
-        <h2 className="App">Please <Link to='/login'>login</Link> into your X Cloud account</h2>
-      )
+      // Cases of access error
+      // Not authenticated
+      if (!this.props.isAuthenticated) {
+        return (
+          <div className="App">
+            <h2>Please <Link to='/login'>login</Link> into your X Cloud account</h2>
+          </div>
+        )
+      }
+      // User not activated
+      if (!this.state.isActivated) {
+        return (
+          <div className="App">
+            <Alert variant="danger">
+              <h3>Your account needs to be activated!</h3>
+              <p> Search your mail inbox for activation mail and follow its instructions </p>
+            </Alert>
+          </div>
+        )
+      }
+
     }
   }
 }

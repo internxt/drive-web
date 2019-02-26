@@ -19,17 +19,50 @@ class Login extends React.Component {
     };
   }
 
-  //componentDidMount() {
-  // TO-DO If user have login token, continue to x-cloud
-  //}
+  componentDidMount() {
+    // Check if recent login is passed and redirect user to X Cloud
+    const mnemonic = localStorage.getItem('xMnemonic');
+    const user = JSON.parse(localStorage.getItem('xUser'));
 
-  componentDidUpdate() {
-    if (this.state.isAuthenticated == true && this.state.token) { 
-      history.push('/app') 
+    if (user) { 
+      this.props.handleKeySaved(user)
+      if (user.storeMnemonic == true && mnemonic) {
+        // Case of login and mnemonic loaded from server
+        history.push('/app')
+      } else {
+        // Case of login and mnemonic required by user
+        history.push('/keyPage');
+      }
     }
   }
 
-  validateForm() {
+  componentDidUpdate() {
+    if (this.state.isAuthenticated == true && this.state.token && this.state.user) {
+      const mnemonic = localStorage.getItem('xMnemonic');
+      if (this.state.user.storeMnemonic == true && mnemonic) {
+        // Case of login and mnemonic loaded from server
+        history.push('/app')
+      } else {
+        // Case of login and mnemonic loaded from server
+        history.push('/KeyPage')
+      }
+    }
+  }
+
+  setHeaders = () => {
+    let headers = {
+      Authorization: `Bearer ${localStorage.getItem("xToken")}`,
+      "content-type": "application/json; charset=utf-8"
+    };
+    if (!this.state.user.mnemonic) {
+      headers = Object.assign(headers, {
+        "internxt-mnemonic": localStorage.getItem("xMnemonic")
+      });
+    }
+    return headers;
+  }
+
+  validateForm = () => {
     let isValid = true;
 
     if (this.state.email.length < 5) isValid = false;
@@ -47,26 +80,32 @@ class Login extends React.Component {
   handleSubmit = event => {
     event.preventDefault();
 
+    const headers = this.setHeaders();
     // Proceed with submit
     fetch("/api/login", {
       method: "post",
-      headers: { "content-type": "application/json; charset=utf-8" },
+      headers,
       body: JSON.stringify({ email: this.state.email, password: this.state.password})
     })
     .then(response => {
         if (response.status == 200) {
           // Manage succesfull login
           response.json().then( (body) => {
-            const user = { email: this.state.email, mnemonic: body.user.mnemonic, root_folder_id: body.user.root_folder_id };
-            localStorage.setItem('xToken',body.token);
-            localStorage.setItem('xMnemonic', body.user.mnemonic);
+            const user = { 
+              email: this.state.email, 
+              mnemonic: body.user.mnemonic, 
+              root_folder_id: body.user.root_folder_id,
+              storeMnemonic: body.storeMnemonic 
+            };
             this.props.handleKeySaved(user)
+            localStorage.setItem('xToken',body.token);
+            if (body.user.mnemonic && body.user.storeMnemonic == true) localStorage.setItem('xMnemonic', body.user.mnemonic);
+            localStorage.setItem('xUser', JSON.stringify(user));
             this.setState({ 
               isAuthenticated: true, 
               token: body.token,
               user: user
             })
-            history.push('/app')
           });
         } else if(response.status == 400) {
           // Manage other cases:

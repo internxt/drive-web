@@ -24,8 +24,7 @@ class App extends Component {
     this.state = {
       token: "",
       user: {},
-      isAuthenticated: false,
-      isActivated: false
+      isAuthenticated: false
     }
   }
 
@@ -37,31 +36,23 @@ class App extends Component {
     });
   }
 
-  userHasAuthenticated = (authenticated) => {
-    this.setState({ isAuthenticated: authenticated });
-  }
-
-  userHasActivated = (activated) => {
-    this.setState({ isActivated: activated });
-  }
-
   render() {
     return (
       <div>
         <Switch>
           <Route path='/register' render={ (props) => <Register {...props}  
-            isAuthenticated={this.state.isAuthenticated} 
-            isActivated={this.state.isActivated}/> 
+            isAuthenticated={this.state.isAuthenticated} /> 
           }/>
           <Route path='/login' render={ (props) => <Login {...props}  
             isAuthenticated={this.state.isAuthenticated} 
-            userHasAuthenticated={this.userHasAuthenticated}
-            handleKeySaved={this.handleKeySaved}
-            isActivated={this.state.isActivated}/> 
+            handleKeySaved={this.handleKeySaved}/> 
           }/>
           <Route path='/activations/:token' render={ (props) => <Activation {...props} /> }/>
           <Route path='/settings' render={ (props) => <Settings /> }/> 
-          <Route path='/keyPage' render={ (props) => <KeyPage isAuthenticated={this.state.isAuthenticated} /> }/>
+          <Route path='/keyPage' render={ (props) => <KeyPage {...props}
+            isAuthenticated={this.state.isAuthenticated}
+            user={this.state.user} /> 
+          }/>
           <Route path='/app' render={ (props) => <XCloud {...props} 
             isAuthenticated={this.state.isAuthenticated} 
             user={this.state.user}

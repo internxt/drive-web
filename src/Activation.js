@@ -33,31 +33,6 @@ class Activation extends React.Component {
     })
   }
 
-  checkRequestAvailable = () => {
-    const lastRequest = new Date(localStorage.getItem('lastRequest'));
-    if (lastRequest) {
-      // If its more or equals than 24h from last request return true
-      const diff = (Date.now() - lastRequest)/86400000;
-      if(diff >= 1) return true; 
-      else return false;
-    } else {
-      // If not exists lastRequest date, generate it
-      localStorage.setItem('lastRequest', Date.now.toString());
-      return true;
-    }
-  }
-
-  sendActivationEmail = () => {
-    // Check if passed one day from last email request
-    if (this.checkRequestAvailable()) {
-      // Request new activation email
-      //fetch('', {});
-      // TO-DO Use or build in api a function to re-send activation email
-    } else {
-      alert('Only one activation email request each 24h is allowed')
-    }
-  }
-
   render() {
     return(
       <div>
@@ -66,14 +41,13 @@ class Activation extends React.Component {
             <Alert variant="success">
               <h3>Your account has successfully activated!</h3>
               <p>Now you will be redirected to <Link to="/login">login</Link>...</p>
-              <script>setTimeout(() => { history.push('/app') }, 5000);</script>
+              <script>setTimeout(() => { history.push('/app') }, 10000);</script>
             </Alert>
           ) : (
             <Alert variant="danger">
               <h3>Your account needs to be activated!</h3>
               <p> 
-                Search your mail inbox for activation mail or use below
-                button for request another activatión email (one each 24h max).
+                Search your mail inbox for activation mail..
               </p>
             </Alert>
           )
