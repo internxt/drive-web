@@ -1,6 +1,7 @@
 .key {
   display: flex;
   height: 100vh;
+  margin-top: 25px;
   position: relative;
   justify-content: center;
   font-family: "Cerebri Sans", Arial, sans-serif;
@@ -26,7 +27,6 @@
 .key-title {
   font-size: 50px;
   font-weight: 900;
-  margin-bottom: 0;
   letter-spacing: -1.5px;
   text-align: center;
   color: #000000;
@@ -59,14 +59,14 @@
   font-size: 18px;
   letter-spacing: -0.2px;
   color: #000000;
-  margin-left: 20px;
+  margin-left: 10;
   text-align: center;
 }
 
 .button-repeat {
   width: 44px;
   height: 44px;
-  margin: 0 20px;
+  margin: 0 10px;
   display: flex;
   flex-shrink: 0;
   justify-content: center;

@@ -1,5 +1,5 @@
 .Login {
-  padding: 60px 0 30% 30%;
+  padding: 60px 0 20% 20%;
   position: relative;
   justify-content: center;
 }
@@ -8,6 +8,7 @@
   position: relative;
   justify-content: center;
   font-family: "Cerebri Sans", Arial, sans-serif;
+  text-align: left;
   color: #000000;
 }
 

@@ -128,7 +128,7 @@ class Login extends React.Component {
       <div className="Login">
         <div className="LoginHeader">
             <h2> Login into X Cloud</h2>
-            <p>or <Link to="/register">Create a new account</Link> on X-Cloud</p>
+            <p>or <Link to="/register">Create a new account</Link></p>
       </div>
         <Form className="formBlock" onSubmit={this.handleSubmit}>
           <Form.Group controlId="email">
