@@ -92,10 +92,10 @@ class Login extends React.Component {
           // Manage succesfull login
           response.json().then( (body) => {
             const user = { 
-              email: this.state.email, 
-              mnemonic: body.user.mnemonic, 
+              email: this.state.email,  
+              mnemonic: body.user.mnemonic,
               root_folder_id: body.user.root_folder_id,
-              storeMnemonic: body.storeMnemonic 
+              storeMnemonic: body.user.storeMnemonic 
             };
             this.props.handleKeySaved(user)
             localStorage.setItem('xToken',body.token);

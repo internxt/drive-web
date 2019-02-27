@@ -101,7 +101,7 @@ class KeyPage extends React.Component {
         email: this.props.user.email,
         option: option
       })
-    }).then(response =>{
+    }).then(response => {
       if (response.status == 200) {
         response.json().then( (body) => {
           // When true option is set, save mnemonic locally. When is false, delete mnemonic
@@ -110,6 +110,10 @@ class KeyPage extends React.Component {
           } else {
             localStorage.removeItem('xMnemonic');
           }
+          // Set user with new storeOption property
+          const updatedUser = this.props.user;
+          updatedUser.storeMnemonic = option;
+          this.props.handleKeySaved(updatedUser);
         });
       } else {
         // Other status (400, 500, ...)
@@ -118,7 +122,9 @@ class KeyPage extends React.Component {
         });
       }
     })
-    .catch();
+    .catch(error => {
+      console.log('StoreOption error: ' + error);
+    });
   }
 
   render() {

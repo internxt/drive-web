@@ -10,7 +10,7 @@ class Activation extends React.Component {
     super(props);
 
     this.state = {
-      isActivated: false
+      isActivated: null
     };
   }
 
@@ -30,30 +30,37 @@ class Activation extends React.Component {
         // Wrong activation
         this.setState({ isActivated: false })
       }
+    }).catch(error => {
+      console.log('Activation error: ' + error);
     })
   }
 
   render() {
-    return(
-      <div>
-        {
-          this.state.isActivated ? (
-            <Alert variant="success">
-              <h3>Your account has successfully activated!</h3>
-              <p>Now you will be redirected to <Link to="/login">login</Link>...</p>
-              <script>setTimeout(() => { history.push('/app') }, 10000);</script>
-            </Alert>
-          ) : (
-            <Alert variant="danger">
-              <h3>Your account needs to be activated!</h3>
-              <p> 
-                Search your mail inbox for activation mail..
-              </p>
-            </Alert>
-          )
-        }
-      </div>
-    )
+    if (this.state.isActivated) {
+      return(
+        <div>
+          {
+            this.state.isActivated ? (
+              <Alert classname="Alert" variant="success">
+                <h3>Your account has successfully activated!</h3>
+                <p>Now you will be redirected to <Link to="/login">login</Link>...</p>
+                <script>setTimeout(() => { history.push('/app') }, 10000);</script>
+              </Alert>
+            ) : (
+              <Alert classname="Alert" variant="danger">
+                <h3>Your account needs to be activated!</h3>
+                <p> 
+                  Search your mail inbox for activation mail..
+                </p>
+              </Alert>
+            )
+          }
+        </div>
+      )
+    } else {
+      return( <div></div>)
+    }
+    
   }
 }
 

@@ -1,9 +1,7 @@
 import * as React from "react";
 import { Button, Form, Alert } from "react-bootstrap";
 import { Link } from 'react-router-dom';
-import { isMobile } from "react-device-detect";
 
-import history from './history';
 import "./Login.css";
 
 class Register extends React.Component {
@@ -21,6 +19,19 @@ class Register extends React.Component {
       validated: true,
       user: {}
     };
+  }
+
+  setHeaders = () => {
+    let headers = {
+      Authorization: `Bearer ${localStorage.getItem("xToken")}`,
+      "content-type": "application/json; charset=utf-8"
+    };
+    if (!this.state.user.mnemonic) {
+      headers = Object.assign(headers, {
+        "internxt-mnemonic": localStorage.getItem("xMnemonic")
+      });
+    }
+    return headers;
   }
 
   validateForm = () => {
@@ -41,17 +52,18 @@ class Register extends React.Component {
   }
 
   handleSubmit = event => {
+    event.preventDefault();
     // Form validation
-    const form = event.currentTarget;
     if (this.validateForm() == false) {
       this.setState({ validated: false })
-      event.preventDefault();
       event.stopPropagation();
     }
 
+    const headers = this.setHeaders();
+
     fetch("/api/register", {
       method: "post",
-      headers: { "content-type": "application/json; charset=utf-8" },
+      headers,
       body: JSON.stringify({ 
         name: this.state.name,
         lastname: this.state.lastname,
@@ -65,6 +77,7 @@ class Register extends React.Component {
             const { token, user } = body;
             localStorage.setItem('xToken',token);
             
+            // Clear form fields
             this.setState({ 
               name: '',
               lastname: '',
@@ -86,7 +99,7 @@ class Register extends React.Component {
         }
       })
       .catch(err => {
-        console.error("Login error", err);
+        console.error("Register error", err);
       });
   }
 
@@ -107,7 +120,7 @@ class Register extends React.Component {
             <h2> Create your X-Cloud account </h2>
             <p>or <Link to="/login">Sign in</Link> with your existent account</p>
           </div>
-          <Alert variant="success" show={this.state.isAuthenticated}>
+          <Alert className="formAlert" variant="success" show={this.state.isAuthenticated}>
             <Alert.Heading>Account registered succesfully!</Alert.Heading>
             <p> Now you need to go to your mail and follow instructions on activation email for start using X Cloud. </p>
           </Alert>

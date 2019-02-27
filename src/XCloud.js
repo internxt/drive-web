@@ -226,7 +226,6 @@ class XCloud extends React.Component {
     const bucket = e.target.getAttribute("data-bucket");
     if (_.some(selectedItems, { id })) {
       const indexOf = _.findIndex(selectedItems, o => o.id === id);
-      console.log(indexOf);
       this.setState({
         selectedItems: update(selectedItems, { $splice: [[indexOf, 1]] })
       });

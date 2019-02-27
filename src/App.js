@@ -51,7 +51,8 @@ class App extends Component {
           <Route path='/settings' render={ (props) => <Settings /> }/> 
           <Route path='/keyPage' render={ (props) => <KeyPage {...props}
             isAuthenticated={this.state.isAuthenticated}
-            user={this.state.user} /> 
+            user={this.state.user} 
+            handleKeySaved={this.handleKeySaved}/> 
           }/>
           <Route path='/app' render={ (props) => <XCloud {...props} 
             isAuthenticated={this.state.isAuthenticated} 

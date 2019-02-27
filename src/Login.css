@@ -12,8 +12,12 @@
 }
 
 .formBlock {
-  width: 55%;
+  width: 70%;
   min-width: 250;
+}
+
+.formAlert {
+  width: 70%;
 }
 
 .checkbox {
