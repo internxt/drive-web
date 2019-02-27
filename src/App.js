@@ -40,27 +40,29 @@ class App extends Component {
     return (
       <div>
         <Switch>
-          <Route path='/register' render={ (props) => <Register {...props}  
+          <Route exact path='/register' render={ (props) => <Register {...props}  
             isAuthenticated={this.state.isAuthenticated} /> 
           }/>
-          <Route path='/login' render={ (props) => <Login {...props}  
+          <Route exact path='/login' render={ (props) => <Login {...props}  
             isAuthenticated={this.state.isAuthenticated} 
             handleKeySaved={this.handleKeySaved}/> 
           }/>
           <Route path='/activations/:token' render={ (props) => <Activation {...props} /> }/>
           <Route path='/settings' render={ (props) => <Settings /> }/> 
-          <Route path='/keyPage' render={ (props) => <KeyPage {...props}
+          <Route exact path='/keyPage' render={ (props) => <KeyPage {...props}
             isAuthenticated={this.state.isAuthenticated}
             user={this.state.user} 
             handleKeySaved={this.handleKeySaved}/> 
           }/>
-          <Route path='/app' render={ (props) => <XCloud {...props} 
+          <Route exact path='/app' render={ (props) => <XCloud {...props} 
             isAuthenticated={this.state.isAuthenticated} 
             user={this.state.user}
             isActivated={this.state.isActivated}
             handleKeySaved={this.handleKeySaved}/>
           }/>
-          <Route path='/' component={ Maintenance }/>
+          <Route exact path='/'>
+            <Redirect to="/register"/>
+          </Route>
           <Route component={ NotFound } />
         </Switch>
       </div>
