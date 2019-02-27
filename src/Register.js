@@ -117,7 +117,7 @@ class Register extends React.Component {
     return (
       <div className="Login">
           <div className="LoginHeader">
-            <h2> Create your X-Cloud account </h2>
+            <h2> Create your X Cloud account </h2>
             <p>or <Link to="/login">Sign in</Link> with your existent account</p>
           </div>
           <Alert className="formAlert" variant="success" show={this.state.isAuthenticated}>

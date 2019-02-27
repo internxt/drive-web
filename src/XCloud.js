@@ -28,8 +28,7 @@ class XCloud extends React.Component {
       currentFolderBucket: null,
       currentCommanderItems: [],
       namePath: [],
-      selectedItems: [],
-      user: this.props.user
+      selectedItems: []
     };
   }
 
@@ -45,9 +44,9 @@ class XCloud extends React.Component {
           if (!this.props.user.root_folder_id) {
             // Initialize user in case that is not done yet
             this.userInitialization();
-          } else {
-            this.getFolderContent(this.state.user.root_folder_id);
           }
+          
+          this.getFolderContent(this.props.user.root_folder_id);
           this.setState({ isActivated, isInitialized: true });
         }
       }).catch(error => {
@@ -61,7 +60,7 @@ class XCloud extends React.Component {
       Authorization: `Bearer ${localStorage.getItem("xToken")}`,
       "content-type": "application/json; charset=utf-8"
     };
-    if (!this.state.user.mnemonic) {
+    if (!this.props.user.mnemonic) {
       headers = Object.assign(headers, {
         "internxt-mnemonic": localStorage.getItem("xMnemonic")
       });
@@ -74,13 +73,18 @@ class XCloud extends React.Component {
       method: "post",
       headers: { "content-type": "application/json; charset=utf-8" },
       body: JSON.stringify({ 
-        email: this.state.user.email
+        email: this.props.user.email
       })
     }).then( response => {
       if (response.status == 200) {
         // Successfull intialization
         this.setState({ isInitialized: true });
-        // TO-DO Now go to mnemonic page and do things :D
+        // Set user with new root folder id
+        response.json().then( (body) => {
+          const updatedUser = this.props.user;
+          updatedUser.root_folder_id = body.root_folder_id;
+          this.props.handleKeySaved(updatedUser);
+        })
       } else {
         alert('User initialization error');
         history.push('/login');
@@ -298,7 +302,7 @@ class XCloud extends React.Component {
         />
         <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >
           <div>
-            <a href={'xcloud://' + this.state.token + '://' + JSON.stringify(this.state.user)}>Open mobile app</a>
+            <a href={'xcloud://' + this.state.token + '://' + JSON.stringify(this.props.user)}>Open mobile app</a>
             <a onClick={this.closeModal}>Use web app</a>
           </div>
         </Popup>

@@ -57,7 +57,9 @@ class App extends Component {
           <Route path='/app' render={ (props) => <XCloud {...props} 
             isAuthenticated={this.state.isAuthenticated} 
             user={this.state.user}
-            isActivated={this.state.isActivated}/>} />
+            isActivated={this.state.isActivated}
+            handleKeySaved={this.handleKeySaved}/>
+          }/>
           <Route path='/' component={ Maintenance }/>
           <Route component={ NotFound } />
         </Switch>

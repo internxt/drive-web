@@ -36,7 +36,7 @@ class Activation extends React.Component {
   }
 
   render() {
-    if (this.state.isActivated) {
+    if (this.state.isActivated != null) {
       return(
         <div>
           {
