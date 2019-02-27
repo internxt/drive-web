@@ -20,7 +20,7 @@ class XCloud extends React.Component {
       email: '',
       isAuthorized: false,
       isInitialized: false,
-      isActivated: false,
+      isActivated: null,
       token: "",
       chooserModalOpen: false,
       rateLimitModal: false,
@@ -32,7 +32,7 @@ class XCloud extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     // When user is not signed in, redirect to login
     if (!this.props.user || !this.props.isAuthenticated) {
       history.push('/login');
@@ -337,7 +337,7 @@ class XCloud extends React.Component {
         )
       }
       // User not activated
-      if (!this.state.isActivated) {
+      if (this.state.isActivated == false) {
         return (
           <div className="App">
             <Alert variant="danger">
@@ -347,7 +347,8 @@ class XCloud extends React.Component {
           </div>
         )
       }
-
+      // If is waiting for async method return blank page
+      return(<div></div>)
     }
   }
 }
