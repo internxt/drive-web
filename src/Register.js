@@ -3,6 +3,7 @@ import { Button, Form, Alert } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 
 import "./Login.css";
+import logo from './assets/logo.svg';
 
 class Register extends React.Component {
   constructor(props) {
@@ -116,7 +117,8 @@ class Register extends React.Component {
   render() {
     return (
       <div className="Login">
-          <div className="LoginHeader">
+      <img src={logo} alt="logo" className="Logo" style={{height: 46 ,width: 46}}/>
+      <div className="LoginHeader">
             <h2> Create your X Cloud account </h2>
             <p>or <Link to="/login">Sign in</Link> with your existent account</p>
           </div>

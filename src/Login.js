@@ -5,6 +5,7 @@ import { isMobile } from "react-device-detect";
 
 import history from './history';
 import "./Login.css";
+import logo from './assets/logo.svg';
 
 class Login extends React.Component {
   constructor(props) {
@@ -126,9 +127,10 @@ class Login extends React.Component {
   render() {
     return (
       <div className="Login">
-        <div className="LoginHeader">
-            <h2> Login into X Cloud</h2>
-            <p>or <Link to="/register">Create a new account</Link></p>
+      <img src={logo} alt="logo" className="Logo" style={{height: 46 ,width: 46}}/>
+      <div className="LoginHeader">
+        <h2> Login into X Cloud</h2>
+        <p>or <Link to="/register">Create a new account</Link></p>
       </div>
         <Form className="formBlock" onSubmit={this.handleSubmit}>
           <Form.Group controlId="email">
