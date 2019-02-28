@@ -1,0 +1,14 @@
+.settingsButton .btn {
+    outline: 0;
+    background-color: transparent !important;
+    color: black !important;
+    border: solid 0px;
+}
+
+.settingsButton .btn::before {
+    display: none !important;
+}
+
+.btn-primary.dropdown-toggle:focus, .btn-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.2rem transparent !important;
+}
