@@ -42,6 +42,7 @@
 
 .FileCommanderItem img {
     margin-top: 50px !important;
+    margin-left: 30px !important;
     pointer-events: none;
 }
 
@@ -83,4 +84,16 @@
     letter-spacing: normal;
     text-align: center;
     color: #2a5fc9;
+}
+
+.FileCommanderItem .properties {
+    float: right;
+    margin-right: 10px;
+    font-size: 20px;
+    visibility: hidden;
+    cursor: pointer;
+}
+
+.FileCommanderItem:hover > .properties  {
+    visibility: visible;
 }
