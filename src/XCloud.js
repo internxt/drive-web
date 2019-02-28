@@ -11,6 +11,7 @@ import update from 'immutability-helper';
 import Popup from "reactjs-popup";
 import history from './history';
 import "./App.css";
+import NavigationBar from "./components/navigationBar/NavigationBar";
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -284,7 +285,9 @@ class XCloud extends React.Component {
     if(this.props.isAuthenticated && this.state.isActivated && this.state.isInitialized) {
       return (
         <div className="App">
-          <Header 
+          <NavigationBar
+            showFileButtons={true}
+            showSettingsButton={true}
             createFolder={this.createFolder}
             uploadFile={this.openUploadFile}
             uploadHandler={this.uploadFile}
