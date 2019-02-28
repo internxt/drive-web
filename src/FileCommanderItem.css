@@ -1,16 +1,19 @@
 .FileCommanderItem {
     width: 175px;
     height: 200px;
-    display: flex;
     flex-direction: column;
     justify-content: center;
     margin: 10px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background-color: #fcfcfc;
+    box-sizing: border-box;
 }
 
 .FileCommanderItem:hover {
     border-radius: 10px;
-    background-color: #f0f3ff;
-    border: 1px solid #f0f3ff;
+    border: 1px solid #839cff;
+    background-color: #fcfcfc;
     box-sizing: border-box;
 }
 
@@ -22,13 +25,11 @@
 }
 
 .FileCommanderItem .type {
-    width: 75px;
-    height: 64px;
+    margin-top: 50px !important;
     border-radius: 5.5px;
     /* box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.06); */
     background-color: #fcfcfc;
     border: solid 1px #5291ff;
-    margin: 0 auto 22px auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -40,8 +41,14 @@
 }
 
 .FileCommanderItem img {
-    margin-bottom: 20px;
+    margin-top: 50px !important;
     pointer-events: none;
+}
+
+.FileCommanderItem img, .FileCommanderItem .type {
+    margin: 40px auto;
+    width: 85px;
+    height: 74px;
 }
 
 .FileCommanderItem .name {
@@ -56,6 +63,11 @@
     letter-spacing: normal;
     word-break: break-all;
     cursor: pointer;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0px 10px;
 }
 
 .FileCommanderItem .name:hover {
