@@ -117,34 +117,29 @@ class Register extends React.Component {
   render() {
     return (
       <div className="Login">
-      <img src={logo} alt="logo" className="Logo" style={{height: 46 ,width: 46}}/>
-      <div className="LoginHeader">
-            <h2> Create your X Cloud account </h2>
-            <p>or <Link to="/login">Sign in</Link> with your existent account</p>
-          </div>
-          <Alert className="formAlert" variant="success" show={this.state.isAuthenticated}>
-            <Alert.Heading>Account registered succesfully!</Alert.Heading>
-            <p> Now you need to go to your mail and follow instructions on activation email for start using X Cloud. </p>
-          </Alert>
-        <Form className="formBlock" validated={this.state.validated} onSubmit={this.handleSubmit}>
+        <img src={logo} alt="logo" className="Logo" style={{height: 46 ,width: 46}}/>
+        <div className="LoginHeader">
+          <h2> Create your X Cloud account </h2>
+          <p className="LoginSubHeader">or <Link to="/login">Sign in with your account</Link></p>
+        </div>
+        <Alert className="formAlert" variant="success" show={this.state.isAuthenticated}>
+          <Alert.Heading>Account registered succesfully!</Alert.Heading>
+          <p> Now you need to go to your mail and follow instructions on activation email for start using X Cloud. </p>
+        </Alert>
+        <Form className="formBlock" onSubmit={this.handleSubmit}>
           <Form.Group controlId="name">
-            <Form.Label>First Name</Form.Label>
             <Form.Control autoFocus required placeholder="First Name" value={this.state.name} onChange={this.handleChange}/>
           </Form.Group>
           <Form.Group controlId="lastname">
-            <Form.Label>Last Name</Form.Label>
             <Form.Control required placeholder="Last Name" value={this.state.lastname} onChange={this.handleChange}/>
           </Form.Group>
           <Form.Group controlId="email">
-            <Form.Label>Email</Form.Label>
             <Form.Control required type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
           </Form.Group>
           <Form.Group controlId="password">
-            <Form.Label>Password</Form.Label>
             <Form.Control required type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
           </Form.Group>
           <Form.Group controlId="confirmPassword">
-            <Form.Label>Confirm your password</Form.Label>
             <Form.Control required type="password" placeholder="Confirm your password" value={this.state.confirmPassword} onChange={this.handleChange} />
           </Form.Group>
           <Form.Group controlId="terms">

@@ -1,15 +1,55 @@
+@font-face {
+  font-family: 'CircularStd';
+  src: url('./assets/fonts/CircularStd-Black.woff2') format('woff2'), 
+       url('./assets/fonts/CircularStd-Black.woff') format('woff'), 
+       url('./assets/fonts/CircularStd-Black.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'CircularStd';
+  src: url('./assets/fonts/CircularStd-Bold.woff2') format('woff2'), 
+       url('./assets/fonts/CircularStd-Bold.woff') format('woff'), 
+       url('./assets/fonts/CircularStd-Bold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'CircularStd';
+  src: url('./assets/fonts/CircularStd-Medium.woff2') format('woff2'), 
+       url('./assets/fonts/CircularStd-Medium.woff') format('woff'), 
+       url('./assets/fonts/CircularStd-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'CircularStd';
+  src: url('./assets/fonts/CircularStd-Book.woff2') format('woff2'), 
+       url('./assets/fonts/CircularStd-Book.woff') format('woff'), 
+       url('./assets/fonts/CircularStd-Book.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
 .Login {
   padding: 60px 0 20% 20%;
   position: relative;
   justify-content: center;
+  font-family: CircularStd;
 }
 
 .LoginHeader {
   position: relative;
   justify-content: center;
-  font-family: "Cerebri Sans", Arial, sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  font-style: normal;
   text-align: left;
   color: #000000;
+}
+
+.LoginSubHeader {
+  font-weight: 400;
 }
 
 .formBlock {

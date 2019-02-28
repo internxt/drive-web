@@ -130,15 +130,13 @@ class Login extends React.Component {
       <img src={logo} alt="logo" className="Logo" style={{height: 46 ,width: 46}}/>
       <div className="LoginHeader">
         <h2> Login into X Cloud</h2>
-        <p>or <Link to="/register">Create a new account</Link></p>
+        <p className="LoginSubHeader">or <Link to="/register">Create a new account</Link></p>
       </div>
         <Form className="formBlock" onSubmit={this.handleSubmit}>
           <Form.Group controlId="email">
-            <Form.Label >Email</Form.Label>
             <Form.Control autoFocus required type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
           </Form.Group>
           <Form.Group controlId="password">
-            <Form.Label>Password</Form.Label>
             <Form.Control required type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
           </Form.Group>
           <Button type="submit" > Login </Button>
