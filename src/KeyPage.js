@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import history from "./history";
-import copyIcon from "./assets/Dashboard-Icons/copykey.svg";
+import copyIcon from "./assets/Dashboard-Icons/Copy.svg";
 import infoIcon from "./assets/Dashboard-Icons/Info.svg";
 import { copyToClipboard } from "./utils";
 import "./KeyPage.css";
