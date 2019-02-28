@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, Navbar, ButtonToolbar, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Nav, Navbar, Dropdown } from 'react-bootstrap';
 
 // Assets
 import account from '../../assets/Dashboard-Icons/Account.svg';
@@ -13,8 +13,6 @@ import deleteFile from '../../assets/Dashboard-Icons/Delete.svg';
 import share from '../../assets/Dashboard-Icons/Share.svg';
 
 import HeaderButton from '../../HeaderButton';
-import DropdownItem from 'react-bootstrap/DropdownItem';
-import DropdownToggle from 'react-bootstrap/DropdownToggle';
 
 import "./NavigationBar.css";
 

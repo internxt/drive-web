@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Form, Row, Col, Button, FormGroup } from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import StripeCheckout from 'react-stripe-checkout';
 
 class CreditCard extends React.Component {

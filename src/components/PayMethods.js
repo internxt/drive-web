@@ -5,7 +5,6 @@ import './PayMethods.css';
 import CreditCard from "./paymentBridges/CreditCard";
 import PayPal from "./paymentBridges/PayPal";
 import INXT from "./paymentBridges/INXT";
-import NavigationBar from './navigationBar/NavigationBar';
 
 const AvailablePayMethods = [
     {
@@ -34,7 +33,7 @@ class PayMethods extends React.Component {
     }
 
     componentDidMount() {
-        AvailablePayMethods.find(f => f.name == 'Credit Card').component = <CreditCard plan={this.state.choosedPlan} />
+        AvailablePayMethods.find(f => f.name === 'Credit Card').component = <CreditCard plan={this.state.choosedPlan} />
     }
 
     render() {
@@ -51,7 +50,7 @@ class PayMethods extends React.Component {
                             AvailablePayMethods.map(method =>
                                 <Col xs={12} md={4} sm={6} onClick={(e) => { this.setState({ choosedPayMethod: method.component }) }}>
                                     <Card>
-                                        <Card.Header className={(this.state.choosedPayMethod == method.component ? 'card-header-selected' : '')}>
+                                        <Card.Header className={(this.state.choosedPayMethod === method.component ? 'card-header-selected' : '')}>
                                             <h5><strong>{method.name}</strong></h5>
                                         </Card.Header>
                                     </Card>

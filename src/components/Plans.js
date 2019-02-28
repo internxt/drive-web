@@ -1,6 +1,5 @@
-import Header from "../Header";
-import React, { Component } from 'react';
-import { Container, Row, ProgressBar, Col, Card, Button } from "react-bootstrap";
+import React from 'react';
+import { Container, Row, ProgressBar, Col, Card } from "react-bootstrap";
 
 import './Plans.css'
 import Circle from "./Circle";
@@ -16,7 +15,7 @@ class Plans extends React.Component {
     }
 
     componentDidMount() {
-        fetch('http://116.203.99.12:8000/api/plans', {
+        fetch('/api/plans', {
             method: 'post'
         }).then(response => {
             return response.json();
@@ -58,7 +57,7 @@ class Plans extends React.Component {
                         {this.state.PlanDetails.map(entry => <Col xs={12} md={4} sm={6}>
                             <Card onClick={(e) => { this.props.planHandler(entry); }}>
                                 <Card.Header><h2>{entry.name}</h2></Card.Header>
-                                <Card.Text>{entry.price_eur == 0 ? 'Free' : '€' + entry.price_eur + ' per month'}</Card.Text>
+                                <Card.Text>{entry.price_eur === 0 ? 'Free' : '€' + entry.price_eur + ' per month'}</Card.Text>
                             </Card>
                         </Col>)}
                     </Row>
