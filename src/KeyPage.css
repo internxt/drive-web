@@ -1,10 +1,43 @@
+@font-face {
+  font-family: 'CircularStd';
+  src: url('./assets/fonts/CircularStd-Black.woff2') format('woff2'), 
+       url('./assets/fonts/CircularStd-Black.woff') format('woff'), 
+       url('./assets/fonts/CircularStd-Black.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'CircularStd';
+  src: url('./assets/fonts/CircularStd-Bold.woff2') format('woff2'), 
+       url('./assets/fonts/CircularStd-Bold.woff') format('woff'), 
+       url('./assets/fonts/CircularStd-Bold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'CircularStd';
+  src: url('./assets/fonts/CircularStd-Medium.woff2') format('woff2'), 
+       url('./assets/fonts/CircularStd-Medium.woff') format('woff'), 
+       url('./assets/fonts/CircularStd-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'CircularStd';
+  src: url('./assets/fonts/CircularStd-Book.woff2') format('woff2'), 
+       url('./assets/fonts/CircularStd-Book.woff') format('woff'), 
+       url('./assets/fonts/CircularStd-Book.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
 .key {
   display: flex;
   height: 100vh;
   margin-top: 25px;
   position: relative;
   justify-content: center;
-  font-family: "Cerebri Sans", Arial, sans-serif;
+  font-family: CircularStd;
 }
 
 .key.popup-active ::after {
@@ -63,7 +96,7 @@
   text-align: center;
 }
 
-.button-repeat {
+.button-copy {
   width: 44px;
   height: 44px;
   margin: 0 10px;

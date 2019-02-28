@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import history from "./history";
-import repeatIcon from "./assets/Dashboard-Icons/Repeat.svg";
+import copyIcon from "./assets/Dashboard-Icons/copykey.svg";
 import infoIcon from "./assets/Dashboard-Icons/Info.svg";
 import { copyToClipboard } from "./utils";
 import "./KeyPage.css";
@@ -142,8 +142,8 @@ class KeyPage extends React.Component {
   
             <div className="mnemonic-container">
               <div className="mnemonic-value">{this.state.mnemonic}</div>
-              <div onClick={this.handleCopyToClipboard} className="button-repeat">
-                <img src={repeatIcon} alt="Repeat" className="icon-repeat" />
+              <div onClick={this.handleCopyToClipboard} className="button-copy">
+                <img src={copyIcon} alt="Copy" className="icon-copy" />
               </div>
             </div>
   
