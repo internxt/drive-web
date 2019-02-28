@@ -46,6 +46,7 @@ class NavigationBar extends React.Component {
                     <HeaderButton icon={downloadFile} name="Download" />
                     <HeaderButton icon={deleteFile} name="Delete" clickHandler={props.deleteItems} />
                     <HeaderButton icon={share} name="Share" />
+                    <input id="uploadFile" type="file" onChange={props.uploadHandler}/>
                 </Nav>;
         }
 
