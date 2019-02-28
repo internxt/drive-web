@@ -32,15 +32,13 @@
 }
 
 .Login {
-  padding: 60px 0 20% 20%;
+  padding: 60px 25% 0 25%;
   position: relative;
   justify-content: center;
   font-family: CircularStd;
 }
 
 .LoginHeader {
-  position: relative;
-  justify-content: center;
   font-size: 22px;
   font-weight: bold;
   font-style: normal;
@@ -53,8 +51,7 @@
 }
 
 .formBlock {
-  width: 70%;
-  min-width: 250;
+  margin: 0 50% 0% 0%;
 }
 
 .formAlert {
@@ -63,6 +60,10 @@
 
 .checkbox {
   display: inline;
+}
+
+#name, #lastname, #email, #password, #confirmPassword {
+  border-radius: 0;
 }
 
 button {

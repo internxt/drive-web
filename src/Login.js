@@ -134,12 +134,12 @@ class Login extends React.Component {
       </div>
         <Form className="formBlock" onSubmit={this.handleSubmit}>
           <Form.Group controlId="email">
-            <Form.Control autoFocus required type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
+            <Form.Control autoFocus required size="lg" type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
           </Form.Group>
           <Form.Group controlId="password">
-            <Form.Control required type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
+            <Form.Control required size="lg" type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
           </Form.Group>
-          <Button type="submit" > Login </Button>
+          <Button size="lg" type="submit" > Login </Button>
         </Form> 
       </div>
     );

@@ -17,7 +17,7 @@ class Register extends React.Component {
       confirmPassword: '',
       isAuthenticated: false,
       token: "",
-      validated: true,
+      validated: false,
       user: {}
     };
   }
@@ -53,12 +53,14 @@ class Register extends React.Component {
   }
 
   handleSubmit = event => {
-    event.preventDefault();
+    const form = event.currentTarget;
+    
     // Form validation
-    if (this.validateForm() == false) {
-      this.setState({ validated: false })
+    if (form.checkValidity() === false || this.validateForm() == false) {
       event.stopPropagation();
     }
+    event.preventDefault();
+    this.setState({ validated: true })
 
     const headers = this.setHeaders();
 
@@ -115,6 +117,7 @@ class Register extends React.Component {
   }
 
   render() {
+    const { validated } = this.state;
     return (
       <div className="Login">
         <img src={logo} alt="logo" className="Logo" style={{height: 46 ,width: 46}}/>
@@ -126,29 +129,30 @@ class Register extends React.Component {
           <Alert.Heading>Account registered succesfully!</Alert.Heading>
           <p> Now you need to go to your mail and follow instructions on activation email for start using X Cloud. </p>
         </Alert>
-        <Form className="formBlock" onSubmit={this.handleSubmit}>
+        <Form className="formBlock" noValidate validated={validated} onSubmit={this.handleSubmit}>
           <Form.Group controlId="name">
-            <Form.Control autoFocus required placeholder="First Name" value={this.state.name} onChange={this.handleChange}/>
+            <Form.Control autoFocus required size="lg" placeholder="First Name" value={this.state.name} onChange={this.handleChange}/>
           </Form.Group>
           <Form.Group controlId="lastname">
-            <Form.Control required placeholder="Last Name" value={this.state.lastname} onChange={this.handleChange}/>
+            <Form.Control required size="lg" placeholder="Last Name" value={this.state.lastname} onChange={this.handleChange}/>
           </Form.Group>
           <Form.Group controlId="email">
-            <Form.Control required type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
+            <Form.Control required size="lg" type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
           </Form.Group>
           <Form.Group controlId="password">
-            <Form.Control required type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
+            <Form.Control required size="lg" type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
           </Form.Group>
           <Form.Group controlId="confirmPassword">
-            <Form.Control required type="password" placeholder="Confirm your password" value={this.state.confirmPassword} onChange={this.handleChange} />
+            <Form.Control required size="lg" type="password" placeholder="Confirm your password" value={this.state.confirmPassword} onChange={this.handleChange} />
           </Form.Group>
           <Form.Group controlId="terms">
             <Form.Check id="terms">
-              <Form.Check.Input required className="checkbox" feedback="You must agree before submitting."/>
-              <Form.Check.Label>  Agree <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></Form.Check.Label>
+              <Form.Check.Input required className="checkbox"/>
+              <Form.Check.Label className="text-dark">  Agree <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></Form.Check.Label>
+              <Form.Control.Feedback type="invalid">You must agree before submitting.</Form.Control.Feedback>
             </Form.Check>
           </Form.Group>
-          <Button type="submit"> Register </Button>
+          <Button size="lg" type="submit"> Register </Button>
         </Form> 
       </div>
     );
