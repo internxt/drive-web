@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, ButtonToolbar, Form } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import { isMobile } from "react-device-detect";
 
@@ -129,8 +129,11 @@ class Login extends React.Component {
       <div className="Login">
       <img src={logo} alt="logo" className="Logo" style={{height: 46 ,width: 46}}/>
       <div className="LoginHeader">
-        <h2> Login into X Cloud</h2>
-        <p className="LoginSubHeader">or <Link to="/register">Create a new account</Link></p>
+        <h2> Welcome to X Cloud</h2>
+        <ButtonToolbar>
+            <Button size="lg" id="button-off">Sign in</Button>
+            <Button size="lg" id="button-on" tag={Link} to="/register">Create account</Button>
+          </ButtonToolbar>
       </div>
         <Form className="formBlock" onSubmit={this.handleSubmit}>
           <Form.Group controlId="email">

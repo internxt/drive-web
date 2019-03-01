@@ -1,38 +1,10 @@
-@font-face {
-  font-family: 'CircularStd';
-  src: url('./assets/fonts/CircularStd-Black.woff2') format('woff2'), 
-       url('./assets/fonts/CircularStd-Black.woff') format('woff'), 
-       url('./assets/fonts/CircularStd-Black.ttf') format('truetype');
-  font-weight: 800;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'CircularStd';
-  src: url('./assets/fonts/CircularStd-Bold.woff2') format('woff2'), 
-       url('./assets/fonts/CircularStd-Bold.woff') format('woff'), 
-       url('./assets/fonts/CircularStd-Bold.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'CircularStd';
-  src: url('./assets/fonts/CircularStd-Medium.woff2') format('woff2'), 
-       url('./assets/fonts/CircularStd-Medium.woff') format('woff'), 
-       url('./assets/fonts/CircularStd-Medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'CircularStd';
-  src: url('./assets/fonts/CircularStd-Book.woff2') format('woff2'), 
-       url('./assets/fonts/CircularStd-Book.woff') format('woff'), 
-       url('./assets/fonts/CircularStd-Book.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
+.Logo {
+  margin: 6px 10px;
 }
 
 .Login {
-  padding: 60px 25% 0 25%;
+  margin: 40px 25% 0 10%;
+  width: 80%;
   position: relative;
   justify-content: center;
   font-family: CircularStd;
@@ -52,22 +24,73 @@
 
 .formBlock {
   margin: 0 50% 0% 0%;
+  width: 100%;
 }
 
 .formAlert {
   width: 70%;
 }
 
-.checkbox {
-  display: inline;
+.btn-toolbar {
+  display: block;
 }
 
-#name, #lastname, #email, #password, #confirmPassword {
-  border-radius: 0;
+#button-on ,#button-off {
+  font-weight: bold;
+  margin: 0 10px 0 10px;
+  padding: 20px 0 20px 0;
+  width: 30%;
+}
+
+#button-on {
+  background-color: #4385f4;
+  color: #ffffff;
+}
+
+#button-off {
+  background-color: #f7f7f7;
+  color: #404040;
+  border-style: none;
+}
+
+#Terms {
+  margin-top: 5%;
+  color: #6d6d6d;
+}
+
+#Login h2 {
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+#Login h4 {
+  margin: 60px 0 20px 0;
+}
+
+#Login .form-control-lg {
+  font-size: 16px;
+  height: 60px;
+}
+
+#Login .form-control-lg:focus {
+  border-radius: 8px;
+  border: solid 1px #4385f4;
+  box-shadow: none;
+}
+
+#Login .button-submit{
+  font-weight: bold;
+  padding: 20px 0px;
+}
+
+#Login .btn-primary:disabled {
+  background-color: #f7f7f7;
+  color: #494949;
+  border-style: none;
 }
 
 button {
   background-color: #4385f4;
   color: #ffffff;
-  border-radius: 3px;
+  border-radius: 6px;
 }
