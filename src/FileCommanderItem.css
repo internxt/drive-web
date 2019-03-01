@@ -6,7 +6,7 @@
     margin: 10px;
     border-radius: 10px;
     border: 1px solid transparent;
-    background-color: #fcfcfc;
+    background-color: transparent;
     box-sizing: border-box;
 }
 
@@ -19,8 +19,7 @@
 
 .FileCommanderItem.selected {
     border-radius: 10px;
-    border: 1px solid #839cff;
-    background-color: #f0f3ff;
+    background-color: #f2f5ff;
     box-sizing: border-box;
 }
 
@@ -38,18 +37,22 @@
     padding-bottom: 11px;
     pointer-events: none;
     text-transform: uppercase;
+    width: 75px;
+
+    box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.07);
+
 }
 
 .FileCommanderItem img {
     margin-top: 50px !important;
     margin-left: 30px !important;
     pointer-events: none;
+    width: 99px;
 }
 
 .FileCommanderItem img, .FileCommanderItem .type {
-    margin: 40px auto;
-    width: 85px;
-    height: 74px;
+    margin: 10px auto;
+    height: 75px;
 }
 
 .FileCommanderItem .name {
@@ -87,9 +90,11 @@
 }
 
 .FileCommanderItem .properties {
+    color: #2a5fc9;
     float: right;
     margin-right: 10px;
     font-size: 20px;
+    font-weight: bold;
     visibility: hidden;
     cursor: pointer;
 }

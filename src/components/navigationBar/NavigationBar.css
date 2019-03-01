@@ -12,3 +12,13 @@
 .btn-primary.dropdown-toggle:focus, .btn-primary.dropdown-toggle:focus {
     box-shadow: 0 0 0 0.2rem transparent !important;
 }
+
+nav {
+}
+.navbar {
+    padding: 0 !important;
+}
+
+nav .navbar-brand {
+    margin: 10px 20px;
+}

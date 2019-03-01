@@ -61,7 +61,7 @@ class NavigationBar extends React.Component {
         return (
             <Navbar className="p-1">
                 <Navbar.Brand>
-                    <img src={logo} width='46' />
+                    <a href="/"><img src={logo} width='46' /></a>
                 </Navbar.Brand>
                 <Nav className="m-auto">
                     {this.state.navbarItems}

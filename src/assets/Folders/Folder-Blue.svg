@@ -1,9 +1,78 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="99" height="78" viewBox="0 0 99 78">
-  <defs>
-    <linearGradient id="folder-blue-a" x1="50%" x2="50%" y1="0%" y2="100%">
-      <stop offset="0%" stop-color="#B3D1FF"/>
-      <stop offset="100%" stop-color="#87B7FF"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="98.66349"
+   height="77.264717"
+   viewBox="0 0 98.66349 77.264717"
+   version="1.1"
+   id="svg3737"
+   sodipodi:docname="Folder-Blue.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
+  <metadata
+     id="metadata3741">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="504"
+     inkscape:window-height="405"
+     id="namedview3739"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="7"
+     inkscape:cx="50.109904"
+     inkscape:cy="44.167908"
+     inkscape:window-x="756"
+     inkscape:window-y="195"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg3737" />
+  <defs
+     id="defs3733">
+    <linearGradient
+       id="folder-blue-a"
+       x1="702.93359"
+       x2="702.93359"
+       y1="109.61232"
+       y2="196.92329"
+       gradientTransform="matrix(1.1300239,0,0,0.88493706,-745,-97)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0%"
+         stop-color="#B3D1FF"
+         id="stop3728" />
+      <stop
+         offset="100%"
+         stop-color="#87B7FF"
+         id="stop3730" />
     </linearGradient>
   </defs>
-  <path fill="url(#folder-blue-a)" fill-rule="evenodd" d="M838.669178,104.684932 C841.426247,104.684932 843.663493,106.91749 843.663493,109.671491 L843.663493,140.305284 L843.663493,171.355863 C843.663493,172.9616 842.359436,174.264721 840.750801,174.264721 L747.912692,174.264721 C746.306358,174.264721 745,172.962381 745,171.355863 L745,140.305284 L745,109.671491 C745,109.560796 745.003606,109.450949 745.010708,109.342062 C745.003606,109.233251 745,109.123489 745,109.012885 L745,101.985105 C745,99.2309234 747.236317,97 749.994954,97 L772.892877,97 C774.896915,97 776.623884,98.1764588 777.419754,99.8747346 C777.421541,99.8610064 778.263176,101.332648 778.633429,101.826292 C779.056431,102.390265 779.020516,102.478345 779.760343,103.182973 C780.575974,103.9598 780.776343,104.042126 781.151796,104.227487 C781.303355,104.302311 781.609433,104.474789 782.094499,104.556078 C782.570567,104.635858 783.142944,104.670599 783.473539,104.684932 L838.669178,104.684932 Z" transform="translate(-745 -97)"/>
+  <path
+     d="m 93.66918,7.68493 c 2.75707,0 4.99431,2.23256 4.99431,4.98656 v 30.63379 31.05058 c 0,1.60574 -1.30405,2.90886 -2.91269,2.90886 H 2.91269 C 1.30636,77.26472 0,75.96238 0,74.35586 V 43.30528 12.67149 C 0,12.5608 0.004,12.45095 0.0107,12.34206 0.0037,12.23325 0,12.12349 0,12.01288 V 4.98511 C 0,2.230923 2.23632,0 4.99495,0 h 22.89793 c 2.00404,0 3.731,1.176459 4.52687,2.874735 0.002,-0.01373 0.84343,1.457915 1.21368,1.951555 0.423,0.56398 0.38709,0.65206 1.12691,1.35668 0.81563,0.77683 1.016,0.85916 1.39146,1.04452 0.15155,0.0748 0.45763,0.2473 0.9427,0.32859 0.47607,0.0798 1.04844,0.11452 1.37904,0.12885 z"
+     id="path3735"
+     inkscape:connector-curvature="0"
+     style="fill:url(#folder-blue-a);fill-rule:evenodd" />
 </svg>
