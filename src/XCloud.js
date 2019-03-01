@@ -5,7 +5,6 @@ import $ from 'jquery';
 import _ from 'lodash';
 import fileDownload from 'js-file-download';
 
-import Header from './Header';
 import FileCommander from './FileCommander';
 import update from 'immutability-helper';
 import Popup from "reactjs-popup";

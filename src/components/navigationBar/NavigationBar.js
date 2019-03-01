@@ -49,8 +49,6 @@ class NavigationBar extends React.Component {
                     <input id="uploadFile" type="file" onChange={props.uploadHandler}/>
                 </Nav>;
         }
-
-
     }
 
     componentDidMount() {
