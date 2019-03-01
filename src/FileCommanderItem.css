@@ -8,6 +8,7 @@
     border: 1px solid transparent;
     background-color: transparent;
     box-sizing: border-box;
+    font-family: 'CircularStd';
 }
 
 .FileCommanderItem:hover {
@@ -40,7 +41,6 @@
     width: 75px;
 
     box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.07);
-
 }
 
 .FileCommanderItem img {
@@ -53,6 +53,7 @@
 .FileCommanderItem img, .FileCommanderItem .type {
     margin: 10px auto;
     height: 75px;
+    margin-bottom: 27px;
 }
 
 .FileCommanderItem .name {
@@ -60,8 +61,6 @@
     font-weight: 500;
     font-style: normal;
     font-stretch: normal;
-    line-height: 18px;
-    letter-spacing: -0.1px;
     text-align: center;
     color: #000000;
     letter-spacing: normal;
