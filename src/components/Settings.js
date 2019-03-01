@@ -33,7 +33,7 @@ class Settings extends React.Component {
     render() {
         return (
             <Container fluid>
-                <NavigationBar navbarItems={<h3>Settings</h3>} showSettingsButton={true} showFileButtons={true} />
+                <NavigationBar navbarItems={<h3>Settings</h3>} showSettingsButton={true} showFileButtons={false} />
                 {this.state.page}
             </Container>
         );

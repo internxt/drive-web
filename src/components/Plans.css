@@ -1,5 +1,6 @@
 .progress {
     border-radius: 0.75rem !important;
+    height: 20px !important;
     /* height: 28px !important; */
 }
 
@@ -33,4 +34,9 @@
     font-size: 18px;
     height: 100px;
     line-height: 90px;
+}
+
+.progress .progress-bar {
+    border-radius: 10px;
+    background-image: linear-gradient(to right, #538dff , #4b66ff);
 }
