@@ -3,8 +3,9 @@
 }
 
 .Login {
-  margin: 40px 25% 0 10%;
+  margin: 40px 22.5% 0 22.5%;
   width: 80%;
+  max-width: 750px;
   position: relative;
   justify-content: center;
   font-family: CircularStd;
@@ -35,22 +36,8 @@
   display: block;
 }
 
-#button-on ,#button-off {
-  font-weight: bold;
-  margin: 0 10px 0 10px;
-  padding: 20px 0 20px 0;
-  width: 30%;
-}
-
-#button-on {
-  background-color: #4385f4;
-  color: #ffffff;
-}
-
-#button-off {
-  background-color: #f7f7f7;
-  color: #404040;
-  border-style: none;
+#button-off:hover, #button-on:hover{
+  box-shadow: 0 0 1pt 1pt #6d6d6d;
 }
 
 #Terms {
@@ -78,19 +65,36 @@
   box-shadow: none;
 }
 
+#Login .button-on {
+  background-color: #4385f4;
+  color: #ffffff;
+}
+
+#Login .button-off {
+  background-color: #f7f7f7;
+  color: #404040;
+  border-style: none;
+}
+
+#Login .button-on , #Login .button-off {
+  font-weight: bold;
+  margin: 0 10px 0 10px;
+  padding: 20px 0 20px 0;
+  width: 30%;
+  border-radius: 5px;
+  box-shadow: none;
+}
+
 #Login .button-submit{
   font-weight: bold;
   padding: 20px 0px;
+  background-color: #4385f4;
+  color: #ffffff;
+  border-radius: 6px;
 }
 
 #Login .btn-primary:disabled {
   background-color: #f7f7f7;
   color: #494949;
   border-style: none;
-}
-
-button {
-  background-color: #4385f4;
-  color: #ffffff;
-  border-radius: 6px;
 }

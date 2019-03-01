@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, ButtonToolbar, Form } from "react-bootstrap";
+import { Button, ButtonToolbar, Form, Col } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import { isMobile } from "react-device-detect";
 
@@ -66,10 +66,21 @@ class Login extends React.Component {
   validateForm = () => {
     let isValid = true;
 
-    if (this.state.email.length < 5) isValid = false;
+    // Email validation
+    if (this.state.email.length < 5 || !this.validateEmail(this.state.email)) isValid = false;
+    // Pass length check
     if (this.state.password.length < 1) isValid = false;
 
     return isValid;
+  }
+
+  validateEmail = (email) => {
+    var re = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+    return re.test(String(email).toLowerCase());
+  }
+
+  goRegister = () => {
+    history.push('/register');
   }
 
   handleChange = event => {
@@ -125,25 +136,32 @@ class Login extends React.Component {
   }
 
   render() {
+    const isValid = this.validateForm();
     return (
-      <div className="Login">
-      <img src={logo} alt="logo" className="Logo" style={{height: 46 ,width: 46}}/>
-      <div className="LoginHeader">
-        <h2> Welcome to X Cloud</h2>
-        <ButtonToolbar>
-            <Button size="lg" id="button-off">Sign in</Button>
-            <Button size="lg" id="button-on" tag={Link} to="/register">Create account</Button>
-          </ButtonToolbar>
-      </div>
-        <Form className="formBlock" onSubmit={this.handleSubmit}>
-          <Form.Group controlId="email">
-            <Form.Control autoFocus required size="lg" type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
-          </Form.Group>
-          <Form.Group controlId="password">
-            <Form.Control required size="lg" type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
-          </Form.Group>
-          <Button size="lg" type="submit" > Login </Button>
-        </Form> 
+      <div>
+        <img src={logo} className="Logo" style={{height: 46 ,width: 46}}/>
+        <div id="Login" className="Login">
+        <div className="LoginHeader">
+          <h2> Welcome to X Cloud</h2>
+          <ButtonToolbar>
+              <Button size="lg" className="button-on">Sign in</Button>
+              <Button size="lg" className="button-off" onClick={this.goRegister}>Create account</Button>
+            </ButtonToolbar>
+            <h4>Enter your details below</h4>
+        </div>
+          <Form className="formBlock" onSubmit={this.handleSubmit}>
+            <Form.Row>
+              <Form.Group as={Col} controlId="email">
+                <Form.Control autoFocus required size="lg" type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
+              </Form.Group>
+              <Form.Group as={Col} controlId="password">
+                <Form.Control required size="lg" type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
+              </Form.Group>
+            </Form.Row>
+            <p id="Terms">By signing in, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
+            <Button className="button-submit" disabled={!isValid} size="lg" type="submit" block> Login </Button>
+          </Form> 
+        </div>
       </div>
     );
   }

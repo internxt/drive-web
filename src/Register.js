@@ -2,6 +2,7 @@ import * as React from "react";
 import { Button, ButtonToolbar, Form, Alert, Col } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 
+import history from './history';
 import "./Login.css";
 import logo from './assets/logo.svg';
 
@@ -53,7 +54,11 @@ class Register extends React.Component {
   validateEmail = (email) => {
     var re = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
     return re.test(String(email).toLowerCase());
-}
+  }
+
+  goLogin = () => {
+    history.push('/login');
+  }
 
   handleChange = event => {
     this.setState({
@@ -130,13 +135,13 @@ class Register extends React.Component {
     const isValid = this.validateForm();
     return (
       <div>
-        <img src={logo} alt="logo" className="Logo" style={{height: 46 ,width: 46}}/>
+        <img src={logo} className="Logo" style={{height: 46 ,width: 46}}/>
         <div id="Login" className="Login">
           <div className="LoginHeader">
             <h2> Welcome to X Cloud </h2>
             <ButtonToolbar>
-              <Button size="lg" id="button-on" tag={Link} to="/login">Sign in</Button>
-              <Button size="lg" id="button-off">Create account</Button>
+              <Button size="lg" className="button-off" onClick={this.goLogin}>Sign in</Button>
+              <Button size="lg" className="button-on">Create account</Button>
             </ButtonToolbar>
             <h4>Enter your details below</h4>
           </div>
