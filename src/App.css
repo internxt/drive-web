@@ -31,6 +31,12 @@
   font-style: normal;
 }
 
+/* Alberto: Since now, all elements in this page
+will have CircularStd as default font. */
+* {
+  font-family: 'CircularStd';
+}
+
 .Alert {
   width: 70%;
 }
