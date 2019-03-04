@@ -101,7 +101,7 @@ class Register extends React.Component {
               email: '',
               password: '',
               confirmPassword: '',
-              validated: true,
+              validated: false,
               isAuthenticated: true, 
               token,
               user 
@@ -112,6 +112,7 @@ class Register extends React.Component {
             // Manage account already exists (error 400)
             const { message } = body;
             alert(message);
+            this.setState({ validated: false });
           })
         }
       })
