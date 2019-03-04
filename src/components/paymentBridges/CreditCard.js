@@ -55,7 +55,7 @@ class CreditCard extends React.Component {
                 {this.state.statusMessage}
 
                 <StripeCheckout
-                    name="Internxt SLU"
+                    name="Internxt SL"
                     description={this.state.planName}
                     image="https://internxt.com/img/logos/internxtcircle.png"
                     currency="EUR"
@@ -64,7 +64,7 @@ class CreditCard extends React.Component {
                     token={this.state.onToken}>
                     
                     <Button
-                        variant="primary" type="submit" block size="lg"
+                        type="submit" block size="lg"
                         className="mt-4">Buy now</Button>
 
                 </StripeCheckout>
