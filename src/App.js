@@ -9,9 +9,6 @@ import Register from './Register';
 import XCloud from './XCloud';
 import Activation from './Activation';
 import NotFound from './NotFound';
-import Maintenance from './Maintenance';
-import Plans from './components/Plans';
-import PayMethods from './components/PayMethods';
 
 import history from './history';
 import {StripeProvider} from 'react-stripe-elements';

@@ -1,7 +1,7 @@
 .key {
   display: flex;
   height: 100vh;
-  margin-top: 25px;
+  margin-top: 75px;
   position: relative;
   justify-content: center;
   font-family: CircularStd;
@@ -19,7 +19,7 @@
 
 .key-inner {
   width: 100%;
-  max-width: 700px;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
 }
@@ -43,10 +43,10 @@
 
 .mnemonic-container {
   width: 100%;
-  height: 73px;
+  height: 85px;
   margin-top: 20px;
   margin-bottom: 50px;
-  padding: 10px 0;
+  padding: 15px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,7 +79,7 @@
 .save-key-options {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .button-save-key {
@@ -87,8 +87,9 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  margin: 0px 15px;
   height: 73px;
-  width: 339px;
+  width: 100%;
   border-radius: 8px;
   border: 1px solid #c9c9c9;
   cursor: pointer;
