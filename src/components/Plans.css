@@ -42,7 +42,7 @@
     font-weight: bold;
     font-size: 18px;
     height: 100px;
-    line-height: 90px;
+    line-height: 60px;
 }
 
 .progress .progress-bar {
@@ -51,7 +51,7 @@
 }
 
 hr {
-    margin: 60px 0px !important;
+    margin: 90px 0px !important;
 }
 
 .delete-account {

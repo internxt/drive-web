@@ -30,24 +30,22 @@ class Plans extends React.Component {
     render() {
         return (
             <Container fluid>
-
-
-                <Container className="mt-3" style={{ maxWidth: '784px' }}>
+                <Container className="mt-5" style={{ maxWidth: '784px' }}>
                     <h2><strong>Storage Space</strong></h2>
                     <p color="#404040" className="mt-3">Used storage space</p>
                     <ProgressBar now={60} />
 
                     <Row className="mt-3">
                         <Col xs={12} md={6} sm={6}>
-                            <Circle color="#007bff" /> Used storage space (8GB)
-                </Col>
+                            <Circle color="#007bff" /> Used storage space
+                        </Col>
 
                         <Col xs={12} md={6} sm={6}>
-                            <Circle color="#e9ecef" /> Unused storage space (1GB)
-                </Col>
+                            <Circle color="#e9ecef" /> Unused storage space
+                        </Col>
                     </Row>
 
-                    <hr className="mt-5" />
+                    <hr />
 
                     <h2 className="mt-4">
                         <strong>Storage Plans</strong>
@@ -62,7 +60,7 @@ class Plans extends React.Component {
                         </Col>)}
                     </Row>
 
-                    <hr />
+                    <hr className="mb-4" />
 
                     <p className="delete-account">Permanently Delete Account</p>
 
