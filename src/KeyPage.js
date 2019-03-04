@@ -48,6 +48,7 @@ class KeyPage extends React.Component {
             history.push('/app')
           } else {
             alert('Wrong mnemonic key entered');
+            history.push('/login');
           }
         } else {
           const mnemonic = bip39.generateMnemonic(256);

@@ -81,8 +81,8 @@ class XCloud extends React.Component {
         this.setState({ isInitialized: true });
         // Set user with new root folder id
         response.json().then( (body) => {
-          const updatedUser = this.props.user;
-          updatedUser.root_folder_id = body.root_folder_id;
+          let updatedUser = this.props.user;
+          updatedUser.root_folder_id = body.user.root_folder_id;
           this.props.handleKeySaved(updatedUser);
         })
       } else {
