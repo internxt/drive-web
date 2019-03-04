@@ -64,7 +64,7 @@ class Plans extends React.Component {
 
                     <hr />
 
-                    <p>Permanently Delete Account</p>
+                    <p className="delete-account">Permanently Delete Account</p>
 
                 </Container>
 

@@ -21,11 +21,20 @@
     height: 100%;
     line-height: 70px;
     vertical-align: middle !important;
+    color: #404040 !important;
+}
+
+.card p {
+    color: black !important;
 }
 
 .card-header:hover {
     background-color: #4da3ff !important;
     cursor: pointer;
+}
+
+.card-header:hover > h2 {
+    color: white !important;
 }
 
 .card-text {
@@ -39,4 +48,13 @@
 .progress .progress-bar {
     border-radius: 10px;
     background-image: linear-gradient(to right, #538dff , #4b66ff);
+}
+
+hr {
+    margin: 60px 0px !important;
+}
+
+.delete-account {
+    color: #474747;
+    font-size: 15px;
 }

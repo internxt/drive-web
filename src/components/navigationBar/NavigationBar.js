@@ -57,7 +57,7 @@ class NavigationBar extends React.Component {
 
     render() {
         return (
-            <Navbar className="p-1">
+            <Navbar className="p-1" id="mainNavBar">
                 <Navbar.Brand>
                     <a href="/"><img src={logo} width='46' /></a>
                 </Navbar.Brand>

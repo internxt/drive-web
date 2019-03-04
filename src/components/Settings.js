@@ -3,6 +3,7 @@ import { Container } from 'react-bootstrap';
 import Plans from './Plans';
 import NavigationBar from './navigationBar/NavigationBar';
 import PayMethods from './PayMethods';
+import "./Settings.css"
 
 
 class Settings extends React.Component {
@@ -33,7 +34,7 @@ class Settings extends React.Component {
     render() {
         return (
             <Container fluid>
-                <NavigationBar navbarItems={<h3>Settings</h3>} showSettingsButton={true} showFileButtons={false} />
+                <NavigationBar navbarItems={<h5>Settings</h5>} showSettingsButton={true} showFileButtons={false} />
                 {this.state.page}
             </Container>
         );
