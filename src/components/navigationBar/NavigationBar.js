@@ -32,7 +32,8 @@ class NavigationBar extends React.Component {
                     <Dropdown.Toggle><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
                     <Dropdown.Menu>
                         <Dropdown.Item><a href="#">Settings</a></Dropdown.Item>
-                        <Dropdown.Item onClick={(e) => { localStorage.clear(); }}>Logout</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={(e) => { localStorage.clear(); }}>Sign out</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>;
         }

@@ -9,3 +9,29 @@ h2, h5 {
 body {
     color: #404040 !important;
 }
+
+.dropdown-menu {
+    border-radius: 20px !important;
+    box-shadow: 0px 1px 10px 1px rgba(0,0,0,0.1);
+    width: 200px !important;
+    left: -150px !important;
+    top: 25px !important;
+}
+
+.dropdown-item {
+    color: black;
+    font-weight: bold !important;
+    padding: 0px 25px !important;
+}
+
+.dropdown-item:hover {
+    background-color: transparent !important;
+}
+
+.dropdown-item a {
+    color: black;
+}
+
+.dropdown-item a:hover {
+    text-decoration: none;
+}
