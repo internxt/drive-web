@@ -45,7 +45,7 @@ class Plans extends React.Component {
                         </Col>
                     </Row>
 
-                    <hr />
+                    <hr className="mt-5 mb-5" />
 
                     <h2 className="mt-4">
                         <strong>Storage Plans</strong>
@@ -55,12 +55,12 @@ class Plans extends React.Component {
                         {this.state.PlanDetails.map(entry => <Col xs={12} md={4} sm={6}>
                             <Card onClick={(e) => { this.props.planHandler(entry); }}>
                                 <Card.Header><h2>{entry.name}</h2></Card.Header>
-                                <Card.Text>{entry.price_eur === 0 ? 'Free' : '€' + entry.price_eur + ' per month'}</Card.Text>
+                                <Card.Text>{entry.price_eur == 0 ? 'Free' : '€' + entry.price_eur + ' per month'}</Card.Text>
                             </Card>
                         </Col>)}
                     </Row>
 
-                    <hr className="mb-4" />
+                    <hr className="mb-2" />
 
                     <p className="delete-account">Permanently Delete Account</p>
 

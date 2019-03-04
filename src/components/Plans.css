@@ -1,20 +1,20 @@
-.progress {
-    border-radius: 0.75rem !important;
-    height: 23px !important;
+.settings .progress {
+    border-radius: 0.75rem;
+    height: 23px;
     /* height: 28px !important; */
 }
 
-.card {
-    border: solid 0px !important;
+.settings .card {
+    border: solid 0px;
 }
 
 .card-header {
-    background-color: #f5f5f5 !important;
+    background-color: #f5f5f5;
     text-align: center;
-    border: solid 0px !important;
-    border-radius: 10px !important;
+    border: solid 0px;
+    border-radius: 10px;
     height: 100px;
-    vertical-align: middle !important;
+    vertical-align: middle;
 }
 
 .card-header h2 {
@@ -33,6 +33,11 @@
     cursor: pointer;
 }
 
+.settings .card-header > h2 {
+    color: #707070 !important;
+    font-weight: bolder;
+}
+
 .card-header:hover > h2 {
     color: white !important;
 }
@@ -48,10 +53,6 @@
 .progress .progress-bar {
     border-radius: 10px;
     background-image: linear-gradient(to right, #538dff , #4b66ff);
-}
-
-hr {
-    margin: 90px 0px !important;
 }
 
 .delete-account {
