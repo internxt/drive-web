@@ -33,7 +33,7 @@ class NavigationBar extends React.Component {
                     <Dropdown.Menu>
                         <Dropdown.Item><a href="#">Settings</a></Dropdown.Item>
                         <Dropdown.Divider />
-                        <Dropdown.Item onClick={(e) => { localStorage.clear(); }}>Sign out</Dropdown.Item>
+                        <Dropdown.Item onClick={(e) => { localStorage.clear(); window.location.reload();  }}>Sign out</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>;
         }
