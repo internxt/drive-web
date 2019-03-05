@@ -45,7 +45,7 @@ class Plans extends React.Component {
                         </Col>
                     </Row>
 
-                    <hr className="mt-5 mb-5" />
+                    <hr className="settings-hr-first" />
 
                     <h2 className="mt-4">
                         <strong>Storage Plans</strong>
@@ -60,7 +60,7 @@ class Plans extends React.Component {
                         </Col>)}
                     </Row>
 
-                    <hr className="mb-2" />
+                    <hr className="settings-hr-end" />
 
                     <p className="delete-account">Permanently Delete Account</p>
 

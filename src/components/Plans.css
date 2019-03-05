@@ -34,7 +34,7 @@
 }
 
 .settings .card-header > h2 {
-    color: #707070 !important;
+    color: #a0a0a0 !important;
     font-weight: bolder;
 }
 
@@ -58,4 +58,12 @@
 .delete-account {
     color: #9a9a9a;
     font-size: 15px;
+}
+
+.settings-hr-first {
+    margin: 70px 0px;
+}
+
+.settings-hr-end {
+    margin: 20px 0px 20px;
 }
