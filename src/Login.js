@@ -91,12 +91,36 @@ class Login extends React.Component {
     });
   }
 
-  handleSubmit = event => {
+  captchaLaunch = event => {
+    event.preventDefault();
+    this.recaptchaRef.current.execute();
+  }
+
+  resolveCaptcha = captchaToken => {
+    const headers = this.setHeaders();
+    
+    fetch('/api/captcha/' + captchaToken, {
+      method: 'POST',
+      headers
+    }).then(response => {
+      if (response.status == 200) {
+        // Manage succesfull login
+        response.json().then( (body) => {
+          if (body.success) return true;
+          else return false;
+        })
+      }
+    }).catch(err => {
+      console.error("Captcha validation error. ", err);
+    });
+  }
+
+  handleSubmit = captchaToken => {
     event.preventDefault();
 
-    // Captcha execution
-    this.recaptchaRef.current.execute();
-    
+    // Captcha resolution
+    const res = this.resolveCaptcha(captchaToken)
+      
     const headers = this.setHeaders();
     // Proceed with submit
     fetch("/api/login", {
@@ -154,7 +178,7 @@ class Login extends React.Component {
             </ButtonToolbar>
             <h4>Enter your details below</h4>
         </div>
-          <Form className="formBlock" onSubmit={this.handleSubmit}>
+          <Form className="formBlock" onSubmit={this.captchaLaunch}>
             <Form.Row>
               <Form.Group as={Col} controlId="email">
                 <Form.Control autoFocus required size="lg" type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
@@ -166,6 +190,7 @@ class Login extends React.Component {
             <ReCAPTCHA sitekey="6Lf4_xsUAAAAAAEEhth1iM8LjyUn6gse-z0Y7iEp"
               ref={this.recaptchaRef}
               size="invisible"
+              onChange={this.handleSubmit}
             />
             <p id="Terms">By signing in, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
             <Button className="button-submit" disabled={!isValid} size="lg" type="submit" block> Login </Button>
