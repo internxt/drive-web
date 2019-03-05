@@ -100,7 +100,7 @@ class Login extends React.Component {
     const headers = this.setHeaders();
     
     fetch('/api/captcha/' + captchaToken, {
-      method: 'POST',
+      method: 'GET',
       headers
     }).then(response => {
       if (response.status == 200) {
