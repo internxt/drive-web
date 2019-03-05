@@ -116,8 +116,6 @@ class Login extends React.Component {
   }
 
   handleSubmit = captchaToken => {
-    event.preventDefault();
-
     // Captcha resolution
     const res = this.resolveCaptcha(captchaToken)
       
