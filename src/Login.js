@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Button, ButtonToolbar, Form, Col } from "react-bootstrap";
-import { Link } from 'react-router-dom';
 import { isMobile } from "react-device-detect";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import history from './history';
 import "./Login.css";
@@ -18,6 +18,8 @@ class Login extends React.Component {
       token: "",
       user: {}
     };
+
+    this.recaptchaRef = React.createRef();
   }
 
   componentDidMount() {
@@ -92,6 +94,9 @@ class Login extends React.Component {
   handleSubmit = event => {
     event.preventDefault();
 
+    // Captcha execution
+    this.recaptchaRef.current.execute();
+    
     const headers = this.setHeaders();
     // Proceed with submit
     fetch("/api/login", {
@@ -158,6 +163,10 @@ class Login extends React.Component {
                 <Form.Control required size="lg" type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
               </Form.Group>
             </Form.Row>
+            <ReCAPTCHA sitekey="6Lf4_xsUAAAAAAEEhth1iM8LjyUn6gse-z0Y7iEp"
+              ref={this.recaptchaRef}
+              size="invisible"
+            />
             <p id="Terms">By signing in, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
             <Button className="button-submit" disabled={!isValid} size="lg" type="submit" block> Login </Button>
           </Form> 

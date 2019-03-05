@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Button, ButtonToolbar, Form, Alert, Col } from "react-bootstrap";
 import { Link } from 'react-router-dom';
+import ReCAPTCHA from "react-google-recaptcha";
 
 import history from './history';
 import "./Login.css";
@@ -21,6 +22,8 @@ class Register extends React.Component {
       validated: false,
       user: {}
     };
+
+    this.recaptchaRef = React.createRef();
   }
 
   setHeaders = () => {
@@ -73,6 +76,8 @@ class Register extends React.Component {
     if (form.checkValidity() === false || this.validateForm() == false) {
       event.stopPropagation();
     }
+    this.recaptchaRef.execute();
+    
     event.preventDefault();
     this.setState({ validated: true })
 
@@ -170,6 +175,10 @@ class Register extends React.Component {
                 <Form.Control required size="lg" type="password" placeholder="Confirm your password" value={this.state.confirmPassword} onChange={this.handleChange} />
               </Form.Group>
             </Form.Row>
+            <ReCAPTCHA sitekey="6Lf4_xsUAAAAAAEEhth1iM8LjyUn6gse-z0Y7iEp"
+              ref={this.recaptchaRef}
+              size="invisible"
+            />
             <p id="Terms">By creating an account, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
             <Button className="button-submit" disabled={!isValid} size="lg" type="submit" block> Continue </Button>
           </Form> 
