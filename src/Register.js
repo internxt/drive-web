@@ -63,67 +63,93 @@ class Register extends React.Component {
     history.push('/login');
   }
 
+  captchaLaunch = event => {
+    const form = event.currentTarget;
+    event.preventDefault();
+
+    // Form validation
+    if (form.checkValidity() === false || this.validateForm() == false) {
+      event.stopPropagation();
+    }
+    this.setState({ validated: true })
+
+    // Captcha execution
+    this.recaptchaRef.current.execute();
+  }
+
+  resolveCaptcha = captchaToken => {
+    const headers = this.setHeaders();
+    return new Promise((resolve, reject) => {
+      fetch('/api/captcha/' + captchaToken, {
+        method: 'GET',
+        headers
+      }).then(response => { resolve(response); })
+      .catch(err => {
+        console.error("Captcha validation error. ", err);
+        reject(err);
+      });
+    });
+  }
+
   handleChange = event => {
     this.setState({
       [event.target.id]: event.target.value
     });
   }
 
-  handleSubmit = event => {
-    const form = event.currentTarget;
-    
-    // Form validation
-    if (form.checkValidity() === false || this.validateForm() == false) {
-      event.stopPropagation();
-    }
-    this.recaptchaRef.execute();
-    
-    event.preventDefault();
-    this.setState({ validated: true })
+  handleSubmit = captchaToken => {
+    // Captcha resolution
+    const captchaPromise = this.resolveCaptcha(captchaToken) 
+    captchaPromise.then(response => response.json())
+    .then((resolved) => {
+      if (resolved.success) {
+        const headers = this.setHeaders();
 
-    const headers = this.setHeaders();
-
-    fetch("/api/register", {
-      method: "post",
-      headers,
-      body: JSON.stringify({ 
-        name: this.state.name,
-        lastname: this.state.lastname,
-        email: this.state.email, 
-        password: this.state.password
-      })
-    }).then(response => {
-        if (response.status == 200) {
-          response.json().then( (body) => {
-            // Manage succesfull register
-            const { token, user } = body;
-            localStorage.setItem('xToken',token);
-            
-            // Clear form fields
-            this.setState({ 
-              name: '',
-              lastname: '',
-              email: '',
-              password: '',
-              confirmPassword: '',
-              validated: false,
-              isAuthenticated: true, 
-              token,
-              user 
-            });
-          });
-        } else {
-          response.json().then( (body) => {
-            // Manage account already exists (error 400)
-            const { message } = body;
-            alert(message);
-            this.setState({ validated: false });
+        fetch("/api/register", {
+          method: "post",
+          headers,
+          body: JSON.stringify({ 
+            name: this.state.name,
+            lastname: this.state.lastname,
+            email: this.state.email, 
+            password: this.state.password
           })
-        }
-      })
-      .catch(err => {
-        console.error("Register error", err);
-      });
+        }).then(response => {
+            if (response.status == 200) {
+              response.json().then( (body) => {
+                // Manage succesfull register
+                const { token, user } = body;
+                localStorage.setItem('xToken',token);
+                
+                // Clear form fields
+                this.setState({ 
+                  name: '',
+                  lastname: '',
+                  email: '',
+                  password: '',
+                  confirmPassword: '',
+                  validated: false,
+                  isAuthenticated: true, 
+                  token,
+                  user 
+                });
+              });
+            } else {
+              response.json().then( (body) => {
+                // Manage account already exists (error 400)
+                const { message } = body;
+                alert(message);
+                this.setState({ validated: false });
+              })
+            }
+          })
+          .catch(err => {
+            console.error("Register error", err);
+          });
+      }
+    }).catch(error => {
+      console.error('Captcha validation error: ' + error);
+    });
   }
 
   clearFields = () => {
@@ -155,7 +181,7 @@ class Register extends React.Component {
             <Alert.Heading>Account registered succesfully!</Alert.Heading>
             <p> Now you need to go to your mail and follow instructions on activation email for start using X Cloud. </p>
           </Alert>
-          <Form className="formBlock" noValidate validated={validated} onSubmit={this.handleSubmit}>
+          <Form className="formBlock" noValidate validated={validated} onSubmit={this.captchaLaunch}>
             <Form.Row>
               <Form.Group as={Col} controlId="name">
                 <Form.Control autoFocus required size="lg" placeholder="First Name" value={this.state.name} onChange={this.handleChange}/>
@@ -178,6 +204,7 @@ class Register extends React.Component {
             <ReCAPTCHA sitekey="6Lf4_xsUAAAAAAEEhth1iM8LjyUn6gse-z0Y7iEp"
               ref={this.recaptchaRef}
               size="invisible"
+              onChange={this.handleSubmit}
             />
             <p id="Terms">By creating an account, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
             <Button className="button-submit" disabled={!isValid} size="lg" type="submit" block> Continue </Button>

@@ -98,68 +98,71 @@ class Login extends React.Component {
 
   resolveCaptcha = captchaToken => {
     const headers = this.setHeaders();
-    
-    fetch('/api/captcha/' + captchaToken, {
-      method: 'GET',
-      headers
-    }).then(response => {
-      if (response.status == 200) {
-        // Manage succesfull login
-        response.json().then( (body) => {
-          if (body.success) return true;
-          else return false;
-        })
-      }
-    }).catch(err => {
-      console.error("Captcha validation error. ", err);
+    return new Promise((resolve, reject) => {
+      fetch('/api/captcha/' + captchaToken, {
+        method: 'GET',
+        headers
+      }).then(response => { resolve(response); })
+      .catch(err => {
+        console.error("Captcha validation error. ", err);
+        reject(err);
+      });
     });
   }
 
   handleSubmit = captchaToken => {
     // Captcha resolution
-    const res = this.resolveCaptcha(captchaToken)
-      
-    const headers = this.setHeaders();
-    // Proceed with submit
-    fetch("/api/login", {
-      method: "post",
-      headers,
-      body: JSON.stringify({ email: this.state.email, password: this.state.password})
+    const captchaPromise = this.resolveCaptcha(captchaToken) 
+    captchaPromise.then(response => response.json())
+    .then((resolved) => {
+      if (resolved.success) {
+        const headers = this.setHeaders();
+        // Proceed with submit
+        fetch("/api/login", {
+          method: "post",
+          headers,
+          body: JSON.stringify({ email: this.state.email, password: this.state.password})
+        })
+        .then(response => {
+            if (response.status == 200) {
+              // Manage succesfull login
+              response.json().then( (body) => {
+                const user = { 
+                  email: this.state.email,  
+                  mnemonic: body.user.mnemonic,
+                  root_folder_id: body.user.root_folder_id,
+                  storeMnemonic: body.user.storeMnemonic 
+                };
+                this.props.handleKeySaved(user)
+                localStorage.setItem('xToken',body.token);
+                if (body.user.mnemonic && body.user.storeMnemonic == true) localStorage.setItem('xMnemonic', body.user.mnemonic);
+                localStorage.setItem('xUser', JSON.stringify(user));
+                this.setState({ 
+                  isAuthenticated: true, 
+                  token: body.token,
+                  user: user
+                })
+              });
+            } else if(response.status == 400) {
+              // Manage other cases:
+              // username / password do not match, user activation required...
+              response.json().then( (body) => {
+                alert(body.message);
+              });
+            } else {
+              // Manage user does not exist
+              alert("This account doesn't exists");
+            }
+        })
+          .catch(err => {
+            console.error("Login error. " + err);
+        });
+      }
+    }).catch((error) => {
+      console.error('Captcha validation error: ' + error);
     })
-    .then(response => {
-        if (response.status == 200) {
-          // Manage succesfull login
-          response.json().then( (body) => {
-            const user = { 
-              email: this.state.email,  
-              mnemonic: body.user.mnemonic,
-              root_folder_id: body.user.root_folder_id,
-              storeMnemonic: body.user.storeMnemonic 
-            };
-            this.props.handleKeySaved(user)
-            localStorage.setItem('xToken',body.token);
-            if (body.user.mnemonic && body.user.storeMnemonic == true) localStorage.setItem('xMnemonic', body.user.mnemonic);
-            localStorage.setItem('xUser', JSON.stringify(user));
-            this.setState({ 
-              isAuthenticated: true, 
-              token: body.token,
-              user: user
-            })
-          });
-        } else if(response.status == 400) {
-          // Manage other cases:
-          // username / password do not match, user activation required...
-          response.json().then( (body) => {
-            alert(body.message);
-          });
-        } else {
-          // Manage user does not exist
-          alert("This account doesn't exists");
-        }
-    })
-      .catch(err => {
-        console.error("Login error. ", err);
-    });
+    // After login
+    this.recaptchaRef.current.reset();
   }
 
   render() {
