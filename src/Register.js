@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, ButtonToolbar, Form, Alert, Col } from "react-bootstrap";
+import { Button, ButtonToolbar, Form, Modal, Col } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import ReCAPTCHA from "react-google-recaptcha";
 
@@ -17,7 +17,7 @@ class Register extends React.Component {
       email: '',
       password: '',
       confirmPassword: '',
-      isAuthenticated: false,
+      showModal: false,
       token: "",
       validated: false,
       user: {}
@@ -97,6 +97,10 @@ class Register extends React.Component {
     });
   }
 
+  handleHide = () => {
+    this.setState({ showModal: false });
+  };
+
   handleSubmit = captchaToken => {
     // Captcha resolution
     const captchaPromise = this.resolveCaptcha(captchaToken) 
@@ -129,7 +133,7 @@ class Register extends React.Component {
                   password: '',
                   confirmPassword: '',
                   validated: false,
-                  isAuthenticated: true, 
+                  showModal: true, 
                   token,
                   user 
                 });
@@ -177,10 +181,15 @@ class Register extends React.Component {
             </ButtonToolbar>
             <h4>Enter your details below</h4>
           </div>
-          <Alert className="formAlert" variant="success" show={this.state.isAuthenticated}>
-            <Alert.Heading>Account registered succesfully!</Alert.Heading>
-            <p> Now you need to go to your mail and follow instructions on activation email for start using X Cloud. </p>
-          </Alert>
+          <Modal dialogClassName="modal-custom" show={this.state.showModal} onHide={this.handleHide}>
+          <Modal.Header closeButton/>
+          <Modal.Body>
+            <h1>You're nearly there...</h1>
+            <p>
+              Please check your email and follow the instructions from us to activate you account so you can start using X Cloud.
+            </p>
+          </Modal.Body>
+        </Modal>
           <Form className="formBlock" noValidate validated={validated} onSubmit={this.captchaLaunch}>
             <Form.Row>
               <Form.Group as={Col} controlId="name">

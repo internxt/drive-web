@@ -28,12 +28,32 @@
   width: 100%;
 }
 
-.formAlert {
-  width: 100%;
-}
-
 .btn-toolbar {
   display: block;
+}
+
+.modal-custom {
+  max-width: 90% !important;
+  min-height: 20%;
+}
+
+.modal-custom .modal-content {
+  height: 100%;
+}
+
+.modal-custom .modal-body {
+  text-align: center;
+  margin: 0px 15%;
+  padding: 50px 0 100px 0;
+}
+
+.modal-custom h1 {
+  font-weight: bold;
+}
+
+.modal-custom p {
+  font-size: 18px;
+  color: #404040;
 }
 
 #button-off:hover, #button-on:hover{
