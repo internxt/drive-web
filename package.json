@@ -12,6 +12,7 @@
     "js-file-download": "^0.4.1",
     "lodash": "^4.17.10",
     "moment": "^2.24.0",
+    "prettysize": "^2.0.0",
     "react": "^16.8.1",
     "react-bootstrap": "^1.0.0-beta.5",
     "react-device-detect": "^1.6.2",

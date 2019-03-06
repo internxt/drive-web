@@ -4,6 +4,8 @@ import { Container, Row, ProgressBar, Col, Card } from "react-bootstrap";
 import './Plans.css'
 import Circle from "./Circle";
 
+import PrettySize from 'prettysize';
+
 class Plans extends React.Component {
 
     constructor(props) {
@@ -74,7 +76,7 @@ class Plans extends React.Component {
             <Container fluid>
                 <Container className="mt-5" style={{ maxWidth: '784px' }}>
                     <h2><strong>Storage Space</strong></h2>
-                    <p color="#404040" className="mt-3">Used storage space</p>
+                    <p color="#404040" className="mt-3" style={{textAlign: 'right'}}>Used {PrettySize(this.state.barUsage)} of {PrettySize(this.state.barLimit)}</p>
                     <ProgressBar now={this.state.barUsage} max={this.state.barLimit}  />
 
                     <Row className="mt-3">
