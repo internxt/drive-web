@@ -131,3 +131,8 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.popover-body p {
+  font-size: 18px;
+  color: #979797;
+}

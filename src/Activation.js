@@ -23,7 +23,7 @@ class Activation extends React.Component {
         method: "GET",
       }
     ).then(response => {
-      if(response.status == 200) {
+      if(response.status === 200) {
         // Successfull activation
         this.setState({ isActivated: true });
       } else {

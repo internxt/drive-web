@@ -1,8 +1,10 @@
 import * as React from "react";
+import { Popover, OverlayTrigger } from 'react-bootstrap';
 
 import history from "./history";
 import copyIcon from "./assets/Dashboard-Icons/Copy.svg";
 import infoIcon from "./assets/Dashboard-Icons/Info.svg";
+import infoOnIcon from "./assets/Dashboard-Icons/InfoOn.svg";
 import { copyToClipboard } from "./utils";
 import "./KeyPage.css";
 
@@ -10,11 +12,15 @@ const bip39 = require('bip39')
 const SAVE_OPTIONS = [
   {
     label: "I have copied and saved my key",
-    value: "USER" // do nothing. user will save pass manually
+    value: "USER", // do nothing. user will save pass manually
+    tooltip: "This is the most secure option to store your files in the cloud. By choosing this option, your files are encrypted and only you store the decryption key. However, if you lose your decryption key, you will lose access to your files. Make sure your key is stored securely and safely.",
+    ref: React.createRef()
   },
   {
     label: "I want to save my key online",
-    value: "ONLINE" // save on server
+    value: "ONLINE", // save on server
+    tooltip: "This option is what the most current secure cloud storage providers use. By choosing this option, we use your password to encrypt your file encryption and decryption keys. We never have access to your files since your password is needed to decrypt your files.",
+    ref: React.createRef()
   }
 ];
 
@@ -24,40 +30,43 @@ class KeyPage extends React.Component {
     this.state = {
       mnemonic: '',
       saveOptionSelected: null,
-      chooserModalOpen: false
+      chooserModalOpen: false,
+      infoIcons: [infoIcon, infoIcon]
     };
     this.handleRepeatClick = this.handleCopyToClipboard.bind(this);
   }
 
   componentDidMount() {
-    // Check user authentication and redirect to login if necessary
-    if (this.props.isAuthenticated) {
-      // In case user has activated storeMnemonic option, store on local and continue to X Cloud
-      if (this.props.user.storeMnemonic == true && this.props.user.mnemonic) {
-        localStorage.setItem('xMnemonic', this.props.user.mnemonic);
-      }
-      const xMnemonic = localStorage.getItem('xMnemonic');
+    const mnemonic = bip39.generateMnemonic(256);
+    this.setState({ mnemonic })
+    // // Check user authentication and redirect to login if necessary
+    // if (this.props.isAuthenticated) {
+    //   // In case user has activated storeMnemonic option, store on local and continue to X Cloud
+    //   if (this.props.user.storeMnemonic == true && this.props.user.mnemonic) {
+    //     localStorage.setItem('xMnemonic', this.props.user.mnemonic);
+    //   }
+    //   const xMnemonic = localStorage.getItem('xMnemonic');
 
-      if (xMnemonic) {
-        history.push('/app')
-      } else {
-        // If storageMnemonic is set, ask for mnenomic. If not, ask user to select option
-        if (this.props.user.storeMnemonic == false && this.props.user.mnemonic) {
-          let inputMnemonic = prompt("Please enter yout mnemonic key");
-          if (inputMnemonic == this.props.user.mnemonic) {
-            history.push('/app')
-          } else {
-            alert('Wrong mnemonic key entered');
-            history.push('/login');
-          }
-        } else {
-          const mnemonic = bip39.generateMnemonic(256);
-          this.setState({ mnemonic })
-        }
-      }
-    } else {
-      history.push('/login');
-    }
+    //   if (xMnemonic) {
+    //     history.push('/app')
+    //   } else {
+    //     // If storageMnemonic is set, ask for mnenomic. If not, ask user to select option
+    //     if (this.props.user.storeMnemonic == false && this.props.user.mnemonic) {
+    //       let inputMnemonic = prompt("Please enter yout mnemonic key");
+    //       if (inputMnemonic == this.props.user.mnemonic) {
+    //         history.push('/app')
+    //       } else {
+    //         alert('Wrong mnemonic key entered');
+    //         history.push('/login');
+    //       }
+    //     } else {
+    //       const mnemonic = bip39.generateMnemonic(256);
+    //       this.setState({ mnemonic })
+    //     }
+    //   }
+    // } else {
+    //   history.push('/login');
+    // }
   }
 
   setHeaders = () => {
@@ -81,12 +90,20 @@ class KeyPage extends React.Component {
     this.setState({ saveOptionSelected });
   }
 
+  handleInfoClick = (index) => {
+    let newIcon = infoIcon;
+    if (this.state.infoIcons[index] === infoIcon) newIcon = infoOnIcon;
+    let newIconState = this.state.infoIcons;
+    newIconState[index] = newIcon;
+    this.setState({ infoIcons: newIconState });
+  }
+
   handleContinueClick = () => {
     let optionSelected = false;
     if (!this.state.saveOptionSelected) return;
 
     // Redirect user without saving mnemonic
-    if (this.state.saveOptionSelected != "USER") { optionSelected = true; }
+    if (this.state.saveOptionSelected !== "USER") { optionSelected = true; }
 
     this.updateStorageOption(optionSelected);
     history.push('/app')
@@ -103,7 +120,7 @@ class KeyPage extends React.Component {
         option: option
       })
     }).then(response => {
-      if (response.status == 200) {
+      if (response.status === 200) {
         response.json().then( (body) => {
           // When true option is set, save mnemonic locally. When is false, delete mnemonic
           if (option) {
@@ -153,14 +170,23 @@ class KeyPage extends React.Component {
                 const selected =
                 this.state.saveOptionSelected === option.value ? "selected" : "";
                 return (
-                  <div
-                    key={index}
-                    onClick={() => this.handleSaveOptionClick(option.value)}
-                    className={`button-save-key ${selected}`}
-                  >
-                    <span className="label">{option.label}</span>
-                    <img src={infoIcon} alt="Info" className="icon-info" />
-                  </div>
+                    <div
+                      key={index}
+                      ref={option.ref}
+                      onClick={() => this.handleSaveOptionClick(option.value)}
+                      className={`button-save-key ${selected}`}
+                    >
+                      <span className="label">{option.label}</span>
+                      <OverlayTrigger
+                        trigger="click" key='top' placement='top'
+                        overlay={
+                          <Popover className="popover-tooltip">
+                            <p>{option.tooltip}</p>
+                          </Popover>
+                      }>
+                       <img src={this.state.infoIcons[index]} alt="Info" className="icon-info" onClick={() => this.handleInfoClick(index)}/>
+                      </OverlayTrigger>
+                    </div>
                 );
               })}
             </div>

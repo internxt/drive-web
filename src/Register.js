@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Button, ButtonToolbar, Form, Modal, Col } from "react-bootstrap";
-import { Link } from 'react-router-dom';
 import ReCAPTCHA from "react-google-recaptcha";
 
 import history from './history';
@@ -49,7 +48,7 @@ class Register extends React.Component {
     // Pass length check
     if (this.state.password.length < 1 && this.state.confirmPassword.length < 1) isValid = false;
     // Pass and confirm pass validation
-    if (this.state.password != this.state.confirmPassword) isValid = false;
+    if (this.state.password !== this.state.confirmPassword) isValid = false;
 
     return isValid;
   }
@@ -68,7 +67,7 @@ class Register extends React.Component {
     event.preventDefault();
 
     // Form validation
-    if (form.checkValidity() === false || this.validateForm() == false) {
+    if (form.checkValidity() === false || this.validateForm() === false) {
       event.stopPropagation();
     }
     this.setState({ validated: true })
@@ -119,7 +118,7 @@ class Register extends React.Component {
             password: this.state.password
           })
         }).then(response => {
-            if (response.status == 200) {
+            if (response.status === 200) {
               response.json().then( (body) => {
                 // Manage succesfull register
                 const { token, user } = body;
@@ -186,7 +185,7 @@ class Register extends React.Component {
           <Modal.Body>
             <h1>You're nearly there...</h1>
             <p>
-              Please check your email and follow the instructions from us to activate you account so you can start using X Cloud.
+              Please check your email and follow the instructions from us to activate your account so you can start using X Cloud.
             </p>
           </Modal.Body>
         </Modal>

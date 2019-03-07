@@ -11,6 +11,8 @@ import Popup from "reactjs-popup";
 import history from './history';
 import "./App.css";
 import NavigationBar from "./components/navigationBar/NavigationBar";
+import { resolve } from "dns";
+import { rejects } from "assert";
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -43,10 +45,15 @@ class XCloud extends React.Component {
         if (isActivated) {
           if (!this.props.user.root_folder_id) {
             // Initialize user in case that is not done yet
-            this.userInitialization();
-          }
+            this.userInitialization().then((resultId) => {
+              this.getFolderContent(resultId);
+            }).catch((error) => {
+              const errorMsg = error ? error : '';
+              alert('User initialization error ' + errorMsg);
+              history.push('/login');
+            })
+          } else { this.getFolderContent(this.props.user.root_folder_id); }
           
-          this.getFolderContent(this.props.user.root_folder_id);
           this.setState({ isActivated, isInitialized: true });
         }
       }).catch(error => {
@@ -69,28 +76,26 @@ class XCloud extends React.Component {
   }
 
   userInitialization = () => {
-    fetch('/api/initialize', {
-      method: "post",
-      headers: { "content-type": "application/json; charset=utf-8" },
-      body: JSON.stringify({ 
-        email: this.props.user.email
-      })
-    }).then( response => {
-      if (response.status == 200) {
-        // Successfull intialization
-        this.setState({ isInitialized: true });
-        // Set user with new root folder id
-        response.json().then( (body) => {
-          let updatedUser = this.props.user;
-          updatedUser.root_folder_id = body.user.root_folder_id;
-          this.props.handleKeySaved(updatedUser);
+    return new Promise((resolve, reject) => {
+      fetch('/api/initialize', {
+        method: "post",
+        headers: { "content-type": "application/json; charset=utf-8" },
+        body: JSON.stringify({ 
+          email: this.props.user.email
         })
-      } else {
-        alert('User initialization error');
-        history.push('/login');
-      }
-    }).catch(error => {
-      console.error('User initialization error: ' + error);
+      }).then( response => {
+        if (response.status === 200) {
+          // Successfull intialization
+          this.setState({ isInitialized: true });
+          // Set user with new root folder id
+          response.json().then( (body) => {
+            let updatedUser = this.props.user;
+            updatedUser.root_folder_id = body.user.root_folder_id;
+            this.props.handleKeySaved(updatedUser);
+            resolve(body.user.root_folder_id);
+          })
+        } else { reject(null); }
+      }).catch(error => { reject(error); });
     });
   }
 

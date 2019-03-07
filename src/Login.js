@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Button, ButtonToolbar, Form, Col } from "react-bootstrap";
-import { isMobile } from "react-device-detect";
 import ReCAPTCHA from "react-google-recaptcha";
 
 import history from './history';
@@ -29,7 +28,7 @@ class Login extends React.Component {
 
     if (user) { 
       this.props.handleKeySaved(user)
-      if (user.storeMnemonic == true && mnemonic) {
+      if (user.storeMnemonic === true && mnemonic) {
         // Case of login and mnemonic loaded from server
         history.push('/app')
       } else {
@@ -40,9 +39,9 @@ class Login extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.state.isAuthenticated == true && this.state.token && this.state.user) {
+    if (this.state.isAuthenticated === true && this.state.token && this.state.user) {
       const mnemonic = localStorage.getItem('xMnemonic');
-      if (this.state.user.storeMnemonic == true && mnemonic) {
+      if (this.state.user.storeMnemonic === true && mnemonic) {
         // Case of login and mnemonic loaded from server
         history.push('/app')
       } else {
@@ -103,10 +102,7 @@ class Login extends React.Component {
         method: 'GET',
         headers
       }).then(response => { resolve(response); })
-      .catch(err => {
-        console.error("Captcha validation error. ", err);
-        reject(err);
-      });
+      .catch(err => { reject(err); });
     });
   }
 
@@ -124,7 +120,7 @@ class Login extends React.Component {
           body: JSON.stringify({ email: this.state.email, password: this.state.password})
         })
         .then(response => {
-            if (response.status == 200) {
+            if (response.status === 200) {
               // Manage succesfull login
               response.json().then( (body) => {
                 const user = { 
@@ -135,7 +131,7 @@ class Login extends React.Component {
                 };
                 this.props.handleKeySaved(user)
                 localStorage.setItem('xToken',body.token);
-                if (body.user.mnemonic && body.user.storeMnemonic == true) localStorage.setItem('xMnemonic', body.user.mnemonic);
+                if (body.user.mnemonic && body.user.storeMnemonic === true) localStorage.setItem('xMnemonic', body.user.mnemonic);
                 localStorage.setItem('xUser', JSON.stringify(user));
                 this.setState({ 
                   isAuthenticated: true, 
@@ -143,7 +139,7 @@ class Login extends React.Component {
                   user: user
                 })
               });
-            } else if(response.status == 400) {
+            } else if(response.status === 400) {
               // Manage other cases:
               // username / password do not match, user activation required...
               response.json().then( (body) => {
