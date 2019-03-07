@@ -37,36 +37,34 @@ class KeyPage extends React.Component {
   }
 
   componentDidMount() {
-    const mnemonic = bip39.generateMnemonic(256);
-    this.setState({ mnemonic })
-    // // Check user authentication and redirect to login if necessary
-    // if (this.props.isAuthenticated) {
-    //   // In case user has activated storeMnemonic option, store on local and continue to X Cloud
-    //   if (this.props.user.storeMnemonic == true && this.props.user.mnemonic) {
-    //     localStorage.setItem('xMnemonic', this.props.user.mnemonic);
-    //   }
-    //   const xMnemonic = localStorage.getItem('xMnemonic');
+    // Check user authentication and redirect to login if necessary
+    if (this.props.isAuthenticated) {
+      // In case user has activated storeMnemonic option, store on local and continue to X Cloud
+      if (this.props.user.storeMnemonic == true && this.props.user.mnemonic) {
+        localStorage.setItem('xMnemonic', this.props.user.mnemonic);
+      }
+      const xMnemonic = localStorage.getItem('xMnemonic');
 
-    //   if (xMnemonic) {
-    //     history.push('/app')
-    //   } else {
-    //     // If storageMnemonic is set, ask for mnenomic. If not, ask user to select option
-    //     if (this.props.user.storeMnemonic == false && this.props.user.mnemonic) {
-    //       let inputMnemonic = prompt("Please enter yout mnemonic key");
-    //       if (inputMnemonic == this.props.user.mnemonic) {
-    //         history.push('/app')
-    //       } else {
-    //         alert('Wrong mnemonic key entered');
-    //         history.push('/login');
-    //       }
-    //     } else {
-    //       const mnemonic = bip39.generateMnemonic(256);
-    //       this.setState({ mnemonic })
-    //     }
-    //   }
-    // } else {
-    //   history.push('/login');
-    // }
+      if (xMnemonic) {
+        history.push('/app')
+      } else {
+        // If storageMnemonic is set, ask for mnenomic. If not, ask user to select option
+        if (this.props.user.storeMnemonic == false && this.props.user.mnemonic) {
+          let inputMnemonic = prompt("Please enter yout mnemonic key");
+          if (inputMnemonic == this.props.user.mnemonic) {
+            history.push('/app')
+          } else {
+            alert('Wrong mnemonic key entered');
+            history.push('/login');
+          }
+        } else {
+          const mnemonic = bip39.generateMnemonic(256);
+          this.setState({ mnemonic })
+        }
+      }
+    } else {
+      history.push('/login');
+    }
   }
 
   setHeaders = () => {
