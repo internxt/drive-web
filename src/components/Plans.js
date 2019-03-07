@@ -4,17 +4,24 @@ import { Container, Row, ProgressBar, Col, Card } from "react-bootstrap";
 import './Plans.css'
 import Circle from "./Circle";
 
+import PrettySize from 'prettysize';
+
 class Plans extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            PlanDetails: []
+            PlanDetails: [],
+            barLimit: 1024* 1024* 1024,
+            barUsage: 0
         }
     }
 
     componentDidMount() {
+
+        // Load current plans
+
         fetch('/api/plans', {
             method: 'post'
         }).then(response => {
@@ -24,6 +31,43 @@ class Plans extends React.Component {
                 PlanDetails: pay
             });
         });
+
+        // Load current usage
+
+        let user = JSON.parse(localStorage.xUser).email;
+
+
+
+        fetch('/api/limit', {
+            method: 'post',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+                email: user
+            })
+        }
+        ).then(res => {
+            return res.json();
+        }).then(res2 => {
+            this.setState({ barLimit: res2.total })
+        }).catch(err => {
+            console.log(err);
+        });
+
+        fetch('/api/usage', {
+            method: 'post',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+                email: user
+            })
+        }
+        ).then(res => {
+            return res.json();
+        }).then(res2 => {
+            this.setState({ barUsage: res2.total })
+        }).catch(err => {
+            console.log(err);
+        });
+
     }
 
 
@@ -32,8 +76,8 @@ class Plans extends React.Component {
             <Container fluid>
                 <Container className="mt-5" style={{ maxWidth: '784px' }}>
                     <h2><strong>Storage Space</strong></h2>
-                    <p color="#404040" className="mt-3">Used storage space</p>
-                    <ProgressBar now={60} />
+                    <p color="#404040" className="mt-3" style={{textAlign: 'right'}}>Used {PrettySize(this.state.barUsage)} of {PrettySize(this.state.barLimit)}</p>
+                    <ProgressBar now={this.state.barUsage} max={this.state.barLimit}  />
 
                     <Row className="mt-3">
                         <Col xs={12} md={6} sm={6}>
