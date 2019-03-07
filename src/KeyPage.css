@@ -135,4 +135,6 @@
 .popover-body p {
   font-size: 18px;
   color: #979797;
+  margin: 15px 15px;
+  text-align: justify;
 }
