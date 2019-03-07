@@ -15,6 +15,7 @@ import share from '../../assets/Dashboard-Icons/Share.svg';
 import HeaderButton from '../../HeaderButton';
 
 import "./NavigationBar.css";
+import history from '../../history';
 
 
 class NavigationBar extends React.Component {
@@ -31,7 +32,7 @@ class NavigationBar extends React.Component {
                 <Dropdown drop="left" className="settingsButton">
                     <Dropdown.Toggle><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
                     <Dropdown.Menu>
-                        <Dropdown.Item>Settings</Dropdown.Item>
+                        <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={(e) => { localStorage.clear(); window.location.reload();  }}>Sign out</Dropdown.Item>
                     </Dropdown.Menu>
