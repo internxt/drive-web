@@ -5,6 +5,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import history from './history';
 import "./Login.css";
 import logo from './assets/logo.svg';
+import { encryptText } from './utils';
 
 class Login extends React.Component {
   constructor(props) {
@@ -117,7 +118,7 @@ class Login extends React.Component {
         fetch("/api/login", {
           method: "post",
           headers,
-          body: JSON.stringify({ email: this.state.email, password: this.state.password})
+          body: JSON.stringify({ email: this.state.email, password: encryptText(this.state.password) })
         })
         .then(response => {
             if (response.status === 200) {
