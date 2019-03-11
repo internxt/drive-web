@@ -5,9 +5,7 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
-import history from './history';
-
-// Router history for navigate through components
+import history from './history'; // Router history for navigate through components
 
 ReactDOM.render(
     <Router history={history}>
