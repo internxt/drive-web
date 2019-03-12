@@ -5,10 +5,9 @@ import history from "./history";
 import copyIcon from "./assets/Dashboard-Icons/Copy.svg";
 import infoIcon from "./assets/Dashboard-Icons/Info.svg";
 import infoOnIcon from "./assets/Dashboard-Icons/InfoOn.svg";
-import { copyToClipboard } from "./utils";
+import { copyToClipboard, decryptTextWithKey } from "./utils";
 import "./KeyPage.css";
 
-const bip39 = require('bip39')
 const SAVE_OPTIONS = [
   {
     label: "I have copied and saved my key",
@@ -58,7 +57,7 @@ class KeyPage extends React.Component {
             history.push('/login');
           }
         } else {
-          const mnemonic = bip39.generateMnemonic(256);
+          const mnemonic = this.props.user.mnemonic;
           this.setState({ mnemonic })
         }
       }
@@ -122,7 +121,13 @@ class KeyPage extends React.Component {
         response.json().then( (body) => {
           // When true option is set, save mnemonic locally. When is false, delete mnemonic
           if (option) {
-            localStorage.setItem('xMnemonic', body.mnemonic);
+            // Check if mnemonic is on local storage or user props
+            const mnemonicExists = this.props.user.mnemonic || localStorage.getItem('xMnemonic');
+            if (!mnemonicExists) {
+              const pass = prompt('Please enter your password for decrypt and store your mnemonic: ');
+              const mnemonicDecrypted = decryptTextWithKey(body.mnemonic, pass);
+              localStorage.setItem('xMnemonic', mnemonicDecrypted);
+            }
           } else {
             localStorage.removeItem('xMnemonic');
           }

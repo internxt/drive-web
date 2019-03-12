@@ -81,7 +81,8 @@ class XCloud extends React.Component {
         method: "post",
         headers: { "content-type": "application/json; charset=utf-8" },
         body: JSON.stringify({ 
-          email: this.props.user.email
+          email: this.props.user.email,
+          mnemonic: this.props.user.mnemonic
         })
       }).then( response => {
         if (response.status === 200) {

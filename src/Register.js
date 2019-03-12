@@ -5,7 +5,9 @@ import ReCAPTCHA from "react-google-recaptcha";
 import history from './history';
 import "./Login.css";
 import logo from './assets/logo.svg';
-import { encryptText, passToHash } from './utils';
+import { encryptText, encryptTextWithKey ,passToHash } from './utils';
+
+const bip39 = require('bip39');
 
 class Register extends React.Component {
   constructor(props) {
@@ -109,10 +111,13 @@ class Register extends React.Component {
       if (resolved.success) {
         const headers = this.setHeaders();
 
-        //Setup hash and salt 
+        // Setup hash and salt 
         const hashObj = passToHash({ password: this.state.password });
         const encPass = encryptText(hashObj.hash);
         const encSalt = encryptText(hashObj.salt);
+        // Setup mnemonic
+        const mnemonic = bip39.generateMnemonic(256);
+        const encMnemonic = encryptTextWithKey(mnemonic, this.state.password);
 
         fetch("/api/register", {
           method: "post",
@@ -122,6 +127,7 @@ class Register extends React.Component {
             lastname: this.state.lastname,
             email: this.state.email, 
             password: encPass,
+            mnemonic: encMnemonic,
             salt: encSalt
           })
         }).then(response => {

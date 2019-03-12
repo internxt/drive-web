@@ -5,7 +5,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import history from './history';
 import "./Login.css";
 import logo from './assets/logo.svg';
-import { encryptText } from './utils';
+import { encryptText, decryptTextWithKey } from './utils';
 
 class Login extends React.Component {
   constructor(props) {
@@ -126,13 +126,13 @@ class Login extends React.Component {
               response.json().then( (body) => {
                 const user = { 
                   email: this.state.email,  
-                  mnemonic: body.user.mnemonic,
+                  mnemonic: decryptTextWithKey(body.user.mnemonic, this.state.password),
                   root_folder_id: body.user.root_folder_id,
                   storeMnemonic: body.user.storeMnemonic 
                 };
                 this.props.handleKeySaved(user)
                 localStorage.setItem('xToken',body.token);
-                if (body.user.mnemonic && body.user.storeMnemonic === true) localStorage.setItem('xMnemonic', body.user.mnemonic);
+                if (user.mnemonic && body.user.storeMnemonic === true) localStorage.setItem('xMnemonic', user.mnemonic);
                 localStorage.setItem('xUser', JSON.stringify(user));
                 this.setState({ 
                   isAuthenticated: true, 
