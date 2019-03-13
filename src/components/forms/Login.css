@@ -48,6 +48,7 @@
 
 .modal-custom img {
   margin: 100px 0;
+  cursor: pointer;
 }
 
 .modal-custom .modal-body {

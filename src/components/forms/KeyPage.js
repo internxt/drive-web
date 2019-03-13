@@ -36,8 +36,11 @@ class KeyPage extends React.Component {
   }
 
   componentDidMount() {
+    const user = localStorage.getItem('xUser');
     // Check user authentication and redirect to login if necessary
-    if (this.props.isAuthenticated) {
+    if (this.props.isAuthenticated || user) {
+      // When exists user in local but isAuthenticated is not true, set props
+      if (!this.props.isAuthenticated) { this.props.handleKeySaved(user); }
       // In case user has activated storeMnemonic option, store on local and continue to X Cloud
       if (this.props.user.storeMnemonic === true && this.props.user.mnemonic) {
         localStorage.setItem('xMnemonic', this.props.user.mnemonic);

@@ -20,7 +20,7 @@ class Register extends React.Component {
       email: '',
       password: '',
       confirmPassword: '',
-      showModal: false,
+      showModal: true,
       token: "",
       validated: false,
       user: {}
