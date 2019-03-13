@@ -151,15 +151,18 @@ class XCloud extends React.Component {
           selectedItems: []
         });
         if (updateNamePath) {
-          const folderName = data.name.includes("root") ? "Home" : data.name;
-          this.setState({
-            namePath: this.pushNamePath({
-              name: folderName,
-              id: data.id,
-              bucket: data.bucket
-            }),
-            isAuthorized: true
-          });
+          // Only push path if it is not the same as actual path
+          if (this.state.namePath.length === 0 || (this.state.namePath[this.state.namePath.length - 1].id !== data.id)) {
+            const folderName = data.name.includes("root") ? "Home" : data.name;
+            this.setState({
+              namePath: this.pushNamePath({
+                name: folderName,
+                id: data.id,
+                bucket: data.bucket
+              }),
+              isAuthorized: true
+            });
+          }
         }
       });
   }
