@@ -2,12 +2,12 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
-import KeyPage from './KeyPage';
+import KeyPage from './components/forms/KeyPage';
 import './App.css';
-import Login from './Login';
-import Register from './Register';
-import XCloud from './XCloud';
-import Activation from './Activation';
+import Login from './components/forms/Login';
+import Register from './components/forms/Register';
+import XCloud from './components/xcloud/XCloud';
+import Activation from './components/forms/Activation';
 import NotFound from './NotFound';
 
 import history from './history';

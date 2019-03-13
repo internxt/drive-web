@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Popover, OverlayTrigger } from 'react-bootstrap';
 
-import history from "./history";
-import copyIcon from "./assets/Dashboard-Icons/Copy.svg";
-import infoIcon from "./assets/Dashboard-Icons/Info.svg";
-import infoOnIcon from "./assets/Dashboard-Icons/InfoOn.svg";
-import { copyToClipboard, decryptTextWithKey } from "./utils";
+import history from "../../history";
+import copyIcon from "../../assets/Dashboard-Icons/Copy.svg";
+import infoIcon from "../../assets/Dashboard-Icons/Info.svg";
+import infoOnIcon from "../../assets/Dashboard-Icons/InfoOn.svg";
+import { copyToClipboard, decryptTextWithKey } from "../../utils";
 import "./KeyPage.css";
 
 const SAVE_OPTIONS = [

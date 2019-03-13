@@ -8,9 +8,9 @@ import fileDownload from 'js-file-download';
 import FileCommander from './FileCommander';
 import update from 'immutability-helper';
 import Popup from "reactjs-popup";
-import history from './history';
-import "./App.css";
-import NavigationBar from "./components/navigationBar/NavigationBar";
+import history from '../../history';
+import "../../App.css";
+import NavigationBar from "../navigationBar/NavigationBar";
 import { resolve } from "dns";
 import { rejects } from "assert";
 

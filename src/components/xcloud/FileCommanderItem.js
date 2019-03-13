@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './FileCommanderItem.css';
-import icon from './assets/Folders/Folder-Blue.svg'
+import icon from '../../assets/Folders/Folder-Blue.svg'
 
 class FileCommanderItem extends React.Component {
     constructor(props, state) {

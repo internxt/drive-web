@@ -2,11 +2,11 @@ import * as React from "react";
 import { Button, ButtonToolbar, Form, Modal, Col } from "react-bootstrap";
 import ReCAPTCHA from "react-google-recaptcha";
 
-import history from './history';
+import history from '../../history';
 import "./Login.css";
-import logo from './assets/logo.svg';
-import closeTabIcon from './assets/Dashboard-Icons/Close\ tab.svg';
-import { encryptText, encryptTextWithKey ,passToHash } from './utils';
+import logo from '../../assets/logo.svg';
+import closeTabIcon from '../../assets/Dashboard-Icons/Close\ tab.svg';
+import { encryptText, encryptTextWithKey ,passToHash } from '../../utils';
 
 const bip39 = require('bip39');
 

@@ -2,8 +2,8 @@ import * as React from "react";
 import { Link } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
 
-import history from './history';
-import "./App.css";
+import history from '../../history';
+import "../../App.css";
 
 class Activation extends React.Component {
   constructor(props) {

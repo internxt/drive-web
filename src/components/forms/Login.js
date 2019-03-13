@@ -2,10 +2,10 @@ import * as React from "react";
 import { Button, ButtonToolbar, Form, Col } from "react-bootstrap";
 import ReCAPTCHA from "react-google-recaptcha";
 
-import history from './history';
+import history from '../../history';
 import "./Login.css";
-import logo from './assets/logo.svg';
-import { encryptText, decryptTextWithKey } from './utils';
+import logo from '../../assets/logo.svg';
+import { encryptText, decryptTextWithKey } from '../../utils';
 
 class Login extends React.Component {
   constructor(props) {
