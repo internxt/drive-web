@@ -12,9 +12,7 @@ class Settings extends React.Component {
         super(props);
 
         this.state = {
-            // First loaded, shows space usage and plans.
-            // Reference to payMethodLoaded from child component to parent.
-            page: <Plans planHandler={this.payMethodLoader} />
+            page: null
         }
 
     }
@@ -23,6 +21,12 @@ class Settings extends React.Component {
         // Check auth and redirect to login if necessary
         if (!this.props.isAuthenticated) {
             history.push('/login');
+        } else {
+            // First loaded, shows space usage and plans.
+            // Reference to payMethodLoaded from child component to parent.
+            this.setState({
+                page: <Plans planHandler={this.payMethodLoader} />
+            });
         }
     }
 
