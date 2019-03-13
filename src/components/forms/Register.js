@@ -146,7 +146,7 @@ class Register extends React.Component {
                   password: '',
                   confirmPassword: '',
                   validated: false,
-                  showModal: true, 
+                  showModal: false, 
                   token,
                   user 
                 });
