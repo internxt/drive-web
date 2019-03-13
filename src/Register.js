@@ -5,6 +5,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import history from './history';
 import "./Login.css";
 import logo from './assets/logo.svg';
+import closeTabIcon from './assets/Dashboard-Icons/Close\ tab.svg';
 import { encryptText, encryptTextWithKey ,passToHash } from './utils';
 
 const bip39 = require('bip39');
@@ -193,9 +194,9 @@ class Register extends React.Component {
             </ButtonToolbar>
             <h4>Enter your details below</h4>
           </div>
-          <Modal dialogClassName="modal-custom" show={this.state.showModal} onHide={this.handleHide}>
-          <Modal.Header closeButton/>
+          <Modal dialogClassName="modal-custom" fade={false} show={this.state.showModal}>
           <Modal.Body>
+            <img src={closeTabIcon} onClick={this.handleHide}/>
             <h1>You're nearly there...</h1>
             <p>
               Please check your email and follow the instructions from us to activate your account so you can start using X Cloud.

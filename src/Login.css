@@ -33,27 +33,40 @@
 }
 
 .modal-custom {
-  max-width: 90% !important;
+  width: 100%;
+  margin: 0 !important;
   min-height: 20%;
+  height: 100%;
+  max-width: 100% !important;
 }
 
 .modal-custom .modal-content {
   height: 100%;
+  border-radius: 0;
+  border-style: none;
+}
+
+.modal-custom img {
+  margin: 100px 0;
 }
 
 .modal-custom .modal-body {
   text-align: center;
   margin: 0px 15%;
-  padding: 50px 0 100px 0;
+  padding: 50px 25px 100px 25px;
 }
 
 .modal-custom h1 {
   font-weight: bold;
+  color: #000000;
 }
 
 .modal-custom p {
   font-size: 18px;
   color: #404040;
+  margin: auto;
+  width: 50%;
+  opacity: 0.84;
 }
 
 #button-off:hover, #button-on:hover{
