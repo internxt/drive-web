@@ -42,7 +42,7 @@ class FileCommander extends React.Component {
                     }
                     {
                         <div id="FileCommander-path">
-                            {(this.state.namePath.length > 1 ? this.state.namePath[this.state.namePath.length - 1].name : "All files")}
+                            {(this.state.namePath.length > 1 ? this.state.namePath[this.state.namePath.length - 1].name : "Home")}
                         </div>
                     }
                 </div>
