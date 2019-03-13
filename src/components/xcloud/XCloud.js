@@ -345,7 +345,7 @@ class XCloud extends React.Component {
         )
       }
       // User not activated
-      if (this.state.isActivated == false) {
+      if (this.state.isActivated === false) {
         return (
           <div className="App">
             <Alert variant="danger">

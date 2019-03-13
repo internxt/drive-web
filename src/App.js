@@ -45,7 +45,9 @@ class App extends Component {
             handleKeySaved={this.handleKeySaved}/> 
           }/>
           <Route path='/activations/:token' render={ (props) => <Activation {...props} /> }/>
-          <Route path='/settings' render={ (props) => <Settings /> }/> 
+          <Route path='/settings' render={ (props) => <Settings {...props} 
+            isAuthenticated={this.state.isAuthenticated}/> 
+          }/> 
           <Route exact path='/keyPage' render={ (props) => <KeyPage {...props}
             isAuthenticated={this.state.isAuthenticated}
             user={this.state.user} 

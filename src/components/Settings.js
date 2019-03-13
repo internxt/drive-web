@@ -3,7 +3,8 @@ import { Container } from 'react-bootstrap';
 import Plans from './Plans';
 import NavigationBar from './navigationBar/NavigationBar';
 import PayMethods from './PayMethods';
-import "./Settings.css"
+import "./Settings.css";
+import history from '../history';
 
 
 class Settings extends React.Component {
@@ -18,6 +19,13 @@ class Settings extends React.Component {
 
     }
 
+    componentDidMount() {
+        // Check auth and redirect to login if necessary
+        if (!this.props.isAuthenticated) {
+            history.push('/login');
+        }
+    }
+
     payMethodLoader = (plan) => {
         console.log(plan);
         if (plan.stripe_plan_id != null) {
@@ -25,10 +33,6 @@ class Settings extends React.Component {
                 page: <PayMethods choosedPlan={plan} />
             });
         }
-    }
-
-    componentDidMount() {
-
     }
 
     render() {
