@@ -30,7 +30,8 @@ class XCloud extends React.Component {
       currentFolderBucket: null,
       currentCommanderItems: [],
       namePath: [],
-      selectedItems: []
+      selectedItems: [],
+      sortFunction: null
     };
   }
 
@@ -111,6 +112,12 @@ class XCloud extends React.Component {
     .catch(error => error)
   }
 
+  setSortFunction = (newSortFunc) => {
+    // Set new sort function on state and call getFolderContent for refresh files list
+    this.setState({ sortFunction: newSortFunc });
+    this.getFolderContent(this.state.currentFolderId);
+  }
+
   createFolder = () => {
     var folderName = prompt("Please enter folder name");
     var headers = this.setHeaders();
@@ -141,11 +148,15 @@ class XCloud extends React.Component {
       .then(response => response.json())
       .then(data => {
         this.deselectAll();
+        // Set new items list and apply sort function if is set
+        let newCommanderFolders = _.map(data.children, o => _.extend({ type: "Folder" }, o))
+        let newCommanderFiles = data.files;
+        if (this.state.sortFunction) {
+          newCommanderFolders.sort(this.state.sortFunction);
+          newCommanderFiles.sort(this.state.sortFunction);
+        }
         this.setState({
-          currentCommanderItems: _.concat(
-            _.map(data.children, o => _.extend({ type: "Folder" }, o)),
-            data.files
-          ),
+          currentCommanderItems: _.concat(newCommanderFolders, newCommanderFiles),
           currentFolderId: data.id,
           currentFolderBucket: data.bucket,
           selectedItems: []
@@ -310,6 +321,7 @@ class XCloud extends React.Component {
           selectCommanderItem={this.selectCommanderItem}
           namePath={this.state.namePath}
           handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
+          setSortFunction={this.setSortFunction}
         />
         <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >
           <div>

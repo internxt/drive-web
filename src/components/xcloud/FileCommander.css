@@ -37,3 +37,47 @@
     margin: 0 auto;
     height: 50vh;
 }
+
+#FileCommander-path .btn {
+    background-color: #ffffff;
+    color: #000000;
+    box-shadow: none;
+    border-style: none;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+#FileCommander-path .dropdown-toggle::after {
+    content: none;
+}
+
+#FileCommander-path .dropdown-toggle img {
+    visibility: hidden;
+    margin-left: 5px;
+}
+
+#FileCommander-path :hover .dropdown-toggle img {
+    visibility: visible;
+}
+
+#FileCommander-path .dropdown-menu {
+    left: -35px !important;
+    border-radius: 14px;
+    border-style: none;
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
+}
+
+#FileCommander-path .dropdown-item {
+    margin: 15px -5px 20px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    padding-left: 0px;
+}
+
+#FileCommander-path .dropdown-item:first-child {
+    margin-top: 5px;
+} 
+
+#FileCommander-path .dropdown-item:last-child {
+    margin-bottom: 5px;
+}

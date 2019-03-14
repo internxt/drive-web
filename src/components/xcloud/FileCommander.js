@@ -1,8 +1,21 @@
 // import * as _ from 'lodash'
 import * as React from 'react'
+import { Dropdown } from 'react-bootstrap'
+
 import './FileCommander.css'
 import FileCommanderItem from './FileCommanderItem';
 import * as moment from 'moment'
+import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown\ arrow.svg';
+
+const SORT_TYPES = {
+    DATE_ADDED : 'Date_Added',
+    SIZE_ASC : 'Size_Asc',
+    SIZE_DESC : 'Size_Desc',
+    NAME_ASC : 'Name_Asc',
+    NAME_DESC : 'Name_Desc',
+    FILETYPE_ASC : 'File_Type_Asc',
+    FILETYPE_DESC : 'File_Type_Asc'
+};
 
 class FileCommander extends React.Component {
     constructor(props, state) {
@@ -26,7 +39,42 @@ class FileCommander extends React.Component {
         }
     }
 
+    sortItems = (sortType) => {
+        // Sort commander file items depending on option selected
+        let sortFunc = null;
+        switch (sortType) {
+            case SORT_TYPES.DATE_ADDED:
+            // At this time, default order is date added
+                break;
+            case SORT_TYPES.FILETYPE_ASC:
+                sortFunc = function(a, b) { return a.type > b.type };
+                break;
+            case SORT_TYPES.FILETYPE_DESC:
+                sortFunc = function(a, b) { return a.type < b.type };
+                break;
+            case SORT_TYPES.NAME_ASC:
+                sortFunc = function(a, b) { return a.name.localeCompare(b.name) };
+                break;
+            case SORT_TYPES.NAME_DESC:
+                sortFunc = function(a, b) { return b.name.localeCompare(a.name) };
+                break;
+            case SORT_TYPES.SIZE_ASC:
+                sortFunc = function(a, b) { return a.size > b.size };
+                break;
+            case SORT_TYPES.SIZE_DESC:
+                sortFunc = function(a, b) { return a.size < b.size };
+                break;
+            default:
+                break;
+        }
+        this.props.setSortFunction(sortFunc);
+    }
 
+    onSelect = (eventKey, event) => { 
+        if (event.target.active) {
+            event.target.active = event.target.active ? false : true;
+        } 
+    }
 
     render() {
         const list = this.state.currentCommanderItems || 0
@@ -42,7 +90,19 @@ class FileCommander extends React.Component {
                     }
                     {
                         <div id="FileCommander-path">
-                            {(this.state.namePath.length > 1 ? this.state.namePath[this.state.namePath.length - 1].name : "Home")}
+                            <Dropdown className="dropdownButton">
+                                <Dropdown.Toggle>
+                                    {(this.state.namePath.length > 1 ? this.state.namePath[this.state.namePath.length - 1].name : "Home")}
+                                    <img src={DropdownArrowIcon}/>
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item onClick={() => this.sortItems(SORT_TYPES.DATE_ADDED)} onSelect={this.onSelect} active>Date Added</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => this.sortItems(SORT_TYPES.SIZE_ASC)}>Size</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => this.sortItems(SORT_TYPES.NAME_ASC)}>Name</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => this.sortItems(SORT_TYPES.FILETYPE_ASC)}>File Type</Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            
                         </div>
                     }
                 </div>
