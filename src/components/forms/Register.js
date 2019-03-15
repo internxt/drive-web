@@ -29,6 +29,22 @@ class Register extends React.Component {
     this.recaptchaRef = React.createRef();
   }
 
+  componentDidMount() {
+    const xUser = JSON.parse(localStorage.getItem('xUser'));
+    const xToken = localStorage.getItem('xToken');
+    const haveInfo = (xUser && xToken);
+    if (this.state.isAuthenticated === true || haveInfo) {
+      const mnemonic = localStorage.getItem('xMnemonic');
+      if (mnemonic) {
+        // Case of login and mnemonic loaded from server
+        history.push('/app')
+      } else {
+        // Case of login and mnemonic loaded from server
+        history.push('/KeyPage')
+      }
+    }
+  }
+
   setHeaders = () => {
     let headers = {
       Authorization: `Bearer ${localStorage.getItem("xToken")}`,
