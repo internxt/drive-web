@@ -21,11 +21,12 @@ class FileCommander extends React.Component {
     constructor(props, state) {
         super(props, state);
         this.state = {
-            currentCommanderItems: this.props.currentCommanderItems,
             // currentPath: [0, 'subFolders'],
             // allFolders: this.props.folderTree,
-            namePath: this.props.namePath,
             // activeParent: {folder:'', bucket: '', name: ''}
+            currentCommanderItems: this.props.currentCommanderItems,
+            namePath: this.props.namePath,
+            selectedSortType: SORT_TYPES.DATE_ADDED
         }
         this.myRef = React.createRef()
     }
@@ -71,9 +72,12 @@ class FileCommander extends React.Component {
     }
 
     onSelect = (eventKey, event) => { 
-        if (event.target.active) {
-            event.target.active = event.target.active ? false : true;
-        } 
+        // Change active class to option selected only if its not the currently active
+        if (!event.target.className.includes('active')) {
+            document.getElementById(this.state.selectedSortType).className = document.getElementById(this.state.selectedSortType).className.split(" ")[0];
+            event.target.className = event.target.className + ' active';
+            this.setState({ selectedSortType: event.target.id })
+        }
     }
 
     render() {
@@ -96,10 +100,10 @@ class FileCommander extends React.Component {
                                     <img src={DropdownArrowIcon}/>
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                    <Dropdown.Item onClick={() => this.sortItems(SORT_TYPES.DATE_ADDED)} onSelect={this.onSelect} active>Date Added</Dropdown.Item>
-                                    <Dropdown.Item onClick={() => this.sortItems(SORT_TYPES.SIZE_ASC)}>Size</Dropdown.Item>
-                                    <Dropdown.Item onClick={() => this.sortItems(SORT_TYPES.NAME_ASC)}>Name</Dropdown.Item>
-                                    <Dropdown.Item onClick={() => this.sortItems(SORT_TYPES.FILETYPE_ASC)}>File Type</Dropdown.Item>
+                                    <Dropdown.Item id={SORT_TYPES.DATE_ADDED} onClick={() => this.sortItems(SORT_TYPES.DATE_ADDED)} onSelect={this.onSelect} active>Date Added</Dropdown.Item>
+                                    <Dropdown.Item id={SORT_TYPES.SIZE_ASC} onClick={() => this.sortItems(SORT_TYPES.SIZE_ASC)} onSelect={this.onSelect}>Size</Dropdown.Item>
+                                    <Dropdown.Item id={SORT_TYPES.NAME_ASC} onClick={() => this.sortItems(SORT_TYPES.NAME_ASC)} onSelect={this.onSelect}>Name</Dropdown.Item>
+                                    <Dropdown.Item id={SORT_TYPES.FILETYPE_ASC} onClick={() => this.sortItems(SORT_TYPES.FILETYPE_ASC)} onSelect={this.onSelect}>File Type</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                             

@@ -74,6 +74,11 @@
     padding-left: 0px;
 }
 
+#FileCommander-path .dropdown-item.active {
+    background: none;
+    color: #0054ff;
+} 
+
 #FileCommander-path .dropdown-item:first-child {
     margin-top: 5px;
 } 
