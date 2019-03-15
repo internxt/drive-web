@@ -66,21 +66,18 @@ class XCloud extends React.Component {
   setHeaders = () => {
     let headers = {
       Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-      "content-type": "application/json; charset=utf-8"
+      "content-type": "application/json; charset=utf-8",
+      "internxt-mnemonic": localStorage.getItem("xMnemonic")
     };
-    if (!this.props.user.mnemonic) {
-      headers = Object.assign(headers, {
-        "internxt-mnemonic": localStorage.getItem("xMnemonic")
-      });
-    }
     return headers;
   }
 
   userInitialization = () => {
+    const headers = this.setHeaders();
     return new Promise((resolve, reject) => {
       fetch('/api/initialize', {
         method: "post",
-        headers: { "content-type": "application/json; charset=utf-8" },
+        headers,
         body: JSON.stringify({ 
           email: this.props.user.email,
           mnemonic: this.props.user.mnemonic
@@ -119,15 +116,15 @@ class XCloud extends React.Component {
   }
 
   createFolder = () => {
-    var folderName = prompt("Please enter folder name");
-    var headers = this.setHeaders();
+    const folderName = prompt("Please enter folder name");
+    const headers = this.setHeaders();
     if (folderName != null) {
       fetch(`/api/storage/folder`, {
         method: "post",
-        headers: headers,
+        headers,
         body: JSON.stringify({
           parentFolderId: this.state.currentFolderId,
-          folderName: folderName
+          folderName
         })
       }).then(() => {
         this.getFolderContent(this.state.currentFolderId, false);
@@ -143,7 +140,7 @@ class XCloud extends React.Component {
     const headers = this.setHeaders();
     fetch(`/api/storage/folder/${rootId}`, {
       method: "get",
-      headers: headers
+      headers
     })
       .then(response => response.json())
       .then(data => {
@@ -182,7 +179,7 @@ class XCloud extends React.Component {
     const headers = this.setHeaders();
     fetch(`/api/storage/file/${id}`, {
       method: "get",
-      headers: headers
+      headers
     }).then(async (data) => {
       if (data.status === 402){
         this.setState({rateLimitModal: true})
@@ -200,12 +197,12 @@ class XCloud extends React.Component {
 
   uploadFile = (e) => {
     const data = new FormData();
-    const headers = this.setHeaders();
+    let headers = this.setHeaders();
     delete headers['content-type'];
     data.append('xfile', e.target.files[0]);
     fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
       method: "post",
-      headers: headers,
+      headers,
       body: data
     }).then((response) => {
       if (response.status === 402){
@@ -222,7 +219,7 @@ class XCloud extends React.Component {
     const headers = this.setHeaders();
     const fetchOptions = {
       method: "DELETE",
-      headers: headers
+      headers
     };
     if (selectedItems.length === 0) return;
     const deletionRequests = _.map(selectedItems, (v, i) => {

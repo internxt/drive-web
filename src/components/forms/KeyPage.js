@@ -54,6 +54,8 @@ class KeyPage extends React.Component {
         if (this.props.user.storeMnemonic === false && this.props.user.mnemonic) {
           let inputMnemonic = prompt("Please enter yout mnemonic key");
           if (inputMnemonic === this.props.user.mnemonic) {
+            // When user enter mnemonic, save it in local storage for X Cloud uses
+            localStorage.setItem('xMnemonic', this.props.user.mnemonic);
             history.push('/app')
           } else {
             alert('Wrong mnemonic key entered');
