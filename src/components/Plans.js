@@ -48,7 +48,7 @@ class Plans extends React.Component {
         ).then(res => {
             return res.json();
         }).then(res2 => {
-            this.setState({ barLimit: res2.total })
+            this.setState({ barLimit: res2.maxSpaceBytes })
         }).catch(err => {
             console.log(err);
         });
