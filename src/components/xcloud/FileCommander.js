@@ -96,7 +96,7 @@ class FileCommander extends React.Component {
                         <div id="FileCommander-path">
                             <Dropdown className="dropdownButton">
                                 <Dropdown.Toggle>
-                                    {(this.state.namePath.length > 1 ? this.state.namePath[this.state.namePath.length - 1].name : "Home")}
+                                    {(this.state.namePath.length > 1 ? this.state.namePath[this.state.namePath.length - 1].name : "All Files")}
                                     <img src={DropdownArrowIcon}/>
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
