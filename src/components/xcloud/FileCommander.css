@@ -64,6 +64,7 @@
 }
 
 #FileCommander-path .dropdown-menu {
+    min-width: 200px;
     left: -35px !important;
     border-radius: 14px;
     border-style: none;
@@ -72,8 +73,8 @@
 
 #FileCommander-path .dropdown-item {
     margin: 15px -5px 20px 20px;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 500;
     padding-left: 0px;
 }
 
