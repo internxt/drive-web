@@ -66,7 +66,8 @@
 
 #FileCommander-path .dropdown-menu {
     min-width: 200px;
-    left: -35px !important;
+    left: -57px !important;
+    transform: translate3d(-21px, 42px, 0px);
     border-radius: 14px;
     border-style: none;
     box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
