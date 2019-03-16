@@ -24,6 +24,7 @@
     font-weight: bold;
     display: inline;
     cursor: pointer;
+    text-align: left;
 }
 
 #FileCommander-items {
@@ -94,5 +95,5 @@
 }
 
 .dropdown {
-    margin-left: -100px !important; 
+    margin-left: -178px !important; 
 }
