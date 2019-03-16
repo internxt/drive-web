@@ -191,7 +191,7 @@ class Login extends React.Component {
               onChange={this.handleSubmit}
             />
             <p id="Terms">By signing in, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
-            <Button className="button-submit" disabled={!isValid} size="lg" type="submit" block> Login </Button>
+            <Button className="button-submit" disabled={!isValid} size="lg" type="submit" block> Continue </Button>
           </Form> 
         </div>
       </div>
