@@ -26,7 +26,8 @@ class FileCommander extends React.Component {
             // activeParent: {folder:'', bucket: '', name: ''}
             currentCommanderItems: this.props.currentCommanderItems,
             namePath: this.props.namePath,
-            selectedSortType: SORT_TYPES.DATE_ADDED
+            selectedSortType: SORT_TYPES.DATE_ADDED,
+            dragDropStyle: ''
         }
         this.myRef = React.createRef()
     }
@@ -106,11 +107,29 @@ class FileCommander extends React.Component {
                                     <Dropdown.Item id={SORT_TYPES.FILETYPE_ASC} onClick={() => this.sortItems(SORT_TYPES.FILETYPE_ASC)} onSelect={this.onSelect}>File Type</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
-                            
                         </div>
                     }
                 </div>
-                <div id="FileCommander-items">
+                <div id="FileCommander-items"
+                    className={this.state.dragDropStyle}
+                    onDragOver={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        this.setState({ dragDropStyle: 'drag-over' });
+                    }}
+                    onDragLeave={e => this.setState({ dragDropStyle: '' })}
+                    onDrop={e => {
+                        e.preventDefault()
+                        let files = e.dataTransfer.files;
+
+                        if (files.length) {
+                            this.props.uploadDroppedFile(files);
+                        }
+
+                        e.stopPropagation()
+                        this.setState({ dragDropStyle: '' })
+                    }}
+                >
                     {
                         list.length > 0 ? (
                             list.map((item, i) => {

@@ -54,7 +54,7 @@ class XCloud extends React.Component {
               history.push('/login');
             })
           } else { this.getFolderContent(this.props.user.root_folder_id); }
-          
+
           this.setState({ isActivated, isInitialized: true });
         }
       }).catch(error => {
@@ -78,16 +78,16 @@ class XCloud extends React.Component {
       fetch('/api/initialize', {
         method: "post",
         headers,
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           email: this.props.user.email,
           mnemonic: this.props.user.mnemonic
         })
-      }).then( response => {
+      }).then(response => {
         if (response.status === 200) {
           // Successfull intialization
           this.setState({ isInitialized: true });
           // Set user with new root folder id
-          response.json().then( (body) => {
+          response.json().then((body) => {
             let updatedUser = this.props.user;
             updatedUser.root_folder_id = body.user.root_folder_id;
             this.props.handleKeySaved(updatedUser);
@@ -106,7 +106,7 @@ class XCloud extends React.Component {
       method: 'get',
       headers
     }).then(response => response.json())
-    .catch(error => error)
+      .catch(error => error)
   }
 
   setSortFunction = (newSortFunc) => {
@@ -181,9 +181,9 @@ class XCloud extends React.Component {
       method: "get",
       headers
     }).then(async (data) => {
-      if (data.status === 402){
-        this.setState({rateLimitModal: true})
-        return; 
+      if (data.status === 402) {
+        this.setState({ rateLimitModal: true })
+        return;
       }
       const blob = await data.blob()
       const name = data.headers.get('x-file-name')
@@ -205,9 +205,29 @@ class XCloud extends React.Component {
       headers,
       body: data
     }).then((response) => {
-      if (response.status === 402){
-        this.setState({rateLimitModal: true})
-        return; 
+      if (response.status === 402) {
+        this.setState({ rateLimitModal: true })
+        return;
+      }
+      this.getFolderContent(this.state.currentFolderId);
+    })
+  }
+
+  uploadDroppedFile = (e) => {
+    console.log("UPLOAD DROPPED");
+    console.log(e);
+    const data = new FormData();
+    let headers = this.setHeaders();
+    delete headers['content-type'];
+    data.append('xfile', e[0]);
+    fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
+      method: "post",
+      headers,
+      body: data
+    }).then((response) => {
+      if (response.status === 402) {
+        this.setState({ rateLimitModal: true })
+        return;
       }
       this.getFolderContent(this.state.currentFolderId);
     })
@@ -285,11 +305,11 @@ class XCloud extends React.Component {
   }
 
   openChooserModal() {
-    this.setState({chooserModalOpen: true})
+    this.setState({ chooserModalOpen: true })
   }
 
   closeModal = () => {
-    this.setState({chooserModalOpen: false})
+    this.setState({ chooserModalOpen: false })
   }
 
   closeRateLimitModal = () => {
@@ -298,7 +318,7 @@ class XCloud extends React.Component {
 
   render() {
     // Check authentication
-    if(this.props.isAuthenticated && this.state.isActivated && this.state.isInitialized) {
+    if (this.props.isAuthenticated && this.state.isActivated && this.state.isInitialized) {
       return (
         <div className="App">
           <NavigationBar
@@ -310,27 +330,28 @@ class XCloud extends React.Component {
             deleteItems={this.deleteItems}
             style
           />
-        <FileCommander
-          //   folderTree={this.state.folderTree}
-          currentCommanderItems={this.state.currentCommanderItems}
-          openFolder={this.openFolder}
-          downloadFile={this.downloadFile}
-          selectCommanderItem={this.selectCommanderItem}
-          namePath={this.state.namePath}
-          handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
-          setSortFunction={this.setSortFunction}
-        />
-        <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >
-          <div>
-            <a href={'xcloud://' + this.state.token + '://' + JSON.stringify(this.props.user)}>Open mobile app</a>
-            <a onClick={this.closeModal}>Use web app</a>
-          </div>
-        </Popup>
-        <Popup open={this.state.rateLimitModal} closeOnDocumentClick onClose={this.closeRateLimitModal} className="popup--full-screen">
+          <FileCommander
+            //   folderTree={this.state.folderTree}
+            currentCommanderItems={this.state.currentCommanderItems}
+            openFolder={this.openFolder}
+            downloadFile={this.downloadFile}
+            selectCommanderItem={this.selectCommanderItem}
+            namePath={this.state.namePath}
+            handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
+            uploadDroppedFile={this.uploadDroppedFile}
+            setSortFunction={this.setSortFunction}
+          />
+          <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >
+            <div>
+              <a href={'xcloud://' + this.state.token + '://' + JSON.stringify(this.props.user)}>Open mobile app</a>
+              <a onClick={this.closeModal}>Use web app</a>
+            </div>
+          </Popup>
+          <Popup open={this.state.rateLimitModal} closeOnDocumentClick onClose={this.closeRateLimitModal} className="popup--full-screen">
             <div className="popup--full-screen__content">
               <div className="popup--full-screen__close-button-wrapper">
-                  <div className="close-button" onClick={this.closeRateLimitModal}>
-                    X
+                <div className="close-button" onClick={this.closeRateLimitModal}>
+                  X
                   </div>
               </div>
               <div className="message-wrapper">
@@ -344,7 +365,7 @@ class XCloud extends React.Component {
               </div>
             </div>
           </Popup>
-      </div>
+        </div>
       );
     } else {
       // Cases of access error
@@ -368,7 +389,7 @@ class XCloud extends React.Component {
         )
       }
       // If is waiting for async method return blank page
-      return(<div></div>)
+      return (<div></div>)
     }
   }
 }

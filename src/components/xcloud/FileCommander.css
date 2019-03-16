@@ -35,6 +35,10 @@
     flex-wrap: wrap;
 }
 
+.drag-over {
+    outline:  5px dashed #aab3ff;
+}
+
 .noItems {
     justify-content: center;
     display: flex;
