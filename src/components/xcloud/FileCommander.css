@@ -20,6 +20,7 @@
 
 #FileCommander-backTo {
     font-size: 20px;
+     width: 200px;
     font-weight: bold;
     display: inline;
     cursor: pointer;
@@ -89,4 +90,8 @@
 
 #FileCommander-path .dropdown-item:last-child {
     margin-bottom: 5px;
+}
+
+.dropdown {
+    margin-left: -100px !important; 
 }
