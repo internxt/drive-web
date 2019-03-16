@@ -49,10 +49,10 @@ class FileCommander extends React.Component {
             // At this time, default order is date added
                 break;
             case SORT_TYPES.FILETYPE_ASC:
-                sortFunc = function(a, b) { return a.type > b.type };
+                sortFunc = function(a, b) { return a.type.localeCompare(b.type) };
                 break;
             case SORT_TYPES.FILETYPE_DESC:
-                sortFunc = function(a, b) { return a.type < b.type };
+                sortFunc = function(a, b) { return b.type.localeCompare(a.type) };
                 break;
             case SORT_TYPES.NAME_ASC:
                 sortFunc = function(a, b) { return a.name.localeCompare(b.name) };
