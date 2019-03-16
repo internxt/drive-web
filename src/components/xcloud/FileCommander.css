@@ -1,5 +1,5 @@
 #FileCommander {
-    margin-top: 36px;
+    margin-top: 20px;
     max-width: 1440px;
     margin-left: auto;
     margin-right: auto;
@@ -47,7 +47,7 @@
     box-shadow: none;
     border-style: none;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 #FileCommander-path .dropdown-toggle::after {
