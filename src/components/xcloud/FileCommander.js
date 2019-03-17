@@ -123,6 +123,17 @@ class FileCommander extends React.Component {
                         let files = e.dataTransfer.files;
 
                         if (files.length) {
+                            console.log(files[0].name);
+                            this.state.currentCommanderItems.push({
+                                name: files[0].name,
+                                size: files[0].size,
+                                isLoading: true
+                            });
+                            this.setState({
+                                currentCommanderItems: this.state.currentCommanderItems
+                            });
+                            console.log(this.state.currentCommanderItems);
+                            
                             this.props.uploadDroppedFile(files);
                         }
 
@@ -156,6 +167,7 @@ class FileCommander extends React.Component {
                                                 created={moment(item.created).format('dddd')}
                                                 clickHandler={this.props.downloadFile.bind(null, item.bucketId)}
                                                 selectHandler={(e) => this.props.selectCommanderItem(i, e)}
+                                                isLoading={item.isLoading}
                                             />
                                         }
                                     </span>

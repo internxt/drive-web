@@ -4,9 +4,15 @@
 
 @keyframes Act-Ind-spin {
     from {
-        transform: rotate(0deg);
+        transform: translate3d(-40px, 40px, 0) rotate(0deg);
+        width: 50px;
+        width: 50px;
+        margin-left: 52px;
     }
     to {
-        transform: rotate(-360deg);
+        transform: translate3d(-40px, 40px, 0) rotate(-360deg);
+        width: 50px;
+        width: 50px;
+        margin-left: 52px;
     }
 }
