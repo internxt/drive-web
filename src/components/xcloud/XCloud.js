@@ -196,6 +196,15 @@ class XCloud extends React.Component {
   }
 
   uploadFile = (e) => {
+    this.state.currentCommanderItems.push({
+      name: e.target.files[0].name,
+      size: e.target.files[0].size,
+      isLoading: true
+    });
+    this.setState({
+      currentCommanderItems: this.state.currentCommanderItems
+    });
+
     const data = new FormData();
     let headers = this.setHeaders();
     delete headers['content-type'];
