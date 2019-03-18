@@ -166,7 +166,7 @@ class Login extends React.Component {
     const isValid = this.validateForm();
     return (
       <div>
-        <img src={logo} className="Logo" style={{height: 46 ,width: 46}}/>
+        <img src={logo} className="Logo" style={{height: 27.5 ,width: 52.4}}/>
         <div id="Login" className="Login">
         <div className="LoginHeader">
           <h2> Welcome to X Cloud</h2>
