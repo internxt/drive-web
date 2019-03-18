@@ -80,8 +80,15 @@
 }
 
 #Login h2 {
-  font-weight: bold;
-  margin-bottom: 30px;
+    font-weight: 900;
+    margin-bottom: 52px;
+    width: 358px;
+    height: 49px;
+    font-size: 39px;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: -1.2px;
 }
 
 #Login h4 {
