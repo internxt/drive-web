@@ -12,13 +12,13 @@ const SAVE_OPTIONS = [
   {
     label: "I have copied and saved my key",
     value: "USER", // do nothing. user will save pass manually
-    tooltip: "This is the most secure option to store your files in the cloud. By choosing this option, your files are encrypted and only you store the decryption key. However, if you lose your decryption key, you will lose access to your files. Make sure your key is stored securely and safely.",
+    tooltip: "By choosing this option, your files are encrypted and only you store the decryption key. You will need to enter your password and key to use your account. Most secure option.",
     ref: React.createRef()
   },
   {
     label: "I want to save my key online",
     value: "ONLINE", // save on server
-    tooltip: "This option is what the most current secure cloud storage providers use. By choosing this option, we use your password to encrypt your file encryption and decryption keys. We never have access to your files since your password is needed to decrypt your files.",
+    tooltip: "We store your file decryption key. However, unlike others, your password is used to locally encrypt your key before we store it, thus never have access to it. Only password needed at login.",
     ref: React.createRef()
   }
 ];
