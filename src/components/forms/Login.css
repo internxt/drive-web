@@ -92,8 +92,16 @@
 }
 
 #Login h4 {
-  margin: 60px 0 20px 0;
-}
+    margin: 63px 0 23px;
+    width: 267px;
+    height: 30px;
+    font-family: CircularStd;
+    font-size: 24px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: -0.9px;}
 
 #Login .form-control-lg {
   font-size: 16px;
