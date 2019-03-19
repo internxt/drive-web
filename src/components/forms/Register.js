@@ -244,7 +244,7 @@ class Register extends React.Component {
               size="invisible"
               onChange={this.handleSubmit}
             />
-            <p id="Terms">By creating an account, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
+            <p id="Terms1">By creating an account, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
             <Button className="button-submit" disabled={!isValid} size="lg" type="submit" block> Continue </Button>
           </Form> 
         </div>
