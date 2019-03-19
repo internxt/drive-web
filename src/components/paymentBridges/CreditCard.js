@@ -31,14 +31,9 @@ class CreditCard extends React.Component {
                 plan: this.state.plan.stripe_plan_id
             })
         }).then(response => {
-
-            console.log('Respuesta');
-
-            /*
-            response.json().then(data => {
-                alert(`We are in business, ${data.email}`);
-            });
-            */
+            return response.json();
+        }).then(body => {
+            this.setState({ statusMessage: body.message });
         });
     }
 
@@ -63,7 +58,7 @@ class CreditCard extends React.Component {
                     email={JSON.parse(localStorage.xUser).email}
                     stripeKey="pk_test_vpHlkSQ7DhmzSWHEbmfT1lIJ"
                     token={this.state.onToken}>
-                    
+
                     <Button
                         type="submit" block size="lg"
                         className="mt-4">Buy now</Button>
