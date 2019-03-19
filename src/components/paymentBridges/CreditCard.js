@@ -60,7 +60,8 @@ class CreditCard extends React.Component {
                     image="https://internxt.com/img/logos/internxtcircle.png"
                     currency="EUR"
                     bitcoin={false}
-                    stripeKey=""
+                    email={JSON.parse(localStorage.xUser).email}
+                    stripeKey="pk_test_vpHlkSQ7DhmzSWHEbmfT1lIJ"
                     token={this.state.onToken}>
                     
                     <Button
