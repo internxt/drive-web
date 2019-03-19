@@ -3,7 +3,7 @@
 }
 
 .Login {
-  margin: 40px 22.5% 0 22.5%;
+  margin: auto;
   width: 80%;
   max-width: 750px;
   position: relative;
@@ -76,6 +76,12 @@
 
 #Terms {
     margin-top: 46px;
+    margin-bottom: 24px;
+    color: #6d6d6d;
+}
+
+#Terms1 {
+    margin-top: 32px;
     margin-bottom: 24px;
     color: #6d6d6d;
 }
