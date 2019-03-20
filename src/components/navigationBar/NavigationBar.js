@@ -66,7 +66,7 @@ class NavigationBar extends React.Component {
                 <Nav className="m-auto">
                     {this.state.navbarItems}
                 </Nav>
-                <Nav style={{margin: '0 15px 0 0'}}>
+                <Nav style={{margin: '0 13px 0 0'}}>
                     {this.state.menuButton}
                 </Nav>
             </Navbar>
