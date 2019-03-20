@@ -8,3 +8,14 @@
     cursor: pointer;
     margin: 0px 7px;
 }
+
+.HeaderButton1 {
+    display: flex;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 23.1px;
+    background-color: #f7f7f7;
+    cursor: pointer;
+    margin: 0px 22px;
+}
