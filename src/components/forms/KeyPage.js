@@ -162,7 +162,7 @@ class KeyPage extends React.Component {
               Your encryption key is below. Please save your key!
             </h2>
             <h3 className="key-subtitle">
-              You will need your key for the first time you log into your <br> X Cloud
+              You will need your key for the first time you log into your <br/> X Cloud
               with a new device. Choose one of the options below.
             </h3>
   
