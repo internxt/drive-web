@@ -28,7 +28,7 @@ class App extends Component {
 
   // Method for set user in props.user and localStorage
   handleKeySaved = (user) => {
-    localStorage.setItem('xUser', user);
+    localStorage.setItem('xUser', JSON.stringify(user));
     this.setState({
       isAuthenticated: true,
       user
