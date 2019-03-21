@@ -125,6 +125,7 @@ class Login extends React.Component {
               // Manage succesfull login
               response.json().then( (body) => {
                 const user = { 
+                  userId: body.user.userId,
                   email: this.state.email,  
                   mnemonic: decryptTextWithKey(body.user.mnemonic, this.state.password),
                   root_folder_id: body.user.root_folder_id,
@@ -132,7 +133,7 @@ class Login extends React.Component {
                 };
                 this.props.handleKeySaved(user)
                 localStorage.setItem('xToken',body.token);
-                if (user.mnemonic && body.user.storeMnemonic === true) localStorage.setItem('xMnemonic', user.mnemonic);
+                if (user.mnemonic && body.user.storeMnemonic !== false) localStorage.setItem('xMnemonic', user.mnemonic);
                 localStorage.setItem('xUser', JSON.stringify(user));
                 this.setState({ 
                   isAuthenticated: true, 
