@@ -87,7 +87,7 @@
 }
 
 #Login h2 {
-    font-weight: 500;
+    font-weight: 900;
     margin-bottom: 52px;
     width: 363px;
     height: 49px;
@@ -100,7 +100,7 @@
 
 #Login h4 {
     margin: 63px 0 23px;
-    width: 267px;
+    width: 270px;
     height: 30px;
     font-family: CircularStd;
     font-size: 24px;
