@@ -91,7 +91,7 @@ class FileCommander extends React.Component {
                 <div id="FileCommander-info">
                     {
                         <div id="FileCommander-backTo" onClick={this.props.handleFolderTraverseUp.bind(this)}> 
-                            <img src={BackToIcon}/> 
+                        {(this.state.namePath.length > 1 ? <span><img src={BackToIcon}/>  {this.state.namePath[this.state.namePath.length - 2].name}</span> : '')}
                         </div>
                     }
                     {
