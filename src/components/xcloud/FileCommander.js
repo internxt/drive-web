@@ -6,6 +6,7 @@ import './FileCommander.css'
 import FileCommanderItem from './FileCommanderItem';
 import * as moment from 'moment'
 import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown\ arrow.svg';
+import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
 
 const SORT_TYPES = {
     DATE_ADDED : 'Date_Added',
@@ -90,7 +91,7 @@ class FileCommander extends React.Component {
                 <div id="FileCommander-info">
                     {
                         <div id="FileCommander-backTo" onClick={this.props.handleFolderTraverseUp.bind(this)}> 
-                            {(this.state.namePath.length > 1 ? '< ' + this.state.namePath[this.state.namePath.length - 2].name : '')}
+                            <img src={BackToIcon}> 
                         </div>
                     }
                     {
