@@ -51,16 +51,11 @@ class KeyPage extends React.Component {
         history.push('/app')
       } else {
         // If storageMnemonic is set, ask for mnenomic. If not, ask user to select option
-        if (this.props.user.storeMnemonic === false && this.props.user.mnemonic) {
+        if (this.props.user.storeMnemonic === false) {
           let inputMnemonic = prompt("Please enter yout mnemonic key");
-          if (inputMnemonic === this.props.user.mnemonic) {
-            // When user enter mnemonic, save it in local storage for X Cloud uses
-            localStorage.setItem('xMnemonic', this.props.user.mnemonic);
-            history.push('/app')
-          } else {
-            alert('Wrong mnemonic key entered');
-            history.push('/login');
-          }
+          // When user enter mnemonic, save it in local storage for X Cloud uses
+          localStorage.setItem('xMnemonic', inputMnemonic);
+          history.push('/app')
         } else {
           const mnemonic = this.props.user.mnemonic;
           this.setState({ mnemonic })
@@ -74,13 +69,9 @@ class KeyPage extends React.Component {
   setHeaders = () => {
     let headers = {
       Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-      "content-type": "application/json; charset=utf-8"
+      "content-type": "application/json; charset=utf-8",
+      "internxt-mnemonic": localStorage.getItem("xMnemonic")
     };
-    if (!this.props.user.mnemonic) {
-      headers = Object.assign(headers, {
-        "internxt-mnemonic": localStorage.getItem("xMnemonic")
-      });
-    }
     return headers;
   }
 
@@ -101,13 +92,13 @@ class KeyPage extends React.Component {
   }
 
   handleContinueClick = () => {
-    let optionSelected = false;
+    let localStorageOption = false;
     if (!this.state.saveOptionSelected) return;
 
     // Redirect user without saving mnemonic
-    if (this.state.saveOptionSelected !== "USER") { optionSelected = true; }
+    if (this.state.saveOptionSelected !== "USER") { localStorageOption = true; }
 
-    this.updateStorageOption(optionSelected);
+    this.updateStorageOption(localStorageOption);
     history.push('/app')
   }
 
@@ -125,16 +116,9 @@ class KeyPage extends React.Component {
       if (response.status === 200) {
         response.json().then( (body) => {
           // When true option is set, save mnemonic locally. When is false, delete mnemonic
-          if (option) {
-            // Check if mnemonic is on local storage or user props
-            const mnemonicExists = this.props.user.mnemonic || localStorage.getItem('xMnemonic');
-            if (!mnemonicExists) {
-              const pass = prompt('Please enter your password for decrypt and store your mnemonic: ');
-              const mnemonicDecrypted = decryptTextWithKey(body.mnemonic, pass);
-              localStorage.setItem('xMnemonic', mnemonicDecrypted);
-            }
-          } else {
-            localStorage.removeItem('xMnemonic');
+          if (!option) {
+            // If not store mnemonic is selected, delete db register
+            this.updateMnemonic(null);
           }
           // Set user with new storeOption property
           const updatedUser = this.props.user;
@@ -153,6 +137,24 @@ class KeyPage extends React.Component {
     });
   }
 
+  updateMnemonic = (mnemonic) => {
+    try {
+      const headers = this.setHeaders();
+
+      return fetch(`/api/auth/mnemonic`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+          email: this.props.user.email,
+          mnemonic: mnemonic
+        })
+      });
+    } catch (error) {
+      console.log('Error updating mnemonic: ' + error)
+    }
+
+  }
+
   render() {
     if (!this.props.user.storeMnemonic) {
       return (
@@ -162,7 +164,7 @@ class KeyPage extends React.Component {
               Your encryption key is below. Please save your key!
             </h2>
             <h3 className="key-subtitle">
-              You will need your key for the first time you log into your <br/> X Cloud
+            You will need your key for the first time you log into your <br/> X Cloud
               with a new device. Choose one of the options below.
             </h3>
   
