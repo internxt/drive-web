@@ -87,7 +87,7 @@
 }
 
 #Login h2 {
-    font-weight: 900;
+    font-weight: 500;
     margin-bottom: 52px;
     width: 363px;
     height: 49px;
@@ -95,7 +95,7 @@
     font-style: normal;
     font-stretch: normal;
     line-height: normal;
-    letter-spacing: -1.2px;
+    letter-spacing: -0.9px;
 }
 
 #Login h4 {
@@ -108,7 +108,7 @@
     font-style: normal;
     font-stretch: normal;
     line-height: normal;
-    letter-spacing: -0.9px;}
+    letter-spacing: -0.2px;}
 
 #Login .form-control-lg {
   font-size: 16px;
