@@ -91,7 +91,7 @@ class FileCommander extends React.Component {
                 <div id="FileCommander-info">
                     {
                         <div id="FileCommander-backTo" onClick={this.props.handleFolderTraverseUp.bind(this)}> 
-                            <img src={BackToIcon}> 
+                            <img src={BackToIcon}/> 
                         </div>
                     }
                     {
