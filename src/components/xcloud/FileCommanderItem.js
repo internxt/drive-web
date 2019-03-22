@@ -17,7 +17,8 @@ class FileCommanderItem extends React.Component {
                 data-type={this.props.type}
                 data-id={this.props.id}
                 data-bucket={this.props.bucket}
-                onClick={this.props.selectHandler} >
+                onClick={this.props.selectHandler}
+                onDoubleClick={this.props.clickHandler} >
                 <div className="properties">...</div>
                 {this.props.type === 'Folder' ?
                     <img src={icon} alt="" />
