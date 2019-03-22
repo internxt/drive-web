@@ -7,7 +7,6 @@ import Login from './components/forms/Login';
 import Register from './components/forms/Register';
 import XCloud from './components/xcloud/XCloud';
 import Activation from './components/forms/Activation';
-import Deactivation from './components/forms/Deactivation';
 import NotFound from './NotFound';
 
 import history from './history';
@@ -46,7 +45,6 @@ class App extends Component {
             handleKeySaved={this.handleKeySaved} />
           } />
           <Route path='/activations/:token' render={(props) => <Activation {...props} />} />
-          <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
           <Route path='/settings' render={(props) => <Settings {...props} isAuthenticated={this.state.isAuthenticated} />
           } />
           <Route exact path='/app' render={(props) => <XCloud {...props}
