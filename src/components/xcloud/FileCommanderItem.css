@@ -9,6 +9,7 @@
     background-color: transparent;
     box-sizing: border-box;
     font-family: 'CircularStd';
+    user-select: none;
 }
 
 .FileCommanderItem:hover {
