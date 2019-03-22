@@ -17,6 +17,7 @@
   font-style: normal;
   text-align: left;
   color: #000000;
+  margin-top: 40px;
 }
 
 .LoginSubHeader {
@@ -88,7 +89,7 @@
 
 #Login h2 {
     font-weight: 900;
-    margin-bottom: 52px;
+    margin-bottom: 25px;
     width: 363px;
     height: 49px;
     font-size: 39px;
@@ -99,7 +100,7 @@
 }
 
 #Login h4 {
-    margin: 63px 0 23px;
+    margin: 53px 0 23px;
     width: 270px;
     height: 30px;
     font-family: CircularStd;
