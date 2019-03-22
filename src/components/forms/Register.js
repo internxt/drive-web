@@ -32,29 +32,19 @@ class Register extends React.Component {
   componentDidMount() {
     const xUser = JSON.parse(localStorage.getItem('xUser'));
     const xToken = localStorage.getItem('xToken');
-    const haveInfo = (xUser && xToken);
+    const mnemonic = localStorage.getItem('xMnemonic');
+    const haveInfo = (xUser && xToken && mnemonic);
     if (this.state.isAuthenticated === true || haveInfo) {
-      const mnemonic = localStorage.getItem('xMnemonic');
-      if (mnemonic) {
-        // Case of login and mnemonic loaded from server
         history.push('/app')
-      } else {
-        // Case of login and mnemonic loaded from server
-        history.push('/KeyPage')
-      }
     }
   }
 
   setHeaders = () => {
     let headers = {
       Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-      "content-type": "application/json; charset=utf-8"
+      "content-type": "application/json; charset=utf-8",
+      "internxt-mnemonic": localStorage.getItem("xMnemonic")
     };
-    if (!this.state.user.mnemonic) {
-      headers = Object.assign(headers, {
-        "internxt-mnemonic": localStorage.getItem("xMnemonic")
-      });
-    }
     return headers;
   }
 

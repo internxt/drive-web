@@ -80,7 +80,7 @@ class XCloud extends React.Component {
         headers,
         body: JSON.stringify({
           email: this.props.user.email,
-          mnemonic: this.props.user.mnemonic
+          mnemonic: localStorage.getItem("xMnemonic")
         })
       }).then(response => {
         if (response.status === 200) {

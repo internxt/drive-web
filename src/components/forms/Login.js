@@ -27,27 +27,17 @@ class Login extends React.Component {
     const mnemonic = localStorage.getItem('xMnemonic');
     const user = JSON.parse(localStorage.getItem('xUser'));
 
-    if (user) { 
+    if (user && mnemonic) { 
       this.props.handleKeySaved(user)
-      if (user.storeMnemonic === true && mnemonic) {
-        // Case of login and mnemonic loaded from server
-        history.push('/app')
-      } else {
-        // Case of login and mnemonic required by user
-        history.push('/keyPage');
-      }
+      history.push('/app')
     }
   }
 
   componentDidUpdate() {
     if (this.state.isAuthenticated === true && this.state.token && this.state.user) {
       const mnemonic = localStorage.getItem('xMnemonic');
-      if (this.state.user.storeMnemonic === true && mnemonic) {
-        // Case of login and mnemonic loaded from server
+      if (mnemonic) {
         history.push('/app')
-      } else {
-        // Case of login and mnemonic loaded from server
-        history.push('/KeyPage')
       }
     }
   }
@@ -55,12 +45,8 @@ class Login extends React.Component {
   setHeaders = () => {
     let headers = {
       Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-      "content-type": "application/json; charset=utf-8"
-    };
-    if (!this.state.user.mnemonic) {
-      headers = Object.assign(headers, {
-        "internxt-mnemonic": localStorage.getItem("xMnemonic")
-      });
+      "content-type": "application/json; charset=utf-8",
+      "internxt-mnemonic": localStorage.getItem("xMnemonic")
     }
     return headers;
   }
@@ -127,13 +113,13 @@ class Login extends React.Component {
                 const user = { 
                   userId: body.user.userId,
                   email: this.state.email,  
-                  mnemonic: decryptTextWithKey(body.user.mnemonic, this.state.password),
+                  mnemonic: body.user.mnemonic ? decryptTextWithKey(body.user.mnemonic, this.state.password) : null,
                   root_folder_id: body.user.root_folder_id,
                   storeMnemonic: body.user.storeMnemonic 
                 };
                 this.props.handleKeySaved(user)
                 localStorage.setItem('xToken',body.token);
-                if (user.mnemonic && body.user.storeMnemonic !== false) localStorage.setItem('xMnemonic', user.mnemonic);
+                localStorage.setItem('xMnemonic', user.mnemonic);
                 localStorage.setItem('xUser', JSON.stringify(user));
                 this.setState({ 
                   isAuthenticated: true, 
