@@ -14,21 +14,21 @@
 
 @font-face {
   font-family: "Cerebri Sans";
-  src: url(.assets/fonts/CerebriSans-Bold.ttf);
+  src: url(./assets/fonts/CerebriSans-Bold.ttf);
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Cerebri Sans";
-  src: url(.assets/fonts/CerebriSans-SemiBold.ttf);
+  src: url(./assets/fonts/CerebriSans-SemiBold.ttf);
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Cerebri Sans";
-  src: url(.assets/fonts/CerebriSans-Book.ttf);
+  src: url(./assets/fonts/CerebriSans-Book.ttf);
   font-weight: 300;
   font-style: normal;
 }
