@@ -1,155 +1,72 @@
-.Logo {
-  margin: 24px 24px;
+.login-container-box {
+  margin: 5%;
+
+  background-color: white;
+
+  width: 472px !important;
+
+  border: solid 1px #eaeced;
+  border-radius: 6px;
+  padding: 40px !important;
 }
 
-.Login {
-  margin: auto;
-  width: 80%;
-  max-width: 750px;
-  position: relative;
-  justify-content: center;
+.login-container-box > .logo > img {
+  height: 27.5px;
+  width: 52.4px;
 }
 
-.LoginHeader {
-  font-size: 22px;
-  font-weight: bold;
-  font-style: normal;
-  text-align: left;
-  color: #000000;
-  margin-top: 40px;
+.container-title {
+  font-size: 25px;
+  font-weight: 600;
 }
 
-.LoginSubHeader {
-  font-weight: 400;
-}
-
-.formBlock {
-  margin: 0 50% 0% 0%;
-  width: 100%;
-}
-
-.btn-toolbar {
-  display: block;
-}
-
-.modal-custom {
-  width: 100%;
-  margin: 0 !important;
-  min-height: 20%;
-  height: 100%;
-  max-width: 100% !important;
-}
-
-.modal-custom .modal-content {
-  height: 100%;
-  border-radius: 0;
-  border-style: none;
-}
-
-.modal-custom img {
-  margin: 100px 0;
+.container-register button {
+  background-color: #4585f5;
+  border-radius: 3.4px;
+  height: 49px;
+  padding: 10px 20px;
+  margin-right: 10px;
   cursor: pointer;
 }
 
-.modal-custom .modal-body {
-  text-align: center;
-  margin: 0px 15%;
-  padding: 50px 25px 100px 25px;
+.container-register button {
+outline: transparent;
 }
 
-.modal-custom h1 {
-  font-weight: bold;
-  color: #000000;
+.container-register button.on {
+  color: white;
+  box-shadow: 0 2px 3px 0 rgba(174, 199, 242, 0.62);
+  border: solid 0px #eaeced;
+
 }
-
-.modal-custom p {
-  font-size: 18px;
-  color: #404040;
-  margin: auto;
-  width: 50%;
-  opacity: 0.84;
-}
-
-#button-off:hover, #button-on:hover{
-  box-shadow: 0 0 1pt 1pt #6d6d6d;
-}
-
-#Terms {
-    margin-top: 46px;
-    margin-bottom: 24px;
-    color: #6d6d6d;
-}
-
-#Terms1 {
-    margin-top: 32px;
-    margin-bottom: 24px;
-    color: #6d6d6d;
-}
-
-#Login h2 {
-    font-weight: 900;
-    margin-bottom: 25px;
-    width: 363px;
-    height: 49px;
-    font-size: 39px;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: -0.9px;
-}
-
-#Login h4 {
-    margin: 53px 0 23px;
-    width: 270px;
-    height: 30px;
-    font-size: 24px;
-    font-weight: bold;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: -0.2px;}
-
-#Login .form-control-lg {
-  font-size: 16px;
-  height: 60px;
-}
-
-#Login .form-control-lg:focus {
-  border-radius: 8px;
-  border: solid 1px #4385f4;
-  box-shadow: none;
-}
-
-#Login .button-on {
-  background-color: #4385f4;
-  color: #ffffff;
-}
-
-#Login .button-off {
+.container-register button.off {
   background-color: #f7f7f7;
-  color: #404040;
-  border-style: none;
+  color: #5c5c5c;
+  border: solid 0px;
 }
 
-#Login .button-on , #Login .button-off {
+.login-container-box .form-control {
+  height: 49px;
+}
+
+.privacy-disclaimer {
+  color: #737880;
+  font-size: 15px;
+  line-height: 22px;
+  letter-spacing: -0.11px;
+}
+
+.privacy-remainders {
+  font-size: 14px;
   font-weight: 500;
-  margin: 0px 19px 0px 1px;
-  padding: 20px 0 20px 0;
-  width: 30%;
-  border-radius: 5px;
-  box-shadow: none;
+  line-height: 1.43;
+  letter-spacing: -0.1px;
+  color: #5c6066;
+  background-color: #f8f9fa;
+  padding: 5px 20px 15px 40px;
+  margin-bottom: 40px;
 }
 
-#Login .button-submit{
-  font-weight: bold;
-  padding: 20px 0px;
-  background-color: #4385f4;
-  color: #ffffff;
-  border-radius: 6px;
-}
-
-#Login .btn-primary:disabled {
-  background-color: #f7f7f7;
-  color: #494949;
-  border-style: none;
+.privacy-remainders li {
+  margin-top: 12px;
 }
