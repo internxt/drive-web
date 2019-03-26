@@ -5,7 +5,6 @@
   margin-bottom: 15px;
   position: relative;
   justify-content: center;
-  font-family: CircularStd;
 }
 
 .key.popup-active ::after {
