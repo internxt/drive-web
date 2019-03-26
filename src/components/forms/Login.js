@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, ButtonToolbar, Form, Col, Container, Row, FormGroup, FormControl } from "react-bootstrap";
+import { Button, Form, Col, Container, Row, FormGroup, FormControl } from "react-bootstrap";
 import ReCAPTCHA from "react-google-recaptcha";
 
 import history from '../../history';
@@ -119,7 +119,6 @@ class Login extends React.Component {
     var registerState = this.state.register;
     registerState[event.target.id] = event.target.value;
     this.setState({ register: registerState });
-    console.log(this.state.register);
   }
 
   captchaLaunch = event => {
@@ -130,7 +129,7 @@ class Login extends React.Component {
   resolveCaptcha = captchaToken => {
     const headers = this.setHeaders();
     return new Promise((resolve, reject) => {
-      fetch('https://cloud.internxt.com/api/captcha/' + captchaToken, {
+      fetch('/api/captcha/' + captchaToken, {
         method: 'GET',
         headers
       }).then(response => { resolve(response); })
@@ -177,7 +176,7 @@ class Login extends React.Component {
 
     console.log(this.state);
     // Proceed with submit
-    fetch("https://cloud.internxt.com/api/login", {
+    fetch("/api/login", {
       method: "post",
       headers,
       body: JSON.stringify({ email: this.state.email, password: encryptText(this.state.password) })
@@ -230,7 +229,7 @@ class Login extends React.Component {
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
 
-    fetch("https://cloud.internxt.com/api/register", {
+    fetch("/api/register", {
       method: "post",
       headers,
       body: JSON.stringify({
@@ -242,7 +241,9 @@ class Login extends React.Component {
         salt: encSalt
       })
     }).then(response => {
+      console.log('REGISTERING...');
       if (response.status === 200) {
+        console.log('REGISTER OK');
         response.json().then((body) => {
           // Manage succesfull register
           const { token, user } = body;
@@ -256,11 +257,12 @@ class Login extends React.Component {
               email: '',
               password: '',
               confirmPassword: '',
-              validated: false,
-              showModal: true,
-              token,
-              user
-            }
+            },
+            validated: false,
+            showModal: true,
+            token,
+            user,
+            currentContainer: this.activationContainer()
           });
         });
       } else {
@@ -477,11 +479,12 @@ class Login extends React.Component {
 
   activationContainer() {
     return (<div className="container-register">
-      <p className="container-title">X Cloud Security</p>
+      <p className="container-title">Activation Email</p>
       <p className="privacy-disclaimer">Please check your email and follow the instructions to activate your account so you can start using X Cloud.</p>
-      <ul>
+      <ul className="privacy-remainders" style={{paddingTop: '20px'}}>
         By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy
       </ul>
+      <button className="btn-block on">Re-send activation email</button>
     </div>);
   }
 }
