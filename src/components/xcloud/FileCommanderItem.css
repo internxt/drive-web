@@ -57,20 +57,20 @@
 }
 
 .FileCommanderItem .name {
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: normal;
     font-style: normal;
     font-stretch: normal;
     text-align: center;
-    color: #000000;
+    letter-spacing: -0.1px;
+    color: #000;
     letter-spacing: normal;
     word-break: break-all;
     cursor: pointer;
-
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: 0px 10px;
+    margin: -3px 10px;
 }
 
 .FileCommanderItem .name:hover {
