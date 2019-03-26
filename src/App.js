@@ -4,7 +4,6 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 
 import './App.css';
 import Login from './components/forms/Login';
-import Register from './components/forms/Register';
 import XCloud from './components/xcloud/XCloud';
 import Activation from './components/forms/Activation';
 import NotFound from './NotFound';
@@ -37,9 +36,6 @@ class App extends Component {
     return (
       <div>
         <Switch>
-          <Route exact path='/register' render={(props) => <Register {...props}
-            isAuthenticated={this.state.isAuthenticated} />
-          } />
           <Route exact path='/login' render={(props) => <Login {...props}
             isAuthenticated={this.state.isAuthenticated}
             handleKeySaved={this.handleKeySaved} />
@@ -54,7 +50,7 @@ class App extends Component {
             handleKeySaved={this.handleKeySaved} />
           } />
           <Route exact path='/'>
-            <Redirect to="/register" />
+            <Redirect to="/login" />
           </Route>
           <Route component={NotFound} />
         </Switch>
