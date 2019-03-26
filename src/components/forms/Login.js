@@ -121,8 +121,7 @@ class Login extends React.Component {
     this.setState({ register: registerState });
   }
 
-  captchaLaunch = event => {
-    event.preventDefault();
+  captchaLaunch = () => {
     this.recaptchaRef.current.execute();
   }
 
@@ -283,6 +282,8 @@ class Login extends React.Component {
   formerLogin = () => {
     const isValid = this.validateForm();
 
+    this.recaptchaRef = React.createRef();
+
     return (
       <div>
         <img src={logo} className="Logo" style={{ height: 27.5, width: 52.4 }} />
@@ -386,6 +387,8 @@ class Login extends React.Component {
   }
 
   passwordContainer() {
+    this.recaptchaRef = React.createRef();
+
     return <div className="container-register">
       <p className="container-title">Create an X Cloud account</p>
       <button className="off" onClick={(e) => { this.setState({ currentContainer: this.loginContainer() }) }}>Sign in</button>
@@ -411,7 +414,7 @@ class Login extends React.Component {
           <Form.Group as={Col}>
             <button className="btn-block on" onClick={e => {
               if (this.validatePassword()) {
-                var dev = true;
+                var dev = false;
                 if (dev) {
                   this.doRegister();
                 } else {
@@ -457,7 +460,7 @@ class Login extends React.Component {
                 alert('No valid');
                 return false;
               }
-              var dev = true;
+              var dev = false;
               if (dev) {
                 this.doLogin();
               } else {
