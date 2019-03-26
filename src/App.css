@@ -1,40 +1,43 @@
 @font-face {
-  font-family: 'CircularStd';
-  src: url('./assets/fonts/CircularStd-Black.woff2') format('woff2'), 
-       url('./assets/fonts/CircularStd-Black.woff') format('woff'), 
-       url('./assets/fonts/CircularStd-Black.ttf') format('truetype');
-  font-weight: 800;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'CircularStd';
-  src: url('./assets/fonts/CircularStd-Bold.woff2') format('woff2'), 
-       url('./assets/fonts/CircularStd-Bold.woff') format('woff'), 
-       url('./assets/fonts/CircularStd-Bold.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'CircularStd';
-  src: url('./assets/fonts/CircularStd-Medium.woff2') format('woff2'), 
-       url('./assets/fonts/CircularStd-Medium.woff') format('woff'), 
-       url('./assets/fonts/CircularStd-Medium.ttf') format('truetype');
+  font-family: "Cerebri Sans";
+  src: url(./assets/fonts/CerebriSans-Medium.ttf);
   font-weight: 500;
   font-style: normal;
 }
+
 @font-face {
-  font-family: 'CircularStd';
-  src: url('./assets/fonts/CircularStd-Book.woff2') format('woff2'), 
-       url('./assets/fonts/CircularStd-Book.woff') format('woff'), 
-       url('./assets/fonts/CircularStd-Book.ttf') format('truetype');
+  font-family: "Cerebri Sans";
+  src: url(./assets/fonts/CerebriSans-Regular.ttf);
   font-weight: 400;
   font-style: normal;
+}
+
+@font-face {
+  font-family: "Cerebri Sans";
+  src: url(.assets/fonts/CerebriSans-Bold.ttf);
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Cerebri Sans";
+  src: url(.assets/fonts/CerebriSans-SemiBold.ttf);
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Cerebri Sans";
+  src: url(.assets/fonts/CerebriSans-Book.ttf);
+  font-weight: 300;
+  font-style: normal;
+}
 }
 
 /* Alberto: Since now, all elements in this page
 will have CircularStd as default font. */
 * {
-  font-family: 'CircularStd';
+  font-family: 'Celebri Sans';
 }
 
 .Alert {
