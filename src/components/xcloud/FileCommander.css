@@ -55,7 +55,8 @@
 }
 
 .noItems-subtext {
-    color: #404040;
+    color: #707070;
+    font-weight: normal;
 }
 
 #FileCommander-path .btn {
