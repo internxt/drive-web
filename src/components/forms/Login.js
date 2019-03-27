@@ -321,9 +321,11 @@ class Login extends React.Component {
   registerContainer() {
     return <div className="container-register">
       <p className="container-title">Create an X Cloud account</p>
+      <div className="menu-box">
       <button className="off" onClick={(e) => { this.setState({ currentContainer: this.loginContainer() }) }}>Sign in</button>
       <button className="on">Create account</button>
-      <Form style={{ marginTop: '30px' }}>
+      </div>
+      <Form className="form-register">
         <Form.Row>
           <Form.Group as={Col} controlId="name">
             <Form.Control xs={6} placeholder="First name" autoComplete="name" onChange={this.handleChangeRegister} />
@@ -337,7 +339,7 @@ class Login extends React.Component {
             <Form.Control xs={12} placeholder="Email address" autoComplete="email" onChange={this.handleChangeRegister} />
           </Form.Group>
         </Form.Row>
-        <Form.Row>
+        <Form.Row className="form-register-submit">
           <Form.Group as={Col}>
             <button className="on btn-block" xs={12} onClick={e => {
               e.preventDefault();
@@ -388,9 +390,11 @@ class Login extends React.Component {
 
     return <div className="container-register">
       <p className="container-title">Create an X Cloud account</p>
+      <div className="menu-box">
       <button className="off" onClick={(e) => { this.setState({ currentContainer: this.loginContainer() }) }}>Sign in</button>
       <button className="on">Create account</button>
-      <Form style={{ marginTop: '30px' }}>
+      </div>
+      <Form className="form-register">
         <Form.Row>
           <Form.Group as={Col} controlId="password">
             <Form.Control xs={12} type="password" placeholder="Password" onChange={this.handleChangeRegister} />
@@ -401,7 +405,7 @@ class Login extends React.Component {
             <Form.Control xs={12} type="password" placeholder="Confirm password" onChange={this.handleChangeRegister} />
           </Form.Group>
         </Form.Row>
-        <Form.Row>
+        <Form.Row className="form-register-submit">
           <Form.Group as={Col}>
             <button className="btn-block off" onClick={e => {
               this.setState({ currentContainer: this.privacyContainer() });
@@ -437,9 +441,11 @@ class Login extends React.Component {
   loginContainer() {
     return <div className="container-register">
       <p className="container-title">Sign in to X Cloud</p>
+      <div className="menu-box">
       <button className="on">Sign in</button>
       <button className="off" onClick={(e) => { this.setState({ currentContainer: this.registerContainer() }) }}>Create account</button>
-      <Form style={{ marginTop: '30px' }} onSubmit={this.handleSubmitDev}>
+      </div>
+      <Form className="form-register" onSubmit={this.handleSubmitDev}>
         <Form.Row>
           <Form.Group as={Col} controlId="email">
             <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" onChange={this.handleChange} />
@@ -450,7 +456,7 @@ class Login extends React.Component {
             <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" onChange={this.handleChange} />
           </Form.Group>
         </Form.Row>
-        <Form.Row>
+        <Form.Row className="form-register-submit">
           <Form.Group as={Col}>
             <Button className="on btn-block" xs={12} onClick={e => {
               if (!this.validateLoginForm()) {

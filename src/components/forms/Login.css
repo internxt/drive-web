@@ -70,3 +70,17 @@ outline: transparent;
 .privacy-remainders li {
   margin-top: 12px;
 }
+
+.form-register {
+  margin-top: 37px;
+}
+
+.form-register-submit {
+  margin-top: 18px;
+}
+
+.menu-box {
+  margin-bottom: 21px;
+  margin-top: 32px;
+  padding: 0px;
+}
