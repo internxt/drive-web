@@ -62,10 +62,10 @@ class FileCommander extends React.Component {
                 sortFunc = function(a, b) { return b.name.localeCompare(a.name) };
                 break;
             case SORT_TYPES.SIZE_ASC:
-                sortFunc = function(a, b) { return a.size > b.size };
+                sortFunc = function(a, b) { return a.size - b.size };
                 break;
             case SORT_TYPES.SIZE_DESC:
-                sortFunc = function(a, b) { return a.size < b.size };
+                sortFunc = function(a, b) { return a.size - b.size };
                 break;
             default:
                 break;
