@@ -99,5 +99,5 @@
 }
 
 .FileCommanderItem:hover > .properties  {
-    visibility: visible;
+    visibility: hidden;
 }
