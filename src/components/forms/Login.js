@@ -173,7 +173,6 @@ class Login extends React.Component {
   doLogin = () => {
     const headers = this.setHeaders();
 
-    console.log(this.state);
     // Proceed with submit
     fetch("/api/login", {
       method: "post",
@@ -240,9 +239,7 @@ class Login extends React.Component {
         salt: encSalt
       })
     }).then(response => {
-      console.log('REGISTERING...');
       if (response.status === 200) {
-        console.log('REGISTER OK');
         response.json().then((body) => {
           // Manage succesfull register
           const { token, user } = body;
