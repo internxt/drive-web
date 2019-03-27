@@ -358,7 +358,7 @@ class Login extends React.Component {
   privacyContainer() {
     return (<div className="container-register">
       <p className="container-title">X Cloud Security</p>
-      <p className="privacy-disclaimer">Due to the secure natura of X Cloud we can't recover your information as we don't ever store user data. This means we can't access your account or reset your password.<br />Once its gone, it's gone forever. After you've set up a password on the next page we strongly suggest you:</p>
+      <p className="privacy-disclaimer">Due to the secure nature of X Cloud we cannot recover your information as we do not ever store user data. This means we cannot access your account or reset your password. Once it is gone, it is gone forever. After you have set up a password on the next page we strongly suggest you:</p>
       <ul className="privacy-remainders">
         <li>Store your Password. Keep it safe and secure.</li>
         <li>Keep an offline backup of your password.</li>
