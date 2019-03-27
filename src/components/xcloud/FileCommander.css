@@ -54,6 +54,10 @@
     height: 50vh;
 }
 
+.noItems-subtext {
+    color: #404040;
+}
+
 #FileCommander-path .btn {
     background-color: #ffffff;
     color: #000000;

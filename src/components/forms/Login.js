@@ -490,6 +490,7 @@ class Login extends React.Component {
       <ul className="privacy-remainders" style={{paddingTop: '20px'}}>
         By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy
       </ul>
+      <button className="btn-block on">Re-send activation email</button>
     </div>);
   }
 }

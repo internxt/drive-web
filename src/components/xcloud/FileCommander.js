@@ -175,7 +175,7 @@ class FileCommander extends React.Component {
                                 inRoot ? (
                                     <div className="noItems">
                                         <h1>Your X Cloud is empty.</h1>
-                                        <h4>Click the upload button to get started.</h4>
+                                        <h4 className="noItems-subtext">Click the upload button or drop files in this window to get started.</h4>
                                     </div>
                                 ) : (
 
