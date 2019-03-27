@@ -104,10 +104,6 @@ class Plans extends React.Component {
                         </Col>)}
                     </Row>
 
-                    <hr className="settings-hr-end" />
-
-                    <p className="delete-account">Permanently Delete Account</p>
-
                 </Container>
 
 
