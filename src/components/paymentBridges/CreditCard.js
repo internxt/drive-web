@@ -57,7 +57,7 @@ class CreditCard extends React.Component {
                     currency="EUR"
                     bitcoin={false}
                     email={JSON.parse(localStorage.xUser).email}
-                    stripeKey="pk_test_vpHlkSQ7DhmzSWHEbmfT1lIJ"
+                    stripeKey="pk_live_Rl9YfdPjEGxGUDh9BK5rgI3Y"
                     token={this.state.onToken}>
 
                     <Button
