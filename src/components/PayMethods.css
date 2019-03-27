@@ -1,25 +1,31 @@
 .card-header {
+    margin-top: 40px;
     background-color: #f5f5f5 !important;
     text-align: center;
     border: solid 0px !important;
     border-radius: 10px !important;
     height: 100px;
     vertical-align: middle !important;
+    cursor: pointer;
+
 }
 
 .card-header h5 {
-    height: 100%;
     line-height: 70px;
-    vertical-align: middle !important;
+    color: red;
 }
 
 .card-header:hover {
     background-color: #4385f4 !important;
-    color: white;
-    cursor: pointer;
 }
 
+.card-header:hover > h5 {
+    color: white;
+}
 .card-header-selected {
     background-color: #4385f4 !important;
+}
+
+.card-header-selected > h5 {
     color: white !important;
 }

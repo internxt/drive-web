@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Button } from 'react-bootstrap';
 import StripeCheckout from 'react-stripe-checkout';
+import './CreditCard.css';
 
 class CreditCard extends React.Component {
 
@@ -61,7 +62,7 @@ class CreditCard extends React.Component {
 
                     <Button
                         type="submit" block size="lg"
-                        className="mt-4">Buy now</Button>
+                        className="mt-4 buy-button">Buy now</Button>
 
                 </StripeCheckout>
             </Container>
