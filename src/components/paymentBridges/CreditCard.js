@@ -58,7 +58,10 @@ class CreditCard extends React.Component {
                     bitcoin={false}
                     email={JSON.parse(localStorage.xUser).email}
                     stripeKey="pk_live_Rl9YfdPjEGxGUDh9BK5rgI3Y"
-                    token={this.state.onToken}>
+                    token={this.state.onToken}
+                    billingAddress={true}
+                    zipCode={true}
+                    >
 
                     <Button
                         type="submit" block size="lg"
