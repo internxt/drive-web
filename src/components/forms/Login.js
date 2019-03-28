@@ -328,15 +328,15 @@ class Login extends React.Component {
       <Form className="form-register">
         <Form.Row>
           <Form.Group as={Col} controlId="name">
-            <Form.Control xs={6} placeholder="First name" autoComplete="nope" onChange={this.handleChangeRegister} />
+            <Form.Control xs={6} placeholder="First name" autoComplete="name" onChange={this.handleChangeRegister} />
           </Form.Group>
           <Form.Group as={Col} controlId="lastname">
-            <Form.Control xs={6} placeholder="Last name" autoComplete="nope" onChange={this.handleChangeRegister} />
+            <Form.Control xs={6} placeholder="Last name" autoComplete="surname" onChange={this.handleChangeRegister} />
           </Form.Group>
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="email">
-            <Form.Control xs={12} placeholder="Email address" autoComplete="nope" onChange={this.handleChangeRegister} />
+            <Form.Control xs={12} placeholder="Email address" autoComplete="email" onChange={this.handleChangeRegister} />
           </Form.Group>
         </Form.Row>
         <Form.Row className="form-register-submit">
@@ -448,12 +448,12 @@ class Login extends React.Component {
       <Form className="form-register" onSubmit={this.handleSubmitDev}>
         <Form.Row>
           <Form.Group as={Col} controlId="email">
-            <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="nope" onChange={this.handleChange} />
+            <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" onChange={this.handleChange} />
           </Form.Group>
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="password">
-            <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="nope" onChange={this.handleChange} />
+            <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" onChange={this.handleChange} />
           </Form.Group>
         </Form.Row>
         <Form.Row className="form-register-submit">
