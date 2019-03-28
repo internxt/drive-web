@@ -181,14 +181,21 @@ class XCloud extends React.Component {
       method: "get",
       headers
     }).then(async (data) => {
-      if (data.status === 402) {
-        this.setState({ rateLimitModal: true })
-        return;
+      if (data.status != 200) {
+        throw new Error(data);
       }
+
       const blob = await data.blob()
       const name = data.headers.get('x-file-name')
       fileDownload(blob, name)
-    })
+    }).catch(err => {
+      if (err.status === 402) {
+        this.setState({ rateLimitModal: true })
+      } else {
+        console.error('Error downloading file');
+        console.error(err);
+      }
+    });
   }
 
   openUploadFile = () => {
