@@ -336,7 +336,7 @@ class Login extends React.Component {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="email">
-            <Form.Control xs={12} placeholder="Email address" autoComplete="email" onChange={this.handleChangeRegister} />
+            <Form.Control xs={12} placeholder="Email address" autoComplete="off" onChange={this.handleChangeRegister} />
           </Form.Group>
         </Form.Row>
         <Form.Row className="form-register-submit">
