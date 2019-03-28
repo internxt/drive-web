@@ -11,8 +11,6 @@ import Popup from "reactjs-popup";
 import history from '../../history';
 import "../../App.css";
 import NavigationBar from "../navigationBar/NavigationBar";
-import { resolve } from "dns";
-import { rejects } from "assert";
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -106,7 +104,7 @@ class XCloud extends React.Component {
       method: 'get',
       headers
     }).then(response => response.json())
-      .catch(error => error)
+      .catch(error => error);
   }
 
   setSortFunction = (newSortFunc) => {
@@ -182,18 +180,21 @@ class XCloud extends React.Component {
       headers
     }).then(async (data) => {
       if (data.status != 200) {
-        throw new Error(data);
+        throw data;
       }
 
-      const blob = await data.blob()
+      const blob = await data.blob();
+
       const name = data.headers.get('x-file-name')
       fileDownload(blob, name)
-    }).catch(err => {
+    }).catch(async err => {
+      const res = await err.json();
+
       if (err.status === 402) {
         this.setState({ rateLimitModal: true })
       } else {
-        console.error('Error downloading file');
-        console.error(err);
+
+        alert('Error downloading file:\n' + err.status + ' - ' + err.statusText + '\n' + res.message);
       }
     });
   }
@@ -357,6 +358,7 @@ class XCloud extends React.Component {
             uploadDroppedFile={this.uploadDroppedFile}
             setSortFunction={this.setSortFunction}
           />
+
           <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >
             <div>
               <a href={'xcloud://' + this.state.token + '://' + JSON.stringify(this.props.user)}>Open mobile app</a>
