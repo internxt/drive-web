@@ -5,9 +5,11 @@ import ReCAPTCHA from "react-google-recaptcha";
 import history from '../../history';
 import "./Login.css";
 import logo from '../../assets/logo.svg';
-import { encryptText, encryptTextWithKey, passToHash, decryptTextWithKey } from '../../utils';
+import { encryptText, decryptTextWithKey } from '../../utils';
 
 const bip39 = require('bip39');
+
+const DEV = process.env.NODE_ENV == 'development';
 
 class Login extends React.Component {
   constructor(props) {
@@ -18,15 +20,7 @@ class Login extends React.Component {
       password: '',
       isAuthenticated: false,
       token: "",
-      user: {},
-      currentContainer: this.registerContainer(),
-      register: {
-        name: '',
-        lastname: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-      }
+      user: {}
     };
 
     this.recaptchaRef = React.createRef();
@@ -72,36 +66,6 @@ class Login extends React.Component {
     return isValid;
   }
 
-  validateRegisterFormPart1 = () => {
-    let isValid = true;
-
-    if (!this.state.register.name || !this.state.register.lastname || !this.state.register.email) {
-      return false;
-    }
-
-    // Name lenght check
-    if (this.state.register.name.length < 1 && this.state.reguster.lastname.length < 1) isValid = false;
-    // Email length check and validation
-    if (this.state.register.email.length < 5 || !this.validateEmail(this.state.register.email)) isValid = false;
-
-    return isValid;
-
-  }
-
-  validatePassword = () => {
-    let isValid = true;
-
-    if (!this.state.register.password || !this.state.register.confirmPassword) {
-      return false;
-    }
-
-    // Pass length check
-    if (this.state.register.password.length < 1 && this.state.register.confirmPassword.length < 1) isValid = false;
-    // Pass and confirm pass validation
-    if (this.state.register.password !== this.state.register.confirmPassword) isValid = false;
-
-    return isValid;
-  }
 
 
   validateEmail = (email) => {
@@ -115,11 +79,6 @@ class Login extends React.Component {
     });
   }
 
-  handleChangeRegister = event => {
-    var registerState = this.state.register;
-    registerState[event.target.id] = event.target.value;
-    this.setState({ register: registerState });
-  }
 
   captchaLaunch = () => {
     this.recaptchaRef.current.execute();
@@ -148,23 +107,7 @@ class Login extends React.Component {
         }
       }).catch((error) => {
         console.error('Captcha validation error: ' + error);
-      })
-    // After login
-    this.recaptchaRef.current.reset();
-  }
-
-  handleSubmitRegister = captchaToken => {
-    // Captcha resolution
-    const captchaPromise = this.resolveCaptcha(captchaToken)
-    captchaPromise.then(response => response.json())
-      .then((resolved) => {
-        if (resolved.success) {
-
-          this.doRegister();
-
-        }
-      }).catch((error) => {
-        console.error('Captcha validation error: ' + error);
+        alert('Captcha validation error');
       })
     // After login
     this.recaptchaRef.current.reset();
@@ -213,67 +156,8 @@ class Login extends React.Component {
       })
       .catch(err => {
         console.error("Login error. " + err);
+        alert('Login error');
       });
-  }
-
-  doRegister = () => {
-    const headers = this.setHeaders();
-
-    // Setup hash and salt 
-    const hashObj = passToHash({ password: this.state.register.password });
-    const encPass = encryptText(hashObj.hash);
-    const encSalt = encryptText(hashObj.salt);
-    // Setup mnemonic
-    const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
-
-    fetch("/api/register", {
-      method: "post",
-      headers,
-      body: JSON.stringify({
-        name: this.state.register.name,
-        lastname: this.state.register.lastname,
-        email: this.state.register.email,
-        password: encPass,
-        mnemonic: encMnemonic,
-        salt: encSalt
-      })
-    }).then(response => {
-      if (response.status === 200) {
-        response.json().then((body) => {
-          // Manage succesfull register
-          const { token, user } = body;
-          localStorage.setItem('xToken', token);
-
-          // Clear form fields
-          this.setState({
-            register: {
-              name: '',
-              lastname: '',
-              email: '',
-              password: '',
-              confirmPassword: '',
-            },
-            validated: false,
-            showModal: true,
-            token,
-            user,
-            currentContainer: this.activationContainer()
-          });
-        });
-      } else {
-        response.json().then((body) => {
-          // Manage account already exists (error 400)
-          const { message } = body;
-          alert(message);
-          this.setState({ validated: false });
-        })
-      }
-    })
-      .catch(err => {
-        console.error("Register error", err);
-      });
-
   }
 
   formerLogin = () => {
@@ -312,186 +196,52 @@ class Login extends React.Component {
     return (<div className="login-main">
       <Container className="login-container-box">
         <p className="logo"><img src={logo} /></p>
-        {this.state.currentContainer}
+        <div className="container-register">
+          <p className="container-title">Sign in to X Cloud</p>
+          <div className="menu-box">
+            <button className="on">Sign in</button>
+            <button className="off" onClick={(e) => {
+              history.push('/new');
+            }}>Create account</button>
+          </div>
+          <Form className="form-register" onSubmit={this.handleSubmitDev}>
+            <Form.Row>
+              <Form.Group as={Col} controlId="email">
+                <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" onChange={this.handleChange} />
+              </Form.Group>
+            </Form.Row>
+            <Form.Row>
+              <Form.Group as={Col} controlId="password">
+                <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" onChange={this.handleChange} />
+              </Form.Group>
+            </Form.Row>
+            <Form.Row className="form-register-submit">
+              <Form.Group as={Col}>
+                <Button className="on btn-block" xs={12} onClick={e => {
+                  if (!this.validateLoginForm()) {
+                    alert('No valid');
+                    return false;
+                  }
+                  if (DEV) {
+                    this.doLogin();
+                  } else {
+                    this.captchaLaunch();
+                  }
+                  e.preventDefault();
+                }}>Sign in</Button>
+              </Form.Group>
+            </Form.Row>
+            <ReCAPTCHA sitekey="6Lf4_xsUAAAAAAEEhth1iM8LjyUn6gse-z0Y7iEp"
+              ref={this.recaptchaRef}
+              size="invisible"
+              onChange={this.handleSubmitLogin}
+            />
+
+          </Form>
+        </div>
       </Container>
     </div>
     );
-  }
-
-  registerContainer() {
-    return <div className="container-register">
-      <p className="container-title">Create an X Cloud account</p>
-      <div className="menu-box">
-      <button className="off" onClick={(e) => { this.setState({ currentContainer: this.loginContainer() }) }}>Sign in</button>
-      <button className="on">Create account</button>
-      </div>
-      <Form className="form-register">
-        <Form.Row>
-          <Form.Group as={Col} controlId="name">
-            <Form.Control xs={6} placeholder="First name" autoComplete="name" onChange={this.handleChangeRegister} />
-          </Form.Group>
-          <Form.Group as={Col} controlId="lastname">
-            <Form.Control xs={6} placeholder="Last name" autoComplete="surname" onChange={this.handleChangeRegister} />
-          </Form.Group>
-        </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} controlId="email">
-            <Form.Control xs={12} placeholder="Email address" autoComplete="email" onChange={this.handleChangeRegister} />
-          </Form.Group>
-        </Form.Row>
-        <Form.Row className="form-register-submit">
-          <Form.Group as={Col}>
-            <button className="on btn-block" xs={12} onClick={e => {
-              e.preventDefault();
-
-              if (this.validateRegisterFormPart1()) {
-                this.setState({
-                  currentContainer: this.privacyContainer()
-                });
-              }
-
-            }}>Continue</button>
-          </Form.Group>
-        </Form.Row>
-      </Form>
-    </div>;
-  }
-
-  privacyContainer() {
-    return (<div className="container-register">
-      <p className="container-title">X Cloud Security</p>
-      <p className="privacy-disclaimer">Due to the secure nature of X Cloud we can't recover your information as we don't ever store user data. This means we can't access your account or reset your password. Once it's gone, it's gone forever. After you've set up a password on the next page we strongly suggest you:</p>
-      <ul className="privacy-remainders">
-        <li>Store your Password. Keep it safe and secure.</li>
-        <li>Keep an offline backup of your password.</li>
-      </ul>
-      <Form>
-        <Form.Row>
-          <Form.Group as={Col} controlId="name">
-            <button className="btn-block off" onClick={e => {
-              this.setState({ currentContainer: this.registerContainer() });
-              e.preventDefault();
-            }}>Back</button>
-          </Form.Group>
-          <Form.Group as={Col}>
-            <button className="btn-block on" onClick={e => {
-              e.preventDefault();
-              this.setState({ currentContainer: this.passwordContainer() });
-            }}>Continue</button>
-          </Form.Group>
-        </Form.Row>
-
-      </Form>
-    </div>);
-  }
-
-  passwordContainer() {
-    this.recaptchaRef = React.createRef();
-
-    return <div className="container-register">
-      <p className="container-title">Create an X Cloud account</p>
-      <div className="menu-box">
-      <button className="off" onClick={(e) => { this.setState({ currentContainer: this.loginContainer() }) }}>Sign in</button>
-      <button className="on">Create account</button>
-      </div>
-      <Form className="form-register">
-        <Form.Row>
-          <Form.Group as={Col} controlId="password">
-            <Form.Control xs={12} type="password" placeholder="Password" onChange={this.handleChangeRegister} />
-          </Form.Group>
-        </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} controlId="confirmPassword">
-            <Form.Control xs={12} type="password" placeholder="Confirm password" onChange={this.handleChangeRegister} />
-          </Form.Group>
-        </Form.Row>
-        <Form.Row className="form-register-submit">
-          <Form.Group as={Col}>
-            <button className="btn-block off" onClick={e => {
-              this.setState({ currentContainer: this.privacyContainer() });
-              e.preventDefault();
-            }}>Back</button>
-          </Form.Group>
-          <Form.Group as={Col}>
-            <button className="btn-block on" onClick={e => {
-              if (this.validatePassword()) {
-                var dev = false;
-                if (dev) {
-                  this.doRegister();
-                } else {
-                  this.captchaLaunch();
-                }
-              }
-              e.preventDefault();
-
-            }}>Continue</button>
-          </Form.Group>
-        </Form.Row>
-
-        <ReCAPTCHA sitekey="6Lf4_xsUAAAAAAEEhth1iM8LjyUn6gse-z0Y7iEp"
-          ref={this.recaptchaRef}
-          size="invisible"
-          onChange={this.handleSubmitRegister}
-        />
-
-      </Form>
-    </div>;
-  }
-
-  loginContainer() {
-    return <div className="container-register">
-      <p className="container-title">Sign in to X Cloud</p>
-      <div className="menu-box">
-      <button className="on">Sign in</button>
-      <button className="off" onClick={(e) => { this.setState({ currentContainer: this.registerContainer() }) }}>Create account</button>
-      </div>
-      <Form className="form-register" onSubmit={this.handleSubmitDev}>
-        <Form.Row>
-          <Form.Group as={Col} controlId="email">
-            <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" onChange={this.handleChange} />
-          </Form.Group>
-        </Form.Row>
-        <Form.Row>
-          <Form.Group as={Col} controlId="password">
-            <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" onChange={this.handleChange} />
-          </Form.Group>
-        </Form.Row>
-        <Form.Row className="form-register-submit">
-          <Form.Group as={Col}>
-            <Button className="on btn-block" xs={12} onClick={e => {
-              if (!this.validateLoginForm()) {
-                alert('No valid');
-                return false;
-              }
-              var dev = false;
-              if (dev) {
-                this.doLogin();
-              } else {
-                this.captchaLaunch();
-              }
-              e.preventDefault();
-            }}>Sign in</Button>
-          </Form.Group>
-        </Form.Row>
-        <ReCAPTCHA sitekey="6Lf4_xsUAAAAAAEEhth1iM8LjyUn6gse-z0Y7iEp"
-          ref={this.recaptchaRef}
-          size="invisible"
-          onChange={this.handleSubmitLogin}
-        />
-
-      </Form>
-    </div>;
-  }
-
-  activationContainer() {
-    return (<div className="container-register">
-      <p className="container-title">Activation Email</p>
-      <p className="privacy-disclaimer">Please check your email and follow the instructions to activate your account so you can start using X Cloud.</p>
-      <ul className="privacy-remainders" style={{paddingTop: '20px'}}>
-        By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy
-      </ul>
-      <button className="btn-block on">Re-send activation email</button>
-    </div>);
   }
 }
 

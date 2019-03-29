@@ -60,8 +60,7 @@ class CreditCard extends React.Component {
                     stripeKey="pk_live_Rl9YfdPjEGxGUDh9BK5rgI3Y"
                     token={this.state.onToken}
                     billingAddress={true}
-                    zipCode={true}
-                    >
+                    zipCode={true}>
 
                     <Button
                         type="submit" block size="lg"

@@ -4,12 +4,11 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 
 import './App.css';
 import Login from './components/forms/Login';
+import New from './components/forms/New'
 import XCloud from './components/xcloud/XCloud';
 import Activation from './components/forms/Activation';
 import NotFound from './NotFound';
 
-import history from './history';
-import { StripeProvider } from 'react-stripe-elements';
 import Settings from './components/Settings';
 
 class App extends Component {
@@ -49,6 +48,10 @@ class App extends Component {
             isActivated={this.state.isActivated}
             handleKeySaved={this.handleKeySaved} />
           } />
+          <Route exact path='/new'
+                  render={(props) => <New {...props} />}
+                  isAuthenticated={this.state.isAuthenticated}
+                  handleKeySaved={this.handleKeySaved} />
           <Route exact path='/'>
             <Redirect to="/login" />
           </Route>
