@@ -33,22 +33,20 @@ class New extends React.Component {
 
     setHeaders = () => {
         let headers = {
-          Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-          "content-type": "application/json; charset=utf-8",
-          "internxt-mnemonic": localStorage.getItem("xMnemonic")
+            Authorization: `Bearer ${localStorage.getItem("xToken")}`,
+            "content-type": "application/json; charset=utf-8",
+            "internxt-mnemonic": localStorage.getItem("xMnemonic")
         }
         return headers;
-      }
-    
+    }
+
 
     componentDidMount() {
-        // Check if recent login is passed and redirect user to X Cloud
-
+        const xUser = JSON.parse(localStorage.getItem('xUser'));
+        const xToken = localStorage.getItem('xToken');
         const mnemonic = localStorage.getItem('xMnemonic');
-        const user = JSON.parse(localStorage.getItem('xUser'));
-
-        if (user && mnemonic) {
-            this.props.handleKeySaved(user)
+        const haveInfo = (xUser && xToken && mnemonic);
+        if (this.state.isAuthenticated === true || haveInfo) {
             history.push('/app')
         }
     }
