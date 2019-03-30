@@ -84,3 +84,14 @@ outline: transparent;
   margin-top: 32px;
   padding: 0px;
 }
+
+
+.btn:disabled {
+  opacity: 0.3 !important;
+  filter: alpha(opacity=30);
+}
+/*
+.form-control:invalid, .form-control:active {
+  background-color: rgb(255, 222, 222) !important;
+}
+*/

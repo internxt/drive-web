@@ -68,8 +68,8 @@ class Login extends React.Component {
 
 
   validateEmail = (email) => {
-    var re = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-    return re.test(String(email).toLowerCase());
+    let emailPattern = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+    return emailPattern.test(String(email).toLowerCase());
   }
 
   handleChange = event => {
@@ -126,8 +126,6 @@ class Login extends React.Component {
   }
 
   formerLogin = () => {
-    const isValid = this.validateForm();
-
     this.recaptchaRef = React.createRef();
 
     return (
@@ -144,7 +142,7 @@ class Login extends React.Component {
               </Form.Group>
             </Form.Row>
             <p id="Terms">By signing in, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
-            <Button className="button-submit" disabled={!isValid} size="lg" type="submit" block> Continue </Button>
+            <Button className="button-submit" disabled={!this.validateForm()} size="lg" type="submit" block> Continue </Button>
           </Form>
         </div>
       </div>)
@@ -170,17 +168,17 @@ class Login extends React.Component {
           }}>
             <Form.Row>
               <Form.Group as={Col} controlId="email">
-                <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" onChange={this.handleChange} />
+                <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" value={this.state.email} onChange={this.handleChange} />
               </Form.Group>
             </Form.Row>
             <Form.Row>
               <Form.Group as={Col} controlId="password">
-                <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" onChange={this.handleChange} />
+                <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" value={this.state.password} onChange={this.handleChange} />
               </Form.Group>
             </Form.Row>
             <Form.Row className="form-register-submit">
               <Form.Group as={Col}>
-                <Button className="on btn-block" xs={12} type="submit">Sign in</Button>
+                <Button className="on btn-block" disabled={!isValid} xs={12} type="submit">Sign in</Button>
               </Form.Group>
             </Form.Row>
           </Form>
