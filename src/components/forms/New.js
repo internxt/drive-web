@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { Container, Form, Col } from "react-bootstrap";
-import ReCAPTCHA from "react-google-recaptcha";
 
 import logo from '../../assets/logo.svg';
 import history from '../../history';
@@ -9,7 +8,6 @@ import history from '../../history';
 import { encryptText, encryptTextWithKey, passToHash } from '../../utils';
 
 const bip39 = require('bip39');
-
 
 const DEV = process.env.NODE_ENV == 'development';
 
@@ -40,7 +38,6 @@ class New extends React.Component {
         return headers;
     }
 
-
     componentDidMount() {
         const xUser = JSON.parse(localStorage.getItem('xUser'));
         const xToken = localStorage.getItem('xToken');
@@ -61,7 +58,6 @@ class New extends React.Component {
         var re = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
         return re.test(String(email).toLowerCase());
     }
-
 
     validateRegisterFormPart1 = () => {
         let isValid = true;
@@ -92,51 +88,6 @@ class New extends React.Component {
         if (this.state.register.password !== this.state.register.confirmPassword) isValid = false;
 
         return isValid;
-    }
-
-    captchaLaunch = () => {
-        this.recaptchaRef.current.execute();
-    }
-
-
-
-    render() {
-        return (<div className="login-main">
-            <Container className="login-container-box">
-                <p className="logo"><img src={logo} /></p>
-                {this.state.currentContainer}
-            </Container>
-        </div>
-        );
-    }
-
-    resolveCaptcha = captchaToken => {
-        const headers = this.setHeaders();
-        return new Promise((resolve, reject) => {
-            fetch('/api/captcha/' + captchaToken, {
-                method: 'GET',
-                headers
-            }).then(response => { resolve(response); })
-                .catch(err => { reject(err); });
-        });
-    }
-
-    handleSubmitRegister = captchaToken => {
-        // Captcha resolution
-        const captchaPromise = this.resolveCaptcha(captchaToken)
-        captchaPromise.then(response => response.json())
-            .then((resolved) => {
-                if (resolved.success) {
-
-                    this.doRegister();
-
-                }
-            }).catch((error) => {
-                console.error('Captcha validation error: ' + error);
-                alert('Captcha validation error');
-            })
-        // After login
-        this.recaptchaRef.current.reset();
     }
 
     doRegister = () => {
@@ -199,7 +150,6 @@ class New extends React.Component {
             });
 
     }
-
 
     registerContainer() {
         return <div className="container-register">
@@ -304,20 +254,12 @@ class New extends React.Component {
                                 if (DEV) {
                                     this.doRegister();
                                 } else {
-                                    this.captchaLaunch();
+                                    this.doRegister();
                                 }
                             }
-
                         }}>Continue</button>
                     </Form.Group>
                 </Form.Row>
-
-                <ReCAPTCHA sitekey="6Lf4_xsUAAAAAAEEhth1iM8LjyUn6gse-z0Y7iEp"
-                    ref={this.recaptchaRef}
-                    size="invisible"
-                    onChange={this.handleSubmitRegister}
-                />
-
             </Form>
         </div>;
     }
@@ -333,8 +275,15 @@ class New extends React.Component {
         </div>);
     }
 
-
-
+    render() {
+        return (<div className="login-main">
+            <Container className="login-container-box">
+                <p className="logo"><img src={logo} /></p>
+                {this.state.currentContainer}
+            </Container>
+        </div>
+        );
+    }
 }
 
 export default New;

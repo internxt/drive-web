@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Button, Form, Col, Container, Row, FormGroup, FormControl } from "react-bootstrap";
-import ReCAPTCHA from "react-google-recaptcha";
 
 import history from '../../history';
 import "./Login.css";
@@ -79,40 +78,6 @@ class Login extends React.Component {
     });
   }
 
-
-  captchaLaunch = () => {
-    this.recaptchaRef.current.execute();
-  }
-
-  resolveCaptcha = captchaToken => {
-    const headers = this.setHeaders();
-    return new Promise((resolve, reject) => {
-      fetch('/api/captcha/' + captchaToken, {
-        method: 'GET',
-        headers
-      }).then(response => { resolve(response); })
-        .catch(err => { reject(err); });
-    });
-  }
-
-  handleSubmitLogin = captchaToken => {
-    // Captcha resolution
-    const captchaPromise = this.resolveCaptcha(captchaToken)
-    captchaPromise.then(response => response.json())
-      .then((resolved) => {
-        if (resolved.success) {
-
-          this.doLogin();
-
-        }
-      }).catch((error) => {
-        console.error('Captcha validation error: ' + error);
-        alert('Captcha validation error');
-      })
-    // After login
-    this.recaptchaRef.current.reset();
-  }
-
   doLogin = () => {
     const headers = this.setHeaders();
 
@@ -169,7 +134,7 @@ class Login extends React.Component {
       <div>
         <img src={logo} className="Logo" style={{ height: 27.5, width: 52.4 }} />
         <div id="Login" className="Login">
-          <Form className="formBlock" onSubmit={this.captchaLaunch}>
+          <Form className="formBlock" onSubmit={this.handleSubmit}>
             <Form.Row>
               <Form.Group as={Col} controlId="email">
                 <Form.Control autoFocus required size="lg" type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
@@ -178,11 +143,6 @@ class Login extends React.Component {
                 <Form.Control required size="lg" type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
               </Form.Group>
             </Form.Row>
-            <ReCAPTCHA sitekey="6Lf4_xsUAAAAAAEEhth1iM8LjyUn6gse-z0Y7iEp"
-              ref={this.recaptchaRef}
-              size="invisible"
-              onChange={this.handleSubmit}
-            />
             <p id="Terms">By signing in, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
             <Button className="button-submit" disabled={!isValid} size="lg" type="submit" block> Continue </Button>
           </Form>
@@ -225,18 +185,12 @@ class Login extends React.Component {
                   if (DEV) {
                     this.doLogin();
                   } else {
-                    this.captchaLaunch();
+                    this.doLogin();
                   }
                   e.preventDefault();
                 }}>Sign in</Button>
               </Form.Group>
             </Form.Row>
-            <ReCAPTCHA sitekey="6Lf4_xsUAAAAAAEEhth1iM8LjyUn6gse-z0Y7iEp"
-              ref={this.recaptchaRef}
-              size="invisible"
-              onChange={this.handleSubmitLogin}
-            />
-
           </Form>
         </div>
       </Container>
