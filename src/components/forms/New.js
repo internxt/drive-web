@@ -162,10 +162,11 @@ class New extends React.Component {
                 e.preventDefault();
 
                 if (this.validateRegisterFormPart1()) {
-                    console.log(123);
-
+                    var tempReg = this.state.register;
+                    tempReg.email = tempReg.email.toLowerCase();
                     this.setState({
-                        currentContainer: this.privacyContainer()
+                        currentContainer: this.privacyContainer(),
+                        register: tempReg
                     });
                 }
             }}>
