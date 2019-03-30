@@ -12,6 +12,8 @@ import history from '../../history';
 import "../../App.css";
 import NavigationBar from "../navigationBar/NavigationBar";
 
+import logo from '../../assets/logo.svg';
+
 class XCloud extends React.Component {
   constructor(props) {
     super(props);
@@ -374,12 +376,13 @@ class XCloud extends React.Component {
               <div className="popup--full-screen__close-button-wrapper">
                 <div className="close-button" onClick={this.closeRateLimitModal}>X</div>
               </div>
+              <span className="logo"><img src={logo} /></span>
               <div className="message-wrapper">
-                <h1> You have run out of storage space! </h1>
-                <h2>Get more storage space by upgrading your storage plan on your settings page.</h2>
+                <h1> You have run out of storage. </h1>
+                <h2>You have currently used 1GB of storage. In order to start uploading more files please click the button below to upgrade your storage plan.</h2>
                 <div className="buttons-wrapper">
                 <div className="default-button button-primary" onClick={this.goToSettings}>
-                  Take me there
+                  Upgrade my storage plan
                 </div>
               </div>
 
