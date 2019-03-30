@@ -112,7 +112,7 @@ class Login extends React.Component {
           // Manage other cases:
           // username / password do not match, user activation required...
           response.json().then((body) => {
-            alert(body.message);
+            alert(body.error);
           });
         } else {
           // Manage user does not exist
