@@ -158,32 +158,33 @@ class New extends React.Component {
                 <button className="off" onClick={(e) => { history.push('/login') }}>Sign in</button>
                 <button className="on">Create account</button>
             </div>
-            <Form className="form-register" method="post">
+            <Form className="form-register" onSubmit={e => {
+                e.preventDefault();
+
+                if (this.validateRegisterFormPart1()) {
+                    console.log(123);
+
+                    this.setState({
+                        currentContainer: this.privacyContainer()
+                    });
+                }
+            }}>
                 <Form.Row>
                     <Form.Group as={Col} controlId="name">
-                        <Form.Control xs={6} placeholder="First name" autoComplete="name" onChange={this.handleChangeRegister} />
+                        <Form.Control xs={6} placeholder="First name" required autoComplete="name" onChange={this.handleChangeRegister} />
                     </Form.Group>
                     <Form.Group as={Col} controlId="lastname">
-                        <Form.Control xs={6} placeholder="Last name" autoComplete="lastname" onChange={this.handleChangeRegister} />
+                        <Form.Control xs={6} placeholder="Last name" required autoComplete="lastname" onChange={this.handleChangeRegister} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
                     <Form.Group as={Col} controlId="email">
-                        <Form.Control xs={12} placeholder="Email address" autoComplete="email" onChange={this.handleChangeRegister} />
+                        <Form.Control xs={12} placeholder="Email address" type="email" required autoComplete="email" onChange={this.handleChangeRegister} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row className="form-register-submit">
                     <Form.Group as={Col}>
-                        <button className="on btn-block" xs={12} onClick={e => {
-                            e.preventDefault();
-
-                            if (this.validateRegisterFormPart1()) {
-                                this.setState({
-                                    currentContainer: this.privacyContainer()
-                                });
-                            }
-
-                        }}>Continue</button>
+                        <button className="on btn-block" xs={12} type="submit">Continue</button>
                     </Form.Group>
                 </Form.Row>
             </Form>
@@ -227,16 +228,22 @@ class New extends React.Component {
                 <button className="off" onClick={(e) => { this.setState({ currentContainer: this.loginContainer() }) }}>Sign in</button>
                 <button className="on">Create account</button>
             </div>
-            <Form className="form-register">
+            <Form className="form-register" onSubmit={e => {
+                e.preventDefault();
+
+                if (this.validatePassword()) {
+                    this.doRegister();
+                }
+            }}>
                 <Form.Row>
                     <Form.Group as={Col} controlId="password">
                         <Form.Control type="hidden" name="username" autoComplete="username" value={this.state.register.email} />
-                        <Form.Control xs={12} type="password" placeholder="Password" autoComplete="new-password" onChange={this.handleChangeRegister} />
+                        <Form.Control xs={12} type="password" required placeholder="Password" autoComplete="new-password" onChange={this.handleChangeRegister} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
                     <Form.Group as={Col} controlId="confirmPassword">
-                        <Form.Control xs={12} type="password" placeholder="Confirm password" autoComplete="confirm-password" onChange={this.handleChangeRegister} />
+                        <Form.Control xs={12} type="password" required placeholder="Confirm password" autoComplete="confirm-password" onChange={this.handleChangeRegister} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row className="form-register-submit">
@@ -247,21 +254,11 @@ class New extends React.Component {
                         }}>Back</button>
                     </Form.Group>
                     <Form.Group as={Col}>
-                        <button className="btn-block on" onClick={e => {
-                            e.preventDefault();
-
-                            if (this.validatePassword()) {
-                                if (DEV) {
-                                    this.doRegister();
-                                } else {
-                                    this.doRegister();
-                                }
-                            }
-                        }}>Continue</button>
+                        <button className="btn-block on" type="submit">Continue</button>
                     </Form.Group>
                 </Form.Row>
             </Form>
-        </div>;
+        </div >;
     }
 
     activationContainer() {

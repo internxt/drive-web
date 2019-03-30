@@ -164,7 +164,10 @@ class Login extends React.Component {
               history.push('/new');
             }}>Create account</button>
           </div>
-          <Form className="form-register" onSubmit={this.handleSubmitDev}>
+          <Form className="form-register" onSubmit={e => {
+            e.preventDefault();
+            this.doLogin();
+          }}>
             <Form.Row>
               <Form.Group as={Col} controlId="email">
                 <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" onChange={this.handleChange} />
@@ -177,18 +180,7 @@ class Login extends React.Component {
             </Form.Row>
             <Form.Row className="form-register-submit">
               <Form.Group as={Col}>
-                <Button className="on btn-block" xs={12} onClick={e => {
-                  if (!this.validateLoginForm()) {
-                    alert('No valid');
-                    return false;
-                  }
-                  if (DEV) {
-                    this.doLogin();
-                  } else {
-                    this.doLogin();
-                  }
-                  e.preventDefault();
-                }}>Sign in</Button>
+                <Button className="on btn-block" xs={12} type="submit">Sign in</Button>
               </Form.Group>
             </Form.Row>
           </Form>
