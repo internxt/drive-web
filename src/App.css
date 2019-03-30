@@ -80,6 +80,7 @@ will have CircularStd as default font. */
 
   width: 100% !important;
   height: 100% !important;
+
 }
 
 .popup--full-screen__content {
@@ -89,6 +90,7 @@ will have CircularStd as default font. */
   align-content: center;
 
   width: 80%;
+  height: 100%;
 }
 
 .popup--full-screen__content .message-wrapper {
@@ -96,10 +98,12 @@ will have CircularStd as default font. */
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: auto;
 }
 
 .popup--full-screen__content .message-wrapper h1 {
   font-size: 50px;
+  font-weight: 900;
 }
 
 .popup--full-screen__content .message-wrapper h2 {
@@ -123,6 +127,7 @@ will have CircularStd as default font. */
 .popup--full-screen__content .buttons-wrapper {
   border: 0px;
   justify-content: center;
+  margin-top: 100px;
 }
 
 
@@ -132,7 +137,8 @@ will have CircularStd as default font. */
   flex-direction: row;
   justify-content: center;
   align-content: center;
-  align-items: center
+  align-items: center;
+  margin-top: 50px;
 }
 
 .popup-overlay a {

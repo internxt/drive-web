@@ -333,6 +333,10 @@ class XCloud extends React.Component {
     this.setState({ rateLimitModal: false })
   }
 
+  goToSettings = () => {
+    history.push('/settings');
+  }
+
   render() {
     // Check authentication
     if (this.props.isAuthenticated && this.state.isActivated && this.state.isInitialized) {
@@ -368,18 +372,17 @@ class XCloud extends React.Component {
           <Popup open={this.state.rateLimitModal} closeOnDocumentClick onClose={this.closeRateLimitModal} className="popup--full-screen">
             <div className="popup--full-screen__content">
               <div className="popup--full-screen__close-button-wrapper">
-                <div className="close-button" onClick={this.closeRateLimitModal}>
-                  X
-                  </div>
+                <div className="close-button" onClick={this.closeRateLimitModal}>X</div>
               </div>
               <div className="message-wrapper">
                 <h1> You have run out of storage space! </h1>
                 <h2>Get more storage space by upgrading your storage plan on your settings page.</h2>
-              </div>
-              <div className="buttons-wrapper">
+                <div className="buttons-wrapper">
                 <div className="default-button button-primary" onClick={this.goToSettings}>
                   Take me there
                 </div>
+              </div>
+
               </div>
             </div>
           </Popup>
