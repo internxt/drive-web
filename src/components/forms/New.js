@@ -163,7 +163,7 @@ class New extends React.Component {
 
                 if (this.validateRegisterFormPart1()) {
                     var tempReg = this.state.register;
-                    tempReg.email = tempReg.email.toLowerCase();
+                    tempReg.email = tempReg.email.toLowerCase().trim();
                     this.setState({
                         currentContainer: this.privacyContainer(),
                         register: tempReg
