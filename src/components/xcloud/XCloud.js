@@ -196,7 +196,7 @@ class XCloud extends React.Component {
         this.setState({ rateLimitModal: true })
       } else {
 
-        alert('Error downloading file:\n' + err.status + ' - ' + err.statusText + '\n' + res.message);
+        alert('Error downloading file:\n' + err.status + ' - ' + err.statusText + '\n' + res.message + '\nFile id: ' + id);
       }
     });
   }
