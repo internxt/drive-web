@@ -121,7 +121,7 @@ class XCloud extends React.Component {
     const searchString = e.target.value.toString();
     let func = null;
     if(searchString) { 
-      func = function(item) { return item.name.includes(searchString); }
+      func = function(item) { return item.name.toLowerCase().includes(searchString.toLowerCase()); }
     }
     this.setState({ searchFunction: func });
     this.getFolderContent(this.state.currentFolderId);
