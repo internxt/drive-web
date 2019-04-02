@@ -26,45 +26,29 @@ input#uploadFile {
 }
 
 .searchInput {
-    cursor: pointer;
-    cursor: default;
-    outline: none;
-    height: 46px;
-    width: 46px;
     background-color: #f7f7f7;
+    border-radius: 23.1px;
+    cursor: pointer;
     border: none;
+    outline: none;
+    width: 48px;
     font-size: 1em;
     font-weight: 500;
-    font-family: 'Cerebri Sans';
-    border-radius: 50%;
     transition: all .2s ease-in;
     background-repeat: no-repeat;
     background-size: 23px;
     background-position: center;
-    padding-left: 20%;
+    float: left;
+    margin-left: 0px;
+    color: #333333;
 }
 
 .searchInput:focus {
-    width: 16em;
-    padding-left: 1em;
-    padding-right: 2.5em;
+    width: 380px;
     transition: all .2s ease-in;
-    border-radius: 23.1px;
-    color: #333333;
     background-position: left;
-    background-position-x: 5%;  
-    padding-left: 10%;
+    background-position-x: 5%;
+    padding-left: 62px;
+    margin-left: -295px;
 }
 
-.searchSpan {
-    cursor: pointer;
-    position: relative;
-    left: -2.1em;
-    bottom: -0.75em;
-    pointer-events: none;
-}
-
-.searchSpan::before {
-    content: url('../../assets/Dashboard-Icons/Search.svg');
-    margin-right: -0.9em;
-}

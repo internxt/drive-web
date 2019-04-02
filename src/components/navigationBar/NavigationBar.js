@@ -34,7 +34,7 @@ class NavigationBar extends React.Component {
                     <Dropdown.Menu>
                         <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
                         <Dropdown.Divider />
-                        <Dropdown.Item onClick={(e) => { localStorage.clear(); window.location.reload();  }}>Sign out</Dropdown.Item>
+                        <Dropdown.Item onClick={(e) => { localStorage.clear(); window.location.reload(); }}>Sign out</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>;
         }
@@ -42,13 +42,16 @@ class NavigationBar extends React.Component {
         if (props.showFileButtons) {
             this.state.navbarItems =
                 <Nav className="m-auto">
-                    <input alt="Search files" className="HeaderButton searchInput" style={{backgroundImage: 'url(' + search + ')'}} onChange={props.setSearchFunction}/>
+                    <div className="HeaderButton">
+                        <input alt="Search files" className="searchInput" style={{ backgroundImage: 'url(' + search + ')' }} onChange={props.setSearchFunction} />
+                    </div>
+
                     <HeaderButton icon={uploadFile} name="Upload file" clickHandler={props.uploadFile} />
                     <HeaderButton icon={newFolder} name="New folder" clickHandler={props.createFolder} />
                     {/*<HeaderButton icon={downloadFile} name="Download" />*/}
                     <HeaderButton icon={deleteFile} name="Delete" clickHandler={props.deleteItems} />
                     {/*<HeaderButton icon={share} name="Share" />*/}
-                    <input id="uploadFile" type="file" onChange={props.uploadHandler}/>
+                    <input id="uploadFile" type="file" onChange={props.uploadHandler} />
                 </Nav>;
         }
     }
@@ -66,7 +69,7 @@ class NavigationBar extends React.Component {
                 <Nav className="m-auto">
                     {this.state.navbarItems}
                 </Nav>
-                <Nav style={{margin: '0 13px 0 0'}}>
+                <Nav style={{ margin: '0 13px 0 0' }}>
                     {this.state.menuButton}
                 </Nav>
             </Navbar>
