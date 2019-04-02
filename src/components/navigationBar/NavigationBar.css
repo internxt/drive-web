@@ -13,8 +13,6 @@
     box-shadow: 0 0 0 0.2rem transparent !important;
 }
 
-nav {
-}
 .navbar {
     padding: 0 !important;
 }
@@ -27,6 +25,39 @@ input#uploadFile {
     display: none;
 }
 
-#mainNavBar h3 {
-    
+.searchInput {
+    cursor: pointer;
+    cursor: default;
+    outline: none;
+    height: 46px;
+    width: 46px;
+    background-color: #f7f7f7;
+    border: none;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: 'Cerebri Sans';
+    border-radius: 50%;
+    transition: all .2s ease-in;
+}
+
+.searchInput:focus {
+    width: 16em;
+    padding-left: 1em;
+    padding-right: 2.5em;
+    transition: all .2s ease-in;
+    border-radius: 10px;
+    color: #333333;    
+}
+
+.searchSpan {
+    cursor: pointer;
+    position: relative;
+    left: -2.1em;
+    bottom: -0.75em;
+    pointer-events: none;
+}
+
+.searchSpan::before {
+    content: url('../../assets/Dashboard-Icons/Search.svg');
+    margin-right: -0.9em;
 }

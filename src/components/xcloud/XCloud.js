@@ -31,7 +31,8 @@ class XCloud extends React.Component {
       currentCommanderItems: [],
       namePath: [],
       selectedItems: [],
-      sortFunction: null
+      sortFunction: null,
+      searchFunction: null
     };
   }
 
@@ -115,6 +116,17 @@ class XCloud extends React.Component {
     this.getFolderContent(this.state.currentFolderId);
   }
 
+  setSearchFunction = (e) => {
+    // Set search function depending on search text input and refresh items list
+    const searchString = e.target.value.toString();
+    let func = null;
+    if(searchString) { 
+      func = function(item) { return item.name.includes(searchString); }
+    }
+    this.setState({ searchFunction: func });
+    this.getFolderContent(this.state.currentFolderId);
+  }
+
   createFolder = () => {
     const folderName = prompt("Please enter folder name");
     const headers = this.setHeaders();
@@ -145,9 +157,15 @@ class XCloud extends React.Component {
       .then(response => response.json())
       .then(data => {
         this.deselectAll();
-        // Set new items list and apply sort function if is set
+        // Set new items list
         let newCommanderFolders = _.map(data.children, o => _.extend({ type: "Folder" }, o))
         let newCommanderFiles = data.files;
+        // Apply search function if is set
+        if (this.state.searchFunction) {
+          newCommanderFolders = newCommanderFolders.filter(this.state.searchFunction);
+          newCommanderFiles = newCommanderFiles.filter(this.state.searchFunction);
+        }
+        // Apply sort function if is set
         if (this.state.sortFunction) {
           newCommanderFolders.sort(this.state.sortFunction);
           newCommanderFiles.sort(this.state.sortFunction);
@@ -351,6 +369,7 @@ class XCloud extends React.Component {
             uploadFile={this.openUploadFile}
             uploadHandler={this.uploadFile}
             deleteItems={this.deleteItems}
+            setSearchFunction={this.setSearchFunction}
             style
           />
           <FileCommander

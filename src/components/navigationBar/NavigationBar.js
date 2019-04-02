@@ -42,7 +42,7 @@ class NavigationBar extends React.Component {
         if (props.showFileButtons) {
             this.state.navbarItems =
                 <Nav className="m-auto">
-                    {/*<HeaderButton icon={search} name="Search files" />*/}
+                    <input alt="Search files" className="searchInput" onChange={props.setSearchFunction}/><span className="searchSpan" icon={search}></span>
                     <HeaderButton icon={uploadFile} name="Upload file" clickHandler={props.uploadFile} />
                     <HeaderButton icon={newFolder} name="New folder" clickHandler={props.createFolder} />
                     {/*<HeaderButton icon={downloadFile} name="Download" />*/}
