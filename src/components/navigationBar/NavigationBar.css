@@ -38,6 +38,10 @@ input#uploadFile {
     font-family: 'Cerebri Sans';
     border-radius: 50%;
     transition: all .2s ease-in;
+    background-repeat: no-repeat;
+    background-size: 23px;
+    background-position: center;
+    padding-left: 20%;
 }
 
 .searchInput:focus {
@@ -46,7 +50,10 @@ input#uploadFile {
     padding-right: 2.5em;
     transition: all .2s ease-in;
     border-radius: 23.1px;
-    color: #333333;    
+    color: #333333;
+    background-position: left;
+    background-position-x: 5%;  
+    padding-left: 10%;
 }
 
 .searchSpan {
