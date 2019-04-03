@@ -31,7 +31,7 @@ input#uploadFile {
     cursor: pointer;
     border: none;
     outline: none;
-    width: 48px;
+    width: 46px;
     font-size: 1em;
     font-weight: 500;
     transition: all .2s ease-in;
