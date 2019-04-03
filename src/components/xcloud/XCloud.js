@@ -4,14 +4,14 @@ import { Alert } from 'react-bootstrap';
 import $ from 'jquery';
 import _ from 'lodash';
 import fileDownload from 'js-file-download';
-
-import FileCommander from './FileCommander';
 import update from 'immutability-helper';
 import Popup from "reactjs-popup";
-import history from '../../history';
-import "../../App.css";
-import NavigationBar from "../navigationBar/NavigationBar";
 
+import FileCommander from './FileCommander';
+import NavigationBar from "../navigationBar/NavigationBar";
+import history from '../../history';
+import { removeAccents } from '../../utils';
+import "../../App.css";
 import logo from '../../assets/logo.svg';
 
 class XCloud extends React.Component {
@@ -118,10 +118,10 @@ class XCloud extends React.Component {
 
   setSearchFunction = (e) => {
     // Set search function depending on search text input and refresh items list
-    const searchString = e.target.value.toString();
+    const searchString = removeAccents(e.target.value.toString()).toLowerCase();
     let func = null;
     if(searchString) { 
-      func = function(item) { return item.name.toLowerCase().includes(searchString.toLowerCase()); }
+      func = function(item) { return item.name.toLowerCase().includes(searchString); }
     }
     this.setState({ searchFunction: func });
     this.getFolderContent(this.state.currentFolderId);
