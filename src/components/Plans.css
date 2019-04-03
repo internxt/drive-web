@@ -58,6 +58,11 @@
 .delete-account {
     color: #9a9a9a;
     font-size: 15px;
+    cursor: pointer;
+}
+
+.delete-account:hover {
+    color: red !important;
 }
 
 .settings-hr-first {

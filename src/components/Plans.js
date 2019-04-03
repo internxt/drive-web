@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, ProgressBar, Col, Card } from "react-bootstrap";
+import { Container, Row, ProgressBar, Col, Card, Modal, Button } from "react-bootstrap";
 
 import './Plans.css'
 import Circle from "./Circle";
@@ -13,8 +13,9 @@ class Plans extends React.Component {
 
         this.state = {
             PlanDetails: [],
-            barLimit: 1024* 1024* 1024,
-            barUsage: 0
+            barLimit: 1024 * 1024 * 1024,
+            barUsage: 0,
+            modalDeleteAccountShow: false
         }
     }
 
@@ -70,14 +71,35 @@ class Plans extends React.Component {
 
     }
 
+    handleDismissDeleteAccount = () => {
+        this.setState({ modalDeleteAccountShow: false });
+    }
+
+    handleCancelAccount = () => {
+        fetch('/api/deactivate', {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("xToken")}`,
+                "content-type": "application/json; charset=utf-8"
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            this.setState({ modalDeleteAccountShow: false });
+        }).catch(err => {
+            alert('Error deleting account');
+            console.log(err);
+        });
+    }
+
 
     render() {
         return (
             <Container fluid>
                 <Container className="mt-5" style={{ maxWidth: '784px' }}>
                     <h2><strong>Storage Space</strong></h2>
-                    <p color="#404040" className="mt-3" style={{textAlign: 'right'}}>Used {PrettySize(this.state.barUsage)} of {PrettySize(this.state.barLimit)}</p>
-                    <ProgressBar now={this.state.barUsage} max={this.state.barLimit}  />
+                    <p color="#404040" className="mt-3" style={{ textAlign: 'right' }}>Used {PrettySize(this.state.barUsage)} of {PrettySize(this.state.barLimit)}</p>
+                    <ProgressBar now={this.state.barUsage} max={this.state.barLimit} />
 
                     <Row className="mt-3">
                         <Col xs={12} md={6} sm={6}>
@@ -103,6 +125,24 @@ class Plans extends React.Component {
                             </Card>
                         </Col>)}
                     </Row>
+
+                    <hr className="settings-hr-end" />
+
+                    <a className="delete-account" onClick={e => {
+                        this.setState({ modalDeleteAccountShow: true });
+                    }}>Permanently Delete Account</a>
+
+                    <Modal show={this.state.modalDeleteAccountShow} onHide={this.handleDismissDeleteAccount}>
+                        <Modal.Header closeButton>Permanently delete account</Modal.Header>
+                        <Modal.Body>
+                            <p>You are about to permanently delete this account and the subcription if you have one.</p>
+                            <p>If you confirm you want to remove your account, a confirmation email will be sent to your inbox.</p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="primary" onClick={this.handleDismissDeleteAccount}>Do not remove</Button>
+                            <Button variant="danger" onClick={this.handleCancelAccount}>Confirm delete</Button>
+                        </Modal.Footer>
+                    </Modal>
 
                 </Container>
 
