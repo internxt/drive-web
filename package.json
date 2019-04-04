@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
     "bip39": "^2.5.0",
     "bootstrap": "^4.2.1",
     "copy-to-clipboard": "^3.0.8",
