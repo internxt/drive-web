@@ -43,7 +43,7 @@ input#uploadFile {
     color: transparent;
 }
 
-.searchInput:focus {
+.searchInput:focus, .searchInput:valid {
     width: 380px;
     transition: all .2s ease-in;
     background-position: left;
@@ -52,4 +52,5 @@ input#uploadFile {
     margin-left: -295px;
     color: #333333;
 }
+
 
