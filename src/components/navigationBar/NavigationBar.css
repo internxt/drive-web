@@ -40,7 +40,7 @@ input#uploadFile {
     background-position: center;
     float: left;
     margin-left: 0px;
-    color: #333333;
+    color: transparent;
 }
 
 .searchInput:focus {
@@ -50,5 +50,6 @@ input#uploadFile {
     background-position-x: 5%;
     padding-left: 62px;
     margin-left: -295px;
+    color: #333333;
 }
 
