@@ -13,6 +13,7 @@ import history from '../../history';
 import { removeAccents } from '../../utils';
 import "../../App.css";
 import logo from '../../assets/logo.svg';
+import closeTab from '../../assets/Dashboard-Icons/Close tab.svg';
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -393,7 +394,7 @@ class XCloud extends React.Component {
           <Popup open={this.state.rateLimitModal} closeOnDocumentClick onClose={this.closeRateLimitModal} className="popup--full-screen">
             <div className="popup--full-screen__content">
               <div className="popup--full-screen__close-button-wrapper">
-                <div className="close-button" onClick={this.closeRateLimitModal}>X</div>
+                <img src={closeTab} onClick={this.closeRateLimitModal} />
               </div>
               <span className="logo"><img src={logo} /></span>
               <div className="message-wrapper">

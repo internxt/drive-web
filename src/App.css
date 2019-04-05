@@ -101,8 +101,10 @@ will have CircularStd as default font. */
 
 .popup--full-screen__content .message-wrapper h2 {
   font-size: 15px;
-  color: #737880;
-  font-weight: 500;
+  color: #707070;
+  font-weight: 400;
+  line-height: 1.5;
+  
 }
 
 .popup--full-screen__content .button-primary {
@@ -214,6 +216,8 @@ will have CircularStd as default font. */
   margin-bottom: 30px;
 
   font-size: 16px !important;
+
+  font-weight: 500;
 }
 .default-button:hover {
   border: 1px #222 solid
