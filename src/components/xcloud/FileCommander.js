@@ -161,9 +161,9 @@ class FileCommander extends React.Component {
                                                 id={item.id}
                                                 name={item.name}
                                                 type={item.type}
-                                                bucket={item.bucketId}
+                                                bucket={item.fileId}
                                                 created={moment(item.created).format('dddd')}
-                                                clickHandler={this.props.downloadFile.bind(null, item.bucketId)}
+                                                clickHandler={this.props.downloadFile.bind(null, item.fileId)}
                                                 selectHandler={(e) => this.props.selectCommanderItem(i, e)}
                                                 isLoading={item.isLoading}
                                             />

@@ -4,7 +4,7 @@ import { Button, Form, Col, Container, Row, FormGroup, FormControl } from "react
 import history from '../../history';
 import "./Login.css";
 import logo from '../../assets/logo.svg';
-import { encryptText, decryptTextWithKey } from '../../utils';
+import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../utils';
 
 const bip39 = require('bip39');
 
@@ -85,28 +85,43 @@ class Login extends React.Component {
     fetch("/api/login", {
       method: "post",
       headers,
-      body: JSON.stringify({ email: this.state.email, password: encryptText(this.state.password) })
+      body: JSON.stringify({ email: this.state.email })
     })
       .then(response => {
         if (response.status === 200) {
-          // Manage succesfull login
+          // Manage credentials verification
           response.json().then((body) => {
-            const user = {
-              userId: body.user.userId,
-              email: this.state.email,
-              mnemonic: body.user.mnemonic ? decryptTextWithKey(body.user.mnemonic, this.state.password) : null,
-              root_folder_id: body.user.root_folder_id,
-              storeMnemonic: body.user.storeMnemonic
-            };
-            this.props.handleKeySaved(user)
-            localStorage.setItem('xToken', body.token);
-            localStorage.setItem('xMnemonic', user.mnemonic);
-            localStorage.setItem('xUser', JSON.stringify(user));
-            this.setState({
-              isAuthenticated: true,
-              token: body.token,
-              user: user
-            })
+            // Check password
+            const salt = decryptText(body.sKey);
+            const hashObj = passToHash({ password: this.state.password, salt });
+            const encPass = encryptText(hashObj.hash);
+            fetch("/api/access", {
+              method: "post",
+              headers,
+              body: JSON.stringify({ email: this.state.email, password: encPass })
+            }).then(res => {
+              if (res.status === 200) {
+                // Manage succesfull login
+                res.json().then((data) => {
+                  const user = {
+                    userId: data.user.userId,
+                    email: this.state.email,
+                    mnemonic: data.user.mnemonic ? decryptTextWithKey(data.user.mnemonic, this.state.password) : null,
+                    root_folder_id: data.user.root_folder_id,
+                    storeMnemonic: data.user.storeMnemonic
+                  };
+                  this.props.handleKeySaved(user)
+                  localStorage.setItem('xToken', data.token);
+                  localStorage.setItem('xMnemonic', user.mnemonic);
+                  localStorage.setItem('xUser', JSON.stringify(user));
+                  this.setState({
+                    isAuthenticated: true,
+                    token: data.token,
+                    user: user
+                  });
+                });
+              }
+            });
           });
         } else if (response.status === 400) {
           // Manage other cases:
