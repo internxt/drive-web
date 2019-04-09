@@ -194,6 +194,30 @@ class XCloud extends React.Component {
       });
   }
 
+  moveFile = (fileId, destination) => {
+    const headers = this.setHeaders();
+    const data = {
+      fileId,
+      destination
+    }
+    fetch('/api/storage/moveFile', {
+      method: 'post',
+      headers,
+      body: JSON.stringify(data)
+    }).then((response) => {
+      if (response.status === 200) {
+        // Successfully moved
+        this.getFolderContent(this.state.currentFolderId);
+      } else {
+        // Error moving file
+        response.json().then((error) => {
+          console.error(`Error moving file: ${error.message}`);
+          alert('Error moving file')
+        })
+      }
+    })
+  }
+
   downloadFile = (id) => {
     const headers = this.setHeaders();
     fetch(`/api/storage/file/${id}`, {
@@ -383,6 +407,7 @@ class XCloud extends React.Component {
             handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
             uploadDroppedFile={this.uploadDroppedFile}
             setSortFunction={this.setSortFunction}
+            moveFile={this.moveFile}
           />
 
           <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >

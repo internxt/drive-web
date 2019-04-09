@@ -39,7 +39,6 @@
     pointer-events: none;
     text-transform: uppercase;
     width: 75px;
-
     box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.07);
 }
 
@@ -100,4 +99,9 @@
 
 .FileCommanderItem:hover > .properties  {
     visibility: hidden;
+}
+
+.FileCommanderItem.dragOver {
+    border:  3px solid #aab3ff;
+    background-color: #f2f5ff;
 }

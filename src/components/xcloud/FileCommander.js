@@ -82,6 +82,37 @@ class FileCommander extends React.Component {
         }
     }
 
+    handleDragOver = (e) => {
+        // Disable drop files for fileCommander files
+        if (e.dataTransfer.types.includes('Files')) {
+            e.preventDefault()
+            e.stopPropagation()
+            this.setState({ dragDropStyle: 'drag-over' });
+        }
+    }
+
+    handleDragLeave = (e) => { this.setState({ dragDropStyle: '' }) }
+
+    handleDrop = (e) => {
+        e.preventDefault()
+        let files = e.dataTransfer.files;
+
+        if (files.length) {
+            this.state.currentCommanderItems.push({
+                name: files[0].name,
+                size: files[0].size,
+                isLoading: true
+            });
+            this.setState({
+                currentCommanderItems: this.state.currentCommanderItems
+            });
+            this.props.uploadDroppedFile(files);
+        }
+
+        e.stopPropagation()
+        this.setState({ dragDropStyle: '' })
+    }
+
     render() {
         const list = this.state.currentCommanderItems || 0
         const inRoot = this.state.namePath.length === 1
@@ -113,31 +144,9 @@ class FileCommander extends React.Component {
                 </div>
                 <div id="FileCommander-items"
                     className={this.state.dragDropStyle}
-                    onDragOver={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        this.setState({ dragDropStyle: 'drag-over' });
-                    }}
-                    onDragLeave={e => this.setState({ dragDropStyle: '' })}
-                    onDrop={e => {
-                        e.preventDefault()
-                        let files = e.dataTransfer.files;
-
-                        if (files.length) {
-                            this.state.currentCommanderItems.push({
-                                name: files[0].name,
-                                size: files[0].size,
-                                isLoading: true
-                            });
-                            this.setState({
-                                currentCommanderItems: this.state.currentCommanderItems
-                            });
-                            this.props.uploadDroppedFile(files);
-                        }
-
-                        e.stopPropagation()
-                        this.setState({ dragDropStyle: '' })
-                    }}
+                    onDragOver={this.handleDragOver}
+                    onDragLeave={this.handleDragLeave}
+                    onDrop={this.handleDrop}
                 >
                     {
                         list.length > 0 ? (
@@ -154,6 +163,7 @@ class FileCommander extends React.Component {
                                                 created={moment(item.created).format('dddd')}
                                                 clickHandler={this.props.openFolder.bind(null, item.id)}
                                                 selectHandler={(e) => this.props.selectCommanderItem(i, e)}
+                                                moveFile={this.props.moveFile}
                                             />
                                             :
                                             <FileCommanderItem

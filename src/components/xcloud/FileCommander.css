@@ -22,12 +22,13 @@
     position: relative;
     top: -1.5px;
 }
-    #FileCommander-backTo {
-        height: 30px;
-        margin-top: 6px;
-        font-size: 18px;
-     width: 195px;
-     margin-left: 7px;
+
+#FileCommander-backTo {
+    height: 30px;
+    margin-top: 6px;
+    font-size: 18px;
+    width: 195px;
+    margin-left: 7px;
     font-weight: 600;
     display: inline;
     cursor: pointer;
