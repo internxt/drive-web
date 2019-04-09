@@ -17,7 +17,7 @@ class FileCommanderItem extends React.Component {
             type: event.currentTarget.dataset.type,
             id: event.currentTarget.dataset.bucket
         }
-        event.dataTransfer.setData('text/html', JSON.stringify(data));
+        event.dataTransfer.setData('text/plain', JSON.stringify(data));
     }
 
     handleDragOver = (event) => {
@@ -33,7 +33,7 @@ class FileCommanderItem extends React.Component {
 
     handleDrop = (event) => {
         // Move file when its dropped
-        var data = JSON.parse(event.dataTransfer.getData('text/html'));
+        var data = JSON.parse(event.dataTransfer.getData('text/plain'));
         this.props.moveFile(data.id, this.props.id);
         event.preventDefault();
         event.stopPropagation();
