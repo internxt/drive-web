@@ -25,32 +25,37 @@ input#uploadFile {
     display: none;
 }
 
-.searchInput {
-    background-color: #f7f7f7;
-    border-radius: 23.1px;
-    cursor: pointer;
-    border: none;
-    outline: none;
-    width: 46px;
-    font-size: 1em;
-    font-weight: 500;
-    transition: all .2s ease-in;
-    background-repeat: no-repeat;
-    background-size: 23px;
-    background-position: center;
-    float: left;
-    margin-left: 0px;
-    color: transparent;
+.top-bar {
+    width: 10px;
+}
+.search-container {
+    max-width: 950px;
+    margin: auto;
+    padding-right: 10px;
 }
 
-.searchInput:focus, .searchInput:valid {
+.search {
+    border-radius: 23.1px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    width: 46px;
+    height: 46px;
+    -webkit-transition: all .5s ease;
+    -moz-transition: all .5s ease;
+    transition: all .5s ease;
+    float: right;
+
+    border: solid 0px;
+    cursor: pointer;
+    outline: none;
+    background-color: #f7f7f7;
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+
+.search:focus {
     width: 380px;
-    transition: all .2s ease-in;
     background-position: left;
     background-position-x: 5%;
     padding-left: 62px;
-    margin-left: -295px;
-    color: #333333;
 }
-
-
