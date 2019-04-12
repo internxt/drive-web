@@ -26,12 +26,12 @@ input#uploadFile {
 }
 
 .top-bar {
-    width: 10px;
+    width: 60px;
 }
 .search-container {
     max-width: 950px;
     margin: auto;
-    padding-right: 10px;
+    padding-right: 8px;
 }
 
 .search {
@@ -51,11 +51,13 @@ input#uploadFile {
     background-color: #f7f7f7;
     background-repeat: no-repeat;
     background-position: 50%;
+    color: transparent;
 }
 
-.search:focus {
+.search:focus, .search:valid {
     width: 380px;
     background-position: left;
     background-position-x: 5%;
     padding-left: 62px;
+    color: #333333;
 }
