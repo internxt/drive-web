@@ -140,29 +140,6 @@ class Login extends React.Component {
       });
   }
 
-  formerLogin = () => {
-    this.recaptchaRef = React.createRef();
-
-    return (
-      <div>
-        <img src={logo} className="Logo" style={{ height: 27.5, width: 52.4 }} />
-        <div id="Login" className="Login">
-          <Form className="formBlock" onSubmit={this.handleSubmit}>
-            <Form.Row>
-              <Form.Group as={Col} controlId="email">
-                <Form.Control autoFocus required size="lg" type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
-              </Form.Group>
-              <Form.Group as={Col} controlId="password">
-                <Form.Control required size="lg" type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
-              </Form.Group>
-            </Form.Row>
-            <p id="Terms">By signing in, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
-            <Button className="button-submit" disabled={!this.validateForm()} size="lg" type="submit" block> Continue </Button>
-          </Form>
-        </div>
-      </div>)
-  };
-
   render() {
     const isValid = this.validateLoginForm();
 
