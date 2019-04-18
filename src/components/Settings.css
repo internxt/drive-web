@@ -15,9 +15,9 @@
     box-shadow: 0 6px 16px 0 rgba(0,0,0,.16);
     border: 0 solid;
     width: 212px;
-    height: 96px;
     left: -148px!important;
     top: 40px!important;
+    padding: 5px 0px 0px 0px;
 }
 
 .dropdown-menu .dropdown-item {

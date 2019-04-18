@@ -32,7 +32,9 @@ class NavigationBar extends React.Component {
                 <Dropdown drop="left" className="settingsButton">
                     <Dropdown.Toggle><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
                     <Dropdown.Menu>
-                        <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
+                    <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={(e) => { localStorage.clear(); window.location.reload(); }}>Sign out</Dropdown.Item>
                     </Dropdown.Menu>

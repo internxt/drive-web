@@ -1,0 +1,80 @@
+.Security {
+
+}
+
+.Security .security-box {
+    border: solid 1px #eaeced;
+    border-radius: 6px;
+    width: 641px;
+    height: 447px;
+    padding: 43px;
+}
+
+.Security .security-title {
+    font-size: 19px;
+    font-weight: bold;
+    font-style: normal;
+    letter-spacing: -0.2px;
+    color: #000000;
+    margin-bottom: 10px;
+}
+
+.Security .security-description {
+    font-size: 14px;
+    line-height: 1.57;
+    letter-spacing: -0.1px;
+    width: 514px;
+    color: #737880;
+}
+
+.Security .security-button-container {
+    margin-top: 39px;
+}
+
+.Security .security-button-container button {
+    display: flexbox;
+    border: solid 0px;
+    border-radius: 20.5px;
+    color: #ffffff;
+    margin-right: 10px;
+    height: 35px;
+    outline: none !important;
+    background-color: #fafbfc;
+}
+
+.Security .security-button-container button span.number {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-color: #b1b5ba;
+    border-radius: 50%;
+    font-weight: 900;
+    text-align: center;
+    margin-right: 5px;
+    line-height: 18px;
+    margin: 3px;
+    margin-right: 7px;
+    font-size: 11px;
+    color: #ffffff;
+}
+
+.Security .security-button-container button span.text {
+    height: 100%;
+    font-size: 14px;
+    margin-right: 10px;
+    color: #7e848c;
+}
+
+.Security .security-button-container button.on {
+    background-image: linear-gradient(51deg, #096dff, #00b1ff);
+    color: #4585f5;
+}
+
+.Security .security-button-container button.on span.number {
+    background-color: #ffffff;
+    color: #4585f5;
+}
+
+.Security .security-button-container button.on span.text {
+    color: #ffffff;
+}
