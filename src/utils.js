@@ -35,12 +35,12 @@ function passToHash(passObject) {
 
 // AES Plain text encryption method
 function encryptText(textToEncrypt) {
-  encryptTextWithKey(textToEncrypt, process.env.REACT_APP_CRYPTO_SECRET);
+  return encryptTextWithKey(textToEncrypt, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
 // AES Plain text decryption method
 function decryptText(encryptedText) {
-  decryptTextWithKey(encryptText, process.env.REACT_APP_CRYPTO_SECRET);
+  return decryptTextWithKey(encryptedText, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
 // AES Plain text encryption method with enc. key

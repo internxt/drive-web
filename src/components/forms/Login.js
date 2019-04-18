@@ -5,6 +5,7 @@ import history from '../../history';
 import "./Login.css";
 import logo from '../../assets/logo.svg';
 import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../utils';
+import { fdatasync } from "fs";
 
 const bip39 = require('bip39');
 
@@ -19,7 +20,9 @@ class Login extends React.Component {
       password: '',
       isAuthenticated: false,
       token: "",
-      user: {}
+      user: {},
+      showTwoFactor: false,
+      twoFactorCode: ''
     };
 
     this.recaptchaRef = React.createRef();
@@ -65,6 +68,11 @@ class Login extends React.Component {
     return isValid;
   }
 
+  validate2FA = () => {
+    let pattern = /^\d{3}(\s+)?\d{3}$/
+    return pattern.test(this.state.twoFactorCode);
+  }
+
 
 
   validateEmail = (email) => {
@@ -75,6 +83,32 @@ class Login extends React.Component {
   handleChange = event => {
     this.setState({
       [event.target.id]: event.target.value
+    });
+  }
+
+  check2FANeeded = () => {
+    const headers = this.setHeaders();
+
+    fetch('/api/login', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ email: this.state.email })
+    }).then(res => {
+
+      if (res.status != 200) {
+        throw new Error('Login error');
+      }
+
+      return res.json();
+
+    }).then(res => {
+      if (!res.tfa) {
+        this.doLogin();
+      } else {
+        this.setState({ showTwoFactor: true });
+      }
+    }).catch(err => {
+      alert(err);
     });
   }
 
@@ -95,33 +129,43 @@ class Login extends React.Component {
             const salt = decryptText(body.sKey);
             const hashObj = passToHash({ password: this.state.password, salt });
             const encPass = encryptText(hashObj.hash);
+
             fetch("/api/access", {
               method: "post",
               headers,
-              body: JSON.stringify({ email: this.state.email, password: encPass })
+              body: JSON.stringify({
+                email: this.state.email,
+                password: encPass,
+                tfa: this.state.twoFactorCode
+              })
+            }).then(async res => {
+              return { res, data: await res.json() };
             }).then(res => {
-              if (res.status === 200) {
-                // Manage succesfull login
-                res.json().then((data) => {
-                  const user = {
-                    userId: data.user.userId,
-                    email: this.state.email,
-                    mnemonic: data.user.mnemonic ? decryptTextWithKey(data.user.mnemonic, this.state.password) : null,
-                    root_folder_id: data.user.root_folder_id,
-                    storeMnemonic: data.user.storeMnemonic
-                  };
-                  this.props.handleKeySaved(user)
-                  localStorage.setItem('xToken', data.token);
-                  localStorage.setItem('xMnemonic', user.mnemonic);
-                  localStorage.setItem('xUser', JSON.stringify(user));
-                  this.setState({
-                    isAuthenticated: true,
-                    token: data.token,
-                    user: user
-                  });
-                });
+              if (res.res.status != 200) {
+                throw new Error(res.data.error ? res.data.error : res.data);
               }
-            });
+              var data = res.data;
+              // Manage succesfull login
+              const user = {
+                userId: data.user.userId,
+                email: this.state.email,
+                mnemonic: data.user.mnemonic ? decryptTextWithKey(data.user.mnemonic, this.state.password) : null,
+                root_folder_id: data.user.root_folder_id,
+                storeMnemonic: data.user.storeMnemonic
+              };
+              this.props.handleKeySaved(user)
+              localStorage.setItem('xToken', data.token);
+              localStorage.setItem('xMnemonic', user.mnemonic);
+              localStorage.setItem('xUser', JSON.stringify(user));
+              this.setState({
+                isAuthenticated: true,
+                token: data.token,
+                user: user
+              });
+            })
+              .catch(err => {
+                alert(err.error ? err.error : err);
+              });
           });
         } else if (response.status === 400) {
           // Manage other cases:
@@ -139,33 +183,58 @@ class Login extends React.Component {
         alert('Login error');
       });
   }
-
   render() {
-    const isValid = this.validateLoginForm();
-
-    return (<div className="login-main">
-      <Container className="login-container-box">
-        <p className="logo"><img src={logo} /></p>
-        <div className="container-register">
-          <p className="container-title">Sign in to X Cloud</p>
-          <div className="menu-box">
-            <button className="on">Sign in</button>
-            <button className="off" onClick={(e) => {
-              history.push('/new');
-            }}>Create account</button>
+    if (!this.state.showTwoFactor) {
+      const isValid = this.validateLoginForm();
+      return (<div className="login-main">
+        <Container className="login-container-box">
+          <p className="logo"><img src={logo} /></p>
+          <div className="container-register">
+            <p className="container-title">Sign in to X Cloud</p>
+            <div className="menu-box">
+              <button className="on">Sign in</button>
+              <button className="off" onClick={(e) => {
+                history.push('/new');
+              }}>Create account</button>
+            </div>
+            <Form className="form-register" onSubmit={e => {
+              e.preventDefault();
+              this.check2FANeeded();
+            }}>
+              <Form.Row>
+                <Form.Group as={Col} controlId="email">
+                  <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" value={this.state.email} onChange={this.handleChange} />
+                </Form.Group>
+              </Form.Row>
+              <Form.Row>
+                <Form.Group as={Col} controlId="password">
+                  <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" value={this.state.password} onChange={this.handleChange} />
+                </Form.Group>
+              </Form.Row>
+              <Form.Row className="form-register-submit">
+                <Form.Group as={Col}>
+                  <Button className="on btn-block" disabled={!isValid} xs={12} type="submit">Sign in</Button>
+                </Form.Group>
+              </Form.Row>
+            </Form>
           </div>
-          <Form className="form-register" onSubmit={e => {
+        </Container>
+      </div>
+      );
+    } else {
+      const isValid = this.validate2FA();
+      return (<div className="login-main">
+        <Container className="login-container-box">
+          <p className="logo"><img src={logo} /></p>
+          <p className="container-title">Security Verification</p>
+          <p className="privacy-disclaimer">Enter your 6 digit Google Authenticator Code below</p>
+          <Form className="form-register container-register two-factor" onSubmit={e => {
             e.preventDefault();
             this.doLogin();
           }}>
             <Form.Row>
-              <Form.Group as={Col} controlId="email">
-                <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" value={this.state.email} onChange={this.handleChange} />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="password">
-                <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" value={this.state.password} onChange={this.handleChange} />
+              <Form.Group as={Col} controlId="twoFactorCode">
+                <Form.Control xs={12} placeholder="Google Authentication Code" required type="text" name="two-factor" autoComplete="off" value={this.state.twoFactorCode} onChange={this.handleChange} maxLength={7} />
               </Form.Group>
             </Form.Row>
             <Form.Row className="form-register-submit">
@@ -174,10 +243,9 @@ class Login extends React.Component {
               </Form.Group>
             </Form.Row>
           </Form>
-        </div>
-      </Container>
-    </div>
-    );
+        </Container>
+      </div>);
+    }
   }
 }
 
