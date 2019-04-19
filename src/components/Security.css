@@ -78,3 +78,85 @@
 .Security .security-button-container button.on span.text {
     color: #ffffff;
 }
+
+.Security .security-button-container button.on span.text {
+    color: #ffffff;
+}
+
+.Security .security-content {
+    margin-top: 50px;
+    color: #737880;
+    font-size: 15px;
+    line-height: 1.47;
+    letter-spacing: -0.1px;
+}
+
+.Security .security-content input, .Security .security-content button {
+    height: 48.6px;
+}
+
+.Security .box-step-1 div {
+   padding-bottom: 39px;
+}
+
+.Security .box-step-1 img.google-authenticator-logo {
+    margin-right: 42px;
+}
+
+.Security .box-step-1 img.app-store {
+    margin-right: 12px;
+}
+
+.Security .box-step-2 .bidi-container img {
+    margin-top: 10px;
+    display: inline-block;
+    width: 118px;
+    float: left;
+}
+
+.Security .box-step-2 .code-container {
+    float: left;
+    margin-left: 50px;
+}
+
+.Security .box-step-2 .code-container .text-code-container {
+    width: 160px;
+    height: 40px;
+    border-radius: 3.9px;
+    background-color: #f8f9fa;
+    padding: 10px 16px;
+    margin-top: 16px;
+    color: #5c6066;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.53;
+    letter-spacing: -0.1px;
+}
+
+.Security .box-step-2 .code-container .desc-code-container {
+    font-size: 13px;
+    line-height: 1.38;
+    letter-spacing: normal;
+    color: #737880;
+    margin-top: 29px;
+}
+
+.Security .security-deactivation .disable-description {
+    margin-bottom: 26px;
+}
+
+.Security .box-step-3 .backup-key {
+    border-radius: 3.9px;
+    background-color: #f8f9fa;
+    margin-top: 27px;
+    padding: 16px 34px 16px 34px;
+    display: inline-block;
+
+    font-size: 14px;
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.53;
+    letter-spacing: -0.1px;
+    color: #5c6066;
+}
