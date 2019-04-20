@@ -3,9 +3,11 @@ import { Container, Button, Col } from 'react-bootstrap';
 import NavigationBar from './navigationBar/NavigationBar';
 import './Security.css';
 import { Form } from 'react-bootstrap';
+import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../utils';
 import ggl from '../assets/google-authenticator.svg';
 import appstore from '../assets/app-store.svg';
 import gglplay from '../assets/google-play.svg';
+import history from '../history';
 
 class Security extends React.Component {
 
@@ -19,12 +21,16 @@ class Security extends React.Component {
             code: null,
             showButtons: false,
             checkKey: '',
-            checkCode: ''
+            checkCode: '',
+            deactivationPassword: '',
+            deactivationCode: '',
+            passwordSalt: ''
         }
 
         // Functions to be used inside sub-views
         this.handleChange = this.handleChange.bind(this);
         this.store2FA = this.store2FA.bind(this);
+        this.handleDeactivation = this.handleDeactivation.bind(this);
     }
 
     userHas2FAStored() {
@@ -35,6 +41,7 @@ class Security extends React.Component {
                 headers,
                 body: JSON.stringify({ email: JSON.parse(localStorage.xUser).email })
             }).then(res => res.json()).then(res => {
+                this.setState({ passwordSalt: res.sKey });
                 resolve(typeof res.tfa == 'boolean' ? res.tfa : false);
             }).catch(err => {
                 reject(err);
@@ -45,7 +52,7 @@ class Security extends React.Component {
     pickStep = (buttonNumber, obj) => {
         // Unable to go two steps forward
         if (this.state.currentStep - buttonNumber < -1) {
-            //return;
+            return;
         }
 
         let newBox = (() => {
@@ -98,28 +105,32 @@ class Security extends React.Component {
     }
 
     componentDidMount() {
-        this.userHas2FAStored()
-            .then(hasCode => {
-                if (!hasCode) {
-                    // We need to create a new 2FA code to show
-                    this.generateNew2FA().then(bidi => {
-                        this.setState({
-                            showButtons: !hasCode,
-                            stepView: this.boxStep1(),
-                            bidi: bidi.qr,
-                            code: bidi.code
+        if (!this.props.isAuthenticated) {
+            history.push('/login');
+        } else {
+            this.userHas2FAStored()
+                .then(hasCode => {
+                    if (!hasCode) {
+                        // We need to create a new 2FA code to show
+                        this.generateNew2FA().then(bidi => {
+                            this.setState({
+                                showButtons: !hasCode,
+                                stepView: this.boxStep1(),
+                                bidi: bidi.qr,
+                                code: bidi.code
+                            });
+                        }).catch(err => {
+                            console.log(err);
                         });
-                    }).catch(err => {
-                        console.log(err);
-                    });
-                } else {
-                    this.setState({
-                        stepView: this.deactivation2FA()
-                    });
-                }
-            }).catch(err => {
-                alert('Error. Please, try again in a few seconds.');
-            });
+                    } else {
+                        this.setState({
+                            stepView: this.deactivation2FA()
+                        });
+                    }
+                }).catch(err => {
+                    alert('Error. Please, try again in a few seconds.');
+                });
+        }
     }
 
     render() {
@@ -142,13 +153,8 @@ class Security extends React.Component {
     }
 
     // Sub-views
-
     boxLoading() {
         return <div>Loading...</div>;
-    }
-
-    boxError() {
-
     }
 
     boxStep1() {
@@ -221,7 +227,9 @@ class Security extends React.Component {
             })
         }).then(res => {
             if (res.status == 200) {
-                alert('2FA activated!');
+                alert('Your 2-Factor Authentication has been activated!');
+                this.setState({ showButtons: false });
+                this.componentDidMount();
             } else {
                 return res.json().then(error => {
                     throw error;
@@ -240,17 +248,51 @@ class Security extends React.Component {
         });
     }
 
+    handleDeactivation(e) {
+        e.preventDefault();
+
+        const salt = decryptText(this.state.passwordSalt);
+        const hashObj = passToHash({ password: this.state.deactivationPassword, salt });
+        const encPass = encryptText(hashObj.hash);
+
+        const headers = this.setHeaders();
+
+        fetch('/api/tfa', {
+            method: 'DELETE',
+            headers,
+            body: JSON.stringify({
+                pass: encPass,
+                code: this.state.deactivationCode
+            })
+        }).then(async res => {
+            return { res, data: await res.json() }
+        }).then(res => {
+            if (res.res.status != 200) {
+                throw res.data;
+            } else {
+                alert('Your 2-Factor Authentication has been disabled.');
+                this.componentDidMount();
+            }
+        }).catch(err => {
+            if (err.error) {
+                alert(err.error);
+            } else {
+                alert('Internal server error. Try again later.');
+            }
+        });
+    }
+
 
     deactivation2FA() {
         return <div className="security-deactivation">
             <div className="disable-description">Disable Google Authentication below</div>
-            <Form onSubmit={(e) => { alert('lol'); }}>
+            <Form onSubmit={this.handleDeactivation}>
                 <Form.Row>
-                    <Form.Group as={Col}>
-                        <Form.Control xs={6} placeholder="Password" type="password" />
+                    <Form.Group as={Col} controlId="deactivationPassword">
+                        <Form.Control xs={6} placeholder="Password" type="password" onChange={this.handleChange} />
                     </Form.Group>
-                    <Form.Group as={Col}>
-                        <Form.Control xs={6} placeholder="2FA Code" />
+                    <Form.Group as={Col} controlId="deactivationCode">
+                        <Form.Control xs={6} placeholder="2FA Code" onChange={this.handleChange} />
                     </Form.Group>
                 </Form.Row>
                 <Button className="btn btn-block" type="submit">Disable Two Factor Authentication</Button>
