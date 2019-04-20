@@ -42,7 +42,7 @@ class XCloud extends React.Component {
     if (!this.props.user || !this.props.isAuthenticated) {
       history.push('/login');
     } else {
-      this.isUserActivated(this.props.user.email).then(data => {
+      this.isUserActivated().then(data => {
         // If user is signed in but is not activated set property isActivated to false
         const isActivated = data.activated
         if (isActivated) {
@@ -100,10 +100,8 @@ class XCloud extends React.Component {
     });
   }
 
-  isUserActivated = (email) => {
+  isUserActivated = () => {
     let headers = this.setHeaders();
-    headers = Object.assign(headers, { "xEmail": email });
-
     return fetch('/api/user/isactivated', {
       method: 'get',
       headers
