@@ -8,6 +8,7 @@ import appstore from '../assets/app-store.svg';
 import gglplay from '../assets/google-play.svg';
 
 class Security extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -20,6 +21,10 @@ class Security extends React.Component {
             checkKey: '',
             checkCode: ''
         }
+
+        // Functions to be used inside sub-views
+        this.handleChange = this.handleChange.bind(this);
+        this.store2FA = this.store2FA.bind(this);
     }
 
     userHas2FAStored() {
@@ -40,15 +45,15 @@ class Security extends React.Component {
     pickStep = (buttonNumber, obj) => {
         // Unable to go two steps forward
         if (this.state.currentStep - buttonNumber < -1) {
-            return;
+            //return;
         }
 
         let newBox = (() => {
             switch (buttonNumber) {
                 case 1: return this.boxStep1()
-                case 2: return this.boxStep2(this.state.bidi, this.state.code)
-                case 3: return this.boxStep3(this.state.code)
-                case 4: return this.boxStep4().bind(this)
+                case 2: return this.boxStep2()
+                case 3: return this.boxStep3()
+                case 4: return this.boxStep4()
             }
         })();
 
@@ -67,23 +72,9 @@ class Security extends React.Component {
     setHeaders = () => {
         let headers = {
             Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-            "content-type": "application/json; charset=utf-8",
-            "internxt-mnemonic": localStorage.getItem("xMnemonic")
+            "content-type": "application/json; charset=utf-8"
         };
         return headers;
-    }
-
-    getBidi() {
-        const headers = this.setHeaders();
-
-        fetch('/api/tfa', {
-            method: 'POST',
-            headers
-        }).then(result => result.json())
-            .then(res => {
-                this.setState({ bidi: res.qr });
-            }).catch(err => {
-            });
     }
 
     generateNew2FA() {
@@ -114,12 +105,16 @@ class Security extends React.Component {
                     this.generateNew2FA().then(bidi => {
                         this.setState({
                             showButtons: !hasCode,
-                            stepView: hasCode ? this.deactivation2FA() : this.boxStep1(),
+                            stepView: this.boxStep1(),
                             bidi: bidi.qr,
                             code: bidi.code
                         });
                     }).catch(err => {
                         console.log(err);
+                    });
+                } else {
+                    this.setState({
+                        stepView: this.deactivation2FA()
                     });
                 }
             }).catch(err => {
@@ -167,29 +162,29 @@ class Security extends React.Component {
         </div>;
     }
 
-    boxStep2(bidiUrl, bidiCode) {
+    boxStep2() {
         return <div className="box-step-2">
             <div>Use the google Authentication App to scan the QR Code below</div>
             <div className="bidi-container">
-                <img src={bidiUrl} />
+                <img src={this.state.bidi} />
                 <div className="code-container">
-                    <div className="text-code-container">{bidiCode}</div>
+                    <div className="text-code-container">{this.state.code}</div>
                     <div className="desc-code-container">If you are unable to scan the QR code<br />enter this code into the app.</div>
                 </div>
             </div>
         </div>;
     }
 
-    boxStep3(bidiCode) {
+    boxStep3() {
         return <div className="box-step-3">
             <div>Your backup key is below. You will need this incase you lose your device.<br />Keep an offline backup of your key. Keep it safe and secure.</div>
-            <div className="backup-key">{bidiCode}</div>
+            <div className="backup-key">{this.state.code}</div>
         </div>;
     }
 
     handleChange(event) {
         this.setState({
-            [event.target.id]: event.target.value
+            [event.target.id]: event.target.value,
         });
     }
 
@@ -198,10 +193,10 @@ class Security extends React.Component {
             <Form onSubmit={this.store2FA}>
                 <Form.Row>
                     <Form.Group as={Col} controlId="checkKey">
-                        <Form.Control xs={6} placeholder="Backup Key" value={this.state.checkKey} onChange={this.handleChange.bind(this)} />
+                        <Form.Control xs={6} placeholder="Backup Key" onChange={this.handleChange} />
                     </Form.Group>
-                    <Form.Group as={Col}>
-                        <Form.Control xs={6} placeholder="2FA Code" />
+                    <Form.Group as={Col} controlId="checkCode">
+                        <Form.Control xs={6} placeholder="2FA Code" onChange={this.handleChange} />
                     </Form.Group>
                 </Form.Row>
                 <Button className="btn btn-block" type="submit">Enable Two Factor Authentication</Button>
@@ -211,8 +206,38 @@ class Security extends React.Component {
 
     store2FA(e) {
         e.preventDefault();
+        if (this.state.checkKey != this.state.code) {
+            alert('You must insert your backup key in order to validate the 2FA configuration');
+            return;
+        }
+        const headers = this.setHeaders();
 
-        console.log('Storeando', e);
+        fetch('/api/tfa', {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify({
+                key: this.state.code,
+                code: this.state.checkCode
+            })
+        }).then(res => {
+            if (res.status == 200) {
+                alert('2FA activated!');
+            } else {
+                return res.json().then(error => {
+                    throw error;
+                }).catch(err => {
+                    // Propagate the exception to the parent promise
+                    return Promise.reject(err);
+                });
+            }
+        }).catch(err => {
+            // All exceptions will be catched here
+            if (err.error) {
+                alert(err.error);
+            } else {
+                alert('An error ocurred while trying to store your 2FA code. Try again later.');
+            }
+        });
     }
 
 
