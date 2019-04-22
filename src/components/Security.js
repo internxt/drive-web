@@ -163,6 +163,8 @@ class Security extends React.Component {
             <div>Download Authy, Google Authenticator or a similar app on your device.</div>
             <div>
                 <img src={ggl} height={48} className="google-authenticator-logo" />
+                <img src={appstore} height={48} className="app-store" /></a>	
+                <img src={gglplay} height={48} />
             </div>
         </div>;
     }
