@@ -2,6 +2,11 @@
 
 }
 
+.Security h5 {
+    font-weight: 700;
+    color: black;
+}
+
 .Security .security-box {
     border: solid 1px #eaeced;
     border-radius: 6px;
