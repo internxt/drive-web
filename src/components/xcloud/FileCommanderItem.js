@@ -1,5 +1,6 @@
 import * as React from 'react';
 import $ from 'jquery';
+import PrettySize from 'prettysize';
 import { Dropdown, Button, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import './FileCommanderItem.css';
 import Icon from '../../assets/Icon'
@@ -209,8 +210,8 @@ class FileCommanderItem extends React.Component {
                     <Dropdown.Menu>
                         <Dropdown.Item as="span"><input className="itemNameInput" type="text" value={this.state.itemName} onChange={this.handleNameChange}/></Dropdown.Item>
                         <Dropdown.Divider />
-                        <Dropdown.Item as="span"><span className="propText">Type: </span>{this.props.type}</Dropdown.Item>
-                        <Dropdown.Item as="span"><span className="propText">Size: </span>{this.props.size} bytes</Dropdown.Item>
+                        <Dropdown.Item as="span"><span className="propText">Type: </span>{this.props.type.toUpperCase()}</Dropdown.Item>
+                        <Dropdown.Item as="span"><span className="propText">Size: </span>{PrettySize(this.props.size)}</Dropdown.Item>
                         {/* <Dropdown.Item eventKey="4" as="span"><span className="propText">Added: </span></Dropdown.Item> */}
                     </Dropdown.Menu>
                 </Dropdown>}
