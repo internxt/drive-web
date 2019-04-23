@@ -107,21 +107,37 @@
 .FileCommanderItem .properties .dropdown-menu {
     left: 10px !important;
     top: -2px !important;
-    width: 270px;
+    width: 248px;
     height: auto;
     cursor: default;
     border-radius: 14px;
     border-style: none;
     visibility: visible;
     box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
+    padding-bottom: 20px;
 }
 
 .FileCommanderItem .dropdown-divider {
-    margin: 0.5rem 1.8rem !important; 
+    margin: 0rem 1.6rem !important; 
+    margin-bottom: 15px !important;
+}
+
+.FileCommanderItem .ponleunnombre{
+margin-top: 20px !important;
+
 }
 
 .FileCommanderItem .dropdown-item {
-    font-weight: 500;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+}
+
+.FileCommanderItem .dropdown-item:hover {
+    background-color: #fff;
+}
+
+.FileCommanderItem .dropdown-item:active {
+    color: black;
 }
 
 .FileCommanderItem .itemNameInput {
@@ -140,9 +156,7 @@
 .FileCommanderItem #iconToggle {
     height: auto;
     width: auto;
-    display: block;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
+    display: inline-block;
 }
 
 .FileCommanderItem .btn-group label {
@@ -160,9 +174,9 @@
 .FileCommanderItem #iconToggle label {
     border-radius: 0% !important;
     background-color: transparent;
-    min-width: 38px;
-    min-height: 38px;
     margin: 0;
+    width: 40px;
+    height: 40px;
     background-position: center;
     background-repeat: no-repeat;
     background-size: 55%;
@@ -175,9 +189,6 @@
     background-size: 12px;
 }
 
-.FileCommanderItem #iconToggle label.active {
-    background-color: #f2f5ff;
-}
 
 .FileCommanderItem .redColor { background-color: #FF8888 !important }
 .FileCommanderItem .yellowColor { background-color: #FFD07E !important }

@@ -182,7 +182,6 @@ class FileCommanderItem extends React.Component {
                             <Dropdown.Divider />
                             <Dropdown.Item as="span">
                                 Style color  
-                                <Button className="clearBadge" variant="secondary" disabled={colorUnchanged} onClick={(e) => this.resetMetadataChanges(e, 'color')}>Clear</Button>
                             </Dropdown.Item>
                             <ToggleButtonGroup id="colorToggle" className="toggleGroup" name="colorSelection" type="radio" defaultValue={this.props.color} onChange={this.handleColorSelection}>
                                 {
@@ -191,10 +190,9 @@ class FileCommanderItem extends React.Component {
                                     })
                                 }
                             </ToggleButtonGroup>
-                            <Dropdown.Divider />
+                            <Dropdown.Divider className="ponleunnombre" />
                             <Dropdown.Item as="span">
                                 Cover icon
-                                <Button className="clearBadge" variant="secondary" disabled={iconUnchanged} onClick={(e) => this.resetMetadataChanges(e, 'icon')}>Clear</Button>
                             </Dropdown.Item>
                             <ToggleButtonGroup id="iconToggle" className="toggleGroup" name="iconSelection" type="radio" defaultValue={this.props.icon ? this.props.icon.id : ''} onChange={this.handleIconSelection}>
                                 {
