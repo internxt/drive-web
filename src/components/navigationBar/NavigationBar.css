@@ -61,3 +61,64 @@ input#uploadFile {
     padding-left: 62px;
     color: #333333;
 }
+
+
+/*** Settings menu ***/
+
+.settingsButton .dropdown-menu {
+    width: 265px;
+    border-radius: 4px;
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
+    background-color: #ffffff; 
+    border: solid 0px;
+
+    /** Text **/
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: -0.1px;
+    color: #000000;
+
+    cursor: default;
+
+}
+.settingsButton .dropdown-menu {
+    padding: 22px 0px 12px 0px;
+    margin: 2.7rem -4rem !important;
+}
+
+.settingsButton .dropdown-menu .dropdown-item, .settingsButton .dropdown-menu .dropdown-menu-group.info {
+    padding: 0px 26px;
+}
+
+.settingsButton .dropdown-menu .dropdown-item {
+    padding: 10px 26px;
+}
+
+.settingsButton .dropdown-menu .dropdown-item:hover, .settingsButton .dropdown-menu .dropdown-item:active {
+    background-color: #ffffff;
+    cursor: pointer;
+    color: #000000;
+}
+
+.settingsButton .dropdown-menu .dropdown-menu-group {
+    padding: 0px 0px;
+}
+
+.settingsButton .dropdown-menu .dropdown-menu-group .name-lastname {
+    font-weight: 600;
+}
+
+.settingsButton .dropdown-menu .dropdown-menu-group .space-used {
+    padding-top: 18px;
+}
+
+.settingsButton .dropdown-menu-group .progress {
+    height: 5px;
+}
+
+.settingsButton .dropdown-menu-group .progress .progress-bar {
+    background-image: linear-gradient(78deg, #096dff, #00b1ff);
+}

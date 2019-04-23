@@ -149,7 +149,9 @@ class Login extends React.Component {
                     email: this.state.email,
                     mnemonic: data.user.mnemonic ? decryptTextWithKey(data.user.mnemonic, this.state.password) : null,
                     root_folder_id: data.user.root_folder_id,
-                    storeMnemonic: data.user.storeMnemonic
+                    storeMnemonic: data.user.storeMnemonic,
+                    name: data.user.name,
+                    lastname: data.user.lastname
                   };
                   this.props.handleKeySaved(user)
                   localStorage.setItem('xToken', data.token);

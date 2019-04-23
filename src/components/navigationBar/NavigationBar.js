@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, Navbar, Dropdown } from 'react-bootstrap';
+import { Nav, Navbar, Dropdown, ProgressBar, Container } from 'react-bootstrap';
 
 // Assets
 import account from '../../assets/Dashboard-Icons/Account.svg';
@@ -11,6 +11,7 @@ import newFolder from '../../assets/Dashboard-Icons/Add-folder.svg';
 import downloadFile from '../../assets/Dashboard-Icons/Download.svg';
 import deleteFile from '../../assets/Dashboard-Icons/Delete.svg';
 import share from '../../assets/Dashboard-Icons/Share.svg';
+import PrettySize from 'prettysize';
 
 import HeaderButton from '../xcloud/HeaderButton';
 
@@ -24,22 +25,15 @@ class NavigationBar extends React.Component {
 
         this.state = {
             menuButton: null,
-            navbarItems: props.navbarItems
+            navbarItems: props.navbarItems,
+            barLimit: 1024 * 1024 * 1024,
+            barUsage: 0,
         };
 
-        if (props.showSettingsButton) {
-            this.state.menuButton =
-                <Dropdown drop="left" className="settingsButton">
-                    <Dropdown.Toggle><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
-                    <Dropdown.Menu>
-                    <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item onClick={(e) => { localStorage.clear(); window.location.reload(); }}>Sign out</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>;
+        if (!localStorage.xUser) {
+            return;
         }
+        const user = JSON.parse(localStorage.xUser);
 
         if (props.showFileButtons) {
             this.state.navbarItems =
@@ -61,10 +55,42 @@ class NavigationBar extends React.Component {
     }
 
     componentDidMount() {
+        let user = JSON.parse(localStorage.xUser).email;
 
+        fetch('/api/limit', {
+            method: 'post',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+                email: user
+            })
+        }
+        ).then(res => {
+            return res.json();
+        }).then(res2 => {
+            this.setState({ barLimit: res2.maxSpaceBytes })
+        }).catch(err => {
+            console.log(err);
+        });
+
+        fetch('/api/usage', {
+            method: 'post',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+                email: user
+            })
+        }
+        ).then(res => {
+            return res.json();
+        }).then(res2 => {
+            this.setState({ barUsage: res2.total })
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
     render() {
+        const user = JSON.parse(localStorage.xUser);
+
         return (
             <Navbar className="p-1" id="mainNavBar">
                 <Navbar.Brand>
@@ -74,7 +100,26 @@ class NavigationBar extends React.Component {
                     {this.state.navbarItems}
                 </Nav>
                 <Nav style={{ margin: '0 13px 0 0' }}>
-                    {this.state.menuButton}
+                    <Dropdown drop="left" className="settingsButton">
+                        <Dropdown.Toggle><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <div className="dropdown-menu-group info">
+                                <p className="name-lastname">{user.name} {user.lastname}</p>
+                                <ProgressBar className="mini-progress-bar" now={this.state.barUsage} max={this.state.barLimit} />
+                                <p className="space-used">Used <strong>{PrettySize(this.state.barUsage)}</strong> of <strong>{PrettySize(this.state.barLimit)}</strong></p>
+                            </div>
+                            <Dropdown.Divider />
+                            <div className="dropdown-menu-group">
+                                <Dropdown.Item onClick={(e) => { history.push('/storage'); }}>Storage</Dropdown.Item>
+                                <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
+                                <Dropdown.Item href="mailto:hello@internxt.com">Contact us</Dropdown.Item>
+                            </div>
+                            <Dropdown.Divider />
+                            <div className="dropdown-menu-group">
+                                <Dropdown.Item onClick={(e) => { localStorage.clear(); window.location.reload(); }}>Sign out</Dropdown.Item>
+                            </div>
+                        </Dropdown.Menu>
+                    </Dropdown>
                 </Nav>
             </Navbar>
         );
