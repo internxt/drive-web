@@ -13,6 +13,7 @@
     width: 641px;
     height: 447px;
     padding: 43px;
+    margin-top: 4em;
 }
 
 .Security .security-title {
@@ -125,7 +126,7 @@
 }
 
 .Security .box-step-2 .code-container .text-code-container {
-    width: 170px;
+    display: inline-block;
     height: 40px;
     border-radius: 3.9px;
     background-color: #f8f9fa;
