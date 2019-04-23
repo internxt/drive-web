@@ -127,11 +127,12 @@ class Login extends React.Component {
             const salt = decryptText(body.sKey);
             const hashObj = passToHash({ password: this.state.password, salt });
             const encPass = encryptText(hashObj.hash);
+
             fetch("/api/access", {
               method: "post",
               headers,
-              body: JSON.stringify({ 
-                email: this.state.email, 
+              body: JSON.stringify({
+                email: this.state.email,
                 password: encPass,
                 tfa: this.state.twoFactorCode
               })
@@ -182,31 +183,56 @@ class Login extends React.Component {
   }
   render() {
     if (!this.state.showTwoFactor) {
-    const isValid = this.validateLoginForm();
-
-    return (<div className="login-main">
-      <Container className="login-container-box">
-        <p className="logo"><img src={logo} /></p>
-        <div className="container-register">
-          <p className="container-title">Sign in to X Cloud</p>
-          <div className="menu-box">
-            <button className="on">Sign in</button>
-            <button className="off" onClick={(e) => {
-              history.push('/new');
-            }}>Create account</button>
+      const isValid = this.validateLoginForm();
+      return (<div className="login-main">
+        <Container className="login-container-box">
+          <p className="logo"><img src={logo} /></p>
+          <div className="container-register">
+            <p className="container-title">Sign in to X Cloud</p>
+            <div className="menu-box">
+              <button className="on">Sign in</button>
+              <button className="off" onClick={(e) => {
+                history.push('/new');
+              }}>Create account</button>
+            </div>
+            <Form className="form-register" onSubmit={e => {
+              e.preventDefault();
+              this.check2FANeeded();
+            }}>
+              <Form.Row>
+                <Form.Group as={Col} controlId="email">
+                  <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" value={this.state.email} onChange={this.handleChange} />
+                </Form.Group>
+              </Form.Row>
+              <Form.Row>
+                <Form.Group as={Col} controlId="password">
+                  <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" value={this.state.password} onChange={this.handleChange} />
+                </Form.Group>
+              </Form.Row>
+              <Form.Row className="form-register-submit">
+                <Form.Group as={Col}>
+                  <Button className="on btn-block" disabled={!isValid} xs={12} type="submit">Sign in</Button>
+                </Form.Group>
+              </Form.Row>
+            </Form>
           </div>
-          <Form className="form-register" onSubmit={e => {
+        </Container>
+      </div>
+      );
+    } else {
+      const isValid = this.validate2FA();
+      return (<div className="login-main">
+        <Container className="login-container-box">
+          <p className="logo"><img src={logo} /></p>
+          <p className="container-title">Security Verification</p>
+          <p className="privacy-disclaimer">Enter your 6 digit Google Authenticator Code below</p>
+          <Form className="form-register container-register two-factor" onSubmit={e => {
             e.preventDefault();
             this.check2FANeeded();
           }}>
             <Form.Row>
-              <Form.Group as={Col} controlId="email">
-                <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" value={this.state.email} onChange={this.handleChange} />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="password">
-                <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" value={this.state.password} onChange={this.handleChange} />
+              <Form.Group as={Col} controlId="twoFactorCode">
+                <Form.Control xs={12} placeholder="Google Authentication Code" required type="text" name="two-factor" autoComplete="off" value={this.state.twoFactorCode} onChange={this.handleChange} maxLength={7} />
               </Form.Group>
             </Form.Row>
             <Form.Row className="form-register-submit">
@@ -215,35 +241,9 @@ class Login extends React.Component {
               </Form.Group>
             </Form.Row>
           </Form>
-        </div>
-      </Container>
-    </div>
-    );
-  } else {
-    const isValid = this.validate2FA();
-    return (<div className="login-main">
-      <Container className="login-container-box">
-        <p className="logo"><img src={logo} /></p>
-        <p className="container-title">Security Verification</p>
-        <p className="privacy-disclaimer">Enter your 6 digit Google Authenticator Code below</p>
-        <Form className="form-register container-register two-factor" onSubmit={e => {
-          e.preventDefault();
-          this.doLogin();
-        }}>
-          <Form.Row>
-            <Form.Group as={Col} controlId="twoFactorCode">
-              <Form.Control xs={12} placeholder="Google Authentication Code" required type="text" name="two-factor" autoComplete="off" value={this.state.twoFactorCode} onChange={this.handleChange} maxLength={7} />
-            </Form.Group>
-          </Form.Row>
-          <Form.Row className="form-register-submit">
-            <Form.Group as={Col}>
-              <Button className="on btn-block" disabled={!isValid} xs={12} type="submit">Sign in</Button>
-            </Form.Group>
-          </Form.Row>
-        </Form>
-      </Container>
-    </div>);
-  }
+        </Container>
+      </div>);
+    }
   }
 }
 
