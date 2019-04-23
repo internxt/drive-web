@@ -5,6 +5,7 @@ import history from '../../history';
 import "./Login.css";
 import logo from '../../assets/logo.svg';
 import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../utils';
+import { fdatasync } from "fs";
 
 const bip39 = require('bip39');
 
@@ -19,7 +20,9 @@ class Login extends React.Component {
       password: '',
       isAuthenticated: false,
       token: "",
-      user: {}
+      user: {},
+      showTwoFactor: false,
+      twoFactorCode: ''
     };
 
     this.recaptchaRef = React.createRef();
@@ -65,7 +68,10 @@ class Login extends React.Component {
     return isValid;
   }
 
-
+  validate2FA = () => {
+    let pattern = /^\d{3}(\s+)?\d{3}$/
+    return pattern.test(this.state.twoFactorCode);
+  }
 
   validateEmail = (email) => {
     let emailPattern = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
@@ -75,6 +81,32 @@ class Login extends React.Component {
   handleChange = event => {
     this.setState({
       [event.target.id]: event.target.value
+    });
+  }
+
+  check2FANeeded = () => {
+    const headers = this.setHeaders();
+
+    fetch('/api/login', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ email: this.state.email })
+    }).then(res => {
+
+      if (res.status != 200) {
+        throw new Error('Login error');
+      }
+
+      return res.json();
+
+    }).then(res => {
+      if (!res.tfa) {
+        this.doLogin();
+      } else {
+        this.setState({ showTwoFactor: true });
+      }
+    }).catch(err => {
+      alert(err);
     });
   }
 
@@ -98,11 +130,19 @@ class Login extends React.Component {
             fetch("/api/access", {
               method: "post",
               headers,
-              body: JSON.stringify({ email: this.state.email, password: encPass })
+              body: JSON.stringify({ 
+                email: this.state.email, 
+                password: encPass,
+                tfa: this.state.twoFactorCode
+              })
+            }).then(async res => {
+              return { res, data: await res.json() };
             }).then(res => {
-              if (res.status === 200) {
+              if (res.res.status != 200) {
+                throw new Error(res.data.error ? res.data.error : res.data);
+              }
+              var data = res.data;
                 // Manage succesfull login
-                res.json().then((data) => {
                   const user = {
                     userId: data.user.userId,
                     email: this.state.email,
@@ -119,10 +159,11 @@ class Login extends React.Component {
                     token: data.token,
                     user: user
                   });
+                })
+                .catch(err => {
+                  alert(err.error ? err.error : err);
                 });
-              }
             });
-          });
         } else if (response.status === 400) {
           // Manage other cases:
           // username / password do not match, user activation required...
@@ -139,31 +180,8 @@ class Login extends React.Component {
         alert('Login error');
       });
   }
-
-  formerLogin = () => {
-    this.recaptchaRef = React.createRef();
-
-    return (
-      <div>
-        <img src={logo} className="Logo" style={{ height: 27.5, width: 52.4 }} />
-        <div id="Login" className="Login">
-          <Form className="formBlock" onSubmit={this.handleSubmit}>
-            <Form.Row>
-              <Form.Group as={Col} controlId="email">
-                <Form.Control autoFocus required size="lg" type="email" placeholder="Email" value={this.state.email} onChange={this.handleChange} />
-              </Form.Group>
-              <Form.Group as={Col} controlId="password">
-                <Form.Control required size="lg" type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
-              </Form.Group>
-            </Form.Row>
-            <p id="Terms">By signing in, you are agreeing to our <a href="https://internxt.com/terms">Terms {"&"} Conditions</a> and <a href="https://internxt.com/privacy">Privacy Policy</a></p>
-            <Button className="button-submit" disabled={!this.validateForm()} size="lg" type="submit" block> Continue </Button>
-          </Form>
-        </div>
-      </div>)
-  };
-
   render() {
+    if (!this.state.showTwoFactor) {
     const isValid = this.validateLoginForm();
 
     return (<div className="login-main">
@@ -179,7 +197,7 @@ class Login extends React.Component {
           </div>
           <Form className="form-register" onSubmit={e => {
             e.preventDefault();
-            this.doLogin();
+            this.check2FANeeded();
           }}>
             <Form.Row>
               <Form.Group as={Col} controlId="email">
@@ -201,8 +219,32 @@ class Login extends React.Component {
       </Container>
     </div>
     );
+  } else {
+    const isValid = this.validate2FA();
+    return (<div className="login-main">
+      <Container className="login-container-box">
+        <p className="logo"><img src={logo} /></p>
+        <p className="container-title">Security Verification</p>
+        <p className="privacy-disclaimer">Enter your 6 digit Google Authenticator Code below</p>
+        <Form className="form-register container-register two-factor" onSubmit={e => {
+          e.preventDefault();
+          this.doLogin();
+        }}>
+          <Form.Row>
+            <Form.Group as={Col} controlId="twoFactorCode">
+              <Form.Control xs={12} placeholder="Google Authentication Code" required type="text" name="two-factor" autoComplete="off" value={this.state.twoFactorCode} onChange={this.handleChange} maxLength={7} />
+            </Form.Group>
+          </Form.Row>
+          <Form.Row className="form-register-submit">
+            <Form.Group as={Col}>
+              <Button className="on btn-block" disabled={!isValid} xs={12} type="submit">Sign in</Button>
+            </Form.Group>
+          </Form.Row>
+        </Form>
+      </Container>
+    </div>);
+  }
   }
 }
 
 export default Login;
-

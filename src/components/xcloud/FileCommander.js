@@ -161,9 +161,12 @@ class FileCommander extends React.Component {
                                                 type={item.type}
                                                 bucket={item.bucket}
                                                 created={moment(item.created).format('dddd')}
+                                                icon={item.icon}
+                                                color={item.color ? item.color : 'blue'}
                                                 clickHandler={this.props.openFolder.bind(null, item.id)}
                                                 selectHandler={(e) => this.props.selectCommanderItem(i, e)}
                                                 moveFile={this.props.moveFile}
+                                                updateFolderMeta={this.props.updateFolderMeta}
                                             />
                                             :
                                             <FileCommanderItem
@@ -171,6 +174,7 @@ class FileCommander extends React.Component {
                                                 id={item.id}
                                                 name={item.name}
                                                 type={item.type}
+                                                size={item.size}
                                                 bucket={item.fileId}
                                                 created={moment(item.created).format('dddd')}
                                                 clickHandler={this.props.downloadFile.bind(null, item.fileId)}

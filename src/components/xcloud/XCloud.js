@@ -42,7 +42,7 @@ class XCloud extends React.Component {
     if (!this.props.user || !this.props.isAuthenticated) {
       history.push('/login');
     } else {
-      this.isUserActivated(this.props.user.email).then(data => {
+      this.isUserActivated().then(data => {
         // If user is signed in but is not activated set property isActivated to false
         const isActivated = data.activated
         if (isActivated) {
@@ -100,10 +100,8 @@ class XCloud extends React.Component {
     });
   }
 
-  isUserActivated = (email) => {
+  isUserActivated = () => {
     let headers = this.setHeaders();
-    headers = Object.assign(headers, { "xEmail": email });
-
     return fetch('/api/user/isactivated', {
       method: 'get',
       headers
@@ -192,6 +190,21 @@ class XCloud extends React.Component {
           }
         }
       });
+  }
+
+  updateFolderMeta = (metadata, folderId) => {
+    // Apply changes on metadata
+    const headers = this.setHeaders();
+    const data = JSON.stringify({ metadata });
+    fetch(`/api/storage/folder/${folderId}/meta`, {
+    method: "post",
+    headers,
+    body: data
+    }).then((response) => {
+      this.getFolderContent(this.state.currentFolderId);
+    }).catch((error) => {
+      console.log(`Error during folder customization. Error: ${error} `)
+    })
   }
 
   moveFile = (fileId, destination) => {
@@ -408,6 +421,7 @@ class XCloud extends React.Component {
             uploadDroppedFile={this.uploadDroppedFile}
             setSortFunction={this.setSortFunction}
             moveFile={this.moveFile}
+            updateFolderMeta={this.updateFolderMeta}
           />
 
           <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >
