@@ -11,7 +11,7 @@ class FileCommanderItem extends React.Component {
         this.state = {
             selected: false,
             dragDropStyle: '',
-            folderName: this.props.name,
+            itemName: this.props.name,
             selectedColor: '',
             selectedIcon: 0,
             showDropdown: false
@@ -55,7 +55,7 @@ class FileCommanderItem extends React.Component {
     }
 
     handleNameChange = (event) => {
-        this.setState({ folderName: event.target.value });
+        this.setState({ itemName: event.target.value });
     }
 
     handleColorSelection = (value, event) => {
@@ -68,13 +68,23 @@ class FileCommanderItem extends React.Component {
 
     handleApplyChanges = () => {
         let metadata = {};
-        if (this.state.folderName && (this.props.name !== this.state.folderName)) metadata.folderName = this.state.folderName;
-        if (this.state.selectedColor && (this.props.color !== this.state.selectedColor)) metadata.color = this.state.selectedColor;
-        if (this.state.selectedIcon && (this.props.icon.id !== this.state.selectedIcon)) metadata.icon = this.state.selectedIcon;
 
-        if (metadata.folderName || metadata.color || metadata.icon) {
-            this.props.updateFolderMeta(metadata, this.props.id);
+        if (this.state.itemName && (this.props.name !== this.state.itemName)) metadata.itemName = this.state.itemName;
+        if (this.props.type === 'Folder') {
+            // Changes on folder item
+            if (this.state.selectedColor && (this.props.color !== this.state.selectedColor)) metadata.color = this.state.selectedColor;
+            if (this.state.selectedIcon && (!this.props.icon || this.props.icon.id !== this.state.selectedIcon)) metadata.icon = this.state.selectedIcon;
+    
+            if (metadata.itemName || metadata.color || metadata.icon) {
+                this.props.updateFolderMeta(metadata, this.props.id, this.props.type);
+            }
+        } else {
+            // Changes on file item
+            if (metadata.itemName) {
+                this.props.updateFileMeta(metadata, this.props.bucket, this.props.type)
+            }
         }
+
     }
 
     handleDropdownSelect = (isOpen, event, metadata) => {
@@ -137,13 +147,13 @@ class FileCommanderItem extends React.Component {
 
     render() {
         // Set Apply button active if are changes pending 
-        let folderNameUnchanged = true;
+        let itemNameUnchanged = true;
         let colorUnchanged = true;
         let iconUnchanged = true;
-        if (this.state.folderName && (this.props.name !== this.state.folderName)) { folderNameUnchanged = false; }
+        if (this.state.itemName && (this.props.name !== this.state.itemName)) { itemNameUnchanged = false; }
         if (this.state.selectedColor && (this.props.color !== this.state.selectedColor)) { colorUnchanged = false; }
-        if (this.state.selectedIcon && (this.props.icon.id !== this.state.selectedIcon)) { iconUnchanged = false; }
-        let metaUnchanged = (folderNameUnchanged && colorUnchanged && iconUnchanged);
+        if (this.state.selectedIcon && (!this.props.icon || this.props.icon.id !== this.state.selectedIcon)) { iconUnchanged = false; }
+
         return (
             <div className={`FileCommanderItem (this.state.selected ? 'selected' : '') ${this.state.dragDropStyle}`}
                 data-type={this.props.type}
@@ -163,7 +173,7 @@ class FileCommanderItem extends React.Component {
                     <Dropdown drop={'right'} show={this.state.showDropdown} onToggle={this.handleDropdownSelect}>
                         <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown} >...</Dropdown.Toggle>
                         <Dropdown.Menu>
-                            <Dropdown.Item as="span"><input className="folderNameInput" type="text" value={this.state.folderName} onChange={this.handleNameChange}/></Dropdown.Item>
+                            <Dropdown.Item as="span"><input className="itemNameInput" type="text" value={this.state.itemName} onChange={this.handleNameChange}/></Dropdown.Item>
                             <Dropdown.Divider />
                             <Dropdown.Item as="span">
                                 Style color  
@@ -181,7 +191,7 @@ class FileCommanderItem extends React.Component {
                                 Cover icon
                                 <Button className="clearBadge" variant="secondary" disabled={iconUnchanged} onClick={(e) => this.resetMetadataChanges(e, 'icon')}>Clear</Button>
                             </Dropdown.Item>
-                            <ToggleButtonGroup id="iconToggle" className="toggleGroup" name="iconSelection" type="radio" defaultValue={this.props.icon.id} onChange={this.handleIconSelection}>
+                            <ToggleButtonGroup id="iconToggle" className="toggleGroup" name="iconSelection" type="radio" defaultValue={this.props.icon ? this.props.icon.id : ''} onChange={this.handleIconSelection}>
                                 {
                                     this.icons.map((value, i) => {
                                         return(<ToggleButton className={`${value}Icon`} type="radio" value={i+1}/>);
@@ -190,13 +200,13 @@ class FileCommanderItem extends React.Component {
                             </ToggleButtonGroup>
                         </Dropdown.Menu>
                     </Dropdown> :
-                <Dropdown drop={'right'}>
-                    <Dropdown.Toggle as={CustomToggle}>...</Dropdown.Toggle>
+                <Dropdown drop={'right'} show={this.state.showDropdown} onToggle={this.handleDropdownSelect}>
+                    <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown}>...</Dropdown.Toggle>
                     <Dropdown.Menu>
-                        <Dropdown.Item eventKey="1">{this.props.name}</Dropdown.Item>
+                        <Dropdown.Item as="span"><input className="itemNameInput" type="text" value={this.state.itemName} onChange={this.handleNameChange}/></Dropdown.Item>
                         <Dropdown.Divider />
-                        <Dropdown.Item eventKey="2" as="span"><span className="propText">Type: </span>{this.props.type}</Dropdown.Item>
-                        <Dropdown.Item eventKey="3" as="span"><span className="propText">Size: </span>{this.props.size}</Dropdown.Item>
+                        <Dropdown.Item as="span"><span className="propText">Type: </span>{this.props.type}</Dropdown.Item>
+                        <Dropdown.Item as="span"><span className="propText">Size: </span>{this.props.size} bytes</Dropdown.Item>
                         {/* <Dropdown.Item eventKey="4" as="span"><span className="propText">Added: </span></Dropdown.Item> */}
                     </Dropdown.Menu>
                 </Dropdown>}

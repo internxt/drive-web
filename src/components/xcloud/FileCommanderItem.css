@@ -115,7 +115,7 @@
     box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
 }
 
-.FileCommanderItem .folderNameInput {
+.FileCommanderItem .itemNameInput {
     border: none;
     font-weight: 600;
     width: 210px;

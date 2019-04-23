@@ -192,19 +192,32 @@ class XCloud extends React.Component {
       });
   }
 
-  updateFolderMeta = (metadata, folderId) => {
-    // Apply changes on metadata
+  updateMeta = (metadata, itemId, itemType) => {
+    // Apply changes on metadata depending on type of item
     const headers = this.setHeaders();
     const data = JSON.stringify({ metadata });
-    fetch(`/api/storage/folder/${folderId}/meta`, {
-    method: "post",
-    headers,
-    body: data
-    }).then((response) => {
-      this.getFolderContent(this.state.currentFolderId);
-    }).catch((error) => {
-      console.log(`Error during folder customization. Error: ${error} `)
-    })
+    if (itemType === 'Folder') {
+      fetch(`/api/storage/folder/${itemId}/meta`, {
+        method: "post",
+        headers,
+        body: data
+      }).then((response) => {
+        this.getFolderContent(this.state.currentFolderId);
+      }).catch((error) => {
+        console.log(`Error during folder customization. Error: ${error} `)
+      })
+    } else {
+      fetch(`/api/storage/file/${itemId}/meta`, {
+        method: "post",
+        headers,
+        body: data
+      }).then((response) => {
+        this.getFolderContent(this.state.currentFolderId);
+      }).catch((error) => {
+        console.log(`Error during file customization. Error: ${error} `)
+      })
+    }
+
   }
 
   moveFile = (fileId, destination) => {
@@ -421,7 +434,7 @@ class XCloud extends React.Component {
             uploadDroppedFile={this.uploadDroppedFile}
             setSortFunction={this.setSortFunction}
             moveFile={this.moveFile}
-            updateFolderMeta={this.updateFolderMeta}
+            updateMeta={this.updateMeta}
           />
 
           <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >

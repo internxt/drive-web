@@ -166,7 +166,7 @@ class FileCommander extends React.Component {
                                                 clickHandler={this.props.openFolder.bind(null, item.id)}
                                                 selectHandler={(e) => this.props.selectCommanderItem(i, e)}
                                                 moveFile={this.props.moveFile}
-                                                updateFolderMeta={this.props.updateFolderMeta}
+                                                updateFolderMeta={this.props.updateMeta}
                                             />
                                             :
                                             <FileCommanderItem
@@ -180,6 +180,7 @@ class FileCommander extends React.Component {
                                                 clickHandler={this.props.downloadFile.bind(null, item.fileId)}
                                                 selectHandler={(e) => this.props.selectCommanderItem(i, e)}
                                                 isLoading={item.isLoading}
+                                                updateFileMeta={this.props.updateMeta}
                                             />
                                         }
                                     </span>
