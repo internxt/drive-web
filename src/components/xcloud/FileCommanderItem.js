@@ -208,7 +208,7 @@ class FileCommanderItem extends React.Component {
                     <Dropdown.Menu>
                         <Dropdown.Item as="span"><input className="itemNameInput" type="text" value={this.state.itemName} onChange={this.handleNameChange}/></Dropdown.Item>
                         <Dropdown.Divider />
-                        <Dropdown.Item as="span"><span className="propText">Type: </span>{this.props.type.toUpperCase()}</Dropdown.Item>
+                        <Dropdown.Item as="span"><span className="propText">Type: </span>{this.props.type ? this.props.type.toUpperCase() : ''}</Dropdown.Item>
                         <Dropdown.Item as="span"><span className="propText">Size: </span>{PrettySize(this.props.size)}</Dropdown.Item>
                         {/* <Dropdown.Item eventKey="4" as="span"><span className="propText">Added: </span></Dropdown.Item> */}
                     </Dropdown.Menu>

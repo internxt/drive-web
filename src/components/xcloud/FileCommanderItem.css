@@ -51,6 +51,10 @@
     margin-bottom: 27px;
 }
 
+.FileCommanderItem .itemIcon .ai-animation {
+    margin: 2.8rem 3.2rem !important;
+}
+
 .FileCommanderItem .iconContainer svg:last-child {
     position: relative;
     top: -3.2rem;
