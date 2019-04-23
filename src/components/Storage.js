@@ -3,11 +3,11 @@ import { Container } from 'react-bootstrap';
 import Plans from './Plans';
 import NavigationBar from './navigationBar/NavigationBar';
 import PayMethods from './PayMethods';
-import "./Settings.css";
+import "./Storage.css";
 import history from '../history';
 
 
-class Settings extends React.Component {
+class Storage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -42,11 +42,11 @@ class Settings extends React.Component {
     render() {
         return (
             <Container fluid className="settings">
-                <NavigationBar navbarItems={<h5>Settings</h5>} showSettingsButton={true} showFileButtons={false} />
+                <NavigationBar navbarItems={<h5>Storage</h5>} showSettingsButton={true} showFileButtons={false} />
                 {this.state.page}
             </Container>
         );
     }
 }
 
-export default Settings;
+export default Storage;

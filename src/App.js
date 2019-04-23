@@ -11,7 +11,7 @@ import NotFound from './NotFound';
 import Deactivation from './components/forms/Deactivation';
 
 
-import Settings from './components/Settings';
+import Storage from './components/Storage';
 import Security from './components/Security';
 
 class App extends Component {
@@ -44,7 +44,7 @@ class App extends Component {
           } />
           <Route path='/activations/:token' render={(props) => <Activation {...props} />} />
           <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
-          <Route path='/settings' render={(props) => <Settings {...props} isAuthenticated={this.state.isAuthenticated} />} />
+          <Route path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/security' render={(props) => <Security {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/app' render={(props) => <XCloud {...props}
             isAuthenticated={this.state.isAuthenticated}
