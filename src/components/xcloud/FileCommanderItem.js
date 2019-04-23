@@ -101,6 +101,10 @@ class FileCommanderItem extends React.Component {
     handleShowDropdown = () => {
         // Save changes when dropdown is closed
         if (this.state.showDropdown === true) this.handleApplyChanges();
+        else { 
+            // Set item name when open context menu
+            this.setState({ itemName: this.props.name }) 
+        }
         this.setState({ showDropdown: !this.state.showDropdown });
     }
 
