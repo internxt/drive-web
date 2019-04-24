@@ -55,7 +55,17 @@ class NavigationBar extends React.Component {
     }
 
     componentDidMount() {
-        let user = JSON.parse(localStorage.xUser).email;
+        let user = null;
+        try {
+            user = JSON.parse(localStorage.xUser).email;
+            if (user == null) {
+                throw new Error();
+            }
+        } catch {
+            history.push('/login');
+            return;
+            
+        }
 
         fetch('/api/limit', {
             method: 'post',
@@ -89,7 +99,16 @@ class NavigationBar extends React.Component {
     }
 
     render() {
-        const user = JSON.parse(localStorage.xUser);
+        let user = null;
+        try {
+            user = JSON.parse(localStorage.xUser).email;
+            if (user == null) {
+                throw new Error();
+            }
+        } catch {
+            history.push('/login');
+            return "";
+        }
 
         return (
             <Navbar className="p-1" id="mainNavBar">
