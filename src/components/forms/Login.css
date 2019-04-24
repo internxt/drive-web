@@ -13,6 +13,21 @@
   width: 52.4px;
 }
 
+.login-container-box1 {
+  margin: 7% auto auto auto;
+  background-color: white;
+  width: 472px !important;
+  border: solid 1px #eaeced;
+  border-radius: 6px;
+  padding: 40px !important;
+  height: 450px;
+}
+
+.login-container-box1 > .logo > img {
+  height: 27.5px;
+  width: 52.4px;
+}
+
 .container-title {
   font-size: 25px;
   font-weight: 600;
