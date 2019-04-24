@@ -101,7 +101,7 @@ class NavigationBar extends React.Component {
     render() {
         let user = null;
         try {
-            user = JSON.parse(localStorage.xUser).email;
+            user = JSON.parse(localStorage.xUser);
             if (user == null) {
                 throw new Error();
             }
