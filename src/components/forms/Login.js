@@ -224,7 +224,7 @@ class Login extends React.Component {
     } else {
       const isValid = this.validate2FA();
       return (<div className="login-main">
-        <Container className="login-container-box">
+        <Container className="login-container-box1">
           <p className="logo"><img src={logo} /></p>
           <p className="container-title">Security Verification</p>
           <p className="privacy-disclaimer">Enter your 6 digit Google Authenticator Code below</p>
