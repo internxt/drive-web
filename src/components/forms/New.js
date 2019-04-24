@@ -195,7 +195,7 @@ class New extends React.Component {
     privacyContainer() {
         return (<div className="container-register">
             <p className="container-title">X Cloud Security</p>
-            <p className="privacy-disclaimer">Due to the secure nature of X Cloud we can't recover your information as we don't ever store user data. This means we can't access your account or reset your password. Once it's gone, it's gone forever. After you've set up a password on the next page we strongly suggest you:</p>
+            <p className="privacy-disclaimer">X Cloud uses your password to encrypt and decrypt your files. Due to the secure nature of X Cloud, we don't know your password. That means that if you ever forget it, your files are gone forever. With us, you're the only owner of your files. We strongly suggest you to:</p>
             <ul className="privacy-remainders">
                 <li>Store your Password. Keep it safe and secure.</li>
                 <li>Keep an offline backup of your password.</li>
