@@ -230,7 +230,7 @@ class Login extends React.Component {
           <p className="privacy-disclaimer">Enter your 6 digit Google Authenticator Code below</p>
           <Form className="form-register container-register two-factor" onSubmit={e => {
             e.preventDefault();
-            this.check2FANeeded();
+            this.doLogin();
           }}>
             <Form.Row>
               <Form.Group as={Col} controlId="twoFactorCode">
