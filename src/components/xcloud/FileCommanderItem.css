@@ -118,7 +118,7 @@
     border-style: none;
     visibility: visible;
     box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
-    padding-bottom: 20px;
+    padding-bottom: 10px;
 }
 
 .FileCommanderItem .dropdown-divider {
