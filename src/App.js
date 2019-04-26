@@ -9,6 +9,7 @@ import XCloud from './components/xcloud/XCloud';
 import Activation from './components/forms/Activation';
 import NotFound from './NotFound';
 import Deactivation from './components/forms/Deactivation';
+import Reset from './components/forms/Reset';
 
 
 import Storage from './components/Storage';
@@ -42,6 +43,8 @@ class App extends Component {
             isAuthenticated={this.state.isAuthenticated}
             handleKeySaved={this.handleKeySaved} />
           } />
+          <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
+          <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/activations/:token' render={(props) => <Activation {...props} />} />
           <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
           <Route path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
@@ -53,9 +56,9 @@ class App extends Component {
             handleKeySaved={this.handleKeySaved} />
           } />
           <Route exact path='/new'
-                  render={(props) => <New {...props} />}
-                  isAuthenticated={this.state.isAuthenticated}
-                  handleKeySaved={this.handleKeySaved} />
+            render={(props) => <New {...props} />}
+            isAuthenticated={this.state.isAuthenticated}
+            handleKeySaved={this.handleKeySaved} />
           <Route exact path='/'>
             <Redirect to="/login" />
           </Route>
