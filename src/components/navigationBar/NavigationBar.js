@@ -111,7 +111,7 @@ class NavigationBar extends React.Component {
         }
 
         return (
-            <Navbar className="p-1" id="mainNavBar">
+            <Navbar id="mainNavBar">
                 <Navbar.Brand>
                     <a href="/"><img src={logo} width='54.4' height='28.6' /></a>
                 </Navbar.Brand>
@@ -130,6 +130,7 @@ class NavigationBar extends React.Component {
                             <Dropdown.Divider />
                             <div className="dropdown-menu-group">
                                 <Dropdown.Item onClick={(e) => { history.push('/storage'); }}>Storage</Dropdown.Item>
+                                <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
                                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                                 <Dropdown.Item href="mailto:hello@internxt.com">Contact us</Dropdown.Item>
                             </div>

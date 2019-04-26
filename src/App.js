@@ -45,6 +45,7 @@ class App extends Component {
           } />
           <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
+          <Route exact path='/settings' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/activations/:token' render={(props) => <Activation {...props} />} />
           <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
           <Route path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />

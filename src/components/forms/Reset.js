@@ -4,7 +4,7 @@ import './Login.css';
 import './Reset.css';
 import { Form, Col, Button } from 'react-bootstrap';
 import NavigationBar from './../navigationBar/NavigationBar'
-import { hashTextToSHA256, encryptText, passToHash, decryptText } from './../../utils'
+import { hashTextToSHA256, encryptText, passToHash, decryptText, encryptTextWithKey, decryptTextWithKey } from './../../utils'
 import history from '../../history'
 
 class Reset extends React.Component {
@@ -44,7 +44,7 @@ class Reset extends React.Component {
         }
 
         if (!this.validateForm()) {
-            return alert('Passwords do not match');
+            return alert('Passwords do not match.');
         }
 
         // Encrypt the password
@@ -57,12 +57,12 @@ class Reset extends React.Component {
         var encryptedNewSalt = encryptText(hashedNewPassword.salt);
 
         // Encrypt the mnemonic
-        var encryptedMnemonic = encryptText(localStorage.xMnemonic, this.state.newPassword);
+        var encryptedMnemonic = encryptTextWithKey(localStorage.xMnemonic, this.state.newPassword);
 
         var headers = this.setHeaders();
 
-        fetch('/api/password', {
-            method: 'patch',
+        fetch('/api/user/password', {
+            method: 'PATCH',
             headers: headers,
             body: JSON.stringify({
                 currentPassword: encryptedCurrentPassword,
@@ -71,12 +71,21 @@ class Reset extends React.Component {
                 mnemonic: encryptedMnemonic
             })
         })
-        .then(res => res.json())
-        .then(res => {
-            console.log('ok', res);
-        }).catch(err => {
-            alert('Error');
-        });
+            .then(async res => {
+                var data = await res.json();
+                return { res, data };
+            })
+            .then(res => {
+                if (res.res.status != 200) {
+                    console.log(res);
+                    throw res.data.error;
+                } else {
+                    alert("Password changed successfully.");
+                }
+            })
+            .catch(err => {
+                alert(err);
+            });
     }
 
     componentDidMount() {
@@ -97,7 +106,7 @@ class Reset extends React.Component {
             .then(res => {
                 this.setState({ salt: decryptText(res.sKey) });
             }).catch(err => {
-                console.log(err);
+                alert('Error:\n' + (err.error ? err.error : 'Internal server error'));
             });
     }
 
@@ -116,10 +125,10 @@ class Reset extends React.Component {
     }
 
     render() {
-        return <Container fluid>
+        return <div>
             <NavigationBar navbarItems={<h5>Settings</h5>} />
             <Container className="login-main">
-                <Container className="login-container-box">
+                <Container className="login-container-box edit-password-box">
                     <div className="container-register">
                         <p className="container-title edit-password">Edit your password</p>
 
@@ -148,7 +157,7 @@ class Reset extends React.Component {
                     </div>
                 </Container>
             </Container>
-        </Container>;
+        </div>;
     }
 }
 
