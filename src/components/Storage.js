@@ -41,10 +41,10 @@ class Storage extends React.Component {
 
     render() {
         return (
-            <Container fluid className="settings">
+            <div className="settings">
                 <NavigationBar navbarItems={<h5>Storage</h5>} showSettingsButton={true} showFileButtons={false} />
                 {this.state.page}
-            </Container>
+            </div>
         );
     }
 }

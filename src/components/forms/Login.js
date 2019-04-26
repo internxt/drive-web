@@ -5,9 +5,6 @@ import history from '../../history';
 import "./Login.css";
 import logo from '../../assets/logo.svg';
 import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../utils';
-import { fdatasync } from "fs";
-
-const bip39 = require('bip39');
 
 const DEV = process.env.NODE_ENV == 'development';
 
@@ -188,7 +185,7 @@ class Login extends React.Component {
       const isValid = this.validateLoginForm();
       return (<div className="login-main">
         <Container className="login-container-box">
-          <p className="logo"><img src={logo} /></p>
+          <p className="logo logo-login"><img src={logo} /></p>
           <div className="container-register">
             <p className="container-title">Sign in to X Cloud</p>
             <div className="menu-box">

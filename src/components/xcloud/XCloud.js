@@ -448,7 +448,7 @@ class XCloud extends React.Component {
               <div className="popup--full-screen__close-button-wrapper">
                 <img src={closeTab} onClick={this.closeRateLimitModal} />
               </div>
-              <span className="logo"><img src={logo} /></span>
+              <span className="logo logo-runoutstorage"><img src={logo} /></span>
               <div className="message-wrapper">
                 <h1> You have run out of storage. </h1>
                 <h2>You have currently used 1GB of storage. In order to start uploading more files please click the button below to upgrade your storage plan.</h2>

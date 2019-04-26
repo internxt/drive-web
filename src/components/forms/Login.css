@@ -42,6 +42,10 @@
   cursor: pointer;
 }
 
+.logo {
+  margin-bottom: 15px;
+}
+
 .container-register button {
 outline: transparent;
 }
