@@ -453,7 +453,7 @@ class XCloud extends React.Component {
                 <h1> You have run out of storage. </h1>
                 <h2>You have currently used 1GB of storage. In order to start uploading more files please click the button below to upgrade your storage plan.</h2>
                 <div className="buttons-wrapper">
-                <div className="default-button button-primary" onClick={this.goToSettings}>
+                <div className="default-button button-primary" onClick={this.goToStorage}>
                   Upgrade my storage plan
                 </div>
               </div>
