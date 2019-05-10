@@ -108,7 +108,7 @@ class Plans extends React.Component {
 
                     <Row className="mt-3">
                         <Col xs={12} md={6} sm={6}>
-                            <Circle color="#007bff" /> Used storage space
+                            <Circle image="linear-gradient(59deg, #096dff, #00b1ff)" /> Used storage space
                         </Col>
 
                         <Col xs={12} md={6} sm={6}>
