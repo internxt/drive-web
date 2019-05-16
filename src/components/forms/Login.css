@@ -69,6 +69,7 @@ outline: transparent;
 .privacy-disclaimer {
   color: #737880;
   font-size: 15px;
+  text-align: justify;
   line-height: 22px;
   letter-spacing: -0.11px;
 }
