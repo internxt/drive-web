@@ -313,7 +313,7 @@ class XCloud extends React.Component {
       headers,
       body: data
     }).then((response) => {
-      if (response.status === 402) {
+      if (response.status === 402 || response.status === 500) {
         this.setState({ rateLimitModal: true })
         return;
       }
@@ -404,8 +404,8 @@ class XCloud extends React.Component {
     this.setState({ rateLimitModal: false })
   }
 
-  goToSettings = () => {
-    history.push('/settings');
+  goToStorage = () => {
+    history.push('/storage');
   }
 
   render() {
