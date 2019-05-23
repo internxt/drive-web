@@ -341,7 +341,7 @@ class XCloud extends React.Component {
       .then(result => {
         setTimeout(() => {
           this.getFolderContent(this.state.currentFolderId, false);
-        }, 500);
+        }, 1000);
       })
       .catch(err => {
         throw new Error(err);
