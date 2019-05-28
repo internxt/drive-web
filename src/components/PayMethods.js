@@ -45,7 +45,7 @@ class PayMethods extends React.Component {
                         <h2><strong>Choose a payment method.</strong></h2>
                     </Row>
 
-                    <Row className="mt-5" className="payMethods">
+                    <Row className="mt-5 payMethods">
                         {
                             AvailablePayMethods.map(method =>
                                 <Col xs={12} md={4} sm={6} onClick={(e) => { this.setState({ choosedPayMethod: method.component }) }}>

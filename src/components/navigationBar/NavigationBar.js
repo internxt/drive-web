@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, Navbar, Dropdown, ProgressBar, Container } from 'react-bootstrap';
+import { Nav, Navbar, Dropdown, ProgressBar } from 'react-bootstrap';
 
 // Assets
 import account from '../../assets/Dashboard-Icons/Account.svg';
@@ -8,9 +8,9 @@ import logo from '../../assets/logo.svg';
 import search from '../../assets/Dashboard-Icons/Search.svg';
 import uploadFile from '../../assets/Dashboard-Icons/Upload.svg';
 import newFolder from '../../assets/Dashboard-Icons/Add-folder.svg';
-import downloadFile from '../../assets/Dashboard-Icons/Download.svg';
+//import downloadFile from '../../assets/Dashboard-Icons/Download.svg';
 import deleteFile from '../../assets/Dashboard-Icons/Delete.svg';
-import share from '../../assets/Dashboard-Icons/Share.svg';
+//import share from '../../assets/Dashboard-Icons/Share.svg';
 import PrettySize from 'prettysize';
 
 import HeaderButton from '../xcloud/HeaderButton';
@@ -33,7 +33,7 @@ class NavigationBar extends React.Component {
         if (!localStorage.xUser) {
             return;
         }
-        const user = JSON.parse(localStorage.xUser);
+        //const user = JSON.parse(localStorage.xUser);
 
         if (props.showFileButtons) {
             this.state.navbarItems =
@@ -113,7 +113,7 @@ class NavigationBar extends React.Component {
         return (
             <Navbar id="mainNavBar">
                 <Navbar.Brand>
-                    <a href="/"><img src={logo} width='54.4' height='28.6' /></a>
+                    <a href="/"><img src={logo} width='54.4' height='28.6' alt="Logo" /></a>
                 </Navbar.Brand>
                 <Nav className="m-auto">
                     {this.state.navbarItems}

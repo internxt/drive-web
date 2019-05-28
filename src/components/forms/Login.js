@@ -1,12 +1,10 @@
 import * as React from "react";
-import { Button, Form, Col, Container, Row, FormGroup, FormControl } from "react-bootstrap";
+import { Button, Form, Col, Container } from "react-bootstrap";
 
 import history from '../../history';
 import "./Login.css";
 import logo from '../../assets/logo.svg';
 import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../utils';
-
-const DEV = process.env.NODE_ENV == 'development';
 
 class Login extends React.Component {
   constructor(props) {
@@ -90,7 +88,7 @@ class Login extends React.Component {
       body: JSON.stringify({ email: this.state.email })
     }).then(res => {
 
-      if (res.status != 200) {
+      if (res.status !== 200) {
         throw new Error('Login error');
       }
 
@@ -136,7 +134,7 @@ class Login extends React.Component {
             }).then(async res => {
               return { res, data: await res.json() };
             }).then(res => {
-              if (res.res.status != 200) {
+              if (res.res.status !== 200) {
                 throw new Error(res.data.error ? res.data.error : res.data);
               }
               var data = res.data;
@@ -185,7 +183,7 @@ class Login extends React.Component {
       const isValid = this.validateLoginForm();
       return (<div className="login-main">
         <Container className="login-container-box">
-          <p className="logo logo-login"><img src={logo} /></p>
+          <p className="logo logo-login"><img src={logo} alt="Logo" /></p>
           <div className="container-register">
             <p className="container-title">Sign in to X Cloud</p>
             <div className="menu-box">
@@ -222,7 +220,7 @@ class Login extends React.Component {
       const isValid = this.validate2FA();
       return (<div className="login-main">
         <Container className="login-container-box1">
-          <p className="logo"><img src={logo} /></p>
+          <p className="logo"><img src={logo} alt="Logo" /></p>
           <p className="container-title">Security Verification</p>
           <p className="privacy-disclaimer">Enter your 6 digit Google Authenticator Code below</p>
           <Form className="form-register container-register two-factor" onSubmit={e => {

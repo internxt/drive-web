@@ -250,7 +250,7 @@ class XCloud extends React.Component {
       method: "get",
       headers
     }).then(async (data) => {
-      if (data.status != 200) {
+      if (data.status !== 200) {
         throw data;
       }
 
@@ -440,15 +440,15 @@ class XCloud extends React.Component {
           <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >
             <div>
               <a href={'xcloud://' + this.state.token + '://' + JSON.stringify(this.props.user)}>Open mobile app</a>
-              <a onClick={this.closeModal}>Use web app</a>
+              <a href="/" onClick={this.closeModal}>Use web app</a>
             </div>
           </Popup>
           <Popup open={this.state.rateLimitModal} closeOnDocumentClick onClose={this.closeRateLimitModal} className="popup--full-screen">
             <div className="popup--full-screen__content">
               <div className="popup--full-screen__close-button-wrapper">
-                <img src={closeTab} onClick={this.closeRateLimitModal} />
+                <img src={closeTab} onClick={this.closeRateLimitModal} alt="Close tab" />
               </div>
-              <span className="logo logo-runoutstorage"><img src={logo} /></span>
+              <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
                 <h1> You have run out of storage. </h1>
                 <h2>You have currently used 1GB of storage. In order to start uploading more files please click the button below to upgrade your storage plan.</h2>

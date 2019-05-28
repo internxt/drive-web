@@ -126,16 +126,16 @@ class Plans extends React.Component {
                         {this.state.PlanDetails.map(entry => <Col xs={12} md={4} sm={6}>
                             <Card onClick={(e) => { this.props.planHandler(entry); }}>
                                 <Card.Header><h2>{entry.name}</h2></Card.Header>
-                                <Card.Text>{entry.price_eur == 0 ? 'Free' : '€' + entry.price_eur + ' per month'}</Card.Text>
+                                <Card.Text>{entry.price_eur === 0 ? 'Free' : '€' + entry.price_eur + ' per month'}</Card.Text>
                             </Card>
                         </Col>)}
                     </Row>
 
                     <hr className="settings-hr-end" />
 
-                    <a className="delete-account" onClick={e => {
+                    <button className="delete-account" onClick={e => {
                         this.setState({ modalDeleteAccountShow: true });
-                    }}>Permanently Delete Account</a>
+                    }}>Permanently Delete Account</button>
 
                     <Modal show={this.state.modalDeleteAccountShow2} onHide={this.handleDismissDeleteAccount}>
                         <Modal.Header closeButton>Permanently delete account</Modal.Header>
@@ -152,9 +152,9 @@ class Plans extends React.Component {
                     <Popup open={this.state.modalDeleteAccountShow} onClose={this.handleDismissDeleteAccount} className="popup--full-screen">
                         <div className="popup--full-screen__content delete-account-specific">
                             <div className="popup--full-screen__close-button-wrapper">
-                                <img src={closeTab} onClick={this.handleDismissDeleteAccount} />
+                                <img src={closeTab} onClick={this.handleDismissDeleteAccount} alt="Close tab" />
                             </div>
-                            <span className="logo logo-delete-account"><img src={logo} /></span>
+                            <span className="logo logo-delete-account"><img src={logo} alt="Logo" /></span>
                             <div className="message-wrapper">
                                 <h1>Are you sure?</h1>
                                 <p className="delete-account-advertising">Deleting your account means all your files will be gone forever and you will lose access to your X Cloud account. Once you click delete account, you will receive a confirmation email.</p>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import $ from 'jquery';
 import PrettySize from 'prettysize';
-import { Dropdown, Button, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { Dropdown, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import './FileCommanderItem.css';
 import Icon from '../../assets/Icon'
 import ActivityIndicator from '../ActivityIndicator'
@@ -21,9 +21,9 @@ class FileCommanderItem extends React.Component {
         // Folder colors definition
         this.colors = ['red', 'yellow', 'green', 'blue', 'purple', 'pink', 'grey'];
         // Folder icons definition (icon id is its index in array)
-        this.icons = ['avatarcircleneutral', 'backup', 'barchart', 'bell', 'binoculars', 'book', 'camera', 'bowl', 'categories', 
-            'circlefilledcheckmark', 'clappboard', 'clipboard', 'cloud', 'controllerneoGeo', 'dollarsign', 'facehappy', 'file', 
-            'heartfilled', 'inbox', 'lighton', 'locklocked', 'musicnote', 'navigationcircle', 'notifications', 
+        this.icons = ['avatarcircleneutral', 'backup', 'barchart', 'bell', 'binoculars', 'book', 'camera', 'bowl', 'categories',
+            'circlefilledcheckmark', 'clappboard', 'clipboard', 'cloud', 'controllerneoGeo', 'dollarsign', 'facehappy', 'file',
+            'heartfilled', 'inbox', 'lighton', 'locklocked', 'musicnote', 'navigationcircle', 'notifications',
             'path', 'running', 'starfilled', 'video', 'window', 'yinyang'];
     }
 
@@ -75,7 +75,7 @@ class FileCommanderItem extends React.Component {
             // Changes on folder item
             if (this.state.selectedColor && (this.props.color !== this.state.selectedColor)) metadata.color = this.state.selectedColor;
             if (this.state.selectedIcon && (!this.props.icon || this.props.icon.id !== this.state.selectedIcon)) metadata.icon = this.state.selectedIcon;
-    
+
             if (metadata.itemName || metadata.color || metadata.icon) {
                 this.props.updateFolderMeta(metadata, this.props.id, this.props.type);
             }
@@ -94,7 +94,7 @@ class FileCommanderItem extends React.Component {
             event.stopPropagation();
         } else {
             // When click off window, close it and apply changes
-            this.setState({ showDropdown: isOpen });        
+            this.setState({ showDropdown: isOpen });
             if (isOpen === false) this.handleApplyChanges();
         }
     }
@@ -102,9 +102,9 @@ class FileCommanderItem extends React.Component {
     handleShowDropdown = () => {
         // Save changes when dropdown is closed
         if (this.state.showDropdown === true) this.handleApplyChanges();
-        else { 
+        else {
             // Set item name when open context menu
-            this.setState({ itemName: this.props.name }) 
+            this.setState({ itemName: this.props.name })
         }
         this.setState({ showDropdown: !this.state.showDropdown });
     }
@@ -126,7 +126,7 @@ class FileCommanderItem extends React.Component {
                 this.setState({
                     selectedColor: '',
                     selectedIcon: 0
-                })  
+                })
                 break;
         }
     }
@@ -137,8 +137,8 @@ class FileCommanderItem extends React.Component {
             let localIcon = this.state.selectedIcon ? this.icons[this.state.selectedIcon - 1] : this.props.icon.name;
             return (
                 <div className="iconContainer">
-                    <Icon name="folder" color={localColor} height="75" alt=""/>
-                    <Icon className="folderIcon" name={localIcon} color={localColor}/>
+                    <Icon name="folder" color={localColor} height="75" alt="" />
+                    <Icon className="folderIcon" name={localIcon} color={localColor} />
                 </div>
             )
         } else {
@@ -152,69 +152,70 @@ class FileCommanderItem extends React.Component {
 
     render() {
         // Set Apply button active if are changes pending 
+        /*
         let itemNameUnchanged = true;
         let colorUnchanged = true;
         let iconUnchanged = true;
         if (this.state.itemName && (this.props.name !== this.state.itemName)) { itemNameUnchanged = false; }
         if (this.state.selectedColor && (this.props.color !== this.state.selectedColor)) { colorUnchanged = false; }
         if (this.state.selectedIcon && (!this.props.icon || this.props.icon.id !== this.state.selectedIcon)) { iconUnchanged = false; }
-
+*/
         return (
             <div className={`FileCommanderItem (this.state.selected ? 'selected' : '') ${this.state.dragDropStyle}`}
                 data-type={this.props.type}
                 data-id={this.props.id}
                 data-bucket={this.props.bucket}
                 onClick={this.props.selectHandler}
-                onDoubleClick={this.props.clickHandler} 
+                onDoubleClick={this.props.clickHandler}
                 draggable="true"
                 onDragStart={this.handleDragStart}
                 onDragOver={this.handleDragOver}
                 onDragLeave={this.handleDragLeave}
                 onDrop={this.handleDrop}
-                >
+            >
                 <div className="properties">
                     {/* Item context menu changes depending on folder or file*/}
                     {this.props.type === 'Folder' ?
-                    <Dropdown drop={'right'} show={this.state.showDropdown} onToggle={this.handleDropdownSelect}>
-                        <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown} >...</Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Item as="span"><input className="itemNameInput" type="text" value={this.state.itemName} onChange={this.handleNameChange}/></Dropdown.Item>
-                            <Dropdown.Divider />
-                            <Dropdown.Item as="span">
-                                Style color  
+                        <Dropdown drop={'right'} show={this.state.showDropdown} onToggle={this.handleDropdownSelect}>
+                            <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown} >...</Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item as="span"><input className="itemNameInput" type="text" value={this.state.itemName} onChange={this.handleNameChange} /></Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item as="span">
+                                    Style color
                             </Dropdown.Item>
-                            <ToggleButtonGroup id="colorToggle" className="toggleGroup" name="colorSelection" type="radio" defaultValue={this.props.color} onChange={this.handleColorSelection}>
-                                {
-                                    this.colors.map((value, i) => {
-                                        return(<ToggleButton className={`${value}Color`} type="radio" value={value}/>);
-                                    })
-                                }
-                            </ToggleButtonGroup>
-                            <Dropdown.Divider className="ponleunnombre" />
-                            <Dropdown.Item as="span">
-                                Cover icon
+                                <ToggleButtonGroup id="colorToggle" className="toggleGroup" name="colorSelection" type="radio" defaultValue={this.props.color} onChange={this.handleColorSelection}>
+                                    {
+                                        this.colors.map((value, i) => {
+                                            return (<ToggleButton className={`${value}Color`} type="radio" value={value} />);
+                                        })
+                                    }
+                                </ToggleButtonGroup>
+                                <Dropdown.Divider className="ponleunnombre" />
+                                <Dropdown.Item as="span">
+                                    Cover icon
                             </Dropdown.Item>
-                            <ToggleButtonGroup id="iconToggle" className="toggleGroup" name="iconSelection" type="radio" defaultValue={this.props.icon ? this.props.icon.id : ''} onChange={this.handleIconSelection}>
-                                {
-                                    this.icons.map((value, i) => {
-                                        return(<ToggleButton className={`${value}Icon`} type="radio" value={i+1}/>);
-                                    })
-                                }
-                            </ToggleButtonGroup>
-                        </Dropdown.Menu>
-                    </Dropdown> :
-                <Dropdown drop={'right'} show={this.state.showDropdown} onToggle={this.handleDropdownSelect}>
-                    <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown}>...</Dropdown.Toggle>
-                    <Dropdown.Menu>
-                        <Dropdown.Item as="span"><input className="itemNameInput" type="text" value={this.state.itemName} onChange={this.handleNameChange}/></Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item as="span"><span className="propText">Type: </span>{this.props.type ? this.props.type.toUpperCase() : ''}</Dropdown.Item>
-                        <Dropdown.Item as="span"><span className="propText">Size: </span>{PrettySize(this.props.size)}</Dropdown.Item>
-                        {/* <Dropdown.Item eventKey="4" as="span"><span className="propText">Added: </span></Dropdown.Item> */}
-                    </Dropdown.Menu>
-                </Dropdown>}
+                                <ToggleButtonGroup id="iconToggle" className="toggleGroup" name="iconSelection" type="radio" defaultValue={this.props.icon ? this.props.icon.id : ''} onChange={this.handleIconSelection}>
+                                    {
+                                        this.icons.map((value, i) => {
+                                            return (<ToggleButton className={`${value}Icon`} type="radio" value={i + 1} />);
+                                        })
+                                    }
+                                </ToggleButtonGroup>
+                            </Dropdown.Menu>
+                        </Dropdown> :
+                        <Dropdown drop={'right'} show={this.state.showDropdown} onToggle={this.handleDropdownSelect}>
+                            <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown}>...</Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item as="span"><input className="itemNameInput" type="text" value={this.state.itemName} onChange={this.handleNameChange} /></Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item as="span"><span className="propText">Type: </span>{this.props.type ? this.props.type.toUpperCase() : ''}</Dropdown.Item>
+                                <Dropdown.Item as="span"><span className="propText">Size: </span>{PrettySize(this.props.size)}</Dropdown.Item>
+                                {/* <Dropdown.Item eventKey="4" as="span"><span className="propText">Added: </span></Dropdown.Item> */}
+                            </Dropdown.Menu>
+                        </Dropdown>}
                 </div>
-                <div className="itemIcon">{ this.props.type === 'Folder' ? this.getFolderIcon() : this.getFileIcon() }</div>
+                <div className="itemIcon">{this.props.type === 'Folder' ? this.getFolderIcon() : this.getFileIcon()}</div>
                 <div className="name" onClick={this.props.clickHandler}>{this.props.name}</div>
                 {/* {props.type !== 'Folder' &&
                 <div className="created">{props.created}</div>
@@ -225,22 +226,22 @@ class FileCommanderItem extends React.Component {
 
 class CustomToggle extends React.Component {
     constructor(props, context) {
-      super(props, context);
-      this.handleClick = this.handleClick.bind(this);
+        super(props, context);
+        this.handleClick = this.handleClick.bind(this);
     }
-  
+
     handleClick(e) {
-      e.preventDefault();
-      // Call dropdown to toggle show
-      this.props.handleShowDropdown()
-      this.props.onClick(e);
+        e.preventDefault();
+        // Call dropdown to toggle show
+        this.props.handleShowDropdown()
+        this.props.onClick(e);
     }
-  
+
     render() {
-      return (
-        <div onClick={this.handleClick}>{this.props.children}</div>
-      );
+        return (
+            <div onClick={this.handleClick}>{this.props.children}</div>
+        );
     }
-  }
+}
 
 export default FileCommanderItem

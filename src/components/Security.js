@@ -3,7 +3,7 @@ import { Container, Button, Col } from 'react-bootstrap';
 import NavigationBar from './navigationBar/NavigationBar';
 import './Security.css';
 import { Form } from 'react-bootstrap';
-import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../utils';
+import { encryptText, decryptText, passToHash } from '../utils';
 import ggl from '../assets/google-authenticator.svg';
 import appstore from '../assets/app-store.svg';
 import gglplay from '../assets/google-play.svg';
@@ -61,6 +61,7 @@ class Security extends React.Component {
                 case 2: return this.boxStep2()
                 case 3: return this.boxStep3()
                 case 4: return this.boxStep4()
+                default: 
             }
         })();
 
@@ -68,7 +69,8 @@ class Security extends React.Component {
         obj.currentTarget.className = 'on';
 
         if (this.state.lastClickedButton) {
-            this.state.lastClickedButton.className = '';
+            var buttonReference = this.state.lastClickedButton;
+            buttonReference.className = '';
         } else {
             let buttons = document.getElementById('buttons')
             buttons.firstChild.className = '';
@@ -93,7 +95,7 @@ class Security extends React.Component {
             }).then(res => {
                 return { res, data: res.json() };
             }).then(res => {
-                if (res.res.status != 200) {
+                if (res.res.status !== 200) {
                     reject(res.data);
                 } else {
                     resolve(res.data);
@@ -162,9 +164,9 @@ class Security extends React.Component {
         return <div className="box-step-1">
             <div>Download Authy, Google Authenticator or a similar app on your device.</div>
             <div>
-                <img src={ggl} height={48} className="google-authenticator-logo" />
-                <img src={appstore} height={48} className="app-store" />
-                <img src={gglplay} height={48} />
+                <img src={ggl} height={48} className="google-authenticator-logo" alt="Google Authenticator" />
+                <img src={appstore} height={48} className="app-store" alt="App Store" />
+                <img src={gglplay} height={48} alt="Google Play" />
             </div>
         </div>;
     }
@@ -173,7 +175,7 @@ class Security extends React.Component {
         return <div className="box-step-2">
             <div>Use Authy, Google Authentication or a similar app to scan the QR Code below</div>
             <div className="bidi-container">
-                <img src={this.state.bidi} />
+                <img src={this.state.bidi} alt="Bidi Code" />
                 <div className="code-container">
                     <div className="text-code-container">{this.state.code}</div>
                     <div className="desc-code-container">If you are unable to scan the QR code<br />enter this code into the app.</div>
@@ -213,7 +215,7 @@ class Security extends React.Component {
 
     store2FA(e) {
         e.preventDefault();
-        if (this.state.checkKey != this.state.code) {
+        if (this.state.checkKey !== this.state.code) {
             alert('You must insert your backup key in order to validate the 2FA configuration');
             return;
         }
@@ -227,7 +229,7 @@ class Security extends React.Component {
                 code: this.state.checkCode
             })
         }).then(res => {
-            if (res.status == 200) {
+            if (res.status === 200) {
                 alert('Your Two-Factor Authentication has been activated!');
                 this.setState({ showButtons: false });
                 this.componentDidMount();
@@ -268,7 +270,7 @@ class Security extends React.Component {
         }).then(async res => {
             return { res, data: await res.json() }
         }).then(res => {
-            if (res.res.status != 200) {
+            if (res.res.status !== 200) {
                 throw res.data;
             } else {
                 alert('Your Two-Factor Authentication has been disabled.');

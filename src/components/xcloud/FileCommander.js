@@ -5,7 +5,7 @@ import { Dropdown } from 'react-bootstrap'
 import './FileCommander.css'
 import FileCommanderItem from './FileCommanderItem';
 import * as moment from 'moment'
-import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown\ arrow.svg';
+import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown arrow.svg';
 import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
 
 const SORT_TYPES = {
@@ -122,7 +122,7 @@ class FileCommander extends React.Component {
                 <div id="FileCommander-info">
                     {
                         <div id="FileCommander-backTo" onClick={this.props.handleFolderTraverseUp.bind(this)}> 
-                        {(this.state.namePath.length > 1 ? <span><img src={BackToIcon}/>  {this.state.namePath[this.state.namePath.length - 2].name}</span> : '')}
+                        {(this.state.namePath.length > 1 ? <span><img src={BackToIcon} alt="Back" />  {this.state.namePath[this.state.namePath.length - 2].name}</span> : '')}
                         </div>
                     }
                     {
@@ -130,7 +130,7 @@ class FileCommander extends React.Component {
                             <Dropdown className="dropdownButton">
                                 <Dropdown.Toggle>
                                     {(this.state.namePath.length > 1 ? this.state.namePath[this.state.namePath.length - 1].name : "All Files")}
-                                    <img src={DropdownArrowIcon}/>
+                                    <img src={DropdownArrowIcon} alt="Dropdown" />
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                     <Dropdown.Item id={SORT_TYPES.DATE_ADDED} onClick={() => this.sortItems(SORT_TYPES.DATE_ADDED)} onSelect={this.onSelect} active>Date Added</Dropdown.Item>

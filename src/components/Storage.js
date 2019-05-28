@@ -1,5 +1,4 @@
 import React from 'react';
-import { Container } from 'react-bootstrap';
 import Plans from './Plans';
 import NavigationBar from './navigationBar/NavigationBar';
 import PayMethods from './PayMethods';

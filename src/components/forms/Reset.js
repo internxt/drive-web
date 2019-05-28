@@ -4,7 +4,7 @@ import './Login.css';
 import './Reset.css';
 import { Form, Col, Button } from 'react-bootstrap';
 import NavigationBar from './../navigationBar/NavigationBar'
-import { hashTextToSHA256, encryptText, passToHash, decryptText, encryptTextWithKey, decryptTextWithKey } from './../../utils'
+import { encryptText, passToHash, decryptText, encryptTextWithKey } from './../../utils'
 import history from '../../history'
 
 class Reset extends React.Component {
@@ -76,7 +76,7 @@ class Reset extends React.Component {
                 return { res, data };
             })
             .then(res => {
-                if (res.res.status != 200) {
+                if (res.res.status !== 200) {
                     console.log(res);
                     throw res.data.error;
                 } else {
@@ -121,7 +121,7 @@ class Reset extends React.Component {
 
 
     validateForm = () => {
-        return this.state.newPassword == this.state.confirmNewPassword;
+        return this.state.newPassword === this.state.confirmNewPassword;
     }
 
     render() {

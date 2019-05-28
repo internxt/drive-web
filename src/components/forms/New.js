@@ -9,9 +9,6 @@ import { encryptText, encryptTextWithKey, passToHash } from '../../utils';
 
 const bip39 = require('bip39');
 
-const DEV = process.env.NODE_ENV == 'development';
-
-
 class New extends React.Component {
 
     constructor(props) {
@@ -276,7 +273,7 @@ class New extends React.Component {
     render() {
         return (<div className="login-main">
             <Container className="login-container-box">
-                <p className="logo"><img src={logo} /></p>
+                <p className="logo"><img src={logo} alt="Logo" /></p>
                 {this.state.currentContainer}
             </Container>
         </div>
