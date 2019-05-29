@@ -24,6 +24,7 @@
     "react-scripts": "^3.0.1",
     "react-stripe-checkout": "^2.6.3",
     "react-stripe-elements": "^3.0.0",
+    "react-timeago": "^4.4.0",
     "reactjs-popup": "^1.4.1",
     "stripe": "^7.1.0"
   },

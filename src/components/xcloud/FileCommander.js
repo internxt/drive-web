@@ -8,6 +8,8 @@ import * as moment from 'moment'
 import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown arrow.svg';
 import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
 
+import TimeAgo from 'react-timeago'
+
 const SORT_TYPES = {
     DATE_ADDED : 'Date_Added',
     SIZE_ASC : 'Size_Asc',
@@ -160,7 +162,7 @@ class FileCommander extends React.Component {
                                                 name={item.name}
                                                 type={item.type}
                                                 bucket={item.bucket}
-                                                created={moment(item.created).format('dddd')}
+                                                created={moment(item.created_at).format('dddd')}
                                                 icon={item.icon}
                                                 color={item.color ? item.color : 'blue'}
                                                 clickHandler={this.props.openFolder.bind(null, item.id)}
@@ -176,7 +178,7 @@ class FileCommander extends React.Component {
                                                 type={item.type}
                                                 size={item.size}
                                                 bucket={item.fileId}
-                                                created={moment(item.created).format('dddd')}
+                                                created={<TimeAgo date={item.created_at} />}
                                                 clickHandler={this.props.downloadFile.bind(null, item.fileId)}
                                                 selectHandler={(e) => this.props.selectCommanderItem(i, e)}
                                                 isLoading={item.isLoading}
