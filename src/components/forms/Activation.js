@@ -59,7 +59,7 @@ class Activation extends React.Component {
     if (this.state.isActivated != null) {
 
       if (this.state.isActivated === true) {
-        setTimeout(this.redirect, 10000);
+        setTimeout(this.redirect, 1000);
       }
       
       return (

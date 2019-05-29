@@ -6,6 +6,8 @@ import logo from '../../assets/logo.svg';
 import history from '../../history';
 
 import { encryptText, encryptTextWithKey, passToHash } from '../../utils';
+import { isMobile, isAndroid, isIOS } from 'react-device-detect'
+
 
 const bip39 = require('bip39');
 
@@ -36,6 +38,15 @@ class New extends React.Component {
     }
 
     componentDidMount() {
+
+        if (isMobile) {
+            if (isAndroid) {
+                window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
+            } else if (isIOS) {
+                window.location.href = "https://www.apple.com/es/ios/app-store/";
+            }
+        }
+
         const xUser = JSON.parse(localStorage.getItem('xUser'));
         const xToken = localStorage.getItem('xToken');
         const mnemonic = localStorage.getItem('xMnemonic');

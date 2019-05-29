@@ -6,6 +6,9 @@ import "./Login.css";
 import logo from '../../assets/logo.svg';
 import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../utils';
 
+import { isMobile, isAndroid, isIOS } from 'react-device-detect'
+
+
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -24,6 +27,14 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
+    if (isMobile) {
+      if (isAndroid) {
+          window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
+      } else if (isIOS) {
+          window.location.href = "https://www.apple.com/es/ios/app-store/";
+      }
+  }
+
     // Check if recent login is passed and redirect user to X Cloud
     const mnemonic = localStorage.getItem('xMnemonic');
     const user = JSON.parse(localStorage.getItem('xUser'));
