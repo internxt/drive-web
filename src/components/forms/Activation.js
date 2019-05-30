@@ -47,7 +47,7 @@ class Activation extends React.Component {
       if (isAndroid) {
         window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
       } else if (isIOS) {
-        window.location.href = "https://www.apple.com/es/ios/app-store/";
+        window.location.href = "https://itunes.apple.com/us/app/x-cloud-secure-file-storage/id1465869889";
       }
     } else {
       history.push("/");
