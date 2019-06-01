@@ -56,33 +56,27 @@ class Activation extends React.Component {
 
   render() {
 
-    if (this.state.isActivated != null) {
-
-      if (this.state.isActivated === true) {
-        setTimeout(this.redirect, 1000);
-      }
-      
-      return (
-        <div>
-          {
-            this.state.isActivated ? (
-              <Alert className="Alert" variant="success">
-                <h3>Your account has successfully activated!</h3>
-                <p>Now you will be redirected to <Link to="/login">login</Link>...</p>
-              </Alert>
-            ) : (
-                <Alert className="Alert" variant="danger">
-                  <h3>Your account needs to be activated!</h3>
-                  <p>Search your mail inbox for activation mail..</p>
-                </Alert>
-              )
-          }
-        </div>
-      )
-    } else {
-      return <div><p>Activating... {this.state.isActivated}</p></div>
+    if (this.state.isActivated === true) {
+      setTimeout(this.redirect, 1000);
     }
 
+    return <Alert className="Alert" variant={this.state.isActivated ? "success" : "danger"}>
+      {this.state.isActivated == null ? <div>
+        <h3>Activate account</h3>
+        <p>Activating...</p>
+      </div> : ''}
+
+      {this.state.isActivated ? <div>
+        <h3>Your account has successfully activated!</h3>
+        <p>Now you will be redirected to <Link to="/login">login</Link>...</p>
+      </div> : ''}
+
+      {this.state.isActivated == false ? <div>
+        <h3>Invalid activation code</h3>
+        <p>Your activation code is invalid. Maybe you have used this link before and your account is already activated.</p>
+        <p>Check you have access to your account: <a href="/login">login</a></p>
+      </div> : ""}
+    </Alert>
   }
 }
 

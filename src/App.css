@@ -41,6 +41,7 @@ will have CircularStd as default font. */
 
 .Alert {
   width: 70%;
+  margin: auto;
 }
 
 .App {
