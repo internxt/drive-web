@@ -24,9 +24,6 @@ class FileCommander extends React.Component {
     constructor(props, state) {
         super(props, state);
         this.state = {
-            // currentPath: [0, 'subFolders'],
-            // allFolders: this.props.folderTree,
-            // activeParent: {folder:'', bucket: '', name: ''}
             currentCommanderItems: this.props.currentCommanderItems,
             namePath: this.props.namePath,
             selectedSortType: SORT_TYPES.DATE_ADDED,
@@ -159,6 +156,7 @@ class FileCommander extends React.Component {
                                             <FileCommanderItem
                                                 ref={this.myRef}
                                                 id={item.id}
+                                                rawItem={item}
                                                 name={item.name}
                                                 type={item.type}
                                                 bucket={item.bucket}
@@ -174,10 +172,11 @@ class FileCommander extends React.Component {
                                             <FileCommanderItem
                                                 ref={this.myRef}
                                                 id={item.id}
+                                                rawItem={item}
                                                 name={item.name}
                                                 type={item.type}
                                                 size={item.size}
-                                                bucket={item.fileId}
+                                                bucket={item.bucket}
                                                 created={<TimeAgo date={item.created_at} />}
                                                 clickHandler={this.props.downloadFile.bind(null, item.fileId)}
                                                 selectHandler={(e) => this.props.selectCommanderItem(i, e)}

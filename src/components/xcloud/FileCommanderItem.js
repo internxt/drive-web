@@ -30,7 +30,7 @@ class FileCommanderItem extends React.Component {
     handleDragStart = (event) => {
         let data = {
             type: event.currentTarget.dataset.type,
-            id: event.currentTarget.dataset.bucket
+            id: event.currentTarget.dataset.bridgeFileId
         }
         event.dataTransfer.setData('text/plain', JSON.stringify(data));
     }
@@ -49,6 +49,7 @@ class FileCommanderItem extends React.Component {
     handleDrop = (event) => {
         // Move file when its dropped
         var data = JSON.parse(event.dataTransfer.getData('text/plain'));
+        console.log(data);
         this.props.moveFile(data.id, this.props.id);
         event.preventDefault();
         event.stopPropagation();
@@ -151,20 +152,12 @@ class FileCommanderItem extends React.Component {
     }
 
     render() {
-        // Set Apply button active if are changes pending 
-        /*
-        let itemNameUnchanged = true;
-        let colorUnchanged = true;
-        let iconUnchanged = true;
-        if (this.state.itemName && (this.props.name !== this.state.itemName)) { itemNameUnchanged = false; }
-        if (this.state.selectedColor && (this.props.color !== this.state.selectedColor)) { colorUnchanged = false; }
-        if (this.state.selectedIcon && (!this.props.icon || this.props.icon.id !== this.state.selectedIcon)) { iconUnchanged = false; }
-*/
         return (
-            <div className={`FileCommanderItem (this.state.selected ? 'selected' : '') ${this.state.dragDropStyle}`}
+            <div className={`FileCommanderItem` +  (this.state.selected ? ' selected ' : ' ') +  this.state.dragDropStyle}
                 data-type={this.props.type}
                 data-id={this.props.id}
-                data-bucket={this.props.bucket}
+                data-bridge-file-id={this.props.rawItem.fileId}
+                data-bridge-bucket-id={this.props.rawItem.bucket}
                 onClick={this.props.selectHandler}
                 onDoubleClick={this.props.clickHandler}
                 draggable="true"

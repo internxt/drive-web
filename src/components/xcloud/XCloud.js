@@ -156,14 +156,17 @@ class XCloud extends React.Component {
       .then(response => response.json())
       .then(data => {
         this.deselectAll();
+
         // Set new items list
         let newCommanderFolders = _.map(data.children, o => _.extend({ type: "Folder" }, o))
         let newCommanderFiles = data.files;
+
         // Apply search function if is set
         if (this.state.searchFunction) {
           newCommanderFolders = newCommanderFolders.filter(this.state.searchFunction);
           newCommanderFiles = newCommanderFiles.filter(this.state.searchFunction);
         }
+
         // Apply sort function if is set
         if (this.state.sortFunction) {
           newCommanderFolders.sort(this.state.sortFunction);
@@ -334,7 +337,7 @@ class XCloud extends React.Component {
       const url =
         v.type === "Folder"
           ? `/api/storage/folder/${v.id}`
-          : `/api/storage/bucket/${bucket}/file/${v.bucket}`;
+          : `/api/storage/bucket/${v.bucket}/file/${v.fileId}`;
       return fetch(url, fetchOptions);
     });
     Promise.all(deletionRequests)
@@ -352,7 +355,8 @@ class XCloud extends React.Component {
     const selectedItems = this.state.selectedItems;
     const id = e.target.getAttribute("data-id");
     const type = e.target.getAttribute("data-type");
-    const bucket = e.target.getAttribute("data-bucket");
+    const bucket = e.target.getAttribute("data-bridge-bucket-id");
+    const fileId = e.target.getAttribute("data-bridge-file-id");
     if (_.some(selectedItems, { id })) {
       const indexOf = _.findIndex(selectedItems, o => o.id === id);
       this.setState({
@@ -360,7 +364,7 @@ class XCloud extends React.Component {
       });
     } else {
       this.setState({
-        selectedItems: update(selectedItems, { $push: [{ type, id, bucket }] })
+        selectedItems: update(selectedItems, { $push: [{ type, id, bucket, fileId }] })
       });
     }
     e.target.classList.toggle("selected");
