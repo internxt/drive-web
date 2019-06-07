@@ -141,7 +141,8 @@ will have CircularStd as default font. */
 }
 
 .logo.logo-runoutstorage {
-  margin: 30px 0px 10px 15px;
+  margin: 30px 0px 10px 45px;
+  width: 50px;
 }
 
 .popup--full-screen .logo img {

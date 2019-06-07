@@ -72,6 +72,12 @@
     margin: 20px 0px 20px;
 }
 
+.popup-content.popup--full-screen-content {
+    max-width: 550px;
+    border: solid 0px !important;
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.45);
+}
+
 .popup--full-screen__content a.reach-to-us {
     margin: 0px;
     padding: 0px;
@@ -108,8 +114,9 @@
 }
 
 .popup--full-screen__content .logo-delete-account {
-    margin-left: 45px;
+    margin-left: 55px;
     margin-top: 30px;
+    width: 50px;
 }
 
 .delete-account-button {
