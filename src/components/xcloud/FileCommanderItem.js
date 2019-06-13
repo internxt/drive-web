@@ -83,7 +83,7 @@ class FileCommanderItem extends React.Component {
         } else {
             // Changes on file item
             if (metadata.itemName) {
-                this.props.updateFileMeta(metadata, this.props.bucket, this.props.type)
+                this.props.updateFileMeta(metadata, this.props.rawItem.fileId, this.props.type)
             }
         }
 
