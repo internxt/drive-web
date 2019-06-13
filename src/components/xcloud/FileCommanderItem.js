@@ -153,13 +153,13 @@ class FileCommanderItem extends React.Component {
 
     render() {
         return (
-            <div className={`FileCommanderItem` +  (this.state.selected ? ' selected ' : ' ') +  this.state.dragDropStyle}
+            <div className={`FileCommanderItem` + (this.state.selected ? ' selected ' : ' ') + this.state.dragDropStyle}
                 data-type={this.props.type}
                 data-id={this.props.id}
                 data-bridge-file-id={this.props.rawItem.fileId}
                 data-bridge-bucket-id={this.props.rawItem.bucket}
                 onClick={this.props.selectHandler}
-                onDoubleClick={this.props.clickHandler}
+                onDoubleClick={(e) => { if (e.target.className == 'FileCommanderItem') { this.props.clickHandler(); } } }
                 draggable="true"
                 onDragStart={this.handleDragStart}
                 onDragOver={this.handleDragOver}
