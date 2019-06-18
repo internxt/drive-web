@@ -13,7 +13,7 @@ import deleteFile from '../../assets/Dashboard-Icons/Delete.svg';
 //import share from '../../assets/Dashboard-Icons/Share.svg';
 import PrettySize from 'prettysize';
 
-import HeaderButton from '../xcloud/HeaderButton';
+import HeaderButton from './HeaderButton';
 
 import "./NavigationBar.css";
 import history from '../../history';

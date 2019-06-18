@@ -25,9 +25,6 @@ class Plans extends React.Component {
     }
 
     componentDidMount() {
-
-        // Load current plans
-
         fetch('/api/plans', {
             method: 'post'
         }).then(response => {

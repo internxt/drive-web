@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/react": "^16.8.20",
     "axios": "^0.18.0",
     "bip39": "^3.0.2",
     "bootstrap": "^4.3.1",
@@ -14,6 +15,7 @@
     "js-file-download": "^0.4.7",
     "lodash": "^4.17.10",
     "moment": "^2.24.0",
+    "node-sass": "^4.12.0",
     "prettysize": "^2.0.0",
     "react": "^16.8.6",
     "react-bootstrap": "^1.0.0-beta.8",
