@@ -154,7 +154,7 @@ class Plans extends React.Component {
                             <span className="logo logo-delete-account"><img src={logo} alt="Logo" /></span>
                             <div className="message-wrapper">
                                 <h1>Are you sure?</h1>
-                                <p className="delete-account-advertising">Deleting your account means all your files will be gone forever and you will lose access to your X Cloud account. Once you click delete account, you will receive a confirmation email.</p>
+                                <p className="delete-account-advertising">All your files will be gone forever and you will lose access to your X Cloud account. Any active subscriptions you might have if you are an X Cloud paying user will also be cancelled. Once you click delete account, you will receive a confirmation email.</p>
                                 <p className="delete-account-info">Before deleting your account we may be able to help you. <a href="mailto:hello@internxt.com" class="reach-to-us">Reach out to us</a>.</p>
                                 <div className="buttons-wrapper">
                                     <div className="default-button button-primary delete-account-button" onClick={this.handleCancelAccount}>
