@@ -180,7 +180,7 @@ class FileCommanderItem extends React.Component {
                                 <ToggleButtonGroup id="colorToggle" className="toggleGroup" name="colorSelection" type="radio" defaultValue={this.props.color} onChange={this.handleColorSelection}>
                                     {
                                         this.colors.map((value, i) => {
-                                            return (<ToggleButton className={`${value}Color`} type="radio" value={value} />);
+                                            return (<ToggleButton className={`${value}Color`} type="radio" key={i} value={value} />);
                                         })
                                     }
                                 </ToggleButtonGroup>
@@ -191,7 +191,7 @@ class FileCommanderItem extends React.Component {
                                 <ToggleButtonGroup id="iconToggle" className="toggleGroup" name="iconSelection" type="radio" defaultValue={this.props.icon ? this.props.icon.id : ''} onChange={this.handleIconSelection}>
                                     {
                                         this.icons.map((value, i) => {
-                                            return (<ToggleButton className={`${value}Icon`} type="radio" value={i + 1} />);
+                                            return (<ToggleButton className={`${value}Icon`} type="radio" value={i + 1} key={i} />);
                                         })
                                     }
                                 </ToggleButtonGroup>
