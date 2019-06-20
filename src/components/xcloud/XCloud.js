@@ -13,7 +13,7 @@ import history from '../../history';
 import { removeAccents } from '../../utils';
 import "../../App.css";
 import logo from '../../assets/logo.svg';
-import closeTab from '../../assets/Dashboard-Icons/Close tab.svg';
+import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 class XCloud extends React.Component {
   constructor(props) {
