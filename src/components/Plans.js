@@ -7,7 +7,7 @@ import Circle from "./Circle";
 import PrettySize from 'prettysize';
 
 import logo from '../assets/logo.svg';
-import closeTab from '../assets/Dashboard-Icons/Close tab.svg';
+import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
 import Popup from "reactjs-popup";
 
 

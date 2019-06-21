@@ -1,0 +1,42 @@
+.InxtContainer {
+  border: solid 1px #eaeced;
+  border-radius: 6px;
+  padding: 30px 36px !important;
+  max-width: 621px !important;
+  margin-top: 51px;
+
+  p {
+    margin: 0px;
+    padding: 0px;
+  }
+
+  p.title {
+      color: #000000;
+      font-size: 19px;
+      font-weight: bold;
+      letter-spacing: -0.2px;
+  }
+
+  p.close-modal {
+    float: right;
+    position: relative;
+    top: -15px;
+    right: -20px;
+    img {
+      width: 20px;
+    }
+  }
+
+  p.space-used-text {
+    color: black;
+    font-size: 14px;
+    text-align: right;
+  }
+
+  .space-used-legend {
+    span {
+      display: inline-block;
+      font-size: 13px;
+    }
+  }
+}

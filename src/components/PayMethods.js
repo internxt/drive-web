@@ -2,14 +2,13 @@ import React from 'react';
 import { Container, Card, Row, Col } from 'react-bootstrap';
 import './PayMethods.css';
 
-import CreditCard from "./paymentBridges/CreditCard";
 import PayPal from "./paymentBridges/PayPal";
 import INXT from "./paymentBridges/INXT";
 
 const AvailablePayMethods = [
     {
         name: 'Credit Card',
-        component: <CreditCard />,
+        component: null,
     },
     {
         name: 'PayPal',
@@ -33,7 +32,7 @@ class PayMethods extends React.Component {
     }
 
     componentDidMount() {
-        AvailablePayMethods.find(f => f.name === 'Credit Card').component = <CreditCard plan={this.state.choosedPlan} />
+        //AvailablePayMethods.find(f => f.name === 'Credit Card').component = <CreditCard plan={this.state.choosedPlan} />
     }
 
     render() {
