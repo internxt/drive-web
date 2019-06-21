@@ -150,34 +150,37 @@ class StoragePlans extends React.Component {
                 <p className="close-modal" onClick={e => this.setState({ storageStep: 3 })}><img src={iconCloseTab} /></p>
                 <p className="title">Select payment <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, every month, {this.state.paymentMethod}</span></p>
 
-                {this.state.paymentMethod === 'Card' ? <StripeCheckout
-                    name="Internxt SL"
-                    description={planName}
-                    image="https://internxt.com/img/logos/internxtcircle.png"
-                    currency="EUR"
-                    bitcoin={false}
-                    email={JSON.parse(localStorage.xUser).email}
-                    stripeKey={process.env.REACT_APP_STRIPE_PK}
-                    token={this.onTokenHandler}
-                    billingAddress={true}
-                    zipCode={true}>
+                <div>
+                    {this.state.paymentMethod === 'Card' ? <StripeCheckout
+                        name="Internxt SL"
+                        description={planName}
+                        image="https://internxt.com/img/logos/internxtcircle.png"
+                        currency="EUR"
+                        bitcoin={false}
+                        email={JSON.parse(localStorage.xUser).email}
+                        stripeKey={process.env.REACT_APP_STRIPE_PK}
+                        token={this.onTokenHandler}
+                        billingAddress={true}
+                        zipCode={true}>
 
-                    <div style={{ textAlign: 'center' }}>
-                        <Button
-                            type="submit"
-                            size="sm"
-                            className="mt-4"
-                            style={{
-                                width: '28%',
-                                height: '40px',
-                                background: 'linear-gradient(74deg, #096dff, #00b1ff)'
-                            }}>Buy now</Button>
+                        <div style={{ textAlign: 'center' }}>
+                            <Button
+                                type="submit"
+                                size="sm"
+                                className="mt-4"
+                                style={{
+                                    width: '28%',
+                                    height: '40px',
+                                    background: 'linear-gradient(74deg, #096dff, #00b1ff)',
+                                    borderWidth: '0px'
+                                }}>Buy now</Button>
 
-                        {this.state.statusMessage}
-                    </div>
+                        </div>
 
-                </StripeCheckout>
-                    : <div style={{ textAlign: 'center' }}>Comming soon...</div>}
+                    </StripeCheckout>
+                        : <div style={{ textAlign: 'center' }}>Comming soon...</div>}
+                    <p className="mt-4" style={{textAlign: 'center', fontSize: 14}}>{this.state.statusMessage}</p>
+                </div>
             </div>;
         }
     }

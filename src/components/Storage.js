@@ -10,7 +10,12 @@ import StoragePlans from './StoragePlans'
 import PrettySize from 'prettysize'
 
 import Circle from './Circle'
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
+import Popup from 'reactjs-popup';
+
+import logo from '../assets/logo.svg';
+import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
+
 
 
 class Storage extends React.Component {
@@ -20,7 +25,9 @@ class Storage extends React.Component {
         this.state = {
             page: null,
             max: null,
-            now: null
+            now: null,
+
+            modalDeleteAccountShow: false
         }
 
     }
@@ -76,6 +83,24 @@ class Storage extends React.Component {
             });
     }
 
+    handleCancelAccount = () => {
+        fetch('/api/deactivate', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("xToken")}`,
+                'content-type': "application/json; charset=utf-8"
+            }
+        })
+            .then(res => res.json())
+            .then(res => {
+                this.setState({ modalDeleteAccountShow: false });
+            }).catch(err => {
+                alert('Error deleting account');
+                console.log(err);
+            });
+    }
+
+
     render() {
         return (
             <div className="settings">
@@ -100,8 +125,35 @@ class Storage extends React.Component {
                 <InxtContainer>
                     <StoragePlans currentPlan={this.state.max} />
                 </InxtContainer>
-                {this.state.page}
-            </div>
+
+                <p className="deleteAccount" onClick={e => {
+                    this.setState({ modalDeleteAccountShow: true });
+                }}>Permanently Delete Account</p>
+
+                <Popup open={this.state.modalDeleteAccountShow} className="popup--full-screen">
+                    <div className="popup--full-screen__content delete-account-specific">
+                        <div className="popup--full-screen__close-button-wrapper">
+                            <img src={closeTab} onClick={e => {
+                                this.setState({ modalDeleteAccountShow: false });
+                            }} alt="Close tab" />
+                        </div>
+                        <span className="logo logo-delete-account"><img src={logo} alt="Logo" /></span>
+                        <div className="message-wrapper">
+                            <h1>Are you sure?</h1>
+                            <p className="delete-account-advertising">All your files will be gone forever and you will lose access to your X Cloud account. Any active subscriptions you might have if you are an X Cloud paying user will also be cancelled. Once you click delete account, you will receive a confirmation email.</p>
+                            <p className="delete-account-info">Before deleting your account we may be able to help you. <a href="mailto:hello@internxt.com" className="reach-to-us">Reach out to us</a>.</p>
+                            <div className="buttons-wrapper">
+                                <div className="default-button button-primary delete-account-button"
+                                    onClick={this.handleCancelAccount}>
+                                    Delete account
+                                    </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </Popup>
+
+            </div >
         );
     }
 }

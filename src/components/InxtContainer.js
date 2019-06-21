@@ -8,7 +8,7 @@ class InxtContainer extends React.Component {
     }
 
     render() {
-        return <Container className="InxtContainer">
+        return <Container className="InxtContainer" style={this.props.style}>
             {this.props.children}
         </Container>
     }

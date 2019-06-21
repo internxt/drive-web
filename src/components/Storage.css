@@ -10,3 +10,10 @@
     color: #707070;
 }
 
+.deleteAccount {
+    margin: 30px auto 30px auto;
+    max-width: 621px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
