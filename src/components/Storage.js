@@ -112,7 +112,7 @@ class Storage extends React.Component {
                     <StorageProgressBar max={this.state.max} now={this.state.now} />
 
                     <Row className="space-used-legend">
-                        <Col xs={12} md={6} sm={6}>
+                        <Col xs={12} md={4} sm={6}>
                             <Circle image="linear-gradient(59deg, #096dff, #00b1ff)" /> <span>Used storage space</span>
                         </Col>
 
