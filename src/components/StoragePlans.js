@@ -148,7 +148,7 @@ class StoragePlans extends React.Component {
             const planName = 'X Cloud ' + selectedPlan.name + ' Plan (€' + selectedPlan.price_eur + ')';
             return <div>
                 <p className="close-modal" onClick={e => this.setState({ storageStep: 3 })}><img src={iconCloseTab} /></p>
-                <p className="title">Select payment <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, every month, {this.state.paymentMethod}</span></p>
+                <p className="title1">Order summary <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, every month, {this.state.paymentMethod}</span></p>
 
                 <div>
                     {this.state.paymentMethod === 'Card' ? <StripeCheckout
