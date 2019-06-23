@@ -85,7 +85,7 @@ class StoragePlans extends React.Component {
     render() {
         if (this.state.storageStep == 1) {
             return <div>
-                <p className="title">Storage Plans</p>
+                <p className="title1">Storage Plans</p>
 
                 {this.state.plansLoading == true ? <Spinner animation="border" size="sm" /> : ''}
                 {this.state.plansLoading == 'error' ? 'There was an error loading the available plans: The server was unreachable. Please check your network connection and reload.' : ''}
@@ -114,13 +114,13 @@ class StoragePlans extends React.Component {
         if (this.state.storageStep == 2) {
             return <div>
                 <p className="close-modal" onClick={e => this.setState({ storageStep: 1 })}><img src={iconCloseTab} /></p>
-                <p className="title">Select payment length | 1TB plan</p>
+                <p className="title1">Select payment length | 1TB plan</p>
             </div>;
         }
         if (this.state.storageStep == 3) {
             return <div>
                 <p className="close-modal" onClick={e => this.setState({ storageStep: 1 })}><img src={iconCloseTab} /></p>
-                <p className="title">Select payment <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, every month</span></p>
+                <p className="title1">Select payment <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, every month</span></p>
 
                 <Row className='mt-4'>
                     {
