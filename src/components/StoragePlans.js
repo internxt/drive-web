@@ -167,7 +167,6 @@ class StoragePlans extends React.Component {
                             <Button
                                 type="submit"
                                 size="sm"
-                                className="mt-4"
                                 style={{
                                     width: '28%',
                                     height: '40px',
