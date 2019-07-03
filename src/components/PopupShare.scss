@@ -1,0 +1,90 @@
+.popup-content {
+  border: solid 0px transparent !important;
+  padding: 0px !important;
+  max-width: 450px;
+  min-width: 450px;
+}
+
+.ShareContainer {
+}
+
+.ShareHeader {
+  display: flex;
+  border-bottom: solid 1px #ededed;
+  padding: 20px 26px 5px 26px;
+  width: 100%;
+
+  p {
+    width: 330px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .ShareClose {
+    margin: 0px;
+
+    img {
+      margin-top: 5px;
+      width: 22px;
+      height: 22px;
+    }
+  }
+}
+
+.ShareBody {
+  border-bottom: solid 1px #ededed;
+  padding: 20px;
+  color: #999999;
+}
+
+.Icon {
+  border: solid 1px #5291ff;
+  width: 35px;
+  height: 35px;
+  border-radius: 4.2px;
+
+  .Extension {
+    font-size: 8px;
+    font-weight: bolder;
+    color: #2e7bff;
+    line-height: 50px;
+  }
+}
+
+.ShareName {
+  p {
+    text-align: left;
+    line-height: 35px;
+    margin-left: 20px;
+    font-weight: bolder;
+  }
+}
+
+.ShareFooter {
+  display: flex;
+  margin: 0px;
+
+  .ShareLink {
+    width: 100%;
+    border-right: solid 1px #ededed;
+    padding: 15px 0px 0px 25px !important;
+    color: #999999;
+    text-align: left;
+  }
+
+  .ShareCopy {
+    float: right;
+    margin: 10px;
+
+    a {
+      background-color: transparent;
+      width: auto;
+      height: auto;
+      margin: auto;
+      border: solid 0px;
+      font-family: inherit;
+      color: #4b66ff !important;
+    }
+  }
+}

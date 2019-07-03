@@ -15,6 +15,8 @@ import "../../App.css";
 import logo from '../../assets/logo.svg';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
+import PopupShare from '../PopupShare'
+
 class XCloud extends React.Component {
   constructor(props) {
     super(props);
@@ -33,7 +35,8 @@ class XCloud extends React.Component {
       namePath: [],
       selectedItems: [],
       sortFunction: null,
-      searchFunction: null
+      searchFunction: null,
+      popupShareOpened: false
     };
   }
 
@@ -119,8 +122,8 @@ class XCloud extends React.Component {
     // Set search function depending on search text input and refresh items list
     const searchString = removeAccents(e.target.value.toString()).toLowerCase();
     let func = null;
-    if(searchString) { 
-      func = function(item) { return item.name.toLowerCase().includes(searchString); }
+    if (searchString) {
+      func = function (item) { return item.name.toLowerCase().includes(searchString); }
     }
     this.setState({ searchFunction: func });
     this.getFolderContent(this.state.currentFolderId);
@@ -324,6 +327,15 @@ class XCloud extends React.Component {
     })
   }
 
+  shareItem = () => {
+    const selectedItems = this.state.selectedItems;
+    if (selectedItems && selectedItems.length == 1 && selectedItems[0].type !== 'Folder') {
+      this.setState({ popupShareOpened: true });
+    } else {
+      alert("Please select one file to share");
+    }
+  }
+
   deleteItems = () => {
     const selectedItems = this.state.selectedItems;
     const bucket = _.last(this.state.namePath).bucket;
@@ -357,6 +369,7 @@ class XCloud extends React.Component {
     const type = e.target.getAttribute("data-type");
     const bucket = e.target.getAttribute("data-bridge-bucket-id");
     const fileId = e.target.getAttribute("data-bridge-file-id");
+    const fileName = e.target.getAttribute("data-name");
     if (_.some(selectedItems, { id })) {
       const indexOf = _.findIndex(selectedItems, o => o.id === id);
       this.setState({
@@ -364,7 +377,7 @@ class XCloud extends React.Component {
       });
     } else {
       this.setState({
-        selectedItems: update(selectedItems, { $push: [{ type, id, bucket, fileId }] })
+        selectedItems: update(selectedItems, { $push: [{ type, id, bucket, fileId, fileName }] })
       });
     }
     e.target.classList.toggle("selected");
@@ -425,6 +438,7 @@ class XCloud extends React.Component {
             uploadHandler={this.uploadFile}
             deleteItems={this.deleteItems}
             setSearchFunction={this.setSearchFunction}
+            shareItem={this.shareItem}
             style
           />
           <FileCommander
@@ -440,6 +454,11 @@ class XCloud extends React.Component {
             moveFile={this.moveFile}
             updateMeta={this.updateMeta}
           />
+
+          {this.state.selectedItems && this.state.selectedItems.length == 1 && this.state.popupShareOpened ? <PopupShare open={this.state.popupShareOpened} item={this.state.selectedItems[0]} onClose={() => {
+            this.setState({ popupShareOpened: false });
+          }} /> : ''}
+
 
           <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >
             <div>
@@ -457,10 +476,10 @@ class XCloud extends React.Component {
                 <h1> You have run out of storage. </h1>
                 <h2>You have currently used 1GB of storage. In order to start uploading more files please click the button below to upgrade your storage plan.</h2>
                 <div className="buttons-wrapper">
-                <div className="default-button button-primary" onClick={this.goToStorage}>
-                  Upgrade my storage plan
+                  <div className="default-button button-primary" onClick={this.goToStorage}>
+                    Upgrade my storage plan
                 </div>
-              </div>
+                </div>
 
               </div>
             </div>
