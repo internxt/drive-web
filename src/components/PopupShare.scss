@@ -3,6 +3,7 @@
   padding: 0px !important;
   max-width: 450px;
   min-width: 450px;
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.45);
 }
 
 .ShareContainer {
@@ -15,7 +16,7 @@
   width: 100%;
 
   p {
-    width: 330px;
+    width: 320px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -63,19 +64,19 @@
 
 .ShareFooter {
   display: flex;
-  margin: 0px;
+  margin: 0 0 0px;
 
   .ShareLink {
     width: 100%;
     border-right: solid 1px #ededed;
-    padding: 15px 0px 0px 25px !important;
+    padding: 19px 0px 4px 28px;
     color: #999999;
     text-align: left;
   }
 
   .ShareCopy {
     float: right;
-    margin: 10px;
+    margin: 13px 5px 0 0;
 
     a {
       background-color: transparent;

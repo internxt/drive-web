@@ -88,7 +88,7 @@ class PopupShare extends React.Component {
                 </div>
 
                 <div className="ShareFooter">
-                    <div className="ShareLink">{this.state.link == null ? <Spinner animation="border" size="sm" variant="secondary" /> : <p>{this.state.link}</p>}</div>
+                    <div className="ShareLink">{this.state.link == null ? <p>Loading...</p> : <p>{this.state.link}</p>}</div>
                     <div className="ShareCopy"><a onClick={(e) => {
                         if (this.state.link) {
                             copy(this.state.link)
