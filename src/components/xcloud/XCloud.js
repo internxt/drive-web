@@ -470,21 +470,32 @@ class XCloud extends React.Component {
             this.setState({ popupShareOpened: false });
           }} /> : ''}
 
-          <Popup open={this.state.showDeleteItemsPopup} className="deletePopup" onClose={() => this.setState({ showDeleteItemsPopup: false })}>
-            <div className="deleteContainer">
-              <div className="deleteMessage">Are you sure you want to delete {this.state.selectedItems.length > 1 ? 'those' : 'this'} {this.state.selectedItems.length} item{this.state.selectedItems.length > 1 ? 's' : ''}?</div>
-              <div className="deleteButtons">
-                <Button onClick={() => this.setState({ showDeleteItemsPopup: false })}>Cancel</Button>
-                <Button onClick={() => { this.confirmDeleteItems(); this.setState({ showDeleteItemsPopup: false }); }}>Confirm</Button>
+          <Popup open={this.state.showDeleteItemsPopup} closeOnDocumentClick
+            onClose={() => this.setState({ showDeleteItemsPopup: false })} className="popup--full-screen">
+            <div className="popup--full-screen__content">
+              <div className="popup--full-screen__close-button-wrapper">
+                <img src={closeTab} onClick={() => this.setState({ showDeleteItemsPopup: false })} alt="Close tab" />
+              </div>
+              <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
+              <div className="message-wrapper">
+                <h1> Delete item </h1>
+                <h2>Please confirm you want to delete this item{this.state.selectedItems.length > 1 ? 's' : ''}. This action can’t be undone.</h2>
+                <div className="buttons-wrapper">
+                  <div className="default-button button-primary" onClick={() => { this.confirmDeleteItems(); this.setState({ showDeleteItemsPopup: false }); }}>
+                    Confirm
+                </div>
+                </div>
               </div>
             </div>
           </Popup>
+
           <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >
             <div>
               <a href={'xcloud://' + this.state.token + '://' + JSON.stringify(this.props.user)}>Open mobile app</a>
               <a href="/" onClick={this.closeModal}>Use web app</a>
             </div>
           </Popup>
+
           <Popup open={this.state.rateLimitModal} closeOnDocumentClick onClose={this.closeRateLimitModal} className="popup--full-screen">
             <div className="popup--full-screen__content">
               <div className="popup--full-screen__close-button-wrapper">
@@ -499,7 +510,6 @@ class XCloud extends React.Component {
                     Upgrade my storage plan
                 </div>
                 </div>
-
               </div>
             </div>
           </Popup>
