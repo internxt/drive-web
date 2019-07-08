@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link } from 'react-router-dom';
-import { Alert, Modal, Button } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import $ from 'jquery';
 import _ from 'lodash';
 import fileDownload from 'js-file-download';
@@ -17,7 +17,6 @@ import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 import PopupShare from '../PopupShare'
 import './XCloud.scss'
-import InxtContainer from '../InxtContainer'
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -332,7 +331,7 @@ class XCloud extends React.Component {
 
   shareItem = () => {
     const selectedItems = this.state.selectedItems;
-    if (selectedItems && selectedItems.length == 1 && selectedItems[0].type !== 'Folder') {
+    if (selectedItems && selectedItems.length === 1 && selectedItems[0].type !== 'Folder') {
       this.setState({ popupShareOpened: true });
     } else {
       alert("Please select one file to share");
@@ -349,7 +348,7 @@ class XCloud extends React.Component {
 
   confirmDeleteItems = () => {
     const selectedItems = this.state.selectedItems;
-    const bucket = _.last(this.state.namePath).bucket;
+    //const bucket = _.last(this.state.namePath).bucket;
     const headers = this.setHeaders();
     const fetchOptions = {
       method: "DELETE",
@@ -466,12 +465,15 @@ class XCloud extends React.Component {
             updateMeta={this.updateMeta}
           />
 
-          {this.state.selectedItems && this.state.selectedItems.length == 1 && this.state.popupShareOpened ? <PopupShare open={this.state.popupShareOpened} item={this.state.selectedItems[0]} onClose={() => {
+          {this.state.selectedItems && this.state.selectedItems.length === 1 && this.state.popupShareOpened ? <PopupShare open={this.state.popupShareOpened} item={this.state.selectedItems[0]} onClose={() => {
             this.setState({ popupShareOpened: false });
           }} /> : ''}
 
-          <Popup open={this.state.showDeleteItemsPopup} closeOnDocumentClick
-            onClose={() => this.setState({ showDeleteItemsPopup: false })} className="popup--full-screen">
+          <Popup
+            open={this.state.showDeleteItemsPopup}
+            closeOnDocumentClick
+            onClose={() => this.setState({ showDeleteItemsPopup: false })}
+            className="popup--full-screen">
             <div className="popup--full-screen__content">
               <div className="popup--full-screen__close-button-wrapper">
                 <img src={closeTab} onClick={() => this.setState({ showDeleteItemsPopup: false })} alt="Close tab" />

@@ -1,7 +1,6 @@
 import React from 'react'
 import Popup from 'reactjs-popup';
 import './PopupShare.scss'
-import { Row, Container, Col, Spinner } from 'react-bootstrap';
 
 import CloseIcon from '../assets/Dashboard-Icons/close-tab.svg'
 
@@ -80,7 +79,7 @@ class PopupShare extends React.Component {
                         </div>
                     </div>
                     <div className="ShareName"><p>{this.props.item.fileName}.{this.props.item.type}</p></div>
-                    <div className="ShareClose"><img src={CloseIcon} onClick={e => { this.props.onClose() }} /></div>
+                    <div className="ShareClose"><img src={CloseIcon} onClick={e => { this.props.onClose() }} alt="Close" /></div>
                 </div>
 
                 <div className="ShareBody">
@@ -89,11 +88,11 @@ class PopupShare extends React.Component {
 
                 <div className="ShareFooter">
                     <div className="ShareLink">{this.state.link == null ? <p>Loading...</p> : <p>{this.state.link}</p>}</div>
-                    <div className="ShareCopy"><a onClick={(e) => {
+                    <div className="ShareCopy"><label onClick={(e) => {
                         if (this.state.link) {
                             copy(this.state.link)
                         }
-                    }}>Copy</a></div>
+                    }}>Copy</label></div>
                 </div>
             </div>
         </Popup>

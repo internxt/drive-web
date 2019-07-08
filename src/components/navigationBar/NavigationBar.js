@@ -1,6 +1,5 @@
 import React from 'react';
-import { Nav, Navbar, Dropdown, ProgressBar, Row, Col, Button, Container } from 'react-bootstrap';
-import Popup from "reactjs-popup";
+import { Nav, Navbar, Dropdown, ProgressBar } from 'react-bootstrap';
 
 // Assets
 import account from '../../assets/Dashboard-Icons/Account.svg';

@@ -71,7 +71,7 @@ class Activation extends React.Component {
         <p>Now you will be redirected to <Link to="/login">login</Link>...</p>
       </div> : ''}
 
-      {this.state.isActivated == false ? <div>
+      {this.state.isActivated === false ? <div>
         <h3>Invalid activation code</h3>
         <p>Your activation code is invalid. Maybe you have used this link before and your account is already activated.</p>
         <p>Check you have access to your account: <a href="/login">login</a></p>

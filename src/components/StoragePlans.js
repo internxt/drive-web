@@ -83,12 +83,12 @@ class StoragePlans extends React.Component {
     }
 
     render() {
-        if (this.state.storageStep == 1) {
+        if (this.state.storageStep === 1) {
             return <div>
                 <p className="title1">Storage Plans</p>
 
-                {this.state.plansLoading == true ? <Spinner animation="border" size="sm" /> : ''}
-                {this.state.plansLoading == 'error' ? 'There was an error loading the available plans: The server was unreachable. Please check your network connection and reload.' : ''}
+                {this.state.plansLoading === true ? <Spinner animation="border" size="sm" /> : ''}
+                {this.state.plansLoading === 'error' ? 'There was an error loading the available plans: The server was unreachable. Please check your network connection and reload.' : ''}
 
                 <Row className='mt-4'>
                     {this.state.availablePlans ?
@@ -96,7 +96,7 @@ class StoragePlans extends React.Component {
                             // Print the list of available plans
                             return <InxtContainerOption
                                 key={'plan' + i}
-                                isChecked={this.props.currentPlan == entry.space_gb * 1073741824}
+                                isChecked={this.props.currentPlan === entry.space_gb * 1073741824}
                                 header={entry.name}
                                 onClick={(e) => {
                                     // Can't select the current plan or lesser
@@ -105,21 +105,21 @@ class StoragePlans extends React.Component {
                                     }
                                     this.setState({ selectedPlanToBuy: entry, storageStep: 3 });
                                 }}
-                                text={entry.price_eur == '0.00' ? 'Free' : <span>€{entry.price_eur}<span style={{ color: '#7e848c', fontWeight: 'normal' }}>/month</span></span>} />
+                                text={entry.price_eur === '0.00' ? 'Free' : <span>€{entry.price_eur}<span style={{ color: '#7e848c', fontWeight: 'normal' }}>/month</span></span>} />
                         })
                         : ''}
                 </Row>
             </div>;
         }
-        if (this.state.storageStep == 2) {
+        if (this.state.storageStep === 2) {
             return <div>
-                <p className="close-modal" onClick={e => this.setState({ storageStep: 1 })}><img src={iconCloseTab} /></p>
+                <p className="close-modal" onClick={e => this.setState({ storageStep: 1 })}><img src={iconCloseTab} alt="Close" /></p>
                 <p className="title1">Select payment length | 1TB plan</p>
             </div>;
         }
-        if (this.state.storageStep == 3) {
+        if (this.state.storageStep === 3) {
             return <div>
-                <p className="close-modal" onClick={e => this.setState({ storageStep: 1 })}><img src={iconCloseTab} /></p>
+                <p className="close-modal" onClick={e => this.setState({ storageStep: 1 })}><img src={iconCloseTab} alt="Close" /></p>
                 <p className="title1">Select payment <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, every month</span></p>
 
                 <Row className='mt-4'>
@@ -128,7 +128,7 @@ class StoragePlans extends React.Component {
                             return <InxtContainerOption
                                 key={'bridge' + i}
                                 style={entry.border}
-                                header={<img src={entry.logo} />}
+                                header={<img src={entry.logo} alt="Logo" />}
                                 text={entry.name}
                                 onClick={e => {
                                     this.setState({
@@ -143,11 +143,11 @@ class StoragePlans extends React.Component {
             </div>;
         }
 
-        if (this.state.storageStep == 4) {
+        if (this.state.storageStep === 4) {
             const selectedPlan = this.state.selectedPlanToBuy;
             const planName = 'X Cloud ' + selectedPlan.name + ' Plan (€' + selectedPlan.price_eur + ')';
             return <div>
-                <p className="close-modal" onClick={e => this.setState({ storageStep: 3 })}><img src={iconCloseTab} /></p>
+                <p className="close-modal" onClick={e => this.setState({ storageStep: 3 })}><img src={iconCloseTab} alt="Close" /></p>
                 <p className="title1">Order summary <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, every month, {this.state.paymentMethod}</span></p>
 
                 <div>

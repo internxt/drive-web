@@ -1,5 +1,4 @@
 import React from 'react';
-import Plans from './Plans';
 import NavigationBar from './navigationBar/NavigationBar';
 import PayMethods from './PayMethods';
 import "./Storage.css";
@@ -10,7 +9,7 @@ import StoragePlans from './StoragePlans'
 import PrettySize from 'prettysize'
 
 import Circle from './Circle'
-import { Row, Col, Container } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import Popup from 'reactjs-popup';
 
 import logo from '../assets/logo.svg';

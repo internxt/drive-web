@@ -5,7 +5,7 @@ import history from "../../history";
 import copyIcon from "../../assets/Dashboard-Icons/Copy.svg";
 import infoIcon from "../../assets/Dashboard-Icons/Info.svg";
 import infoOnIcon from "../../assets/Dashboard-Icons/InfoOn.svg";
-import { copyToClipboard, decryptTextWithKey } from "../../utils";
+import { copyToClipboard } from "../../utils";
 import "./KeyPage.css";
 
 const SAVE_OPTIONS = [

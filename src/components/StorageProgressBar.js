@@ -1,5 +1,5 @@
 import React from 'react'
-import { ProgressBar, Container } from 'react-bootstrap';
+import { ProgressBar } from 'react-bootstrap';
 
 import './StorageProgressBar.scss'
 
