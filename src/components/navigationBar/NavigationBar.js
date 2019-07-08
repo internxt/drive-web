@@ -1,5 +1,6 @@
 import React from 'react';
-import { Nav, Navbar, Dropdown, ProgressBar } from 'react-bootstrap';
+import { Nav, Navbar, Dropdown, ProgressBar, Row, Col, Button, Container } from 'react-bootstrap';
+import Popup from "reactjs-popup";
 
 // Assets
 import account from '../../assets/Dashboard-Icons/Account.svg';
@@ -17,7 +18,6 @@ import HeaderButton from './HeaderButton';
 
 import "./NavigationBar.css";
 import history from '../../history';
-
 
 class NavigationBar extends React.Component {
     constructor(props) {
@@ -64,7 +64,7 @@ class NavigationBar extends React.Component {
         } catch {
             history.push('/login');
             return;
-            
+
         }
 
         fetch('/api/limit', {

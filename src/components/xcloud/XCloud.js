@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link } from 'react-router-dom';
-import { Alert } from 'react-bootstrap';
+import { Alert, Modal, Button } from 'react-bootstrap';
 import $ from 'jquery';
 import _ from 'lodash';
 import fileDownload from 'js-file-download';
@@ -16,6 +16,8 @@ import logo from '../../assets/logo.svg';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 import PopupShare from '../PopupShare'
+import './XCloud.scss'
+import InxtContainer from '../InxtContainer'
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -36,7 +38,8 @@ class XCloud extends React.Component {
       selectedItems: [],
       sortFunction: null,
       searchFunction: null,
-      popupShareOpened: false
+      popupShareOpened: false,
+      showDeleteItemsPopup: false
     };
   }
 
@@ -338,6 +341,14 @@ class XCloud extends React.Component {
 
   deleteItems = () => {
     const selectedItems = this.state.selectedItems;
+
+    if (selectedItems && selectedItems.length > 0) {
+      this.setState({ showDeleteItemsPopup: true });
+    }
+  }
+
+  confirmDeleteItems = () => {
+    const selectedItems = this.state.selectedItems;
     const bucket = _.last(this.state.namePath).bucket;
     const headers = this.setHeaders();
     const fetchOptions = {
@@ -459,7 +470,15 @@ class XCloud extends React.Component {
             this.setState({ popupShareOpened: false });
           }} /> : ''}
 
-
+          <Popup open={this.state.showDeleteItemsPopup} className="deletePopup" onClose={() => this.setState({ showDeleteItemsPopup: false })}>
+            <div className="deleteContainer">
+              <div className="deleteMessage">Are you sure you want to delete {this.state.selectedItems.length > 1 ? 'those' : 'this'} {this.state.selectedItems.length} item{this.state.selectedItems.length > 1 ? 's' : ''}?</div>
+              <div className="deleteButtons">
+                <Button onClick={() => this.setState({ showDeleteItemsPopup: false })}>Cancel</Button>
+                <Button onClick={() => { this.confirmDeleteItems(); this.setState({ showDeleteItemsPopup: false }); }}>Confirm</Button>
+              </div>
+            </div>
+          </Popup>
           <Popup open={this.state.chooserModalOpen} closeOnDocumentClick onClose={this.closeModal} >
             <div>
               <a href={'xcloud://' + this.state.token + '://' + JSON.stringify(this.props.user)}>Open mobile app</a>
