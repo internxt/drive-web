@@ -88,11 +88,11 @@ class PopupShare extends React.Component {
 
                 <div className="ShareFooter">
                     <div className="ShareLink">{this.state.link == null ? <p>Loading...</p> : <p>{this.state.link}</p>}</div>
-                    <div className="ShareCopy"><label onClick={(e) => {
+                    <div className="ShareCopy"><a href="# " onClick={(e) => {
                         if (this.state.link) {
                             copy(this.state.link)
                         }
-                    }}>Copy</label></div>
+                    }}>Copy</a></div>
                 </div>
             </div>
         </Popup>

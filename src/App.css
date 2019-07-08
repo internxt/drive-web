@@ -134,6 +134,12 @@ will have CircularStd as default font. */
 
 }
 
+.popup--full-screen__close-button-wrapper img {
+  width: 24px;
+  height: 24px;
+}
+
+
 .logo {
   width: 100px;
   margin: 11px;
