@@ -482,7 +482,7 @@ class XCloud extends React.Component {
               </div>
               <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
-                <h1> Delete item </h1>
+                <h1> Delete item{this.state.selectedItems.length > 1 ? 's' : ''} </h1>
                 <h2>Please confirm you want to delete this item{this.state.selectedItems.length > 1 ? 's' : ''}. This action can’t be undone.</h2>
                 <div className="buttons-wrapper">
                   <div className="default-button button-primary" onClick={() => { this.confirmDeleteItems(); this.setState({ showDeleteItemsPopup: false }); }}>
