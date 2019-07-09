@@ -11,13 +11,13 @@ import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
 import TimeAgo from 'react-timeago'
 
 const SORT_TYPES = {
-    DATE_ADDED : 'Date_Added',
-    SIZE_ASC : 'Size_Asc',
-    SIZE_DESC : 'Size_Desc',
-    NAME_ASC : 'Name_Asc',
-    NAME_DESC : 'Name_Desc',
-    FILETYPE_ASC : 'File_Type_Asc',
-    FILETYPE_DESC : 'File_Type_Asc'
+    DATE_ADDED: 'Date_Added',
+    SIZE_ASC: 'Size_Asc',
+    SIZE_DESC: 'Size_Desc',
+    NAME_ASC: 'Name_Asc',
+    NAME_DESC: 'Name_Desc',
+    FILETYPE_ASC: 'File_Type_Asc',
+    FILETYPE_DESC: 'File_Type_Asc'
 };
 
 class FileCommander extends React.Component {
@@ -46,25 +46,25 @@ class FileCommander extends React.Component {
         let sortFunc = null;
         switch (sortType) {
             case SORT_TYPES.DATE_ADDED:
-            // At this time, default order is date added
+                // At this time, default order is date added
                 break;
             case SORT_TYPES.FILETYPE_ASC:
-                sortFunc = function(a, b) { return a.type.localeCompare(b.type) };
+                sortFunc = function (a, b) { return a.type.localeCompare(b.type) };
                 break;
             case SORT_TYPES.FILETYPE_DESC:
-                sortFunc = function(a, b) { return b.type.localeCompare(a.type) };
+                sortFunc = function (a, b) { return b.type.localeCompare(a.type) };
                 break;
             case SORT_TYPES.NAME_ASC:
-                sortFunc = function(a, b) { return a.name.localeCompare(b.name) };
+                sortFunc = function (a, b) { return a.name.localeCompare(b.name) };
                 break;
             case SORT_TYPES.NAME_DESC:
-                sortFunc = function(a, b) { return b.name.localeCompare(a.name) };
+                sortFunc = function (a, b) { return b.name.localeCompare(a.name) };
                 break;
             case SORT_TYPES.SIZE_ASC:
-                sortFunc = function(a, b) { return a.size - b.size };
+                sortFunc = function (a, b) { return a.size - b.size };
                 break;
             case SORT_TYPES.SIZE_DESC:
-                sortFunc = function(a, b) { return a.size - b.size };
+                sortFunc = function (a, b) { return a.size - b.size };
                 break;
             default:
                 break;
@@ -72,7 +72,7 @@ class FileCommander extends React.Component {
         this.props.setSortFunction(sortFunc);
     }
 
-    onSelect = (eventKey, event) => { 
+    onSelect = (eventKey, event) => {
         // Change active class to option selected only if its not the currently active
         if (!event.target.className.includes('active')) {
             document.getElementById(this.state.selectedSortType).className = document.getElementById(this.state.selectedSortType).className.split(" ")[0];
@@ -120,8 +120,8 @@ class FileCommander extends React.Component {
             <div id="FileCommander">
                 <div id="FileCommander-info">
                     {
-                        <div id="FileCommander-backTo" onClick={this.props.handleFolderTraverseUp.bind(this)}> 
-                        {(this.state.namePath.length > 1 ? <span><img src={BackToIcon} alt="Back" />  {this.state.namePath[this.state.namePath.length - 2].name}</span> : '')}
+                        <div id="FileCommander-backTo" onClick={this.props.handleFolderTraverseUp.bind(this)}>
+                            {(this.state.namePath.length > 1 ? <span><img src={BackToIcon} alt="Back" />  {this.state.namePath[this.state.namePath.length - 2].name}</span> : '')}
                         </div>
                     }
                     {

@@ -160,7 +160,7 @@ class FileCommanderItem extends React.Component {
                 data-bridge-bucket-id={this.props.rawItem.bucket}
                 data-name={this.props.rawItem.name}
                 onClick={this.props.selectHandler}
-                onDoubleClick={(e) => { if (e.target.className === 'FileCommanderItem') { this.props.clickHandler(); } } }
+                onDoubleClick={(e) => { if (e.target.className === 'FileCommanderItem') { this.props.clickHandler(); } }}
                 draggable="true"
                 onDragStart={this.handleDragStart}
                 onDragOver={this.handleDragOver}
