@@ -90,6 +90,29 @@ class FileCommander extends React.Component {
         }
     }
 
+    handleDragOverBackButton = (event) => {
+        // Determine parent folder
+        var parentFolder = this.state.namePath[this.state.namePath.length - 2] && this.state.namePath[this.state.namePath.length - 2].id; // Get the MySQL ID of parent folder
+
+        // Allow only drop files into back button if is not parent folder
+        if (parentFolder && event.dataTransfer.types && event.dataTransfer.types[0] === 'text/plain') {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
+    handleDropOverBackButton = (event) => {
+        // Determine parent folder
+        var parentFolder = this.state.namePath[this.state.namePath.length - 2] && this.state.namePath[this.state.namePath.length - 2].id; // Get the MySQL ID of parent folder
+
+        // Recover data from the original object that has been dragged
+        var data = JSON.parse(event.dataTransfer.getData('text/plain'));
+
+        if (parentFolder) {
+            this.props.moveFile(data.id, parentFolder);
+        }
+    }
+
     handleDragLeave = (e) => { this.setState({ dragDropStyle: '' }) }
 
     handleDrop = (e) => {
@@ -120,8 +143,8 @@ class FileCommander extends React.Component {
             <div id="FileCommander">
                 <div id="FileCommander-info">
                     {
-                        <div id="FileCommander-backTo" onClick={this.props.handleFolderTraverseUp.bind(this)}>
-                            {(this.state.namePath.length > 1 ? <span><img src={BackToIcon} alt="Back" />  {this.state.namePath[this.state.namePath.length - 2].name}</span> : '')}
+                        <div id="FileCommander-backTo" onClick={this.props.handleFolderTraverseUp.bind(this)} onDragOver={this.handleDragOverBackButton} onDrop={this.handleDropOverBackButton}>
+                            {(this.state.namePath.length > 1 ? <span><img src={BackToIcon} alt="Back" /> {this.state.namePath[this.state.namePath.length - 2].name}</span> : '')}
                         </div>
                     }
                     {
@@ -167,6 +190,7 @@ class FileCommander extends React.Component {
                                                 selectHandler={(e) => this.props.selectCommanderItem(i, e)}
                                                 moveFile={this.props.moveFile}
                                                 updateFolderMeta={this.props.updateMeta}
+                                                hasParentFolder={!inRoot}
                                             />
                                             :
                                             <FileCommanderItem
@@ -182,6 +206,7 @@ class FileCommander extends React.Component {
                                                 selectHandler={(e) => this.props.selectCommanderItem(i, e)}
                                                 isLoading={item.isLoading}
                                                 updateFileMeta={this.props.updateMeta}
+                                                hasParentFolder={!inRoot}
                                             />
                                         }
                                     </span>

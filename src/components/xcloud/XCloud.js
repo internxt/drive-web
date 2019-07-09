@@ -463,6 +463,8 @@ class XCloud extends React.Component {
             setSortFunction={this.setSortFunction}
             moveFile={this.moveFile}
             updateMeta={this.updateMeta}
+            currentFolderId={this.state.currentFolderId}
+            parentFolderId={null}
           />
 
           {this.state.selectedItems && this.state.selectedItems.length === 1 && this.state.popupShareOpened ? <PopupShare open={this.state.popupShareOpened} item={this.state.selectedItems[0]} onClose={() => {

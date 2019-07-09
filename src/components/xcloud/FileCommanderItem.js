@@ -33,6 +33,11 @@ class FileCommanderItem extends React.Component {
             id: event.currentTarget.dataset.bridgeFileId
         }
         event.dataTransfer.setData('text/plain', JSON.stringify(data));
+
+        // Highlight back button only if is not root folder
+        if (this.props.hasParentFolder) {
+            $('#FileCommander-backTo').addClass('drag-over');
+        }
     }
 
     handleDragOver = (event) => {
@@ -44,12 +49,17 @@ class FileCommanderItem extends React.Component {
         }
     }
 
-    handleDragLeave = (e) => { this.setState({ dragDropStyle: '' }) }
+    handleDragLeave = (e) => {
+        this.setState({ dragDropStyle: '' });
+    }
+
+    handleDragEnd = (e) => {
+        $('#FileCommander-backTo').removeClass('drag-over');
+    }
 
     handleDrop = (event) => {
         // Move file when its dropped
         var data = JSON.parse(event.dataTransfer.getData('text/plain'));
-        console.log(data);
         this.props.moveFile(data.id, this.props.id);
         event.preventDefault();
         event.stopPropagation();
@@ -154,18 +164,22 @@ class FileCommanderItem extends React.Component {
     render() {
         return (
             <div className={`FileCommanderItem` + (this.state.selected ? ' selected ' : ' ') + this.state.dragDropStyle}
+
                 data-type={this.props.type}
                 data-id={this.props.id}
                 data-bridge-file-id={this.props.rawItem.fileId}
                 data-bridge-bucket-id={this.props.rawItem.bucket}
                 data-name={this.props.rawItem.name}
+
                 onClick={this.props.selectHandler}
                 onDoubleClick={(e) => { if (e.target.className === 'FileCommanderItem') { this.props.clickHandler(); } }}
-                draggable="true"
+
+                draggable={this.props.rawItem.type !== 'Folder'}
                 onDragStart={this.handleDragStart}
                 onDragOver={this.handleDragOver}
                 onDragLeave={this.handleDragLeave}
                 onDrop={this.handleDrop}
+                onDragEnd={this.handleDragEnd}
             >
                 <div className="properties">
                     {/* Item context menu changes depending on folder or file*/}
