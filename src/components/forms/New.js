@@ -51,6 +51,7 @@ class New extends React.Component {
         const xToken = localStorage.getItem('xToken');
         const mnemonic = localStorage.getItem('xMnemonic');
         const haveInfo = (xUser && xToken && mnemonic);
+
         if (this.state.isAuthenticated === true || haveInfo) {
             history.push('/app')
         }
@@ -132,7 +133,7 @@ class New extends React.Component {
                         register: {
                             name: '',
                             lastname: '',
-                            email: '',
+                            email: this.state.register.email,
                             password: '',
                             confirmPassword: '',
                         },
@@ -157,6 +158,23 @@ class New extends React.Component {
                 console.log('Register error');
             });
 
+    }
+
+    resendEmail = (email) => {
+        console.log(this.state.register);
+        fetch(`/api/user/resend/${email}`, {
+            method: 'GET'
+        })
+            .then(async res => { return { response: res, data: await res.json() }; })
+            .then(res => {
+                if (res.response.status !== 200) {
+                    throw res.data;
+                } else {
+                    alert(`Activation email sent to ${email}`);
+                }
+            }).catch(err => {
+                alert(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
+            });
     }
 
     registerContainer() {
@@ -277,7 +295,9 @@ class New extends React.Component {
             <ul className="privacy-remainders" style={{ paddingTop: '20px' }}>
                 By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy
           </ul>
-            <button className="btn-block on">Re-send activation email</button>
+            <button className="btn-block on" onClick={(e) => {
+                this.resendEmail(this.state.register.email);
+            }}>Re-send activation email</button>
         </div>);
     }
 
