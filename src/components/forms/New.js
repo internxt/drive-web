@@ -16,16 +16,19 @@ class New extends React.Component {
     constructor(props) {
         super(props);
 
+        let isEmailParam = this.validateEmail(this.props.match.params.email);
+
         this.state = {
-            currentContainer: this.registerContainer(),
+            currentContainer: isEmailParam ? this.activationContainer() : this.registerContainer(),
             register: {
                 name: '',
                 lastname: '',
-                email: '',
+                email: isEmailParam ? this.props.match.params.email : '',
                 password: '',
                 confirmPassword: ''
             }
         };
+
     }
 
     setHeaders = () => {

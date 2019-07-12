@@ -59,6 +59,10 @@ class App extends Component {
             render={(props) => <New {...props} />}
             isAuthenticated={this.state.isAuthenticated}
             handleKeySaved={this.handleKeySaved} />
+          <Route exact path='/activate/:email'
+            render={(props) => <New {...props} />}
+            isAuthenticated={this.state.isAuthenticated}
+            handleKeySaved={this.handleKeySaved} />
           <Route exact path='/'>
             <Redirect to="/login" />
           </Route>

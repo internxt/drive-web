@@ -29,11 +29,11 @@ class Login extends React.Component {
   componentDidMount() {
     if (isMobile) {
       if (isAndroid) {
-          window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
+        window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
       } else if (isIOS) {
-          window.location.href = "https://itunes.apple.com/us/app/x-cloud-secure-file-storage/id1465869889";
+        window.location.href = "https://itunes.apple.com/us/app/x-cloud-secure-file-storage/id1465869889";
       }
-  }
+    }
 
     // Check if recent login is passed and redirect user to X Cloud
     const mnemonic = localStorage.getItem('xMnemonic');
@@ -114,7 +114,11 @@ class Login extends React.Component {
         this.setState({ showTwoFactor: true });
       }
     }).catch(err => {
-      alert(err);
+      if (err.message.includes('not activated') && this.validateEmail(this.state.email)) {
+        history.push(`/activate/${this.state.email}`);
+      } else {
+        alert(err);
+      }
     });
   }
 
@@ -151,30 +155,30 @@ class Login extends React.Component {
                 throw new Error(res.data.error ? res.data.error : res.data);
               }
               var data = res.data;
-                // Manage succesfull login
-                  const user = {
-                    userId: data.user.userId,
-                    email: this.state.email,
-                    mnemonic: data.user.mnemonic ? decryptTextWithKey(data.user.mnemonic, this.state.password) : null,
-                    root_folder_id: data.user.root_folder_id,
-                    storeMnemonic: data.user.storeMnemonic,
-                    name: data.user.name,
-                    lastname: data.user.lastname
-                  };
-                  this.props.handleKeySaved(user)
-                  localStorage.setItem('xToken', data.token);
-                  localStorage.setItem('xMnemonic', user.mnemonic);
-                  localStorage.setItem('xUser', JSON.stringify(user));
-                  this.setState({
-                    isAuthenticated: true,
-                    token: data.token,
-                    user: user
-                  });
-                })
-                .catch(err => {
-                  alert(err.error ? err.error : err);
-                });
-            });
+              // Manage succesfull login
+              const user = {
+                userId: data.user.userId,
+                email: this.state.email,
+                mnemonic: data.user.mnemonic ? decryptTextWithKey(data.user.mnemonic, this.state.password) : null,
+                root_folder_id: data.user.root_folder_id,
+                storeMnemonic: data.user.storeMnemonic,
+                name: data.user.name,
+                lastname: data.user.lastname
+              };
+              this.props.handleKeySaved(user)
+              localStorage.setItem('xToken', data.token);
+              localStorage.setItem('xMnemonic', user.mnemonic);
+              localStorage.setItem('xUser', JSON.stringify(user));
+              this.setState({
+                isAuthenticated: true,
+                token: data.token,
+                user: user
+              });
+            })
+              .catch(err => {
+                alert(err.error ? err.error : err);
+              });
+          });
         } else if (response.status === 400) {
           // Manage other cases:
           // username / password do not match, user activation required...
