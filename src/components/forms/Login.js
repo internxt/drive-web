@@ -105,7 +105,7 @@ class Login extends React.Component {
         throw new Error(data.error ? data.error : 'Login error');
       }
 
-      return res.json();
+      return data;
 
     }).then(res => {
       if (!res.tfa) {
