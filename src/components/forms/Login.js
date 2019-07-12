@@ -97,10 +97,12 @@ class Login extends React.Component {
       method: 'POST',
       headers,
       body: JSON.stringify({ email: this.state.email })
-    }).then(res => {
+    }).then(async res => {
+
+      const data = await res.json();
 
       if (res.status !== 200) {
-        throw new Error('Login error');
+        throw new Error(data.error ? data.error : 'Login error');
       }
 
       return res.json();
