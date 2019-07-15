@@ -15,7 +15,7 @@ import Popup from 'reactjs-popup';
 import logo from '../assets/logo.svg';
 import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
 
-
+import './Plans.css'
 
 class Storage extends React.Component {
     constructor(props) {
