@@ -4,6 +4,7 @@ import PayMethods from './PayMethods';
 import "./Storage.css";
 import history from '../history';
 import InxtContainer from './InxtContainer'
+import './Plans.css'
 import StorageProgressBar from './StorageProgressBar';
 import StoragePlans from './StoragePlans'
 import PrettySize from 'prettysize'
@@ -15,7 +16,6 @@ import Popup from 'reactjs-popup';
 import logo from '../assets/logo.svg';
 import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
 
-import './Plans.css'
 
 class Storage extends React.Component {
     constructor(props) {
