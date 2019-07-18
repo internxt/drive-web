@@ -120,7 +120,7 @@ class StoragePlans extends React.Component {
         if (this.state.storageStep === 3) {
             return <div>
                 <p className="close-modal" onClick={e => this.setState({ storageStep: 1 })}><img src={iconCloseTab} alt="Close" /></p>
-                <p className="title1">Select payment <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, every month</span></p>
+                <p className="title1">Select payment <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, Monthly</span></p>
 
                 <Row className='mt-4'>
                     {
@@ -148,7 +148,7 @@ class StoragePlans extends React.Component {
             const planName = 'X Cloud ' + selectedPlan.name + ' Plan (€' + selectedPlan.price_eur + ')';
             return <div>
                 <p className="close-modal" onClick={e => this.setState({ storageStep: 3 })}><img src={iconCloseTab} alt="Close" /></p>
-                <p className="title1">Order summary <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, every month, {this.state.paymentMethod}</span></p>
+                <p className="title1">Order summary <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, Monthly, {this.state.paymentMethod}</span></p>
 
                 <div>
                     {this.state.paymentMethod === 'Card' ? <StripeCheckout
