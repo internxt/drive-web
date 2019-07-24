@@ -130,7 +130,7 @@ class Reset extends React.Component {
             <Container className="login-main">
                 <Container className="login-container-box edit-password-box">
                     <div className="container-register">
-                        <p className="container-title edit-password">Edit your password</p>
+                        <p className="container-title edit-password">Change your password</p>
 
                         <Form className="form-register" onSubmit={this.handleChangePassword} >
                             <Form.Row>
