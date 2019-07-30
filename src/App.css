@@ -193,7 +193,7 @@ will have CircularStd as default font. */
   display: flex;
   width: 100%;
   justify-content: flex-end;
-  margin-top: 20px;
+  margin-top: 10px;
   border-top: #ededed 1px solid;
 }
 

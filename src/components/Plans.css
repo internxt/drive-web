@@ -73,7 +73,7 @@
 }
 
 .popup-content.popup--full-screen-content {
-    max-width: 550px;
+    max-width: 450px;
     border: solid 0px !important;
     box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.45);
 }
@@ -114,7 +114,7 @@
 }
 
 .popup--full-screen__content .logo-delete-account {
-    margin-left: 55px;
+    margin-left: 47px;
     margin-top: 30px;
     width: 50px;
 }
