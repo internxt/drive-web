@@ -35,9 +35,7 @@ class FileCommanderItem extends React.Component {
         event.dataTransfer.setData('text/plain', JSON.stringify(data));
 
         // Highlight back button only if is not root folder
-        if (this.props.hasParentFolder) {
-            $('#FileCommander-backTo').addClass('drag-over');
-        }
+       
     }
 
     handleDragOver = (event) => {
