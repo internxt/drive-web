@@ -9,10 +9,6 @@ import Activation from './components/forms/Activation';
 import NotFound from './NotFound';
 import Deactivation from './components/forms/Deactivation';
 import Reset from './components/forms/Reset';
-import PaySuccess from './components/PaySuccess';
-import PayCancel from './components/PayCancel';
-
-
 import Storage from './components/Storage';
 import Security from './components/Security';
 
@@ -45,8 +41,6 @@ class App extends Component {
             handleKeySaved={this.handleKeySaved} />
           } />
           <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route path='/pay/success' render={(props) => <PaySuccess {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route path='/pay/cancel' render={(props) => <PayCancel {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/settings' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/activations/:token' render={(props) => <Activation {...props} />} />

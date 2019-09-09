@@ -8,7 +8,7 @@ import iconStripe from '../assets/PaymentBridges/stripe.svg'
 import iconInxt from '../assets/PaymentBridges/inxt.svg'
 import iconPayPal from '../assets/PaymentBridges/paypal.svg'
 
-import StripeCheckout from 'react-stripe-checkout'
+const stripeGlobal = window.Stripe;
 
 const PaymentBridges = [
     {
@@ -36,91 +36,170 @@ class StoragePlans extends React.Component {
             statusMessage: '',
             storageStep: 1,
 
+            productsLoading: true,
             plansLoading: true,
+
+            availableProducts: null,
             availablePlans: null,
+
+            selectedProductToBuy: null,
             selectedPlanToBuy: null,
 
             paymentMethod: null
         }
     }
 
-    loadAvailablePlans() {
-        fetch('/api/plans', { method: 'post' })
-            .then(response => response.json())
-            .then(pay => {
-                this.setState({
-                    availablePlans: pay,
-                    plansLoading: false
-                });
-            }).catch(err => {
-                console.log('Error loading plans: ', err);
-                this.setState({ plansLoading: 'error' });
+    setHeaders = () => {
+        let headers = {
+            Authorization: `Bearer ${localStorage.getItem("xToken")}`,
+            "content-type": "application/json; charset=utf-8",
+            "internxt-mnemonic": localStorage.getItem("xMnemonic")
+        };
+        return headers;
+    }
+
+
+    loadAvailableProducts() {
+        const freePlan = {
+            id: null,
+            metadata: {
+                simple_name: 'Free',
+                price_eur: '0.00',
+                size_bytes: 1073741824
+            }
+        };
+
+
+        fetch('/api/stripe/products', {
+            headers: { 'content-type': 'application/json' }
+        }).then(response => response.json()).then(products => {
+            this.setState({
+                availableProducts: [freePlan, ...products],
+                productsLoading: false
             });
+        }).catch(err => {
+
+        });
+    }
+
+    loadAvailablePlans() {
+        fetch('/api/stripe/plans', {
+            method: 'post',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ product: this.state.selectedProductToBuy.id })
+        }).then(result => result.json()).then(result => {
+            this.setState({ availablePlans: result, plansLoading: false });
+        }).catch(err => {
+            console.log('Error loading price plans', err.message);
+        });
     }
 
     componentDidMount() {
-        this.loadAvailablePlans();
+        this.loadAvailableProducts();
     }
 
-    onTokenHandler = (token) => {
-        this.setState({
-            statusMessage: 'Purchasing...'
-        });
 
-        fetch('/api/buy', {
+    handleStripePayment() {
+        this.setState({ statusMessage: 'Purchasing...' });
+
+        const stripe = new stripeGlobal(process.env.REACT_APP_STRIPE_PK);
+
+        fetch('/api/stripe/session', {
             method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-                token: JSON.stringify(token),
-                plan: this.state.selectedPlanToBuy.stripe_plan_id
-            })
-        }).then(response => response.json()).then(body => {
-            this.setState({ statusMessage: body.message });
+            headers: this.setHeaders(),
+            body: JSON.stringify({ plan: this.state.selectedPlanToBuy.id })
+        }).then(result => result.json()).then(result => {
+            if (result.error) {
+                throw Error(result.error);
+            }
+
+            this.setState({ statusMessage: 'Redirecting to Stripe...' });
+
+            stripe.redirectToCheckout({ sessionId: result.id }).then(result => {
+                console.log(result);
+            }).catch(err => {
+                this.setState({ statusMessage: 'Failed to redirect to Stripe. Reason:' + err.message });
+            });
         }).catch(err => {
-            console.log(err);
-            this.setState({ statusMessage: 'Error purchasing' });
+            console.error('Error starting Stripe session. Reason: %s', err);
+            this.setState({ statusMessage: 'Error purchasing. Reason: ' + err.message });
         });
     }
 
     render() {
         if (this.state.storageStep === 1) {
-            return <div>
+            return (<div>
                 <p className="title1">Storage Plans</p>
 
-                {this.state.plansLoading === true ? <Spinner animation="border" size="sm" /> : ''}
+                {this.state.productsLoading === true ? <div style={{ textAlign: 'center' }}>
+                    <Spinner animation="border" size="sm" />
+                </div> : ''}
+                {this.state.productsLoading === 'error' ? 'There was an error loading the available plans: The server was unreachable. Please check your network connection and reload.' : ''}
+
+                <Row className='mt-4'>
+                    {this.state.availableProducts ?
+                        this.state.availableProducts.map((entry, i) => {
+                            // Print the list of available products
+                            return <InxtContainerOption
+                                key={'plan' + i}
+                                isChecked={this.props.currentPlan === entry.metadata.size_bytes * 1}
+                                header={entry.metadata.simple_name}
+                                onClick={(e) => {
+                                    // Can't select the current product or lesser
+                                    if (this.props.currentPlan > entry.metadata.size_bytes * 1) {
+                                        return false;
+                                    }
+                                    this.setState({ selectedProductToBuy: entry, storageStep: 2, plansLoading: true, availablePlans: null });
+                                }}
+                                text={entry.metadata.price_eur === '0.00' ? 'Free' : <span>€{entry.metadata.price_eur}<span style={{ color: '#7e848c', fontWeight: 'normal' }}>/month</span></span>} />
+                        })
+                        : ''}
+                </Row>
+            </div>);
+        }
+
+        if (this.state.storageStep === 2) {
+            if (this.state.availablePlans == null) {
+                this.loadAvailablePlans();
+            }
+            return <div>
+                <p className="close-modal" onClick={e => this.setState({ storageStep: 1 })}><img src={iconCloseTab} alt="Close" /></p>
+                <p className="title1">Select payment length <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedProductToBuy.metadata.simple_name} Plan</span></p>
+
+                {this.state.plansLoading === true ? <div style={{ textAlign: 'center' }}>
+                    <Spinner animation="border" size="sm" />
+                </div> : ''}
                 {this.state.plansLoading === 'error' ? 'There was an error loading the available plans: The server was unreachable. Please check your network connection and reload.' : ''}
+
 
                 <Row className='mt-4'>
                     {this.state.availablePlans ?
                         this.state.availablePlans.map((entry, i) => {
+                            // Convert to months
+                            if (entry.interval === 'year') {
+                                entry.interval_count *= 12;
+                                entry.interval = 'month';
+                            }
+
                             // Print the list of available plans
                             return <InxtContainerOption
                                 key={'plan' + i}
-                                isChecked={this.props.currentPlan === entry.space_gb * 1073741824}
-                                header={entry.name}
+                                isChecked={false}
+                                header={'€' + (entry.price / 100) / entry.interval_count}
                                 onClick={(e) => {
-                                    // Can't select the current plan or lesser
-                                    if (this.props.currentPlan >= entry.space_gb * 1073741824) {
-                                        return false;
-                                    }
                                     this.setState({ selectedPlanToBuy: entry, storageStep: 3 });
                                 }}
-                                text={entry.price_eur === '0.00' ? 'Free' : <span>€{entry.price_eur}<span style={{ color: '#7e848c', fontWeight: 'normal' }}>/month</span></span>} />
+                                text={<span><span style={{ color: '#7e848c', fontWeight: 'normal' }}>Prepay{entry.interval_count === 1 ? ' per' : ''}</span>&nbsp;{entry.interval_count !== 1 ? entry.interval_count + ' ' : ''}month{entry.interval_count > 1 ? 's' : ''}</span>} />
                         })
                         : ''}
                 </Row>
             </div>;
         }
-        if (this.state.storageStep === 2) {
-            return <div>
-                <p className="close-modal" onClick={e => this.setState({ storageStep: 1 })}><img src={iconCloseTab} alt="Close" /></p>
-                <p className="title1">Select payment length | 1TB plan</p>
-            </div>;
-        }
+
         if (this.state.storageStep === 3) {
             return <div>
-                <p className="close-modal" onClick={e => this.setState({ storageStep: 1 })}><img src={iconCloseTab} alt="Close" /></p>
-                <p className="title1">Select payment <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, Monthly</span></p>
+                <p className="close-modal" onClick={e => this.setState({ storageStep: 2 })}><img src={iconCloseTab} alt="Close" /></p>
+                <p className="title1">Select payment <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedProductToBuy.metadata.simple_name} Plan, {this.state.selectedPlanToBuy.name}</span></p>
 
                 <Row className='mt-4'>
                     {
@@ -131,10 +210,7 @@ class StoragePlans extends React.Component {
                                 header={<img src={entry.logo} alt="Logo" />}
                                 text={entry.name}
                                 onClick={e => {
-                                    this.setState({
-                                        storageStep: 4,
-                                        paymentMethod: entry.name
-                                    });
+                                    this.setState({ storageStep: 4, paymentMethod: entry.name });
                                 }}
                             />
                         })
@@ -144,41 +220,26 @@ class StoragePlans extends React.Component {
         }
 
         if (this.state.storageStep === 4) {
-            const selectedPlan = this.state.selectedPlanToBuy;
-            const planName = 'X Cloud ' + selectedPlan.name + ' Plan (€' + selectedPlan.price_eur + ')';
             return <div>
                 <p className="close-modal" onClick={e => this.setState({ storageStep: 3 })}><img src={iconCloseTab} alt="Close" /></p>
-                <p className="title1">Order summary <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedPlanToBuy.name} Plan, Monthly, {this.state.paymentMethod}</span></p>
+                <p className="title1">Order summary <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedProductToBuy.metadata.simple_name} Plan, {this.state.selectedPlanToBuy.name}, {this.state.paymentMethod}</span></p>
 
                 <div>
-                    {this.state.paymentMethod === 'Card' ? <StripeCheckout
-                        name="Internxt SL"
-                        description={planName}
-                        image="https://internxt.com/img/logos/internxtcircle.png"
-                        currency="EUR"
-                        bitcoin={false}
-                        email={JSON.parse(localStorage.xUser).email}
-                        stripeKey={process.env.REACT_APP_STRIPE_PK}
-                        token={this.onTokenHandler}
-                        billingAddress={true}
-                        zipCode={true}>
+                    {this.state.paymentMethod === 'Card' ? <div style={{ textAlign: 'center' }}>
+                        <Button
+                            type="submit"
+                            size="sm"
+                            onClick={this.handleStripePayment.bind(this)}
+                            style={{
+                                width: '28%',
+                                height: '40px',
+                                background: 'linear-gradient(74deg, #096dff, #00b1ff)',
+                                borderWidth: '0px'
+                            }}>Buy now</Button>
 
-                        <div style={{ textAlign: 'center' }}>
-                            <Button
-                                type="submit"
-                                size="sm"
-                                style={{
-                                    width: '28%',
-                                    height: '40px',
-                                    background: 'linear-gradient(74deg, #096dff, #00b1ff)',
-                                    borderWidth: '0px'
-                                }}>Buy now</Button>
-
-                        </div>
-
-                    </StripeCheckout>
+                    </div>
                         : <div style={{ textAlign: 'center' }}>Comming soon...</div>}
-                    <p className="mt-4" style={{textAlign: 'center', fontSize: 14}}>{this.state.statusMessage}</p>
+                    <p className="mt-4" style={{ textAlign: 'center', fontSize: 14 }}>{this.state.statusMessage}</p>
                 </div>
             </div>;
         }
