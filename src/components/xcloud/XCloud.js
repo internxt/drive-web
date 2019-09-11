@@ -66,6 +66,8 @@ class XCloud extends React.Component {
         }
       }).catch(error => {
         console.log('Error getting user activation status: ' + error)
+        localStorage.clear();
+        history.push('/login');
       })
     }
   }
@@ -111,7 +113,9 @@ class XCloud extends React.Component {
       method: 'get',
       headers
     }).then(response => response.json())
-      .catch(error => error);
+      .catch(error => {
+        console.log('Error getting user activation');
+      });
   }
 
   setSortFunction = (newSortFunc) => {
