@@ -292,9 +292,7 @@ class XCloud extends React.Component {
       size: e.target.files[0].size,
       isLoading: true
     });
-    this.setState({
-      currentCommanderItems: this.state.currentCommanderItems
-    });
+    this.setState({ currentCommanderItems: this.state.currentCommanderItems });
 
     const data = new FormData();
     let headers = this.setHeaders();
@@ -304,18 +302,24 @@ class XCloud extends React.Component {
       method: "post",
       headers,
       body: data
-    }).then((response) => {
+    }).then(async (response) => {
       if (response.status === 402) {
         this.setState({ rateLimitModal: true })
         return;
       }
+
+      if (response.status === 500) {
+        const body = await response.json();
+        alert(body.message);
+      }
+
       this.getFolderContent(this.state.currentFolderId);
+    }).catch(err => {
+      console.error('Error uploading: ', err);
     })
   }
 
   uploadDroppedFile = (e) => {
-    console.log("UPLOAD DROPPED");
-    console.log(e);
     const data = new FormData();
     let headers = this.setHeaders();
     delete headers['content-type'];
@@ -344,7 +348,6 @@ class XCloud extends React.Component {
 
   deleteItems = () => {
     const selectedItems = this.state.selectedItems;
-
     if (selectedItems && selectedItems.length > 0) {
       this.setState({ showDeleteItemsPopup: true });
     }
