@@ -331,8 +331,15 @@ class XCloud extends React.Component {
       headers,
       body: data
     }).then((response) => {
-      if (response.status === 402 || response.status === 500) {
+      if (response.status === 402) {
         this.setState({ rateLimitModal: true })
+        return;
+      }
+
+      if (response.status === 500) {
+        response.json().then(res => {
+          alert('Error uploading file\n' + (res.error || res.message || ''));
+        });
         return;
       }
       this.getFolderContent(this.state.currentFolderId);
