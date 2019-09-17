@@ -38,7 +38,10 @@ class XCloud extends React.Component {
       sortFunction: null,
       searchFunction: null,
       popupShareOpened: false,
-      showDeleteItemsPopup: false
+      showDeleteItemsPopup: false,
+
+      overwritteItemPopup: false,
+      overwritteOptions: {}
     };
   }
 
@@ -232,12 +235,10 @@ class XCloud extends React.Component {
 
   }
 
-  moveFile = (fileId, destination) => {
+  moveFile = (fileId, destination, overwritte = false) => {
     const headers = this.setHeaders();
-    const data = {
-      fileId,
-      destination
-    }
+    const data = { fileId, destination, overwritte };
+
     fetch('/api/storage/moveFile', {
       method: 'post',
       headers,
@@ -246,11 +247,12 @@ class XCloud extends React.Component {
       if (response.status === 200) {
         // Successfully moved
         this.getFolderContent(this.state.currentFolderId);
+      } else if (response.status === 501) {
+        this.setState({ overwritteItemPopup: true, overwritteOptions: { fileId, destination } });
       } else {
         // Error moving file
         response.json().then((error) => {
-          console.error(`Error moving file: ${error.message}`);
-          alert('Error moving file')
+          alert(`Error moving file: ${error.message}`)
         })
       }
     })
@@ -493,6 +495,31 @@ class XCloud extends React.Component {
                 <h2>Please confirm you want to delete this item{this.state.selectedItems.length > 1 ? 's' : ''}. This action can’t be undone.</h2>
                 <div className="buttons-wrapper">
                   <div className="default-button button-primary" onClick={() => { this.confirmDeleteItems(); this.setState({ showDeleteItemsPopup: false }); }}>
+                    Confirm
+                </div>
+                </div>
+              </div>
+            </div>
+          </Popup>
+
+          <Popup
+            open={this.state.overwritteItemPopup}
+            closeOnDocumentClick
+            onClose={() => this.setState({ overwritteItemPopup: false })}
+            className="popup--full-screen">
+            <div className="popup--full-screen__content">
+              <div className="popup--full-screen__close-button-wrapper">
+                <img src={closeTab} onClick={() => this.setState({ overwritteItemPopup: false })} alt="Close tab" />
+              </div>
+              <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
+              <div className="message-wrapper">
+                <h1>Replace item{this.state.selectedItems.length > 1 ? 's' : ''} </h1>
+                <h2>There is already a file with the same name in your selected location. Would you like to overwrite the file?</h2>
+                <div className="buttons-wrapper">
+                  <div className="default-button button-primary" onClick={() => {
+                    this.moveFile(this.state.overwritteOptions.fileId, this.state.overwritteOptions.destination, true);
+                    this.setState({ overwritteItemPopup: false });
+                  }}>
                     Confirm
                 </div>
                 </div>
