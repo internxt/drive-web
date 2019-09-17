@@ -514,7 +514,7 @@ class XCloud extends React.Component {
               <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
                 <h1>Replace item{this.state.selectedItems.length > 1 ? 's' : ''} </h1>
-                <h2>There is already a file with the same name in your selected location. Would you like to overwrite the file?</h2>
+                <h2>There is already a file with the same name in that destination. Would you like to overwrite the file?</h2>
                 <div className="buttons-wrapper">
                   <div className="default-button button-primary" onClick={() => {
                     this.moveFile(this.state.overwritteOptions.fileId, this.state.overwritteOptions.destination, true);

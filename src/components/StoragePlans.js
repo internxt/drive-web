@@ -63,7 +63,7 @@ class StoragePlans extends React.Component {
         const freePlan = {
             id: null,
             metadata: {
-                simple_name: 'Free',
+                simple_name: '1GB',
                 price_eur: '0.00',
                 size_bytes: 1073741824
             }
