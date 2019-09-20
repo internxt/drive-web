@@ -187,7 +187,7 @@ class StoragePlans extends React.Component {
                                 isChecked={false}
                                 header={'€' + (entry.price / 100) / entry.interval_count}
                                 onClick={(e) => {
-                                    this.setState({ selectedPlanToBuy: entry, storageStep: 3 });
+                                    this.setState({ selectedPlanToBuy: entry, storageStep: 4, paymentMethod: PaymentBridges[0].name });
                                 }}
                                 text={<span><span style={{ color: '#7e848c', fontWeight: 'normal' }}>Prepay{entry.interval_count === 1 ? ' per' : ''}</span>&nbsp;{entry.interval_count !== 1 ? entry.interval_count + ' ' : ''}month{entry.interval_count > 1 ? 's' : ''}</span>} />
                         })
