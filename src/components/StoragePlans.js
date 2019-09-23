@@ -60,21 +60,11 @@ class StoragePlans extends React.Component {
 
 
     loadAvailableProducts() {
-        const freePlan = {
-            id: null,
-            metadata: {
-                simple_name: '1GB',
-                price_eur: '0.00',
-                size_bytes: 1073741824
-            }
-        };
-
-
         fetch('/api/stripe/products', {
             headers: { 'content-type': 'application/json' }
         }).then(response => response.json()).then(products => {
             this.setState({
-                availableProducts: [freePlan, ...products],
+                availableProducts: products,
                 productsLoading: false
             });
         }).catch(err => {
@@ -181,11 +171,13 @@ class StoragePlans extends React.Component {
                                 entry.interval = 'month';
                             }
 
+                            const fixedPrice = ((entry.price / 100) / entry.interval_count).toFixed(2);
+
                             // Print the list of available plans
                             return <InxtContainerOption
                                 key={'plan' + i}
                                 isChecked={false}
-                                header={'€' + (entry.price / 100) / entry.interval_count}
+                                header={'€' + fixedPrice}
                                 onClick={(e) => {
                                     this.setState({ selectedPlanToBuy: entry, storageStep: 4, paymentMethod: PaymentBridges[0].name });
                                 }}
