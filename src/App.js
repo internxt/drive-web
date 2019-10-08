@@ -11,6 +11,7 @@ import Deactivation from './components/forms/Deactivation';
 import Reset from './components/forms/Reset';
 import Storage from './components/Storage';
 import Security from './components/Security';
+import Tree from './components/Tree'
 
 class App extends Component {
   constructor(props) {
@@ -40,12 +41,13 @@ class App extends Component {
             isAuthenticated={this.state.isAuthenticated}
             handleKeySaved={this.handleKeySaved} />
           } />
+          <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
+          <Route path='/tree' render={(props) => <Tree {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/settings' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/activations/:token' render={(props) => <Activation {...props} />} />
           <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
-          <Route path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/security' render={(props) => <Security {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/app' render={(props) => <XCloud {...props}
             isAuthenticated={this.state.isAuthenticated}

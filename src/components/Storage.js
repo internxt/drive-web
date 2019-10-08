@@ -33,11 +33,12 @@ class Storage extends React.Component {
 
     componentDidMount() {
         // Check auth and redirect to login if necessary
-        if (!this.props.isAuthenticated) {
-            history.push('/login');
+        if (!localStorage.xUser) {
+           history.push('/login');
         } else {
             this.usageLoader();
         }
+
     }
 
     payMethodLoader = (plan) => {
