@@ -21,7 +21,7 @@ class FileCommanderItem extends React.Component {
         // Folder colors definition
         this.colors = ['red', 'yellow', 'green', 'blue', 'purple', 'pink', 'grey'];
         // Folder icons definition (icon id is its index in array)
-        this.icons = ['avatarcircleneutral', 'backup', 'barchart', 'bell', 'binoculars', 'book', 'camera', 'bowl', 'categories',
+        this.icons = ['avatarcircleneutral', 'backup', 'barchart', 'bell', 'binoculars', 'book', 'bowl', 'camera', 'categories',
             'circlefilledcheckmark', 'clappboard', 'clipboard', 'cloud', 'controllerneoGeo', 'dollarsign', 'facehappy', 'file',
             'heartfilled', 'inbox', 'lighton', 'locklocked', 'musicnote', 'navigationcircle', 'notifications',
             'path', 'running', 'starfilled', 'video', 'window', 'yinyang'];
@@ -144,6 +144,7 @@ class FileCommanderItem extends React.Component {
         let localColor = this.state.selectedColor ? this.state.selectedColor : this.props.color;
         if (this.props.icon || this.state.selectedIcon) {
             let localIcon = this.state.selectedIcon ? this.icons[this.state.selectedIcon - 1] : this.props.icon.name;
+
             return (
                 <div className="iconContainer">
                     <Icon name="folder" color={localColor} height="75" alt="" />
