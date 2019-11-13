@@ -239,14 +239,14 @@ class Login extends React.Component {
         <Container className="login-container-box1">
           <p className="logo"><img src={logo} alt="Logo" /></p>
           <p className="container-title">Security Verification</p>
-          <p className="privacy-disclaimer">Enter your 6 digit Google Authenticator Code below</p>
+          <p className="privacy-disclaimer">Enter your 6 digit authenticator code below</p>
           <Form className="form-register container-register two-factor" onSubmit={e => {
             e.preventDefault();
             this.doLogin();
           }}>
             <Form.Row>
               <Form.Group as={Col} controlId="twoFactorCode">
-                <Form.Control xs={12} placeholder="Google Authentication Code" required type="text" name="two-factor" autoComplete="off" value={this.state.twoFactorCode} onChange={this.handleChange} maxLength={7} />
+                <Form.Control xs={12} placeholder="Authentication code" required type="text" name="two-factor" autoComplete="off" value={this.state.twoFactorCode} onChange={this.handleChange} maxLength={7} />
               </Form.Group>
             </Form.Row>
             <Form.Row className="form-register-submit">
