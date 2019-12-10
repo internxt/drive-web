@@ -5,6 +5,7 @@ import { Dropdown, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import './FileCommanderItem.css';
 import Icon from '../../assets/Icon'
 import ActivityIndicator from '../ActivityIndicator'
+import SanitizeFilename from 'sanitize-filename'
 
 class FileCommanderItem extends React.Component {
     constructor(props, state) {
@@ -35,7 +36,7 @@ class FileCommanderItem extends React.Component {
         event.dataTransfer.setData('text/plain', JSON.stringify(data));
 
         // Highlight back button only if is not root folder
-       
+
     }
 
     handleDragOver = (event) => {
@@ -78,6 +79,16 @@ class FileCommanderItem extends React.Component {
 
     handleApplyChanges = () => {
         let metadata = {};
+
+        // Check if is a valid FILENAME for any OS
+
+        if (this.props.name !== this.state.itemName) {
+            const sanitizedFilename = SanitizeFilename(this.state.itemName)
+
+            if (sanitizedFilename !== this.state.itemName) {
+                return alert('Invalid file name')
+            }
+        }
 
         if (this.state.itemName && (this.props.name !== this.state.itemName)) metadata.itemName = this.state.itemName;
         if (this.props.type === 'Folder') {
@@ -186,7 +197,9 @@ class FileCommanderItem extends React.Component {
                         <Dropdown drop={'right'} show={this.state.showDropdown} onToggle={this.handleDropdownSelect}>
                             <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown} >...</Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item as="span"><input className="itemNameInput" type="text" value={this.state.itemName} onChange={this.handleNameChange} /></Dropdown.Item>
+                                <Dropdown.Item as="span">
+                                    <input className="itemNameInput" type="text" value={this.state.itemName} onChange={this.handleNameChange} />
+                                </Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item as="span">
                                     Style color
