@@ -62,8 +62,15 @@
 
 .FileCommanderItem .type {
     margin: 10px auto;
-    height: 75px;
     margin-bottom: 27px;
+    height: 75px;
+    padding: 10px;
+}
+
+.FileCommanderItem .type span.extension {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .FileCommanderItem .name {
