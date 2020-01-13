@@ -367,6 +367,14 @@
     color: #9c9c9c;
 }
 
+.FileCommanderItem .properties .propValue {
+}
+
+.FileCommanderItem .properties div div:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .FileCommanderItem:hover>.properties {
     visibility: visible;
 }
