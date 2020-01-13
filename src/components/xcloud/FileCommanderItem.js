@@ -244,24 +244,15 @@ class FileCommanderItem extends React.Component {
     }
 }
 
-class CustomToggle extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.handleClick = this.handleClick.bind(this);
-    }
-
-    handleClick(e) {
-        e.preventDefault();
-        // Call dropdown to toggle show
-        this.props.handleShowDropdown()
-        this.props.onClick(e);
-    }
-
-    render() {
-        return (
-            <div onClick={this.handleClick}>{this.props.children}</div>
-        );
-    }
-}
+const CustomToggle = React.forwardRef(({ children, onClick, handleShowDropdown }, ref) => {
+    return (
+        <div ref={ref} onClick={(e) => {
+            e.preventDefault();
+            // Call dropdown to toggle show
+            handleShowDropdown()
+            onClick(e)
+        }}>{children}</div>
+    )
+});
 
 export default FileCommanderItem
