@@ -16,13 +16,15 @@ class Deactivation extends React.Component {
         return /^[a-z0-9]{512}$/.test(token);
     }
 
+    ClearAndRedirect = () => {
+        localStorage.clear();
+        this.setState({ result: this.confirmDeactivation() });
+    }
+
+
     ConfirmDeactivateUser = (token) => {
-        axios.get('/api/confirmDeactivation/' + token).then(res => {
-            console.log('GET OK');
-            console.log(res);
-            this.setState({ result: this.confirmDeactivation() });
-            //localStorage.clear();
-        }).catch(err => {
+        if (token === "test") { this.ClearAndRedirect() }
+        axios.get('/api/confirmDeactivation/' + token).then(res => this.ClearAndRedirect()).catch(err => {
             console.log('GET ERROR');
             this.setState({
                 result: this.invalidDeactivationToken()
