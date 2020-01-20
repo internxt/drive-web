@@ -17,15 +17,18 @@ class Deactivation extends React.Component {
     }
 
     ClearAndRedirect = () => {
+        console.log('Clear and redirect')
         localStorage.clear();
         this.setState({ result: this.confirmDeactivation() });
     }
 
 
     ConfirmDeactivateUser = (token) => {
-        if (token === "test") { this.ClearAndRedirect() }
-        axios.get('/api/confirmDeactivation/' + token).then(res => this.ClearAndRedirect()).catch(err => {
-            console.log('GET ERROR');
+        axios.get('/api/confirmDeactivation/' + token).then(res => {
+            console.log('All is ok')
+            this.ClearAndRedirect()
+        }).catch(err => {
+            console.log('GET ERROR', err);
             this.setState({
                 result: this.invalidDeactivationToken()
             });
