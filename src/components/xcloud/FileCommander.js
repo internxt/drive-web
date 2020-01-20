@@ -120,14 +120,6 @@ class FileCommander extends React.Component {
         let files = e.dataTransfer.files;
 
         if (files.length) {
-            this.state.currentCommanderItems.push({
-                name: files[0].name,
-                size: files[0].size,
-                isLoading: true
-            });
-            this.setState({
-                currentCommanderItems: this.state.currentCommanderItems
-            });
             this.props.uploadDroppedFile(files);
         }
 

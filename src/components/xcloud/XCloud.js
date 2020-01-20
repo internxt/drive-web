@@ -6,6 +6,7 @@ import _ from 'lodash';
 import fileDownload from 'js-file-download';
 import update from 'immutability-helper';
 import Popup from "reactjs-popup";
+import async from 'async'
 
 import FileCommander from './FileCommander';
 import NavigationBar from "../navigationBar/NavigationBar";
@@ -288,62 +289,68 @@ class XCloud extends React.Component {
     $("input#uploadFile").trigger("click");
   }
 
-  uploadFile = (e) => {
-    this.state.currentCommanderItems.push({
-      name: e.target.files[0].name,
-      size: e.target.files[0].size,
-      isLoading: true
-    });
+  handleUploadFiles = (files) => {
+    var re = /(?:\.([^.]+))?$/;
+
+    const currentCommanderItemsLength = this.state.currentCommanderItems.length;
+    let currentUploadedItems = 0;
+
+    for (var i = 0; i < files.length; i++) {
+      this.state.currentCommanderItems.push({
+        name: files[i].name,
+        size: files[i].size,
+        isLoading: true
+      });
+    }
+
     this.setState({ currentCommanderItems: this.state.currentCommanderItems });
 
-    const data = new FormData();
-    let headers = this.setHeaders();
-    delete headers['content-type'];
-    data.append('xfile', e.target.files[0]);
-    fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
-      method: "post",
-      headers,
-      body: data
-    }).then(async (response) => {
-      if (response.status === 402) {
-        this.setState({ rateLimitModal: true })
-        return;
-      }
+    async.eachSeries(files, (file, next) => {
+      const data = new FormData();
+      let headers = this.setHeaders();
+      delete headers['content-type'];
+      data.append('xfile', file);
+      fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
+        method: "post",
+        headers,
+        body: data
+      }).then(async (response) => {
+        if (response.status === 402) {
+          this.setState({ rateLimitModal: true })
+          return next(response.status);
+        }
 
-      if (response.status === 500) {
-        const body = await response.json();
-        alert(body.message);
-      }
+        if (response.status === 500) {
+          const body = await response.json();
+          next(body.message);
+        } else {
+          // Upload OK: Mark object as not loading
+          let index = this.state.currentCommanderItems.findIndex(obj => {
+            return obj.name === file.name
+          })
 
+          this.state.currentCommanderItems[index].isLoading = false
+          this.state.currentCommanderItems[index].type = re.exec(file.name)[1];
+
+          this.setState({ currentCommanderItems: this.state.currentCommanderItems }, () => next());
+        }
+
+      }).catch(err => {
+        console.error('Error uploading: ', err);
+        next(err)
+      })
+    }, (err, results) => {
+      if (err) { alert(err) }
       this.getFolderContent(this.state.currentFolderId);
-    }).catch(err => {
-      console.error('Error uploading: ', err);
     })
   }
 
-  uploadDroppedFile = (e) => {
-    const data = new FormData();
-    let headers = this.setHeaders();
-    delete headers['content-type'];
-    data.append('xfile', e[0]);
-    fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
-      method: "post",
-      headers,
-      body: data
-    }).then((response) => {
-      if (response.status === 402) {
-        this.setState({ rateLimitModal: true })
-        return;
-      }
+  uploadFile = (e) => {
+    this.handleUploadFiles(e.target.files)
+  }
 
-      if (response.status === 500) {
-        response.json().then(res => {
-          alert('Error uploading file\n' + (res.error || res.message || ''));
-        });
-        return;
-      }
-      this.getFolderContent(this.state.currentFolderId);
-    })
+  uploadDroppedFile = (e) => {
+    this.handleUploadFiles(e)
   }
 
   shareItem = () => {
