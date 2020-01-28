@@ -8,6 +8,8 @@ import iconStripe from '../assets/PaymentBridges/stripe.svg'
 import iconInxt from '../assets/PaymentBridges/inxt.svg'
 import iconPayPal from '../assets/PaymentBridges/paypal.svg'
 
+const STRIPE_DEBUG = false;
+
 const stripeGlobal = window.Stripe;
 
 const PaymentBridges = [
@@ -60,7 +62,7 @@ class StoragePlans extends React.Component {
 
 
     loadAvailableProducts() {
-        fetch('/api/stripe/products', {
+        fetch('/api/stripe/products' + (STRIPE_DEBUG ? '?test=true' : ''), {
             headers: { 'content-type': 'application/json' }
         }).then(response => response.json()).then(products => {
             this.setState({
@@ -73,10 +75,12 @@ class StoragePlans extends React.Component {
     }
 
     loadAvailablePlans() {
+        const body = { product: this.state.selectedProductToBuy.id }
+        if (STRIPE_DEBUG) { body.test = true }
         fetch('/api/stripe/plans', {
             method: 'post',
             headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ product: this.state.selectedProductToBuy.id })
+            body: JSON.stringify(body)
         }).then(result => result.json()).then(result => {
             this.setState({ availablePlans: result, plansLoading: false });
         }).catch(err => {
@@ -92,12 +96,16 @@ class StoragePlans extends React.Component {
     handleStripePayment() {
         this.setState({ statusMessage: 'Purchasing...' });
 
-        const stripe = new stripeGlobal(process.env.REACT_APP_STRIPE_PK);
+        const stripe = new stripeGlobal(STRIPE_DEBUG ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+
+        const body = { plan: this.state.selectedPlanToBuy.id }
+
+        if (/^pk_test_/.exec(stripe._apiKey)) { body.test = true }
 
         fetch('/api/stripe/session', {
             method: 'POST',
             headers: this.setHeaders(),
-            body: JSON.stringify({ plan: this.state.selectedPlanToBuy.id })
+            body: JSON.stringify(body)
         }).then(result => result.json()).then(result => {
             if (result.error) {
                 throw Error(result.error);
@@ -112,7 +120,7 @@ class StoragePlans extends React.Component {
             });
         }).catch(err => {
             console.error('Error starting Stripe session. Reason: %s', err);
-            this.setState({ statusMessage: 'Error purchasing. Reason: ' + err.message });
+            this.setState({ statusMessage: 'Please contact us. Reason: ' + err.message });
         });
     }
 
@@ -136,9 +144,6 @@ class StoragePlans extends React.Component {
                                 header={entry.metadata.simple_name}
                                 onClick={(e) => {
                                     // Can't select the current product or lesser
-                                    if (this.props.currentPlan > entry.metadata.size_bytes * 1) {
-                                        return false;
-                                    }
                                     this.setState({ selectedProductToBuy: entry, storageStep: 2, plansLoading: true, availablePlans: null });
                                 }}
                                 text={entry.metadata.price_eur === '0.00' ? 'Free' : <span>€{entry.metadata.price_eur}<span style={{ color: '#7e848c', fontWeight: 'normal' }}>/month</span></span>} />
@@ -213,7 +218,7 @@ class StoragePlans extends React.Component {
 
         if (this.state.storageStep === 4) {
             return <div>
-                <p className="close-modal" onClick={e => this.setState({ storageStep: 3 })}><img src={iconCloseTab} alt="Close" /></p>
+                <p className="close-modal" onClick={e => this.setState({ storageStep: 2 })}><img src={iconCloseTab} alt="Close" /></p>
                 <p className="title1">Order summary <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {this.state.selectedProductToBuy.metadata.simple_name} Plan, {this.state.selectedPlanToBuy.name}, {this.state.paymentMethod}</span></p>
 
                 <div>
@@ -227,7 +232,7 @@ class StoragePlans extends React.Component {
                                 height: '40px',
                                 background: 'linear-gradient(74deg, #096dff, #00b1ff)',
                                 borderWidth: '0px'
-                            }}>Buy now</Button>
+                            }}>Subscribe</Button>
 
                     </div>
                         : <div style={{ textAlign: 'center' }}>Comming soon...</div>}
