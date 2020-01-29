@@ -16,7 +16,8 @@ class FileCommanderItem extends React.Component {
             itemName: this.props.name,
             selectedColor: '',
             selectedIcon: 0,
-            showDropdown: false
+            showDropdown: false,
+            isLoading: this.props.isLoading
         }
 
         // Folder colors definition
@@ -168,13 +169,30 @@ class FileCommanderItem extends React.Component {
     }
 
     getFileIcon = () => {
-        return (<div className="type">{this.props.isLoading ? <span><ActivityIndicator /></span> : <span className="extension">{this.props.type}</span>}</div>)
+        return (<div className="type">
+            {this.state.isLoading ?
+                <span><ActivityIndicator /></span> :
+                <span className="extension">{this.props.type}</span>}
+        </div>)
+    }
+
+    itemClickHandler = (e) => {
+        this.setState({ isLoading: true }, () => {
+            this.props.clickHandler(e).then(() => {
+                this.setState({ isLoading: false })
+            })
+        })
+    }
+
+    componentWillReceiveProps(newProps) {
+        if (newProps.isLoading !== this.state.isLoading) {
+            this.setState({ isLoading: newProps.isLoading })
+        }
     }
 
     render() {
         return (
             <div className={`FileCommanderItem` + (this.state.selected ? ' selected ' : ' ') + this.state.dragDropStyle}
-
                 data-type={this.props.type}
                 data-id={this.props.id}
                 data-bridge-file-id={this.props.rawItem.fileId}
@@ -182,7 +200,7 @@ class FileCommanderItem extends React.Component {
                 data-name={this.props.rawItem.name}
 
                 onClick={this.props.selectHandler}
-                onDoubleClick={(e) => { if (e.target.className === 'FileCommanderItem') { this.props.clickHandler(); } }}
+                onDoubleClick={(e) => { if (e.target.className === 'FileCommanderItem') { this.itemClickHandler(e); } }}
 
                 draggable={this.props.rawItem.type !== 'Folder'}
                 onDragStart={this.handleDragStart}
@@ -236,7 +254,7 @@ class FileCommanderItem extends React.Component {
                         </Dropdown>}
                 </div>
                 <div className="itemIcon">{this.props.type === 'Folder' ? this.getFolderIcon() : this.getFileIcon()}</div>
-                <div className="name" onClick={this.props.clickHandler}>{this.props.name}</div>
+                <div className="name" onClick={this.itemClickHandler}>{this.props.name}</div>
                 {this.props.type !== 'Folder' &&
                     <div className="created">{this.props.created}</div>
                 }
