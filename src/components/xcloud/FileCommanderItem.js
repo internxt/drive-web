@@ -170,17 +170,17 @@ class FileCommanderItem extends React.Component {
 
     getFileIcon = () => {
         return (<div className="type">
-            {this.state.isLoading ?
-                <span><ActivityIndicator /></span> :
-                <span className="extension">{this.props.type}</span>}
+            {
+                this.state.isLoading ?
+                    <span><ActivityIndicator /></span> :
+                    <span className="extension">{this.props.type}</span>
+            }
         </div>)
     }
 
     itemClickHandler = (e) => {
         this.setState({ isLoading: true }, () => {
-            this.props.clickHandler(e).then(() => {
-                this.setState({ isLoading: false })
-            })
+            this.props.clickHandler(e).then(() => this.setState({ isLoading: false }))
         })
     }
 

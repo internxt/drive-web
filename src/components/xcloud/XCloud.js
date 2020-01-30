@@ -273,7 +273,7 @@ class XCloud extends React.Component {
   
         const blob = await data.blob();
   
-        const name = data.headers.get('x-file-name')
+        const name = Buffer.from(data.headers.get('x-file-name'), 'base64').toString('utf8')
         fileDownload(blob, name)
         resolve()
       }).catch(async err => {
