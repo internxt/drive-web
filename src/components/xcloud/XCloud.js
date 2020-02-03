@@ -157,7 +157,10 @@ class XCloud extends React.Component {
   }
 
   openFolder = (e) => {
-    this.getFolderContent(e);
+    return new Promise((resolve) => {
+      this.getFolderContent(e);
+      resolve()
+    })
   }
 
   getFolderContent = (rootId, updateNamePath = true) => {
