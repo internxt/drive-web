@@ -6,6 +6,7 @@ import { Form, Col, Button } from 'react-bootstrap';
 import NavigationBar from './../navigationBar/NavigationBar'
 import { encryptText, passToHash, decryptText, encryptTextWithKey } from './../../utils'
 import history from '../../history'
+import { getHeaders } from '../../lib/auth'
 
 class Reset extends React.Component {
     constructor(props) {
@@ -59,11 +60,9 @@ class Reset extends React.Component {
         // Encrypt the mnemonic
         var encryptedMnemonic = encryptTextWithKey(localStorage.xMnemonic, this.state.newPassword);
 
-        var headers = this.setHeaders();
-
         fetch('/api/user/password', {
             method: 'PATCH',
-            headers: headers,
+            headers: getHeaders(true, true),
             body: JSON.stringify({
                 currentPassword: encryptedCurrentPassword,
                 newPassword: encryptedNewPassword,
@@ -93,13 +92,11 @@ class Reset extends React.Component {
             history.push('/login');
         }
 
-        var headers = this.setHeaders();
-
         var localStg = JSON.parse(localStorage.xUser);
 
         fetch("/api/login", {
             method: "post",
-            headers,
+            headers: getHeaders(false, false),
             body: JSON.stringify({ email: localStg.email })
         })
             .then(res => res.json())
@@ -109,16 +106,6 @@ class Reset extends React.Component {
                 alert('Error:\n' + (err.error ? err.error : 'Internal server error'));
             });
     }
-
-    setHeaders = () => {
-        let headers = {
-            Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-            "content-type": "application/json; charset=utf-8",
-            "internxt-mnemonic": localStorage.getItem("xMnemonic")
-        }
-        return headers;
-    }
-
 
     validateForm = () => {
         return this.state.newPassword === this.state.confirmNewPassword;

@@ -18,6 +18,8 @@ import HeaderButton from './HeaderButton';
 import "./NavigationBar.css";
 import history from '../../history';
 
+import { getHeaders } from '../../lib/auth'
+
 class NavigationBar extends React.Component {
     constructor(props) {
         super(props);
@@ -25,7 +27,7 @@ class NavigationBar extends React.Component {
         this.state = {
             menuButton: null,
             navbarItems: props.navbarItems,
-            barLimit: 1024 * 1024 * 1024,
+            barLimit: 1024 * 1024 * 1024 * 2,
             barUsage: 0,
         };
 
@@ -67,33 +69,27 @@ class NavigationBar extends React.Component {
         }
 
         fetch('/api/limit', {
-            method: 'post',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-                email: user
-            })
+            method: 'get',
+            headers: getHeaders(true, false)
         }
         ).then(res => {
             return res.json();
         }).then(res2 => {
             this.setState({ barLimit: res2.maxSpaceBytes })
         }).catch(err => {
-            console.log(err);
+            console.log('Error on fetch /api/limit', err);
         });
 
         fetch('/api/usage', {
-            method: 'post',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-                email: user
-            })
+            method: 'get',
+            headers: getHeaders(true, false)
         }
         ).then(res => {
             return res.json();
         }).then(res2 => {
             this.setState({ barUsage: res2.total })
         }).catch(err => {
-            console.log(err);
+            console.log('Error on fetch /api/usage', err);
         });
     }
 

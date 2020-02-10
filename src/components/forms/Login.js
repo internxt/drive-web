@@ -8,6 +8,8 @@ import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../
 
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 
+import { getHeaders } from '../../lib/auth'
+
 
 class Login extends React.Component {
   constructor(props) {
@@ -54,15 +56,6 @@ class Login extends React.Component {
     }
   }
 
-  setHeaders = () => {
-    let headers = {
-      Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-      "content-type": "application/json; charset=utf-8",
-      "internxt-mnemonic": localStorage.getItem("xMnemonic")
-    }
-    return headers;
-  }
-
   validateLoginForm = () => {
     let isValid = true;
 
@@ -91,11 +84,9 @@ class Login extends React.Component {
   }
 
   check2FANeeded = () => {
-    const headers = this.setHeaders();
-
     fetch('/api/login', {
       method: 'POST',
-      headers,
+      headers: getHeaders(true, true),
       body: JSON.stringify({ email: this.state.email })
     }).then(async res => {
 
@@ -123,12 +114,10 @@ class Login extends React.Component {
   }
 
   doLogin = () => {
-    const headers = this.setHeaders();
-
     // Proceed with submit
     fetch("/api/login", {
       method: "post",
-      headers,
+      headers: getHeaders(true, false),
       body: JSON.stringify({ email: this.state.email })
     })
       .then(response => {
@@ -142,7 +131,7 @@ class Login extends React.Component {
 
             fetch("/api/access", {
               method: "post",
-              headers,
+              headers: getHeaders(true, false),
               body: JSON.stringify({
                 email: this.state.email,
                 password: encPass,

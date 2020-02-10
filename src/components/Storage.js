@@ -16,6 +16,7 @@ import Popup from 'reactjs-popup';
 import logo from '../assets/logo.svg';
 import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
 
+import { getHeaders } from '../lib/auth'
 
 class Storage extends React.Component {
     constructor(props) {
@@ -34,15 +35,13 @@ class Storage extends React.Component {
     componentDidMount() {
         // Check auth and redirect to login if necessary
         if (!localStorage.xUser) {
-           history.push('/login');
+            history.push('/login');
         } else {
             this.usageLoader();
         }
-
     }
 
     payMethodLoader = (plan) => {
-        console.log(plan);
         if (plan.stripe_plan_id != null) {
             this.setState({
                 page: <PayMethods choosedPlan={plan} />
@@ -51,45 +50,33 @@ class Storage extends React.Component {
     }
 
     usageLoader = () => {
-        let user = JSON.parse(localStorage.xUser).email;
-
         fetch('/api/limit', {
-            method: 'post',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-                email: user
-            })
+            method: 'get',
+            headers: getHeaders(true, false)
         }
         ).then(res => {
             return res.json();
         }).then(res2 => {
             this.setState({ max: res2.maxSpaceBytes })
         }).catch(err => {
-            console.log(err);
+            console.log('Error getting /api/limit for storage bar', err);
         });
 
         fetch('/api/usage', {
-            method: 'post',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-                email: user
-            })
-        }
-        ).then(res => res.json())
+            method: 'get',
+            headers: getHeaders(true, false)
+        }).then(res => res.json())
             .then(res2 => {
                 this.setState({ now: res2.total })
             }).catch(err => {
-                console.log(err);
+                console.log('Error getting /api/usage for storage bar', err);
             });
     }
 
     handleCancelAccount = () => {
         fetch('/api/deactivate', {
             method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem("xToken")}`,
-                'content-type': "application/json; charset=utf-8"
-            }
+            headers: getHeaders(true, false)
         })
             .then(res => res.json())
             .then(res => {

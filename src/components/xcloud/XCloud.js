@@ -19,6 +19,8 @@ import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 import PopupShare from '../PopupShare'
 import './XCloud.scss'
 
+import { getHeaders } from '../../lib/auth'
+
 class XCloud extends React.Component {
   constructor(props) {
     super(props);
@@ -76,21 +78,11 @@ class XCloud extends React.Component {
     }
   }
 
-  setHeaders = () => {
-    let headers = {
-      Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-      "content-type": "application/json; charset=utf-8",
-      "internxt-mnemonic": localStorage.getItem("xMnemonic")
-    };
-    return headers;
-  }
-
   userInitialization = () => {
-    const headers = this.setHeaders();
     return new Promise((resolve, reject) => {
       fetch('/api/initialize', {
         method: "post",
-        headers,
+        headers: getHeaders(true, true),
         body: JSON.stringify({
           email: this.props.user.email,
           mnemonic: localStorage.getItem("xMnemonic")
@@ -112,10 +104,9 @@ class XCloud extends React.Component {
   }
 
   isUserActivated = () => {
-    let headers = this.setHeaders();
     return fetch('/api/user/isactivated', {
       method: 'get',
-      headers
+      headers: getHeaders(true, false)
     }).then(response => response.json())
       .catch(error => {
         console.log('Error getting user activation');
@@ -141,11 +132,10 @@ class XCloud extends React.Component {
 
   createFolder = () => {
     const folderName = prompt("Please enter folder name");
-    const headers = this.setHeaders();
     if (folderName != null) {
       fetch(`/api/storage/folder`, {
         method: "post",
-        headers,
+        headers: getHeaders(true, true),
         body: JSON.stringify({
           parentFolderId: this.state.currentFolderId,
           folderName
@@ -164,10 +154,9 @@ class XCloud extends React.Component {
   }
 
   getFolderContent = (rootId, updateNamePath = true) => {
-    const headers = this.setHeaders();
     fetch(`/api/storage/folder/${rootId}`, {
       method: "get",
-      headers
+      headers: getHeaders(true, true)
     })
       .then(response => response.json())
       .then(data => {
@@ -213,12 +202,11 @@ class XCloud extends React.Component {
 
   updateMeta = (metadata, itemId, itemType) => {
     // Apply changes on metadata depending on type of item
-    const headers = this.setHeaders();
     const data = JSON.stringify({ metadata });
     if (itemType === 'Folder') {
       fetch(`/api/storage/folder/${itemId}/meta`, {
         method: "post",
-        headers,
+        headers: getHeaders(true, true),
         body: data
       }).then((response) => {
         this.getFolderContent(this.state.currentFolderId);
@@ -228,7 +216,7 @@ class XCloud extends React.Component {
     } else {
       fetch(`/api/storage/file/${itemId}/meta`, {
         method: "post",
-        headers,
+        headers: getHeaders(true, true),
         body: data
       }).then((response) => {
         this.getFolderContent(this.state.currentFolderId);
@@ -240,12 +228,11 @@ class XCloud extends React.Component {
   }
 
   moveFile = (fileId, destination, overwritte = false) => {
-    const headers = this.setHeaders();
     const data = { fileId, destination, overwritte };
 
     fetch('/api/storage/moveFile', {
       method: 'post',
-      headers,
+      headers: getHeaders(true, true),
       body: JSON.stringify(data)
     }).then((response) => {
       if (response.status === 200) {
@@ -263,19 +250,17 @@ class XCloud extends React.Component {
   }
 
   downloadFile = (id) => {
-    const headers = this.setHeaders();
-
     return new Promise((resolve) => {
       fetch(`/api/storage/file/${id}`, {
         method: "get",
-        headers
+        headers: getHeaders(true, true)
       }).then(async (data) => {
         if (data.status !== 200) {
           throw data;
         }
-  
+
         const blob = await data.blob();
-  
+
         const name = Buffer.from(data.headers.get('x-file-name'), 'base64').toString('utf8')
         fileDownload(blob, name)
         resolve()
@@ -313,7 +298,7 @@ class XCloud extends React.Component {
 
     async.eachSeries(files, (file, next) => {
       const data = new FormData();
-      let headers = this.setHeaders();
+      let headers = getHeaders(true, true)
       delete headers['content-type'];
       data.append('xfile', file);
       fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
@@ -378,10 +363,9 @@ class XCloud extends React.Component {
   confirmDeleteItems = () => {
     const selectedItems = this.state.selectedItems;
     //const bucket = _.last(this.state.namePath).bucket;
-    const headers = this.setHeaders();
     const fetchOptions = {
       method: "DELETE",
-      headers
+      headers: getHeaders(true, false)
     };
     if (selectedItems.length === 0) return;
     const deletionRequests = _.map(selectedItems, (v, i) => {

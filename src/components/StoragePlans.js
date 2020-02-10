@@ -8,6 +8,8 @@ import iconStripe from '../assets/PaymentBridges/stripe.svg'
 import iconInxt from '../assets/PaymentBridges/inxt.svg'
 import iconPayPal from '../assets/PaymentBridges/paypal.svg'
 
+import { getHeaders } from '../lib/auth'
+
 const STRIPE_DEBUG = false;
 
 const stripeGlobal = window.Stripe;
@@ -51,19 +53,9 @@ class StoragePlans extends React.Component {
         }
     }
 
-    setHeaders = () => {
-        let headers = {
-            Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-            "content-type": "application/json; charset=utf-8",
-            "internxt-mnemonic": localStorage.getItem("xMnemonic")
-        };
-        return headers;
-    }
-
-
     loadAvailableProducts() {
         fetch('/api/stripe/products' + (STRIPE_DEBUG ? '?test=true' : ''), {
-            headers: { 'content-type': 'application/json' }
+            headers: getHeaders(true, false)
         }).then(response => response.json()).then(products => {
             this.setState({
                 availableProducts: products,
@@ -79,7 +71,7 @@ class StoragePlans extends React.Component {
         if (STRIPE_DEBUG) { body.test = true }
         fetch('/api/stripe/plans', {
             method: 'post',
-            headers: { 'content-type': 'application/json' },
+            headers: getHeaders(true, false),
             body: JSON.stringify(body)
         }).then(result => result.json()).then(result => {
             this.setState({ availablePlans: result, plansLoading: false });
@@ -104,7 +96,7 @@ class StoragePlans extends React.Component {
 
         fetch('/api/stripe/session', {
             method: 'POST',
-            headers: this.setHeaders(),
+            headers: getHeaders(true, false),
             body: JSON.stringify(body)
         }).then(result => result.json()).then(result => {
             if (result.error) {

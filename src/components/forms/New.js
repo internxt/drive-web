@@ -8,6 +8,7 @@ import history from '../../history';
 import { encryptText, encryptTextWithKey, passToHash } from '../../utils';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 
+import { getHeaders } from '../../lib/auth'
 
 const bip39 = require('bip39');
 
@@ -29,15 +30,6 @@ class New extends React.Component {
             }
         };
 
-    }
-
-    setHeaders = () => {
-        let headers = {
-            Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-            "content-type": "application/json; charset=utf-8",
-            "internxt-mnemonic": localStorage.getItem("xMnemonic")
-        }
-        return headers;
     }
 
     componentDidMount() {
@@ -103,8 +95,6 @@ class New extends React.Component {
     }
 
     doRegister = () => {
-        const headers = this.setHeaders();
-
         // Setup hash and salt 
         const hashObj = passToHash({ password: this.state.register.password });
         const encPass = encryptText(hashObj.hash);
@@ -115,7 +105,7 @@ class New extends React.Component {
 
         fetch("/api/register", {
             method: "post",
-            headers,
+            headers: getHeaders(true, true),
             body: JSON.stringify({
                 name: this.state.register.name,
                 lastname: this.state.register.lastname,

@@ -8,6 +8,8 @@ import infoOnIcon from "../../assets/Dashboard-Icons/InfoOn.svg";
 import { copyToClipboard } from "../../utils";
 import "./KeyPage.css";
 
+import { getHeaders } from '../../lib/auth'
+
 const SAVE_OPTIONS = [
   {
     label: "I have copied and saved my key",
@@ -66,15 +68,6 @@ class KeyPage extends React.Component {
     }
   }
 
-  setHeaders = () => {
-    let headers = {
-      Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-      "content-type": "application/json; charset=utf-8",
-      "internxt-mnemonic": localStorage.getItem("xMnemonic")
-    };
-    return headers;
-  }
-
   handleCopyToClipboard = () => {
     copyToClipboard(this.state.mnemonic);
   }
@@ -102,50 +95,12 @@ class KeyPage extends React.Component {
     history.push('/app')
   }
 
-  updateStorageOption = (option) => {
-    const headers = this.setHeaders();
-
-    fetch(`/api/user/storeOption`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        email: this.props.user.email,
-        option: option
-      })
-    }).then(response => {
-      if (response.status === 200) {
-        response.json().then( (body) => {
-          // When true option is set, save mnemonic locally. When is false, delete mnemonic
-          if (!option) {
-            // If not store mnemonic is selected, delete db register
-            this.updateMnemonic(null);
-          }
-          // Set user with new storeOption property
-          const updatedUser = this.props.user;
-          updatedUser.storeMnemonic = option;
-          this.props.handleKeySaved(updatedUser);
-        });
-      } else {
-        // Other status (400, 500, ...)
-        response.json().then( (body) => {
-          alert(body.message);
-        });
-      }
-    })
-    .catch(error => {
-      console.log('StoreOption error: ' + error);
-    });
-  }
-
   updateMnemonic = (mnemonic) => {
     try {
-      const headers = this.setHeaders();
-
       return fetch(`/api/auth/mnemonic`, {
         method: "PUT",
-        headers,
+        headers: getHeaders(true, false),
         body: JSON.stringify({
-          email: this.props.user.email,
           mnemonic: mnemonic
         })
       });
@@ -164,45 +119,45 @@ class KeyPage extends React.Component {
               Your encryption key is below. Please save your key!
             </h2>
             <h3 className="key-subtitle">
-            You will need your key for the first time you log into your <br/> X Cloud
-              with a new device. Choose one of the options below.
+              You will need your key for the first time you log into your <br /> X Cloud
+                with a new device. Choose one of the options below.
             </h3>
-  
+
             <div className="mnemonic-container">
               <div className="mnemonic-value">{this.state.mnemonic}</div>
               <div onClick={this.handleCopyToClipboard} className="button-copy">
                 <img src={copyIcon} alt="Copy" className="icon-copy" />
               </div>
             </div>
-  
+
             <div className="save-key-options">
               {SAVE_OPTIONS.map((option, index) => {
                 const selected =
-                this.state.saveOptionSelected === option.value ? "selected" : "";
+                  this.state.saveOptionSelected === option.value ? "selected" : "";
                 return (
-                    <div
-                      key={index}
-                      ref={option.ref}
-                      onClick={() => this.handleSaveOptionClick(option.value)}
-                      className={`button-save-key ${selected}`}
-                    >
-                      <span className="label">{option.label}</span>
-                      <OverlayTrigger
-                        trigger="click" key='top' placement='top'
-                        overlay={
-                          <Popover className="popover-tooltip">
-                            <p>{option.tooltip}</p>
-                          </Popover>
+                  <div
+                    key={index}
+                    ref={option.ref}
+                    onClick={() => this.handleSaveOptionClick(option.value)}
+                    className={`button-save-key ${selected}`}
+                  >
+                    <span className="label">{option.label}</span>
+                    <OverlayTrigger
+                      trigger="click" key='top' placement='top'
+                      overlay={
+                        <Popover className="popover-tooltip">
+                          <p>{option.tooltip}</p>
+                        </Popover>
                       }>
-                       <img src={this.state.infoIcons[index]} alt="Info" className="icon-info" onClick={() => this.handleInfoClick(index)}/>
-                      </OverlayTrigger>
-                    </div>
+                      <img src={this.state.infoIcons[index]} alt="Info" className="icon-info" onClick={() => this.handleInfoClick(index)} />
+                    </OverlayTrigger>
+                  </div>
                 );
               })}
             </div>
-  
-            <button className="button-continue" type="button" onClick={this.handleContinueClick} 
-            disabled={!this.state.saveOptionSelected} >
+
+            <button className="button-continue" type="button" onClick={this.handleContinueClick}
+              disabled={!this.state.saveOptionSelected} >
               Continue
             </button>
           </div>
