@@ -1,6 +1,7 @@
 import React from 'react'
 import Popup from 'reactjs-popup';
 import './PopupShare.scss'
+import history from '../history'
 
 import CloseIcon from '../assets/Dashboard-Icons/close-tab.svg'
 
@@ -48,17 +49,24 @@ class PopupShare extends React.Component {
             fetch(`/api/storage/share/file/${fileId}`, {
                 method: 'POST',
                 headers
-            }).then(res => res.json())
-                .then(res => {
-                    var link = `${process.env.REACT_APP_PROXY_URL}/${process.env.REACT_APP_API_URL}/api/storage/share/${res.token}`
-                    this.generateShortLink(link).then(res => {
-                        resolve(res);
-                    }).catch(err => {
-                        reject(err);
-                    });
+            }).then(res => {
+                if (res.status !== 200) {
+                    throw res
+                }
+                return res.json()
+            }).then(res => {
+                var link = `${process.env.REACT_APP_PROXY_URL}/${process.env.REACT_APP_API_URL}/api/storage/share/${res.token}`
+                this.generateShortLink(link).then(res => {
+                    resolve(res);
                 }).catch(err => {
                     reject(err);
                 });
+            }).catch(err => {
+                if (err.status === 401) {
+                    history.push('/login')
+                }
+                reject(err);
+            });
         });
     }
 

@@ -157,47 +157,55 @@ class XCloud extends React.Component {
     fetch(`/api/storage/folder/${rootId}`, {
       method: "get",
       headers: getHeaders(true, true)
-    })
-      .then(response => response.json())
-      .then(data => {
-        this.deselectAll();
+    }).then(res => {
+      if (res.status !== 200) {
+        throw res
+      } else {
+        return res.json()
+      }
+    }).then(data => {
+      this.deselectAll();
 
-        // Set new items list
-        let newCommanderFolders = _.map(data.children, o => _.extend({ type: "Folder" }, o))
-        let newCommanderFiles = data.files;
+      // Set new items list
+      let newCommanderFolders = _.map(data.children, o => _.extend({ type: "Folder" }, o))
+      let newCommanderFiles = data.files;
 
-        // Apply search function if is set
-        if (this.state.searchFunction) {
-          newCommanderFolders = newCommanderFolders.filter(this.state.searchFunction);
-          newCommanderFiles = newCommanderFiles.filter(this.state.searchFunction);
-        }
+      // Apply search function if is set
+      if (this.state.searchFunction) {
+        newCommanderFolders = newCommanderFolders.filter(this.state.searchFunction);
+        newCommanderFiles = newCommanderFiles.filter(this.state.searchFunction);
+      }
 
-        // Apply sort function if is set
-        if (this.state.sortFunction) {
-          newCommanderFolders.sort(this.state.sortFunction);
-          newCommanderFiles.sort(this.state.sortFunction);
-        }
-        this.setState({
-          currentCommanderItems: _.concat(newCommanderFolders, newCommanderFiles),
-          currentFolderId: data.id,
-          currentFolderBucket: data.bucket,
-          selectedItems: []
-        });
-        if (updateNamePath) {
-          // Only push path if it is not the same as actual path
-          if (this.state.namePath.length === 0 || (this.state.namePath[this.state.namePath.length - 1].id !== data.id)) {
-            const folderName = data.name.includes("root") ? "All Files" : data.name;
-            this.setState({
-              namePath: this.pushNamePath({
-                name: folderName,
-                id: data.id,
-                bucket: data.bucket
-              }),
-              isAuthorized: true
-            });
-          }
-        }
+      // Apply sort function if is set
+      if (this.state.sortFunction) {
+        newCommanderFolders.sort(this.state.sortFunction);
+        newCommanderFiles.sort(this.state.sortFunction);
+      }
+      this.setState({
+        currentCommanderItems: _.concat(newCommanderFolders, newCommanderFiles),
+        currentFolderId: data.id,
+        currentFolderBucket: data.bucket,
+        selectedItems: []
       });
+      if (updateNamePath) {
+        // Only push path if it is not the same as actual path
+        if (this.state.namePath.length === 0 || (this.state.namePath[this.state.namePath.length - 1].id !== data.id)) {
+          const folderName = data.name.includes("root") ? "All Files" : data.name;
+          this.setState({
+            namePath: this.pushNamePath({
+              name: folderName,
+              id: data.id,
+              bucket: data.bucket
+            }),
+            isAuthorized: true
+          });
+        }
+      }
+    }).catch(err => {
+      if (err.status === 401) {
+        history.push('/login')
+      }
+    });
   }
 
   updateMeta = (metadata, itemId, itemType) => {
@@ -252,24 +260,29 @@ class XCloud extends React.Component {
   downloadFile = (id) => {
     return new Promise((resolve) => {
       fetch(`/api/storage/file/${id}`, {
-        method: "get",
+        method: 'GET',
         headers: getHeaders(true, true)
-      }).then(async (data) => {
-        if (data.status !== 200) {
-          throw data;
+      }).then(res => {
+        if (res.status !== 200) {
+          throw res
+        } else {
+          return res
         }
-
-        const blob = await data.blob();
-
-        const name = Buffer.from(data.headers.get('x-file-name'), 'base64').toString('utf8')
-        fileDownload(blob, name)
-        resolve()
-      }).catch(async err => {
-        const res = await err.json();
-        if (err.status === 402) {
+      }).then(res => {
+        res.blob().then(blob => {
+          const name = Buffer.from(res.headers.get('x-file-name'), 'base64').toString('utf8')
+          fileDownload(blob, name)
+          resolve()
+        }).catch(err => { throw err })
+      }).catch(err => {
+        if (err.status === 401) {
+          history.push('/login')
+        } else if (err.status === 402) {
           this.setState({ rateLimitModal: true })
         } else {
-          alert('Error downloading file:\n' + err.status + ' - ' + err.statusText + '\n' + res.message + '\nFile id: ' + id);
+          err.json().then(res => {
+            alert('Error downloading file:\n' + err.status + ' - ' + err.statusText + '\n' + res.message + '\nFile id: ' + id);
+          })
         }
         resolve()
       });
