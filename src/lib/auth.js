@@ -1,6 +1,8 @@
 function headers(withAuth, withMnemonic) {
     const headers = {
-        'content-type': 'application/json; charset=utf-8'
+        'content-type': 'application/json; charset=utf-8',
+        'internxt-version': '1.0.0',
+        'internxt-client': 'x-cloud-web'
     }
 
     if (withAuth) {
