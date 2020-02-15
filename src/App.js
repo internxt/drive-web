@@ -11,7 +11,6 @@ import Deactivation from './components/forms/Deactivation';
 import Reset from './components/forms/Reset';
 import Storage from './components/Storage';
 import Security from './components/Security';
-import Tree from './components/Tree'
 
 class App extends Component {
   constructor(props) {
@@ -42,7 +41,6 @@ class App extends Component {
             handleKeySaved={this.handleKeySaved} />
           } />
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route path='/tree' render={(props) => <Tree {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/settings' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />

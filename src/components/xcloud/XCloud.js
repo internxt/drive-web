@@ -296,9 +296,6 @@ class XCloud extends React.Component {
   handleUploadFiles = (files) => {
     var re = /(?:\.([^.]+))?$/;
 
-    const currentCommanderItemsLength = this.state.currentCommanderItems.length;
-    let currentUploadedItems = 0;
-
     for (var i = 0; i < files.length; i++) {
       this.state.currentCommanderItems.push({
         name: files[i].name,

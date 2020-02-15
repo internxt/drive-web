@@ -184,12 +184,11 @@ class FileCommanderItem extends React.Component {
         })
     }
 
-    componentWillReceiveProps(newProps) {
+    componentDidUpdate(newProps) {
         if (newProps.isLoading !== this.state.isLoading) {
             this.setState({ isLoading: newProps.isLoading })
         }
     }
-
     render() {
         return (
             <div className={`FileCommanderItem` + (this.state.selected ? ' selected ' : ' ') + this.state.dragDropStyle}

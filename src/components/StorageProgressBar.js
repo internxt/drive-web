@@ -4,17 +4,15 @@ import { ProgressBar } from 'react-bootstrap';
 import './StorageProgressBar.scss'
 
 class StorageProgressBar extends React.Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            max: props.max ? props.max : 100,
-            now: props.now ? props.now : 0,
-        }
+    state = {
+        max: 100,
+        now: 0,
     }
 
-    componentWillReceiveProps(newProps) {
-        this.setState(newProps);
+    componentDidUpdate(newProps) {
+        if (newProps.max !== this.state.max || newProps.now !== this.state.now) {
+            this.setState(newProps);
+        }
     }
 
     render() {
