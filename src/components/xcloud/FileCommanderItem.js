@@ -42,7 +42,7 @@ class FileCommanderItem extends React.Component {
 
     handleDragOver = (event) => {
         // Allow only drop files into folders
-        if (this.props.type === 'Folder') {
+        if (this.props.isFolder) {
             event.preventDefault();
             event.stopPropagation();
             this.setState({ dragDropStyle: 'dragOver' });
@@ -92,18 +92,18 @@ class FileCommanderItem extends React.Component {
         }
 
         if (this.state.itemName && (this.props.name !== this.state.itemName)) metadata.itemName = this.state.itemName;
-        if (this.props.type === 'Folder') {
+        if (this.props.isFolder) {
             // Changes on folder item
             if (this.state.selectedColor && (this.props.color !== this.state.selectedColor)) metadata.color = this.state.selectedColor;
             if (this.state.selectedIcon && (!this.props.icon || this.props.icon.id !== this.state.selectedIcon)) metadata.icon = this.state.selectedIcon;
 
             if (metadata.itemName || metadata.color || metadata.icon) {
-                this.props.updateFolderMeta(metadata, this.props.id, this.props.type);
+                this.props.updateMeta(metadata, this.props.id, this.props.isFolder);
             }
         } else {
             // Changes on file item
             if (metadata.itemName) {
-                this.props.updateFileMeta(metadata, this.props.rawItem.fileId, this.props.type)
+                this.props.updateMeta(metadata, this.props.rawItem.fileId, this.props.isFolder)
             }
         }
 
@@ -201,7 +201,7 @@ class FileCommanderItem extends React.Component {
                 onClick={this.props.selectHandler}
                 onDoubleClick={(e) => { if (e.target.className === 'FileCommanderItem') { this.itemClickHandler(e); } }}
 
-                draggable={this.props.rawItem.type !== 'Folder'}
+                draggable={!this.props.isFolder}
                 onDragStart={this.handleDragStart}
                 onDragOver={this.handleDragOver}
                 onDragLeave={this.handleDragLeave}
@@ -210,7 +210,7 @@ class FileCommanderItem extends React.Component {
             >
                 <div className="properties">
                     {/* Item context menu changes depending on folder or file*/}
-                    {this.props.type === 'Folder' ?
+                    {this.props.isFolder ?
                         <Dropdown drop={'right'} show={this.state.showDropdown} onToggle={this.handleDropdownSelect}>
                             <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown} >...</Dropdown.Toggle>
                             <Dropdown.Menu>
@@ -252,9 +252,9 @@ class FileCommanderItem extends React.Component {
                             </Dropdown.Menu>
                         </Dropdown>}
                 </div>
-                <div className="itemIcon">{this.props.type === 'Folder' ? this.getFolderIcon() : this.getFileIcon()}</div>
+                <div className="itemIcon">{this.props.isFolder ? this.getFolderIcon() : this.getFileIcon()}</div>
                 <div className="name" onClick={this.itemClickHandler}>{this.props.name}</div>
-                {this.props.type !== 'Folder' &&
+                {!this.props.isFolder &&
                     <div className="created">{this.props.created}</div>
                 }
             </div>)

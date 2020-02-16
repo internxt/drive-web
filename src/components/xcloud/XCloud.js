@@ -167,7 +167,7 @@ class XCloud extends React.Component {
       this.deselectAll();
 
       // Set new items list
-      let newCommanderFolders = _.map(data.children, o => _.extend({ type: "Folder" }, o))
+      let newCommanderFolders = _.map(data.children, o => _.extend({ isFolder: true }, o))
       let newCommanderFiles = data.files;
 
       // Apply search function if is set
@@ -208,15 +208,15 @@ class XCloud extends React.Component {
     });
   }
 
-  updateMeta = (metadata, itemId, itemType) => {
+  updateMeta = (metadata, itemId, isFolder) => {
     // Apply changes on metadata depending on type of item
     const data = JSON.stringify({ metadata });
-    if (itemType === 'Folder') {
+    if (isFolder) {
       fetch(`/api/storage/folder/${itemId}/meta`, {
         method: "post",
         headers: getHeaders(true, true),
         body: data
-      }).then((response) => {
+      }).then(() => {
         this.getFolderContent(this.state.currentFolderId);
       }).catch((error) => {
         console.log(`Error during folder customization. Error: ${error} `)
@@ -226,7 +226,7 @@ class XCloud extends React.Component {
         method: "post",
         headers: getHeaders(true, true),
         body: data
-      }).then((response) => {
+      }).then(() => {
         this.getFolderContent(this.state.currentFolderId);
       }).catch((error) => {
         console.log(`Error during file customization. Error: ${error} `)
@@ -356,7 +356,7 @@ class XCloud extends React.Component {
 
   shareItem = () => {
     const selectedItems = this.state.selectedItems;
-    if (selectedItems && selectedItems.length === 1 && selectedItems[0].type !== 'Folder') {
+    if (selectedItems && selectedItems.length === 1 && !selectedItems[0].isFolder) {
       this.setState({ popupShareOpened: true });
     } else {
       alert("Please select one file to share");
@@ -380,7 +380,7 @@ class XCloud extends React.Component {
     if (selectedItems.length === 0) return;
     const deletionRequests = _.map(selectedItems, (v, i) => {
       const url =
-        v.type === "Folder"
+        v.isFolder
           ? `/api/storage/folder/${v.id}`
           : `/api/storage/bucket/${v.bucket}/file/${v.fileId}`;
       return fetch(url, fetchOptions);
