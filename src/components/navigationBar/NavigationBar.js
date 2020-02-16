@@ -34,7 +34,6 @@ class NavigationBar extends React.Component {
         if (!localStorage.xUser) {
             return;
         }
-        //const user = JSON.parse(localStorage.xUser);
 
         if (props.showFileButtons) {
             this.state.navbarItems =
@@ -47,7 +46,6 @@ class NavigationBar extends React.Component {
 
                     <HeaderButton icon={uploadFile} name="Upload file" clickHandler={props.uploadFile} />
                     <HeaderButton icon={newFolder} name="New folder" clickHandler={props.createFolder} />
-                    {/*<HeaderButton icon={downloadFile} name="Download" />*/}
                     <HeaderButton icon={deleteFile} name="Delete" clickHandler={props.deleteItems} />
                     <HeaderButton icon={share} name="Share" clickHandler={props.shareItem} />
                     <input id="uploadFile" type="file" onChange={props.uploadHandler} multiple="multiple" />

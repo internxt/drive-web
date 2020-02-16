@@ -22,11 +22,9 @@ class Activation extends React.Component {
   componentDidMount() {
     // Get token from path and activate account through api call
     const token = this.props.match.params.token;
-    fetch(
-      'https://api.internxt.com/activations/' + token, {
-        method: "GET",
-      }
-    ).then(response => {
+    fetch(`https://api.internxt.com/activations/${token}`, {
+      method: "GET",
+    }).then(response => {
       if (response.status === 200) {
         // Successfull activation
         this.setState({ isActivated: true });

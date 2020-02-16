@@ -6,6 +6,7 @@ import history from '../history'
 import CloseIcon from '../assets/Dashboard-Icons/close-tab.svg'
 
 import copy from 'copy-to-clipboard';
+import { getHeaders } from '../lib/auth'
 
 
 class PopupShare extends React.Component {
@@ -39,16 +40,10 @@ class PopupShare extends React.Component {
     }
 
     generateShareLink = (fileId) => {
-        const headers = {
-            Authorization: `Bearer ${localStorage.getItem("xToken")}`,
-            "content-type": "application/json",
-            "internxt-mnemonic": localStorage.getItem("xMnemonic")
-        }
-
         return new Promise((resolve, reject) => {
             fetch(`/api/storage/share/file/${fileId}`, {
                 method: 'POST',
-                headers
+                headers: getHeaders(true, true)
             }).then(res => {
                 if (res.status !== 200) {
                     throw res

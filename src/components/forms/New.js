@@ -157,17 +157,17 @@ class New extends React.Component {
         console.log(this.state.register);
         fetch(`/api/user/resend/${email}`, {
             method: 'GET'
-        })
-            .then(async res => { return { response: res, data: await res.json() }; })
-            .then(res => {
-                if (res.response.status !== 200) {
-                    throw res.data;
-                } else {
-                    alert(`Activation email sent to ${email}`);
-                }
-            }).catch(err => {
-                alert(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
-            });
+        }).then(async res => {
+            return { response: res, data: await res.json() };
+        }).then(res => {
+            if (res.response.status !== 200) {
+                throw res.data;
+            } else {
+                alert(`Activation email sent to ${email}`);
+            }
+        }).catch(err => {
+            alert(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
+        });
     }
 
     registerContainer() {
