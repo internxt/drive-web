@@ -194,9 +194,15 @@ class FileCommanderItem extends React.Component {
             <div className={`FileCommanderItem` + (this.state.selected ? ' selected ' : ' ') + this.state.dragDropStyle}
                 data-type={this.props.type}
                 data-id={this.props.id}
+
+                data-cloud-file-id={this.props.rawItem.id}
+                data-cloud-folder-id={this.props.rawItem.folder_id}
                 data-bridge-file-id={this.props.rawItem.fileId}
                 data-bridge-bucket-id={this.props.rawItem.bucket}
+
                 data-name={this.props.rawItem.name}
+                
+                data-isfolder={!!this.props.rawItem.isFolder}
 
                 onClick={this.props.selectHandler}
                 onDoubleClick={(e) => { if (e.target.className === 'FileCommanderItem') { this.itemClickHandler(e); } }}

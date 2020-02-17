@@ -374,43 +374,40 @@ class XCloud extends React.Component {
     const selectedItems = this.state.selectedItems;
     //const bucket = _.last(this.state.namePath).bucket;
     const fetchOptions = {
-      method: "DELETE",
+      method: 'DELETE',
       headers: getHeaders(true, false)
     };
     if (selectedItems.length === 0) return;
     const deletionRequests = _.map(selectedItems, (v, i) => {
       const url =
-        v.isFolder
+        v.isFolder === 'true'
           ? `/api/storage/folder/${v.id}`
-          : `/api/storage/bucket/${v.bucket}/file/${v.fileId}`;
-      return fetch(url, fetchOptions);
+          : `/api/storage/folder/${v.folderId}/file/${v.id}`;
+      return (next) => fetch(url, fetchOptions).then(() => next()).catch(next);
     });
-    Promise.all(deletionRequests)
-      .then(result => {
-        setTimeout(() => {
-          this.getFolderContent(this.state.currentFolderId, false);
-        }, 1000);
-      })
-      .catch(err => {
-        throw new Error(err);
-      });
+
+    async.parallel(deletionRequests, (err, result) => {
+      if (err) { throw err }
+      else { this.getFolderContent(this.state.currentFolderId, false); }
+    })
   }
 
   selectCommanderItem = (i, e) => {
     const selectedItems = this.state.selectedItems;
-    const id = e.target.getAttribute("data-id");
+    const id = e.target.getAttribute("data-cloud-file-id");
+    const folderId = e.target.getAttribute("data-cloud-folder-id");
     const type = e.target.getAttribute("data-type");
     const bucket = e.target.getAttribute("data-bridge-bucket-id");
     const fileId = e.target.getAttribute("data-bridge-file-id");
     const fileName = e.target.getAttribute("data-name");
+    const isFolder = e.target.getAttribute('data-isfolder')
+
     if (_.some(selectedItems, { id })) {
       const indexOf = _.findIndex(selectedItems, o => o.id === id);
-      this.setState({
-        selectedItems: update(selectedItems, { $splice: [[indexOf, 1]] })
-      });
+      this.setState({ selectedItems: update(selectedItems, { $splice: [[indexOf, 1]] }) });
     } else {
       this.setState({
-        selectedItems: update(selectedItems, { $push: [{ type, id, bucket, fileId, fileName }] })
+        selectedItems: update(selectedItems, { $push: [{ type, id, bucket, fileId, fileName, folderId, isFolder }] })
       });
     }
     e.target.classList.toggle("selected");
