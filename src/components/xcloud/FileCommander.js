@@ -4,11 +4,8 @@ import { Dropdown } from 'react-bootstrap'
 
 import './FileCommander.css'
 import FileCommanderItem from './FileCommanderItem';
-import * as moment from 'moment'
 import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown arrow.svg';
 import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
-
-import TimeAgo from 'react-timeago'
 
 const SORT_TYPES = {
     DATE_ADDED: 'Date_Added',
@@ -166,43 +163,26 @@ class FileCommander extends React.Component {
                         list.length > 0 ? (
                             list.map((item, i) => {
                                 return (
-                                    <span key={i} >
-                                        {item.isFolder ?
-                                            <FileCommanderItem
-                                                ref={this.myRef}
-                                                id={item.id}
-                                                rawItem={item}
-                                                name={item.name}
-                                                type={item.type}
-                                                bucket={item.bucket}
-                                                created={moment(item.created_at).format('dddd')}
-                                                icon={item.icon}
-                                                color={item.color ? item.color : 'blue'}
-                                                clickHandler={this.props.openFolder.bind(null, item.id)}
-                                                selectHandler={(e) => this.props.selectCommanderItem(i, e)}
-                                                moveFile={this.props.moveFile}
-                                                updateMeta={this.props.updateMeta}
-                                                hasParentFolder={!inRoot}
-                                                isFolder={true}
-                                            />
-                                            :
-                                            <FileCommanderItem
-                                                ref={this.myRef}
-                                                id={item.id}
-                                                rawItem={item}
-                                                name={item.name}
-                                                type={item.type}
-                                                size={item.size}
-                                                bucket={item.bucket}
-                                                created={<TimeAgo date={item.created_at} />}
-                                                clickHandler={this.props.downloadFile.bind(null, item.fileId)}
-                                                selectHandler={(e) => this.props.selectCommanderItem(i, e)}
-                                                isLoading={item.isLoading}
-                                                updateMeta={this.props.updateMeta}
-                                                hasParentFolder={!inRoot}
-                                                isFolder={false}
-                                            />
-                                        }
+                                    <span key={i}>
+                                        <FileCommanderItem
+                                            ref={this.myRef}
+                                            id={item.id}
+                                            rawItem={item}
+                                            name={item.name}
+                                            type={item.type}
+                                            size={item.size}
+                                            bucket={item.bucket}
+                                            created={item.created_at}
+                                            icon={item.icon}
+                                            color={item.color ? item.color : 'blue'}
+                                            clickHandler={item.isFolder ? this.props.openFolder.bind(null, item.id) : this.props.downloadFile.bind(null, item.fileId)}
+                                            selectHandler={(e) => this.props.selectCommanderItem(i, e)}
+                                            isLoading={item.isLoading}
+                                            moveFile={this.props.moveFile}
+                                            updateMeta={this.props.updateMeta}
+                                            hasParentFolder={!inRoot}
+                                            isFolder={item.isFolder}
+                                        />
                                     </span>
                                 )
                             })

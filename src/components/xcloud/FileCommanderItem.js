@@ -6,6 +6,7 @@ import './FileCommanderItem.css';
 import Icon from '../../assets/Icon'
 import ActivityIndicator from '../ActivityIndicator'
 import SanitizeFilename from 'sanitize-filename'
+import TimeAgo from 'react-timeago'
 
 class FileCommanderItem extends React.Component {
     constructor(props, state) {
@@ -201,7 +202,7 @@ class FileCommanderItem extends React.Component {
                 data-bridge-bucket-id={this.props.rawItem.bucket}
 
                 data-name={this.props.rawItem.name}
-                
+
                 data-isfolder={!!this.props.rawItem.isFolder}
 
                 onClick={this.props.selectHandler}
@@ -260,9 +261,7 @@ class FileCommanderItem extends React.Component {
                 </div>
                 <div className="itemIcon">{this.props.isFolder ? this.getFolderIcon() : this.getFileIcon()}</div>
                 <div className="name" onClick={this.itemClickHandler}>{this.props.name}</div>
-                {!this.props.isFolder &&
-                    <div className="created">{this.props.created}</div>
-                }
+                <div className="created">{this.props.created && !this.props.isFolder ? <TimeAgo date={this.props.created} /> : ''}</div>
             </div>)
     }
 }
