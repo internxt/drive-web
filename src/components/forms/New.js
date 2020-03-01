@@ -154,7 +154,6 @@ class New extends React.Component {
     }
 
     resendEmail = (email) => {
-        console.log(this.state.register);
         fetch(`/api/user/resend/${email}`, {
             method: 'GET'
         }).then(async res => {

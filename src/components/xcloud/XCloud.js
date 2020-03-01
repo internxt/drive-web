@@ -107,10 +107,9 @@ class XCloud extends React.Component {
     return fetch('/api/user/isactivated', {
       method: 'get',
       headers: getHeaders(true, false)
-    }).then(response => response.json())
-      .catch(error => {
-        console.log('Error getting user activation');
-      });
+    }).then(response => response.json()).catch(error => {
+      console.log('Error getting user activation');
+    });
   }
 
   setSortFunction = (newSortFunc) => {
@@ -158,11 +157,7 @@ class XCloud extends React.Component {
       method: "get",
       headers: getHeaders(true, true)
     }).then(res => {
-      if (res.status !== 200) {
-        throw res
-      } else {
-        return res.json()
-      }
+      if (res.status !== 200) { throw res } else { return res.json() }
     }).then(data => {
       this.deselectAll();
 
@@ -187,10 +182,11 @@ class XCloud extends React.Component {
         currentFolderBucket: data.bucket,
         selectedItems: []
       });
+
       if (updateNamePath) {
         // Only push path if it is not the same as actual path
         if (this.state.namePath.length === 0 || (this.state.namePath[this.state.namePath.length - 1].id !== data.id)) {
-          const folderName = data.name.includes("root") ? "All Files" : data.name;
+          const folderName = this.props.user.root_folder_id === data.id ? "All Files" : data.name;
           this.setState({
             namePath: this.pushNamePath({
               name: folderName,
@@ -326,9 +322,7 @@ class XCloud extends React.Component {
           next(body.message);
         } else {
           // Upload OK: Mark object as not loading
-          let index = this.state.currentCommanderItems.findIndex(obj => {
-            return obj.name === file.name
-          })
+          let index = this.state.currentCommanderItems.findIndex(obj => obj.name === file.name)
 
           this.state.currentCommanderItems[index].isLoading = false
           this.state.currentCommanderItems[index].type = re.exec(file.name)[1];
@@ -346,13 +340,9 @@ class XCloud extends React.Component {
     })
   }
 
-  uploadFile = (e) => {
-    this.handleUploadFiles(e.target.files)
-  }
+  uploadFile = (e) => { this.handleUploadFiles(e.target.files) }
 
-  uploadDroppedFile = (e) => {
-    this.handleUploadFiles(e)
-  }
+  uploadDroppedFile = (e) => { this.handleUploadFiles(e) }
 
   shareItem = () => {
     const selectedItems = this.state.selectedItems;
@@ -472,7 +462,6 @@ class XCloud extends React.Component {
             style
           />
           <FileCommander
-            //   folderTree={this.state.folderTree}
             currentCommanderItems={this.state.currentCommanderItems}
             openFolder={this.openFolder}
             downloadFile={this.downloadFile}
@@ -484,7 +473,6 @@ class XCloud extends React.Component {
             moveFile={this.moveFile}
             updateMeta={this.updateMeta}
             currentFolderId={this.state.currentFolderId}
-            parentFolderId={null}
           />
 
           {this.state.selectedItems && this.state.selectedItems.length === 1 && this.state.popupShareOpened ? <PopupShare open={this.state.popupShareOpened} item={this.state.selectedItems[0]} onClose={() => {
