@@ -369,7 +369,7 @@ class XCloud extends React.Component {
     if (selectedItems.length === 0) return;
     const deletionRequests = _.map(selectedItems, (v, i) => {
       const url =
-        v.isFolder === 'true'
+        v.isFolder
           ? `/api/storage/folder/${v.id}`
           : `/api/storage/folder/${v.folderId}/file/${v.id}`;
       return (next) => fetch(url, fetchOptions).then(() => next()).catch(next);
@@ -377,7 +377,9 @@ class XCloud extends React.Component {
 
     async.parallel(deletionRequests, (err, result) => {
       if (err) { throw err }
-      else { this.getFolderContent(this.state.currentFolderId, false); }
+      else {
+        this.getFolderContent(this.state.currentFolderId, false)
+      }
     })
   }
 
