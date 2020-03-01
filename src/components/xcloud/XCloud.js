@@ -21,6 +21,8 @@ import './XCloud.scss'
 
 import { getHeaders } from '../../lib/auth'
 
+import { SelectableGroup } from 'react-selectable';
+
 class XCloud extends React.Component {
   constructor(props) {
     super(props);
@@ -37,7 +39,6 @@ class XCloud extends React.Component {
       currentFolderBucket: null,
       currentCommanderItems: [],
       namePath: [],
-      selectedItems: [],
       sortFunction: null,
       searchFunction: null,
       popupShareOpened: false,
@@ -162,7 +163,7 @@ class XCloud extends React.Component {
       this.deselectAll();
 
       // Set new items list
-      let newCommanderFolders = _.map(data.children, o => _.extend({ isFolder: true }, o))
+      let newCommanderFolders = _.map(data.children, o => _.extend({ isFolder: true, isSelected: false }, o))
       let newCommanderFiles = data.files;
 
       // Apply search function if is set
@@ -179,8 +180,7 @@ class XCloud extends React.Component {
       this.setState({
         currentCommanderItems: _.concat(newCommanderFolders, newCommanderFiles),
         currentFolderId: data.id,
-        currentFolderBucket: data.bucket,
-        selectedItems: []
+        currentFolderBucket: data.bucket
       });
 
       if (updateNamePath) {
@@ -345,7 +345,7 @@ class XCloud extends React.Component {
   uploadDroppedFile = (e) => { this.handleUploadFiles(e) }
 
   shareItem = () => {
-    const selectedItems = this.state.selectedItems;
+    const selectedItems = this.getSelectedItems();
     if (selectedItems && selectedItems.length === 1 && selectedItems[0].isFolder !== 'true') {
       this.setState({ popupShareOpened: true });
     } else {
@@ -354,14 +354,13 @@ class XCloud extends React.Component {
   }
 
   deleteItems = () => {
-    const selectedItems = this.state.selectedItems;
-    if (selectedItems && selectedItems.length > 0) {
+    if (this.getSelectedItems().length > 0) {
       this.setState({ showDeleteItemsPopup: true });
     }
   }
 
   confirmDeleteItems = () => {
-    const selectedItems = this.state.selectedItems;
+    const selectedItems = this.getSelectedItems();
     //const bucket = _.last(this.state.namePath).bucket;
     const fetchOptions = {
       method: 'DELETE',
@@ -382,32 +381,30 @@ class XCloud extends React.Component {
     })
   }
 
-  selectCommanderItem = (i, e) => {
-    const selectedItems = this.state.selectedItems;
-    const id = e.target.getAttribute("data-cloud-file-id");
-    const folderId = e.target.getAttribute("data-cloud-folder-id");
-    const type = e.target.getAttribute("data-type");
-    const bucket = e.target.getAttribute("data-bridge-bucket-id");
-    const fileId = e.target.getAttribute("data-bridge-file-id");
-    const fileName = e.target.getAttribute("data-name");
-    const isFolder = e.target.getAttribute('data-isfolder')
+  selectItems = (items, unselectOthers = true) => {
+    if (typeof items === 'number') { items = [items] }
 
-    if (_.some(selectedItems, { id })) {
-      const indexOf = _.findIndex(selectedItems, o => o.id === id);
-      this.setState({ selectedItems: update(selectedItems, { $splice: [[indexOf, 1]] }) });
-    } else {
-      this.setState({
-        selectedItems: update(selectedItems, { $push: [{ type, id, bucket, fileId, fileName, folderId, isFolder }] })
-      });
-    }
-    e.target.classList.toggle("selected");
+    this.state.currentCommanderItems.forEach(item => {
+      const isTargetItem = items.indexOf(item.id) !== -1
+      if (isTargetItem) { item.isSelected = !item.isSelected }
+      else {
+        if (unselectOthers) { item.isSelected = false }
+        else { item.isSelected = !!item.isSelected }
+      }
+    })
+
+    this.setState({ currentCommanderItems: this.state.currentCommanderItems })
   }
 
   deselectAll() {
-    const el = document.getElementsByClassName("FileCommanderItem");
-    for (let e of el) {
-      e.classList.remove("selected");
-    }
+    this.state.currentCommanderItems.forEach(item => {
+      item.isSelected = false
+    })
+    this.setState({ currentCommanderItems: this.state.currentCommanderItems })
+  }
+
+  getSelectedItems() {
+    return this.state.currentCommanderItems.filter(o => o.isSelected === true)
   }
 
   folderTraverseUp() {
@@ -433,17 +430,11 @@ class XCloud extends React.Component {
     this.setState({ chooserModalOpen: true })
   }
 
-  closeModal = () => {
-    this.setState({ chooserModalOpen: false })
-  }
+  closeModal = () => { this.setState({ chooserModalOpen: false }) }
 
-  closeRateLimitModal = () => {
-    this.setState({ rateLimitModal: false })
-  }
+  closeRateLimitModal = () => { this.setState({ rateLimitModal: false }) }
 
-  goToStorage = () => {
-    history.push('/storage');
-  }
+  goToStorage = () => { history.push('/storage') }
 
   render() {
     // Check authentication
@@ -461,21 +452,23 @@ class XCloud extends React.Component {
             shareItem={this.shareItem}
             style
           />
-          <FileCommander
-            currentCommanderItems={this.state.currentCommanderItems}
-            openFolder={this.openFolder}
-            downloadFile={this.downloadFile}
-            selectCommanderItem={this.selectCommanderItem}
-            namePath={this.state.namePath}
-            handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
-            uploadDroppedFile={this.uploadDroppedFile}
-            setSortFunction={this.setSortFunction}
-            moveFile={this.moveFile}
-            updateMeta={this.updateMeta}
-            currentFolderId={this.state.currentFolderId}
-          />
+          <SelectableGroup onSelection={this.selectItems}>
+            <FileCommander
+              currentCommanderItems={this.state.currentCommanderItems}
+              openFolder={this.openFolder}
+              downloadFile={this.downloadFile}
+              selectItems={this.selectItems}
+              namePath={this.state.namePath}
+              handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
+              uploadDroppedFile={this.uploadDroppedFile}
+              setSortFunction={this.setSortFunction}
+              moveFile={this.moveFile}
+              updateMeta={this.updateMeta}
+              currentFolderId={this.state.currentFolderId}
+            />
+          </SelectableGroup>
 
-          {this.state.selectedItems && this.state.selectedItems.length === 1 && this.state.popupShareOpened ? <PopupShare open={this.state.popupShareOpened} item={this.state.selectedItems[0]} onClose={() => {
+          {this.getSelectedItems().length > 0 && this.state.popupShareOpened ? <PopupShare open={this.state.popupShareOpened} item={this.getSelectedItems()[0]} onClose={() => {
             this.setState({ popupShareOpened: false });
           }} /> : ''}
 
@@ -490,8 +483,8 @@ class XCloud extends React.Component {
               </div>
               <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
-                <h1> Delete item{this.state.selectedItems.length > 1 ? 's' : ''} </h1>
-                <h2>Please confirm you want to delete this item{this.state.selectedItems.length > 1 ? 's' : ''}. This action can’t be undone.</h2>
+                <h1>Delete item{this.getSelectedItems().length > 1 ? 's' : ''}</h1>
+                <h2>Please confirm you want to delete this item{this.getSelectedItems().length > 1 ? 's' : ''}. This action can’t be undone.</h2>
                 <div className="buttons-wrapper">
                   <div className="default-button button-primary" onClick={() => { this.confirmDeleteItems(); this.setState({ showDeleteItemsPopup: false }); }}>
                     Confirm
@@ -512,7 +505,7 @@ class XCloud extends React.Component {
               </div>
               <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
-                <h1>Replace item{this.state.selectedItems.length > 1 ? 's' : ''} </h1>
+                <h1>Replace item{this.getSelectedItems().length > 1 ? 's' : ''}</h1>
                 <h2>There is already a file with the same name in that destination. Would you like to overwrite the file?</h2>
                 <div className="buttons-wrapper">
                   <div className="default-button button-primary" onClick={() => {

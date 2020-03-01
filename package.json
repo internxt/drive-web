@@ -25,6 +25,7 @@
     "react-folder-tree": "^3.0.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.0",
+    "react-selectable": "^2.0.2",
     "react-stripe-checkout": "^2.6.3",
     "react-timeago": "^4.4.0",
     "reactjs-popup": "^1.5.0",

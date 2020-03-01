@@ -12,7 +12,6 @@ class FileCommanderItem extends React.Component {
     constructor(props, state) {
         super(props, state)
         this.state = {
-            selected: false,
             dragDropStyle: '',
             itemName: this.props.name,
             selectedColor: '',
@@ -83,7 +82,6 @@ class FileCommanderItem extends React.Component {
         let metadata = {};
 
         // Check if is a valid FILENAME for any OS
-
         if (this.props.name !== this.state.itemName) {
             const sanitizedFilename = SanitizeFilename(this.state.itemName)
 
@@ -145,10 +143,7 @@ class FileCommanderItem extends React.Component {
             default:
                 $("#iconToggle label").removeClass("active");
                 $("#colorToggle label").removeClass("active");
-                this.setState({
-                    selectedColor: '',
-                    selectedIcon: 0
-                })
+                this.setState({ selectedColor: '', selectedIcon: 0 })
                 break;
         }
     }
@@ -170,13 +165,11 @@ class FileCommanderItem extends React.Component {
     }
 
     getFileIcon = () => {
-        return (<div className="type">
-            {
-                this.state.isLoading ?
-                    <span><ActivityIndicator /></span> :
-                    <span className="extension">{this.props.type}</span>
-            }
-        </div>)
+        return (
+            <div className="type">
+                {this.state.isLoading ? <span><ActivityIndicator /></span> : <span className="extension">{this.props.type}</span>}
+            </div>
+        )
     }
 
     itemClickHandler = (e) => {
@@ -192,7 +185,7 @@ class FileCommanderItem extends React.Component {
     }
     render() {
         return (
-            <div className={`FileCommanderItem` + (this.state.selected ? ' selected ' : ' ') + this.state.dragDropStyle}
+            <div className={`FileCommanderItem` + (this.props.isSelected ? ' selected ' : ' ') + this.state.dragDropStyle}
                 data-type={this.props.type}
                 data-id={this.props.id}
 
@@ -205,7 +198,7 @@ class FileCommanderItem extends React.Component {
 
                 data-isfolder={!!this.props.rawItem.isFolder}
 
-                onClick={this.props.selectHandler}
+                onClick={() => this.props.selectHandler(this.props.id, false)}
                 onDoubleClick={(e) => { if (e.target.className === 'FileCommanderItem') { this.itemClickHandler(e); } }}
 
                 draggable={!this.props.isFolder}
@@ -242,7 +235,7 @@ class FileCommanderItem extends React.Component {
                                 <ToggleButtonGroup id="iconToggle" className="toggleGroup" name="iconSelection" type="radio" defaultValue={this.props.icon ? this.props.icon.id : ''} onChange={this.handleIconSelection}>
                                     {
                                         this.icons.map((value, i) => {
-                                            return (<ToggleButton className={`${value}Icon`} type="radio" value={i + 1} key={i} />);
+                                            return <ToggleButton className={`${value}Icon`} type="radio" value={i + 1} key={i} />
                                         })
                                     }
                                 </ToggleButtonGroup>

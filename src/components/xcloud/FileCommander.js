@@ -6,6 +6,9 @@ import './FileCommander.css'
 import FileCommanderItem from './FileCommanderItem';
 import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown arrow.svg';
 import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
+import { createSelectable } from 'react-selectable';
+
+const SelectableFileCommanderItem = createSelectable(FileCommanderItem)
 
 const SORT_TYPES = {
     DATE_ADDED: 'Date_Added',
@@ -26,7 +29,6 @@ class FileCommander extends React.Component {
             selectedSortType: SORT_TYPES.DATE_ADDED,
             dragDropStyle: ''
         }
-        this.myRef = React.createRef()
     }
 
     componentDidUpdate(prevProps) {
@@ -125,6 +127,7 @@ class FileCommander extends React.Component {
     }
 
     render() {
+
         const list = this.state.currentCommanderItems || 0
         const inRoot = this.state.namePath.length === 1
 
@@ -159,49 +162,40 @@ class FileCommander extends React.Component {
                     onDragLeave={this.handleDragLeave}
                     onDrop={this.handleDrop}
                 >
-                    {
-                        list.length > 0 ? (
-                            list.map((item, i) => {
-                                return (
-                                    <span key={i}>
-                                        <FileCommanderItem
-                                            ref={this.myRef}
-                                            id={item.id}
-                                            rawItem={item}
-                                            name={item.name}
-                                            type={item.type}
-                                            size={item.size}
-                                            bucket={item.bucket}
-                                            created={item.created_at}
-                                            icon={item.icon}
-                                            color={item.color ? item.color : 'blue'}
-                                            clickHandler={item.isFolder ? this.props.openFolder.bind(null, item.id) : this.props.downloadFile.bind(null, item.fileId)}
-                                            selectHandler={(e) => this.props.selectCommanderItem(i, e)}
-                                            isLoading={item.isLoading}
-                                            moveFile={this.props.moveFile}
-                                            updateMeta={this.props.updateMeta}
-                                            hasParentFolder={!inRoot}
-                                            isFolder={item.isFolder}
-                                        />
-                                    </span>
-                                )
-                            })
-                        ) : (
-                                inRoot ? (
-                                    <div className="noItems">
-                                        <h1>Your X Cloud is empty.</h1>
-                                        <h4 className="noItems-subtext">Click the upload button or drop files in this window to get started.</h4>
-                                    </div>
-                                ) : (
-
-                                        <div className="noItems">
-                                            <h1>This folder is empty.</h1>
-                                        </div>
-                                    )
-                            )
+                    {list.length > 0 ? list.map((item, i) => {
+                        return (
+                            <SelectableFileCommanderItem
+                                key={i} selectableKey={item.id}
+                                ref={this.myRef}
+                                id={item.id}
+                                rawItem={item}
+                                name={item.name}
+                                type={item.type}
+                                size={item.size}
+                                bucket={item.bucket}
+                                created={item.created_at}
+                                icon={item.icon}
+                                color={item.color ? item.color : 'blue'}
+                                clickHandler={item.isFolder ? this.props.openFolder.bind(null, item.id) : this.props.downloadFile.bind(null, item.fileId)}
+                                selectHandler={this.props.selectItems}
+                                isLoading={item.isLoading}
+                                moveFile={this.props.moveFile}
+                                updateMeta={this.props.updateMeta}
+                                hasParentFolder={!inRoot}
+                                isFolder={item.isFolder}
+                                isSelected={item.isSelected}
+                            />
+                        )
+                    }) : (inRoot ?
+                        <div className="noItems">
+                            <h1>Your X Cloud is empty.</h1>
+                            <h4 className="noItems-subtext">Click the upload button or drop files in this window to get started.</h4>
+                        </div>
+                        :
+                        <div className="noItems"><h1>This folder is empty.</h1></div>)
                     }
                 </div>
-            </div>
+            </div >
         );
     }
 }
