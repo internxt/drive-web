@@ -15,8 +15,8 @@ import PrettySize from 'prettysize';
 
 import HeaderButton from './HeaderButton';
 
-import "./NavigationBar.css";
-import history from '../../history';
+import "./NavigationBar.scss";
+import history from '../../lib/history';
 
 import { getHeaders } from '../../lib/auth'
 

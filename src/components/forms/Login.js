@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Button, Form, Col, Container } from "react-bootstrap";
 
-import history from '../../history';
-import "./Login.css";
+import history from '../../lib/history';
+import "./Login.scss";
 import logo from '../../assets/logo.svg';
-import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../utils';
+import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../lib/utils';
 
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 

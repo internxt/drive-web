@@ -1,11 +1,11 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
-import './Login.css';
-import './Reset.css';
+import './Login.scss';
+import './Reset.scss';
 import { Form, Col, Button } from 'react-bootstrap';
 import NavigationBar from './../navigationBar/NavigationBar'
-import { encryptText, passToHash, decryptText, encryptTextWithKey } from './../../utils'
-import history from '../../history'
+import { encryptText, passToHash, decryptText, encryptTextWithKey } from '../../lib/utils'
+import history from '../../lib/history'
 import { getHeaders } from '../../lib/auth'
 
 class Reset extends React.Component {

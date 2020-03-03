@@ -1,7 +1,12 @@
 import React from 'react';
-import './Circle.css';
+import './Circle.scss';
 
-const Circle = props => {
+interface CircleProps {
+    color: string
+    image: string
+}
+
+const Circle = (props: CircleProps) => {
     var style = {
         backgroundColor: props.color ? props.color : 'transparent',
         backgroundImage: props.image ? props.image : 'none'

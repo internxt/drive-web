@@ -1,7 +1,13 @@
 import * as React from 'react'
-import './HeaderButton.css'
+import './HeaderButton.scss'
 
-const HeaderButton = props => {
+interface HeaderButtonProps {
+    icon: string
+    name: string
+    clickHandler?: any
+}
+
+const HeaderButton = (props: HeaderButtonProps) => {
     return (
         <div className="HeaderButton" onClick={props.clickHandler}>
             <img src={props.icon} alt={props.name} />

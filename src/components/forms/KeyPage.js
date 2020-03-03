@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Popover, OverlayTrigger } from 'react-bootstrap';
 
-import history from "../../history";
+import history from "../../lib/history";
 import copyIcon from "../../assets/Dashboard-Icons/Copy.svg";
 import infoIcon from "../../assets/Dashboard-Icons/Info.svg";
 import infoOnIcon from "../../assets/Dashboard-Icons/InfoOn.svg";
-import { copyToClipboard } from "../../utils";
+import { copyToClipboard } from "../../lib/utils";
 import "./KeyPage.css";
 
 import { getHeaders } from '../../lib/auth'

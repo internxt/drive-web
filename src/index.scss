@@ -6,6 +6,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body, html, #root, #root>div {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }

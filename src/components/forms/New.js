@@ -3,9 +3,9 @@ import * as React from "react";
 import { Container, Form, Col } from "react-bootstrap";
 
 import logo from '../../assets/logo.svg';
-import history from '../../history';
+import history from '../../lib/history';
 
-import { encryptText, encryptTextWithKey, passToHash } from '../../utils';
+import { encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 
 import { getHeaders } from '../../lib/auth'

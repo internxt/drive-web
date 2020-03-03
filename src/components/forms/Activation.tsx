@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link, RouteProps } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
 
-import history from '../../history';
+import history from '../../lib/history';
 
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 

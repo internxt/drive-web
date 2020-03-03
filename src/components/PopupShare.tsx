@@ -1,7 +1,7 @@
 import React from 'react'
 import Popup from 'reactjs-popup';
 import './PopupShare.scss'
-import history from '../history'
+import history from '../lib/history'
 
 import CloseIcon from '../assets/Dashboard-Icons/close-tab.svg'
 

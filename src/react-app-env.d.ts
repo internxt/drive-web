@@ -14,3 +14,7 @@ declare namespace NodeJS {
         REACT_APP_SHORTER_API_KEY: string
     }
 }
+
+interface Window {
+    Stripe: any
+}

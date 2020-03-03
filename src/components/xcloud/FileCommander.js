@@ -2,7 +2,7 @@
 import * as React from 'react'
 import { Dropdown } from 'react-bootstrap'
 
-import './FileCommander.css'
+import './FileCommander.scss'
 import FileCommanderItem from './FileCommanderItem';
 import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown arrow.svg';
 import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';

@@ -1,8 +1,8 @@
 import React from 'react';
 import NavigationBar from './navigationBar/NavigationBar';
 import PayMethods from './PayMethods';
-import "./Storage.css";
-import history from '../history';
+import "./Storage.scss";
+import history from '../lib/history';
 import InxtContainer from './InxtContainer'
 import './Plans.css'
 import StorageProgressBar from './StorageProgressBar';
@@ -19,17 +19,12 @@ import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
 import { getHeaders } from '../lib/auth'
 
 class Storage extends React.Component {
-    constructor(props) {
-        super(props);
+    state = {
+        page: null,
+        max: null,
+        now: null,
 
-        this.state = {
-            page: null,
-            max: null,
-            now: null,
-
-            modalDeleteAccountShow: false
-        }
-
+        modalDeleteAccountShow: false
     }
 
     componentDidMount() {

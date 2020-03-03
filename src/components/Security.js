@@ -3,11 +3,11 @@ import { Container, Button, Col } from 'react-bootstrap';
 import NavigationBar from './navigationBar/NavigationBar';
 import './Security.css';
 import { Form } from 'react-bootstrap';
-import { encryptText, decryptText, passToHash } from '../utils';
+import { encryptText, decryptText, passToHash } from '../lib/utils';
 import ggl from '../assets/google-authenticator.svg';
 import appstore from '../assets/app-store.svg';
 import gglplay from '../assets/google-play.svg';
-import history from '../history';
+import history from '../lib/history';
 
 import { getHeaders } from '../lib/auth'
 

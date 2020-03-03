@@ -10,8 +10,8 @@ import async from 'async'
 
 import FileCommander from './FileCommander';
 import NavigationBar from "../navigationBar/NavigationBar";
-import history from '../../history';
-import { removeAccents } from '../../utils';
+import history from '../../lib/history';
+import { removeAccents } from '../../lib/utils';
 import logo from '../../assets/logo.svg';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
