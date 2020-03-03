@@ -66,7 +66,7 @@ class PopupShare extends React.Component<PopupShareProps> {
                             <div className="Extension">{this.props.item.type.toUpperCase()}</div>
                         </div>
                     </div>
-                    <div className="ShareName"><p>{this.props.item.fileName}.{this.props.item.type}</p></div>
+                    <div className="ShareName"><p>{this.props.item.name}.{this.props.item.type}</p></div>
                     <div className="ShareClose"><img src={CloseIcon} onClick={e => { this.props.onClose() }} alt="Close" /></div>
                 </div>
 
