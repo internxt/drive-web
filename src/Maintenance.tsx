@@ -1,5 +1,5 @@
 import React from "react";
-import "./Maintenance.css";
+import "./Maintenance.scss";
 
 export default () =>
   <div className="Maintenance">

@@ -12,7 +12,6 @@ import FileCommander from './FileCommander';
 import NavigationBar from "../navigationBar/NavigationBar";
 import history from '../../history';
 import { removeAccents } from '../../utils';
-import "../../App.css";
 import logo from '../../assets/logo.svg';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
@@ -20,8 +19,6 @@ import PopupShare from '../PopupShare'
 import './XCloud.scss'
 
 import { getHeaders } from '../../lib/auth'
-
-import { SelectableGroup } from 'react-selectable';
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -305,10 +302,10 @@ class XCloud extends React.Component {
     async.eachSeries(files, (file, next) => {
       const data = new FormData();
       let headers = getHeaders(true, true)
-      delete headers['content-type'];
+      headers.delete('content-type')
       data.append('xfile', file);
       fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
-        method: "post",
+        method: 'POST',
         headers,
         body: data
       }).then(async (response) => {
@@ -346,7 +343,7 @@ class XCloud extends React.Component {
 
   shareItem = () => {
     const selectedItems = this.getSelectedItems();
-    if (selectedItems && selectedItems.length === 1 && selectedItems[0].isFolder !== 'true') {
+    if (selectedItems && selectedItems.length === 1 && !selectedItems[0].isFolder) {
       this.setState({ popupShareOpened: true });
     } else {
       alert("Please select one file to share");
@@ -454,21 +451,19 @@ class XCloud extends React.Component {
             shareItem={this.shareItem}
             style
           />
-          <SelectableGroup onSelection={this.selectItems}>
-            <FileCommander
-              currentCommanderItems={this.state.currentCommanderItems}
-              openFolder={this.openFolder}
-              downloadFile={this.downloadFile}
-              selectItems={this.selectItems}
-              namePath={this.state.namePath}
-              handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
-              uploadDroppedFile={this.uploadDroppedFile}
-              setSortFunction={this.setSortFunction}
-              moveFile={this.moveFile}
-              updateMeta={this.updateMeta}
-              currentFolderId={this.state.currentFolderId}
-            />
-          </SelectableGroup>
+          <FileCommander
+            currentCommanderItems={this.state.currentCommanderItems}
+            openFolder={this.openFolder}
+            downloadFile={this.downloadFile}
+            selectItems={this.selectItems}
+            namePath={this.state.namePath}
+            handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
+            uploadDroppedFile={this.uploadDroppedFile}
+            setSortFunction={this.setSortFunction}
+            moveFile={this.moveFile}
+            updateMeta={this.updateMeta}
+            currentFolderId={this.state.currentFolderId}
+          />
 
           {this.getSelectedItems().length > 0 && this.state.popupShareOpened ? <PopupShare open={this.state.popupShareOpened} item={this.getSelectedItems()[0]} onClose={() => {
             this.setState({ popupShareOpened: false });

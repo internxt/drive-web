@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
-import './App.css';
+import './App.scss';
 import Login from './components/forms/Login';
 import New from './components/forms/New'
 import XCloud from './components/xcloud/XCloud';
@@ -12,19 +12,15 @@ import Reset from './components/forms/Reset';
 import Storage from './components/Storage';
 import Security from './components/Security';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      token: "",
-      user: {},
-      isAuthenticated: false
-    }
+class App extends React.Component {
+  state = {
+    token: "",
+    user: {},
+    isAuthenticated: false,
+    isActivated: false
   }
-
   // Method for set user in props.user and localStorage
-  handleKeySaved = (user) => {
+  handleKeySaved = (user: JSON) => {
     localStorage.setItem('xUser', JSON.stringify(user));
     this.setState({
       isAuthenticated: true,
@@ -53,14 +49,10 @@ class App extends Component {
             isActivated={this.state.isActivated}
             handleKeySaved={this.handleKeySaved} />
           } />
-          <Route exact path='/new'
-            render={(props) => <New {...props} />}
-            isAuthenticated={this.state.isAuthenticated}
-            handleKeySaved={this.handleKeySaved} />
-          <Route exact path='/activate/:email'
-            render={(props) => <New {...props} />}
-            isAuthenticated={this.state.isAuthenticated}
-            handleKeySaved={this.handleKeySaved} />
+          <Route exact path='/new' render={(props: any) => <New {...props} />}
+            isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
+          <Route exact path='/activate/:email' render={(props: any) => <New {...props} />}
+            isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
           <Route exact path='/'>
             <Redirect to="/login" />
           </Route>

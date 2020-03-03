@@ -17,7 +17,8 @@ class FileCommanderItem extends React.Component {
             selectedColor: '',
             selectedIcon: 0,
             showDropdown: false,
-            isLoading: this.props.isLoading
+            isLoading: this.props.isLoading,
+            isDownloading: false
         }
 
         // Folder colors definition
@@ -167,22 +168,26 @@ class FileCommanderItem extends React.Component {
     getFileIcon = () => {
         return (
             <div className="type">
-                {this.state.isLoading ? <span><ActivityIndicator /></span> : <span className="extension">{this.props.type}</span>}
+                {this.state.isLoading || this.state.isDownloading ? <span><ActivityIndicator /></span> : <span className="extension">{this.props.type}</span>}
             </div>
         )
     }
 
     itemClickHandler = (e) => {
-        this.setState({ isLoading: true }, () => {
-            this.props.clickHandler(e).then(() => this.setState({ isLoading: false }))
+        this.setState({ isDownloading: true}, () => {
+            this.props.clickHandler(e).then(() => {
+                this.setState({ isDownloading: false })
+            }).catch(() => {
+                this.setState({ isDownloading: false })
+            })
         })
     }
-
     componentDidUpdate(newProps) {
         if (newProps.isLoading !== this.state.isLoading) {
             this.setState({ isLoading: newProps.isLoading })
         }
     }
+
     render() {
         return (
             <div className={`FileCommanderItem` + (this.props.isSelected ? ' selected ' : ' ') + this.state.dragDropStyle}

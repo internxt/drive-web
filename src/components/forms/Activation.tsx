@@ -1,22 +1,30 @@
 import * as React from "react";
-import { Link } from 'react-router-dom';
+import { Link, RouteProps } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
 
 import history from '../../history';
-import "../../App.css";
 
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 
-class Activation extends React.Component {
-  constructor(props) {
-    super(props);
+interface ActivationProps {
+  match: any
+}
 
-    this.state = {
-      isActivated: null,
-      isError: false
-    };
+interface ActivationState {
+  isActivated: Boolean | null
+  isError: Boolean
+}
 
-    this.redirect = this.redirect.bind(this);
+class Activation extends React.Component<ActivationProps & RouteProps, ActivationState> {
+  state = {
+    isActivated: null,
+    isError: false
+  }
+
+  constructor(props: ActivationProps) {
+    super(props)
+
+    this.redirect = this.redirect.bind(this)
   }
 
   componentDidMount() {
