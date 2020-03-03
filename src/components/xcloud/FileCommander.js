@@ -6,9 +6,6 @@ import './FileCommander.css'
 import FileCommanderItem from './FileCommanderItem';
 import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown arrow.svg';
 import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
-import { createSelectable } from 'react-selectable';
-
-const SelectableFileCommanderItem = createSelectable(FileCommanderItem)
 
 const SORT_TYPES = {
     DATE_ADDED: 'Date_Added',
@@ -161,10 +158,10 @@ class FileCommander extends React.Component {
                     onDragOver={this.handleDragOver}
                     onDragLeave={this.handleDragLeave}
                     onDrop={this.handleDrop}
-                >
+                    >
                     {list.length > 0 ? list.map((item, i) => {
                         return (
-                            <SelectableFileCommanderItem
+                            <FileCommanderItem
                                 key={i} selectableKey={item.id}
                                 ref={this.myRef}
                                 id={item.id}

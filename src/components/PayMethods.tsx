@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { SyntheticEvent } from 'react';
 import { Container, Card, Row, Col } from 'react-bootstrap';
-import './PayMethods.css';
+import './PayMethods.scss';
 
 import PayPal from "./paymentBridges/PayPal";
 import INXT from "./paymentBridges/INXT";
+
+interface PayMethodsProps {
+    choosedPlan: string
+}
+
+interface PayMethodsState {
+    choosedPayMethod: JSX.Element | null,
+    choosedPlan: string
+}
 
 const AvailablePayMethods = [
     {
@@ -20,8 +29,8 @@ const AvailablePayMethods = [
     }
 ];
 
-class PayMethods extends React.Component {
-    constructor(props) {
+class PayMethods extends React.Component<PayMethodsProps, PayMethodsState> {
+    constructor(props: PayMethodsProps) {
         super(props);
 
         this.state = {
@@ -29,10 +38,6 @@ class PayMethods extends React.Component {
             choosedPlan: props.choosedPlan
         };
 
-    }
-
-    componentDidMount() {
-        //AvailablePayMethods.find(f => f.name === 'Credit Card').component = <CreditCard plan={this.state.choosedPlan} />
     }
 
     render() {
@@ -47,7 +52,7 @@ class PayMethods extends React.Component {
                     <Row className="mt-5 payMethods">
                         {
                             AvailablePayMethods.map(method =>
-                                <Col xs={12} md={4} sm={6} onClick={(e) => { this.setState({ choosedPayMethod: method.component }) }}>
+                                <Col xs={12} md={4} sm={6} onClick={(e: SyntheticEvent) => { this.setState({ choosedPayMethod: method.component }) }}>
                                     <Card>
                                         <Card.Header className={(this.state.choosedPayMethod === method.component ? 'card-header-selected' : '')}>
                                             <h5><strong>{method.name}</strong></h5>

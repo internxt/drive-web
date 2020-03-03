@@ -1,12 +1,12 @@
 import copy from "copy-to-clipboard";
 const CryptoJS = require('crypto-js')
 
-function copyToClipboard(text) {
+function copyToClipboard(text: string) {
   copy(text);
 }
 
 // Method to remove accents and other special characters from string
-function removeAccents(string) {
+function removeAccents(string: string) {
   const accents = 'ÀÁÂÃÄÅĄĀāàáâãäåąßÒÓÔÕÕÖØŐòóôőõöøĎďDŽdžÈÉÊËĘèéêëęðÇçČčĆćÐÌÍÎÏĪìíîïīÙÚÛÜŰùűúûüĽĹŁľĺłÑŇŃňñńŔŕŠŚŞšśşŤťŸÝÿýŽŻŹžżźđĢĞģğ';
   const accentsOut = 'AAAAAAAAaaaaaaaasOOOOOOOOoooooooDdDZdzEEEEEeeeeeeCcCcCcDIIIIIiiiiiUUUUUuuuuuLLLlllNNNnnnRrSSSsssTtYYyyZZZzzzdGGgg';
   return string
@@ -14,18 +14,22 @@ function removeAccents(string) {
     .map((letter, index) => {
       const accentIndex = accents.indexOf(letter);
       return accentIndex !== -1 ? accentsOut[accentIndex] : letter;
-    })
-    .join("");
+    }).join("");
+}
+
+interface passObjectInterface {
+  salt: string
+  password: string
 }
 
 // Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
-function passToHash(passObject) {
+function passToHash(passObject: passObjectInterface) {
   try {
-    const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128/8);
-    const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256/32, iterations: 10000 });
+    const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
+    const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
     const hashedObjetc = {
-      salt : salt.toString(),
-      hash : hash.toString()
+      salt: salt.toString(),
+      hash: hash.toString()
     }
     return hashedObjetc;
   } catch (error) {
@@ -34,17 +38,17 @@ function passToHash(passObject) {
 }
 
 // AES Plain text encryption method
-function encryptText(textToEncrypt) {
+function encryptText(textToEncrypt: string) {
   return encryptTextWithKey(textToEncrypt, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
 // AES Plain text decryption method
-function decryptText(encryptedText) {
+function decryptText(encryptedText: string) {
   return decryptTextWithKey(encryptedText, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
 // AES Plain text encryption method with enc. key
-function encryptTextWithKey(textToEncrypt, keyToEncrypt) {
+function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string) {
   try {
     const bytes = CryptoJS.AES.encrypt(textToEncrypt, keyToEncrypt).toString();
     const text64 = CryptoJS.enc.Base64.parse(bytes);
@@ -55,7 +59,7 @@ function encryptTextWithKey(textToEncrypt, keyToEncrypt) {
 }
 
 // AES Plain text decryption method with enc. key
-function decryptTextWithKey(encryptedText, keyToDecrypt) {
+function decryptTextWithKey(encryptedText: string, keyToDecrypt: string) {
   try {
     const reb = CryptoJS.enc.Hex.parse(encryptedText);
     const bytes = CryptoJS.AES.decrypt(reb.toString(CryptoJS.enc.Base64), keyToDecrypt);

@@ -8,17 +8,18 @@ import CloseIcon from '../assets/Dashboard-Icons/close-tab.svg'
 import copy from 'copy-to-clipboard';
 import { getHeaders } from '../lib/auth'
 
+interface PopupShareProps {
+    onClose: any
+    item: any
+    open: any
+}
 
-class PopupShare extends React.Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            link: null
-        }
+class PopupShare extends React.Component<PopupShareProps> {
+    state = {
+        link: null
     }
 
-    generateShortLink = (url) => {
+    generateShortLink = (url: string) => {
         return new Promise((resolve, reject) => {
             fetch(`${process.env.REACT_APP_SHORTER_API_URL}`, {
                 method: 'POST',
@@ -26,40 +27,24 @@ class PopupShare extends React.Component {
                     'x-api-key': `${process.env.REACT_APP_SHORTER_API_KEY}`,
                     'Content-type': "application/json"
                 },
-                body: JSON.stringify({
-                    "target": `${url}`,
-                    "reuse": "false"
-                })
-            }).then(res => res.json())
-                .then(res => {
-                    resolve(res.shortUrl);
-                }).catch(err => {
-                    reject(err)
-                });
+                body: JSON.stringify({ 'target': `${url}`, 'reuse': 'false' })
+            }).then(res => res.json()).then(res => { resolve(res.shortUrl) }).catch(reject);
         });
     }
 
-    generateShareLink = (fileId) => {
+    generateShareLink = (fileId: string) => {
         return new Promise((resolve, reject) => {
             fetch(`/api/storage/share/file/${fileId}`, {
                 method: 'POST',
                 headers: getHeaders(true, true)
-            }).then(res => {
-                if (res.status !== 200) {
-                    throw res
-                }
+            }).then((res: Response) => {
+                if (res.status !== 200) { throw res }
                 return res.json()
-            }).then(res => {
+            }).then((res: any) => {
                 var link = `${process.env.REACT_APP_PROXY_URL}/${process.env.REACT_APP_API_URL}/api/storage/share/${res.token}`
-                this.generateShortLink(link).then(res => {
-                    resolve(res);
-                }).catch(err => {
-                    reject(err);
-                });
-            }).catch(err => {
-                if (err.status === 401) {
-                    history.push('/login')
-                }
+                this.generateShortLink(link).then(resolve).catch(reject)
+            }).catch((err: Response) => {
+                if (err.status === 401) { history.push('/login') }
                 reject(err);
             });
         });

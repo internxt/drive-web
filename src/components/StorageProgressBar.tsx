@@ -3,13 +3,18 @@ import { ProgressBar } from 'react-bootstrap';
 
 import './StorageProgressBar.scss'
 
-class StorageProgressBar extends React.Component {
+interface StorageProgressBarState {
+    max: Number
+    now: Number
+}
+
+class StorageProgressBar extends React.Component<StorageProgressBarState, StorageProgressBarState> {
     state = {
         max: 100,
         now: 0,
     }
 
-    componentDidUpdate(newProps) {
+    componentDidUpdate(newProps: StorageProgressBarState) {
         if (newProps.max !== this.state.max || newProps.now !== this.state.now) {
             this.setState(newProps);
         }

@@ -119,71 +119,71 @@ class Login extends React.Component {
       method: "post",
       headers: getHeaders(true, false),
       body: JSON.stringify({ email: this.state.email })
-    })
-      .then(response => {
-        if (response.status === 200) {
-          // Manage credentials verification
-          response.json().then((body) => {
-            // Check password
-            const salt = decryptText(body.sKey);
-            const hashObj = passToHash({ password: this.state.password, salt });
-            const encPass = encryptText(hashObj.hash);
+    }).then(response => {
+      if (response.status === 200) {
+        // Manage credentials verification
+        response.json().then((body) => {
+          // Check password
+          const salt = decryptText(body.sKey);
+          const hashObj = passToHash({ password: this.state.password, salt });
+          const encPass = encryptText(hashObj.hash);
 
-            fetch("/api/access", {
-              method: "post",
-              headers: getHeaders(true, false),
-              body: JSON.stringify({
-                email: this.state.email,
-                password: encPass,
-                tfa: this.state.twoFactorCode
-              })
-            }).then(async res => {
-              return { res, data: await res.json() };
-            }).then(res => {
-              if (res.res.status !== 200) {
-                throw new Error(res.data.error ? res.data.error : res.data);
-              }
-              var data = res.data;
-              // Manage succesfull login
-              const user = {
-                userId: data.user.userId,
-                email: this.state.email,
-                mnemonic: data.user.mnemonic ? decryptTextWithKey(data.user.mnemonic, this.state.password) : null,
-                root_folder_id: data.user.root_folder_id,
-                storeMnemonic: data.user.storeMnemonic,
-                name: data.user.name,
-                lastname: data.user.lastname
-              };
-              this.props.handleKeySaved(user)
-              localStorage.setItem('xToken', data.token);
-              localStorage.setItem('xMnemonic', user.mnemonic);
-              localStorage.setItem('xUser', JSON.stringify(user));
-              this.setState({
-                isAuthenticated: true,
-                token: data.token,
-                user: user
-              });
+          fetch("/api/access", {
+            method: "post",
+            headers: getHeaders(true, false),
+            body: JSON.stringify({
+              email: this.state.email,
+              password: encPass,
+              tfa: this.state.twoFactorCode
             })
-              .catch(err => {
-                alert(err.error ? err.error : err);
-              });
-          });
-        } else if (response.status === 400) {
-          // Manage other cases:
-          // username / password do not match, user activation required...
-          response.json().then((body) => {
-            alert(body.error);
-          });
-        } else {
-          // Manage user does not exist
-          alert("This account doesn't exists");
-        }
-      })
+          }).then(async res => {
+            return { res, data: await res.json() };
+          }).then(res => {
+            if (res.res.status !== 200) {
+              throw new Error(res.data.error ? res.data.error : res.data);
+            }
+            var data = res.data;
+            // Manage succesfull login
+            const user = {
+              userId: data.user.userId,
+              email: this.state.email,
+              mnemonic: data.user.mnemonic ? decryptTextWithKey(data.user.mnemonic, this.state.password) : null,
+              root_folder_id: data.user.root_folder_id,
+              storeMnemonic: data.user.storeMnemonic,
+              name: data.user.name,
+              lastname: data.user.lastname
+            };
+            this.props.handleKeySaved(user)
+            localStorage.setItem('xToken', data.token);
+            localStorage.setItem('xMnemonic', user.mnemonic);
+            localStorage.setItem('xUser', JSON.stringify(user));
+            this.setState({
+              isAuthenticated: true,
+              token: data.token,
+              user: user
+            });
+          })
+            .catch(err => {
+              alert(err.error ? err.error : err);
+            });
+        });
+      } else if (response.status === 400) {
+        // Manage other cases:
+        // username / password do not match, user activation required...
+        response.json().then((body) => {
+          alert(body.error);
+        });
+      } else {
+        // Manage user does not exist
+        alert("This account doesn't exists");
+      }
+    })
       .catch(err => {
         console.error("Login error. " + err);
         alert('Login error');
       });
   }
+
   render() {
     if (!this.state.showTwoFactor) {
       const isValid = this.validateLoginForm();
