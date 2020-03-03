@@ -302,14 +302,13 @@ class XCloud extends React.Component {
     async.eachSeries(files, (file, next) => {
       const data = new FormData();
       let headers = getHeaders(true, true)
-      delete headers['content-type'];
+      headers.delete('content-type')
       data.append('xfile', file);
       fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
         method: 'POST',
         headers,
         body: data
       }).then(async (response) => {
-        console.log(response)
         if (response.status === 402) {
           this.setState({ rateLimitModal: true })
           return next(response.status);
