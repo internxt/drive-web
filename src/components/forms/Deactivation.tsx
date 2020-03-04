@@ -2,17 +2,18 @@ import * as React from "react";
 import { Alert, Container } from 'react-bootstrap';
 import axios from 'axios';
 
-class Deactivation extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            token: this.props.match.params.token,
-            result: this.confirmDeactivation(),
-            errorReason: ''
-        }
+interface DeactivationProps {
+    match: any
+}
+
+class Deactivation extends React.Component<DeactivationProps> {
+    state = {
+        token: this.props.match.params.token,
+        result: this.confirmDeactivation(),
+        errorReason: ''
     }
 
-    IsValidToken = (token) => {
+    IsValidToken = (token: string) => {
         return /^[a-z0-9]{512}$/.test(token);
     }
 
@@ -23,7 +24,7 @@ class Deactivation extends React.Component {
     }
 
 
-    ConfirmDeactivateUser = (token) => {
+    ConfirmDeactivateUser = (token: string) => {
         axios.get('/api/confirmDeactivation/' + token).then(res => {
             console.log('All is ok')
             this.ClearAndRedirect()

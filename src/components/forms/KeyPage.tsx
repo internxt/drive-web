@@ -10,7 +10,14 @@ import "./KeyPage.css";
 
 import { getHeaders } from '../../lib/auth'
 
-const SAVE_OPTIONS = [
+interface SaveOptions {
+  label: string
+  value: string
+  tooltip: string
+  ref: string | ((instance: HTMLDivElement | null) => void) | React.RefObject<HTMLDivElement> | null | undefined
+}
+
+const SAVE_OPTIONS: [SaveOptions, SaveOptions] = [
   {
     label: "I have copied and saved my key",
     value: "USER", // do nothing. user will save pass manually
@@ -25,8 +32,21 @@ const SAVE_OPTIONS = [
   }
 ];
 
-class KeyPage extends React.Component {
-  constructor(props) {
+interface KeyPageProps {
+  isAuthenticated: Boolean
+  handleKeySaved: any
+  user: any
+}
+
+interface KeyPageState {
+  mnemonic: string
+  saveOptionSelected: any
+  chooserModalOpen: Boolean
+  infoIcons: [string, string]
+}
+
+class KeyPage extends React.Component<KeyPageProps, KeyPageState> {
+  constructor(props: KeyPageProps) {
     super(props);
     this.state = {
       mnemonic: '',
@@ -34,7 +54,7 @@ class KeyPage extends React.Component {
       chooserModalOpen: false,
       infoIcons: [infoIcon, infoIcon]
     };
-    this.handleRepeatClick = this.handleCopyToClipboard.bind(this);
+    // this.handleRepeatClick = this.handleCopyToClipboard.bind(this);
   }
 
   componentDidMount() {
@@ -56,7 +76,9 @@ class KeyPage extends React.Component {
         if (this.props.user.storeMnemonic === false) {
           let inputMnemonic = prompt("Please enter yout mnemonic key");
           // When user enter mnemonic, save it in local storage for X Cloud uses
-          localStorage.setItem('xMnemonic', inputMnemonic);
+          if (inputMnemonic) {
+            localStorage.setItem('xMnemonic', inputMnemonic);
+          }
           history.push('/app')
         } else {
           const mnemonic = this.props.user.mnemonic;
@@ -72,11 +94,11 @@ class KeyPage extends React.Component {
     copyToClipboard(this.state.mnemonic);
   }
 
-  handleSaveOptionClick = (saveOptionSelected) => {
+  handleSaveOptionClick = (saveOptionSelected: string) => {
     this.setState({ saveOptionSelected });
   }
 
-  handleInfoClick = (index) => {
+  handleInfoClick = (index: number) => {
     let newIcon = infoIcon;
     if (this.state.infoIcons[index] === infoIcon) newIcon = infoOnIcon;
     let newIconState = this.state.infoIcons;
@@ -91,11 +113,11 @@ class KeyPage extends React.Component {
     // Redirect user without saving mnemonic
     if (this.state.saveOptionSelected !== "USER") { localStorageOption = true; }
 
-    this.updateStorageOption(localStorageOption);
+    // this.updateStorageOption(localStorageOption);
     history.push('/app')
   }
 
-  updateMnemonic = (mnemonic) => {
+  updateMnemonic = (mnemonic: string) => {
     try {
       return fetch(`/api/auth/mnemonic`, {
         method: "PUT",
@@ -131,7 +153,7 @@ class KeyPage extends React.Component {
             </div>
 
             <div className="save-key-options">
-              {SAVE_OPTIONS.map((option, index) => {
+              {SAVE_OPTIONS.map((option: SaveOptions, index: number) => {
                 const selected =
                   this.state.saveOptionSelected === option.value ? "selected" : "";
                 return (
@@ -145,7 +167,7 @@ class KeyPage extends React.Component {
                     <OverlayTrigger
                       trigger="click" key='top' placement='top'
                       overlay={
-                        <Popover className="popover-tooltip">
+                        <Popover className="popover-tooltip" id="1">
                           <p>{option.tooltip}</p>
                         </Popover>
                       }>

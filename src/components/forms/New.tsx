@@ -1,20 +1,31 @@
 import * as React from "react";
-
 import { Container, Form, Col } from "react-bootstrap";
+import bip39 from 'bip39';
 
 import logo from '../../assets/logo.svg';
 import history from '../../history';
 
 import { encryptText, encryptTextWithKey, passToHash } from '../../utils';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
-
 import { getHeaders } from '../../lib/auth'
 
-const bip39 = require('bip39');
+interface NewProps {
+    match: any
+}
 
-class New extends React.Component {
+interface NewState {
+    isAuthenticated?: Boolean
+    register: any
+    currentContainer: JSX.Element
+    validated?: Boolean
+    showModal: Boolean
+    token?: string
+    user?: any
+}
 
-    constructor(props) {
+class New extends React.Component<NewProps, NewState> {
+
+    constructor(props: NewProps) {
         super(props);
 
         let isEmailParam = this.validateEmail(this.props.match.params.email);
@@ -27,7 +38,8 @@ class New extends React.Component {
                 email: isEmailParam ? this.props.match.params.email : '',
                 password: '',
                 confirmPassword: ''
-            }
+            },
+            showModal: false
         };
 
     }
@@ -42,7 +54,7 @@ class New extends React.Component {
             }
         }
 
-        const xUser = JSON.parse(localStorage.getItem('xUser'));
+        const xUser = JSON.parse(localStorage.getItem('xUser') || '{}');
         const xToken = localStorage.getItem('xToken');
         const mnemonic = localStorage.getItem('xMnemonic');
         const haveInfo = (xUser && xToken && mnemonic);
@@ -52,13 +64,13 @@ class New extends React.Component {
         }
     }
 
-    handleChangeRegister = event => {
+    handleChangeRegister = (event: any) => {
         var registerState = this.state.register;
         registerState[event.target.id] = event.target.value;
         this.setState({ register: registerState });
     }
 
-    validateEmail = (email) => {
+    validateEmail = (email: string) => {
         var re = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
         return re.test(String(email).toLowerCase());
     }
@@ -71,7 +83,7 @@ class New extends React.Component {
         }
 
         // Name lenght check
-        if (this.state.register.name.length < 1 && this.state.reguster.lastname.length < 1) isValid = false;
+        if (this.state.register.name.length < 1 && this.state.register.lastname.length < 1) isValid = false;
         // Email length check and validation
         if (this.state.register.email.length < 5 || !this.validateEmail(this.state.register.email)) isValid = false;
 
@@ -153,7 +165,7 @@ class New extends React.Component {
 
     }
 
-    resendEmail = (email) => {
+    resendEmail = (email: string) => {
         fetch(`/api/user/resend/${email}`, {
             method: 'GET'
         }).then(async res => {
@@ -176,7 +188,7 @@ class New extends React.Component {
                 <button className="off" onClick={(e) => { history.push('/login') }}>Sign in</button>
                 <button className="on">Create account</button>
             </div>
-            <Form className="form-register" onSubmit={e => {
+            <Form className="form-register" onSubmit={(e: any) => {
                 e.preventDefault();
 
                 if (this.validateRegisterFormPart1()) {
@@ -190,20 +202,20 @@ class New extends React.Component {
             }}>
                 <Form.Row>
                     <Form.Group as={Col} controlId="name">
-                        <Form.Control xs={6} placeholder="First name" required autoComplete="name" onChange={this.handleChangeRegister} />
+                        <Form.Control placeholder="First name" required autoComplete="name" onChange={this.handleChangeRegister} />
                     </Form.Group>
                     <Form.Group as={Col} controlId="lastname">
-                        <Form.Control xs={6} placeholder="Last name" required autoComplete="lastname" onChange={this.handleChangeRegister} />
+                        <Form.Control placeholder="Last name" required autoComplete="lastname" onChange={this.handleChangeRegister} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
                     <Form.Group as={Col} controlId="email">
-                        <Form.Control xs={12} placeholder="Email address" type="email" required autoComplete="email" onChange={this.handleChangeRegister} />
+                        <Form.Control placeholder="Email address" type="email" required autoComplete="email" onChange={this.handleChangeRegister} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row className="form-register-submit">
                     <Form.Group as={Col}>
-                        <button className="on btn-block" xs={12} type="submit">Continue</button>
+                        <button className="on btn-block" type="submit">Continue</button>
                     </Form.Group>
                 </Form.Row>
             </Form>
@@ -239,15 +251,13 @@ class New extends React.Component {
     }
 
     passwordContainer() {
-        this.recaptchaRef = React.createRef();
-
         return <div className="container-register">
             <p className="container-title">Create an X Cloud account</p>
             <div className="menu-box">
-                <button className="off" onClick={(e) => { this.setState({ currentContainer: this.loginContainer() }) }}>Sign in</button>
+                <button className="off" onClick={(e) => { /* this.setState({ currentContainer: this.loginContainer() }) */ }}>Sign in</button>
                 <button className="on">Create account</button>
             </div>
-            <Form className="form-register" onSubmit={e => {
+            <Form className="form-register" onSubmit={(e: any) => {
                 e.preventDefault();
 
                 if (this.validatePassword()) {
@@ -257,12 +267,12 @@ class New extends React.Component {
                 <Form.Row>
                     <Form.Group as={Col} controlId="password">
                         <Form.Control type="hidden" name="username" autoComplete="username" value={this.state.register.email} />
-                        <Form.Control xs={12} type="password" required placeholder="Password" autoComplete="new-password" onChange={this.handleChangeRegister} />
+                        <Form.Control type="password" required placeholder="Password" autoComplete="new-password" onChange={this.handleChangeRegister} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
                     <Form.Group as={Col} controlId="confirmPassword">
-                        <Form.Control xs={12} type="password" required placeholder="Confirm password" autoComplete="confirm-password" onChange={this.handleChangeRegister} />
+                        <Form.Control type="password" required placeholder="Confirm password" autoComplete="confirm-password" onChange={this.handleChangeRegister} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row className="form-register-submit">
@@ -284,10 +294,8 @@ class New extends React.Component {
         return (<div className="container-register">
             <p className="container-title">Activation Email</p>
             <p className="privacy-disclaimer">Please check your email and follow the instructions to activate your account so you can start using X Cloud.</p>
-            <ul className="privacy-remainders" style={{ paddingTop: '20px' }}>
-                By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy
-          </ul>
-            <button className="btn-block on" onClick={(e) => {
+            <ul className="privacy-remainders" style={{ paddingTop: '20px' }}>By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy</ul>
+            <button className="btn-block on" onClick={() => {
                 this.resendEmail(this.state.register.email);
             }}>Re-send activation email</button>
         </div>);
