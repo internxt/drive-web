@@ -117,7 +117,7 @@ class FileCommander extends React.Component {
 
         for (let i = 0; i < items.length; i++) {
             let item = items[i].webkitGetAsEntry();
-            
+
             if (item) {
                 this.traverseFileTree(item);
             }

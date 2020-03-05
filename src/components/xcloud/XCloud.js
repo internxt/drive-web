@@ -162,7 +162,6 @@ class XCloud extends React.Component {
         });
     });
   }
-  
 
   openFolder = (e) => {
     return new Promise((resolve) => {
@@ -309,7 +308,21 @@ class XCloud extends React.Component {
 
   handleUploadFiles = (files, parentFolderId) => {
     var re = /(?:\.([^.]+))?$/;
-    parentFolderId = parentFolderId || this.state.currentFolderId;
+    let __currentCommanderItems = this.state.currentCommanderItems;
+    let currentFolderId = this.state.currentFolderId;
+    parentFolderId = parentFolderId || currentFolderId;
+
+    if (parentFolderId === currentFolderId) {
+      for (let i = 0; i < files.length; i++) {
+        __currentCommanderItems.push({
+          name: files[i].name,
+          size: files[i].size,
+          isLoading: true
+        });
+      }
+  
+      this.setState({ currentCommanderItems: __currentCommanderItems });
+    }
 
     async.eachSeries(files, (file, next) => {
       const data = new FormData();
@@ -330,25 +343,15 @@ class XCloud extends React.Component {
           const body = await response.json();
           next(body.message);
         } else {
-          for (var i = 0; i < files.length; i++) {
-            this.state.currentCommanderItems.push({
-              name: files[i].name,
-              size: files[i].size,
-              isLoading: true
-            });
-          }
-      
-          this.setState({ currentCommanderItems: this.state.currentCommanderItems });
-
           // Upload OK: Mark object as not loading when it's in current directory
-          if (parentFolderId === this.state.currentFolderId) {
-            let index = this.state.currentCommanderItems.findIndex(obj => obj.name === file.name)
+          if (parentFolderId === currentFolderId) {
+            let index = __currentCommanderItems.findIndex(obj => obj.name === file.name)
 
-            this.state.currentCommanderItems[index].isLoading = false
-            this.state.currentCommanderItems[index].type = re.exec(file.name)[1];
+            __currentCommanderItems[index].isLoading = false
+            __currentCommanderItems[index].type = re.exec(file.name)[1];
+
+            this.setState({ currentCommanderItems: __currentCommanderItems }, () => next());
           }
-
-          this.setState({ currentCommanderItems: this.state.currentCommanderItems }, () => next());
         }
 
       }).catch(err => {
@@ -357,7 +360,10 @@ class XCloud extends React.Component {
       })
     }, (err, results) => {
       if (err) { alert(err) }
-      this.getFolderContent(this.state.currentFolderId);
+      
+      if (parentFolderId === currentFolderId) {
+        this.getFolderContent(currentFolderId);
+      }
     })
   }
 
