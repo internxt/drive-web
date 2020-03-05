@@ -113,14 +113,45 @@ class FileCommander extends React.Component {
 
     handleDrop = (e) => {
         e.preventDefault()
-        let files = e.dataTransfer.files;
+        let items = e.dataTransfer.items;
 
-        if (files.length) {
-            this.props.uploadDroppedFile(files);
+        for (let i = 0; i < items.length; i++) {
+            let item = items[i].webkitGetAsEntry();
+            
+            if (item) {
+                this.traverseFileTree(item);
+            }
         }
 
         e.stopPropagation()
         this.setState({ dragDropStyle: '' })
+    }
+
+    traverseFileTree = (item, path = "", uuid = null) => {
+        if (item.isFile) {
+            // Get file
+            item.file((file) => {
+                this.props.uploadDroppedFile([file], uuid);
+            });
+          
+        } else if (item.isDirectory) {
+            this.props.createFolderByName(item.name, uuid).then(data => {
+                let folderParent = data.id;
+                let dirReader = item.createReader();
+                
+                dirReader.readEntries((entries) => {
+                    for (let i = 0; i < entries.length; i++) {
+                        this.traverseFileTree(
+                            entries[i], 
+                            path + item.name + "/", 
+                            folderParent
+                        );
+                    }
+                });
+            }).catch(err => {
+                console.log(err);
+            });
+        }
     }
 
     render() {

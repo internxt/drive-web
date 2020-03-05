@@ -143,6 +143,27 @@ class XCloud extends React.Component {
     }
   }
 
+  createFolderByName = (folderName, parentFolderId) => {
+    parentFolderId = parentFolderId || this.state.currentFolderId;
+
+    return new Promise((resolve, reject) => {
+        fetch(`/api/storage/folder`, {
+          method: "post",
+          headers: getHeaders(true, true),
+          body: JSON.stringify({
+            parentFolderId: parentFolderId,
+            folderName
+          })
+        }).then(res => res.json()).then(res => {
+          this.getFolderContent(this.state.currentFolderId, false);
+          resolve(res);
+        }).catch(err => {
+          reject(err);
+        });
+    });
+  }
+  
+
   openFolder = (e) => {
     return new Promise((resolve) => {
       this.getFolderContent(e);
@@ -286,25 +307,16 @@ class XCloud extends React.Component {
     $("input#uploadFile").trigger("click");
   }
 
-  handleUploadFiles = (files) => {
+  handleUploadFiles = (files, parentFolderId) => {
     var re = /(?:\.([^.]+))?$/;
-
-    for (var i = 0; i < files.length; i++) {
-      this.state.currentCommanderItems.push({
-        name: files[i].name,
-        size: files[i].size,
-        isLoading: true
-      });
-    }
-
-    this.setState({ currentCommanderItems: this.state.currentCommanderItems });
+    parentFolderId = parentFolderId || this.state.currentFolderId;
 
     async.eachSeries(files, (file, next) => {
       const data = new FormData();
       let headers = getHeaders(true, true)
       headers.delete('content-type')
       data.append('xfile', file);
-      fetch(`/api/storage/folder/${this.state.currentFolderId}/upload`, {
+      fetch(`/api/storage/folder/${parentFolderId}/upload`, {
         method: 'POST',
         headers,
         body: data
@@ -318,11 +330,23 @@ class XCloud extends React.Component {
           const body = await response.json();
           next(body.message);
         } else {
-          // Upload OK: Mark object as not loading
-          let index = this.state.currentCommanderItems.findIndex(obj => obj.name === file.name)
+          for (var i = 0; i < files.length; i++) {
+            this.state.currentCommanderItems.push({
+              name: files[i].name,
+              size: files[i].size,
+              isLoading: true
+            });
+          }
+      
+          this.setState({ currentCommanderItems: this.state.currentCommanderItems });
 
-          this.state.currentCommanderItems[index].isLoading = false
-          this.state.currentCommanderItems[index].type = re.exec(file.name)[1];
+          // Upload OK: Mark object as not loading when it's in current directory
+          if (parentFolderId === this.state.currentFolderId) {
+            let index = this.state.currentCommanderItems.findIndex(obj => obj.name === file.name)
+
+            this.state.currentCommanderItems[index].isLoading = false
+            this.state.currentCommanderItems[index].type = re.exec(file.name)[1];
+          }
 
           this.setState({ currentCommanderItems: this.state.currentCommanderItems }, () => next());
         }
@@ -339,7 +363,7 @@ class XCloud extends React.Component {
 
   uploadFile = (e) => { this.handleUploadFiles(e.target.files) }
 
-  uploadDroppedFile = (e) => { this.handleUploadFiles(e) }
+  uploadDroppedFile = (e, uuid) => { this.handleUploadFiles(e, uuid) }
 
   shareItem = () => {
     const selectedItems = this.getSelectedItems();
@@ -459,6 +483,7 @@ class XCloud extends React.Component {
             namePath={this.state.namePath}
             handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
             uploadDroppedFile={this.uploadDroppedFile}
+            createFolderByName={this.createFolderByName}
             setSortFunction={this.setSortFunction}
             moveFile={this.moveFile}
             updateMeta={this.updateMeta}
