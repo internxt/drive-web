@@ -6,7 +6,7 @@ import account from '../../assets/Dashboard-Icons/Account.svg';
 import logo from '../../assets/logo.svg';
 
 import search from '../../assets/Dashboard-Icons/Search.svg';
-import uploadFile from '../../assets/Dashboard-Icons/Upload.svg';
+import uploadFileIcon from '../../assets/Dashboard-Icons/Upload.svg';
 import newFolder from '../../assets/Dashboard-Icons/Add-folder.svg';
 //import downloadFile from '../../assets/Dashboard-Icons/Download.svg';
 import deleteFile from '../../assets/Dashboard-Icons/Delete.svg';
@@ -44,11 +44,11 @@ class NavigationBar extends React.Component {
                         </div>
                     </div>
 
-                    <HeaderButton icon={uploadFile} name="Upload file" clickHandler={props.uploadFile} />
+                    <HeaderButton icon={uploadFileIcon} name="Upload file" clickHandler={props.uploadFile} />
                     <HeaderButton icon={newFolder} name="New folder" clickHandler={props.createFolder} />
                     <HeaderButton icon={deleteFile} name="Delete" clickHandler={props.deleteItems} />
                     <HeaderButton icon={share} name="Share" clickHandler={props.shareItem} />
-                    <input id="uploadFile" type="file" onChange={props.uploadHandler} multiple="multiple" />
+                    <input id="uploadFileControl" type="file" onChange={props.uploadHandler} multiple="multiple" />
                 </Nav>;
         }
     }
