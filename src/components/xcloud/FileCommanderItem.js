@@ -1,7 +1,7 @@
 import * as React from 'react';
 import $ from 'jquery';
 import PrettySize from 'prettysize';
-import { Dropdown, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { Dropdown, ToggleButton, ToggleButtonGroup, Spinner } from 'react-bootstrap';
 import './FileCommanderItem.css';
 import Icon from '../../assets/Icon'
 import ActivityIndicator from '../ActivityIndicator'
@@ -11,6 +11,7 @@ import TimeAgo from 'react-timeago'
 class FileCommanderItem extends React.Component {
     constructor(props, state) {
         super(props, state)
+        console.log(props)
         this.state = {
             dragDropStyle: '',
             itemName: this.props.name,
@@ -151,6 +152,16 @@ class FileCommanderItem extends React.Component {
 
     getFolderIcon = () => {
         let localColor = this.state.selectedColor ? this.state.selectedColor : this.props.color;
+
+        if (this.state.isLoading) {
+            return (
+                <div className="iconContainer">
+                    <Icon name="folder" color={localColor} height="75" alt="" />
+                    <Spinner animation="border" variant="primary" className="folder-spinner" />
+                </div>
+            )
+        }
+
         if (this.props.icon || this.state.selectedIcon) {
             let localIcon = this.state.selectedIcon ? this.icons[this.state.selectedIcon - 1] : this.props.icon.name;
 
@@ -182,6 +193,7 @@ class FileCommanderItem extends React.Component {
             })
         })
     }
+
     componentDidUpdate(newProps) {
         if (newProps.isLoading !== this.state.isLoading) {
             this.setState({ isLoading: newProps.isLoading })
