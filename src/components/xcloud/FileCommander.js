@@ -1,6 +1,7 @@
 // import * as _ from 'lodash'
 import * as React from 'react'
 import { Dropdown } from 'react-bootstrap'
+import async from 'async'
 
 import './FileCommander.scss'
 import FileCommanderItem from './FileCommanderItem';
@@ -29,11 +30,11 @@ class FileCommander extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.currentCommanderItems !== prevProps.currentCommanderItems) {
-            this.setState({ currentCommanderItems: this.props.currentCommanderItems })
-        }
-        if (this.props.namePath !== prevProps.namePath) {
-            this.setState({ namePath: this.props.namePath })
+        if (this.props.currentCommanderItems !== prevProps.currentCommanderItems || this.props.namePath !== prevProps.namePath) {
+            this.setState({
+                currentCommanderItems: this.props.currentCommanderItems,
+                namePath: this.props.namePath
+            })
         }
     }
 
@@ -115,43 +116,55 @@ class FileCommander extends React.Component {
         e.preventDefault()
         let items = e.dataTransfer.items;
 
-        for (let i = 0; i < items.length; i++) {
-            let item = items[i].webkitGetAsEntry();
-
-            if (item) {
-                this.traverseFileTree(item);
+        async.eachSeries(items, (item, nextItem) => {
+            let entry = item.webkitGetAsEntry()
+            if (entry) {
+                this.traverseFileTree(entry).then(() => nextItem()).catch(nextItem)
+            } else {
+                nextItem()
             }
-        }
+        }, (err) => {
+            if (err) {
+                console.error('Error uploading dropped files', err)
+            } else {
+                this.props.getFolderContent(this.props.currentFolderId)
+            }
+        })
 
         e.stopPropagation()
         this.setState({ dragDropStyle: '' })
     }
 
     traverseFileTree = (item, path = "", uuid = null) => {
-        if (item.isFile) {
-            // Get file
-            item.file((file) => {
-                this.props.uploadDroppedFile([file], uuid);
-            });
-          
-        } else if (item.isDirectory) {
-            this.props.createFolderByName(item.name, uuid).then(data => {
-                let folderParent = data.id;
-                let dirReader = item.createReader();
-                
-                dirReader.readEntries((entries) => {
-                    for (let i = 0; i < entries.length; i++) {
-                        this.traverseFileTree(
-                            entries[i], 
-                            path + item.name + "/", 
-                            folderParent
-                        );
-                    }
+        return new Promise((resolve, reject) => {
+            if (item.isFile) {
+                // Get file
+                item.file((file) => { this.props.uploadDroppedFile([file], uuid).then(resolve).catch(reject); })
+            } else if (item.isDirectory) {
+                this.props.createFolderByName(item.name, uuid).then(data => {
+                    let folderParent = data.id;
+                    let dirReader = item.createReader();
+    
+                    dirReader.readEntries((entries) => {
+                        async.eachSeries(entries, (entry, nextEntry) => {
+                            this.traverseFileTree(
+                                entry,
+                                path + item.name + "/",
+                                folderParent
+                            ).then(() => nextEntry()).catch(nextEntry);
+                        }, (err) => {
+                            if (err) { reject(err) }
+                            else { resolve() }
+                        })
+                    });
+                }).catch(err => {
+                    console.log(err);
+                    reject(err)
                 });
-            }).catch(err => {
-                console.log(err);
-            });
-        }
+            }
+    
+
+        })
     }
 
     render() {
@@ -189,7 +202,7 @@ class FileCommander extends React.Component {
                     onDragOver={this.handleDragOver}
                     onDragLeave={this.handleDragLeave}
                     onDrop={this.handleDrop}
-                    >
+                >
                     {list.length > 0 ? list.map((item, i) => {
                         return (
                             <FileCommanderItem

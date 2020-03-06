@@ -11,7 +11,6 @@ import TimeAgo from 'react-timeago'
 class FileCommanderItem extends React.Component {
     constructor(props, state) {
         super(props, state)
-        console.log(props)
         this.state = {
             dragDropStyle: '',
             itemName: this.props.name,
@@ -153,7 +152,7 @@ class FileCommanderItem extends React.Component {
     getFolderIcon = () => {
         let localColor = this.state.selectedColor ? this.state.selectedColor : this.props.color;
 
-        if (this.state.isLoading) {
+        if (this.props.isLoading) {
             return (
                 <div className="iconContainer">
                     <Icon name="folder" color={localColor} height="75" alt="" />
