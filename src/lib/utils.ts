@@ -9,21 +9,19 @@ function copyToClipboard(text: string) {
 function removeAccents(string: string) {
   const accents = 'ÀÁÂÃÄÅĄĀāàáâãäåąßÒÓÔÕÕÖØŐòóôőõöøĎďDŽdžÈÉÊËĘèéêëęðÇçČčĆćÐÌÍÎÏĪìíîïīÙÚÛÜŰùűúûüĽĹŁľĺłÑŇŃňñńŔŕŠŚŞšśşŤťŸÝÿýŽŻŹžżźđĢĞģğ';
   const accentsOut = 'AAAAAAAAaaaaaaaasOOOOOOOOoooooooDdDZdzEEEEEeeeeeeCcCcCcDIIIIIiiiiiUUUUUuuuuuLLLlllNNNnnnRrSSSsssTtYYyyZZZzzzdGGgg';
-  return string
-    .split("")
-    .map((letter, index) => {
-      const accentIndex = accents.indexOf(letter);
-      return accentIndex !== -1 ? accentsOut[accentIndex] : letter;
-    }).join("");
+  return string.split('').map((letter, index) => {
+    const accentIndex = accents.indexOf(letter);
+    return accentIndex !== -1 ? accentsOut[accentIndex] : letter;
+  }).join('');
 }
 
-interface passObjectInterface {
-  salt: string
+interface PassObjectInterface {
+  salt?: string | null
   password: string
 }
 
 // Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
-function passToHash(passObject: passObjectInterface) {
+function passToHash(passObject: PassObjectInterface) {
   try {
     const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
     const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });

@@ -102,28 +102,27 @@ class Security extends React.Component {
         if (!this.props.isAuthenticated) {
             history.push('/login');
         } else {
-            this.userHas2FAStored()
-                .then(hasCode => {
-                    if (!hasCode) {
-                        // We need to create a new 2FA code to show
-                        this.generateNew2FA().then(bidi => {
-                            this.setState({
-                                showButtons: !hasCode,
-                                stepView: this.boxStep1(),
-                                bidi: bidi.qr,
-                                code: bidi.code
-                            });
-                        }).catch(err => {
-                            console.log(err);
-                        });
-                    } else {
+            this.userHas2FAStored().then(hasCode => {
+                if (!hasCode) {
+                    // We need to create a new 2FA code to show
+                    this.generateNew2FA().then(bidi => {
                         this.setState({
-                            stepView: this.deactivation2FA()
+                            showButtons: !hasCode,
+                            stepView: this.boxStep1(),
+                            bidi: bidi.qr,
+                            code: bidi.code
                         });
-                    }
-                }).catch(err => {
-                    alert('Error. Please, try again in a few seconds.');
-                });
+                    }).catch(err => {
+                        console.log(err);
+                    });
+                } else {
+                    this.setState({
+                        stepView: this.deactivation2FA()
+                    });
+                }
+            }).catch(err => {
+                alert('Error. Please, try again in a few seconds.');
+            });
         }
     }
 

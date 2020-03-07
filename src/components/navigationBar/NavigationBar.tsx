@@ -20,30 +20,29 @@ import history from '../../lib/history';
 
 import { getHeaders } from '../../lib/auth'
 
-class NavigationBar extends React.Component {
-    constructor(props) {
+interface NavigationBarProps {
+    navbarItems: JSX.Element
+    showFileButtons?: Boolean
+    setSearchFunction?: any
+    uploadFile?: any
+    createFolder?: any
+    deleteItems?: any
+    shareItem?: any
+    uploadHandler?: any
+}
+
+interface NavigationBarState {
+    navbarItems: JSX.Element
+    menuButton: any
+    barLimit: number
+    barUsage: number
+}
+
+class NavigationBar extends React.Component<NavigationBarProps, NavigationBarState> {
+    constructor(props: NavigationBarProps) {
         super(props);
 
-        this.state = {
-            menuButton: null,
-            navbarItems: props.navbarItems,
-            barLimit: 1024 * 1024 * 1024 * 2,
-            barUsage: 0,
-        };
-
-        if (!localStorage.xUser) {
-            return;
-        }
-
-        if (props.showFileButtons) {
-            this.state.navbarItems =
-                <Nav className="m-auto">
-                    <div className="top-bar">
-                        <div className="search-container">
-                            <input alt="Search files" className="search" required style={{ backgroundImage: 'url(' + search + ')' }} onChange={props.setSearchFunction} />
-                        </div>
-                    </div>
-
+<<<<<<< HEAD:src/components/navigationBar/NavigationBar.js
                     <HeaderButton icon={uploadFileIcon} name="Upload file" clickHandler={props.uploadFile} />
                     <HeaderButton icon={newFolder} name="New folder" clickHandler={props.createFolder} />
                     <HeaderButton icon={deleteFile} name="Delete" clickHandler={props.deleteItems} />
@@ -51,6 +50,14 @@ class NavigationBar extends React.Component {
                     <input id="uploadFileControl" type="file" onChange={props.uploadHandler} multiple="multiple" />
                 </Nav>;
         }
+=======
+            this.state = {
+                menuButton: null,
+                navbarItems: props.navbarItems,
+                barLimit: 1024 * 1024 * 1024 * 2,
+                barUsage: 0,
+            };
+>>>>>>> TypeScript-migration:src/components/navigationBar/NavigationBar.tsx
     }
 
     componentDidMount() {
@@ -65,6 +72,25 @@ class NavigationBar extends React.Component {
             return;
 
         }
+
+        if (this.props.showFileButtons) {
+            this.setState({
+                navbarItems: <Nav className="m-auto">
+                    <div className="top-bar">
+                        <div className="search-container">
+                            <input alt="Search files" className="search" required style={{ backgroundImage: 'url(' + search + ')' }} onChange={this.props.setSearchFunction} />
+                        </div>
+                    </div>
+
+                    <HeaderButton icon={uploadFile} name="Upload file" clickHandler={this.props.uploadFile} />
+                    <HeaderButton icon={newFolder} name="New folder" clickHandler={this.props.createFolder} />
+                    <HeaderButton icon={deleteFile} name="Delete" clickHandler={this.props.deleteItems} />
+                    <HeaderButton icon={share} name="Share" clickHandler={this.props.shareItem} />
+                    <input id="uploadFile" type="file" onChange={this.props.uploadHandler} multiple={true} />
+                </Nav>
+            })
+        }
+
 
         fetch('/api/limit', {
             method: 'get',
@@ -92,9 +118,9 @@ class NavigationBar extends React.Component {
     }
 
     render() {
-        let user = null;
+        let user: any = null;
         try {
-            user = JSON.parse(localStorage.xUser);
+            user = JSON.parse(localStorage.xUser || '{}');
             if (user == null) {
                 throw new Error();
             }
@@ -113,7 +139,7 @@ class NavigationBar extends React.Component {
                 </Nav>
                 <Nav style={{ margin: '0 13px 0 0' }}>
                     <Dropdown drop="left" className="settingsButton">
-                        <Dropdown.Toggle><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
+                        <Dropdown.Toggle id="1"><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
                         <Dropdown.Menu>
                             <div className="dropdown-menu-group info">
                                 <p className="name-lastname">{user.name} {user.lastname}</p>

@@ -8,36 +8,35 @@ import { encryptText, passToHash, decryptText, encryptTextWithKey } from '../../
 import history from '../../lib/history'
 import { getHeaders } from '../../lib/auth'
 
-class Reset extends React.Component {
-    constructor(props) {
-        super(props);
+interface ResetProps {
+    match?: any
+    isAuthenticated: Boolean
+}
 
-        this.state = {
-            token: this.props.match.params.token,
-            isValidToken: true,
-            salt: null,
+class Reset extends React.Component<ResetProps> {
+    state = {
+        token: this.props.match.params.token,
+        isValidToken: true,
+        salt: null,
 
-            currentPassword: '',
-            newPassword: '',
-            confirmNewPassword: ''
-        };
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: ''
     }
 
-    IsValidToken = (token) => {
+    IsValidToken = (token: string) => {
         return /^[a-z0-9]{512}$/.test(token) && this.state.isValidToken;
     }
 
-    handleChange = event => {
-        this.setState({
-            [event.target.id]: event.target.value
-        });
+    handleChange = (event: any) => {
+        this.setState({ [event.target.id]: event.target.value });
     }
 
     isLoggedIn = () => {
         return !(!localStorage.xToken);
     }
 
-    handleChangePassword = (e) => {
+    handleChangePassword = (e: any) => {
         e.preventDefault();
 
         if (!this.state.salt) {
@@ -122,22 +121,22 @@ class Reset extends React.Component {
                         <Form className="form-register" onSubmit={this.handleChangePassword} >
                             <Form.Row>
                                 <Form.Group as={Col} controlId="currentPassword">
-                                    <Form.Control xs={12} placeholder="Current password" required type="password" name="current-password" value={this.state.currentPassword} onChange={this.handleChange} />
+                                    <Form.Control placeholder="Current password" required type="password" name="current-password" value={this.state.currentPassword} onChange={this.handleChange} />
                                 </Form.Group>
                             </Form.Row>
                             <Form.Row>
                                 <Form.Group as={Col} controlId="newPassword">
-                                    <Form.Control xs={12} placeholder="New password" required type="password" name="new-password" value={this.state.newPassword} onChange={this.handleChange} />
+                                    <Form.Control placeholder="New password" required type="password" name="new-password" value={this.state.newPassword} onChange={this.handleChange} />
                                 </Form.Group>
                             </Form.Row>
                             <Form.Row>
                                 <Form.Group as={Col} controlId="confirmNewPassword">
-                                    <Form.Control xs={12} placeholder="Confirm new password" required type="password" name="confirm-new-password" value={this.state.confirmNewPassword} onChange={this.handleChange} />
+                                    <Form.Control placeholder="Confirm new password" required type="password" name="confirm-new-password" value={this.state.confirmNewPassword} onChange={this.handleChange} />
                                 </Form.Group>
                             </Form.Row>
                             <Form.Row className="form-register-submit">
                                 <Form.Group as={Col}>
-                                    <Button className="on btn-block" xs={12} type="submit">Change password</Button>
+                                    <Button className="on btn-block" type="submit">Change password</Button>
                                 </Form.Group>
                             </Form.Row>
                         </Form>
