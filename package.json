@@ -57,5 +57,5 @@
   "devDependencies": {
     "node-sass": "^4.13.1"
   },
-  "proxy": "https://cloud.internxt.com"
+  "proxy": "http://localhost:3007"
 }
