@@ -137,9 +137,19 @@ class XCloud extends React.Component {
           parentFolderId: this.state.currentFolderId,
           folderName
         })
-      }).then(() => {
+      }).then(async res => {
+        if (res.status !== 201) {
+          const body = await res.json()
+          throw body.error ? body.error : 'createFolder error'
+        }
         this.getFolderContent(this.state.currentFolderId, false);
-      });
+      }).catch(err => {
+        if (err.includes('already exists')) {
+          alert('Folder with same name already exists')
+        } else {
+          alert(err)
+        }
+      })
     }
   }
 
@@ -163,7 +173,13 @@ class XCloud extends React.Component {
         method: "post",
         headers: getHeaders(true, true),
         body: JSON.stringify({ parentFolderId, folderName })
-      }).then(res => res.json()).then(resolve).catch(reject);
+      }).then(async res => {
+        const data = await res.json()
+        if (res.status !== 201) {
+          throw data
+        }
+        return data
+      }).then(resolve).catch(reject);
     });
   }
 
@@ -332,9 +348,9 @@ class XCloud extends React.Component {
         method: 'POST',
         headers: headers,
         body: data
-      }).then(res => {
+      }).then(async res => {
         let data
-        try { data = res.json() }
+        try { data = await res.json() }
         catch (err) { console.error('Upload response data is not a JSON', err) }
         if (data) { return { res: res, data: data } }
         else { throw res }
@@ -365,13 +381,13 @@ class XCloud extends React.Component {
         this.upload(file, parentFolderId).then(({ res, data }) => {
           if (res.status === 402) {
             this.setState({ rateLimitModal: true })
-            return next(res.status);
+            throw res.status;
           }
-  
+
           if (res.status === 500) {
-            return next(data.message);
+            throw data.message;
           }
-  
+
           if (parentFolderId === currentFolderId) {
             let index = __currentCommanderItems.findIndex(obj => obj.name === file.name)
             __currentCommanderItems[index].isLoading = false
@@ -380,7 +396,11 @@ class XCloud extends React.Component {
           } else {
             next()
           }
-        }).catch(next)
+        }).catch(err => {
+          let index = __currentCommanderItems.findIndex(obj => obj.name === file.name)
+          __currentCommanderItems.splice(index, 1)
+          this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
+        })
       }, (err, results) => {
         if (err) {
           console.error('Error uploading:', err)
@@ -393,7 +413,7 @@ class XCloud extends React.Component {
           resolve()
         }
       })
-  
+
     })
   }
 

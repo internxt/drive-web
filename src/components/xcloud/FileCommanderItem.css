@@ -384,7 +384,16 @@
     background-color: #f2f5ff;
 }
 
-div.folder-spinner {
+.iconContainer span.ai-animation {
     position: relative;
-    top: -48px !important;
+    top: -321px;
+    left: -38px;
+}
+
+.iconContainer.fileIconContainer .type .extension {
+    display: none;
+}
+
+.iconContainer.fileIconContainer span.ai-animation {
+    top: -351px;
 }

@@ -1,8 +1,8 @@
 import React from 'react';
 import './ActivityIndicator.scss';
 
-import image from "../assets/Dashboard-Icons/Uploading.svg"
+import SvgUploading from "../assets/Dashboard-Icons/Uploading.js"
 
-const ActivityIndicator = (props: any) => <img className="ai-animation" alt="..." src={image} />;
+const ActivityIndicator = (props: any) => <SvgUploading {...props} />;
 
 export default ActivityIndicator;

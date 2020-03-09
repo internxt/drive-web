@@ -1,7 +1,7 @@
 import * as React from 'react';
 import $ from 'jquery';
 import PrettySize from 'prettysize';
-import { Dropdown, ToggleButton, ToggleButtonGroup, Spinner } from 'react-bootstrap';
+import { Dropdown, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import './FileCommanderItem.css';
 import Icon from '../../assets/Icon'
 import ActivityIndicator from '../ActivityIndicator'
@@ -156,7 +156,7 @@ class FileCommanderItem extends React.Component {
             return (
                 <div className="iconContainer">
                     <Icon name="folder" color={localColor} height="75" alt="" />
-                    <Spinner animation="border" variant="primary" className="folder-spinner" />
+                    <ActivityIndicator color="#e0e0e0" />
                 </div>
             )
         }
@@ -177,14 +177,15 @@ class FileCommanderItem extends React.Component {
 
     getFileIcon = () => {
         return (
-            <div className="type">
-                {this.state.isLoading || this.state.isDownloading ? <span><ActivityIndicator /></span> : <span className="extension">{this.props.type}</span>}
+            <div className="iconContainer fileIconContainer">
+                <div className="type"><span className="extension">{this.props.type}</span></div>
+                {this.state.isLoading || this.state.isDownloading ? <ActivityIndicator /> : ''}
             </div>
         )
     }
 
     itemClickHandler = (e) => {
-        this.setState({ isDownloading: true}, () => {
+        this.setState({ isDownloading: true }, () => {
             this.props.clickHandler(e).then(() => {
                 this.setState({ isDownloading: false })
             }).catch(() => {
