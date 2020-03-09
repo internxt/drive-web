@@ -178,7 +178,7 @@ class FileCommanderItem extends React.Component {
     getFileIcon = () => {
         return (
             <div className="iconContainer fileIconContainer">
-                <div className="type"><span className="extension">{this.props.type}</span></div>
+                <div className="type"><span className="extension">{!this.state.isLoading && !this.state.isDownloading ? this.props.type : ''}</span></div>
                 {this.state.isLoading || this.state.isDownloading ? <ActivityIndicator /> : ''}
             </div>
         )

@@ -4,7 +4,7 @@ const SVG = ({
     defaultColors = {},
     color = "#D9D9D9",
     width = 39,
-    height = 600,
+    height = 150,
     className = 'ai-animation'
 }) => {
     // Use default colors if none hex color is set
