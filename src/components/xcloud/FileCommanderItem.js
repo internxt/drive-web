@@ -216,7 +216,7 @@ class FileCommanderItem extends React.Component {
                 data-isfolder={!!this.props.rawItem.isFolder}
 
                 onClick={() => this.props.selectHandler(this.props.id, false)}
-                onDoubleClick={(e) => { if (e.target.className === 'FileCommanderItem') { this.itemClickHandler(e); } }}
+                onDoubleClick={(e) => { if (e.target.className.includes('FileCommanderItem')) { this.itemClickHandler(e); } }}
 
                 draggable={!this.props.isFolder}
                 onDragStart={this.handleDragStart}
