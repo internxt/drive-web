@@ -156,7 +156,7 @@ class FileCommanderItem extends React.Component {
             return (
                 <div className="iconContainer">
                     <Icon name="folder" color={localColor} height="75" alt="" />
-                    <ActivityIndicator color="#e0e0e0" />
+                    <ActivityIndicator color="#4385F4" />
                 </div>
             )
         }
