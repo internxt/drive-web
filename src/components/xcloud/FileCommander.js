@@ -212,7 +212,7 @@ class FileCommander extends React.Component {
                     {list.length > 0 ? list.map((item, i) => {
                         return (
                             <FileCommanderItem
-                                key={i} selectableKey={item.id}
+                                key={item.id + '' + i} selectableKey={item.id}
                                 ref={this.myRef}
                                 id={item.id}
                                 rawItem={item}
@@ -225,7 +225,8 @@ class FileCommander extends React.Component {
                                 color={item.color ? item.color : 'blue'}
                                 clickHandler={item.isFolder ? this.props.openFolder.bind(null, item.id) : this.props.downloadFile.bind(null, item.fileId)}
                                 selectHandler={this.props.selectItems}
-                                isLoading={item.isLoading}
+                                isLoading={!!item.isLoading}
+                                isDownloading={!!item.isDownloading}
                                 moveFile={this.props.moveFile}
                                 updateMeta={this.props.updateMeta}
                                 hasParentFolder={!inRoot}

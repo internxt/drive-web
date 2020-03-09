@@ -200,7 +200,7 @@ class XCloud extends React.Component {
       this.deselectAll();
 
       // Set new items list
-      let newCommanderFolders = _.map(data.children, o => _.extend({ isFolder: true, isSelected: false, isLoading: false }, o))
+      let newCommanderFolders = _.map(data.children, o => _.extend({ isFolder: true, isSelected: false, isLoading: false, isDowloading: false }, o))
       let newCommanderFiles = data.files;
 
       // Apply search function if is set
