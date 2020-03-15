@@ -42,22 +42,12 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     constructor(props: NavigationBarProps) {
         super(props);
 
-<<<<<<< HEAD:src/components/navigationBar/NavigationBar.js
-                    <HeaderButton icon={uploadFileIcon} name="Upload file" clickHandler={props.uploadFile} />
-                    <HeaderButton icon={newFolder} name="New folder" clickHandler={props.createFolder} />
-                    <HeaderButton icon={deleteFile} name="Delete" clickHandler={props.deleteItems} />
-                    <HeaderButton icon={share} name="Share" clickHandler={props.shareItem} />
-                    <input id="uploadFileControl" type="file" onChange={props.uploadHandler} multiple="multiple" />
-                </Nav>;
-        }
-=======
             this.state = {
                 menuButton: null,
                 navbarItems: props.navbarItems,
                 barLimit: 1024 * 1024 * 1024 * 2,
                 barUsage: 0,
             };
->>>>>>> TypeScript-migration:src/components/navigationBar/NavigationBar.tsx
     }
 
     componentDidMount() {
@@ -82,11 +72,11 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                         </div>
                     </div>
 
-                    <HeaderButton icon={uploadFile} name="Upload file" clickHandler={this.props.uploadFile} />
+                    <HeaderButton icon={uploadFileIcon} name="Upload file" clickHandler={this.props.uploadFile} />
                     <HeaderButton icon={newFolder} name="New folder" clickHandler={this.props.createFolder} />
                     <HeaderButton icon={deleteFile} name="Delete" clickHandler={this.props.deleteItems} />
                     <HeaderButton icon={share} name="Share" clickHandler={this.props.shareItem} />
-                    <input id="uploadFile" type="file" onChange={this.props.uploadHandler} multiple={true} />
+                    <input id="uploadFileControl" type="file" onChange={this.props.uploadHandler} multiple={true} />
                 </Nav>
             })
         }
