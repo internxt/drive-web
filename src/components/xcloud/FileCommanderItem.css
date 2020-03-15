@@ -383,3 +383,13 @@
     border: 3px solid #aab3ff;
     background-color: #f2f5ff;
 }
+
+.iconContainer span.ai-animation {
+    position: relative;
+    top: -95px;
+    left: -38px;
+}
+
+.iconContainer.fileIconContainer span.ai-animation {
+    top: -125px;
+}

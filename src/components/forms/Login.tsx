@@ -10,22 +10,22 @@ import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 
 import { getHeaders } from '../../lib/auth'
 
+interface LoginProps {
+  email?: string
+  password?: string
+  handleKeySaved?: (user: any) => void
+  isAuthenticated: Boolean
+}
 
-class Login extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      email: '',
-      password: '',
-      isAuthenticated: false,
-      token: "",
-      user: {},
-      showTwoFactor: false,
-      twoFactorCode: ''
-    };
-
-    this.recaptchaRef = React.createRef();
+class Login extends React.Component<LoginProps> {
+  state = {
+    email: '',
+    password: '',
+    isAuthenticated: false,
+    token: "",
+    user: {},
+    showTwoFactor: false,
+    twoFactorCode: ''
   }
 
   componentDidMount() {
@@ -39,16 +39,16 @@ class Login extends React.Component {
 
     // Check if recent login is passed and redirect user to X Cloud
     const mnemonic = localStorage.getItem('xMnemonic');
-    const user = JSON.parse(localStorage.getItem('xUser'));
+    const user = JSON.parse(localStorage.getItem('xUser') || '{}');
 
-    if (user && mnemonic) {
+    if (user && mnemonic && this.props.handleKeySaved) {
       this.props.handleKeySaved(user)
       history.push('/app')
     }
   }
 
   componentDidUpdate() {
-    if (this.state.isAuthenticated === true && this.state.token && this.state.user) {
+    if (this.state.isAuthenticated && this.state.token && this.state.user) {
       const mnemonic = localStorage.getItem('xMnemonic');
       if (mnemonic) {
         history.push('/app')
@@ -72,12 +72,12 @@ class Login extends React.Component {
     return pattern.test(this.state.twoFactorCode);
   }
 
-  validateEmail = (email) => {
+  validateEmail = (email: string) => {
     let emailPattern = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
     return emailPattern.test(String(email).toLowerCase());
   }
 
-  handleChange = event => {
+  handleChange = (event: any) => {
     this.setState({
       [event.target.id]: event.target.value
     });
@@ -153,7 +153,9 @@ class Login extends React.Component {
               name: data.user.name,
               lastname: data.user.lastname
             };
-            this.props.handleKeySaved(user)
+            if (this.props.handleKeySaved) {
+              this.props.handleKeySaved(user)
+            }
             localStorage.setItem('xToken', data.token);
             localStorage.setItem('xMnemonic', user.mnemonic);
             localStorage.setItem('xUser', JSON.stringify(user));
@@ -198,23 +200,23 @@ class Login extends React.Component {
                 history.push('/new');
               }}>Create account</button>
             </div>
-            <Form className="form-register" onSubmit={e => {
+            <Form className="form-register" onSubmit={(e: any) => {
               e.preventDefault();
               this.check2FANeeded();
             }}>
               <Form.Row>
                 <Form.Group as={Col} controlId="email">
-                  <Form.Control xs={12} placeholder="Email address" required type="email" name="email" autoComplete="username" value={this.state.email} onChange={this.handleChange} />
+                  <Form.Control placeholder="Email address" required type="email" name="email" autoComplete="username" value={this.state.email} onChange={this.handleChange} />
                 </Form.Group>
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="password">
-                  <Form.Control xs={12} placeholder="Password" required type="password" name="password" autoComplete="current-password" value={this.state.password} onChange={this.handleChange} />
+                  <Form.Control placeholder="Password" required type="password" name="password" autoComplete="current-password" value={this.state.password} onChange={this.handleChange} />
                 </Form.Group>
               </Form.Row>
               <Form.Row className="form-register-submit">
                 <Form.Group as={Col}>
-                  <Button className="on btn-block" disabled={!isValid} xs={12} type="submit">Sign in</Button>
+                  <Button className="on btn-block" disabled={!isValid} type="submit">Sign in</Button>
                 </Form.Group>
               </Form.Row>
             </Form>
@@ -229,18 +231,18 @@ class Login extends React.Component {
           <p className="logo"><img src={logo} alt="Logo" /></p>
           <p className="container-title">Security Verification</p>
           <p className="privacy-disclaimer">Enter your 6 digit authenticator code below</p>
-          <Form className="form-register container-register two-factor" onSubmit={e => {
+          <Form className="form-register container-register two-factor" onSubmit={(e: any) => {
             e.preventDefault();
             this.doLogin();
           }}>
             <Form.Row>
               <Form.Group as={Col} controlId="twoFactorCode">
-                <Form.Control xs={12} placeholder="Authentication code" required type="text" name="two-factor" autoComplete="off" value={this.state.twoFactorCode} onChange={this.handleChange} maxLength={7} />
+                <Form.Control placeholder="Authentication code" required type="text" name="two-factor" autoComplete="off" value={this.state.twoFactorCode} onChange={this.handleChange} />
               </Form.Group>
             </Form.Row>
             <Form.Row className="form-register-submit">
               <Form.Group as={Col}>
-                <Button className="on btn-block" disabled={!isValid} xs={12} type="submit">Sign in</Button>
+                <Button className="on btn-block" disabled={!isValid} type="submit">Sign in</Button>
               </Form.Group>
             </Form.Row>
           </Form>

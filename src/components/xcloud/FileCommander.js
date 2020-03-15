@@ -1,6 +1,7 @@
 // import * as _ from 'lodash'
 import * as React from 'react'
 import { Dropdown } from 'react-bootstrap'
+import async from 'async'
 
 import './FileCommander.scss'
 import FileCommanderItem from './FileCommanderItem';
@@ -29,11 +30,11 @@ class FileCommander extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.currentCommanderItems !== prevProps.currentCommanderItems) {
-            this.setState({ currentCommanderItems: this.props.currentCommanderItems })
-        }
-        if (this.props.namePath !== prevProps.namePath) {
-            this.setState({ namePath: this.props.namePath })
+        if (this.props.currentCommanderItems !== prevProps.currentCommanderItems || this.props.namePath !== prevProps.namePath) {
+            this.setState({
+                currentCommanderItems: this.props.currentCommanderItems,
+                namePath: this.props.namePath
+            })
         }
     }
 
@@ -113,14 +114,63 @@ class FileCommander extends React.Component {
 
     handleDrop = (e) => {
         e.preventDefault()
-        let files = e.dataTransfer.files;
+        let items = e.dataTransfer.items;
 
-        if (files.length) {
-            this.props.uploadDroppedFile(files);
-        }
+        async.map(items, (item, nextItem) => {
+            let entry = item ? item.webkitGetAsEntry() : null
+            if (entry) {
+                this.traverseFileTree(entry).then(() => {
+                    nextItem()
+                }).catch(err => {
+                    nextItem(err)
+                })
+            } else {
+                nextItem()
+            }
+        }, (err) => {
+            if (err) {
+                let errmsg = err.error ? err.error : err
+                if (errmsg.includes('already exist')) {
+                    errmsg = 'Folder with same name already exists'
+                }
+                alert(errmsg)
+            }
+                this.props.getFolderContent(this.props.currentFolderId)
+        })
 
         e.stopPropagation()
         this.setState({ dragDropStyle: '' })
+    }
+
+    traverseFileTree = (item, path = "", uuid = null) => {
+        return new Promise((resolve, reject) => {
+            if (item.isFile) {
+                // Get file
+                item.file((file) => { this.props.uploadDroppedFile([file], uuid).then(resolve).catch(reject); })
+            } else if (item.isDirectory) {
+                this.props.createFolderByName(item.name, uuid).then(data => {
+                    let folderParent = data.id;
+                    let dirReader = item.createReader();
+
+                    dirReader.readEntries((entries) => {
+                        async.eachSeries(entries, (entry, nextEntry) => {
+                            this.traverseFileTree(
+                                entry,
+                                path + item.name + "/",
+                                folderParent
+                            ).then(() => nextEntry()).catch(nextEntry);
+                        }, (err) => {
+                            if (err) { reject(err) }
+                            else { resolve() }
+                        })
+                    });
+                }).catch(err => {
+                    reject(err)
+                });
+            }
+
+
+        })
     }
 
     render() {
@@ -158,11 +208,11 @@ class FileCommander extends React.Component {
                     onDragOver={this.handleDragOver}
                     onDragLeave={this.handleDragLeave}
                     onDrop={this.handleDrop}
-                    >
+                >
                     {list.length > 0 ? list.map((item, i) => {
                         return (
                             <FileCommanderItem
-                                key={i} selectableKey={item.id}
+                                key={item.id + '' + i} selectableKey={item.id}
                                 ref={this.myRef}
                                 id={item.id}
                                 rawItem={item}
@@ -175,7 +225,8 @@ class FileCommander extends React.Component {
                                 color={item.color ? item.color : 'blue'}
                                 clickHandler={item.isFolder ? this.props.openFolder.bind(null, item.id) : this.props.downloadFile.bind(null, item.fileId)}
                                 selectHandler={this.props.selectItems}
-                                isLoading={item.isLoading}
+                                isLoading={!!item.isLoading}
+                                isDownloading={!!item.isDownloading}
                                 moveFile={this.props.moveFile}
                                 updateMeta={this.props.updateMeta}
                                 hasParentFolder={!inRoot}

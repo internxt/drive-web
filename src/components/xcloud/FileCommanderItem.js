@@ -151,6 +151,16 @@ class FileCommanderItem extends React.Component {
 
     getFolderIcon = () => {
         let localColor = this.state.selectedColor ? this.state.selectedColor : this.props.color;
+
+        if (this.props.isLoading) {
+            return (
+                <div className="iconContainer">
+                    <Icon name="folder" color={localColor} height="75" alt="" />
+                    <ActivityIndicator color="#4385F4" />
+                </div>
+            )
+        }
+
         if (this.props.icon || this.state.selectedIcon) {
             let localIcon = this.state.selectedIcon ? this.icons[this.state.selectedIcon - 1] : this.props.icon.name;
 
@@ -167,14 +177,15 @@ class FileCommanderItem extends React.Component {
 
     getFileIcon = () => {
         return (
-            <div className="type">
-                {this.state.isLoading || this.state.isDownloading ? <span><ActivityIndicator /></span> : <span className="extension">{this.props.type}</span>}
+            <div className="iconContainer fileIconContainer">
+                <div className="type"><span className="extension">{!this.state.isLoading && !this.state.isDownloading ? this.props.type : ''}</span></div>
+                {this.state.isLoading || this.state.isDownloading ? <ActivityIndicator /> : ''}
             </div>
         )
     }
 
     itemClickHandler = (e) => {
-        this.setState({ isDownloading: true}, () => {
+        this.setState({ isDownloading: true }, () => {
             this.props.clickHandler(e).then(() => {
                 this.setState({ isDownloading: false })
             }).catch(() => {
@@ -182,6 +193,7 @@ class FileCommanderItem extends React.Component {
             })
         })
     }
+
     componentDidUpdate(newProps) {
         if (newProps.isLoading !== this.state.isLoading) {
             this.setState({ isLoading: newProps.isLoading })
@@ -204,7 +216,7 @@ class FileCommanderItem extends React.Component {
                 data-isfolder={!!this.props.rawItem.isFolder}
 
                 onClick={() => this.props.selectHandler(this.props.id, false)}
-                onDoubleClick={(e) => { if (e.target.className === 'FileCommanderItem') { this.itemClickHandler(e); } }}
+                onDoubleClick={(e) => { if (e.target.className.includes('FileCommanderItem')) { this.itemClickHandler(e); } }}
 
                 draggable={!this.props.isFolder}
                 onDragStart={this.handleDragStart}

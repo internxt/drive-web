@@ -22,20 +22,14 @@ class App extends React.Component {
   // Method for set user in props.user and localStorage
   handleKeySaved = (user: JSON) => {
     localStorage.setItem('xUser', JSON.stringify(user));
-    this.setState({
-      isAuthenticated: true,
-      user
-    });
+    this.setState({ isAuthenticated: true, user: user });
   }
 
   render() {
     return (
       <div>
         <Switch>
-          <Route exact path='/login' render={(props) => <Login {...props}
-            isAuthenticated={this.state.isAuthenticated}
-            handleKeySaved={this.handleKeySaved} />
-          } />
+          <Route exact path='/login' render={(props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
@@ -49,13 +43,9 @@ class App extends React.Component {
             isActivated={this.state.isActivated}
             handleKeySaved={this.handleKeySaved} />
           } />
-          <Route exact path='/new' render={(props: any) => <New {...props} />}
-            isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
-          <Route exact path='/activate/:email' render={(props: any) => <New {...props} />}
-            isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
-          <Route exact path='/'>
-            <Redirect to="/login" />
-          </Route>
+          <Route exact path='/new' render={(props: any) => <New {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
+          <Route exact path='/activate/:email' render={(props: any) => <New {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
+          <Route exact path='/'><Redirect to="/login" /></Route>
           <Route component={NotFound} />
         </Switch>
       </div>
