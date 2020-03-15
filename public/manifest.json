@@ -1,9 +1,9 @@
 {
   "short_name": "X Cloud",
-  "name": "X Cloud by Internxt",
+  "name": "X Cloud, by Internxt",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "logo64.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
