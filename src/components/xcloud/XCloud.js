@@ -268,6 +268,28 @@ class XCloud extends React.Component {
 
   }
 
+  moveFolder = (folderId, destination, overwritte = false) => {
+    const data = { folderId, destination, overwritte };
+
+    fetch('/api/storage/moveFolder', {
+      method: 'post',
+      headers: getHeaders(true, true),
+      body: JSON.stringify(data)
+    }).then((response) => {
+      if (response.status === 200) {
+        // Successfully moved
+        this.getFolderContent(this.state.currentFolderId);
+      } else if (response.status === 501) {
+        this.setState({ overwritteItemPopup: true, overwritteOptions: { folderId, destination } });
+      } else {
+        // Error moving file
+        response.json().then((error) => {
+          alert(`Error moving folder: ${error.message}`)
+        })
+      }
+    })
+  }
+
   moveFile = (fileId, destination, overwritte = false) => {
     const data = { fileId, destination, overwritte };
 
@@ -542,6 +564,7 @@ class XCloud extends React.Component {
             createFolderByName={this.createFolderByName}
             setSortFunction={this.setSortFunction}
             moveFile={this.moveFile}
+            moveFolder={this.moveFolder}
             updateMeta={this.updateMeta}
             currentFolderId={this.state.currentFolderId}
             getFolderContent={this.getFolderContent}
