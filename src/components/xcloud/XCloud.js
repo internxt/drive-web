@@ -42,7 +42,8 @@ class XCloud extends React.Component {
       showDeleteItemsPopup: false,
 
       overwritteItemPopup: false,
-      overwritteOptions: {}
+      overwritteOptions: {},
+      type: 'file'
     };
   }
 
@@ -280,7 +281,7 @@ class XCloud extends React.Component {
         // Successfully moved
         this.getFolderContent(this.state.currentFolderId);
       } else if (response.status === 501) {
-        this.setState({ overwritteItemPopup: true, overwritteOptions: { folderId, destination } });
+        this.setState({ overwritteItemPopup: true, overwritteOptions: { folderId, destination }, type: 'folder' });
       } else {
         // Error moving file
         response.json().then((error) => {
@@ -302,7 +303,7 @@ class XCloud extends React.Component {
         // Successfully moved
         this.getFolderContent(this.state.currentFolderId);
       } else if (response.status === 501) {
-        this.setState({ overwritteItemPopup: true, overwritteOptions: { fileId, destination } });
+        this.setState({ overwritteItemPopup: true, overwritteOptions: { fileId, destination }, type: 'file' });
       } else {
         // Error moving file
         response.json().then((error) => {
@@ -608,7 +609,7 @@ class XCloud extends React.Component {
               <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
                 <h1>Replace item{this.getSelectedItems().length > 1 ? 's' : ''}</h1>
-                <h2>There is already a file with the same name in that destination. Would you like to overwrite the file?</h2>
+                <h2>There is already a {this.state.type} with the same name in that destination. Would you like to overwrite the file?</h2>
                 <div className="buttons-wrapper">
                   <div className="default-button button-primary" onClick={() => {
                     this.moveFile(this.state.overwritteOptions.fileId, this.state.overwritteOptions.destination, true);

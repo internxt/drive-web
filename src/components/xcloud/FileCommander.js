@@ -229,6 +229,7 @@ class FileCommander extends React.Component {
                                 isLoading={!!item.isLoading}
                                 isDownloading={!!item.isDownloading}
                                 moveFile={this.props.moveFile}
+                                moveFolder={this.props.moveFolder}
                                 updateMeta={this.props.updateMeta}
                                 hasParentFolder={!inRoot}
                                 isFolder={item.isFolder}
