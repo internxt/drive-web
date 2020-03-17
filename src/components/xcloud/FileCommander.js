@@ -99,6 +99,7 @@ class FileCommander extends React.Component {
     }
 
     handleDropOverBackButton = (event) => {
+        event.preventDefault()
         // Determine parent folder
         var parentFolder = this.state.namePath[this.state.namePath.length - 2] && this.state.namePath[this.state.namePath.length - 2].id; // Get the MySQL ID of parent folder
 
