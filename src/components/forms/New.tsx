@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Container, Form, Col } from "react-bootstrap";
-import bip39 from 'bip39';
 
 import logo from '../../assets/logo.svg';
 import history from '../../lib/history';
@@ -8,6 +7,8 @@ import history from '../../lib/history';
 import { encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { getHeaders } from '../../lib/auth'
+
+const bip39 = require('bip39')
 
 interface NewProps {
     match: any
