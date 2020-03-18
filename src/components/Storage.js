@@ -21,8 +21,8 @@ import { getHeaders } from '../lib/auth'
 class Storage extends React.Component {
     state = {
         page: null,
-        max: null,
-        now: null,
+        max: 0,
+        now: 0,
 
         modalDeleteAccountShow: false
     }
@@ -51,21 +51,24 @@ class Storage extends React.Component {
         }
         ).then(res => {
             return res.json();
-        }).then(res2 => {
-            this.setState({ max: res2.maxSpaceBytes })
+        }).then(res1 => {
+
+            fetch('/api/usage', {
+                method: 'get',
+                headers: getHeaders(true, false)
+            }).then(res => res.json())
+                .then(res2 => {
+                    this.setState({ 
+                        max: res1.maxSpaceBytes,
+                        now: res2.total 
+                    })
+                }).catch(err => {
+                    console.log('Error getting /api/usage for storage bar', err);
+                });
+
         }).catch(err => {
             console.log('Error getting /api/limit for storage bar', err);
         });
-
-        fetch('/api/usage', {
-            method: 'get',
-            headers: getHeaders(true, false)
-        }).then(res => res.json())
-            .then(res2 => {
-                this.setState({ now: res2.total })
-            }).catch(err => {
-                console.log('Error getting /api/usage for storage bar', err);
-            });
     }
 
     handleCancelAccount = () => {
