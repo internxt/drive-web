@@ -31,14 +31,25 @@ class FileCommanderItem extends React.Component {
     }
 
     handleDragStart = (event) => {
-        let data = {
-            type: event.currentTarget.dataset.type,
-            id: event.currentTarget.dataset.bridgeFileId
+        let dataset = event.currentTarget.dataset;
+        let data = {};
+
+        if (dataset.isfolder === "true") {
+            data = {
+                id: dataset.cloudFileId,
+                isFolder: dataset.isfolder,
+                type: 'folder'
+            }
+        } else if (dataset.isfolder === "false") {
+            data = {
+                id: dataset.bridgeFileId,
+                isFolder: dataset.isfolder,
+                type: dataset.type
+            }
         }
+
         event.dataTransfer.setData('text/plain', JSON.stringify(data));
-
         // Highlight back button only if is not root folder
-
     }
 
     handleDragOver = (event) => {
@@ -59,11 +70,17 @@ class FileCommanderItem extends React.Component {
     }
 
     handleDrop = (event) => {
-        // Move file when its dropped
-        var data = JSON.parse(event.dataTransfer.getData('text/plain'));
-        this.props.moveFile(data.id, this.props.id);
+        // Move file or folder when its dropped
         event.preventDefault();
         event.stopPropagation();
+        var data = JSON.parse(event.dataTransfer.getData('text/plain'));
+        
+        if (data.isFolder === "false") {
+            this.props.moveFile(data.id, this.props.id);
+        } else if (data.isFolder === "true") {
+            this.props.moveFolder(data.id, this.props.id);
+        }
+        
         this.setState({ dragDropStyle: '' });
     }
 
@@ -218,7 +235,7 @@ class FileCommanderItem extends React.Component {
                 onClick={() => this.props.selectHandler(this.props.id, false)}
                 onDoubleClick={(e) => { if (e.target.className.includes('FileCommanderItem')) { this.itemClickHandler(e); } }}
 
-                draggable={!this.props.isFolder}
+                draggable={true}
                 onDragStart={this.handleDragStart}
                 onDragOver={this.handleDragOver}
                 onDragLeave={this.handleDragLeave}

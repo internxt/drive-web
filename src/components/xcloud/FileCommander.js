@@ -107,7 +107,11 @@ class FileCommander extends React.Component {
         var data = JSON.parse(event.dataTransfer.getData('text/plain'));
 
         if (parentFolder) {
-            this.props.moveFile(data.id, parentFolder);
+            if (data.isFolder === "false") {
+                this.props.moveFile(data.id, parentFolder);
+            } else if (data.isFolder === "true") {
+                this.props.moveFolder(data.id, parentFolder);
+            }
         }
     }
 
@@ -229,6 +233,7 @@ class FileCommander extends React.Component {
                                 isLoading={!!item.isLoading}
                                 isDownloading={!!item.isDownloading}
                                 moveFile={this.props.moveFile}
+                                moveFolder={this.props.moveFolder}
                                 updateMeta={this.props.updateMeta}
                                 hasParentFolder={!inRoot}
                                 isFolder={item.isFolder}
