@@ -220,7 +220,17 @@ class Login extends React.Component<LoginProps> {
                 </Form.Group>
               </Form.Row>
             </Form>
+
+            
           </div>
+        </Container>
+
+        <Container className="login-container-box-forgot-password">
+          <p className="forgotPassword" onClick={e => {
+                history.push('/remove');
+              }}
+            >Forgot your password?</p>
+
         </Container>
       </div>
       );
