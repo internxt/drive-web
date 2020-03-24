@@ -96,21 +96,22 @@ class Remove extends React.Component<RemoveProps, RemoveState> {
             <p className="privacy-disclaimer">As specified during the sign up process, X Cloud encrypts your files, and only you have access to those. We never know your password, and thus, that way, only you can decrypt your account. For that reason, if you forget your password, we can't restore your account. What we can do, however, is to delete your account and erase all its files, so that you can sign up again. Please enter your email below so that we can process the account removal.</p>
 
             <Form>
-                <Form.Row style={{ paddingTop: '20px' }}>
+                <Form.Row style={{ paddingTop: '5px' }}>
+                
                     <Form.Group as={Col} controlId="email">
                         <Form.Control placeholder="Email address" type="email" required autoComplete="off" onChange={this.handleChangeRemove} />
                     </Form.Group>
                 </Form.Row>
 
-                <Form.Row className="form-register-submit">
-                    <Form.Group as={Col}>
+                <Form.Row className="form-register-submit" style={{ marginTop: '15px' }}>
+                    <Form.Group as={Col} style={{ paddingRight: 20 }}>
                         <button className="btn-block off" onClick={e => {
                             history.push('/login');
                             e.preventDefault();
                         }}>Back</button>
                     </Form.Group>
 
-                    <Form.Group as={Col}>
+                    <Form.Group as={Col} style={{ paddingLeft: 20 }}>
                         <Button className="on btn-block" disabled={!isValid} onClick={e => {
                             e.preventDefault();
                             this.sendDeactivationEmail(this.state.remove.email);
