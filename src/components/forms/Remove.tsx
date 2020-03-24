@@ -78,6 +78,9 @@ class Remove extends React.Component<NewProps, NewState> {
             .then(res => res.json())
             .then(res => {
                 this.setState({ currentContainer: this.deActivationContainer() });        
+            }).catch(err => {
+                alert('Error deactivating account');
+                console.log(err);
             });
     }
 
