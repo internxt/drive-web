@@ -75,7 +75,6 @@ class Remove extends React.Component<NewProps, NewState> {
             method: 'GET',
             headers: getHeaders(false, false)
         })
-            .then(res => res.json())
             .then(res => {
                 this.setState({ currentContainer: this.deActivationContainer() });        
             }).catch(err => {
