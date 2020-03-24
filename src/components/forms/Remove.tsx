@@ -5,11 +5,11 @@ import history from '../../lib/history';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { getHeaders } from '../../lib/auth'
 
-interface NewProps {
+interface RemoveProps {
     match: any
 }
 
-interface NewState {
+interface RemoveState {
     isAuthenticated?: Boolean
     remove: any
     currentContainer: any
@@ -18,9 +18,9 @@ interface NewState {
     isValid: Boolean
 }
 
-class Remove extends React.Component<NewProps, NewState> {
+class Remove extends React.Component<RemoveProps, RemoveState> {
 
-    constructor(props: NewProps) {
+    constructor(props: RemoveProps) {
         super(props);
 
         this.state = {
@@ -33,7 +33,7 @@ class Remove extends React.Component<NewProps, NewState> {
     }
 
     componentDidMount() {
-        this.setState({currentContainer: this.privacyContainer()});
+        this.setState({ currentContainer: this.privacyContainer() });
         if (isMobile) {
             if (isAndroid) {
                 window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
@@ -57,11 +57,18 @@ class Remove extends React.Component<NewProps, NewState> {
         removeState[event.target.id] = event.target.value;
 
         this.setState({ remove: removeState });
+
+        if (this.state.isValid !== this.validateForm()) {
+            this.setState({ isValid: this.validateForm() });
+            this.setState({ currentContainer: this.privacyContainer() });
+        }
+
     }
 
     validateEmail = (email: string) => {
-        var re = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-        return re.test(String(email).toLowerCase());
+        // eslint-disable-next-line no-control-regex
+        let emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/
+        return emailPattern.test(email.toLowerCase());
     }
 
     validateForm = () => {
@@ -74,13 +81,12 @@ class Remove extends React.Component<NewProps, NewState> {
         fetch(`/api/reset/${email}`, {
             method: 'GET',
             headers: getHeaders(false, false)
-        })
-            .then(res => {
-                this.setState({ currentContainer: this.deActivationContainer() });        
-            }).catch(err => {
-                alert('Error deactivating account');
-                console.log(err);
-            });
+        }).then(() => {
+            this.setState({ currentContainer: this.deActivationContainer() });
+        }).catch(err => {
+            alert('Error deactivating account');
+            console.log(err);
+        });
     }
 
     privacyContainer() {
@@ -92,12 +98,7 @@ class Remove extends React.Component<NewProps, NewState> {
             <Form>
                 <Form.Row style={{ paddingTop: '20px' }}>
                     <Form.Group as={Col} controlId="email">
-                        <Form.Control placeholder="Email address" type="email" required autoComplete="off" onChange={this.handleChangeRemove} onBlur={() => {
-                            if (this.state.isValid !== this.validateForm()) {
-                                this.setState({ isValid: this.validateForm() });
-                                this.setState({ currentContainer: this.privacyContainer() });
-                            }
-                        }}/>
+                        <Form.Control placeholder="Email address" type="email" required autoComplete="off" onChange={this.handleChangeRemove} />
                     </Form.Group>
                 </Form.Row>
 
