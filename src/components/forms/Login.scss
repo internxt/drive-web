@@ -8,6 +8,18 @@
   height: 510px;
 }
 
+.login-container-box-forgot-password {
+  margin: 0% auto auto auto;
+  background-color: white;
+  width: 550px !important;
+  padding: 40px !important;
+
+  &>p {
+    margin: -30px auto -30px auto;
+    font-size: 15px;
+  }
+}
+
 .login-container-box > .logo > img {
   height: 27.5px;
   width: 52.4px;
