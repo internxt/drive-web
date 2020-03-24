@@ -3,6 +3,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 
 import './App.scss';
 import Login from './components/forms/Login';
+import Remove from './components/forms/Remove';
 import New from './components/forms/New'
 import XCloud from './components/xcloud/XCloud';
 import Activation from './components/forms/Activation';
@@ -44,6 +45,7 @@ class App extends React.Component {
             handleKeySaved={this.handleKeySaved} />
           } />
           <Route exact path='/new' render={(props: any) => <New {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
+          <Route exact path='/remove' render={(props: any) => <Remove {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
           <Route exact path='/activate/:email' render={(props: any) => <New {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
           <Route exact path='/'><Redirect to="/login" /></Route>
           <Route component={NotFound} />
