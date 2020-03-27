@@ -37,7 +37,7 @@ class Login extends React.Component<LoginProps> {
       }
     }
 
-    // Check if recent login is passed and redirect user to X Cloud
+    // Check if recent login is passed and redirect user to Internxt Drive
     const mnemonic = localStorage.getItem('xMnemonic');
     const user = JSON.parse(localStorage.getItem('xUser') || '{}');
 
@@ -194,7 +194,7 @@ class Login extends React.Component<LoginProps> {
         <Container className="login-container-box">
           <p className="logo logo-login"><img src={logo} alt="Logo" /></p>
           <div className="container-register">
-            <p className="container-title">Sign in to X Cloud</p>
+            <p className="container-title">Sign in to Internxt Drive</p>
             <div className="menu-box">
               <button className="on">Sign in</button>
               <button className="off" onClick={(e) => {

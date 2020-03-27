@@ -185,7 +185,7 @@ class New extends React.Component<NewProps, NewState> {
 
     registerContainer() {
         return <div className="container-register">
-            <p className="container-title">Create an X Cloud account</p>
+            <p className="container-title">Create an Internxt Drive account</p>
             <div className="menu-box">
                 <button className="off" onClick={(e) => { history.push('/login') }}>Sign in</button>
                 <button className="on">Create account</button>
@@ -226,8 +226,8 @@ class New extends React.Component<NewProps, NewState> {
 
     privacyContainer() {
         return (<div className="container-register">
-            <p className="container-title">X Cloud Security</p>
-            <p className="privacy-disclaimer">X Cloud uses your password to encrypt and decrypt your files. Due to the secure nature of X Cloud, we don't know your password. That means that if you ever forget it, your files are gone forever. With us, you're the only owner of your files. We strongly suggest you to:</p>
+            <p className="container-title">Internxt Drive Security</p>
+            <p className="privacy-disclaimer">Internxt Drive uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt Drive, we don't know your password. That means that if you ever forget it, your files are gone forever. With us, you're the only owner of your files. We strongly suggest you to:</p>
             <ul className="privacy-remainders">
                 <li>Store your Password. Keep it safe and secure.</li>
                 <li>Keep an offline backup of your password.</li>
@@ -254,7 +254,7 @@ class New extends React.Component<NewProps, NewState> {
 
     passwordContainer() {
         return <div className="container-register">
-            <p className="container-title">Create an X Cloud account</p>
+            <p className="container-title">Create an Internxt Drive account</p>
             <div className="menu-box">
                 <button className="off" onClick={(e) => { /* this.setState({ currentContainer: this.loginContainer() }) */ }}>Sign in</button>
                 <button className="on">Create account</button>
@@ -295,7 +295,7 @@ class New extends React.Component<NewProps, NewState> {
     activationContainer() {
         return (<div className="container-register">
             <p className="container-title">Activation Email</p>
-            <p className="privacy-disclaimer">Please check your email and follow the instructions to activate your account so you can start using X Cloud.</p>
+            <p className="privacy-disclaimer">Please check your email and follow the instructions to activate your account so you can start using Internxt Drive.</p>
             <ul className="privacy-remainders" style={{ paddingTop: '20px' }}>By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy</ul>
             <button className="btn-block on" onClick={() => {
                 this.resendEmail(this.state.register.email);

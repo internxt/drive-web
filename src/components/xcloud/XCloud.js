@@ -654,7 +654,7 @@ class XCloud extends React.Component {
       if (!this.props.isAuthenticated) {
         return (
           <div className="App">
-            <h2>Please <Link to='/login'>login</Link> into your X Cloud account</h2>
+            <h2>Please <Link to='/login'>login</Link> into your Internxt Drive account</h2>
           </div>
         )
       }

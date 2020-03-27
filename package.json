@@ -1,5 +1,5 @@
 {
-  "name": "x-cloud-web",
+  "name": "drive-web",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -57,5 +57,5 @@
   "devDependencies": {
     "node-sass": "^4.13.1"
   },
-  "proxy": "https://cloud.internxt.com"
+  "proxy": "http://localhost:3007"
 }

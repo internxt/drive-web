@@ -63,7 +63,7 @@ class KeyPage extends React.Component<KeyPageProps, KeyPageState> {
     if (this.props.isAuthenticated || user) {
       // When exists user in local but isAuthenticated is not true, set props
       if (!this.props.isAuthenticated) { this.props.handleKeySaved(user); }
-      // In case user has activated storeMnemonic option, store on local and continue to X Cloud
+      // In case user has activated storeMnemonic option, store on local and continue to Internxt Drive
       if (this.props.user.storeMnemonic === true && this.props.user.mnemonic) {
         localStorage.setItem('xMnemonic', this.props.user.mnemonic);
       }
@@ -75,7 +75,7 @@ class KeyPage extends React.Component<KeyPageProps, KeyPageState> {
         // If storageMnemonic is set, ask for mnenomic. If not, ask user to select option
         if (this.props.user.storeMnemonic === false) {
           let inputMnemonic = prompt("Please enter yout mnemonic key");
-          // When user enter mnemonic, save it in local storage for X Cloud uses
+          // When user enter mnemonic, save it in local storage for Internxt Drive uses
           if (inputMnemonic) {
             localStorage.setItem('xMnemonic', inputMnemonic);
           }
@@ -141,7 +141,7 @@ class KeyPage extends React.Component<KeyPageProps, KeyPageState> {
               Your encryption key is below. Please save your key!
             </h2>
             <h3 className="key-subtitle">
-              You will need your key for the first time you log into your <br /> X Cloud
+              You will need your key for the first time you log into your <br /> Internxt Drive
                 with a new device. Choose one of the options below.
             </h3>
 
