@@ -19,6 +19,8 @@ import PopupShare from '../PopupShare'
 import './XCloud.scss'
 
 import { getHeaders } from '../../lib/auth'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -62,7 +64,7 @@ class XCloud extends React.Component {
               this.getFolderContent(resultId);
             }).catch((error) => {
               const errorMsg = error ? error : '';
-              alert('User initialization error ' + errorMsg);
+              toast.warn('User initialization error ' + errorMsg);
               history.push('/login');
             })
           } else { this.getFolderContent(this.props.user.root_folder_id); }
@@ -146,9 +148,9 @@ class XCloud extends React.Component {
         this.getFolderContent(this.state.currentFolderId, false);
       }).catch(err => {
         if (err.includes('already exists')) {
-          alert('Folder with same name already exists')
+          toast.warn('Folder with same name already exists');
         } else {
-          alert(err)
+          toast.warn(`"${err}"`);
         }
       })
     }
@@ -285,7 +287,7 @@ class XCloud extends React.Component {
       } else {
         // Error moving file
         response.json().then((error) => {
-          alert(`Error moving folder: ${error.message}`)
+          toast.warn(`Error moving folder: ${error.message}`);
         })
       }
     })
@@ -307,7 +309,7 @@ class XCloud extends React.Component {
       } else {
         // Error moving file
         response.json().then((error) => {
-          alert(`Error moving file: ${error.message}`)
+          toast.warn(`Error moving file: ${error.message}`);
         })
       }
     })
@@ -337,7 +339,7 @@ class XCloud extends React.Component {
           this.setState({ rateLimitModal: true })
         } else {
           err.json().then(res => {
-            alert('Error downloading file:\n' + err.status + ' - ' + err.statusText + '\n' + res.message + '\nFile id: ' + id);
+            toast.warn('Error downloading file:\n' + err.status + ' - ' + err.statusText + '\n' + res.message + '\nFile id: ' + id);
           })
         }
         resolve()
@@ -428,7 +430,7 @@ class XCloud extends React.Component {
         if (err) {
           console.error('Error uploading:', err)
           reject(err)
-          alert(err)
+          toast.warn(`"${err}"`);
         } else if (parentFolderId === currentFolderId) {
           resolve()
           this.getFolderContent(currentFolderId);
@@ -449,7 +451,7 @@ class XCloud extends React.Component {
     if (selectedItems && selectedItems.length === 1 && !selectedItems[0].isFolder) {
       this.setState({ popupShareOpened: true });
     } else {
-      alert("Please select one file to share");
+      toast.warn("Please select one file to share");
     }
   }
 

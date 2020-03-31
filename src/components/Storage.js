@@ -17,6 +17,8 @@ import logo from '../assets/logo.svg';
 import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
 
 import { getHeaders } from '../lib/auth'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class Storage extends React.Component {
     state = {
@@ -80,7 +82,7 @@ class Storage extends React.Component {
             .then(res => {
                 this.setState({ modalDeleteAccountShow: false });
             }).catch(err => {
-                alert('Error deleting account');
+                toast.warn('Error deleting account');
                 console.log(err);
             });
     }

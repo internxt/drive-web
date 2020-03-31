@@ -12,6 +12,7 @@ import Deactivation from './components/forms/Deactivation';
 import Reset from './components/forms/Reset';
 import Storage from './components/Storage';
 import Security from './components/Security';
+import { ToastContainer } from 'react-toastify';
 
 class App extends React.Component {
   state = {
@@ -50,6 +51,17 @@ class App extends React.Component {
           <Route exact path='/'><Redirect to="/login" /></Route>
           <Route component={NotFound} />
         </Switch>
+
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={true}
+          rtl={false}
+          draggable={true}
+          pauseOnHover={true}
+        />
       </div>
     )
   }

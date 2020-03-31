@@ -7,6 +7,8 @@ import Icon from '../../assets/Icon'
 import ActivityIndicator from '../ActivityIndicator'
 import SanitizeFilename from 'sanitize-filename'
 import TimeAgo from 'react-timeago'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class FileCommanderItem extends React.Component {
     constructor(props, state) {
@@ -104,7 +106,7 @@ class FileCommanderItem extends React.Component {
             const sanitizedFilename = SanitizeFilename(this.state.itemName)
 
             if (sanitizedFilename !== this.state.itemName) {
-                return alert('Invalid file name')
+                return toast.warn('Invalid file name');
             }
         }
 

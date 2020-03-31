@@ -9,6 +9,8 @@ import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 
 import { getHeaders } from '../../lib/auth'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface LoginProps {
   email?: string
@@ -109,7 +111,7 @@ class Login extends React.Component<LoginProps> {
       if (err.message.includes('not activated') && this.validateEmail(this.state.email)) {
         history.push(`/activate/${this.state.email}`);
       } else {
-        alert(err);
+        toast.warn(`"${err}"`);
       }
     });
   }
@@ -167,23 +169,23 @@ class Login extends React.Component<LoginProps> {
             });
           })
             .catch(err => {
-              alert(err.error ? err.error : err);
+              toast.warn(`"${err.error ? err.error : err}"`);
             });
         });
       } else if (response.status === 400) {
         // Manage other cases:
         // username / password do not match, user activation required...
         response.json().then((body) => {
-          alert(body.error);
+          toast.warn(body.error);
         });
       } else {
         // Manage user does not exist
-        alert("This account doesn't exists");
+        toast.warn("This account doesn't exists");
       }
     })
       .catch(err => {
         console.error("Login error. " + err);
-        alert('Login error');
+        toast.warn('Login error');
       });
   }
 
