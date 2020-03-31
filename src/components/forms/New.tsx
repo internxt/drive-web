@@ -7,6 +7,8 @@ import history from '../../lib/history';
 import { encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { getHeaders } from '../../lib/auth'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const bip39 = require('bip39')
 
@@ -155,7 +157,7 @@ class New extends React.Component<NewProps, NewState> {
                 response.json().then((body) => {
                     // Manage account already exists (error 400)
                     const { message } = body;
-                    alert(message);
+                    toast.warn(`"${message}"`);
                     this.setState({ validated: false });
                 })
             }
@@ -176,10 +178,10 @@ class New extends React.Component<NewProps, NewState> {
             if (res.response.status !== 200) {
                 throw res.data;
             } else {
-                alert(`Activation email sent to ${email}`);
+                toast.warn(`Activation email sent to ${email}`);
             }
         }).catch(err => {
-            alert(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
+            toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
         });
     }
 

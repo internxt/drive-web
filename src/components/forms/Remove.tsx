@@ -4,6 +4,8 @@ import logo from '../../assets/logo.svg';
 import history from '../../lib/history';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { getHeaders } from '../../lib/auth'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface RemoveProps {
     match: any
@@ -84,7 +86,7 @@ class Remove extends React.Component<RemoveProps, RemoveState> {
         }).then(() => {
             this.setState({ currentContainer: this.deActivationContainer() });
         }).catch(err => {
-            alert('Error deactivating account');
+            toast.warn('Error deactivating account');
             console.log(err);
         });
     }

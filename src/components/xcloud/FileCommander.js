@@ -7,6 +7,8 @@ import './FileCommander.scss'
 import FileCommanderItem from './FileCommanderItem';
 import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown arrow.svg';
 import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SORT_TYPES = {
     DATE_ADDED: 'Date_Added',
@@ -117,31 +119,39 @@ class FileCommander extends React.Component {
 
     handleDragLeave = (e) => { this.setState({ dragDropStyle: '' }) }
 
+    isAcceptableSize = (size) => {
+        return parseInt(size) <= 209715200 ? true : false;
+    }
+
     handleDrop = (e) => {
         e.preventDefault()
         let items = e.dataTransfer.items;
 
-        async.map(items, (item, nextItem) => {
-            let entry = item ? item.webkitGetAsEntry() : null
-            if (entry) {
-                this.traverseFileTree(entry).then(() => {
+        if (this.isAcceptableSize(e.dataTransfer.files[0].size)) {
+            async.map(items, (item, nextItem) => {
+                let entry = item ? item.webkitGetAsEntry() : null
+                if (entry) {
+                    this.traverseFileTree(entry).then(() => {
+                        nextItem()
+                    }).catch(err => {
+                        nextItem(err)
+                    })
+                } else {
                     nextItem()
-                }).catch(err => {
-                    nextItem(err)
-                })
-            } else {
-                nextItem()
-            }
-        }, (err) => {
-            if (err) {
-                let errmsg = err.error ? err.error : err
-                if (errmsg.includes('already exist')) {
-                    errmsg = 'Folder with same name already exists'
                 }
-                alert(errmsg)
-            }
-                this.props.getFolderContent(this.props.currentFolderId)
-        })
+            }, (err) => {
+                if (err) {
+                    let errmsg = err.error ? err.error : err
+                    if (errmsg.includes('already exist')) {
+                        errmsg = 'Folder with same name already exists'
+                    }
+                    toast.warn(`"${errmsg}"`);
+                }
+                    this.props.getFolderContent(this.props.currentFolderId)
+            })
+        } else {
+            toast.warn("File too large.\nYou can only upload or download files of up to 200 MB through the web app");
+        }
 
         e.stopPropagation()
         this.setState({ dragDropStyle: '' })

@@ -10,6 +10,8 @@ import gglplay from '../assets/google-play.svg';
 import history from '../lib/history';
 
 import { getHeaders } from '../lib/auth'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class Security extends React.Component {
 
@@ -121,7 +123,7 @@ class Security extends React.Component {
                     });
                 }
             }).catch(err => {
-                alert('Error. Please, try again in a few seconds.');
+                toast.warn('Error. Please, try again in a few seconds.');
             });
         }
     }
@@ -207,7 +209,7 @@ class Security extends React.Component {
     store2FA(e) {
         e.preventDefault();
         if (this.state.checkKey !== this.state.code) {
-            alert('You must insert your backup key in order to validate the 2FA configuration');
+            toast.warn('You must insert your backup key in order to validate the 2FA configuration');
             return;
         }
 
@@ -220,7 +222,7 @@ class Security extends React.Component {
             })
         }).then(res => {
             if (res.status === 200) {
-                alert('Your Two-Factor Authentication has been activated!');
+                toast.warn('Your Two-Factor Authentication has been activated!');
                 this.setState({ showButtons: false });
                 this.componentDidMount();
             } else {
@@ -234,9 +236,9 @@ class Security extends React.Component {
         }).catch(err => {
             // All exceptions will be catched here
             if (err.error) {
-                alert(err.error);
+                toast.warn(err.error);
             } else {
-                alert('An error ocurred while trying to store your 2FA code. Try again later.');
+                toast.warn('An error ocurred while trying to store your 2FA code. Try again later.');
             }
         });
     }
@@ -261,14 +263,14 @@ class Security extends React.Component {
             if (res.res.status !== 200) {
                 throw res.data;
             } else {
-                alert('Your Two-Factor Authentication has been disabled.');
+                toast.warn('Your Two-Factor Authentication has been disabled.');
                 this.componentDidMount();
             }
         }).catch(err => {
             if (err.error) {
-                alert(err.error);
+                toast.warn(err.error);
             } else {
-                alert('Internal server error. Try again later.');
+                toast.warn('Internal server error. Try again later');
             }
         });
     }

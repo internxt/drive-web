@@ -29,6 +29,7 @@
     "react-scripts": "3.4.0",
     "react-selectable": "^2.0.2",
     "react-timeago": "^4.4.0",
+    "react-toastify": "^5.5.0",
     "reactjs-popup": "^1.5.0",
     "sanitize-filename": "^1.6.3",
     "typescript": "~3.7.2"
