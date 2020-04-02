@@ -187,7 +187,7 @@ class New extends React.Component<NewProps, NewState> {
 
     registerContainer() {
         return <div className="container-register">
-            <p className="container-title">Create an Internxt Drive account</p>
+            <p className="container-title">Create an Internxt account</p>
             <div className="menu-box">
                 <button className="off" onClick={(e) => { history.push('/login') }}>Sign in</button>
                 <button className="on">Create account</button>
