@@ -256,7 +256,7 @@ class New extends React.Component<NewProps, NewState> {
 
     passwordContainer() {
         return <div className="container-register">
-            <p className="container-title">Create an Internxt Drive account</p>
+            <p className="container-title">Create an Internxt account</p>
             <div className="menu-box">
                 <button className="off" onClick={(e) => { /* this.setState({ currentContainer: this.loginContainer() }) */ }}>Sign in</button>
                 <button className="on">Create account</button>
