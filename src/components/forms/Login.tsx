@@ -196,7 +196,7 @@ class Login extends React.Component<LoginProps> {
         <Container className="login-container-box">
           <p className="logo logo-login"><img src={logo} alt="Logo" /></p>
           <div className="container-register">
-            <p className="container-title">Sign in to Internxt Drive</p>
+            <p className="container-title">Sign in to Internxt</p>
             <div className="menu-box">
               <button className="on">Sign in</button>
               <button className="off" onClick={(e) => {
