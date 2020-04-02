@@ -94,7 +94,7 @@ class Remove extends React.Component<RemoveProps, RemoveState> {
     privacyContainer() {
         const isValid = this.validateForm();
         return (<div className="container-register">
-            <p className="container-title">Internxt Drive Security</p>
+            <p className="container-title">Internxt Security</p>
             <p className="privacy-disclaimer">As specified during the sign up process, Internxt Drive encrypts your files, and only you have access to those. We never know your password, and thus, that way, only you can decrypt your account. For that reason, if you forget your password, we can't restore your account. What we can do, however, is to <span style={{ fontWeight: 'bold' }}>delete your account and erase all its files</span>, so that you can sign up again. Please enter your email below so that we can process the account removal.</p>
 
             <Form>
