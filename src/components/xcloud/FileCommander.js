@@ -27,7 +27,8 @@ class FileCommander extends React.Component {
             currentCommanderItems: this.props.currentCommanderItems,
             namePath: this.props.namePath,
             selectedSortType: SORT_TYPES.DATE_ADDED,
-            dragDropStyle: ''
+            dragDropStyle: '',
+            treeSize: 0
         }
     }
 
@@ -126,42 +127,88 @@ class FileCommander extends React.Component {
     handleDrop = (e) => {
         e.preventDefault()
         let items = e.dataTransfer.items;
+        
+        async.map(items, (item, nextItem) => {
+            let entry = item ? item.webkitGetAsEntry() : null
+            if (entry) {
+                this.getTotalTreeSize(entry).then(() => {
 
-        if (this.isAcceptableSize(e.dataTransfer.files[0].size)) {
-            async.map(items, (item, nextItem) => {
-                let entry = item ? item.webkitGetAsEntry() : null
-                if (entry) {
-                    this.traverseFileTree(entry).then(() => {
-                        nextItem()
-                    }).catch(err => {
-                        nextItem(err)
-                    })
-                } else {
-                    nextItem()
+                    if (this.isAcceptableSize(this.state.treeSize)) {
+                        this.traverseFileTree(entry).then(() => {
+                            nextItem()
+                        }).catch(err => {
+                            nextItem(err)
+                        })
+                    } else {
+                        toast.warn(`File too large.\nYou can only upload or download files of up to 200 MB through the web app`);
+                    }    
+                
+                }).catch((err) => {});
+
+            } else {
+                nextItem()
+            }
+        }, (err) => {
+            if (err) {
+                let errmsg = err.error ? err.error : err
+                if (errmsg.includes('already exist')) {
+                    errmsg = 'Folder with same name already exists'
                 }
-            }, (err) => {
-                if (err) {
-                    let errmsg = err.error ? err.error : err
-                    if (errmsg.includes('already exist')) {
-                        errmsg = 'Folder with same name already exists'
-                    }
-                    toast.warn(`"${errmsg}"`);
-                }
-                    this.props.getFolderContent(this.props.currentFolderId)
-            })
-        } else {
-            toast.warn("File too large.\nYou can only upload or download files of up to 200 MB through the web app");
-        }
+                toast.warn(`"${errmsg}"`);
+            }
+            
+            this.props.getFolderContent(this.props.currentFolderId)
+        })
 
         e.stopPropagation()
         this.setState({ dragDropStyle: '' })
+    }
+
+    setTreeSize = (newSize) => {
+        return new Promise((resolve, reject) => {
+            this.setState({ treeSize: newSize });
+            resolve(true);
+        })
+    }
+
+    getTotalTreeSize = (item, resetCountSize = true) => {
+        return new Promise((resolve, reject) => {
+            if (resetCountSize) {
+                this.setState({ treeSize: 0 });
+            }
+
+            if (item.isFile) {
+                item.file((file) => { 
+                    this.setTreeSize(this.state.treeSize + file.size).then(() => {
+                        resolve(this.state.treeSize);
+                    }).catch(() => {});
+                });
+            } else if (item.isDirectory) {
+                let dirReader = item.createReader();
+
+                dirReader.readEntries((entries) => {
+                    async.eachSeries(entries, (entry, nextEntry) => {
+                        this.getTotalTreeSize(entry, false)
+                            .then(() => nextEntry())
+                            .catch(nextEntry);
+                    }, (err) => {
+                        if (err) { reject(err) }
+                        else { resolve() }
+                    })
+                });
+            }
+        })
     }
 
     traverseFileTree = (item, path = "", uuid = null) => {
         return new Promise((resolve, reject) => {
             if (item.isFile) {
                 // Get file
-                item.file((file) => { this.props.uploadDroppedFile([file], uuid).then(resolve).catch(reject); })
+                item.file((file) => { 
+                    this.props.uploadDroppedFile([file], uuid)
+                        .then(resolve)
+                        .catch(reject);
+                });
             } else if (item.isDirectory) {
                 this.props.createFolderByName(item.name, uuid).then(data => {
                     let folderParent = data.id;
