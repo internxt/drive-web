@@ -131,8 +131,8 @@ class FileCommander extends React.Component {
         async.map(items, (item, nextItem) => {
             let entry = item ? item.webkitGetAsEntry() : null
             if (entry) {
-                this.getTotalTreeSize(entry).then(() => {
 
+                this.getTotalTreeSize(entry).then(() => {
                     if (this.isAcceptableSize(this.state.treeSize)) {
                         this.traverseFileTree(entry).then(() => {
                             nextItem()
@@ -173,12 +173,12 @@ class FileCommander extends React.Component {
 
     getTotalTreeSize = (item, resetCountSize = true) => {
         return new Promise((resolve, reject) => {
-            if (resetCountSize) {
-                this.setState({ treeSize: 0 });
-            }
-
             if (item.isFile) {
                 item.file((file) => { 
+                    if (resetCountSize) {
+                        this.setState({ treeSize: 0 });
+                    }
+
                     this.setTreeSize(this.state.treeSize + file.size).then(() => {
                         resolve(this.state.treeSize);
                     }).catch(() => {});
