@@ -458,6 +458,8 @@ class XCloud extends React.Component {
   deleteItems = () => {
     if (this.getSelectedItems().length > 0) {
       this.setState({ showDeleteItemsPopup: true });
+    } else {
+      toast.warn("Please select at least one file or folder to delete");
     }
   }
 
