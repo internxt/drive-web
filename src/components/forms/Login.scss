@@ -78,6 +78,10 @@ outline: transparent;
   height: 49px;
 }
 
+.login-container-box * button:disabled {
+  opacity: 0.5;
+}
+
 .privacy-disclaimer {
   color: #737880;
   font-size: 15px;
