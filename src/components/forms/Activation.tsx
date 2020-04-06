@@ -5,6 +5,8 @@ import { Alert } from 'react-bootstrap';
 import history from '../../lib/history';
 
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface ActivationProps {
   match: any
@@ -41,9 +43,16 @@ class Activation extends React.Component<ActivationProps & RouteProps, Activatio
         // Wrong activation
         this.setState({ isActivated: false })
       }
+
+      if (!isMobile) {
+        this.redirect();
+      }
     }).catch(error => {
       this.setState({ isActivated: false })
       console.log('Activation error: ' + error);
+      if (!isMobile) {
+        this.redirect();
+      }
     })
   }
 
@@ -56,33 +65,42 @@ class Activation extends React.Component<ActivationProps & RouteProps, Activatio
         window.location.href = "https://itunes.apple.com/us/app/x-cloud-secure-file-storage/id1465869889";
       }
     } else {
+      if (this.state.isActivated) {
+        toast.info('Your account has been activated successfully!', {className: 'xcloud-toast-info'})
+      } else {
+        toast.warn('Invalid activation code')
+        toast.warn('Your activation code is invalid. Maybe you have used this link before and your account is already activated.')
+      }
       history.push("/");
     }
   }
 
   render() {
+    if (!isMobile) {
+      return "";
+    } else {
+      if (this.state.isActivated) {
+        setTimeout(this.redirect, 1000);
+      }
 
-    if (this.state.isActivated === true) {
-      setTimeout(this.redirect, 1000);
+      return <Alert className="Alert" variant={this.state.isActivated ? "success" : "danger"}>
+        {this.state.isActivated == null ? <div>
+          <h3>Activate account</h3>
+          <p>Activating...</p>
+        </div> : ''}
+
+        {this.state.isActivated ? <div>
+          <h3>Your account has successfully activated!</h3>
+          <p>Now you will be redirected to <Link to="/login">login</Link>...</p>
+        </div> : ''}
+
+        {this.state.isActivated === false ? <div>
+          <h3>Invalid activation code</h3>
+          <p>Your activation code is invalid. Maybe you have used this link before and your account is already activated.</p>
+          <p>Check you have access to your account: <a href="/login">login</a></p>
+        </div> : ""}
+      </Alert>
     }
-
-    return <Alert className="Alert" variant={this.state.isActivated ? "success" : "danger"}>
-      {this.state.isActivated == null ? <div>
-        <h3>Activate account</h3>
-        <p>Activating...</p>
-      </div> : ''}
-
-      {this.state.isActivated ? <div>
-        <h3>Your account has successfully activated!</h3>
-        <p>Now you will be redirected to <Link to="/login">login</Link>...</p>
-      </div> : ''}
-
-      {this.state.isActivated === false ? <div>
-        <h3>Invalid activation code</h3>
-        <p>Your activation code is invalid. Maybe you have used this link before and your account is already activated.</p>
-        <p>Check you have access to your account: <a href="/login">login</a></p>
-      </div> : ""}
-    </Alert>
   }
 }
 

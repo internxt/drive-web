@@ -61,6 +61,7 @@ class App extends React.Component {
           rtl={false}
           draggable={true}
           pauseOnHover={true}
+          className=""
         />
       </div>
     )
