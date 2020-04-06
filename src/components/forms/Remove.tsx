@@ -110,14 +110,14 @@ class Remove extends React.Component<RemoveProps, RemoveState> {
 
                 <Form.Row className="form-register-submit" style={{ marginTop: '15px' }}>
                     <Form.Group as={Col} style={{ paddingRight: 20 }}>
-                        <button className="btn-block off" onClick={e => {
+                        <Button className="btn-block off" onClick={e => {
                             history.push('/login');
                             e.preventDefault();
-                        }}>Back</button>
+                        }}>Back</Button>
                     </Form.Group>
 
                     <Form.Group as={Col} style={{ paddingLeft: 20 }}>
-                        <button className="on btn-block" disabled={!isValid} type="submit">Continue</button>
+                        <Button className="on btn-block" disabled={!isValid} type="submit">Continue</Button>
                     </Form.Group>
                 </Form.Row>
             </Form>
