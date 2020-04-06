@@ -199,7 +199,7 @@ class Login extends React.Component<LoginProps> {
             <p className="container-title">Sign in to Internxt</p>
             <div className="menu-box">
               <button className="on">Sign in</button>
-              <button className="off" onClick={(e) => {
+              <button className="off" onClick={(e: any) => {
                 history.push('/new');
               }}>Create account</button>
             </div>
@@ -209,7 +209,7 @@ class Login extends React.Component<LoginProps> {
             }}>
               <Form.Row>
                 <Form.Group as={Col} controlId="email">
-                  <Form.Control placeholder="Email address" required type="email" name="email" autoComplete="username" value={this.state.email} onChange={this.handleChange} />
+                  <Form.Control placeholder="Email address" required type="email" name="email" autoComplete="username" value={this.state.email} onChange={this.handleChange} autoFocus />
                 </Form.Group>
               </Form.Row>
               <Form.Row>
@@ -224,15 +224,15 @@ class Login extends React.Component<LoginProps> {
               </Form.Row>
             </Form>
 
-            
+
           </div>
         </Container>
 
         <Container className="login-container-box-forgot-password">
-          <p className="forgotPassword" onClick={e => {
-                history.push('/remove');
-              }}
-            >Forgot your password?</p>
+          <p className="forgotPassword" onClick={(e: any) => {
+            history.push('/remove');
+          }}
+          >Forgot your password?</p>
 
         </Container>
       </div>

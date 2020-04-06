@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Container, Form, Col } from "react-bootstrap";
+import { Container, Form, Col, Button } from "react-bootstrap";
 
 import logo from '../../assets/logo.svg';
 import history from '../../lib/history';
@@ -105,7 +105,10 @@ class New extends React.Component<NewProps, NewState> {
         // Pass length check
         if (this.state.register.password.length < 1 && this.state.register.confirmPassword.length < 1) isValid = false;
         // Pass and confirm pass validation
-        if (this.state.register.password !== this.state.register.confirmPassword) isValid = false;
+        if (this.state.register.password !== this.state.register.confirmPassword) {
+            toast.warn('Password mismatch')
+            isValid = false
+        }
 
         return isValid;
     }
@@ -206,15 +209,15 @@ class New extends React.Component<NewProps, NewState> {
             }}>
                 <Form.Row>
                     <Form.Group as={Col} controlId="name">
-                        <Form.Control placeholder="First name" required autoComplete="name" onChange={this.handleChangeRegister} />
+                        <Form.Control placeholder="First name" required autoComplete="name" onChange={this.handleChangeRegister} value={this.state && this.state.register.name} autoFocus />
                     </Form.Group>
                     <Form.Group as={Col} controlId="lastname">
-                        <Form.Control placeholder="Last name" required autoComplete="lastname" onChange={this.handleChangeRegister} />
+                        <Form.Control placeholder="Last name" required autoComplete="lastname" onChange={this.handleChangeRegister} value={this.state && this.state.register.lastname} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
                     <Form.Group as={Col} controlId="email">
-                        <Form.Control placeholder="Email address" type="email" required autoComplete="email" onChange={this.handleChangeRegister} />
+                        <Form.Control placeholder="Email address" type="email" required autoComplete="email" onChange={this.handleChangeRegister} value={this.state && this.state.register.email} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row className="form-register-submit">
@@ -234,19 +237,19 @@ class New extends React.Component<NewProps, NewState> {
                 <li>Store your Password. Keep it safe and secure.</li>
                 <li>Keep an offline backup of your password.</li>
             </ul>
-            <Form>
+            <Form onSubmit={(e: any) => {
+                e.preventDefault();
+                this.setState({ currentContainer: this.passwordContainer() });
+            }}>
                 <Form.Row>
                     <Form.Group as={Col} controlId="name">
-                        <button className="btn-block off" onClick={e => {
+                        <button className="btn-block off" onClick={(e: any) => {
                             this.setState({ currentContainer: this.registerContainer() });
                             e.preventDefault();
                         }}>Back</button>
                     </Form.Group>
                     <Form.Group as={Col}>
-                        <button className="btn-block on" onClick={e => {
-                            e.preventDefault();
-                            this.setState({ currentContainer: this.passwordContainer() });
-                        }}>Continue</button>
+                        <button className="btn-block on" type="submit" autoFocus>Continue</button>
                     </Form.Group>
                 </Form.Row>
 
@@ -258,7 +261,7 @@ class New extends React.Component<NewProps, NewState> {
         return <div className="container-register">
             <p className="container-title">Create an Internxt account</p>
             <div className="menu-box">
-                <button className="off" onClick={(e) => { /* this.setState({ currentContainer: this.loginContainer() }) */ }}>Sign in</button>
+                <button className="off" onClick={(e: any) => { /* this.setState({ currentContainer: this.loginContainer() }) */ }}>Sign in</button>
                 <button className="on">Create account</button>
             </div>
             <Form className="form-register" onSubmit={(e: any) => {
@@ -269,9 +272,9 @@ class New extends React.Component<NewProps, NewState> {
                 }
             }}>
                 <Form.Row>
+                    <Form.Control type="hidden" name="username" autoComplete="username" value={this.state.register.email} />
                     <Form.Group as={Col} controlId="password">
-                        <Form.Control type="hidden" name="username" autoComplete="username" value={this.state.register.email} />
-                        <Form.Control type="password" required placeholder="Password" autoComplete="new-password" onChange={this.handleChangeRegister} />
+                        <Form.Control type="password" required placeholder="Password" autoComplete="new-password" onChange={this.handleChangeRegister} autoFocus />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
@@ -281,7 +284,7 @@ class New extends React.Component<NewProps, NewState> {
                 </Form.Row>
                 <Form.Row className="form-register-submit">
                     <Form.Group as={Col}>
-                        <button className="btn-block off" onClick={e => {
+                        <button className="btn-block off" onClick={(e: any) => {
                             this.setState({ currentContainer: this.privacyContainer() });
                             e.preventDefault();
                         }}>Back</button>

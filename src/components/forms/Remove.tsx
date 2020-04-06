@@ -97,11 +97,14 @@ class Remove extends React.Component<RemoveProps, RemoveState> {
             <p className="container-title">Internxt Security</p>
             <p className="privacy-disclaimer">As specified during the sign up process, Internxt Drive encrypts your files, and only you have access to those. We never know your password, and thus, that way, only you can decrypt your account. For that reason, if you forget your password, we can't restore your account. What we can do, however, is to <span style={{ fontWeight: 'bold' }}>delete your account and erase all its files</span>, so that you can sign up again. Please enter your email below so that we can process the account removal.</p>
 
-            <Form>
+            <Form onSubmit={(e: any) => {
+                e.preventDefault();
+                this.sendDeactivationEmail(this.state.remove.email);
+            }}>
                 <Form.Row style={{ paddingTop: '5px' }}>
-                
+
                     <Form.Group as={Col} controlId="email">
-                        <Form.Control placeholder="Email address" type="email" required autoComplete="off" onChange={this.handleChangeRemove} />
+                        <Form.Control placeholder="Email address" type="email" required autoComplete="off" onChange={this.handleChangeRemove} autoFocus />
                     </Form.Group>
                 </Form.Row>
 
@@ -114,10 +117,7 @@ class Remove extends React.Component<RemoveProps, RemoveState> {
                     </Form.Group>
 
                     <Form.Group as={Col} style={{ paddingLeft: 20 }}>
-                        <Button className="on btn-block" disabled={!isValid} onClick={e => {
-                            e.preventDefault();
-                            this.sendDeactivationEmail(this.state.remove.email);
-                        }}>Continue</Button>
+                        <button className="on btn-block" disabled={!isValid} type="submit">Continue</button>
                     </Form.Group>
                 </Form.Row>
             </Form>
