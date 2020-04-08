@@ -1,6 +1,10 @@
 import * as React from "react";
 import { Alert, Container } from 'react-bootstrap';
 import axios from 'axios';
+import history from '../../lib/history';
+import { isMobile } from 'react-device-detect'
+import { toast, ToastPosition } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface DeactivationProps {
     match: any
@@ -20,7 +24,13 @@ class Deactivation extends React.Component<DeactivationProps> {
     ClearAndRedirect = () => {
         console.log('Clear and redirect')
         localStorage.clear();
-        this.setState({ result: this.confirmDeactivation() });
+
+        if (!isMobile) {
+            toast.info('Your account has been deactivated');
+            history.push('/');
+        } else {
+            this.setState({ result: this.confirmDeactivation() });
+        }
     }
 
 
@@ -30,9 +40,13 @@ class Deactivation extends React.Component<DeactivationProps> {
             this.ClearAndRedirect()
         }).catch(err => {
             console.log('GET ERROR', err);
-            this.setState({
-                result: this.invalidDeactivationToken()
-            });
+
+            if (!isMobile) {
+                toast.warn('Invalid token');
+                history.push('/');
+            } else {
+                this.setState({ result: this.invalidDeactivationToken() });
+            }
         });
     }
 
@@ -41,16 +55,27 @@ class Deactivation extends React.Component<DeactivationProps> {
         if (this.IsValidToken(this.state.token)) {
             this.ConfirmDeactivateUser(this.state.token);
         } else {
-            this.setState({ result: this.invalidDeactivationToken() });
+
+            if (!isMobile) {
+                toast.warn('Invalid token');
+                history.push('/');
+            } else {
+                this.setState({ result: this.invalidDeactivationToken() });
+            }
         }
     }
 
     render() {
-        return <Container>
-            <Alert variant="danger">
-                {this.state.result}
-            </Alert>
-        </Container>;
+
+        if (!isMobile) {
+            return "";
+        } else {
+            return <Container>
+                        <Alert variant="danger">
+                            {this.state.result}
+                        </Alert>
+                   </Container>;
+        }
     }
 
     confirmDeactivation() {
