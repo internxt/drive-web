@@ -36,7 +36,10 @@ class PopupShare extends React.Component<PopupShareProps> {
         return new Promise((resolve, reject) => {
             fetch(`/api/storage/share/file/${fileId}`, {
                 method: 'POST',
-                headers: getHeaders(true, true)
+                headers: getHeaders(true, true),
+                body: JSON.stringify({
+                    'isFolder': this.props.item.isFolder ? 'true' : 'false'
+                })
             }).then((res: Response) => {
                 if (res.status !== 200) { throw res }
                 return res.json()
@@ -51,27 +54,37 @@ class PopupShare extends React.Component<PopupShareProps> {
     }
 
     componentDidMount() {
-        this.generateShareLink(this.props.item.fileId).then(link => {
+        let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
+
+        this.generateShareLink(fileId).then(link => {
             this.setState({ link: link });
         });
     }
 
     render() {
+        const fileType = this.props.item.isFolder ? '' : this.props.item.type.toUpperCase();
+        const fileName = this.props.item.isFolder ? this.props.item.name : `${this.props.item.name}.${this.props.item.type}`;
+
         return <Popup open={this.props.open} onClose={this.props.onClose}>
             <div className="ShareContainer">
 
                 <div className="ShareHeader">
                     <div>
-                        <div className="Icon">
-                            <div className="Extension">{this.props.item.type.toUpperCase()}</div>
+                        <div className={this.props.item.isFolder ? 'Icon-image' : 'Icon'}>
+                            {
+                            this.props.item.isFolder ? 
+                                  <img src="/Folder-Blue.svg" className="Folder" />
+                                : <div className="Extension">{fileType}</div>
+                            }
+                            
                         </div>
                     </div>
-                    <div className="ShareName"><p>{this.props.item.name}.{this.props.item.type}</p></div>
+                    <div className="ShareName"><p>{fileName}</p></div>
                     <div className="ShareClose"><img src={CloseIcon} onClick={e => { this.props.onClose() }} alt="Close" /></div>
                 </div>
 
                 <div className="ShareBody">
-                    <div>Share your Drive file with this single-use private link</div>
+                    <div>Share your Drive {this.props.item.isFolder ? 'folder' : 'file'} with this single-use private link</div>
                 </div>
 
                 <div className="ShareFooter">
