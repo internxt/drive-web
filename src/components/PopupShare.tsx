@@ -4,6 +4,7 @@ import './PopupShare.scss'
 import history from '../lib/history'
 
 import CloseIcon from '../assets/Dashboard-Icons/close-tab.svg'
+import FolderBlueIcon from '../assets/Folders/Folder-Blue.svg'
 
 import copy from 'copy-to-clipboard';
 import { getHeaders } from '../lib/auth'
@@ -73,7 +74,7 @@ class PopupShare extends React.Component<PopupShareProps> {
                         <div className={this.props.item.isFolder ? 'Icon-image' : 'Icon'}>
                             {
                             this.props.item.isFolder ? 
-                                  <img src="/Folder-Blue.svg" className="Folder" />
+                                  <img src={FolderBlueIcon} className="Folder" />
                                 : <div className="Extension">{fileType}</div>
                             }
                             
