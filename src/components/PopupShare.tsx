@@ -70,9 +70,13 @@ class PopupShare extends React.Component<PopupShareProps> {
 
                 <div className="ShareHeader">
                     <div>
-                        <div className="Icon">
+                        <div className={this.props.item.isFolder ? 'Icon-image' : 'Icon'}>
+                            {
+                            this.props.item.isFolder ? 
+                                  <img src="/Folder-Blue.svg" className="Folder" />
+                                : <div className="Extension">{fileType}</div>
+                            }
                             
-                            <div className="Extension">{fileType}</div>
                         </div>
                     </div>
                     <div className="ShareName"><p>{fileName}</p></div>
@@ -80,7 +84,7 @@ class PopupShare extends React.Component<PopupShareProps> {
                 </div>
 
                 <div className="ShareBody">
-                    <div>Share your Drive file with this single-use private link</div>
+                    <div>Share your Drive {this.props.item.isFolder ? 'folder' : ''} with this single-use private link</div>
                 </div>
 
                 <div className="ShareFooter">
