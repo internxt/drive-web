@@ -84,7 +84,7 @@ class PopupShare extends React.Component<PopupShareProps> {
                 </div>
 
                 <div className="ShareBody">
-                    <div>Share your Drive {this.props.item.isFolder ? 'folder' : ''} with this single-use private link</div>
+                    <div>Share your Drive {this.props.item.isFolder ? 'folder' : 'file'} with this single-use private link</div>
                 </div>
 
                 <div className="ShareFooter">
