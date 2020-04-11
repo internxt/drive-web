@@ -22,13 +22,10 @@ class PopupShare extends React.Component<PopupShareProps> {
 
     generateShortLink = (url: string) => {
         return new Promise((resolve, reject) => {
-            fetch(`${process.env.REACT_APP_SHORTER_API_URL}`, {
+            fetch('/api/storage/shortLink', {
                 method: 'POST',
-                headers: {
-                    'x-api-key': `${process.env.REACT_APP_SHORTER_API_KEY}`,
-                    'Content-type': "application/json"
-                },
-                body: JSON.stringify({ 'target': `${url}`, 'reuse': 'false' })
+                headers: getHeaders(true, true),
+                body: JSON.stringify({ 'url': url })
             }).then(res => res.json()).then(res => { resolve(res.shortUrl) }).catch(reject);
         });
     }
