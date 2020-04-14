@@ -8,6 +8,8 @@ import FolderBlueIcon from '../assets/Folders/Folder-Blue.svg'
 
 import copy from 'copy-to-clipboard';
 import { getHeaders } from '../lib/auth'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface PopupShareProps {
     onClose: any
@@ -56,6 +58,12 @@ class PopupShare extends React.Component<PopupShareProps> {
 
         this.generateShareLink(fileId).then(link => {
             this.setState({ link: link });
+        }).catch((err) => {
+            if (err.status === 402) {
+                let itemType = this.props.item.isFolder ? 'older' : 'ile';
+                this.setState({ link: 'Unavailable link' });
+                toast.warn(`F${itemType} too large.\nYou can only share f${itemType}s of up to 200 MB through the web app`);
+            }
         });
     }
 
