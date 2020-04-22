@@ -14,7 +14,7 @@ ReactDOM.render(<Router history={history}><App /></Router>, document.getElementB
 // Learn more about service workers: https://bit.ly/CRA-PWA
 if (window.location.hostname === 'cloud.internxt.com') {
     localStorage.clear();
-    window.location.href = 'https://drive.internxt.com'
+    window.location.href = 'https://drive.internxt.com/app'
     serviceWorker.unregister();
 }
 else {
