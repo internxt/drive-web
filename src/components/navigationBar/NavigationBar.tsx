@@ -145,7 +145,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                             </div>
                             <Dropdown.Divider />
                             <div className="dropdown-menu-group">
-                                <Dropdown.Item onClick={(e) => { localStorage.clear(); window.location.reload(); }}>Sign out</Dropdown.Item>
+                                <Dropdown.Item onClick={(e) => { localStorage.clear(); history.push('/login'); }}>Sign out</Dropdown.Item>
                             </div>
                         </Dropdown.Menu>
                     </Dropdown>
