@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Alert, Container } from 'react-bootstrap';
+import fileDownload from 'js-file-download';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -17,6 +17,14 @@ class Share extends React.Component<ShareProps> {
         return /^[a-z0-9]{10}$/.test(token);
     }
 
+    isBase64(str) {
+        try {
+            return btoa(atob(str)) == str;
+        } catch (err) {
+            return false;
+        }
+    }
+
     componentDidMount() {
         if (this.IsValidToken(this.state.token)) {
             this.download();
@@ -26,16 +34,20 @@ class Share extends React.Component<ShareProps> {
     }
 
     download() {
-        toast.info('Downloading file..');
+        toast.info('Downloading file ...');
 
-        fetch(`${process.env.REACT_APP_PROXY_URL}/${process.env.REACT_APP_API_URL}/api/storage/share/${this.state.token}`)
+        fetch(`/api/storage/share/${this.state.token}`)
             .then((resp: Response) => {
                 if (resp.status !== 200) { throw resp }
-                
-                const fileName = resp.headers.get('x-file-name');
+
+                var fileName = resp.headers.get('x-file-name');
                 if ( fileName ) {
+                    if (this.isBase64(fileName)) {
+                        fileName = Buffer.from(fileName, 'base64').toString('utf8')
+                    }
+                    
                     this.setState({
-                        fileName: decodeURIComponent(escape(window.atob( fileName )))
+                        fileName: fileName
                     });
                     return resp.blob();
                 } else {
@@ -43,17 +55,8 @@ class Share extends React.Component<ShareProps> {
                 }
             })
             .then((blob: any) => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                
-                a.style.display = 'none';
-                a.href = url;
-                a.download = this.state.fileName;
-                document.body.appendChild(a);
-                a.click();
-                
+                fileDownload(blob, this.state.fileName)
                 toast.info('File has been downloaded!');
-                window.URL.revokeObjectURL(url);
             })
             .catch((err: Response) => {
                 if (err.status === 500) {
@@ -66,11 +69,6 @@ class Share extends React.Component<ShareProps> {
 
     render() {
         return "";
-        return <Container>
-                    <Alert variant="danger">
-                        ddddd
-                    </Alert>
-                </Container>;
     }
 }
 
