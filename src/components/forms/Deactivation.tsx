@@ -3,7 +3,7 @@ import { Alert, Container } from 'react-bootstrap';
 import axios from 'axios';
 import history from '../../lib/history';
 import { isMobile } from 'react-device-detect'
-import { toast, ToastPosition } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface DeactivationProps {

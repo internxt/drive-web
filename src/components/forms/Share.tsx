@@ -19,7 +19,7 @@ class Share extends React.Component<ShareProps> {
 
     isBase64(str) {
         try {
-            return btoa(atob(str)) == str;
+            return btoa(atob(str)) === str;
         } catch (err) {
             return false;
         }
@@ -34,35 +34,35 @@ class Share extends React.Component<ShareProps> {
     }
 
     download() {
-        toast.info('Downloading file ...');
+        toast.info('Downloading file...');
 
         fetch(`/api/storage/share/${this.state.token}`)
             .then((resp: Response) => {
                 if (resp.status !== 200) { throw resp }
 
                 var fileName = resp.headers.get('x-file-name');
-                if ( fileName ) {
+                if (fileName) {
                     if (this.isBase64(fileName)) {
                         fileName = Buffer.from(fileName, 'base64').toString('utf8')
                     }
-                    
+
                     this.setState({
                         fileName: fileName
                     });
                     return resp.blob();
                 } else {
-                    throw new Error;
+                    throw resp;
                 }
             })
-            .then((blob: any) => {
+            .then((blob: Blob) => {
                 fileDownload(blob, this.state.fileName)
                 toast.info('File has been downloaded!');
             })
             .catch((err: Response) => {
                 if (err.status === 500) {
-                    toast.warn('Unavailable token');    
+                    toast.warn('Unavailable token');
                 } else {
-                    toast.warn('Error downloading file');    
+                    toast.warn('Error downloading file');
                 }
             });
     }

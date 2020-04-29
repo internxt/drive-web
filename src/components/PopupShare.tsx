@@ -82,11 +82,11 @@ class PopupShare extends React.Component<PopupShareProps> {
                     <div>
                         <div className={this.props.item.isFolder ? 'Icon-image' : 'Icon'}>
                             {
-                            this.props.item.isFolder ? 
-                                  <img src={FolderBlueIcon} className="Folder" />
-                                : <div className="Extension">{fileType}</div>
+                                this.props.item.isFolder ?
+                                    <img src={FolderBlueIcon} className="Folder" alt="Folder" />
+                                    : <div className="Extension">{fileType}</div>
                             }
-                            
+
                         </div>
                     </div>
                     <div className="ShareName"><p>{fileName}</p></div>
@@ -95,7 +95,7 @@ class PopupShare extends React.Component<PopupShareProps> {
 
                 <div className="ShareBody">
                     <div>
-                        Share your Drive {this.props.item.isFolder ? 'folder' : 'file'} with this private link. Or enter 
+                        Share your Drive {this.props.item.isFolder ? 'folder' : 'file'} with this private link. Or enter
                         the number of times you'd like the link to be valid:&nbsp;&nbsp;
                         <input type="text" defaultValue={this.state.views} size={2} style={{
                             display: 'inline',
@@ -103,29 +103,30 @@ class PopupShare extends React.Component<PopupShareProps> {
                             color: '#5c6066',
                             backgroundColor: '#f8f9fa',
                             textAlign: 'center',
-                            borderRadius: '3.9px'}} onKeyUp={(e: React.FormEvent<HTMLInputElement>) => {
-                                
-                                if (/^[1-9]$/.test(e.currentTarget.value)) {
-                                    let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
+                            borderRadius: '3.9px'
+                        }} onKeyUp={(e: React.FormEvent<HTMLInputElement>) => {
 
-                                    this.generateShareLink(
-                                        fileId,
-                                        parseInt(e.currentTarget.value)
-                                    ).then(link => {
-                                        this.setState({ link: link });
-                                    }).catch((err) => {
-                                        if (err.status === 402) {
-                                            let itemType = this.props.item.isFolder ? 'older' : 'ile';
-                                            this.setState({ link: 'Unavailable link' });
-                                            toast.warn(`F${itemType} too large.\nYou can only share f${itemType}s of up to 200 MB through the web app`);
-                                        }
-                                    });   
-                                } else {
-                                    if (e.currentTarget.value != "") {
-                                        e.currentTarget.value = "1";
+                            if (/^[1-9]$/.test(e.currentTarget.value)) {
+                                let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
+
+                                this.generateShareLink(
+                                    fileId,
+                                    parseInt(e.currentTarget.value)
+                                ).then(link => {
+                                    this.setState({ link: link });
+                                }).catch((err) => {
+                                    if (err.status === 402) {
+                                        let itemType = this.props.item.isFolder ? 'older' : 'ile';
+                                        this.setState({ link: 'Unavailable link' });
+                                        toast.warn(`F${itemType} too large.\nYou can only share f${itemType}s of up to 200 MB through the web app`);
                                     }
+                                });
+                            } else {
+                                if (e.currentTarget.value !== "") {
+                                    e.currentTarget.value = "1";
                                 }
-                            }}>
+                            }
+                        }}>
                         </input>
                     </div>
                 </div>
