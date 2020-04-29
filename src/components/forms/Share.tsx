@@ -28,7 +28,7 @@ class Share extends React.Component<ShareProps> {
     download() {
         toast.info('Downloading file..');
 
-        fetch(`${process.env.REACT_APP_API_URL}/api/storage/share/${this.state.token}`)
+        fetch(`${process.env.REACT_APP_PROXY_URL}/${process.env.REACT_APP_API_URL}/api/storage/share/${this.state.token}`)
             .then((resp: Response) => {
                 if (resp.status !== 200) { throw resp }
                 
@@ -59,7 +59,7 @@ class Share extends React.Component<ShareProps> {
                 if (err.status === 500) {
                     toast.warn('Unavailable token');    
                 } else {
-                    toast.warn('Error downloading file..');    
+                    toast.warn('Error downloading file');    
                 }
             });
     }
