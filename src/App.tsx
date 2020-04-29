@@ -9,6 +9,7 @@ import XCloud from './components/xcloud/XCloud';
 import Activation from './components/forms/Activation';
 import NotFound from './NotFound';
 import Deactivation from './components/forms/Deactivation';
+import Share from './components/forms/Share';
 import Reset from './components/forms/Reset';
 import Storage from './components/Storage';
 import Security from './components/Security';
@@ -28,6 +29,13 @@ class App extends React.Component {
   }
 
   render() {
+    const currentPath = window.location.pathname;
+    var route = <Route exact path='/'><Redirect to="/login" /></Route>;
+
+    if (currentPath !== "/") {
+      route = <Route path='/:token' render={(props) => <Share {...props} />} />
+    }
+
     return (
       <div>
         <Switch>
@@ -48,7 +56,7 @@ class App extends React.Component {
           <Route exact path='/new' render={(props: any) => <New {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
           <Route exact path='/remove' render={(props: any) => <Remove {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
           <Route exact path='/activate/:email' render={(props: any) => <New {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
-          <Route exact path='/'><Redirect to="/login" /></Route>
+          {route}
           <Route component={NotFound} />
         </Switch>
 
