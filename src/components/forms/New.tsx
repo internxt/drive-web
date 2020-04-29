@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Container, Form, Col, Button } from "react-bootstrap";
+import { Container, Form, Col } from "react-bootstrap";
 
 import logo from '../../assets/logo.svg';
 import history from '../../lib/history';
