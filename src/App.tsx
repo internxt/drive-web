@@ -29,13 +29,6 @@ class App extends React.Component {
   }
 
   render() {
-    const currentPath = window.location.pathname;
-    var route = <Route exact path='/'><Redirect to="/login" /></Route>;
-
-    if (currentPath !== "/") {
-      route = <Route path='/:token' render={(props) => <Share {...props} />} />
-    }
-
     return (
       <div>
         <Switch>
@@ -56,7 +49,8 @@ class App extends React.Component {
           <Route exact path='/new' render={(props: any) => <New {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
           <Route exact path='/remove' render={(props: any) => <Remove {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
           <Route exact path='/activate/:email' render={(props: any) => <New {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
-          {route}
+          <Route exact path='/:token' render={(props) => <Share {...props} />} />
+          <Route exact path='/'><Redirect to="/login" /></Route>
           <Route component={NotFound} />
         </Switch>
 
