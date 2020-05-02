@@ -1,9 +1,10 @@
 import React from 'react';
 
 const SVG = ({
+    defaultColors = {},
     color = 'blue',
     width = 99,
-    height = 78,
+    height = 78
 }) => {
     // Correct color when is passed null
     color = !color ? 'blue' : color 

@@ -1,5 +1,5 @@
 import copy from "copy-to-clipboard";
-const CryptoJS = require('crypto-js')
+import CryptoJS from "crypto-js";
 
 function copyToClipboard(text: string) {
   copy(text);

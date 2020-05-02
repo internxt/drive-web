@@ -1,6 +1,7 @@
 import React from 'react';
 
 const SVG = ({
+    defaultColors = {},
     width = 25,
     height = 20,
 }) => {
