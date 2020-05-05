@@ -132,7 +132,7 @@ class XCloud extends React.Component {
 
   createFolder = () => {
     const folderName = prompt("Please enter folder name");
-    if (folderName != null) {
+    if (folderName && folderName !== "") {
       fetch(`/api/storage/folder`, {
         method: "post",
         headers: getHeaders(true, true),
@@ -153,6 +153,8 @@ class XCloud extends React.Component {
           toast.warn(`"${err}"`);
         }
       })
+    } else {
+      toast.warn("Invalid folder name");
     }
   }
 
