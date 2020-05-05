@@ -135,7 +135,7 @@ class PopupShare extends React.Component<PopupShareProps> {
                     <div className="ShareLink">{this.state.link == null ? <p>Loading...</p> : <p>{this.state.link}</p>}</div>
                     <div className="ShareCopy"><a href="# " onClick={(e) => {
                         if (this.state.link) {
-                            copy('Hello,\nHow are things going? I’m using Internxt Drive, a secure, simple, private and eco-friendly cloud storage service https://internxt.com/drive\n\nI wanted to share a file with you through this single-use private link -no sign up required: ' + this.state.link + '')
+                            copy('Hello,\nHow are things going? I’m using Internxt Drive, a secure, simple, private and eco-friendly cloud storage service https://internxt.com/drive\nI wanted to share a file with you through this direct secure link: ' + this.state.link + '')
                         }
                     }}>Copy</a></div>
                 </div>
