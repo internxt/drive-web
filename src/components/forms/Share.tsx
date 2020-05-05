@@ -1,6 +1,6 @@
 import * as React from "react";
 import fileDownload from 'js-file-download';
-import { toast } from 'react-toastify';
+import { toast, ToastOptions } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface ShareProps {
@@ -8,6 +8,15 @@ interface ShareProps {
 }
 
 class Share extends React.Component<ShareProps> {
+    toastOptions: ToastOptions = {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        pauseOnHover: true
+    }
+
     state = {
         token: this.props.match.params.token,
         fileName: ''
@@ -29,13 +38,17 @@ class Share extends React.Component<ShareProps> {
         if (this.IsValidToken(this.state.token)) {
             this.download();
         } else {
-            toast.warn('Invalid token');
+            toast.warn('Invalid token', this.toastOptions);
         }
     }
 
     download() {
-        toast.info('Downloading file...');
-
+        const toastId = toast.info('Downloading file...', {
+            position: "bottom-right",
+            autoClose: false,
+            draggable: false
+        });
+    
         fetch(`/api/storage/share/${this.state.token}`)
             .then((resp: Response) => {
                 if (resp.status !== 200) { throw resp }
@@ -55,15 +68,18 @@ class Share extends React.Component<ShareProps> {
                 }
             })
             .then((blob: Blob) => {
-                fileDownload(blob, this.state.fileName)
-                toast.info('File has been downloaded!');
+                fileDownload(blob, this.state.fileName);
+                toast.info('File has been downloaded!', this.toastOptions);
+                toast.dismiss(toastId);
             })
             .catch((err: Response) => {
                 if (err.status === 500) {
-                    toast.warn('Unavailable token');
+                    toast.warn('Unavailable token', this.toastOptions);
                 } else {
-                    toast.warn('Error downloading file');
+                    toast.warn('Error downloading file', this.toastOptions);
                 }
+
+                toast.dismiss(toastId);
             });
     }
 
