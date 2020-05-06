@@ -81,6 +81,27 @@ class FileCommander extends React.Component {
         }
     }
 
+    handleDragStart = (event) => {
+        const selectedItems = this.state.currentCommanderItems.filter(item => item.isSelected);
+        let data = selectedItems.map(item => {
+            if (item.isFolder) {
+                return {
+                    id: item.id,
+                    isFolder: true,
+                    type: 'folder'
+                }
+            }
+            return {
+                id: item.fileId,
+                isFolder: false,
+                type: item.type
+            }
+        });
+
+        event.dataTransfer.setData('text/plain', JSON.stringify(data));
+        // Highlight back button only if is not root folder
+    }
+
     handleDragOver = (e) => {
         // Disable drop files for fileCommander files
         if (e.dataTransfer.types.includes('Files')) {
@@ -110,11 +131,13 @@ class FileCommander extends React.Component {
         var data = JSON.parse(event.dataTransfer.getData('text/plain'));
 
         if (parentFolder) {
-            if (data.isFolder === "false") {
-                this.props.moveFile(data.id, parentFolder);
-            } else if (data.isFolder === "true") {
-                this.props.moveFolder(data.id, parentFolder);
-            }
+            data.forEach(item => {
+                if (!item.isFolder) {
+                    this.props.moveFile(item.id, parentFolder);
+                } else {
+                    this.props.moveFolder(item.id, parentFolder);
+                }
+            });
         }
     }
 
@@ -287,6 +310,7 @@ class FileCommander extends React.Component {
                                 color={item.color ? item.color : 'blue'}
                                 clickHandler={item.isFolder ? this.props.openFolder.bind(null, item.id) : this.props.downloadFile.bind(null, item.fileId)}
                                 selectHandler={this.props.selectItems}
+                                handleDragStart={this.handleDragStart}
                                 isLoading={!!item.isLoading}
                                 isDownloading={!!item.isDownloading}
                                 moveFile={this.props.moveFile}

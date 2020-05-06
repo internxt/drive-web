@@ -32,28 +32,6 @@ class FileCommanderItem extends React.Component {
             'path', 'running', 'starfilled', 'video', 'window', 'yinyang'];
     }
 
-    handleDragStart = (event) => {
-        let dataset = event.currentTarget.dataset;
-        let data = {};
-
-        if (dataset.isfolder === "true") {
-            data = {
-                id: dataset.cloudFileId,
-                isFolder: dataset.isfolder,
-                type: 'folder'
-            }
-        } else if (dataset.isfolder === "false") {
-            data = {
-                id: dataset.bridgeFileId,
-                isFolder: dataset.isfolder,
-                type: dataset.type
-            }
-        }
-
-        event.dataTransfer.setData('text/plain', JSON.stringify(data));
-        // Highlight back button only if is not root folder
-    }
-
     handleDragOver = (event) => {
         // Allow only drop files into folders
         if (this.props.isFolder) {
@@ -76,12 +54,13 @@ class FileCommanderItem extends React.Component {
         event.preventDefault();
         event.stopPropagation();
         var data = JSON.parse(event.dataTransfer.getData('text/plain'));
-        
-        if (data.isFolder === "false") {
-            this.props.moveFile(data.id, this.props.id);
-        } else if (data.isFolder === "true") {
-            this.props.moveFolder(data.id, this.props.id);
-        }
+        data.forEach(item => {
+            if (!item.isFolder) {
+                this.props.moveFile(item.id, this.props.id);
+            } else {
+                this.props.moveFolder(item.id, this.props.id);
+            }
+        });
         
         this.setState({ dragDropStyle: '' });
     }
@@ -234,11 +213,11 @@ class FileCommanderItem extends React.Component {
 
                 data-isfolder={!!this.props.rawItem.isFolder}
 
-                onClick={() => this.props.selectHandler(this.props.id, false)}
+                onClick={() => this.props.selectHandler(this.props.id, this.props.isFolder, false)}
                 onDoubleClick={(e) => { if (e.target.className.includes('FileCommanderItem')) { this.itemClickHandler(e); } }}
 
                 draggable={true}
-                onDragStart={this.handleDragStart}
+                onDragStart={ (e) => this.props.handleDragStart(e)}
                 onDragOver={this.handleDragOver}
                 onDragLeave={this.handleDragLeave}
                 onDrop={this.handleDrop}

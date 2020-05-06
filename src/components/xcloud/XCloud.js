@@ -498,11 +498,11 @@ class XCloud extends React.Component {
     })
   }
 
-  selectItems = (items, unselectOthers = true) => {
+  selectItems = (items, isFolder, unselectOthers = true) => {
     if (typeof items === 'number') { items = [items] }
 
     this.state.currentCommanderItems.forEach(item => {
-      const isTargetItem = items.indexOf(item.id) !== -1
+      const isTargetItem = items.indexOf(item.id) !== -1 && item.isFolder === isFolder;
       if (isTargetItem) { item.isSelected = !item.isSelected }
       else {
         if (unselectOthers) { item.isSelected = false }
