@@ -81,25 +81,46 @@ class FileCommander extends React.Component {
         }
     }
 
-    handleDragStart = (event) => {
-        const selectedItems = this.state.currentCommanderItems.filter(item => item.isSelected);
-        let data = selectedItems.map(item => {
-            if (item.isFolder) {
-                return {
-                    id: item.id,
-                    isFolder: true,
-                    type: 'folder'
-                }
-            }
+    getEventItemData = (item) => {
+        if (item.isFolder) {
             return {
-                id: item.fileId,
-                isFolder: false,
-                type: item.type
+                id: item.id,
+                isFolder: true,
+                type: 'folder'
             }
-        });
+        }
+        return {
+            id: item.fileId,
+            isFolder: false,
+            type: item.type
+        }
+    }
 
+    getEventDatasetData = (item) => {
+        if (item.isfolder === "true") {
+            return {
+                id: item.cloudFileId,
+                isFolder: true,
+                type: 'folder'
+            }
+        }
+        return {
+            id: item.bridgeFileId,
+            isFolder: false,
+            type: item.type
+        }
+    }
+
+    handleDragStart = (event) => {
+        const currentItemEvent =  this.getEventDatasetData(event.currentTarget.dataset);
+        // Add selected items to event data (for moving)
+        const selectedItems = this.state.currentCommanderItems.filter(item => item.isSelected && item.fileId !== currentItemEvent.id && item.id !== currentItemEvent.id);
+        let data = selectedItems.map(item => {
+            return this.getEventItemData(item);
+        });
+        // Do not forget current drag item (even if it's or not selected, we move it)
+        data.push(currentItemEvent);
         event.dataTransfer.setData('text/plain', JSON.stringify(data));
-        // Highlight back button only if is not root folder
     }
 
     handleDragOver = (e) => {
