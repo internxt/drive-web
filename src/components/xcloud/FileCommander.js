@@ -99,7 +99,7 @@ class FileCommander extends React.Component {
     getEventDatasetData = (item) => {
         if (item.isfolder === "true") {
             return {
-                id: item.cloudFileId,
+                id: parseInt(item.cloudFileId),
                 isFolder: true,
                 type: 'folder'
             }
@@ -152,13 +152,7 @@ class FileCommander extends React.Component {
         var data = JSON.parse(event.dataTransfer.getData('text/plain'));
 
         if (parentFolder) {
-            data.forEach(item => {
-                if (!item.isFolder) {
-                    this.props.moveFile(item.id, parentFolder);
-                } else {
-                    this.props.moveFolder(item.id, parentFolder);
-                }
-            });
+            this.props.move(data, parentFolder);
         }
     }
 
@@ -334,8 +328,7 @@ class FileCommander extends React.Component {
                                 handleDragStart={this.handleDragStart}
                                 isLoading={!!item.isLoading}
                                 isDownloading={!!item.isDownloading}
-                                moveFile={this.props.moveFile}
-                                moveFolder={this.props.moveFolder}
+                                move={this.props.move}
                                 updateMeta={this.props.updateMeta}
                                 hasParentFolder={!inRoot}
                                 isFolder={item.isFolder}

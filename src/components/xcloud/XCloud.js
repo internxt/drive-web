@@ -42,11 +42,13 @@ class XCloud extends React.Component {
       searchFunction: null,
       popupShareOpened: false,
       showDeleteItemsPopup: false,
-
-      overwritteItemPopup: false,
-      overwritteOptions: {},
-      type: 'file'
+      showOverwritteItemPopup: false,
+      currentOverwritteOptions: {},
     };
+
+    this.overwritteOptions = []
+    this.moveEvent = { resolved: 0, total: 0, errors: 0 };
+    this.overwritteItemPopUps = 0;
   }
 
   componentDidMount = () => {
@@ -196,7 +198,8 @@ class XCloud extends React.Component {
   }
 
   getFolderContent = (rootId, updateNamePath = true) => {
-    fetch(`/api/storage/folder/${rootId}`, {
+    rootId = rootId || this.state.currentFolderId;
+    return fetch(`/api/storage/folder/${rootId}`, {
       method: "get",
       headers: getHeaders(true, true)
     }).then(res => {
@@ -273,48 +276,62 @@ class XCloud extends React.Component {
 
   }
 
-  moveFolder = (folderId, destination, overwritte = false) => {
-    const data = { folderId, destination, overwritte };
+  // TODO: Add checkbox for default answer on Popup when multiple overwrites happend on move
+  move = (items, destination, overwritte = false) => {
+    const data = { destination, overwritte };
+    const totalAcum = !!overwritte ? 0 : items.length;
+    this.moveEvent = { total: this.moveEvent.total + totalAcum, resolved: this.moveEvent.resolved, errors: this.moveEvent.errors };
 
-    fetch('/api/storage/moveFolder', {
-      method: 'post',
-      headers: getHeaders(true, true),
-      body: JSON.stringify(data)
-    }).then((response) => {
-      if (response.status === 200) {
-        // Successfully moved
-        this.getFolderContent(this.state.currentFolderId);
-      } else if (response.status === 501) {
-        this.setState({ overwritteItemPopup: true, overwritteOptions: { folderId, destination }, type: 'folder' });
-      } else {
-        // Error moving file
-        response.json().then((error) => {
-          toast.warn(`Error moving folder: ${error.message}`);
-        })
+    let keyOp; // Folder or File
+    Promise.all(items.map(item => {
+      keyOp = item.isFolder ? 'Folder' : 'File';
+      const uri = `/api/storage/move${keyOp}`;
+      data[keyOp.toLowerCase() + 'Id'] = item.id;
+      return fetch(uri, {
+        method: 'post',
+        headers: getHeaders(true, true),
+        body: JSON.stringify(data)
+      });
+    })).then(responses => {
+      const successResIdxs = []
+      const overwriteResIdxs = [];
+      const errorResIdxs = [];
+      responses.forEach((res, idx) => res.status === 200 ? successResIdxs.push(idx) : res.status === 501 ? overwriteResIdxs.push(idx) : errorResIdxs.push(idx));
+      const resolved = successResIdxs.length + errorResIdxs.length;
+      const overwritteOptions = overwritte
+        ? this.overwritteOptions.slice(- (this.overwritteOptions.length - items.length))
+            .concat(overwriteResIdxs.map(itemIdx => { 
+              return { [keyOp.toLowerCase() + 'Id']: items[itemIdx].id, destination, type: keyOp.toLowerCase() } 
+            })) 
+        : this.overwritteOptions;
+      this.overwritteItemPopUps += overwriteResIdxs.length;
+      this.moveEvent = { 
+        total: this.moveEvent.total,
+        resolved: this.moveEvent.resolved + resolved,
+        errors: this.moveEvent.errors + errorResIdxs.length,
       }
-    })
-  }
 
-  moveFile = (fileId, destination, overwritte = false) => {
-    const data = { fileId, destination, overwritte };
+      if (this.overwritteItemPopUps <= 0) {
+        return this.getFolderContent(this.state.currentFolderId).then(() => {
+          console.log('Got folder content after move operation');
+          if (this.moveEvent.errors > 0) {
+            toast.warn(`Error moving ${this.moveEvent.errors} items`);
+          }
 
-    fetch('/api/storage/moveFile', {
-      method: 'post',
-      headers: getHeaders(true, true),
-      body: JSON.stringify(data)
-    }).then((response) => {
-      if (response.status === 200) {
-        // Successfully moved
-        this.getFolderContent(this.state.currentFolderId);
-      } else if (response.status === 501) {
-        this.setState({ overwritteItemPopup: true, overwritteOptions: { fileId, destination }, type: 'file' });
-      } else {
-        // Error moving file
-        response.json().then((error) => {
-          toast.warn(`Error moving file: ${error.message}`);
-        })
+          toast.info(`Correctly moved ${this.moveEvent.total} items`);
+          this.moveEvent = { resolved: 0, total: 0, errors: 0 };
+          this.overwritteItemPopUps = 0;
+        });
       }
-    })
+
+      if (this.overwritteItemPopUps > 0) {
+        this.overwritteOptions = overwritteOptions;
+        this.setState({ 
+          currentOverwritteOptions: overwritteOptions[0],
+          showOverwritteItemPopup: true,
+        });
+      }
+    });
   }
 
   downloadFile = (id) => {
@@ -579,8 +596,7 @@ class XCloud extends React.Component {
             uploadDroppedFile={this.uploadDroppedFile}
             createFolderByName={this.createFolderByName}
             setSortFunction={this.setSortFunction}
-            moveFile={this.moveFile}
-            moveFolder={this.moveFolder}
+            move={this.move}
             updateMeta={this.updateMeta}
             currentFolderId={this.state.currentFolderId}
             getFolderContent={this.getFolderContent}
@@ -613,22 +629,22 @@ class XCloud extends React.Component {
           </Popup>
 
           <Popup
-            open={this.state.overwritteItemPopup}
+            open={this.state.showOverwritteItemPopup}
             closeOnDocumentClick
-            onClose={() => this.setState({ overwritteItemPopup: false })}
+            onClose={() => this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: {}})}
             className="popup--full-screen">
             <div className="popup--full-screen__content">
               <div className="popup--full-screen__close-button-wrapper">
-                <img src={closeTab} onClick={() => this.setState({ overwritteItemPopup: false })} alt="Close tab" />
+                <img src={closeTab} onClick={() => this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: {}})} alt="Close tab" />
               </div>
               <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
                 <h1>Replace item{this.getSelectedItems().length > 1 ? 's' : ''}</h1>
-                <h2>There is already a {this.state.type} with the same name in that destination. Would you like to overwrite the file?</h2>
+                <h2>There is already a {this.state.currentOverwritteOptions.type} with the same name in that destination. Would you like to overwrite the file?</h2>
                 <div className="buttons-wrapper">
                   <div className="default-button button-primary" onClick={() => {
-                    this.moveFile(this.state.overwritteOptions.fileId, this.state.overwritteOptions.destination, true);
-                    this.setState({ overwritteItemPopup: false });
+                    this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: {}});
+                    this.move([{ id: this.state.currentOverwritteOptions[this.state.currentOverwritteOptions.type + 'Id'], isFolder: this.state.currentOverwritteOptions.type === 'folder' }], this.state.currentOverwritteOptions.destination, true);
                   }}>
                     Confirm
                 </div>

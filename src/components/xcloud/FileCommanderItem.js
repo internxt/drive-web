@@ -54,14 +54,7 @@ class FileCommanderItem extends React.Component {
         event.preventDefault();
         event.stopPropagation();
         var data = JSON.parse(event.dataTransfer.getData('text/plain'));
-        data.forEach(item => {
-            if (!item.isFolder) {
-                this.props.moveFile(item.id, this.props.id);
-            } else {
-                this.props.moveFolder(item.id, this.props.id);
-            }
-        });
-        
+        this.props.move(data, this.props.id);
         this.setState({ dragDropStyle: '' });
     }
 
