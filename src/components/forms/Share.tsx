@@ -2,6 +2,7 @@ import * as React from "react";
 import fileDownload from 'js-file-download';
 import { toast, ToastOptions } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { isMobile } from 'react-device-detect';
 
 interface ShareProps {
     match: any
@@ -36,7 +37,11 @@ class Share extends React.Component<ShareProps> {
 
     componentDidMount() {
         if (this.IsValidToken(this.state.token)) {
-            this.download();
+            if (isMobile) {
+                window.location.href = `https://api.internxt.com:8081/https://drive.internxt.com/api/storage/share/${this.state.token}`;
+            } else {
+                this.download();
+            }
         } else {
             toast.warn('Invalid token', this.toastOptions);
         }
