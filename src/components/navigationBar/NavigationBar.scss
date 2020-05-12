@@ -122,3 +122,15 @@ input#uploadFileControl {
 .settingsButton .dropdown-menu-group .progress .progress-bar {
     background-image: linear-gradient(78deg, #096dff, #00b1ff);
 }
+
+
+#mainNavBar {
+    &>.navbar-brand {
+        &>a {
+            &>img {
+                width: 30px;
+                height: 35px;
+            }
+        }
+    }
+}

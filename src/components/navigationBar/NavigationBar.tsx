@@ -3,12 +3,11 @@ import { Nav, Navbar, Dropdown, ProgressBar } from 'react-bootstrap';
 
 // Assets
 import account from '../../assets/Dashboard-Icons/Account.svg';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/drive-logo.svg';
 
 import search from '../../assets/Dashboard-Icons/Search.svg';
 import uploadFileIcon from '../../assets/Dashboard-Icons/Upload.svg';
 import newFolder from '../../assets/Dashboard-Icons/Add-folder.svg';
-//import downloadFile from '../../assets/Dashboard-Icons/Download.svg';
 import deleteFile from '../../assets/Dashboard-Icons/Delete.svg';
 import share from '../../assets/Dashboard-Icons/Share.svg';
 import PrettySize from 'prettysize';
@@ -122,7 +121,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         return (
             <Navbar id="mainNavBar">
                 <Navbar.Brand>
-                    <a href="/"><img src={logo} width='54.4' height='28.6' alt="Logo" /></a>
+                    <a href="/"><img src={logo} alt="Logo" /></a>
                 </Navbar.Brand>
                 <Nav className="m-auto">
                     {this.state.navbarItems}

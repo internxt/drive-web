@@ -12,7 +12,7 @@ import FileCommander from './FileCommander';
 import NavigationBar from "../navigationBar/NavigationBar";
 import history from '../../lib/history';
 import { removeAccents } from '../../lib/utils';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/drive-logo.svg';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 import PopupShare from '../PopupShare'
@@ -599,7 +599,6 @@ class XCloud extends React.Component {
               <div className="popup--full-screen__close-button-wrapper">
                 <img src={closeTab} onClick={() => this.setState({ showDeleteItemsPopup: false })} alt="Close tab" />
               </div>
-              <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
                 <h1>Delete item{this.getSelectedItems().length > 1 ? 's' : ''}</h1>
                 <h2>Please confirm you want to delete this item{this.getSelectedItems().length > 1 ? 's' : ''}. This action can’t be undone.</h2>
@@ -621,7 +620,6 @@ class XCloud extends React.Component {
               <div className="popup--full-screen__close-button-wrapper">
                 <img src={closeTab} onClick={() => this.setState({ overwritteItemPopup: false })} alt="Close tab" />
               </div>
-              <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
                 <h1>Replace item{this.getSelectedItems().length > 1 ? 's' : ''}</h1>
                 <h2>There is already a {this.state.type} with the same name in that destination. Would you like to overwrite the file?</h2>
@@ -649,7 +647,6 @@ class XCloud extends React.Component {
               <div className="popup--full-screen__close-button-wrapper">
                 <img src={closeTab} onClick={this.closeRateLimitModal} alt="Close tab" />
               </div>
-              <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
                 <h1> You have run out of storage. </h1>
                 <h2>In order to start uploading more files please click the button below to upgrade your storage plan.</h2>

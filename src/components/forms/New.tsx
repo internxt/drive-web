@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Container, Form, Col } from "react-bootstrap";
 
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/drive-logo.svg';
 import history from '../../lib/history';
 
 import { encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
@@ -190,6 +190,7 @@ class New extends React.Component<NewProps, NewState> {
 
     registerContainer() {
         return <div className="container-register">
+            <p className="logo"><img src={logo} alt="Logo" /></p>
             <p className="container-title">Create an Internxt account</p>
             <div className="menu-box">
                 <button className="off" onClick={(e) => { history.push('/login') }}>Sign in</button>
@@ -231,6 +232,7 @@ class New extends React.Component<NewProps, NewState> {
 
     privacyContainer() {
         return (<div className="container-register">
+            <p className="logo"><img src={logo} alt="Logo" /></p>
             <p className="container-title">Internxt Security</p>
             <p className="privacy-disclaimer">Internxt Drive uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt Drive, we don't know your password. That means that if you ever forget it, your files are gone forever. With us, you're the only owner of your files. We strongly suggest you to:</p>
             <ul className="privacy-remainders">
@@ -259,6 +261,7 @@ class New extends React.Component<NewProps, NewState> {
 
     passwordContainer() {
         return <div className="container-register">
+            <p className="logo"><img src={logo} alt="Logo" /></p>
             <p className="container-title">Create an Internxt account</p>
             <div className="menu-box">
                 <button className="off" onClick={(e: any) => { /* this.setState({ currentContainer: this.loginContainer() }) */ }}>Sign in</button>
@@ -299,6 +302,7 @@ class New extends React.Component<NewProps, NewState> {
 
     activationContainer() {
         return (<div className="container-register">
+            <p className="logo"><img src={logo} alt="Logo" /></p>
             <p className="container-title">Activation Email</p>
             <p className="privacy-disclaimer">Please check your email and follow the instructions to activate your account so you can start using Internxt Drive.</p>
             <ul className="privacy-remainders" style={{ paddingTop: '20px' }}>By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy</ul>
@@ -311,7 +315,6 @@ class New extends React.Component<NewProps, NewState> {
     render() {
         return (<div className="login-main">
             <Container className="login-container-box">
-                <p className="logo"><img src={logo} alt="Logo" /></p>
                 {this.state.currentContainer}
             </Container>
         </div>

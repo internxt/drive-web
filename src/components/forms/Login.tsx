@@ -3,7 +3,7 @@ import { Button, Form, Col, Container } from "react-bootstrap";
 
 import history from '../../lib/history';
 import "./Login.scss";
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/drive-logo.svg';
 import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../lib/utils';
 
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
@@ -194,8 +194,8 @@ class Login extends React.Component<LoginProps> {
       const isValid = this.validateLoginForm();
       return (<div className="login-main">
         <Container className="login-container-box">
-          <p className="logo logo-login"><img src={logo} alt="Logo" /></p>
           <div className="container-register">
+            <p className="logo"><img src={logo} alt="Logo" /></p>
             <p className="container-title">Sign in to Internxt</p>
             <div className="menu-box">
               <button className="on">Sign in</button>
@@ -240,7 +240,7 @@ class Login extends React.Component<LoginProps> {
     } else {
       const isValid = this.validate2FA();
       return (<div className="login-main">
-        <Container className="login-container-box1">
+        <Container className="login-container-box">
           <p className="logo"><img src={logo} alt="Logo" /></p>
           <p className="container-title">Security Verification</p>
           <p className="privacy-disclaimer">Enter your 6 digit authenticator code below</p>

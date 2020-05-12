@@ -5,7 +5,7 @@
   border: solid 1px #eaeced;
   border-radius: 6px;
   padding: 40px !important;
-  height: 510px;
+  height: 460px;
 }
 
 .xcloud-toast-info {
@@ -24,58 +24,47 @@
   }
 }
 
-.login-container-box > .logo > img {
-  height: 27.5px;
-  width: 52.4px;
-}
+.container-register, .popup--full-screen__content {
+  margin-top: 5px;
+  &>.logo {
+    display: inline-block;
+    &>img {
+      width: 30px;
+      height: 45px;
+    }
+  }
 
-.login-container-box1 {
-  margin: 7% auto auto auto;
-  background-color: white;
-  width: 472px !important;
-  border: solid 1px #eaeced;
-  border-radius: 6px;
-  padding: 40px !important;
-  height: 450px;
-}
+  .container-title {
+    display: inline-block;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 45px;
+    vertical-align: bottom;
+    margin-left: 15px;
+  }
 
-.login-container-box1 > .logo > img {
-  height: 27.5px;
-  width: 52.4px;
-}
+  button {
+    background-color: #4585f5;
+    border-radius: 3.4px;
+    height: 49px;
+    padding: 10px 20px;
+    margin-right: 10px;
+    cursor: pointer;
+    outline: transparent;
+  }
 
-.container-title {
-  font-size: 25px;
-  font-weight: 600;
-}
-
-.container-register button {
-  background-color: #4585f5;
-  border-radius: 3.4px;
-  height: 49px;
-  padding: 10px 20px;
-  margin-right: 10px;
-  cursor: pointer;
-}
-
-.logo {
-  margin-bottom: 15px;
-}
-
-.container-register button {
-outline: transparent;
-}
-
-.container-register button.on {
-  color: white;
-  box-shadow: 0 2px 3px 0 rgba(174, 199, 242, 0.62);
-  border: solid 0px #eaeced;
-
-}
-.container-register button.off {
-  background-color: #f7f7f7;
-  color: #5c5c5c;
-  border: solid 0px;
+  button {
+    &.on {
+      color: white;
+      box-shadow: 0 2px 3px 0 rgba(174, 199, 242, 0.62);
+      border: solid 0px #eaeced;
+    }
+    &.off {
+      background-color: #f7f7f7;
+      color: #5c5c5c;
+      border: solid 0px;
+    }
+  }
 }
 
 .login-container-box .form-control {
@@ -119,7 +108,7 @@ outline: transparent;
 
 .menu-box {
   margin-bottom: 21px;
-  margin-top: 32px;
+  margin-top: 20px;
   padding: 0px;
 }
 
@@ -128,8 +117,3 @@ outline: transparent;
   opacity: 0.3 !important;
   filter: alpha(opacity=30);
 }
-/*
-.form-control:invalid, .form-control:active {
-  background-color: rgb(255, 222, 222) !important;
-}
-*/

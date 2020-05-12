@@ -93,19 +93,18 @@ will have CircularStd as default font. */
 
 .popup--full-screen__content .message-wrapper {
   margin: auto;
-}
+  h1 {
+    margin-top: 25px;
+    font-size: 25px;
+    font-weight: 900;
+  }
 
-.popup--full-screen__content .message-wrapper h1 {
-  font-size: 25px;
-  font-weight: 900;
-}
-
-.popup--full-screen__content .message-wrapper h2 {
-  font-size: 15px;
-  color: #707070;
-  font-weight: 400;
-  line-height: 1.5;
-  
+  h2 {
+    font-size: 15px;
+    color: #707070;
+    font-weight: 400;
+    line-height: 1.5;
+  }  
 }
 
 .popup--full-screen__content .button-primary {
@@ -139,11 +138,9 @@ will have CircularStd as default font. */
   height: 24px;
 }
 
-
-.logo {
-  width: 100px;
-  margin: 11px;
-  margin-left: 0px;
+.logo img {
+  width: 45px;
+  height: 30px;
 }
 
 .logo.logo-runoutstorage {
@@ -260,5 +257,4 @@ will have CircularStd as default font. */
 
   font-size: 15px;
   font-weight: 200;
-
 }
