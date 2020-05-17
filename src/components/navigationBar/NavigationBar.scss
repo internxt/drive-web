@@ -1,136 +1,132 @@
 .settingsButton .btn {
-    outline: 0;
-    background-color: transparent !important;
-    color: black !important;
-    border: solid 0px;
+  outline: 0;
+  background-color: transparent !important;
+  color: black !important;
+  border: solid 0;
 }
 
 .settingsButton .btn::before {
-    display: none !important;
+  display: none !important;
 }
 
-.btn-primary.dropdown-toggle:focus, .btn-primary.dropdown-toggle:focus {
-    box-shadow: 0 0 0 0.2rem transparent !important;
+.btn-primary.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.2rem transparent !important;
 }
 
 .navbar {
-    padding: 0 !important;
+  padding: 0 !important;
 }
 
 nav .navbar-brand {
-    margin: 22px 22px;
+  margin: 22px 22px;
 }
 
 input#uploadFileControl {
-    display: none;
+  display: none;
 }
 
 .top-bar {
-    width: 60px;
+  width: 60px;
 }
+
 .search-container {
-    max-width: 950px;
-    margin: auto;
-    padding-right: 8px;
+  max-width: 950px;
+  margin: auto;
+  padding-right: 8px;
 }
 
 .search {
-    border-radius: 23.1px;
-    border: 1px solid #ccc;
-    padding: 5px;
-    width: 46px;
-    height: 46px;
-    -webkit-transition: all .5s ease;
-    -moz-transition: all .5s ease;
-    transition: all .5s ease;
-    float: right;
-
-    border: solid 0px;
-    cursor: pointer;
-    outline: none;
-    background-color: #f7f7f7;
-    background-repeat: no-repeat;
-    background-position: 50%;
-    color: transparent;
+  border-radius: 23.1px;
+  padding: 5px;
+  width: 46px;
+  height: 46px;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  float: right;
+  border: solid 0 #ccc;
+  cursor: pointer;
+  outline: none;
+  background-color: #f7f7f7;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  color: transparent;
 }
 
-.search:focus, .search:valid {
-    width: 380px;
-    background-position: left;
-    background-position-x: 5%;
-    padding-left: 62px;
-    color: #333333;
+.search:focus,
+.search:valid {
+  width: 380px;
+  background-position: left;
+  background-position-x: 5%;
+  padding-left: 62px;
+  color: #333;
 }
-
 
 /*** Settings menu ***/
 
 .settingsButton .dropdown-menu {
-    width: 265px;
-    border-radius: 4px;
-    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
-    background-color: #ffffff; 
-    border: solid 0px;
+  width: 265px;
+  border-radius: 4px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
+  background-color: #fff;
+  border: solid 0;
 
-    /** Text **/
-    font-size: 14px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: -0.1px;
-    color: #000000;
-
-    cursor: default;
-
-}
-.settingsButton .dropdown-menu {
-    padding: 22px 0px 12px 0px;
-    margin: 2.7rem -4rem !important;
+  /** Text **/
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: -0.1px;
+  color: #000;
+  cursor: default;
+  padding: 22px 0 12px 0;
+  margin: 2.7rem -4rem !important;
 }
 
-.settingsButton .dropdown-menu .dropdown-item, .settingsButton .dropdown-menu .dropdown-menu-group.info {
-    padding: 0px 26px;
+.settingsButton .dropdown-menu .dropdown-item,
+.settingsButton .dropdown-menu .dropdown-menu-group.info {
+  padding: 0 26px;
 }
 
 .settingsButton .dropdown-menu .dropdown-item {
-    padding: 10px 26px;
+  padding: 10px 26px;
 }
 
-.settingsButton .dropdown-menu .dropdown-item:hover, .settingsButton .dropdown-menu .dropdown-item:active {
-    background-color: #ffffff;
-    cursor: pointer;
-    color: #000000;
+.settingsButton .dropdown-menu .dropdown-item:hover,
+.settingsButton .dropdown-menu .dropdown-item:active {
+  background-color: #fff;
+  cursor: pointer;
+  color: #000;
 }
 
 .settingsButton .dropdown-menu .dropdown-menu-group {
-    padding: 0px 0px;
+  padding: 0 0;
 }
 
 .settingsButton .dropdown-menu .dropdown-menu-group .name-lastname {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .settingsButton .dropdown-menu .dropdown-menu-group .space-used {
-    padding-top: 18px;
+  padding-top: 18px;
 }
 
 .settingsButton .dropdown-menu-group .progress {
-    height: 5px;
+  height: 5px;
 }
 
 .settingsButton .dropdown-menu-group .progress .progress-bar {
-    background-image: linear-gradient(78deg, #096dff, #00b1ff);
+  background-image: linear-gradient(78deg, #096dff, #00b1ff);
 }
 
-
 #mainNavBar {
-    &>.navbar-brand {
-        &>a {
-            &>img {
-                width: 30px;
-                height: 35px;
-            }
-        }
+  > .navbar-brand {
+    > a {
+      > img {
+        width: 30px;
+        height: 35px;
+      }
     }
+  }
 }

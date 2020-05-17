@@ -1,6 +1,6 @@
 .popup-content {
-  border: solid 0px transparent !important;
-  padding: 0px !important;
+  border: solid 0 transparent !important;
+  padding: 0 !important;
   max-width: 450px;
   min-width: 450px;
   box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.45);
@@ -20,7 +20,7 @@
   }
 
   .ShareClose {
-    margin: 0px;
+    margin: 0;
 
     img {
       margin-top: 5px;
@@ -33,7 +33,7 @@
 .ShareBody {
   border-bottom: solid 1px #ededed;
   padding: 20px;
-  color: #999999;
+  color: #999;
 }
 
 .Icon {
@@ -50,7 +50,6 @@
   }
 }
 
-
 .Icon-image {
   width: 35px;
   height: 35px;
@@ -61,7 +60,6 @@
     height: 100%;
   }
 }
-
 
 .ShareName {
   p {
@@ -74,13 +72,13 @@
 
 .ShareFooter {
   display: flex;
-  margin: 0 0 0px;
+  margin: 0 0 0;
 
   .ShareLink {
     width: 100%;
     border-right: solid 1px #ededed;
-    padding: 19px 0px 4px 28px;
-    color: #999999;
+    padding: 19px 0 4px 28px;
+    color: #999;
     text-align: left;
   }
 
@@ -93,7 +91,7 @@
       width: auto;
       height: auto;
       margin: auto;
-      border: solid 0px;
+      border: solid 0;
       font-family: inherit;
       color: #4b66ff !important;
     }

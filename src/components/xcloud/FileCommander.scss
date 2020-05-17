@@ -1,126 +1,122 @@
 #FileCommander {
-    margin-top: 13px;
-    max-width: 1440px;
-    margin-left: auto;
-    margin-right: auto;
+  margin-top: 13px;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #FileCommander-info {
-    display: flex;
-    justify-content: center;
-    padding: 0 20px;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
 }
 
 #FileCommander-path {
-    font-size: 18px;
-    font-weight: 600;
-    display: inline;
-    margin: auto;
+  font-size: 18px;
+  font-weight: 600;
+  display: inline;
+  margin: auto;
 }
 
 #FileCommander-backTo img {
-    position: relative;
-    top: -1.5px;
+  position: relative;
+  top: -1.5px;
 }
 
 #FileCommander-backTo {
-    height: 30px;
-    margin-top: 6px;
-    font-size: 18px;
-    width: 195px;
-    margin-left: 7px;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: left;
+  height: 30px;
+  margin-top: 6px;
+  font-size: 18px;
+  width: 195px;
+  margin-left: 7px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
 }
 
 #FileCommander-items {
-    display: flex;
-    margin-top: 13px;
-    padding: 0px 38px;
-    border-top: solid 1px #f2f2f2;
-    flex-wrap: wrap;
+  display: flex;
+  margin-top: 13px;
+  padding: 0 38px;
+  border-top: solid 1px #f2f2f2;
+  flex-wrap: wrap;
 }
 
 .drag-over {
-    outline:  5px dashed #aab3ff;
+  outline: 5px dashed #aab3ff;
 }
 
 .noItems {
-    justify-content: center;
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    height: 50vh;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  height: 50vh;
 }
 
 .noItems-subtext {
-    color: #707070;
-    font-weight: normal;
+  color: #707070;
+  font-weight: normal;
 }
 
 #FileCommander-path .btn {
-    background-color: #ffffff;
-    color: #000000;
-    box-shadow: none;
-    border-style: none;
-    font-weight: 600;
-    font-size: 18px;
+  background-color: #fff;
+  color: #000;
+  box-shadow: none;
+  border-style: none;
+  font-weight: 600;
+  font-size: 18px;
 }
 
 #FileCommander-path .dropdown-toggle::after {
-    content: none;
+  content: none;
 }
 
 #FileCommander-path .dropdown-toggle img {
-    visibility: hidden;
-    margin-left: 5px;
+  visibility: hidden;
+  margin-left: 5px;
 }
 
 #FileCommander-path :hover .dropdown-toggle img {
-    visibility: visible;
+  visibility: visible;
 }
 
 #FileCommander-path .dropdown-menu {
-    min-width: 200px;
-    left: -57px !important;
-    transform: translate3d(-21px, 42px, 0px);
-    border-radius: 14px;
-    border-style: none;
-    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
+  min-width: 200px;
+  left: -57px !important;
+  transform: translate3d(-21px, 42px, 0);
+  border-radius: 14px;
+  border-style: none;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
 }
 
 #FileCommander-path .dropdown-item {
-    margin: 15px -5px 20px 20px;
-    font-size: 15px;
-    font-weight: 500;
-    padding-left: 0px;
+  margin: 15px -5px 20px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  padding-left: 0;
 }
 
-#FileCommander-path .dropdown-item.active, #FileCommander-path .dropdown-item:active {
-    background: none;
-    color: #0054ff;
-} 
-
-#FileCommander-path .dropdown-item:hover, .dropdown-item:focus {
-    width: max-content;
-    background: none;
+#FileCommander-path .dropdown-item.active,
+#FileCommander-path .dropdown-item:active {
+  background: none;
+  color: #0054ff;
 }
 
 #FileCommander-path .dropdown-item:first-child {
-    margin-top: 5px;
-} 
+  margin-top: 5px;
+}
 
 #FileCommander-path .dropdown-item:last-child {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .dropdown {
-    margin-left: -178px !important; 
+  margin-left: -178px !important;
 }
 
 #selection-rect {
-    border: dotted 1px gray;
-    background-color: rgba(0, 0, 100, 0.06);
-    position: absolute;
+  border: dotted 1px gray;
+  background-color: rgba(0, 0, 100, 0.06);
+  position: absolute;
 }

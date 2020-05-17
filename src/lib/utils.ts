@@ -31,7 +31,7 @@ function passToHash(passObject: PassObjectInterface) {
     }
     return hashedObjetc;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 }
 
@@ -52,18 +52,21 @@ function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string) {
     const text64 = CryptoJS.enc.Base64.parse(bytes);
     return text64.toString(CryptoJS.enc.Hex);
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 }
 
 // AES Plain text decryption method with enc. key
 function decryptTextWithKey(encryptedText: string, keyToDecrypt: string) {
+  if (!keyToDecrypt) {
+    throw new Error('No key defined. Check .env file')
+  }
   try {
     const reb = CryptoJS.enc.Hex.parse(encryptedText);
     const bytes = CryptoJS.AES.decrypt(reb.toString(CryptoJS.enc.Base64), keyToDecrypt);
     return bytes.toString(CryptoJS.enc.Utf8);
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 }
 

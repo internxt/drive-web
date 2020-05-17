@@ -1,18 +1,16 @@
 .deletePopup-content {
-    .deleteContainer {
-        margin: 20px;
+  .deleteContainer {
+    margin: 20px;
 
-        .deleteMessage {
-            padding: 20px;
-        }
-
-        .deleteButtons {
-
-            button {
-                margin-left: 30px;
-                margin-right: 30px;
-            }
-        }
-
+    .deleteMessage {
+      padding: 20px;
     }
+
+    .deleteButtons {
+      button {
+        margin-left: 30px;
+        margin-right: 30px;
+      }
+    }
+  }
 }

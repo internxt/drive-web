@@ -1,18 +1,17 @@
 .ai-animation svg {
-    animation: Act-Ind-spin infinite 1s linear;
+  animation: Act-Ind-spin infinite 1s linear;
 }
 
 @keyframes Act-Ind-spin {
-    from {
-        transform: translate3d(-40px, 40px, 0) rotate(0deg);
-        width: 50px;
-        width: 50px;
-        margin-left: 52px;
-    }
-    to {
-        transform: translate3d(-40px, 40px, 0) rotate(-360deg);
-        width: 50px;
-        width: 50px;
-        margin-left: 52px;
-    }
+  from {
+    transform: translate3d(-40px, 40px, 0) rotate(0deg);
+    width: 50px;
+    margin-left: 52px;
+  }
+
+  to {
+    transform: translate3d(-40px, 40px, 0) rotate(-360deg);
+    width: 50px;
+    margin-left: 52px;
+  }
 }

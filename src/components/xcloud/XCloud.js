@@ -12,7 +12,6 @@ import FileCommander from './FileCommander';
 import NavigationBar from "../navigationBar/NavigationBar";
 import history from '../../lib/history';
 import { removeAccents } from '../../lib/utils';
-import logo from '../../assets/drive-logo.svg';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 import PopupShare from '../PopupShare'
