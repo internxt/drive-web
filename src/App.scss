@@ -118,6 +118,16 @@ will have CircularStd as default font. */
   font-size: 19px;
 }
 
+.popup--full-screen__content .button-important {
+  width: 175px;
+  height: 52px;
+  border-radius: 4px;
+  background-color: #FF8888;
+  
+  color: white;
+  font-size: 19px;
+}
+
 .popup--full-screen__content .buttons-wrapper {
   border: 0px;
   justify-content: center;
@@ -237,6 +247,14 @@ will have CircularStd as default font. */
 
 .button-primary:hover {
   border-color: #4b66ff;
+}
+
+.button-important {
+  color: #fff;
+}
+
+.button-important:hover {
+  border-color: rgb(182, 74, 74);
 }
 
 .close-button {

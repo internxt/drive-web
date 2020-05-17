@@ -81,33 +81,20 @@ class FileCommander extends React.Component {
         }
     }
 
-    getEventItemData = (item) => {
-        if (item.isFolder) {
-            return {
-                id: item.id,
-                isFolder: true,
-                type: 'folder'
-            }
-        }
-        return {
-            id: item.fileId,
-            isFolder: false,
-            type: item.type
-        }
-    }
-
     getEventDatasetData = (item) => {
         if (item.isfolder === "true") {
             return {
                 id: parseInt(item.cloudFileId),
                 isFolder: true,
-                type: 'folder'
+                type: 'folder',
+                name: item.name,
             }
         }
         return {
-            id: item.bridgeFileId,
+            fileId: item.bridgeFileId,
             isFolder: false,
-            type: item.type
+            type: item.type,
+            name: item.name,
         }
     }
 
@@ -116,7 +103,7 @@ class FileCommander extends React.Component {
         // Add selected items to event data (for moving)
         const selectedItems = this.state.currentCommanderItems.filter(item => item.isSelected && item.fileId !== currentItemEvent.id && item.id !== currentItemEvent.id);
         let data = selectedItems.map(item => {
-            return this.getEventItemData(item);
+            return item;
         });
         // Do not forget current drag item (even if it's or not selected, we move it)
         data.push(currentItemEvent);
@@ -152,7 +139,8 @@ class FileCommander extends React.Component {
         var data = JSON.parse(event.dataTransfer.getData('text/plain'));
 
         if (parentFolder) {
-            this.props.move(data, parentFolder);
+            const moveOpId = new Date().getTime();
+            this.props.move(data, parentFolder, moveOpId, true);
         }
     }
 

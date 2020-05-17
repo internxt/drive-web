@@ -53,8 +53,12 @@ class FileCommanderItem extends React.Component {
         // Move file or folder when its dropped
         event.preventDefault();
         event.stopPropagation();
-        var data = JSON.parse(event.dataTransfer.getData('text/plain'));
-        this.props.move(data, this.props.id);
+        if (event.currentTarget.dataset.isfolder === 'true') {
+            const moveOpId = new Date().getTime();
+            var data = JSON.parse(event.dataTransfer.getData('text/plain'));
+            this.props.move(data, this.props.id, moveOpId);
+        }
+        
         this.setState({ dragDropStyle: '' });
     }
 

@@ -43,12 +43,11 @@ class XCloud extends React.Component {
       popupShareOpened: false,
       showDeleteItemsPopup: false,
       showOverwritteItemPopup: false,
-      currentOverwritteOptions: {},
+      currentOverwritteOptions: { origin: {}, destination: {} },
+      moveOps: {},
     };
 
-    this.overwritteOptions = []
-    this.moveEvent = { resolved: 0, total: 0, errors: 0 };
-    this.overwritteItemPopUps = 0;
+    this.moveEvent = {};
   }
 
   componentDidMount = () => {
@@ -276,61 +275,285 @@ class XCloud extends React.Component {
 
   }
 
-  // TODO: Add checkbox for default answer on Popup when multiple overwrites happend on move
-  move = (items, destination, overwritte = false) => {
-    const data = { destination, overwritte };
-    const totalAcum = !!overwritte ? 0 : items.length;
-    this.moveEvent = { total: this.moveEvent.total + totalAcum, resolved: this.moveEvent.resolved, errors: this.moveEvent.errors };
+  handleMoveCheckboxChange = (event, moveOpId, type) => {
+    const moveOps = this.state.moveOps;
+    moveOps[moveOpId][type] = event.target.checked;
+    this.setState({ moveOps });
+  }
 
+  nextOverwritePopup = (moveOpId) => {
+    const moveEvent = this.moveEvent[moveOpId];
+    if (moveEvent.overwritteOptions.length && !this.state.showOverwritteItemPopup) {
+      // order overwritte popups from less to deeply path
+      moveEvent.overwritteOptions = moveEvent.overwritteOptions.sort((itemA, itemB) => itemA.destination.destinationPath.length -  itemB.destination.destinationPath.length);
+      this.setState({ 
+        currentOverwritteOptions: moveEvent.overwritteOptions.pop(),
+        showOverwritteItemPopup: true,
+      });
+    }
+  }
+
+  execPendingCombines = (moveOpId) => {
+    const moveEvent = this.moveEvent[moveOpId];
+    const moveOp = this.state.moveOps[moveOpId];
+    if (moveOp.combineAll && moveEvent.overwritteOptions && moveEvent.overwritteOptions.length) {
+      const combineMoves = _.groupBy(_.remove(moveEvent.overwritteOptions, option => option.origin.isFolder), option => option.destination.id);
+      Object.keys(combineMoves).forEach(destination => {
+        this.move(
+          combineMoves[destination].map(option => option.origin),
+          destination,
+          moveOpId,
+          false,
+          moveOp.overwritteAll,
+          true,
+          true,
+          _.first(combineMoves[destination]).destination.destinationPath
+        );
+      });
+    }
+  }
+
+  execPendingOverwrittes = (moveOpId) => {
+    const moveEvent = this.moveEvent[moveOpId];
+    const moveOp = this.state.moveOps[moveOpId];
+    if (moveOp.overwritteAll && moveEvent.overwritteOptions && moveEvent.overwritteOptions.length) {
+      const overwrittesMoves = _.groupBy(_.remove(moveEvent.overwritteOptions, option => !option.origin.isFolder), option => option.destination.id);
+      Object.keys(overwrittesMoves).forEach(destination => {
+        this.move(
+          overwrittesMoves[destination].map(option => option.origin),
+          destination,
+          moveOpId,
+          false,
+          true,
+          moveOp.combineAll,
+          true,
+          _.first(overwrittesMoves[destination]).destination.destinationPath
+        );
+      });
+    }
+  }
+
+  onClickCloseOverwrittePopup = () => {
+    const moveOpId = this.state.currentOverwritteOptions.moveOpId;
+    this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: { origin: {}, destination: {} }});
+    this.moveEvent[moveOpId].finished = true;
+    this.moveEvent[moveOpId].overwritteOptions = [];
+  }
+
+  clearMoveOp = (moveOpId) => {
+    delete this.moveEvent[moveOpId];
+    const moveOps = this.state.moveOps;
+    delete moveOps[moveOpId];
+    this.setState({ 
+      moveOps
+    });
+  }
+
+  decreaseMoveOpCounters = (isError, moveOpId) => {
+    this.moveEvent[moveOpId].errors += isError;
+    this.moveEvent[moveOpId].total -= 1;
+    this.moveEvent[moveOpId].resolved += 1;
+  }
+
+  getMoveErrorItemPopup = (errorRes, moveOpId) => {
+    let destinationPath = errorRes.destination.destinationPath;
+    const pathArr = destinationPath.split('/');
+    destinationPath = pathArr.slice(0, pathArr.length - 1).join('/');
+    
+    return {
+      origin: errorRes.item.fileId ? errorRes.item : _.extend({ isFolder: true }, errorRes.item),
+      destination: { 
+        id: errorRes.destination.id, 
+        destinationPath, 
+        destinationName: pathArr.length > 1 ? pathArr[pathArr.length - 2] : pathArr[0]
+      },
+      moveOpId
+    }
+  }
+
+  move = (
+    items,
+    destination,
+    moveOpId,
+    isBack = false,
+    overwritte = false,
+    combine = false,
+    nested = false,
+    destinationPath = this.state.namePath.map(path => path.name).join('/'),
+    popupAction,
+  ) => {
+    // Don't want to request this...
+    if (items.filter(item => item.isFolder).map(item => item.id).includes(destination)) {
+      toast.warn(`You can't move a folder inside itself'`);
+      return;
+    }
+    
+    // Init new move operation (concurrent container logic)
+    if (!this.state.moveOps[moveOpId]) {
+      const moveOps = this.state.moveOps;
+      moveOps[moveOpId] = { combineAll: false, overwritteAll: false, isBack };
+      this.setState({ moveOps });
+    } 
+    
+    // Init default operation properties
+    if (!this.moveEvent[moveOpId]) {
+      this.moveEvent[moveOpId] = { 
+        finished: false,
+        total: 0,
+        errors: 0,
+        resolved: 0,
+        overwritteOptions: [],
+        mainFolder: this.state.currentFolderId,
+        mainDestination: destination,
+        mainItemsLength: items.length,
+      };
+    }
+    
+    // Increment operation property values
+    this.moveEvent[moveOpId].total += items.length;
+
+    // Build destination tree path (for not nested)
+    if (!nested && isBack) {
+      const destinationArr = destinationPath.split('/');
+      destinationPath = destinationArr.slice(0, destinationArr.length - 1).join('/');
+    }
+
+    // Move Request body
+    const data = {
+      destinationPath,
+      destination,
+      overwritte,
+      combine,
+      overwritteAll: this.state.moveOps[moveOpId].overwritteAll,
+      combineAll: this.state.moveOps[moveOpId].combineAll,
+      mainFolder: this.moveEvent[moveOpId].mainFolder
+    };
     let keyOp; // Folder or File
-    Promise.all(items.map(item => {
+    // Fetch for each first levels items
+    items.forEach(item => {
       keyOp = item.isFolder ? 'Folder' : 'File';
-      const uri = `/api/storage/move${keyOp}`;
-      data[keyOp.toLowerCase() + 'Id'] = item.id;
-      return fetch(uri, {
+      data[keyOp.toLowerCase() + 'Id'] = item.isFolder ? item.id : item.fileId;
+      fetch(`/api/storage/move${keyOp}`, {
         method: 'post',
         headers: getHeaders(true, true),
         body: JSON.stringify(data)
-      });
-    })).then(responses => {
-      const successResIdxs = []
-      const overwriteResIdxs = [];
-      const errorResIdxs = [];
-      responses.forEach((res, idx) => res.status === 200 ? successResIdxs.push(idx) : res.status === 501 ? overwriteResIdxs.push(idx) : errorResIdxs.push(idx));
-      const resolved = successResIdxs.length + errorResIdxs.length;
-      const overwritteOptions = overwritte
-        ? this.overwritteOptions.slice(- (this.overwritteOptions.length - items.length))
-            .concat(overwriteResIdxs.map(itemIdx => { 
-              return { [keyOp.toLowerCase() + 'Id']: items[itemIdx].id, destination, type: keyOp.toLowerCase() } 
-            })) 
-        : this.overwritteOptions;
-      this.overwritteItemPopUps += overwriteResIdxs.length;
-      this.moveEvent = { 
-        total: this.moveEvent.total,
-        resolved: this.moveEvent.resolved + resolved,
-        errors: this.moveEvent.errors + errorResIdxs.length,
-      }
+      }).then(async res => {
+        const response = await res.json();
+        const success = res.status === 200;
+        const needOverwritte = res.status === 501;
+        const isError = !success && !needOverwritte;
+        const moveEvent = this.moveEvent[moveOpId];
+        const moveOp = this.state.moveOps[moveOpId];
+        const _nested = destination !== moveEvent.mainDestination;
+        // If user closes or operation get cancelled
+        if (moveEvent.finished) {
+          this.decreaseMoveOpCounters(false, moveOpId);
+          if (moveEvent.total === 0) {
+            this.clearMoveOp(moveOpId);
+          }
+          
+          return;
+        }
+        
+        // If need overwrite (or combine)
+        if (needOverwritte) {
+          if (!item.isFolder || !data.combine) {
+            if (moveOp.overwritteAll || moveOp.combineAll) {
+              this.move([item], destination, moveOpId, isBack, moveOp.overwritteAll, moveOp.combineAll, true, destinationPath);
+            } else {
+              // Generate new owverwrite popup item
+              let overwritteOptionsItem = this.getMoveErrorItemPopup(response, moveOpId);
+              // push new item for overwritte popup move operation
+              moveEvent.overwritteOptions.push(overwritteOptionsItem);
+            }
+          } else {
+            // get all subfolders and subfiles overwrite and combines popups from response result
+            const allOps = response.result.results.reduce((allResults, childResult) => allResults.concat(childResult.overwrites, childResult.combines, childResult.errors), []);
+            // if combineAll checkbox changed, exec all coming combines
+            if (moveOp.combineAll) {
+              const combineMovesErrs = _.groupBy(allOps.filter(error => error.item && !error.item.fileId), error => error.destination.id);
+              Object.keys(combineMovesErrs).forEach(destination => {
+                this.move(combineMovesErrs[destination].map(error => error.item), destination, moveOpId, isBack, moveOp.overwritteAll, true, true, _.first(combineMovesErrs[destination]).destination.destinationPath);
+              });
+            } else {
+              // push combines items errs to overwrites popup array
+              const combinesPopups = allOps.filter(error => error.item && !error.item.fileId).map(error => this.getMoveErrorItemPopup(error, moveOpId));
+              moveEvent.overwritteOptions = moveEvent.overwritteOptions.concat(combinesPopups);
+            }
 
-      if (this.overwritteItemPopUps <= 0) {
-        return this.getFolderContent(this.state.currentFolderId).then(() => {
-          console.log('Got folder content after move operation');
-          if (this.moveEvent.errors > 0) {
-            toast.warn(`Error moving ${this.moveEvent.errors} items`);
+            // if overwritteAll checkbox changed, exec all coming combines
+            if (moveOp.overwritteAll) {
+              const overwrittesMovesErrs = _.groupBy(allOps.filter(error => error.item && error.item.fileId), error => error.destination.id);
+              Object.keys(overwrittesMovesErrs).forEach(destination => {
+                this.move(overwrittesMovesErrs[destination].map(error => error.item), destination, moveOpId, isBack, true, moveOp.combineAll, true, _.first(overwrittesMovesErrs[destination]).destination.destinationPath);
+              });
+            } else {
+              // push overwrites items errs to overwrites popup array
+              const overwrittesPopups = allOps.filter(error => error.item && error.item.fileId).map(error => this.getMoveErrorItemPopup(error, moveOpId));
+              moveEvent.overwritteOptions = moveEvent.overwritteOptions.concat(overwrittesPopups);
+            }
+          }
+        }
+        
+        // Decreasing counters...
+        this.decreaseMoveOpCounters(isError, moveOpId);
+
+        // Show all (even nested) errors
+        if (isError) {
+          toast.warn(`Error moving ${keyOp.toLowerCase()} '${response.item.name} to ${response.destination.destinationPath}`);
+        }
+
+        let currentCommanderItems;
+        if (success) {
+          // update currentFolder list (remove from main list folders removed folders from tree on backwards)
+          if (response.removedFolders && response.removedFolders.length) {
+            currentCommanderItems = this.state.currentCommanderItems.filter(item => !item.isFolder || (item.isFolder && !response.removedFolders.includes(item.id)));
+            // update state for updating commander items
+            this.setState({ currentCommanderItems });
           }
 
-          toast.info(`Correctly moved ${this.moveEvent.total} items`);
-          this.moveEvent = { resolved: 0, total: 0, errors: 0 };
-          this.overwritteItemPopUps = 0;
-        });
-      }
+          if (!_nested) { 
+            // Remove myself
+            currentCommanderItems = this.state.currentCommanderItems.filter(
+              commanderItem => 
+                item.isFolder ? 
+                  !commanderItem.isFolder || (commanderItem.isFolder && !(commanderItem.id === item.id)) :
+                  commanderItem.isFolder || (!commanderItem.isFolder && !(commanderItem.fileId === item.fileId))
+            );
+            // update state for updating commander items list
+            this.setState({ currentCommanderItems });
+            // Show OK toast only on main move folders and on popups moves
+            toast.info(`Correctly moved ${keyOp.toLowerCase()} '${item.name}'`);
+          } else {
+            if (items.length === 1) {
+              if (popupAction === 1) {
+                toast.info(`File '${item.name}' was overwrited`);
+              }
 
-      if (this.overwritteItemPopUps > 0) {
-        this.overwritteOptions = overwritteOptions;
-        this.setState({ 
-          currentOverwritteOptions: overwritteOptions[0],
-          showOverwritteItemPopup: true,
-        });
-      }
+              if (popupAction === 2) {
+                toast.info(`Folder '${item.name}' was combined`);
+              }
+            }
+          }
+        }
+
+        // If no popups to show...
+        if (!moveEvent.overwritteOptions.length && !this.state.showOverwritteItemPopup) {
+          if (moveEvent.total === 0) {
+            toast.info(`Move operation finished: Correctly moved ${moveEvent.mainItemsLength} items!`);
+            this.clearMoveOp(moveOpId);
+            // If empty folder list move back
+            if (!this.state.currentCommanderItems.length) {
+              this.folderTraverseUp();
+            }
+
+            return;
+          }
+        }
+  
+        // Next overwrite popup
+        this.nextOverwritePopup(moveOpId);
+      });
     });
   }
 
@@ -538,7 +761,7 @@ class XCloud extends React.Component {
   }
 
   getSelectedItems() {
-    return this.state.currentCommanderItems.filter(o => o.isSelected === true)
+    return this.state.currentCommanderItems.filter(o => o.isSelected === true);
   }
 
   folderTraverseUp() {
@@ -629,25 +852,122 @@ class XCloud extends React.Component {
           </Popup>
 
           <Popup
-            open={this.state.showOverwritteItemPopup}
+            open={this.state.showOverwritteItemPopup && this.state.currentOverwritteOptions && this.state.currentOverwritteOptions.origin && this.state.currentOverwritteOptions.destination && !this.state.currentOverwritteOptions.origin.isFolder}
             closeOnDocumentClick
-            onClose={() => this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: {}})}
+            onClose={() => this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: { origin: {}, destination: {} }})}
             className="popup--full-screen">
             <div className="popup--full-screen__content">
               <div className="popup--full-screen__close-button-wrapper">
-                <img src={closeTab} onClick={() => this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: {}})} alt="Close tab" />
+                <img src={closeTab} onClick={() => this.onClickCloseOverwrittePopup()} alt="Close tab" />
               </div>
               <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
               <div className="message-wrapper">
-                <h1>Replace item{this.getSelectedItems().length > 1 ? 's' : ''}</h1>
-                <h2>There is already a {this.state.currentOverwritteOptions.type} with the same name in that destination. Would you like to overwrite the file?</h2>
+                <h1>Replace item </h1>
+                <h2>File: {this.state.currentOverwritteOptions.origin.originalName || this.state.currentOverwritteOptions.origin.name} on folder {this.state.currentOverwritteOptions.destination.destinationName}</h2> 
+                <h2>There is already a file with the same name in destination: {this.state.currentOverwritteOptions.destination.destinationPath + '/'}.<br />Would you like to overwrite the file?</h2>
+                <div className="custom-control custom-checkbox">
+                  <input 
+                    onChange={(e) => this.handleMoveCheckboxChange(e, this.state.currentOverwritteOptions.moveOpId, 'overwritteAll')}
+                    type="checkbox" className="custom-control-input" id="overwritte-all"
+                    checked={ !!this.state.moveOps[this.state.currentOverwritteOptions.moveOpId] && this.state.moveOps[this.state.currentOverwritteOptions.moveOpId].overwritteAll}
+                   />
+                  <label className="custom-control-label" htmlFor="overwritte-all">Remember choice for next operations</label>
+                </div>
+                <div className="buttons-wrapper">
+                  <div className="default-button button-important" onClick={() => {
+                    const moveOpId = this.state.currentOverwritteOptions.moveOpId;
+                    this.execPendingOverwrittes(this.state.currentOverwritteOptions.moveOpId);
+                    this.move(
+                      [this.state.currentOverwritteOptions.origin],
+                      this.state.currentOverwritteOptions.destination.id,
+                      moveOpId,
+                      this.state.moveOps[moveOpId].isBack,
+                      true,
+                      this.state.moveOps[moveOpId].combineAll,
+                      true,
+                      this.state.currentOverwritteOptions.destination.destinationPath,
+                      1
+                    );
+                    this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: { origin: {}, destination: {} }});
+                    this.nextOverwritePopup(moveOpId);
+                  }}>
+                    Replace
+                  </div>
+                  <div className="default-button button-primary" onClick={() => {
+                    const moveOpId = this.state.currentOverwritteOptions.moveOpId;
+                    this.execPendingOverwrittes(this.state.currentOverwritteOptions.moveOpId);
+                    this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: { origin: {}, destination: {} }});
+                    this.nextOverwritePopup(moveOpId);
+                  }}>
+                    Continue
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Popup>
+
+          <Popup
+            open={this.state.showOverwritteItemPopup && this.state.currentOverwritteOptions && this.state.currentOverwritteOptions.origin && this.state.currentOverwritteOptions.destination && this.state.currentOverwritteOptions.origin.isFolder}
+            closeOnDocumentClick
+            onClose={() => this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: { origin: {}, destination: {} }})}
+            className="popup--full-screen">
+            <div className="popup--full-screen__content">
+              <div className="popup--full-screen__close-button-wrapper">
+                <img src={closeTab} onClick={() => this.onClickCloseOverwrittePopup()} alt="Close tab" />
+              </div>
+              <span className="logo logo-runoutstorage"><img src={logo} alt="Logo" /></span>
+              <div className="message-wrapper">
+                <h1>Combine folder</h1>
+                <h2>Folder: {this.state.currentOverwritteOptions.origin.originalName || this.state.currentOverwritteOptions.origin.name}</h2> 
+                <h2>There is already a folder with the same name in {this.state.currentOverwritteOptions.destination.destinationPath + '/'}.<br />What would you like to do?</h2>
+                <div className="custom-control custom-checkbox">
+                  <input 
+                    onChange={(e) => this.handleMoveCheckboxChange(e, this.state.currentOverwritteOptions.moveOpId, 'combineAll')}
+                    type="checkbox" className="custom-control-input" id="combine-all"
+                    checked={ !!this.state.moveOps[this.state.currentOverwritteOptions.moveOpId] && this.state.moveOps[this.state.currentOverwritteOptions.moveOpId].combineAll}
+                   />
+                  <label className="custom-control-label" htmlFor="combine-all">Remember choice for next operations</label>
+                </div>
                 <div className="buttons-wrapper">
                   <div className="default-button button-primary" onClick={() => {
-                    this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: {}});
-                    this.move([{ id: this.state.currentOverwritteOptions[this.state.currentOverwritteOptions.type + 'Id'], isFolder: this.state.currentOverwritteOptions.type === 'folder' }], this.state.currentOverwritteOptions.destination, true);
+                    const moveOpId = this.state.currentOverwritteOptions.moveOpId;
+                    this.execPendingCombines(this.state.currentOverwritteOptions.moveOpId);
+                    this.move(
+                      [this.state.currentOverwritteOptions.origin],
+                      this.state.currentOverwritteOptions.destination.id,
+                      moveOpId,
+                      this.state.moveOps[moveOpId].isBack,
+                      this.state.moveOps[moveOpId].overwritteAll,
+                      true,
+                      true,
+                      this.state.currentOverwritteOptions.destination.destinationPath,
+                      2
+                    );
+                    this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: { origin: {}, destination: {} }});
+                    this.nextOverwritePopup(moveOpId);
                   }}>
-                    Confirm
-                </div>
+                    Combine
+                  </div>
+                  <div className="default-button button-important" onClick={() => {
+                    const moveOpId = this.state.currentOverwritteOptions.moveOpId;
+                    this.execPendingCombines(this.state.currentOverwritteOptions.moveOpId);
+                    this.execPendingOverwrittes(this.state.currentOverwritteOptions.moveOpId);
+                    this.move(
+                      [this.state.currentOverwritteOptions.origin],
+                      this.state.currentOverwritteOptions.destination.id,
+                      moveOpId,
+                      false,
+                      true,
+                      true,
+                      true,
+                      this.state.currentOverwritteOptions.destination.destinationPath,
+                      2
+                    );
+                    this.setState({ showOverwritteItemPopup: false, currentOverwritteOptions: { origin: {}, destination: {} }});
+                    this.nextOverwritePopup(moveOpId);
+                  }}>
+                    Combine & Replace
+                  </div>
                 </div>
               </div>
             </div>
