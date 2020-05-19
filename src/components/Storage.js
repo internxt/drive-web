@@ -13,7 +13,6 @@ import Circle from './Circle'
 import { Row, Col } from 'react-bootstrap';
 import Popup from 'reactjs-popup';
 
-import logo from '../assets/logo.svg';
 import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
 
 import { getHeaders } from '../lib/auth'
