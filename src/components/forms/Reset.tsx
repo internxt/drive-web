@@ -117,7 +117,6 @@ class Reset extends React.Component<ResetProps> {
                 <Container className="login-container-box edit-password-box">
                     <div className="container-register">
                         <p className="container-title edit-password">Change your password</p>
-
                         <Form className="form-register" onSubmit={this.handleChangePassword} >
                             <Form.Row>
                                 <Form.Group as={Col} controlId="currentPassword">

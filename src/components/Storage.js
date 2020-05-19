@@ -124,7 +124,6 @@ class Storage extends React.Component {
                                 this.setState({ modalDeleteAccountShow: false });
                             }} alt="Close tab" />
                         </div>
-                        <span className="logo logo-delete-account"><img src={logo} alt="Logo" /></span>
                         <div className="message-wrapper">
                             <h1>Are you sure?</h1>
                             <p className="delete-account-advertising">All your files will be gone forever and you will lose access to your Internxt Drive account. Any active subscriptions you might have will also be cancelled. Once you click delete account, you will receive a confirmation email.</p>
