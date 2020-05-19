@@ -124,7 +124,7 @@ class FileCommander extends React.Component {
         return parseInt(size) <= 209715200 ? true : false;
     }
 
-    handleDrop = (e) => {
+    handleDrop = (e, parentId = null) => {
         e.preventDefault()
         let items = e.dataTransfer.items;
         
@@ -134,7 +134,7 @@ class FileCommander extends React.Component {
 
                 this.getTotalTreeSize(entry).then(() => {
                     if (this.isAcceptableSize(this.state.treeSize)) {
-                        this.traverseFileTree(entry).then(() => {
+                        this.traverseFileTree(entry, '', parentId).then(() => {
                             nextItem()
                         }).catch(err => {
                             nextItem(err)
@@ -295,6 +295,7 @@ class FileCommander extends React.Component {
                                 hasParentFolder={!inRoot}
                                 isFolder={item.isFolder}
                                 isSelected={item.isSelected}
+                                handleExternalDrop={this.handleDrop}
                             />
                         )
                     }) : (inRoot ?

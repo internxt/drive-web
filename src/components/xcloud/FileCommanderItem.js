@@ -20,7 +20,8 @@ class FileCommanderItem extends React.Component {
             selectedIcon: 0,
             showDropdown: false,
             isLoading: this.props.isLoading,
-            isDownloading: false
+            isDownloading: false,
+            handleExternalDrop: this.props.handleExternalDrop
         }
 
         // Folder colors definition
@@ -75,14 +76,19 @@ class FileCommanderItem extends React.Component {
         // Move file or folder when its dropped
         event.preventDefault();
         event.stopPropagation();
-        var data = JSON.parse(event.dataTransfer.getData('text/plain'));
+
+        try {
+            var data = JSON.parse(event.dataTransfer.getData('text/plain'));
         
-        if (data.isFolder === "false") {
-            this.props.moveFile(data.id, this.props.id);
-        } else if (data.isFolder === "true") {
-            this.props.moveFolder(data.id, this.props.id);
+            if (data.isFolder === "false") {
+                this.props.moveFile(data.id, this.props.id);
+            } else if (data.isFolder === "true") {
+                this.props.moveFolder(data.id, this.props.id);
+            }
+        } catch (err) {
+            this.state.handleExternalDrop(event, this.props.id);
         }
-        
+
         this.setState({ dragDropStyle: '' });
     }
 
