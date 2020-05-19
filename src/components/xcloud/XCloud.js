@@ -558,7 +558,7 @@ class XCloud extends React.Component {
       return (
         <div className="App">
           <div style={{width: '100%', height: '100%'}}>
-            <div className="col-md-12">
+            <div className="col-md-12" style={{padding: 0}}>
               <NavigationBar
                 showFileButtons={true}
                 showSettingsButton={true}
@@ -572,7 +572,7 @@ class XCloud extends React.Component {
               />
             </div>
           
-            <div className="col-md-12" style={{height: '80%'}}>
+            <div className="col-md-12" style={{height: '80%', padding: 0}}>
               <FileCommander
                 currentCommanderItems={this.state.currentCommanderItems}
                 openFolder={this.openFolder}
