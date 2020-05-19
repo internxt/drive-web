@@ -98,6 +98,14 @@ class FileCommanderItem extends React.Component {
         this.setState({ selectedIcon: value });
     }
 
+    handleClickIcon = (value, event) => { 
+        if (this.props.icon && this.props.icon.name && this.props.icon.name === value) {
+            this.setState({ selectedIcon: 0 }, () => {
+                this.handleApplyChanges();
+            });
+        }
+    }
+
     handleApplyChanges = () => {
         let metadata = {};
 
@@ -115,6 +123,10 @@ class FileCommanderItem extends React.Component {
             // Changes on folder item
             if (this.state.selectedColor && (this.props.color !== this.state.selectedColor)) metadata.color = this.state.selectedColor;
             if (this.state.selectedIcon && (!this.props.icon || this.props.icon.id !== this.state.selectedIcon)) metadata.icon = this.state.selectedIcon;
+
+            if (this.state.selectedIcon === 0) {
+                metadata.icon = 'none';
+            }
 
             if (metadata.itemName || metadata.color || metadata.icon) {
                 this.props.updateMeta(metadata, this.props.id, this.props.isFolder);
@@ -271,7 +283,7 @@ class FileCommanderItem extends React.Component {
                                 <ToggleButtonGroup id="iconToggle" className="toggleGroup" name="iconSelection" type="radio" defaultValue={this.props.icon ? this.props.icon.id : ''} onChange={this.handleIconSelection}>
                                     {
                                         this.icons.map((value, i) => {
-                                            return <ToggleButton className={`${value}Icon`} type="radio" value={i + 1} key={i} />
+                                            return <ToggleButton className={`${value}Icon`} type="radio" value={i + 1} key={i} onClick={() => this.handleClickIcon(value)}/>
                                         })
                                     }
                                 </ToggleButtonGroup>
