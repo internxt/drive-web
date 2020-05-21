@@ -1,9 +1,7 @@
 #FileCommander {
-  height: 100%;
-  margin-top: 13px;
-  max-width: 1440px;
-  margin-left: auto;
-  margin-right: auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 #FileCommander-info {
@@ -36,16 +34,20 @@
 }
 
 #FileCommander-items {
-  height: 80%;
-  display: flex;
   margin-top: 13px;
   padding: 0 38px;
   border-top: solid 1px #f2f2f2;
+
+  flex-grow: 1;
+  display: flex;
+  align-items: flex-start;
+  align-content: flex-start;
   flex-wrap: wrap;
 }
 
 .drag-over {
-  outline: 5px dashed #aab3ff;
+  outline: dashed 5px #aab3ff;
+  outline-offset: -10px;
 }
 
 .noItems {

@@ -1,8 +1,6 @@
 .FileCommanderItem {
   width: 174px;
   height: 200px;
-  flex-direction: column;
-  justify-content: center;
   margin: 10px;
   border-radius: 10px;
   border: 1px solid transparent;
