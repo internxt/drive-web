@@ -349,6 +349,7 @@ class XCloud extends React.Component {
   }
 
   openUploadFile = () => {
+    $("input#uploadFileControl").val(null);
     $("input#uploadFileControl").trigger("click");
   }
 
