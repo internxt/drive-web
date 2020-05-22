@@ -106,7 +106,7 @@ class PopupShare extends React.Component<PopupShareProps> {
                             borderRadius: '3.9px'
                         }} onKeyUp={(e: React.FormEvent<HTMLInputElement>) => {
 
-                            if (/^[1-9]$/.test(e.currentTarget.value)) {
+                            if (/^[1-9][0-9]?$/.test(e.currentTarget.value)) {
                                 let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
 
                                 this.generateShareLink(
