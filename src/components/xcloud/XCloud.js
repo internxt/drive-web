@@ -506,6 +506,7 @@ class XCloud extends React.Component {
   };
 
   openUploadFile = () => {
+    $('input#uploadFileControl').val(null);
     $('input#uploadFileControl').trigger('click');
   };
 
@@ -753,40 +754,34 @@ class XCloud extends React.Component {
     // Check authentication
     if (this.props.isAuthenticated && this.state.isActivated && this.state.isInitialized) {
       return (
-        <div className="App">
-          <div style={{ width: '100%', height: '100%' }}>
-            <div className="col-md-12" style={{ padding: 0 }}>
-              <NavigationBar
-                showFileButtons={true}
-                showSettingsButton={true}
-                createFolder={this.createFolder}
-                uploadFile={this.openUploadFile}
-                uploadHandler={this.uploadFile}
-                deleteItems={this.deleteItems}
-                setSearchFunction={this.setSearchFunction}
-                shareItem={this.shareItem}
-                style
-              />
-            </div>
+        <div className="App d-flex flex-column">
+          <NavigationBar
+            showFileButtons={true}
+            showSettingsButton={true}
+            createFolder={this.createFolder}
+            uploadFile={this.openUploadFile}
+            uploadHandler={this.uploadFile}
+            deleteItems={this.deleteItems}
+            setSearchFunction={this.setSearchFunction}
+            shareItem={this.shareItem}
+            style
+          />
 
-            <div className="col-md-12" style={{ height: '80%', padding: 0 }}>
-              <FileCommander
-                currentCommanderItems={this.state.currentCommanderItems}
-                openFolder={this.openFolder}
-                downloadFile={this.downloadFile}
-                selectItems={this.selectItems}
-                namePath={this.state.namePath}
-                handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
-                uploadDroppedFile={this.uploadDroppedFile}
-                createFolderByName={this.createFolderByName}
-                setSortFunction={this.setSortFunction}
-                move={this.move}
-                updateMeta={this.updateMeta}
-                currentFolderId={this.state.currentFolderId}
-                getFolderContent={this.getFolderContent}
-              />
-            </div>
-          </div>
+          <FileCommander
+            currentCommanderItems={this.state.currentCommanderItems}
+            openFolder={this.openFolder}
+            downloadFile={this.downloadFile}
+            selectItems={this.selectItems}
+            namePath={this.state.namePath}
+            handleFolderTraverseUp={this.folderTraverseUp.bind(this)}
+            uploadDroppedFile={this.uploadDroppedFile}
+            createFolderByName={this.createFolderByName}
+            setSortFunction={this.setSortFunction}
+            move={this.move}
+            updateMeta={this.updateMeta}
+            currentFolderId={this.state.currentFolderId}
+            getFolderContent={this.getFolderContent}
+          />
 
           {this.getSelectedItems().length > 0 && this.state.popupShareOpened ? (
             <PopupShare
