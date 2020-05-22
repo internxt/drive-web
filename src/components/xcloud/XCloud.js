@@ -552,6 +552,7 @@ class XCloud extends React.Component {
   };
 
   handleUploadFiles = (files, parentFolderId) => {
+    files = Array.from(files);
     var re = /(?:\.([^.]+))?$/;
     let __currentCommanderItems = this.state.currentCommanderItems;
     let currentFolderId = this.state.currentFolderId;
