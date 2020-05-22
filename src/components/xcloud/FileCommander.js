@@ -202,7 +202,7 @@ class FileCommander extends React.Component {
                 );
               }
             })
-            .catch((err) => {});
+            .catch((err) => { });
         } else {
           nextItem();
         }
@@ -243,7 +243,7 @@ class FileCommander extends React.Component {
             .then(() => {
               resolve(this.state.treeSize);
             })
-            .catch(() => {});
+            .catch(() => { });
         });
       } else if (item.isDirectory) {
         let dirReader = item.createReader();
@@ -317,19 +317,18 @@ class FileCommander extends React.Component {
         <div id="FileCommander-info">
           {
             <div
-              id="FileCommander-backTo"
-              onClick={this.props.handleFolderTraverseUp.bind(this)}
-              onDragOver={this.handleDragOverBackButton}
-              onDrop={this.handleDropOverBackButton}
-            >
+              id="FileCommander-backTo">
               {this.state.namePath.length > 1 ? (
-                <span>
+                <span
+                  onClick={this.props.handleFolderTraverseUp.bind(this)}
+                  onDragOver={this.handleDragOverBackButton}
+                  onDrop={this.handleDropOverBackButton}>
                   <img src={BackToIcon} alt="Back" />{' '}
                   {this.state.namePath[this.state.namePath.length - 2].name}
                 </span>
               ) : (
-                ''
-              )}
+                  ''
+                )}
             </div>
           }
           {
@@ -425,10 +424,10 @@ class FileCommander extends React.Component {
               </h4>
             </div>
           ) : (
-            <div className="noItems">
-              <h1>This folder is empty.</h1>
-            </div>
-          )}
+                <div className="noItems">
+                  <h1>This folder is empty.</h1>
+                </div>
+              )}
         </div>
       </div>
     );

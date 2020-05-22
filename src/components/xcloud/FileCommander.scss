@@ -17,11 +17,6 @@
   margin: auto;
 }
 
-#FileCommander-backTo img {
-  position: relative;
-  top: -1.5px;
-}
-
 #FileCommander-backTo {
   height: 30px;
   margin-top: 6px;
@@ -29,15 +24,22 @@
   width: 195px;
   margin-left: 7px;
   font-weight: 600;
-  cursor: pointer;
   text-align: left;
+
+  span {
+    cursor: pointer;
+
+    img {
+      position: relative;
+      top: -1.5px;
+    }
+  }
 }
 
 #FileCommander-items {
   margin-top: 13px;
   padding: 0 38px;
   border-top: solid 1px #f2f2f2;
-
   flex-grow: 1;
   display: flex;
   align-items: flex-start;
