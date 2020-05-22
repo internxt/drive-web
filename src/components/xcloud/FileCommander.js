@@ -121,7 +121,7 @@ class FileCommander extends React.Component {
     handleDragLeave = (e) => { this.setState({ dragDropStyle: '' }) }
 
     isAcceptableSize = (size) => {
-        return parseInt(size) <= 209715200 ? true : false;
+        return parseInt(size) <= 314572800 ? true : false;
     }
 
     handleDrop = (e, parentId = null) => {

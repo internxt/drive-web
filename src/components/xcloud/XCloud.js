@@ -392,7 +392,7 @@ class XCloud extends React.Component {
     parentFolderId = parentFolderId || currentFolderId;
 
     for (let i = 0; i < files.length; i++) {
-      if (files[i].size >= 209715200) {
+      if (files[i].size >= 314572800) {
         let arr = Array.from(files);
         arr.splice(i, 1);
         files = arr;
