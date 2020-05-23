@@ -94,6 +94,18 @@
         }
 
         .iconContainer {
+          svg {
+            &:nth-child(1) {
+              height: 35px;
+              margin-top: 45px;
+            }
+
+            &:nth-child(2) {
+              height: 20px;
+              margin-top: 28px;
+            }
+          }
+
           &.fileIconContainer {
           }
 
@@ -205,4 +217,12 @@
   border: dotted 1px gray;
   background-color: rgba(0, 0, 100, 0.06);
   position: absolute;
+}
+
+.switch-view {
+  button {
+    i {
+      color: gray;
+    }
+  }
 }

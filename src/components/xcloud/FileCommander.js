@@ -1,6 +1,6 @@
 // import * as _ from 'lodash'
 import * as React from 'react';
-import { Dropdown, Button } from 'react-bootstrap';
+import { Dropdown, Button, ButtonGroup } from 'react-bootstrap';
 import async from 'async';
 import $ from 'jquery'
 
@@ -378,16 +378,21 @@ class FileCommander extends React.Component {
           {
             <div>
               {/*
-              <Button onClick={() => {
-                if ($('#FileCommander-items').hasClass('mosaico')) {
-                  $('#FileCommander-items').removeClass('mosaico')
-                  $('#FileCommander-items').addClass('list')
-                } else {
-                  $('#FileCommander-items').removeClass('list')
-                  $('#FileCommander-items').addClass('mosaico')
-                }
-              }}>Hola</Button>
-            */}
+              <ButtonGroup className="switch-view">
+                <Button onClick={() => {
+                  if ($('#FileCommander-items').hasClass('list')) {
+                    $('#FileCommander-items').removeClass('list')
+                    $('#FileCommander-items').addClass('mosaico')
+                  }
+                }} variant="light"><i class="fa fa-th fa-lg"></i></Button>
+                <Button onClick={() => {
+                  if ($('#FileCommander-items').hasClass('mosaico')) {
+                    $('#FileCommander-items').removeClass('mosaico')
+                    $('#FileCommander-items').addClass('list')
+                  }
+                }} variant="light"><i class="fa fa-list fa-lg"></i></Button>
+              </ButtonGroup>
+              */}
             </div>
           }
         </div>
