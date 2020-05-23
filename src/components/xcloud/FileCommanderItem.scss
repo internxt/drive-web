@@ -7,103 +7,105 @@
   background-color: transparent;
   box-sizing: border-box;
   user-select: none;
-}
 
-.FileCommanderItem:hover {
-  border-radius: 10px;
-  border: 1px solid #839cff;
-  background-color: #fcfcfc;
-  box-sizing: border-box;
-}
+  &:hover {
+    border-radius: 10px;
+    border: 1px solid #839cff;
+    background-color: #fcfcfc;
+    box-sizing: border-box;
+  }
 
-.FileCommanderItem.selected {
-  border-radius: 10px;
-  background-color: #f2f5ff;
-  box-sizing: border-box;
-}
+  &.selected {
+    border-radius: 10px;
+    background-color: #f2f5ff;
+    box-sizing: border-box;
+  }
 
-.FileCommanderItem .type {
-  margin: 50px auto 50px auto;
-  border-radius: 5.5px;
-  background-color: #fcfcfc;
-  border: solid 1px #5291ff;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  color: #5291ff;
-  font-weight: 500;
-  font-size: 14px;
-  padding-bottom: 11px;
-  pointer-events: none;
-  text-transform: uppercase;
-  width: 75px;
-  height: 75px;
-  box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.07);
-}
+  .type {
+    margin: 50px auto 50px auto;
+    border-radius: 5.5px;
+    background-color: #fcfcfc;
+    border: solid 1px #5291ff;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: #5291ff;
+    font-weight: 500;
+    font-size: 14px;
+    padding-bottom: 11px;
+    pointer-events: none;
+    text-transform: uppercase;
+    width: 75px;
+    height: 75px;
+    box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.07);
 
-.FileCommanderItem .itemIcon {
-  margin: 10px auto;
-  margin-top: 50px !important;
-  pointer-events: none;
-  width: 99px;
-  height: 75px;
-  margin-bottom: 27px;
-}
+    span.extension {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
 
-.FileCommanderItem .itemIcon .ai-animation {
-  margin: 2.8rem 3.2rem !important;
-}
+  .itemIcon {
+    margin: 10px auto;
+    margin-top: 50px;
+    pointer-events: none;
+    width: 99px;
+    height: 75px;
+    margin-bottom: 27px;
 
-.FileCommanderItem .iconContainer svg:last-child {
-  position: relative;
-  top: -3.4rem;
-}
+    .ai-animation {
+      margin: 2.8rem 3.2rem !important;
+    }
+  }
 
-.FileCommanderItem .type span.extension {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
+  .properties {
+    color: #2a5fc9;
+    float: right;
+    margin-right: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    visibility: hidden;
+    cursor: pointer;
+  }
 
-.FileCommanderItem .name {
-  font-size: 14px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  text-align: center;
-  letter-spacing: normal;
-  color: #000;
-  word-break: break-all;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin: -3px 10px;
-}
+  .iconContainer {
+    svg:last-child {
+      position: relative;
+      top: -3.4rem;
+    }
+  }
 
-.FileCommanderItem .name:hover {
-  text-decoration: underline;
-}
+  .name {
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    text-align: center;
+    letter-spacing: normal;
+    color: #000;
+    word-break: break-all;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: -3px 10px;
+  
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 
-.FileCommanderItem .created {
-  font-size: 12px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  text-align: center;
-  color: #2a5fc9;
-}
-
-.FileCommanderItem .properties {
-  color: #2a5fc9;
-  float: right;
-  margin-right: 10px;
-  font-size: 20px;
-  font-weight: bold;
-  visibility: hidden;
-  cursor: pointer;
+  .created {
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #2a5fc9;
+  }
 }
 
 .FileCommanderItem .properties .dropdown-menu {
@@ -131,14 +133,14 @@
 .FileCommanderItem .dropdown-item {
   font-weight: 600;
   padding: 0.5rem 1.5rem;
-}
 
-.FileCommanderItem .dropdown-item:hover {
-  background-color: #fff;
-}
+  &:hover {
+    background-color: #fff;
+  }
 
-.FileCommanderItem .dropdown-item:active {
-  color: black;
+  &:active {
+    color: black;
+  }
 }
 
 .FileCommanderItem .itemNameInput {

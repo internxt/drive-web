@@ -2,7 +2,7 @@ import * as React from 'react';
 import $ from 'jquery';
 import PrettySize from 'prettysize';
 import { Dropdown, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
-import './FileCommanderItem.css';
+import './FileCommanderItem.scss';
 import Icon from '../../assets/Icon';
 import ActivityIndicator from '../ActivityIndicator';
 import SanitizeFilename from 'sanitize-filename';
@@ -79,6 +79,7 @@ class FileCommanderItem extends React.Component {
   };
 
   handleDrop = (event) => {
+    this.setState({ dragDropStyle: '' });
     // Move file or folder when its dropped
     event.preventDefault();
     event.stopPropagation();
@@ -94,7 +95,6 @@ class FileCommanderItem extends React.Component {
       this.props.move(data, this.props.id, moveOpId);
     }
 
-    this.setState({ dragDropStyle: '' });
   };
 
   handleNameChange = (event) => {

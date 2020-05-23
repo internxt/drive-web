@@ -1,7 +1,8 @@
 // import * as _ from 'lodash'
 import * as React from 'react';
-import { Dropdown } from 'react-bootstrap';
+import { Dropdown, Button } from 'react-bootstrap';
 import async from 'async';
+import $ from 'jquery'
 
 import './FileCommander.scss';
 import FileCommanderItem from './FileCommanderItem';
@@ -136,7 +137,7 @@ class FileCommander extends React.Component {
     if (e.dataTransfer.types.includes('Files')) {
       e.preventDefault();
       e.stopPropagation();
-      this.setState({ dragDropStyle: 'drag-over' });
+      $('#FileCommander-items').addClass('drag-over')
     }
   };
 
@@ -170,7 +171,7 @@ class FileCommander extends React.Component {
   };
 
   handleDragLeave = (e) => {
-    this.setState({ dragDropStyle: '' });
+    $('#FileCommander-items').removeClass('drag-over')
   };
 
   isAcceptableSize = (size) => {
@@ -221,7 +222,7 @@ class FileCommander extends React.Component {
     );
 
     e.stopPropagation();
-    this.setState({ dragDropStyle: '' });
+    $('#FileCommander-items').removeClass('drag-over')
   };
 
   setTreeSize = (newSize) => {
@@ -374,10 +375,25 @@ class FileCommander extends React.Component {
               </Dropdown>
             </div>
           }
+          {
+            <div>
+              {/*
+              <Button onClick={() => {
+                if ($('#FileCommander-items').hasClass('mosaico')) {
+                  $('#FileCommander-items').removeClass('mosaico')
+                  $('#FileCommander-items').addClass('list')
+                } else {
+                  $('#FileCommander-items').removeClass('list')
+                  $('#FileCommander-items').addClass('mosaico')
+                }
+              }}>Hola</Button>
+            */}
+            </div>
+          }
         </div>
         <div
           id="FileCommander-items"
-          className={this.state.dragDropStyle}
+          className="mosaico"
           onDragOver={this.handleDragOver}
           onDragLeave={this.handleDragLeave}
           onDrop={this.handleDrop}
