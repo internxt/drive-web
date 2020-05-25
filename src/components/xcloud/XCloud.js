@@ -433,19 +433,9 @@ class XCloud extends React.Component {
           );
           // update state for updating commander items list
           this.setState({ currentCommanderItems });
-          if (item.name !== response.item.name) {
-            toast.info(
-              `${keyOp.toLowerCase()} moved but already exists. Your ${keyOp.toLowerCase()} new name: ${
-                response.item.name
-              }`,
-            );
-          } else {
-            toast.info(`Correctly moved ${keyOp.toLowerCase()} '${item.name}'`);
-          }
         }
 
         if (moveEvent.total === 0) {
-          toast.info(`Move finished: moved ${moveEvent.resolved} items!`);
           this.clearMoveOpEvent(moveOpId);
           // If empty folder list move back
           if (!this.state.currentCommanderItems.length) {
