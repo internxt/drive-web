@@ -127,6 +127,7 @@ class Remove extends React.Component<RemoveProps, RemoveState> {
 
     deActivationContainer() {
         return (<div className="container-register">
+            <p className="logo"><img src={logo} alt="Logo" /></p>
             <p className="container-title">Deactivation Email</p>
             <p className="privacy-disclaimer">Please check your email and follow the instructions to deactivate your account so you can start using Internxt Drive again.</p>
             <div className="privacy-remainders" style={{ paddingTop: '20px' }}>Once you deactivate your account, you will be able to sign up using the same email address. Please store your password somewhere safe. With Internxt Drive, only you are the true owner of your files on the cloud. With great power there must also come great responsibility.</div>
