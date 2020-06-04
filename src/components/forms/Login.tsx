@@ -239,8 +239,6 @@ class Login extends React.Component<LoginProps> {
       );
     } else {
       const isValid = this.validate2FA();
-          
-
       return (<div className="login-main">
         <Container className="login-container-box">
         <div className="container-register">
