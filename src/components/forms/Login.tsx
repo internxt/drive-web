@@ -239,8 +239,11 @@ class Login extends React.Component<LoginProps> {
       );
     } else {
       const isValid = this.validate2FA();
+          
+
       return (<div className="login-main">
         <Container className="login-container-box">
+        <div className="container-register">
           <p className="logo"><img src={logo} alt="Logo" /></p>
           <p className="container-title">Security Verification</p>
           <p className="privacy-disclaimer">Enter your 6 digit authenticator code below</p>
@@ -259,6 +262,7 @@ class Login extends React.Component<LoginProps> {
               </Form.Group>
             </Form.Row>
           </Form>
+          </div>
         </Container>
       </div>);
     }
