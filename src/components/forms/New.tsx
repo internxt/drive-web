@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Container, Form, Col } from "react-bootstrap";
+import { Container, Form, Col, Button } from "react-bootstrap";
 
 import logo from '../../assets/drive-logo.svg';
 import history from '../../lib/history';
@@ -287,13 +287,13 @@ class New extends React.Component<NewProps, NewState> {
                 </Form.Row>
                 <Form.Row className="form-register-submit">
                     <Form.Group as={Col}>
-                        <button className="btn-block off" onClick={(e: any) => {
+                        <Button className="btn-block off" onClick={(e: any) => {
                             this.setState({ currentContainer: this.privacyContainer() });
                             e.preventDefault();
-                        }}>Back</button>
+                        }}>Back</Button>
                     </Form.Group>
                     <Form.Group as={Col}>
-                        <button className="btn-block on" type="submit">Continue</button>
+                        <Button className="btn-block on" type="submit">Continue</Button>
                     </Form.Group>
                 </Form.Row>
             </Form>
