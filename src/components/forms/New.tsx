@@ -293,7 +293,7 @@ class New extends React.Component<NewProps, NewState> {
                         }}>Back</Button>
                     </Form.Group>
                     <Form.Group as={Col}>
-                        <Button className="btn-block on" type="submit">Continue</Button>
+                        <Button className="btn-block on __btn-new-button" type="submit">Continue</Button>
                     </Form.Group>
                 </Form.Row>
             </Form>

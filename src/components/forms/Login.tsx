@@ -219,7 +219,7 @@ class Login extends React.Component<LoginProps> {
               </Form.Row>
               <Form.Row className="form-register-submit">
                 <Form.Group as={Col}>
-                  <Button className="on btn-block" disabled={!isValid} type="submit">Sign in</Button>
+                  <Button className="on btn-block __btn-new-button" disabled={!isValid} type="submit">Sign in</Button>
                 </Form.Group>
               </Form.Row>
             </Form>
@@ -256,7 +256,7 @@ class Login extends React.Component<LoginProps> {
             </Form.Row>
             <Form.Row className="form-register-submit">
               <Form.Group as={Col}>
-                <Button className="on btn-block" disabled={!isValid} type="submit">Sign in</Button>
+                <Button className="on btn-block __btn-new-button" disabled={!isValid} type="submit">Sign in</Button>
               </Form.Group>
             </Form.Row>
           </Form>
