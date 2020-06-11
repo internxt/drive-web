@@ -113,6 +113,12 @@ class New extends React.Component<NewProps, NewState> {
         return isValid;
     }
 
+    readReferalCookie() {
+        const cookie = document.cookie.match(/REFERRAL=(\w+);?/);
+        return cookie ? cookie[1] : null;
+    }
+
+
     doRegister = () => {
         // Setup hash and salt 
         const hashObj = passToHash({ password: this.state.register.password });
@@ -131,7 +137,8 @@ class New extends React.Component<NewProps, NewState> {
                 email: this.state.register.email,
                 password: encPass,
                 mnemonic: encMnemonic,
-                salt: encSalt
+                salt: encSalt,
+                referral: this.readReferalCookie()
             })
         }).then(response => {
             if (response.status === 200) {
