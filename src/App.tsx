@@ -14,6 +14,8 @@ import Reset from './components/forms/Reset';
 import Storage from './components/Storage';
 import Security from './components/Security';
 import { ToastContainer } from 'react-toastify';
+import Checkout from './components/Checkout';
+
 
 class App extends React.Component {
   state = {
@@ -34,7 +36,7 @@ class App extends React.Component {
       var toast;
 
       if (/^[a-z0-9]{10}$/.test(pathName)) {
-        toast = <ToastContainer/>
+        toast = <ToastContainer />
       } else {
         toast = <ToastContainer
           position="bottom-right"
@@ -55,6 +57,7 @@ class App extends React.Component {
           <Route exact path='/login' render={(props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
+          <Route path='/checkout/:sessionId' render={(props) => <Checkout {...props} />} />
           <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/settings' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/activations/:token' render={(props) => <Activation {...props} />} />
