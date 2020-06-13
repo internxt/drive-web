@@ -195,6 +195,10 @@
   padding-left: 0;
 }
 
+#FileCommander-path .dropdown-item:hover {
+  background-color: transparent;
+}
+
 #FileCommander-path .dropdown-item.active,
 #FileCommander-path .dropdown-item:active {
   background: none;
