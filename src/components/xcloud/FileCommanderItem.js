@@ -391,7 +391,7 @@ class FileCommanderItem extends React.Component {
         <div className="itemIcon">
           {this.props.isFolder ? this.getFolderIcon() : this.getFileIcon()}
         </div>
-        <div className="name" onClick={this.itemClickHandler}>
+        <div className="name" title={this.props.name} onClick={this.itemClickHandler}>
           {this.props.name}
         </div>
         <div className="created">
