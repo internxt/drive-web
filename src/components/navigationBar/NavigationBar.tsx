@@ -140,7 +140,37 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                                 <Dropdown.Item onClick={(e) => { history.push('/storage'); }}>Storage</Dropdown.Item>
                                 <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
                                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
-                                <Dropdown.Item href="mailto:hello@internxt.com">Contact us</Dropdown.Item>
+                                <Dropdown.Item onClick={(e) => { 
+                                    function getOperatingSystem() {
+                                        let operatingSystem = 'Not known';
+                                        if (window.navigator.appVersion.indexOf('Win') !== -1) { operatingSystem = 'WindowsOS'; }
+                                        if (window.navigator.appVersion.indexOf('Mac') !== -1) { operatingSystem = 'MacOS'; }
+                                        if (window.navigator.appVersion.indexOf('X11') !== -1) { operatingSystem = 'UNIXOS'; }
+                                        if (window.navigator.appVersion.indexOf('Linux') !== -1) { operatingSystem = 'LinuxOS'; }
+                                      
+                                        return operatingSystem;
+                                      }
+
+                                      console.log(getOperatingSystem());
+
+                                      switch(getOperatingSystem()) {
+                                        case 'WindowsOS':
+                                            window.location.href = 'https://internxt.com/downloads/drive.exe';
+                                        break;
+                                        case 'MacOS':
+                                            window.location.href = 'https://internxt.com/downloads/drive.dmg';
+                                        break;
+                                        case 'Linux':
+                                        case 'UNIXOS':
+                                            window.location.href = 'https://internxt.com/downloads/drive.deb';
+                                        break;
+                                        default: 
+                                            window.location.href = 'https://internxt.com/downloads/';
+                                        break;
+                                      }
+
+                                 }}>Download</Dropdown.Item>
+                                <Dropdown.Item href="mailto:hello@internxt.com">Contact</Dropdown.Item>
                             </div>
                             <Dropdown.Divider />
                             <div className="dropdown-menu-group">
