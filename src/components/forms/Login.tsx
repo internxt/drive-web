@@ -233,7 +233,6 @@ class Login extends React.Component<LoginProps> {
             history.push('/remove');
           }}
           >Forgot your password?</p>
-
         </Container>
       </div>
       );
@@ -241,25 +240,25 @@ class Login extends React.Component<LoginProps> {
       const isValid = this.validate2FA();
       return (<div className="login-main">
         <Container className="login-container-box">
-        <div className="container-register">
-          <p className="logo"><img src={logo} alt="Logo" /></p>
-          <p className="container-title">Security Verification</p>
-          <p className="privacy-disclaimer">Enter your 6 digit authenticator code below</p>
-          <Form className="form-register container-register two-factor" onSubmit={(e: any) => {
-            e.preventDefault();
-            this.doLogin();
-          }}>
-            <Form.Row>
-              <Form.Group as={Col} controlId="twoFactorCode">
-                <Form.Control placeholder="Authentication code" required type="text" name="two-factor" autoComplete="off" value={this.state.twoFactorCode} onChange={this.handleChange} />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row className="form-register-submit">
-              <Form.Group as={Col}>
-                <Button className="on btn-block __btn-new-button" disabled={!isValid} type="submit">Sign in</Button>
-              </Form.Group>
-            </Form.Row>
-          </Form>
+          <div className="container-register">
+            <p className="logo"><img src={logo} alt="Logo" /></p>
+            <p className="container-title">Security Verification</p>
+            <p className="privacy-disclaimer">Enter your 6 digit authenticator code below</p>
+            <Form className="form-register container-register two-factor" onSubmit={(e: any) => {
+              e.preventDefault();
+              this.doLogin();
+            }}>
+              <Form.Row>
+                <Form.Group as={Col} controlId="twoFactorCode">
+                  <Form.Control placeholder="Authentication code" required type="text" name="two-factor" autoComplete="off" value={this.state.twoFactorCode} onChange={this.handleChange} />
+                </Form.Group>
+              </Form.Row>
+              <Form.Row className="form-register-submit">
+                <Form.Group as={Col}>
+                  <Button className="on btn-block __btn-new-button" disabled={!isValid} type="submit">Sign in</Button>
+                </Form.Group>
+              </Form.Row>
+            </Form>
           </div>
         </Container>
       </div>);
