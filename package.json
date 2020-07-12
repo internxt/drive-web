@@ -20,6 +20,7 @@
     "immutability-helper": "^3.0.1",
     "jquery": "^3.4.1",
     "js-file-download": "^0.4.10",
+    "natural-orderby": "^2.0.3",
     "prettysize": "^2.0.0",
     "react": "^16.13.0",
     "react-bootstrap": "^1.0.0-beta.17",

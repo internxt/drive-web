@@ -1,6 +1,6 @@
 // import * as _ from 'lodash'
 import * as React from 'react';
-import { Dropdown, Button, ButtonGroup } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import async from 'async';
 import $ from 'jquery'
 
@@ -10,6 +10,8 @@ import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown arrow.svg';
 import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+import { compare } from 'natural-orderby'
 
 const SORT_TYPES = {
   DATE_ADDED: 'Date_Added',
@@ -29,7 +31,7 @@ class FileCommander extends React.Component {
       namePath: this.props.namePath,
       selectedSortType: SORT_TYPES.DATE_ADDED,
       dragDropStyle: '',
-      treeSize: 0,
+      treeSize: 0
     };
   }
 
@@ -63,13 +65,19 @@ class FileCommander extends React.Component {
         };
         break;
       case SORT_TYPES.NAME_ASC:
-        sortFunc = function (a, b) {
-          return a.name.localeCompare(b.name);
-        };
+        if (this.state.selectedSortType === SORT_TYPES.NAME_ASC) {
+          sortFunc = function (a, b) {
+            return compare({ order: 'desc' })(a.name, b.name)
+          };
+        } else {
+          sortFunc = function (a, b) {
+            return compare({ order: 'asc' })(a.name, b.name)
+          };
+        }
         break;
       case SORT_TYPES.NAME_DESC:
         sortFunc = function (a, b) {
-          return b.name.localeCompare(a.name);
+          return compare({ order: 'desc' })(a.name, b.name)
         };
         break;
       case SORT_TYPES.SIZE_ASC:
