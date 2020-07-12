@@ -66,14 +66,12 @@ class FileCommander extends React.Component {
         break;
       case SORT_TYPES.NAME_ASC:
         if (this.state.selectedSortType === SORT_TYPES.NAME_ASC) {
-          sortFunc = function (a, b) {
-            return compare({ order: 'desc' })(a.name, b.name)
-          };
-        } else {
-          sortFunc = function (a, b) {
-            return compare({ order: 'asc' })(a.name, b.name)
-          };
+          this.setState({ selectedSortType: SORT_TYPES.NAME_DESC })
+          return sortType(SORT_TYPES.NAME_DESC)
         }
+        sortFunc = function (a, b) {
+          return compare({ order: 'asc' })(a.name, b.name)
+        };
         break;
       case SORT_TYPES.NAME_DESC:
         sortFunc = function (a, b) {
@@ -93,17 +91,21 @@ class FileCommander extends React.Component {
       default:
         break;
     }
+    this.setState({ selectedSortType: sortType })
     this.props.setSortFunction(sortFunc);
   };
 
   onSelect = (eventKey, event) => {
     // Change active class to option selected only if its not the currently active
     if (!event.target.className.includes('active')) {
-      document.getElementById(this.state.selectedSortType).className = document
-        .getElementById(this.state.selectedSortType)
-        .className.split(' ')[0];
+      if (document
+        .getElementById(this.state.selectedSortType)) {
+        document.getElementById(this.state.selectedSortType).className = document
+          .getElementById(this.state.selectedSortType)
+          .className.split(' ')[0];
+      }
       event.target.className = event.target.className + ' active';
-      this.setState({ selectedSortType: event.target.id });
+      // this.setState({ selectedSortType: event.target.id });
     }
   };
 
@@ -367,7 +369,7 @@ class FileCommander extends React.Component {
                   </Dropdown.Item>
                   <Dropdown.Item
                     id={SORT_TYPES.NAME_ASC}
-                    onClick={() => this.sortItems(SORT_TYPES.NAME_ASC)}
+                    onClick={() => this.sortItems(this.state.selectedSortType === SORT_TYPES.NAME_ASC ? SORT_TYPES.NAME_DESC : SORT_TYPES.NAME_ASC)}
                     onSelect={this.onSelect}
                   >
                     Name
