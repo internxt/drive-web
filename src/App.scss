@@ -33,10 +33,16 @@
   font-style: normal;
 }
 
+
+@font-face {
+  font-family: "Gotham";
+  src: url(./assets/fonts/Gotham-Book-Regular.otf);
+}
 /* Alberto: Since now, all elements in this page
 will have CircularStd as default font. */
 * {
-  font-family: 'Cerebri Sans', sans-serif;
+  // font-family: 'Cerebri Sans', sans-serif;
+  font-family: Gotham;
 }
 
 .Alert {
