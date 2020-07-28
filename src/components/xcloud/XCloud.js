@@ -467,6 +467,7 @@ class XCloud extends React.Component {
         },
         responseType: 'blob'
       }).then(res => {
+        console.log(res)
         if (res.status !== 200) {
           throw res
         }
@@ -476,23 +477,32 @@ class XCloud extends React.Component {
         pcb.setState({ progress: 0 })
         resolve()
       }).catch(err => {
-        console.error(err)
-        if (err.status === 401) {
-          history.push('/login')
+        if (err.response && err.response.status === 401) {
+          return history.push('/login')
         } else {
-          err.json && err.json().then(res => {
+          err.response.data.text().then(result => {
+            const json = JSON.parse(result)
             toast.warn(
               'Error downloading file:\n' +
-                err.status +
+                err.response.status +
                 ' - ' +
-                err.statusText +
+                err.response.statusText +
                 '\n' +
-                res.message +
+                json.message +
                 '\nFile id: ' +
                 id,
             );
+          }).catch(textErr => {
+            toast.warn(
+              'Error downloading file:\n' +
+                err.response.status +
+                ' - ' +
+                err.response.statusText +
+                '\nFile id: ' +
+                id,
+            );  
           })
-        }
+        } 
         resolve()
       })
     });
