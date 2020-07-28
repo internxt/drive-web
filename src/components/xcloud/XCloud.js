@@ -21,6 +21,8 @@ import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import axios from 'axios'
+
 class XCloud extends React.Component {
   constructor(props) {
     super(props);
@@ -427,9 +429,9 @@ class XCloud extends React.Component {
           let currentCommanderItems = this.state.currentCommanderItems.filter((commanderItem) =>
             item.isFolder
               ? !commanderItem.isFolder ||
-                (commanderItem.isFolder && !(commanderItem.id === item.id))
+              (commanderItem.isFolder && !(commanderItem.id === item.id))
               : commanderItem.isFolder ||
-                (!commanderItem.isFolder && !(commanderItem.fileId === item.fileId)),
+              (!commanderItem.isFolder && !(commanderItem.fileId === item.fileId)),
           );
           // update state for updating commander items list
           this.setState({ currentCommanderItems });
@@ -446,52 +448,53 @@ class XCloud extends React.Component {
     });
   };
 
-  downloadFile = (id) => {
+  downloadFile = (id, _class, pcb) => {
     return new Promise((resolve) => {
-      fetch(`/api/storage/file/${id}`, {
-        method: 'GET',
-        headers: getHeaders(true, true),
+      axios.interceptors.request.use((config) => {
+        const headers = getHeaders(true, true)
+        headers.forEach((value, key) => {
+          config.headers[key] = value
+        })
+        return config
       })
-        .then((res) => {
-          if (res.status !== 200) {
-            throw res;
-          } else {
-            return res;
+      axios.get(`/api/storage/file/${id}`, {
+        onDownloadProgress(pe) {
+          if (pcb) {
+            const size = pcb.props.rawItem.size
+            const progress = Math.floor(100 * pe.loaded / size)
+            pcb.setState({ progress: progress })
           }
-        })
-        .then((res) => {
-          res
-            .blob()
-            .then((blob) => {
-              const name = Buffer.from(res.headers.get('x-file-name'), 'base64').toString('utf8');
-              fileDownload(blob, name);
-              resolve();
-            })
-            .catch((err) => {
-              throw err;
-            });
-        })
-        .catch((err) => {
-          if (err.status === 401) {
-            history.push('/login');
-          } else if (err.status === 402) {
-            this.setState({ rateLimitModal: true });
-          } else {
-            err.json().then((res) => {
-              toast.warn(
-                'Error downloading file:\n' +
-                  err.status +
-                  ' - ' +
-                  err.statusText +
-                  '\n' +
-                  res.message +
-                  '\nFile id: ' +
-                  id,
-              );
-            });
-          }
-          resolve();
-        });
+        },
+        responseType: 'blob'
+      }).then(res => {
+        if (res.status !== 200) {
+          throw res
+        }
+        return { blob: res.data, filename: Buffer.from(res.headers['x-file-name'], 'base64').toString('utf8') }
+      }).then(({ blob, filename }) => {
+        fileDownload(blob, filename);
+        pcb.setState({ progress: 0 })
+        resolve()
+      }).catch(err => {
+        console.error(err)
+        if (err.status === 401) {
+          history.push('/login')
+        } else {
+          err.json && err.json().then(res => {
+            toast.warn(
+              'Error downloading file:\n' +
+                err.status +
+                ' - ' +
+                err.statusText +
+                '\n' +
+                res.message +
+                '\nFile id: ' +
+                id,
+            );
+          })
+        }
+        resolve()
+      })
     });
   };
 
@@ -783,8 +786,8 @@ class XCloud extends React.Component {
               }}
             />
           ) : (
-            ''
-          )}
+              ''
+            )}
 
           <Popup
             open={this.state.showDeleteItemsPopup}

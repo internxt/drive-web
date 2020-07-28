@@ -1,7 +1,7 @@
 import * as React from 'react';
 import $ from 'jquery';
 import PrettySize from 'prettysize';
-import { Dropdown, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { Dropdown, ToggleButton, ToggleButtonGroup, ProgressBar } from 'react-bootstrap';
 import './FileCommanderItem.scss';
 import Icon from '../../assets/Icon';
 import ActivityIndicator from '../ActivityIndicator';
@@ -22,6 +22,7 @@ class FileCommanderItem extends React.Component {
       isLoading: this.props.isLoading,
       isDownloading: false,
       handleExternalDrop: this.props.handleExternalDrop,
+      progress: 0
     };
 
     // Folder colors definition
@@ -231,6 +232,7 @@ class FileCommanderItem extends React.Component {
           <span className="extension">
             {!this.state.isLoading && !this.state.isDownloading ? this.props.type : ''}
           </span>
+          {this.state.progress > 0 ? <ProgressBar className="download-pb" now={this.state.progress} /> : '' }
         </div>
         {this.state.isLoading || this.state.isDownloading ? <ActivityIndicator /> : ''}
       </div>
@@ -240,7 +242,7 @@ class FileCommanderItem extends React.Component {
   itemClickHandler = (e) => {
     this.setState({ isDownloading: true }, () => {
       this.props
-        .clickHandler(e)
+        .clickHandler(e, this)
         .then(() => {
           this.setState({ isDownloading: false });
         })

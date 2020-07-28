@@ -417,7 +417,7 @@ class FileCommander extends React.Component {
             list.map((item, i) => {
               return (
                 <FileCommanderItem
-                  key={item.id + '' + i}
+                  key={item.id + '-' + i}
                   selectableKey={item.id}
                   ref={this.myRef}
                   id={item.id}
@@ -433,6 +433,7 @@ class FileCommander extends React.Component {
                     item.isFolder
                       ? this.props.openFolder.bind(null, item.id)
                       : this.props.downloadFile.bind(null, item.fileId)
+                  
                   }
                   selectHandler={this.props.selectItems}
                   isLoading={!!item.isLoading}

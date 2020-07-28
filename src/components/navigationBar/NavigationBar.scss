@@ -69,7 +69,7 @@ input#uploadFileControl {
   width: 265px;
   border-radius: 4px;
   box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.16);
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 1);
   border: solid 0;
 
   /** Text **/
@@ -84,6 +84,31 @@ input#uploadFileControl {
   padding: 22px 0 12px 0;
   margin: 2.7rem -4rem !important;
 }
+
+.settingsButton .dropdown-menu.show {
+  -webkit-animation-name: slideIn;
+  animation-name: slideIn;
+  animation-duration: 0.3s;
+  -webkit-animation-duration: 0.3s;
+  animation-fill-mode: both;
+  -webkit-animation-fill-mode: both;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0px);
+    opacity: 1;
+  }
+  0% {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+}
+
 
 .settingsButton .dropdown-menu .dropdown-item,
 .settingsButton .dropdown-menu .dropdown-menu-group.info {
