@@ -23,7 +23,7 @@
     "natural-orderby": "^2.0.3",
     "prettysize": "^2.0.0",
     "react": "^16.13.0",
-    "react-bootstrap": "^1.0.0-beta.17",
+    "react-bootstrap": "=1.0.0-beta.17",
     "react-device-detect": "^1.11.14",
     "react-dom": "^16.13.0",
     "react-router-dom": "^5.1.2",
