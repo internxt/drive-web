@@ -2,11 +2,13 @@ import React from 'react';
 import { Button, Container } from 'react-bootstrap';
 import NavigationBar from './navigationBar/NavigationBar';
 import './Referred.scss';
+import { getHeaders } from '../lib/auth'
 
 import twitter from '../assets/Share-Icons/Twitter.svg';
 import facebook from '../assets/Share-Icons/Facebook.svg';
 import telegram from '../assets/Share-Icons/Telegram.svg';
 import copy from '../assets/copy-icon.svg';
+import { toast } from 'react-toastify';
 
 
 class Referred extends React.Component {
@@ -27,6 +29,24 @@ class Referred extends React.Component {
     handleChange = (event) => {
         this.setState({
           value: event.target.value
+        });
+    }
+
+    sendClaimEmail = (email) => {
+        fetch(`/api/user/claim`, {
+            method: 'POST',
+            headers: getHeaders(false, false),
+            body: JSON.stringify({ email: this.state.email })
+        }).then(async res => {
+            return { response: res, data: await res.json() };
+        }).then(res => {
+            if (res.response.status !== 200) {
+                throw res.data;
+            } else {
+                toast.warn(`Claim email sent to hello@internxt.com`);
+            }
+        }).catch(err => {
+            toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
         });
     }
 
@@ -75,16 +95,20 @@ class Referred extends React.Component {
                     <div>
                         <input className="mail-box" type="email" value={this.state.email} onChange={this.handleChange} />
                     </div>
-                    <Button className="send-button" type="button">Send
+                    <Button className="send-button" type="button">
+                        Send
                     </Button>
                 </Container>
 
-                <div className="user-credit" /* TODO: Calcular credito*/ >You have accumulated 15 €</div>
+                <div className="user-credit">{`You have accumulated ${user.credit} €`}</div>
 
                 <Button className="on btn-block referred-button" 
                         type="button"
-                        href='mailto:hello@internxt.com?Subject=Referred friends credits&Body=Hello Internxt! I am ready to receive my credit for referring friends'
-                        >Claim</Button>
+                        onClick={() => {
+                            this.sendClaimEmail(this.state.email);
+                        }}>
+                        Claim
+                </Button>
             </Container>
             
         </div>

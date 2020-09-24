@@ -155,7 +155,8 @@ class Login extends React.Component<LoginProps> {
               storeMnemonic: data.user.storeMnemonic,
               name: data.user.name,
               lastname: data.user.lastname,
-              uuid: data.user.uuid
+              uuid: data.user.uuid,
+              credit: data.user.credit
             };
             if (this.props.handleKeySaved) {
               this.props.handleKeySaved(user)
