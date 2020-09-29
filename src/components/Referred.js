@@ -10,28 +10,37 @@ import facebook from '../assets/Share-Icons/Facebook.svg';
 import telegram from '../assets/Share-Icons/Telegram.svg';
 
 import { toast } from 'react-toastify';
-import { copyToClipboard } from '../lib/utils';
+import copy from 'copy-to-clipboard';
 
 
 class Referred extends React.Component {
     state = {
         email: '',
-        credit: 0
+        credit: 0,
+        textToCopy: '',
+        copySuccess: '',
+        isOpen: false,
+        text: ''
     }
 
     constructor(props) {
         super(props);
         this.state = {value: ''};
+        
         this.handleEmailChange = this.handleEmailChange.bind(this);
     }
 
     componentDidMount() {
         const user = JSON.parse(localStorage.getItem('xUser') || '{}');
-        this.getCredit(user.uuid);
+        this.getCredit();
+        this.setState({textToCopy: `https://internxt.com/?ref=${user.uuid}`});
+        this.setState({copySuccess: 'Copy'});
+        const socialText = this.parseUrl('I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!');
+        this.setState({text: socialText});
     }
 
-    getCredit = (userUuid) => {
-        fetch(`/api/user/referred/${userUuid}`, {
+    getCredit = () => {
+        fetch(`/api/user/credit`, {
             method: 'GET',
             headers: getHeaders(true, false)            
         }).then(async res => {
@@ -39,6 +48,12 @@ class Referred extends React.Component {
                 throw res
             }
             return { response: res, data: await res.json() };
+        })
+        .then(async ({ res, data }) => {
+            const credit = data.userCredit;
+            this.setState({ credit: credit });
+
+            console.log(this.state.credit);
         }).catch(err => {
             console.log("Hola desde el error", err);
         });
@@ -49,14 +64,26 @@ class Referred extends React.Component {
     }
 
     validateEmail = (email) => {
+        // eslint-disable-next-line no-control-regex
         const emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/
         return emailPattern.test(email.toLowerCase());
+    }
+
+    copyToClipboard = () => {
+        this.setState({copySuccess: 'Copied'});
+        copy(this.state.textToCopy);
     }
 
     handleEmailChange = (event) => {
         this.setState({
           email: event.target.value
         });
+    }
+
+    handleClick = (e) =>
+    {
+        e.preventDefault();
+        this.setState({isOpen: !this.state.isOpen});
     }
 
     sendInvitationEmail = (mail) => {
@@ -108,7 +135,7 @@ class Referred extends React.Component {
                     <div>
                         <input className="mail-box" type="email" placeholder="example@example.com" value={this.state.email} onChange={this.handleEmailChange} />
                     </div>
-                    <Button className="on btn-block send-button" type="button" onClick={() => {
+                    <Button className="send-button" type="button" onClick={() => {
                             const mail = this.state.email;
                             if (mail !== undefined && this.validateEmail(mail)) {
                                 console.log("enviando")
@@ -125,26 +152,24 @@ class Referred extends React.Component {
                     <div className="referred-url">
                         <input type="text" readOnly value={`https://internxt.com/?ref=${user.uuid}`} />
                     </div> 
-                    <copyToClipboard className="copy-button" value={`https://internxt.com/?ref=${user.uuid}`} onCopy={this.onCopy}>
-                        <Button type="button">
-                            Copy
-                        </Button>
-                    </copyToClipboard>
-                    <DropdownButton className="share-container" name="menuShare" title="Share" type="toggle">
+                    <Button type="button" className="copy-button" onClick={this.copyToClipboard}>
+                        {this.state.copySuccess}
+                    </Button>
+                    <DropdownButton className="share-container" name="menuShare" title="Share" type="toggle">                        
                         <Dropdown.Item className="social-button"
-                            href={`https://twitter.com/intent/tweet?${this.parseUrl({text: 'Still havent known @Internxt? Register with my link and get benefits '})}`}
+                            href={`https://twitter.com/intent/tweet?url=https://internxt.com/?ref=${user.uuid}&${this.parseUrl({text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!'})}`}
                             target="_blank"
                             data-size="large"
-                            data-url={`https://internxt.com/?ref=${user.uuid}`}
+                            original-referer={`https://internxt.com/?ref=${user.uuid}`}
                             data-lang="en">
                                 <img src={twitter} alt="" />
                         </Dropdown.Item>
                         <Dropdown.Item className="social-button"
-                            href={`https://www.facebook.com/sharer/sharer.php?u=https://internxt.com/?ref=${user.uuid}&amp;src=sdkpreparse&${this.parseUrl({quote: 'Still havent known @Internxt? Register with my link and get benefits https://internxt.com/'})}`} target="_blank">
+                            href={`https://www.facebook.com/sharer/sharer.php?u=https://internxt.com/?ref=${user.uuid}&amp;src=sdkpreparse&${this.parseUrl({quote: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!'})}`} target="_blank">
                                 <img src={facebook} alt="" />
                         </Dropdown.Item>
                         <Dropdown.Item className="social-button"
-                            href={`https://t.me/share/url?url=https://internxt.com/?ref=${user.uuid}&${this.parseUrl({text: 'Still havent known @Internxt? Register with my link and get benefits'})}`} target="_blank">
+                            href={`https://t.me/share/url?${this.parseUrl({text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!'})}&url=https://internxt.com/?ref=${user.uuid}`} target="_blank">
                                 <img src={telegram} alt="" />
                         </Dropdown.Item>
                     </DropdownButton>
@@ -152,15 +177,15 @@ class Referred extends React.Component {
                 
                 <div></div>
                 
-                <div className="user-credit">{`You have accumulated ${user.credit} €`}</div>
+                <div className="user-credit">{`You have accumulated €${this.state.credit} `}</div>
 
-                <Button className="on btn-block referred-button" 
+                <Button className="referred-button" 
                         type="button"
                         onClick={() => {
                             if (user.credit > 0) {
                                 this.sendClaimEmail(this.state.email);
                             } else {
-                                toast.warn(`You need to have credit to send claim`);
+                                toast.warn(`You don't have any credit on your account`);
                             }
                         }}>
                         Claim

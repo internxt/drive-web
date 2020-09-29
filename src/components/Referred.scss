@@ -32,21 +32,14 @@
 }
 
 .Referred .copy-button {
-    display: flex;
-   
-    cursor: pointer;
-    button {
-        background-color: transparent;
-        border-width: 2px;
-        color: #4b66ff!important;
-        font-weight: bold;
-        border: 0 solid;
-        font-family: "Cerebri Sans",sans-serif;
-    }
-}
-
-.Referred .copy-button:hover {
-    color:white!important;
+    background-color: transparent!important;
+    border-width: 2px;
+    color: #4b66ff!important;
+    font-weight: bold;
+    border: 0 solid;
+    font-family: "Cerebri Sans",sans-serif;
+    vertical-align: middle;
+    font-size: 16px;
 }
 
 
@@ -55,19 +48,34 @@
     border: 0 solid;
     margin: 0px !important;
     display: flex;
-
+    justify-content: flex-start;
+    background-color: transparent;
+    color: #4b66ff!important;
+    
     button {
-        background-color: transparent;
+        background-color: transparent!important;
         border: solid 0px;
-        color: #4b66ff;
+        color: #4b66ff !important;
         font-family: "Cerebri Sans",sans-serif;
         font-weight: bold;
     }   
 
     div {
-        display: flex;
-        justify-content: space-around;
+        width: 50px!important;
+        justify-content: center;
+        padding: 5px;
+        min-width: 7rem;
+
     }
+
+    .show {
+        display: flex !important;
+    }
+
+}
+
+.share-container:show {
+    color: #4b66ff;
 }
 
 .Referred .referred-url {
@@ -95,17 +103,17 @@
 
 .Referred .social-container {
     padding: 0%;
-    margin: 15px auto;
+    margin: 5px auto;
     width: 40%;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
 }
 
 .Referred .social-button {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    padding: 0px;
+    padding: 2px;
     background-color: transparent;
     border: solid 0px;
 
@@ -118,12 +126,11 @@
     display: flex;
     margin-top: 35px;
     height:40px;
-    width: max-content;
     align-items: flex-start;
 
     .mail-box {
         flex-grow: 4;
-        height: 40px;
+        height: 49px;
         width: 450px;
         border-radius: 3.9px;
         font-size: 14px;
@@ -139,10 +146,11 @@
 }
 
 .Referred .send-button {
-    background-color: #4b66ff;
+    background-color: #4585f5;
     border-width: 2px;
     margin-left: 5px;
-    height: 40px;
+    height: 49px;
+    border-color: transparent;
 }
 
 .Referred .user-credit {
@@ -153,7 +161,8 @@
 }
 
 .Referred .referred-button {
-    background-color: #4b66ff;
+    background-color: #4585f5;
+    border-color: transparent;
     border-radius: 3.4px;
     height: 49px;
     padding: 10px 20px;
@@ -161,4 +170,10 @@
     margin-right: 10px;
     cursor: pointer;
     outline: transparent;
+    display: block;
+    width: 100%;
   }
+
+.noHover{
+    text-decoration: none;
+}
