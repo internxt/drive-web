@@ -15,6 +15,8 @@ import Storage from './components/Storage';
 import Security from './components/Security';
 import { ToastContainer } from 'react-toastify';
 import Checkout from './components/Checkout';
+import Referred from './components/Referred';
+
 
 
 class App extends React.Component {
@@ -57,6 +59,7 @@ class App extends React.Component {
           <Redirect from='//*' to='/*' />
           <Route exact path='/login' render={(props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
+          <Route exact path='/Invite' render={(props) => <Referred {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/checkout/:sessionId' render={(props) => <Checkout {...props} />} />
           <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />

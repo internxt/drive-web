@@ -114,8 +114,8 @@ class New extends React.Component<NewProps, NewState> {
     }
 
     readReferalCookie() {
-        const cookie = document.cookie.match(/REFERRAL=(\w+);?/);
-        return cookie ? cookie[1] : null;
+        const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
+        return cookie ? cookie[2] : null;
     }
 
 

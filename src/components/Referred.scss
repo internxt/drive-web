@@ -1,0 +1,182 @@
+.Referred {
+    .referred-box {
+        border: solid 1px #eaeced;
+        border-radius: 6px;
+        width: 641px;
+        height: max-content;
+        padding: 43px;
+        margin-top: 4em;
+        text-align: center;
+    }
+    .btn {
+        box-shadow: none !important;
+    }
+
+    .referred-title {
+        font-size: 25px;
+        font-weight: bold;
+        font-style: normal;
+        letter-spacing: -0.2px;
+        color: #000;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .referred-description {
+        text-align: justify;
+        color: #737880;
+        letter-spacing: -0.1px;
+        font-size: 14px;
+        line-height: 1.57;
+    }
+
+    .url-container {
+        display: flex;
+        margin-top: 30px;
+    }
+
+    .copy-button {
+        background-color: transparent !important;
+        border-width: 2px;
+        color: #4b66ff !important;
+        font-weight: bold;
+        border: 0 solid;
+        font-family: "Cerebri Sans", sans-serif;
+        vertical-align: middle;
+        font-size: 16px;
+    }
+
+    .share-container {
+        border-width: 2px;
+        border: 0 solid;
+        margin: 0px !important;
+        display: flex;
+        justify-content: flex-start;
+        background-color: transparent;
+        color: #4b66ff !important;
+
+        button {
+            background-color: transparent !important;
+            border: solid 0px;
+            color: #4b66ff !important;
+            font-family: "Cerebri Sans", sans-serif;
+            font-weight: bold;
+        }
+
+        div {
+            width: 50px !important;
+            justify-content: center;
+            padding: 5px;
+            min-width: 7rem;
+        }
+
+        .show {
+            display: flex !important;
+        }
+
+        &:show {
+            color: #4b66ff;
+        }
+        
+
+        .dropdown-menu {
+            a:active {
+                background-color: transparent;
+            }
+        }
+    }
+
+    .referred-url {
+        border-radius: 4.9px;
+        background-color: #f8f9fa;
+        padding: 16px 14px 16px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        font-style: normal;
+        font-stretch: normal;
+        text-align: center;
+        line-height: 1.53;
+        letter-spacing: -0.1px;
+        color: #5c6066;
+        flex-grow: 1;
+
+        input {
+            width: 100%;
+            border: solid 0px;
+            background-color: transparent;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .social-container {
+        padding: 0%;
+        margin: 5px auto;
+        width: 40%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .social-button {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        padding: 2px;
+        background-color: transparent;
+        border: solid 0px;
+
+        img {
+            padding-left: -10px;
+        }
+    }
+
+    .mail-container {
+        display: flex;
+        margin-top: 35px;
+        height: 40px;
+        align-items: flex-start;
+
+        .mail-box {
+            flex-grow: 4;
+            height: 49px;
+            width: 450px;
+            border-radius: 3.9px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #ced4da;
+            padding: 10px 16px;
+            color: #5c6066;
+            font-weight: 500;
+            line-height: 1.53;
+            letter-spacing: -0.1px;
+        }
+    }
+
+    .send-button {
+        background-color: #4585f5;
+        border-width: 2px;
+        margin-left: 5px;
+        height: 49px;
+        border-color: transparent;
+    }
+
+    .user-credit {
+        margin-top: 40px;
+        font-size: 20px;
+        font-weight: bold;
+        font-style: normal;
+    }
+
+    .referred-button {
+        background-color: #4585f5;
+        border-color: transparent;
+        border-radius: 3.4px;
+        height: 49px;
+        padding: 10px 20px;
+        margin-top: 30px;
+        margin-right: 10px;
+        cursor: pointer;
+        outline: transparent;
+        display: block;
+        width: 100%;
+    }
+}
