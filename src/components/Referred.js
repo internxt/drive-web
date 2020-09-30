@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Dropdown, DropdownButton, Nav } from 'react-bootstrap';
+import { Button, Container, Dropdown, DropdownButton } from 'react-bootstrap';
 import NavigationBar from './navigationBar/NavigationBar';
 import './Referred.scss';
 import { getHeaders } from '../lib/auth';
@@ -25,39 +25,39 @@ class Referred extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {value: ''};
-        
+        this.state = { value: '' };
+
         this.handleEmailChange = this.handleEmailChange.bind(this);
     }
 
     componentDidMount() {
         const user = JSON.parse(localStorage.getItem('xUser') || '{}');
         this.getCredit();
-        this.setState({textToCopy: `https://internxt.com/?ref=${user.uuid}`});
-        this.setState({copySuccess: 'Copy'});
+        this.setState({ textToCopy: `https://internxt.com/?ref=${user.uuid}` });
+        this.setState({ copySuccess: 'Copy' });
         const socialText = this.parseUrl('I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!');
-        this.setState({text: socialText});
+        this.setState({ text: socialText });
     }
 
     getCredit = () => {
         fetch(`/api/user/credit`, {
             method: 'GET',
-            headers: getHeaders(true, false)            
+            headers: getHeaders(true, false)
         }).then(async res => {
             if (res.status !== 200) {
                 throw res
             }
             return { response: res, data: await res.json() };
         })
-        .then(async ({ res, data }) => {
-            const credit = data.userCredit;
-            this.setState({ credit: credit });
+            .then(async ({ res, data }) => {
+                const credit = data.userCredit;
+                this.setState({ credit: credit });
 
-            console.log(this.state.credit);
-        }).catch(err => {
-            console.log("Hola desde el error", err);
-        });
-    } 
+                console.log(this.state.credit);
+            }).catch(err => {
+                console.log("Hola desde el error", err);
+            });
+    }
 
     parseUrl(text) {
         return new URLSearchParams(text).toString()
@@ -70,20 +70,19 @@ class Referred extends React.Component {
     }
 
     copyToClipboard = () => {
-        this.setState({copySuccess: 'Copied'});
+        this.setState({ copySuccess: 'Copied' });
         copy(this.state.textToCopy);
     }
 
     handleEmailChange = (event) => {
         this.setState({
-          email: event.target.value
+            email: event.target.value
         });
     }
 
-    handleClick = (e) =>
-    {
+    handleClick = (e) => {
         e.preventDefault();
-        this.setState({isOpen: !this.state.isOpen});
+        this.setState({ isOpen: !this.state.isOpen });
     }
 
     sendInvitationEmail = (mail) => {
@@ -125,17 +124,18 @@ class Referred extends React.Component {
     render() {
         const user = JSON.parse(localStorage.getItem('xUser') || '{}');
 
-        return <div className="Referred">
+        return <div>
             <NavigationBar navbarItems={<h5>Referrals</h5>} showSettingsButton={true} />
-            <Container className="referred-box">
-                <div className="referred-title">Earn money by referring friends</div>
-                <div className="referred-description">Invite friends who aren't on Internxt yet to upgrade their Internxt account for free the first month, cancel anytime. You'll both get €5 of Internxt credit as soon as they activate their free premium trial. Start earning money today!</div>
+            <div className="Referred">
+                <Container className="referred-box">
+                    <div className="referred-title">Earn money by referring friends</div>
+                    <div className="referred-description">Invite friends who aren't on Internxt yet to upgrade their Internxt account for free the first month, cancel anytime. You'll both get €5 of Internxt credit as soon as they activate their free premium trial. Start earning money today!</div>
 
-                <Container className="mail-container">
-                    <div>
-                        <input className="mail-box" type="email" placeholder="example@example.com" value={this.state.email} onChange={this.handleEmailChange} />
-                    </div>
-                    <Button className="send-button" type="button" onClick={() => {
+                    <Container className="mail-container">
+                        <div>
+                            <input className="mail-box" type="email" placeholder="example@example.com" value={this.state.email} onChange={this.handleEmailChange} />
+                        </div>
+                        <Button className="send-button" type="button" onClick={() => {
                             const mail = this.state.email;
                             if (mail !== undefined && this.validateEmail(mail)) {
                                 console.log("enviando")
@@ -144,42 +144,42 @@ class Referred extends React.Component {
                                 toast.warn(`Please, enter a valid email to send invitation`);
                             }
                         }}>
-                        Invite
+                            Invite
                     </Button>
-                </Container>
-                <div></div>
-                <Container className="url-container">
-                    <div className="referred-url">
-                        <input type="text" readOnly value={`https://internxt.com/?ref=${user.uuid}`} />
-                    </div> 
-                    <Button type="button" className="copy-button" onClick={this.copyToClipboard}>
-                        {this.state.copySuccess}
-                    </Button>
-                    <DropdownButton className="share-container" name="menuShare" title="Share" type="toggle">                        
-                        <Dropdown.Item className="social-button"
-                            href={`https://twitter.com/intent/tweet?url=https://internxt.com/?ref=${user.uuid}&${this.parseUrl({text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!'})}`}
-                            target="_blank"
-                            data-size="large"
-                            original-referer={`https://internxt.com/?ref=${user.uuid}`}
-                            data-lang="en">
+                    </Container>
+                    <div></div>
+                    <Container className="url-container">
+                        <div className="referred-url">
+                            <input type="text" readOnly value={`https://internxt.com/?ref=${user.uuid}`} />
+                        </div>
+                        <Button type="button" className="copy-button" onClick={this.copyToClipboard}>
+                            {this.state.copySuccess}
+                        </Button>
+                        <DropdownButton className="share-container" name="menuShare" title="Share" type="toggle">
+                            <Dropdown.Item className="social-button"
+                                href={`https://twitter.com/intent/tweet?url=https://internxt.com/?ref=${user.uuid}&${this.parseUrl({ text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`}
+                                target="_blank"
+                                data-size="large"
+                                original-referer={`https://internxt.com/?ref=${user.uuid}`}
+                                data-lang="en">
                                 <img src={twitter} alt="" />
-                        </Dropdown.Item>
-                        <Dropdown.Item className="social-button"
-                            href={`https://www.facebook.com/sharer/sharer.php?u=https://internxt.com/?ref=${user.uuid}&amp;src=sdkpreparse&${this.parseUrl({quote: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!'})}`} target="_blank">
+                            </Dropdown.Item>
+                            <Dropdown.Item className="social-button"
+                                href={`https://www.facebook.com/sharer/sharer.php?u=https://internxt.com/?ref=${user.uuid}&amp;src=sdkpreparse&${this.parseUrl({ quote: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`} target="_blank">
                                 <img src={facebook} alt="" />
-                        </Dropdown.Item>
-                        <Dropdown.Item className="social-button"
-                            href={`https://t.me/share/url?${this.parseUrl({text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!'})}&url=https://internxt.com/?ref=${user.uuid}`} target="_blank">
+                            </Dropdown.Item>
+                            <Dropdown.Item className="social-button"
+                                href={`https://t.me/share/url?${this.parseUrl({ text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}&url=https://internxt.com/?ref=${user.uuid}`} target="_blank">
                                 <img src={telegram} alt="" />
-                        </Dropdown.Item>
-                    </DropdownButton>
-                </Container>
-                
-                <div></div>
-                
-                <div className="user-credit">{`You have accumulated €${this.state.credit} `}</div>
+                            </Dropdown.Item>
+                        </DropdownButton>
+                    </Container>
 
-                <Button className="referred-button" 
+                    <div></div>
+
+                    <div className="user-credit">{`You have accumulated €${this.state.credit} `}</div>
+
+                    <Button className="referred-button"
                         type="button"
                         onClick={() => {
                             if (user.credit > 0) {
@@ -190,8 +190,8 @@ class Referred extends React.Component {
                         }}>
                         Claim
                 </Button>
-            </Container>
-            
+                </Container>
+            </div>
         </div>
     }
 }
