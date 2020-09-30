@@ -141,7 +141,7 @@ class Referred extends React.Component {
                                 console.log("enviando")
                                 this.sendInvitationEmail(mail);
                             } else {
-                                toast.warn(`Please, enter a valid email to send invitation`);
+                                toast.warn(`Please, enter a valid email before sending out the invite`);
                             }
                         }}>
                             Invite
