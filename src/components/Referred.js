@@ -96,7 +96,7 @@ class Referred extends React.Component {
             if (res.response.status !== 200) {
                 throw res.data;
             } else {
-                toast.warn(`Invitation email sent to ${mail}`);
+                toast.info(`Invitation email sent to ${mail}`);
             }
         }).catch(err => {
             toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
@@ -114,7 +114,7 @@ class Referred extends React.Component {
             if (res.response.status !== 200) {
                 throw res.data;
             } else {
-                toast.warn(`Claim email sent to hello@internxt.com`);
+                toast.info(`Claim email sent to hello@internxt.com`);
             }
         }).catch(err => {
             toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
@@ -129,7 +129,7 @@ class Referred extends React.Component {
             <div className="Referred">
                 <Container className="referred-box">
                     <div className="referred-title">Earn money by referring friends</div>
-                    <div className="referred-description">Invite friends who aren't on Internxt yet to upgrade their Internxt account for free the first month, cancel anytime. You'll both get €5 of Internxt credit as soon as they activate their free premium trial. Start earning money today!</div>
+                    <div className="referred-description">Invite friends who aren't on Internxt yet. You'll both get €5 of Internxt credit as soon as they activate their account. Start earning money today!</div>
 
                     <Container className="mail-container">
                         <div>
@@ -185,7 +185,7 @@ class Referred extends React.Component {
                             if (user.credit > 0) {
                                 this.sendClaimEmail(this.state.email);
                             } else {
-                                toast.warn(`You don't have any credit on your account`);
+                                toast.info(`You don't have any credit on your account`);
                             }
                         }}>
                         Claim
