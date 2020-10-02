@@ -138,7 +138,8 @@ class Referred extends React.Component {
                         <Button className="send-button" type="button" onClick={() => {
                             const mail = this.state.email;
                             if (mail !== undefined && this.validateEmail(mail)) {
-                                console.log("enviando")
+                                console.log("enviando");
+                                this.setState({ email: '' });
                                 this.sendInvitationEmail(mail);
                             } else {
                                 toast.warn(`Please, enter a valid email before sending out the invite`);
@@ -189,7 +190,7 @@ class Referred extends React.Component {
                             }
                         }}>
                         Claim
-                </Button>
+                    </Button>
                 </Container>
             </div>
         </div>

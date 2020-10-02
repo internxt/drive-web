@@ -90,7 +90,7 @@ class Storage extends React.Component {
     render() {
         return (
             <div className="settings">
-                <NavigationBar navbarItems={<h5>Storage</h5>} showSettingsButton={true} showFileButtons={true} />
+                <NavigationBar navbarItems={<h5>Storage</h5>} showSettingsButton={true} />
                 <InxtContainer>
                     <p className="title">Storage Used</p>
 
