@@ -165,7 +165,7 @@ class Referred extends React.Component {
                                 data-lang="en">
                                 <img src={twitter} alt="" />
                             </Dropdown.Item>
-                            <Dropdown.Item className="social-button"
+                            <Dropdown.Item className="social-button" data-href={`https://internxt.com/?ref=${user.uuid}`}
                                 href={`https://www.facebook.com/sharer/sharer.php?u=https://internxt.com/?ref=${user.uuid}&amp;src=sdkpreparse&${this.parseUrl({ quote: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`} target="_blank">
                                 <img src={facebook} alt="" />
                             </Dropdown.Item>
