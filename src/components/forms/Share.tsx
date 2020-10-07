@@ -48,7 +48,7 @@ class Share extends React.Component<ShareProps> {
     }
 
     download() {
-        const toastId = toast.info('Downloading file...', {
+        const toastId = toast.info('Securely downloading file...', {
             position: "bottom-right",
             autoClose: false,
             draggable: false
