@@ -12,6 +12,8 @@ import { getHeaders } from '../../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { analytics } from '../../lib/analytics';
+
 interface LoginProps {
   email?: string
   password?: string
@@ -169,6 +171,10 @@ class Login extends React.Component<LoginProps> {
               token: data.token,
               user: user
             });
+            analytics.track({
+              event: 'user-signup',
+              userId: data.user.uuid
+            })
           })
             .catch(err => {
               toast.warn(`"${err.error ? err.error : err}"`);

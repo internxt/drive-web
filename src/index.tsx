@@ -7,6 +7,7 @@ import { Router } from 'react-router-dom'
 import history from './lib/history'
 import 'bootstrap/dist/css/bootstrap.css';
 
+
 ReactDOM.render(<Router history={history}><App /></Router>, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
