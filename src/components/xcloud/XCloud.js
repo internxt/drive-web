@@ -23,7 +23,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import axios from 'axios'
 
-import {analytics, getUuid } from '../../lib/analytics'
+import { analytics, getUuid } from '../../lib/analytics'
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -443,6 +443,10 @@ class XCloud extends React.Component {
         if (!success) {
           toast.warn(`Error moving ${keyOp.toLowerCase()} '${response.item.name}`);
         } else {
+          analytics.track({
+            event: `${keyOp}-move`,
+            userId: getUuid()
+          })
           // Remove myself
           let currentCommanderItems = this.state.currentCommanderItems.filter((commanderItem) =>
             item.isFolder
@@ -510,22 +514,22 @@ class XCloud extends React.Component {
             const json = JSON.parse(result)
             toast.warn(
               'Error downloading file:\n' +
-                err.response.status +
-                ' - ' +
-                err.response.statusText +
-                '\n' +
-                json.message +
-                '\nFile id: ' +
-                id,
+              err.response.status +
+              ' - ' +
+              err.response.statusText +
+              '\n' +
+              json.message +
+              '\nFile id: ' +
+              id,
             );
           }).catch(textErr => {
             toast.warn(
               'Error downloading file:\n' +
-                err.response.status +
-                ' - ' +
-                err.response.statusText +
-                '\nFile id: ' +
-                id,
+              err.response.status +
+              ' - ' +
+              err.response.statusText +
+              '\nFile id: ' +
+              id,
             );
           })
         }
@@ -706,9 +710,13 @@ class XCloud extends React.Component {
         ? `/api/storage/folder/${v.id}`
         : `/api/storage/folder/${v.folderId}/file/${v.id}`;
       return (next) =>
-        fetch(url, fetchOptions)
-          .then(() => next())
-          .catch(next);
+        fetch(url, fetchOptions).then(() => {
+          analytics.track({
+            event: (v.isFolder ? 'folder' : 'file') + '-delete',
+            userId: getUuid()
+          })
+          next()
+        }).catch(next);
     });
 
     async.parallel(deletionRequests, (err, result) => {

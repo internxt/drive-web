@@ -11,6 +11,8 @@ import { getHeaders } from '../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { analytics, getUuid } from '../lib/analytics'
+
 interface PopupShareProps {
     onClose: any
     item: any
@@ -105,7 +107,6 @@ class PopupShare extends React.Component<PopupShareProps> {
                             textAlign: 'center',
                             borderRadius: '3.9px'
                         }} onKeyUp={(e: React.FormEvent<HTMLInputElement>) => {
-
                             if (/^[1-9][0-9]?$/.test(e.currentTarget.value)) {
                                 let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
 
@@ -113,6 +114,10 @@ class PopupShare extends React.Component<PopupShareProps> {
                                     fileId,
                                     parseInt(e.currentTarget.value)
                                 ).then(link => {
+                                    analytics.track({
+                                        event: 'file-share',
+                                        userId: getUuid()
+                                    })        
                                     this.setState({ link: link });
                                 }).catch((err) => {
                                     if (err.status === 402) {
