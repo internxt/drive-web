@@ -3202,6 +3202,11 @@ charenc@0.0.2:
   resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
   integrity sha1-wKHS86cJLgN3S/qD8UwPxXkKhmc=
 
+check-password-strength@^1.0.15:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/check-password-strength/-/check-password-strength-1.0.15.tgz#b50c009a64cfb993946ba7c884434e290c7ddfba"
+  integrity sha512-e43Hzwets7P/oeFmCxdzLC9xUVH3mfP70WRchAj23+NPct8dy/yLEZC3ikTZ0/Cht9rcPMoACIiEGyVkiqWjkw==
+
 chokidar@^2.1.8:
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.8.tgz#804b3a7b6a99358c3c5c61e71d8728f041cff917"

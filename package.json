@@ -15,6 +15,7 @@
     "axios": "^0.20.0",
     "bip39": "^3.0.2",
     "bootstrap": "^4.4.1",
+    "check-password-strength": "^1.0.15",
     "copy-to-clipboard": "^3.3.1",
     "crypto-js": "^4.0.0",
     "history": "^4.10.1",
