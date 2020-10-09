@@ -37,6 +37,7 @@
     "typescript": "~3.7.2"
   },
   "scripts": {
+    "preinstall": "node ./scripts/use-yarn.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "npm run lint",
