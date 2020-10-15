@@ -16,4 +16,5 @@ declare namespace NodeJS {
 
 interface Window {
     Stripe: any
+    analytics: any
 }
