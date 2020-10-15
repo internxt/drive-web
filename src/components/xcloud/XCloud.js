@@ -198,29 +198,31 @@ class XCloud extends React.Component {
   getNewFolderName = (name) => {
     let exists = true;
     let i = 1;
-    let newName;
     const currentFolder = this.state.currentCommanderItems.filter((item) => item.isFolder);
+    let finalName;
     while (exists) {
-      newName = this.getNextNewName(name, i);
+      const newName = this.getNextNewName(name, i);
       exists = currentFolder.find((folder) => folder.name === newName);
       i += 1;
+      finalName = newName
     }
 
-    return newName;
+    return finalName;
   };
 
   getNewFileName = (name, type) => {
     let exists = true;
     let i = 1;
-    let newName;
+    let finalName;
     const currentFiles = this.state.currentCommanderItems.filter((item) => !item.isFolder);
     while (exists) {
-      newName = this.getNextNewName(name, i);
+      const newName = this.getNextNewName(name, i);
       exists = currentFiles.find((file) => file.name === newName && file.type === type);
+      finalName = newName
       i += 1;
     }
 
-    return newName;
+    return finalName;
   };
 
   getNewName = (name, type) => {
