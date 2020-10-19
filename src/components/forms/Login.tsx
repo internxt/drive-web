@@ -166,14 +166,16 @@ class Login extends React.Component<LoginProps> {
             localStorage.setItem('xToken', data.token);
             localStorage.setItem('xMnemonic', user.mnemonic);
             localStorage.setItem('xUser', JSON.stringify(user));
+
             this.setState({
               isAuthenticated: true,
               token: data.token,
               user: user
             });
-            analytics.track({
+
+            analytics.identify(data.user.uuid, {
               event: 'user-signup',
-              userId: data.user.uuid
+              email: data.user.email
             })
           })
             .catch(err => {
@@ -192,8 +194,8 @@ class Login extends React.Component<LoginProps> {
       }
     })
       .catch(err => {
-        console.error("Login error. " + err);
-        toast.warn('Login error');
+        console.error("Login error. " + err)
+        toast.warn('Login error')
       });
   }
 

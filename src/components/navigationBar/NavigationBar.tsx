@@ -14,6 +14,8 @@ import PrettySize from 'prettysize';
 
 import HeaderButton from './HeaderButton';
 
+import { analytics, getUserData, getUuid } from '../../lib/analytics'
+
 import "./NavigationBar.scss";
 import history from '../../lib/history';
 
@@ -41,12 +43,31 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     constructor(props: NavigationBarProps) {
         super(props);
 
-            this.state = {
-                menuButton: null,
-                navbarItems: props.navbarItems,
-                barLimit: 1024 * 1024 * 1024 * 2,
-                barUsage: 0,
-            };
+        this.state = {
+            menuButton: null,
+            navbarItems: props.navbarItems,
+            barLimit: 1024 * 1024 * 1024 * 2,
+            barUsage: 0,
+        };
+    }
+
+    identifyPlan(bytes: number): string {
+        if (bytes <= 1073741824) {
+            return "Free 2GB"
+        }
+        if (bytes === 21474836480) {
+            return "20GB"
+        }
+
+        if (bytes === 2199023255552) {
+            return "2TB"
+        }
+
+        if (bytes === 214748364800) {
+            return "200GB"
+        }
+
+        return "Unknown"
     }
 
     componentDidMount() {
@@ -88,6 +109,10 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         ).then(res => {
             return res.json();
         }).then(res2 => {
+            analytics.identify(getUuid(), {
+                email: getUserData().email,
+                plan: this.identifyPlan(res2.maxSpaceBytes)
+            })
             this.setState({ barLimit: res2.maxSpaceBytes })
         }).catch(err => {
             console.log('Error on fetch /api/limit', err);
@@ -141,41 +166,48 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                                 <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
                                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                                 <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>
-                                <Dropdown.Item onClick={(e) => { 
+                                <Dropdown.Item onClick={(e) => {
                                     function getOperatingSystem() {
                                         let operatingSystem = 'Not known';
                                         if (window.navigator.appVersion.indexOf('Win') !== -1) { operatingSystem = 'WindowsOS'; }
                                         if (window.navigator.appVersion.indexOf('Mac') !== -1) { operatingSystem = 'MacOS'; }
                                         if (window.navigator.appVersion.indexOf('X11') !== -1) { operatingSystem = 'UNIXOS'; }
                                         if (window.navigator.appVersion.indexOf('Linux') !== -1) { operatingSystem = 'LinuxOS'; }
-                                      
+
                                         return operatingSystem;
-                                      }
+                                    }
 
-                                      console.log(getOperatingSystem());
+                                    console.log(getOperatingSystem());
 
-                                      switch(getOperatingSystem()) {
+                                    switch (getOperatingSystem()) {
                                         case 'WindowsOS':
                                             window.location.href = 'https://internxt.com/downloads/drive.exe';
-                                        break;
+                                            break;
                                         case 'MacOS':
                                             window.location.href = 'https://internxt.com/downloads/drive.dmg';
-                                        break;
+                                            break;
                                         case 'Linux':
                                         case 'UNIXOS':
                                             window.location.href = 'https://internxt.com/downloads/drive.deb';
-                                        break;
-                                        default: 
+                                            break;
+                                        default:
                                             window.location.href = 'https://internxt.com/downloads/';
-                                        break;
-                                      }
+                                            break;
+                                    }
 
-                                 }}>Download</Dropdown.Item>
+                                }}>Download</Dropdown.Item>
                                 <Dropdown.Item href="mailto:hello@internxt.com">Contact</Dropdown.Item>
                             </div>
                             <Dropdown.Divider />
                             <div className="dropdown-menu-group">
-                                <Dropdown.Item onClick={(e) => { localStorage.clear(); history.push('/login'); }}>Sign out</Dropdown.Item>
+                                <Dropdown.Item onClick={(e) => {
+                                    analytics.track('signout', {
+                                        userId: getUuid(),
+                                        email: getUserData().email
+                                    })
+                                    localStorage.clear();
+                                    history.push('/login');
+                                }}>Sign out</Dropdown.Item>
                             </div>
                         </Dropdown.Menu>
                     </Dropdown>

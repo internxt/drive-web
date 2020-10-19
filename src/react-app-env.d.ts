@@ -14,6 +14,10 @@ declare namespace NodeJS {
     }
 }
 
+interface SegmentAnalytics {
+    
+}
+
 interface Window {
     Stripe: any
     analytics: any
