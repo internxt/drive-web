@@ -121,8 +121,7 @@ class XCloud extends React.Component {
     return fetch('/api/user/isactivated', {
       method: 'get',
       headers: getHeaders(true, false),
-    })
-      .then((response) => response.json())
+    }).then((response) => response.json())
       .catch((error) => {
         console.log('Error getting user activation');
       });
@@ -163,9 +162,8 @@ class XCloud extends React.Component {
             const body = await res.json();
             throw body.error ? body.error : 'createFolder error';
           }
-          analytics.track({
-            userId: getUuid(),
-            event: 'folder-created'
+          analytics.track('folder-created', {
+            userId: getUuid()
           })
           this.getFolderContent(this.state.currentFolderId, false);
         })
@@ -293,9 +291,8 @@ class XCloud extends React.Component {
         if (res.status !== 200) {
           throw res;
         } else {
-          analytics.track({
-            userId: getUuid(),
-            event: 'folder-opened'
+          analytics.track('folder-opened', {
+            userId: getUuid()
           })
           return res.json();
         }
@@ -361,9 +358,8 @@ class XCloud extends React.Component {
         body: data,
       })
         .then(() => {
-          analytics.track({
-            userId: getUuid(),
-            event: 'folder-rename'
+          analytics.track('folder-rename', {
+            userId: getUuid()
           })
           this.getFolderContent(this.state.currentFolderId);
         })
@@ -377,9 +373,8 @@ class XCloud extends React.Component {
         body: data,
       })
         .then(() => {
-          analytics.track({
-            userId: getUuid(),
-            event: 'file-rename'
+          analytics.track('file-rename', {
+            userId: getUuid()
           })
           this.getFolderContent(this.state.currentFolderId);
         })
@@ -445,8 +440,7 @@ class XCloud extends React.Component {
         if (!success) {
           toast.warn(`Error moving ${keyOp.toLowerCase()} '${response.item.name}`);
         } else {
-          analytics.track({
-            event: `${keyOp}-move`,
+          analytics.track(`${keyOp}-move`, {
             userId: getUuid()
           })
           // Remove myself
@@ -481,9 +475,8 @@ class XCloud extends React.Component {
         })
         return config
       })
-      analytics.track({
-        userId: getUuid(),
-        event: 'file-download-start'
+      analytics.track('file-download-start', {
+        userId: getUuid()
       })
       axios.get(`/api/storage/file/${id}`, {
         onDownloadProgress(pe) {
@@ -499,9 +492,8 @@ class XCloud extends React.Component {
         if (res.status !== 200) {
           throw res
         }
-        analytics.track({
-          userId: getUuid(),
-          event: 'file-download-finished'
+        analytics.track('file-download-finished', {
+          userId: getUuid()
         })
         return { blob: res.data, filename: Buffer.from(res.headers['x-file-name'], 'base64').toString('utf8') }
       }).then(({ blob, filename }) => {
@@ -552,9 +544,8 @@ class XCloud extends React.Component {
       }
 
       console.log('Upload file:', file.name);
-      analytics.track({
-        userId: getUuid(),
-        event: 'file-upload-start'
+      analytics.track('file-upload-start', {
+        userId: getUuid()
       })
       const uploadUrl = `/api/storage/folder/${parentFolderId}/upload`;
 
@@ -579,9 +570,8 @@ class XCloud extends React.Component {
             console.error('Upload response data is not a JSON', err);
           }
           if (data) {
-            analytics.track({
-              userId: getUuid(),
-              event: 'file-upload-finished'
+            analytics.track('file-upload-finished', {
+              userId: getUuid()
             })
             return { res: res, data: data };
           } else {
@@ -713,8 +703,7 @@ class XCloud extends React.Component {
         : `/api/storage/folder/${v.folderId}/file/${v.id}`;
       return (next) =>
         fetch(url, fetchOptions).then(() => {
-          analytics.track({
-            event: (v.isFolder ? 'folder' : 'file') + '-delete',
+          analytics.track((v.isFolder ? 'folder' : 'file') + '-delete', {
             userId: getUuid()
           })
           next()

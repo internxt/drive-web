@@ -114,8 +114,7 @@ class PopupShare extends React.Component<PopupShareProps> {
                                     fileId,
                                     parseInt(e.currentTarget.value)
                                 ).then(link => {
-                                    analytics.track({
-                                        event: 'file-share',
+                                    analytics.track('file-share', {
                                         userId: getUuid()
                                     })        
                                     this.setState({ link: link });

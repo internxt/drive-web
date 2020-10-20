@@ -15,10 +15,12 @@ declare namespace NodeJS {
 }
 
 interface SegmentAnalytics {
-    
+    identify: any
+    track: (eventName: string, params: any) => void
+    page: (pageName: string) => void
 }
 
 interface Window {
     Stripe: any
-    analytics: any
+    analytics: SegmentAnalytics
 }
