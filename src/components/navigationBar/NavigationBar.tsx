@@ -52,9 +52,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     }
 
     identifyPlan(bytes: number): string {
-        if (bytes <= 1073741824) {
-            return "Free 2GB"
-        }
         if (bytes === 21474836480) {
             return "20GB"
         }
@@ -67,7 +64,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
             return "200GB"
         }
 
-        return "Unknown"
+        return "Free 2GB"
     }
 
     componentDidMount() {
