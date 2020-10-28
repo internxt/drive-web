@@ -567,6 +567,10 @@ class XCloud extends React.Component {
           try {
             data = await res.json();
           } catch (err) {
+            analytics.track('file-upload-error', {
+              userId: getUuid(),
+              platform: 'web'
+            })
             console.error('Upload response data is not a JSON', err);
           }
           if (data) {
