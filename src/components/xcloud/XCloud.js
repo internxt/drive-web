@@ -545,7 +545,8 @@ class XCloud extends React.Component {
 
       console.log('Upload file:', file.name);
       analytics.track('file-upload-start', {
-        userId: getUuid()
+        userId: getUuid(),
+        platform: 'web'
       })
       const uploadUrl = `/api/storage/folder/${parentFolderId}/upload`;
 
@@ -575,7 +576,8 @@ class XCloud extends React.Component {
           }
           if (data) {
             analytics.track('file-upload-finished', {
-              userId: getUuid()
+              userId: getUuid(),
+              platform: 'web'
             })
             return { res: res, data: data };
           } else {
