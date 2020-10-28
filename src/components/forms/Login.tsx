@@ -100,8 +100,8 @@ class Login extends React.Component<LoginProps> {
       if (res.status !== 200) {
         analytics.track('user-signin-attempted', {
           status: 'error',
-          msg: data.error ? data.error : 'Login error',
-        });
+          msg: data.error ? data.error : 'Login error'
+        })
         throw new Error(data.error ? data.error : 'Login error');
       }
 
@@ -149,7 +149,6 @@ class Login extends React.Component<LoginProps> {
             return { res, data: await res.json() };
           }).then(res => {
             if (res.res.status !== 200) {
-              console.error("Response error")
               throw new Error(res.data.error ? res.data.error : res.data);
             }
             var data = res.data;
