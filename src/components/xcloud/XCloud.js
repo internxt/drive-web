@@ -544,8 +544,11 @@ class XCloud extends React.Component {
       }
 
       console.log('Upload file:', file.name);
+      console.log(file)
       analytics.track('file-upload-start', {
         userId: getUuid(),
+        file_size: file.size,
+        file_type: file.type,
         platform: 'web'
       })
       const uploadUrl = `/api/storage/folder/${parentFolderId}/upload`;
@@ -575,9 +578,12 @@ class XCloud extends React.Component {
             console.error('Upload response data is not a JSON', err);
           }
           if (data) {
+            console.log(file)
             analytics.track('file-upload-finished', {
               userId: getUuid(),
-              platform: 'web'
+              platform: 'web',
+              file_size: file.size,
+              file_type: file.type,
             })
             return { res: res, data: data };
           } else {
