@@ -185,7 +185,8 @@ class Login extends React.Component<LoginProps> {
 
             analytics.identify(data.user.uuid, {
               email: data.user.email,
-            })
+            });
+            analytics.track('user-signin', {});
           })
             .catch(err => {
               toast.warn(`"${err.error ? err.error : err}"`);
