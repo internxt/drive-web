@@ -184,7 +184,6 @@ class Login extends React.Component<LoginProps> {
             });
 
             analytics.identify(data.user.uuid, {
-              event: 'user-signup',
               email: data.user.email,
             })
           })
