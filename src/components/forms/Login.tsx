@@ -250,6 +250,8 @@ class Login extends React.Component<LoginProps> {
 
         <Container className="login-container-box-forgot-password">
           <p className="forgotPassword" onClick={(e: any) => {
+            analytics.track('user-reset-password-request', {
+            });
             history.push('/remove');
           }}
           >Forgot your password?</p>
