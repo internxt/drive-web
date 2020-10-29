@@ -571,14 +571,15 @@ class XCloud extends React.Component {
           try {
             data = await res.json();
           } catch (err) {
+            console.log(err)
             analytics.track('file-upload-error', {
               userId: getUuid(),
+              msg: err,
               platform: 'web'
             })
             console.error('Upload response data is not a JSON', err);
           }
           if (data) {
-            console.log(file)
             analytics.track('file-upload-finished', {
               userId: getUuid(),
               platform: 'web',
