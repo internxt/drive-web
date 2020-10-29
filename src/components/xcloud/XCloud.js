@@ -291,9 +291,6 @@ class XCloud extends React.Component {
         if (res.status !== 200) {
           throw res;
         } else {
-          analytics.track('folder-opened', {
-            userId: getUuid()
-          })
           return res.json();
         }
       })
