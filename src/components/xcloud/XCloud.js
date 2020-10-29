@@ -490,6 +490,11 @@ class XCloud extends React.Component {
       }).then(res => {
         console.log(res)
         if (res.status !== 200) {
+          analytics.track('file-download-error', {
+            userId: getUuid(),
+            platform: 'web',
+            msg: res
+          });
           throw res
         }
         analytics.track('file-download-finished', {
