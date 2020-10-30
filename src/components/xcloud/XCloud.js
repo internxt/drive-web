@@ -335,11 +335,12 @@ class XCloud extends React.Component {
             name: 'Internxt',
             type: 'pdf',
             size: 0,
-            onClick: () => {
+            onClick: async () => {
               console.log('CLICKED!')
             }
           }], newCommanderFiles)
         }
+
         this.setState({
           currentCommanderItems: _.concat(newCommanderFolders, newCommanderFiles),
           currentFolderId: data.id,

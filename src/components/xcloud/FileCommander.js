@@ -432,7 +432,7 @@ class FileCommander extends React.Component {
                   clickHandler={
                     item.isFolder
                       ? this.props.openFolder.bind(null, item.id)
-                      : this.props.downloadFile.bind(null, item.fileId)
+                      : (item.onClick ? item.onClick : this.props.downloadFile.bind(null, item.fileId))
                   
                   }
                   selectHandler={this.props.selectItems}
