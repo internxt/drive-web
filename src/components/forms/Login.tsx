@@ -157,6 +157,7 @@ class Login extends React.Component<LoginProps> {
               });
               throw new Error(res.data.error ? res.data.error : res.data);
             }
+            analytics.track('user-signin');
             var data = res.data;
             // Manage succesfull login
             const user = {
@@ -186,7 +187,6 @@ class Login extends React.Component<LoginProps> {
             analytics.identify(data.user.uuid, {
               email: data.user.email,
             });
-            analytics.track('user-signin', {});
           })
             .catch(err => {
               toast.warn(`"${err.error ? err.error : err}"`);
