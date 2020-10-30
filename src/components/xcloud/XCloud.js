@@ -325,6 +325,21 @@ class XCloud extends React.Component {
           newCommanderFolders.sort(this.state.sortFunction);
           newCommanderFiles.sort(this.state.sortFunction);
         }
+
+        if (!data.parentId && welcomeFile) {
+          console.log(newCommanderFiles)
+          newCommanderFiles = _.concat([{
+            id: 0,
+            file_id: '0',
+            fileId: '0',
+            name: 'Internxt',
+            type: 'pdf',
+            size: 0,
+            onClick: () => {
+              console.log('CLICKED!')
+            }
+          }], newCommanderFiles)
+        }
         this.setState({
           currentCommanderItems: _.concat(newCommanderFolders, newCommanderFiles),
           currentFolderId: data.id,
