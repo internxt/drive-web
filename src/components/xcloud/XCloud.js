@@ -327,7 +327,6 @@ class XCloud extends React.Component {
         }
 
         if (!data.parentId && welcomeFile) {
-          console.log(newCommanderFiles)
           newCommanderFiles = _.concat([{
             id: 0,
             file_id: '0',
@@ -336,7 +335,7 @@ class XCloud extends React.Component {
             type: 'pdf',
             size: 0,
             onClick: async () => {
-              console.log('CLICKED!')
+              window.open('https://internxt.com/Internxt.pdf');
             }
           }], newCommanderFiles)
         }
