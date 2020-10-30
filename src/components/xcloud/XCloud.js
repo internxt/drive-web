@@ -331,11 +331,19 @@ class XCloud extends React.Component {
             id: 0,
             file_id: '0',
             fileId: '0',
-            name: 'Internxt',
+            name: 'Welcome',
             type: 'pdf',
             size: 0,
             onClick: async () => {
               window.open('https://internxt.com/Internxt.pdf');
+            },
+            onDelete: async () => {
+              return fetch('/api/welcome', {
+                method: 'delete',
+                headers: getHeaders(true, false)
+              }).catch(err => {
+                console.error('Cannot delete welcome file, reason: %s', err.message)
+              })
             }
           }], newCommanderFiles)
         }
@@ -721,6 +729,9 @@ class XCloud extends React.Component {
     };
     if (selectedItems.length === 0) return;
     const deletionRequests = _.map(selectedItems, (v, i) => {
+      if (v.onDelete) {
+        return (next) => { v.onDelete(); next() }
+      }
       const url = v.isFolder
         ? `/api/storage/folder/${v.id}`
         : `/api/storage/folder/${v.folderId}/file/${v.id}`;
