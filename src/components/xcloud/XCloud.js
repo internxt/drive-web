@@ -282,7 +282,15 @@ class XCloud extends React.Component {
     });
   };
 
-  getFolderContent = (rootId, updateNamePath = true) => {
+  getFolderContent = async (rootId, updateNamePath = true) => {
+
+    let welcomeFile = await fetch('/api/welcome', {
+      method: 'get',
+      headers: getHeaders(true, false)
+    }).then(res => res.json())
+      .then(body => body.file_exists)
+      .catch(() => false)
+
     fetch(`/api/storage/folder/${rootId}`, {
       method: 'get',
       headers: getHeaders(true, true),
