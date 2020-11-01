@@ -11,8 +11,7 @@ import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { getHeaders } from '../../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import { analytics } from '../../lib/analytics';
+import { analytics } from '../../lib/analytics'
 
 interface LoginProps {
   email?: string
@@ -101,7 +100,6 @@ class Login extends React.Component<LoginProps> {
         analytics.track('user-signin-attempted', {
           status: 'error',
           msg: data.error ? data.error : 'Login error',
-          type: 'credentials'
         })
         throw new Error(data.error ? data.error : 'Login error');
       }
@@ -118,6 +116,10 @@ class Login extends React.Component<LoginProps> {
       if (err.message.includes('not activated') && this.validateEmail(this.state.email)) {
         history.push(`/activate/${this.state.email}`);
       } else {
+        analytics.track('user-signin-attempted', {
+          status: 'error',
+          msg: err,
+        })
         toast.warn(`"${err}"`);
       }
     });
@@ -153,11 +155,9 @@ class Login extends React.Component<LoginProps> {
               analytics.track('user-signin-attempted', {
                 status: 'error',
                 msg: res.data.error ? res.data.error : 'Login error',
-                type: 'account blocked'
               });
               throw new Error(res.data.error ? res.data.error : res.data);
             }
-            analytics.track('user-signin');
             var data = res.data;
             // Manage succesfull login
             const user = {
@@ -182,10 +182,6 @@ class Login extends React.Component<LoginProps> {
               isAuthenticated: true,
               token: data.token,
               user: user
-            });
-
-            analytics.identify(data.user.uuid, {
-              email: data.user.email,
             });
           })
             .catch(err => {
