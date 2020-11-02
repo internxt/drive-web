@@ -115,7 +115,12 @@ class PopupShare extends React.Component<PopupShareProps> {
                         }} onKeyUp={(e: React.FormEvent<HTMLInputElement>) => {
                             if (/^[1-9][0-9]?$/.test(e.currentTarget.value)) {
                                 let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
-
+                                if (!this.props.item.isFolder && !this.props.item.isDraggable) {
+                                    return this.setState({
+                                        link: 'https://internxt.com/Internxt.pdf'
+                                    })
+                                }
+                        
                                 this.generateShareLink(
                                     fileId,
                                     parseInt(e.currentTarget.value)

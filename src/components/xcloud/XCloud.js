@@ -630,7 +630,7 @@ class XCloud extends React.Component {
         arr.splice(i, 1);
         files = arr;
         toast.warn(
-          `File too large.\nYou can only upload or download files of up to 200 MB through the web app`,
+          `File too large.\nYou can only upload or download files of up to 300 MB through the web app`,
         );
       }
     }
@@ -684,6 +684,8 @@ class XCloud extends React.Component {
               );
               __currentCommanderItems.splice(index, 1);
               this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
+            }).finally(() => {
+              this.getFolderContent(this.state.currentFolderId)
             });
         },
         (err, results) => {
