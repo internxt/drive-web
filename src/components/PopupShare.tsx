@@ -62,6 +62,12 @@ class PopupShare extends React.Component<PopupShareProps> {
     componentDidMount() {
         let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
 
+        if (!this.props.item.isFolder && !this.props.item.isDraggable) {
+            return this.setState({
+                link: 'https://internxt.com/Internxt.pdf'
+            })
+        }
+
         this.generateShareLink(fileId, 1).then(link => {
             this.setState({ link: link });
         }).catch((err) => {
