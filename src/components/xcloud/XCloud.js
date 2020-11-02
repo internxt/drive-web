@@ -282,7 +282,15 @@ class XCloud extends React.Component {
     });
   };
 
-  getFolderContent = (rootId, updateNamePath = true) => {
+  getFolderContent = async (rootId, updateNamePath = true) => {
+
+    let welcomeFile = await fetch('/api/welcome', {
+      method: 'get',
+      headers: getHeaders(true, false)
+    }).then(res => res.json())
+      .then(body => body.file_exists)
+      .catch(() => false)
+
     fetch(`/api/storage/folder/${rootId}`, {
       method: 'get',
       headers: getHeaders(true, true),
@@ -317,6 +325,30 @@ class XCloud extends React.Component {
           newCommanderFolders.sort(this.state.sortFunction);
           newCommanderFiles.sort(this.state.sortFunction);
         }
+
+        if (!data.parentId && welcomeFile) {
+          newCommanderFiles = _.concat([{
+            id: 0,
+            file_id: '0',
+            fileId: '0',
+            name: 'Welcome',
+            type: 'pdf',
+            size: 0,
+            isDraggable: false,
+            onClick: async () => {
+              window.open('https://internxt.com/Internxt.pdf');
+            },
+            onDelete: async () => {
+              return fetch('/api/welcome', {
+                method: 'delete',
+                headers: getHeaders(true, false)
+              }).catch(err => {
+                console.error('Cannot delete welcome file, reason: %s', err.message)
+              })
+            }
+          }], newCommanderFiles)
+        }
+
         this.setState({
           currentCommanderItems: _.concat(newCommanderFolders, newCommanderFiles),
           currentFolderId: data.id,
@@ -698,6 +730,9 @@ class XCloud extends React.Component {
     };
     if (selectedItems.length === 0) return;
     const deletionRequests = _.map(selectedItems, (v, i) => {
+      if (v.onDelete) {
+        return (next) => { v.onDelete(); next() }
+      }
       const url = v.isFolder
         ? `/api/storage/folder/${v.id}`
         : `/api/storage/folder/${v.folderId}/file/${v.id}`;
