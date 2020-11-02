@@ -109,9 +109,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
             analytics.identify(getUuid(), {
                 email: getUserData().email,
                 plan: this.identifyPlan(res2.maxSpaceBytes)
-            }, () => analytics.track('user-signin', {
-                email: getUserData().email
-            }))
+            })
             this.setState({ barLimit: res2.maxSpaceBytes })
         }).catch(err => {
             console.log('Error on fetch /api/limit', err);

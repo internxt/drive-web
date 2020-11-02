@@ -160,6 +160,7 @@ class Login extends React.Component<LoginProps> {
             }
             var data = res.data;
             // Manage succesfull login
+            analytics.track("user-signin")
             const user = {
               userId: data.user.userId,
               email: this.state.email,
