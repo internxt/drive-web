@@ -336,7 +336,7 @@ class XCloud extends React.Component {
             size: 0,
             isDraggable: false,
             onClick: async () => {
-              window.open('https://internxt.com/Internxt.pdf');
+              fileDownload('https://internxt.com/Internxt.pdf', 'Welcome.pdf')
             },
             onDelete: async () => {
               return fetch('/api/welcome', {
