@@ -280,7 +280,7 @@ class FileCommanderItem extends React.Component {
             this.itemClickHandler(e);
           }
         }}
-        draggable={true}
+        draggable={this.props.isDraggable}
         onDragStart={(e) => this.props.handleDragStart(e)}
         onDragOver={this.handleDragOver}
         onDragLeave={this.handleDragLeave}

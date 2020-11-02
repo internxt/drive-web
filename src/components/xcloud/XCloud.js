@@ -334,6 +334,7 @@ class XCloud extends React.Component {
             name: 'Welcome',
             type: 'pdf',
             size: 0,
+            isDraggable: false,
             onClick: async () => {
               window.open('https://internxt.com/Internxt.pdf');
             },
