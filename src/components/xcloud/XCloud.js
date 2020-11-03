@@ -522,7 +522,6 @@ class XCloud extends React.Component {
         },
         responseType: 'blob'
       }).then(res => {
-        console.log(res)
         if (res.status !== 200) {
           throw res
         }

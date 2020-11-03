@@ -62,7 +62,7 @@ class PopupShare extends React.Component<PopupShareProps> {
     componentDidMount() {
         let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
 
-        if (!this.props.item.isFolder && !this.props.item.isDraggable) {
+        if (!this.props.item.isFolder && this.props.item.isDraggable === false) {
             return this.setState({
                 link: 'https://internxt.com/Internxt.pdf'
             })
@@ -77,6 +77,10 @@ class PopupShare extends React.Component<PopupShareProps> {
                 toast.warn(`F${itemType} too large.\nYou can only share f${itemType}s of up to 200 MB through the web app`);
             }
         });
+    }
+
+    handleChange(e) {
+        
     }
 
     render() {
@@ -105,7 +109,9 @@ class PopupShare extends React.Component<PopupShareProps> {
                     <div>
                         Share your Drive {this.props.item.isFolder ? 'folder' : 'file'} with this private link. Or enter
                         the number of times you'd like the link to be valid:&nbsp;&nbsp;
-                        <input type="text" defaultValue={this.state.views} size={2} style={{
+                        <input type="text" defaultValue={this.state.views} size={2}
+                        onChange={this.handleChange}
+                        style={{
                             display: 'inline',
                             border: 'none',
                             color: '#5c6066',
@@ -115,19 +121,18 @@ class PopupShare extends React.Component<PopupShareProps> {
                         }} onKeyUp={(e: React.FormEvent<HTMLInputElement>) => {
                             if (/^[1-9][0-9]?$/.test(e.currentTarget.value)) {
                                 let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
-                                if (!this.props.item.isFolder && !this.props.item.isDraggable) {
+                                if (!this.props.item.isFolder && this.props.item.isDraggable === false) {
                                     return this.setState({
                                         link: 'https://internxt.com/Internxt.pdf'
                                     })
                                 }
-                        
+
                                 this.generateShareLink(
-                                    fileId,
-                                    parseInt(e.currentTarget.value)
+                                    fileId, parseInt(e.currentTarget.value)
                                 ).then(link => {
                                     analytics.track('file-share', {
                                         userId: getUuid()
-                                    })        
+                                    })
                                     this.setState({ link: link });
                                 }).catch((err) => {
                                     if (err.status === 402) {
