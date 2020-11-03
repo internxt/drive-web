@@ -11,8 +11,7 @@ import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { getHeaders } from '../../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import { analytics } from '../../lib/analytics';
+import { analytics } from '../../lib/analytics'
 
 interface LoginProps {
   email?: string
@@ -98,6 +97,10 @@ class Login extends React.Component<LoginProps> {
       const data = await res.json();
 
       if (res.status !== 200) {
+        analytics.track('user-signin-attempted', {
+          status: 'error',
+          msg: data.error ? data.error : 'Login error',
+        })
         throw new Error(data.error ? data.error : 'Login error');
       }
 
@@ -113,6 +116,10 @@ class Login extends React.Component<LoginProps> {
       if (err.message.includes('not activated') && this.validateEmail(this.state.email)) {
         history.push(`/activate/${this.state.email}`);
       } else {
+        analytics.track('user-signin-attempted', {
+          status: 'error',
+          msg: err,
+        })
         toast.warn(`"${err}"`);
       }
     });
@@ -145,10 +152,15 @@ class Login extends React.Component<LoginProps> {
             return { res, data: await res.json() };
           }).then(res => {
             if (res.res.status !== 200) {
+              analytics.track('user-signin-attempted', {
+                status: 'error',
+                msg: res.data.error ? res.data.error : 'Login error',
+              });
               throw new Error(res.data.error ? res.data.error : res.data);
             }
             var data = res.data;
             // Manage succesfull login
+            analytics.track("user-signin")
             const user = {
               userId: data.user.userId,
               email: this.state.email,
@@ -172,11 +184,6 @@ class Login extends React.Component<LoginProps> {
               token: data.token,
               user: user
             });
-
-            analytics.identify(data.user.uuid, {
-              event: 'user-signup',
-              email: data.user.email
-            })
           })
             .catch(err => {
               toast.warn(`"${err.error ? err.error : err}"`);
@@ -240,6 +247,8 @@ class Login extends React.Component<LoginProps> {
 
         <Container className="login-container-box-forgot-password">
           <p className="forgotPassword" onClick={(e: any) => {
+            analytics.track('user-reset-password-request', {
+            });
             history.push('/remove');
           }}
           >Forgot your password?</p>

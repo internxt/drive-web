@@ -10,6 +10,9 @@ import iconPayPal from '../assets/PaymentBridges/paypal.svg'
 
 import { getHeaders } from '../lib/auth'
 
+import { analytics, getUserData, getUuid } from '../lib/analytics'
+import { getSuggestedQuery } from '@testing-library/dom';
+
 const STRIPE_DEBUG = false;
 
 const stripeGlobal = window.Stripe;
@@ -102,9 +105,11 @@ class StoragePlans extends React.Component {
             if (result.error) {
                 throw Error(result.error);
             }
-
+            analytics.track('user-enter-payments', {
+                user_id: getUuid(),
+                email: getUserData().email
+            })
             this.setState({ statusMessage: 'Redirecting to Stripe...' });
-
             stripe.redirectToCheckout({ sessionId: result.id }).then(result => {
                 console.log(result);
             }).catch(err => {
@@ -176,6 +181,13 @@ class StoragePlans extends React.Component {
                                 isChecked={false}
                                 header={'€' + fixedPrice}
                                 onClick={(e) => {
+                                    analytics.track('plan-subscription-selected', {
+                                        price: fixedPrice,
+                                        plan_type: entry.name,
+                                        payment_type: PaymentBridges[0].name,
+                                        plan_length: entry.interval_count,
+                                        email: getUserData().email
+                                    })
                                     this.setState({ selectedPlanToBuy: entry, storageStep: 4, paymentMethod: PaymentBridges[0].name });
                                 }}
                                 text={<span><span style={{ color: '#7e848c', fontWeight: 'normal' }}>Prepay{entry.interval_count === 1 ? ' per' : ''}</span>&nbsp;{entry.interval_count !== 1 ? entry.interval_count + ' ' : ''}month{entry.interval_count > 1 ? 's' : ''}</span>} />

@@ -70,6 +70,7 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string) {
   }
 }
 
+
 export {
   copyToClipboard,
   removeAccents,
@@ -77,5 +78,5 @@ export {
   encryptText,
   decryptText,
   encryptTextWithKey,
-  decryptTextWithKey
+  decryptTextWithKey,
 }
