@@ -1,154 +1,148 @@
 .Referred {
-    .referred-box {
-        width: 641px;
-        border: solid 1px #eaeced;
-        border-radius: 6px;
-        height: max-content;
-        text-align: center;
-    }
-    .btn {
-        box-shadow: none !important;
+  .referred-box {
+    width: 641px;
+    border: solid 1px #eaeced;
+    border-radius: 6px;
+    height: max-content;
+    text-align: center;
+  }
+
+  .btn {
+    box-shadow: none !important;
+  }
+
+  .referred-title {
+    font-size: 25px;
+    font-weight: bold;
+    font-style: normal;
+    letter-spacing: -0.2px;
+    color: #000;
+    text-align: center;
+  }
+
+  .referred-description {
+    text-align: justify;
+    color: #737880;
+    letter-spacing: -0.1px;
+    font-size: 14px;
+    line-height: 1.57;
+  }
+
+  .copy-button {
+    background-color: transparent !important;
+    border-width: 2px;
+    color: #4b66ff !important;
+    font-weight: bold;
+    border: 0 solid;
+    font-family: "Cerebri Sans", sans-serif;
+    font-size: 16px;
+  }
+
+  .share-container {
+    border-width: 2px;
+    border: 0 solid;
+    background-color: transparent;
+    color: #4b66ff !important;
+
+    button {
+      background-color: transparent !important;
+      border: solid 0;
+      color: #4b66ff !important;
+      font-family: "Cerebri Sans", sans-serif;
+      font-weight: bold;
     }
 
-    .referred-title {
-        font-size: 25px;
-        font-weight: bold;
-        font-style: normal;
-        letter-spacing: -0.2px;
-        color: #000;
-        text-align: center;
+    div {
+      justify-content: center;
+      min-width: 7rem;
     }
 
-    .referred-description {
-        text-align: justify;
-        color: #737880;
-        letter-spacing: -0.1px;
-        font-size: 14px;
-        line-height: 1.57;
+    .show {
+      display: flex !important;
     }
 
-    .copy-button {
-        background-color: transparent !important;
-        border-width: 2px;
-        color: #4b66ff !important;
-        font-weight: bold;
-        border: 0 solid;
-        font-family: "Cerebri Sans", sans-serif;
-        font-size: 16px;
-    }
-
-    .share-container {
-        border-width: 2px;
-        border: 0 solid;
+    .dropdown-menu {
+      a:active {
         background-color: transparent;
-        color: #4b66ff !important;
+      }
+    }
+  }
 
-        button {
-            background-color: transparent !important;
-            border: solid 0px;
-            color: #4b66ff !important;
-            font-family: "Cerebri Sans", sans-serif;
-            font-weight: bold;
-        }
+  .referred-url {
+    border-radius: 4.9px;
+    background-color: #f8f9fa;
+    padding: 16px 14px 16px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+    text-align: center;
+    line-height: 1.53;
+    letter-spacing: -0.1px;
+    color: #5c6066;
 
-        div {
-            justify-content: center;
-            min-width: 7rem;
-        }
+    input {
+      width: 100%;
+      border: solid 0;
+      background-color: transparent;
+      text-overflow: ellipsis;
+    }
+  }
 
-        .show {
-            display: flex !important;
-        }
+  .social-container {
+    padding: 0%;
+    margin: 5px auto;
+    width: 40%;
+    display: flex;
+    justify-content: center;
+  }
 
-        &:show {
-            color: #4b66ff;
-        }
-        
+  .social-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 2px;
+    background-color: transparent;
+    border: solid 0;
 
-        .dropdown-menu {
-            a:active {
-                background-color: transparent;
-            }
-        }
+    img {
+      padding-left: -10px;
+    }
+  }
+
+  .mail-container {
+    .mail-box {
+      border-radius: 3.9px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid #ced4da;
+      padding: 10px 16px;
+      color: #5c6066;
+      line-height: 1.53;
+      letter-spacing: -0.1px;
+      height: 50px;
     }
 
-    .referred-url {
-        border-radius: 4.9px;
-        background-color: #f8f9fa;
-        padding: 16px 14px 16px 14px;
-        font-size: 14px;
-        font-weight: 500;
-        font-style: normal;
-        font-stretch: normal;
-        text-align: center;
-        line-height: 1.53;
-        letter-spacing: -0.1px;
-        color: #5c6066;
-
-        input {
-            width: 100%;
-            border: solid 0px;
-            background-color: transparent;
-            text-overflow: ellipsis;
-        }
+    .invite-button {
+      background-color: #4585f5;
+      border-color: transparent;
     }
+  }
 
-    .social-container {
-        padding: 0%;
-        margin: 5px auto;
-        width: 40%;
-        display: flex;
-        justify-content: center;
-    }
+  .user-credit {
+    font-size: 20px;
+    font-weight: bold;
+    font-style: normal;
+  }
 
-    .social-button {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        padding: 2px;
-        background-color: transparent;
-        border: solid 0px;
-
-        img {
-            padding-left: -10px;
-        }
-    }
-
-    .mail-container {
-        .mail-box {
-            border-radius: 3.9px;
-            font-size: 14px;
-            font-weight: 500;
-            border: 1px solid #ced4da;
-            padding: 10px 16px;
-            color: #5c6066;
-            font-weight: 500;
-            line-height: 1.53;
-            letter-spacing: -0.1px;
-            height: 50px;
-
-        }
-        .invite-button {
-            background-color: #4585f5;
-            border-color: transparent;
-        }    
-    }
-
-
-    .user-credit {
-        font-size: 20px;
-        font-weight: bold;
-        font-style: normal;
-    }
-
-    .referred-button {
-        background-color: #4585f5;
-        border-color: transparent;
-        border-radius: 3.4px;
-        height: 49px;
-        padding: 10px 20px;
-        cursor: pointer;
-        outline: transparent;
-        display: block;
-    }
+  .referred-button {
+    background-color: #4585f5;
+    border-color: transparent;
+    border-radius: 3.4px;
+    height: 49px;
+    padding: 10px 20px;
+    cursor: pointer;
+    outline: transparent;
+    display: block;
+  }
 }

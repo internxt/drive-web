@@ -86,7 +86,7 @@ input#uploadFileControl {
 }
 
 .settingsButton .dropdown-menu.show {
-  -webkit-animation-name: slideIn;
+  -webkit-animation-name: slidein;
   animation-name: slideIn;
   animation-duration: 0.3s;
   -webkit-animation-duration: 0.3s;
@@ -99,16 +99,17 @@ input#uploadFileControl {
     transform: translateX(50px);
     opacity: 0;
   }
+
   100% {
-    transform: translateX(0px);
+    transform: translateX(0);
     opacity: 1;
   }
+
   0% {
     transform: translateX(50px);
     opacity: 0;
   }
 }
-
 
 .settingsButton .dropdown-menu .dropdown-item,
 .settingsButton .dropdown-menu .dropdown-menu-group.info {

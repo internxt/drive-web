@@ -11,7 +11,6 @@ import iconPayPal from '../assets/PaymentBridges/paypal.svg'
 import { getHeaders } from '../lib/auth'
 
 import { analytics, getUserData, getUuid } from '../lib/analytics'
-import { getSuggestedQuery } from '@testing-library/dom';
 
 const STRIPE_DEBUG = false;
 
