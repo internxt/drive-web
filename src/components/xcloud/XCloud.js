@@ -520,7 +520,6 @@ class XCloud extends React.Component {
       analytics.track('file-download-start', {
         userId: getUuid(),
         file_id: id,
-        file_size: this.state.props.size,
         email: getUserData().email,
         platform: 'web'
       })
