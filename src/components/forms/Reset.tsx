@@ -7,7 +7,7 @@ import NavigationBar from './../navigationBar/NavigationBar'
 import { encryptText, passToHash, decryptText, encryptTextWithKey } from '../../lib/utils'
 import history from '../../lib/history'
 import { getHeaders } from '../../lib/auth'
-import { analytics, getUserData } from '../../lib/analytics'
+import { analytics, getUserData, getUuid } from '../../lib/analytics'
 
 interface ResetProps {
     match?: any
@@ -79,9 +79,11 @@ class Reset extends React.Component<ResetProps> {
                     console.log(res);
                     throw res.data.error;
                 } else {
+                    console.log('cambio contraseña')
                     analytics.track('user-change-password', {
                         status: 'success',
-                        email: getUserData().email
+                        email: getUserData().email,
+                        user_id: getUuid()
                     });
                     alert("Password changed successfully.");
                 }
@@ -89,7 +91,8 @@ class Reset extends React.Component<ResetProps> {
             .catch(err => {
                 analytics.track('user-change-password', {
                     status: 'error',
-                    email: getUserData().email
+                    email: getUserData().email,
+                    user_id: getUuid()
                 });
                 alert(err);
             });
