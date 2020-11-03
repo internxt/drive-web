@@ -520,7 +520,7 @@ class XCloud extends React.Component {
           userId: getUuid(),
           file_id: id,
           email: getUserData().email,
-          msg: res,
+          msg: err,
           platform: 'web'
         });
         if (err.response && err.response.status === 401) {
