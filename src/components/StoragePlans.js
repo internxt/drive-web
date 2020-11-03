@@ -10,7 +10,8 @@ import iconPayPal from '../assets/PaymentBridges/paypal.svg'
 
 import { getHeaders } from '../lib/auth'
 
-import { analytics, getUserData } from '../lib/analytics'
+import { analytics, getUserData, getUuid } from '../lib/analytics'
+import { getSuggestedQuery } from '@testing-library/dom';
 
 const STRIPE_DEBUG = false;
 
@@ -104,9 +105,11 @@ class StoragePlans extends React.Component {
             if (result.error) {
                 throw Error(result.error);
             }
-
+            analytics.track('user-enter-payments', {
+                user_id: getUuid(),
+                email: getUserData().email
+            })
             this.setState({ statusMessage: 'Redirecting to Stripe...' });
-
             stripe.redirectToCheckout({ sessionId: result.id }).then(result => {
                 console.log(result);
             }).catch(err => {
