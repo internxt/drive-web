@@ -104,6 +104,10 @@ class FileCommanderItem extends React.Component {
   };
 
   handleColorSelection = (value, event) => {
+    analytics.track('folder-color-selection', {
+      user_id: getUuid(),
+      value: value
+    })
     this.setState({ selectedColor: value });
   };
 
