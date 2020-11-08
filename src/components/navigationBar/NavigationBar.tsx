@@ -122,12 +122,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         ).then(res => {
             return res.json();
         }).then(res2 => {
-            analytics.track('storage-used', {
-                user_id: getUuid(),
-                email: getUuid().email,
-                storage_used: res2.total,
-                storage_limit: res2.maxSpaceBytes
-            })
             this.setState({ barUsage: res2.total })
         }).catch(err => {
             console.log('Error on fetch /api/usage', err);
