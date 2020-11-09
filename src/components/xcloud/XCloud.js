@@ -485,9 +485,12 @@ class XCloud extends React.Component {
       })
       analytics.track('file-download-start', {
         userId: getUuid(),
-        file_id: id,
-        file_size: this.state.props.size,
+        file_id: pcb.props.rawItem.id,
+        file_name: pcb.props.rawItem.name,
+        file_size: pcb.props.rawItem.size,
+        file_type: pcb.props.type,
         email: getUserData().email,
+        folder_id: pcb.props.rawItem.folder_id,
         platform: 'web'
       })
       axios.get(`/api/storage/file/${id}`, {
