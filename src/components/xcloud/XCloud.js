@@ -506,6 +506,7 @@ class XCloud extends React.Component {
         if (res.status !== 200) {
           throw res
         }
+
         analytics.track('file-download-finished', {
           userId: getUuid(),
           file_id: id,
@@ -568,11 +569,12 @@ class XCloud extends React.Component {
         return reject(Error('No folder ID provided'));
       }
 
-      console.log(file)
+      // console.log(file)
       analytics.track('file-upload-start', {
         userId: getUuid(),
         file_size: file.size,
         file_type: file.type,
+        folder_id: parentFolderId,
         email: getUserData().email,
         platform: 'web'
       })

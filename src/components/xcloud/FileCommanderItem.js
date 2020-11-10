@@ -9,7 +9,7 @@ import SanitizeFilename from 'sanitize-filename';
 import TimeAgo from 'react-timeago';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { analytics, getUuid } from '../../lib/analytics';
+import { analytics, getUuid, getUserData } from '../../lib/analytics';
 
 class FileCommanderItem extends React.Component {
   constructor(props, state) {
@@ -295,10 +295,9 @@ class FileCommanderItem extends React.Component {
                 folder_id: this.props.id
               });
             }
+            this.itemClickHandler(e);
           }
-          this.itemClickHandler(e);
-        }
-        }
+        }}
         draggable={true}
         onDragStart={(e) => this.props.handleDragStart(e)}
         onDragOver={this.handleDragOver}
