@@ -11,7 +11,7 @@ import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { getHeaders } from '../../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { analytics } from '../../lib/analytics'
+import { analytics, getUuid, getUserData } from '../../lib/analytics'
 
 interface LoginProps {
   email?: string
@@ -160,7 +160,10 @@ class Login extends React.Component<LoginProps> {
             }
             var data = res.data;
             // Manage succesfull login
-            analytics.track("user-signin")
+            analytics.track("user-signin", {
+              email: getUserData().email,
+              userId: getUuid()
+            })
             const user = {
               userId: data.user.userId,
               email: this.state.email,

@@ -9,7 +9,7 @@ import SanitizeFilename from 'sanitize-filename';
 import TimeAgo from 'react-timeago';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { analytics, getUuid } from '../../lib/analytics';
+import { analytics, getUuid, getUserData } from '../../lib/analytics';
 
 class FileCommanderItem extends React.Component {
   constructor(props, state) {
@@ -288,11 +288,13 @@ class FileCommanderItem extends React.Component {
         }}
         onDoubleClick={(e) => {
           if (e.target.className.includes('FileCommanderItem')) {
-            analytics.track('folder-opened', {
-              userId: getUuid(),
-              folder_name: this.state.itemName,
-              folder_id: this.props.id
-            });
+            if (this.props.type == null) {
+              analytics.track('folder-opened', {
+                userId: getUuid(),
+                folder_name: this.state.itemName,
+                folder_id: this.props.id
+              });
+            }
             this.itemClickHandler(e);
           }
         }}
@@ -415,7 +417,7 @@ class FileCommanderItem extends React.Component {
         <div className="created">
           {this.props.created && !this.props.isFolder ? <TimeAgo date={this.props.created} /> : ''}
         </div>
-      </div>
+      </div >
     );
   }
 }
