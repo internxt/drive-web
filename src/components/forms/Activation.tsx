@@ -7,6 +7,7 @@ import history from '../../lib/history';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { analytics } from "../../lib/analytics";
 
 interface ActivationProps {
   match: any
@@ -32,6 +33,7 @@ class Activation extends React.Component<ActivationProps & RouteProps, Activatio
   componentDidMount() {
     // Get token from path and activate account through api call
     const token = this.props.match.params.token;
+    analytics.page('activations')
     fetch(`https://api.internxt.com/activations/${token}`, {
       method: "GET",
     }).then(response => {

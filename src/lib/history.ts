@@ -10,7 +10,7 @@ instance.listen((nav) => {
     if (index > -1) {
         const pageName = PATH_NAMES[keys[index]]
         analytics.page(pageName)
-    } 
+    }
 })
 
 export default instance;
