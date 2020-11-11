@@ -9,7 +9,6 @@ instance.listen((nav) => {
 
     if (index > -1) {
         const pageName = PATH_NAMES[keys[index]]
-        console.log('page', pageName)
         analytics.page(pageName)
     } 
 })
