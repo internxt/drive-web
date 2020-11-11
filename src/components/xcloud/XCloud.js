@@ -23,7 +23,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import axios from 'axios'
 
-import { analytics, getUuid, getUserData } from '../../lib/analytics'
+import { analytics, getUserData, getUuid } from '../../lib/analytics'
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -547,6 +547,13 @@ class XCloud extends React.Component {
         fileDownload(blob, filename);
         pcb.setState({ progress: 0 })
         resolve()
+        fetch('/api/usage', {
+          method: 'get',
+          headers: getHeaders(true, false)
+        }).then(res => res.json())
+          .then(res => {
+            if (res.total) { analytics.identify(getUuid(), { storage_used: res.total }) }
+          }).catch(() => { });
       }).catch(err => {
         analytics.track('file-download-error', {
           file_id: id,
@@ -733,6 +740,18 @@ class XCloud extends React.Component {
           } else {
             resolve();
           }
+
+          if (!err) {
+            fetch('/api/usage', {
+              method: 'get',
+              headers: getHeaders(true, false)
+            }).then(res => res.json())
+              .then(res => {
+                if (res.total) {
+                  analytics.identify({ storage_used: res.total })
+                }
+              }).catch(() => { });
+          }
         },
       );
     });
@@ -766,10 +785,14 @@ class XCloud extends React.Component {
       method: 'DELETE',
       headers: getHeaders(true, false),
     };
+    let anyDeletedFile = false;
     if (selectedItems.length === 0) return;
     const deletionRequests = _.map(selectedItems, (v, i) => {
       if (v.onDelete) {
         return (next) => { v.onDelete(); next() }
+      }
+      if (!v.isFolder) {
+        anyDeletedFile = true;
       }
       const url = v.isFolder
         ? `/api/storage/folder/${v.id}`
@@ -789,6 +812,17 @@ class XCloud extends React.Component {
         throw err;
       } else {
         this.getFolderContent(this.state.currentFolderId, false);
+        if (anyDeletedFile) {
+          console.log('anyDeletedFile', anyDeletedFile)
+          fetch('/api/usage', {
+            method: 'get',
+            headers: getHeaders(true, false)
+          }).then(res => res.json())
+            .then(res => {
+              console.log(res.total)
+              if (res.total) { analytics.identify(getUuid(), { storage_used: res.total }) }
+            }).catch(() => { });
+        }
       }
     });
   };

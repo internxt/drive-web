@@ -14,7 +14,7 @@ import PrettySize from 'prettysize';
 
 import HeaderButton from './HeaderButton';
 
-import { analytics, getUserData, getUuid } from '../../lib/analytics'
+import { analytics, getUserData } from '../../lib/analytics'
 
 import "./NavigationBar.scss";
 import history from '../../lib/history';

@@ -9,7 +9,7 @@ import SanitizeFilename from 'sanitize-filename';
 import TimeAgo from 'react-timeago';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { analytics, getUuid, getUserData } from '../../lib/analytics';
+import { analytics } from '../../lib/analytics';
 
 class FileCommanderItem extends React.Component {
   constructor(props, state) {

@@ -7,7 +7,7 @@ import NavigationBar from './../navigationBar/NavigationBar'
 import { encryptText, passToHash, decryptText, encryptTextWithKey } from '../../lib/utils'
 import history from '../../lib/history'
 import { getHeaders } from '../../lib/auth'
-import { analytics, getUserData, getUuid } from '../../lib/analytics'
+import { analytics, getUserData } from '../../lib/analytics'
 
 interface ResetProps {
     match?: any

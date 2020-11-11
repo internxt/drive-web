@@ -11,7 +11,7 @@ import { getHeaders } from '../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { analytics, getUuid } from '../lib/analytics'
+import { analytics } from '../lib/analytics'
 import { clearTimeout, setTimeout } from 'timers';
 
 interface PopupShareProps {
