@@ -551,7 +551,7 @@ class XCloud extends React.Component {
         analytics.track('file-download-error', {
           file_id: id,
           email: getUserData().email,
-          msg: err,
+          msg: err.message,
           platform: 'web'
         });
         if (err.response && err.response.status === 401) {
@@ -629,7 +629,7 @@ class XCloud extends React.Component {
               file_size: file.size,
               file_type: file.type,
               email: getUserData().email,
-              msg: err,
+              msg: err.message,
               platform: 'web'
             })
             console.error('Upload response data is not a JSON', err);

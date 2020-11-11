@@ -118,7 +118,7 @@ class Login extends React.Component<LoginProps> {
       } else {
         analytics.track('user-signin-attempted', {
           status: 'error',
-          msg: err,
+          msg: err.message,
         })
         toast.warn(`"${err}"`);
       }
