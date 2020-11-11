@@ -163,7 +163,6 @@ class XCloud extends React.Component {
             throw body.error ? body.error : 'createFolder error';
           }
           analytics.track('folder-created', {
-            userId: getUuid(),
             email: getUserData().email,
             platform: 'web'
           })
@@ -392,7 +391,6 @@ class XCloud extends React.Component {
       })
         .then(() => {
           analytics.track('folder-rename', {
-            userId: getUuid(),
             email: getUserData().email,
             fileId: itemId,
             platform: 'web'
@@ -410,7 +408,6 @@ class XCloud extends React.Component {
       })
         .then(() => {
           analytics.track('file-rename', {
-            userId: getUuid(),
             file_id: itemId,
             email: getUserData().email,
             platform: 'web'
@@ -480,7 +477,6 @@ class XCloud extends React.Component {
           toast.warn(`Error moving ${keyOp.toLowerCase()} '${response.item.name}`);
         } else {
           analytics.track(`${keyOp}-move`, {
-            userId: getUuid(),
             file_id: response.item.id,
             email: getUserData().email,
             platform: 'web'
@@ -518,7 +514,6 @@ class XCloud extends React.Component {
         return config
       })
       analytics.track('file-download-start', {
-        userId: getUuid(),
         file_id: pcb.props.rawItem.id,
         file_name: pcb.props.rawItem.name,
         file_size: pcb.props.rawItem.size,
@@ -542,7 +537,6 @@ class XCloud extends React.Component {
         }
 
         analytics.track('file-download-finished', {
-          userId: getUuid(),
           file_id: id,
           email: getUserData().email,
           file_size: res.data.size,
@@ -555,7 +549,6 @@ class XCloud extends React.Component {
         resolve()
       }).catch(err => {
         analytics.track('file-download-error', {
-          userId: getUuid(),
           file_id: id,
           email: getUserData().email,
           msg: err,
@@ -605,7 +598,6 @@ class XCloud extends React.Component {
 
       // console.log(file)
       analytics.track('file-upload-start', {
-        userId: getUuid(),
         file_size: file.size,
         file_type: file.type,
         folder_id: parentFolderId,
@@ -634,7 +626,6 @@ class XCloud extends React.Component {
           } catch (err) {
             console.log(err)
             analytics.track('file-upload-error', {
-              userId: getUuid(),
               file_size: file.size,
               file_type: file.type,
               email: getUserData().email,
@@ -645,7 +636,6 @@ class XCloud extends React.Component {
           }
           if (data) {
             analytics.track('file-upload-finished', {
-              userId: getUuid(),
               platform: 'web',
               file_size: file.size,
               file_type: file.type,
@@ -787,7 +777,6 @@ class XCloud extends React.Component {
       return (next) =>
         fetch(url, fetchOptions).then(() => {
           analytics.track((v.isFolder ? 'folder' : 'file') + '-delete', {
-            userId: getUuid(),
             email: getUserData().email,
             platform: 'web'
           })

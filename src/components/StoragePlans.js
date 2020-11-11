@@ -104,10 +104,7 @@ class StoragePlans extends React.Component {
             if (result.error) {
                 throw Error(result.error);
             }
-            analytics.track('user-enter-payments', {
-                user_id: getUuid(),
-                email: getUserData().email
-            })
+            analytics.track('user-enter-payments')
             this.setState({ statusMessage: 'Redirecting to Stripe...' });
             stripe.redirectToCheckout({ sessionId: result.id }).then(result => {
                 console.log(result);

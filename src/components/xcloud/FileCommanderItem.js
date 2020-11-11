@@ -105,7 +105,6 @@ class FileCommanderItem extends React.Component {
 
   handleColorSelection = (value, event) => {
     analytics.track('folder-color-selection', {
-      user_id: getUuid(),
       value: value
     })
     this.setState({ selectedColor: value });
@@ -113,7 +112,6 @@ class FileCommanderItem extends React.Component {
 
   handleIconSelection = (value, event) => {
     analytics.track('folder-icon-selection', {
-      userId: getUuid(),
       value: value
     })
     this.setState({ selectedIcon: value });
@@ -290,7 +288,6 @@ class FileCommanderItem extends React.Component {
           if (e.target.className.includes('FileCommanderItem')) {
             if (this.props.type == null) {
               analytics.track('folder-opened', {
-                userId: getUuid(),
                 folder_name: this.state.itemName,
                 folder_id: this.props.id
               });

@@ -179,7 +179,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                             <div className="dropdown-menu-group">
                                 <Dropdown.Item onClick={(e) => {
                                     analytics.track('user-signout', {
-                                        userId: getUuid(),
                                         email: getUserData().email
                                     })
                                     localStorage.clear();

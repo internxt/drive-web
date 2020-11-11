@@ -165,10 +165,7 @@ class Login extends React.Component<LoginProps> {
               referrals_count: Math.floor(data.user.credit / 5)
             })
             // Manage succesfull login
-            analytics.track("user-signin", {
-              email: this.state.email,
-              userId: data.user.uuid
-            })
+            analytics.track("user-signin")
             const user = {
               userId: data.user.userId,
               email: this.state.email,
@@ -255,8 +252,7 @@ class Login extends React.Component<LoginProps> {
 
         <Container className="login-container-box-forgot-password">
           <p className="forgotPassword" onClick={(e: any) => {
-            analytics.track('user-reset-password-request', {
-            });
+            analytics.track('user-reset-password-request');
             history.push('/remove');
           }}
           >Forgot your password?</p>

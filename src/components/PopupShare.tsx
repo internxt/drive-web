@@ -84,9 +84,7 @@ class PopupShare extends React.Component<PopupShareProps> {
         this.generateShareLink(
             fileId, views
         ).then(link => {
-            analytics.track('file-share', {
-                userId: getUuid()
-            })
+            analytics.track('file-share')
             this.setState({ link: link });
         }).catch((err) => {
             if (err.status === 402) {
