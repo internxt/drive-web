@@ -51,22 +51,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         };
     }
 
-    identifyPlan(bytes: number): string {
-        if (bytes === 21474836480) {
-            return "20GB"
-        }
-
-        if (bytes === 2199023255552) {
-            return "2TB"
-        }
-
-        if (bytes === 214748364800) {
-            return "200GB"
-        }
-
-        return "Free 2GB"
-    }
-
     componentDidMount() {
         let user = null;
         try {
@@ -106,13 +90,9 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         ).then(res => {
             return res.json();
         }).then(res2 => {
-            analytics.identify(getUuid(), {
-                email: getUserData().email,
-                plan: this.identifyPlan(res2.maxSpaceBytes)
-            })
             this.setState({ barLimit: res2.maxSpaceBytes })
         }).catch(err => {
-            console.log('Error on fetch /api/limit', err);
+            console.log('Error on fetch limit', err);
         });
 
         fetch('/api/usage', {
@@ -124,7 +104,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         }).then(res2 => {
             this.setState({ barUsage: res2.total })
         }).catch(err => {
-            console.log('Error on fetch /api/usage', err);
+            console.log('Error on fetch usage', err);
         });
     }
 

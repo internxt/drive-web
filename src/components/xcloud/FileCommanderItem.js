@@ -113,7 +113,7 @@ class FileCommanderItem extends React.Component {
 
   handleIconSelection = (value, event) => {
     analytics.track('folder-icon-selection', {
-      user_id: getUuid(),
+      userId: getUuid(),
       value: value
     })
     this.setState({ selectedIcon: value });
