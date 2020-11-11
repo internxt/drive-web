@@ -159,7 +159,11 @@ class Login extends React.Component<LoginProps> {
               throw new Error(res.data.error ? res.data.error : res.data);
             }
             var data = res.data;
-            analytics.identify(data.user.uuid, { email: this.state.email })
+            analytics.identify(data.user.uuid, {
+              email: this.state.email,
+              platform: 'web',
+              referrals_count: Math.floor(data.user.credit / 5)
+            })
             // Manage succesfull login
             analytics.track("user-signin", {
               email: this.state.email,

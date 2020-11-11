@@ -31,14 +31,14 @@ const payload = {
 export function identifyUsage(newValue) {
     if (newValue !== payload.usage) {
         payload.usage = newValue;
-        analytics.identify(getUuid(), { userId: getUuid(), storage: newValue });
+        analytics.identify(getUuid(), { userId: getUuid(), storage: newValue, platform: 'web' });
     }
 }
 
 export function identifyPlan(newValue: number) {
     if (newValue !== payload.plan) {
         payload.plan = newValue
-        analytics.identify(getUuid(), { userId: getUuid(), plan: identifyPlanName(newValue) })
+        analytics.identify(getUuid(), { userId: getUuid(), plan: identifyPlanName(newValue), platform: 'web' })
     }
 }
 
