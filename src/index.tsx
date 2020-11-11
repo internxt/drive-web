@@ -19,5 +19,5 @@ if (window.location.hostname === 'cloud.internxt.com') {
     serviceWorker.unregister();
 }
 else {
-    serviceWorker.register();
+    serviceWorker.unregister();
 }
