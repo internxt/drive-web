@@ -163,9 +163,10 @@ class Login extends React.Component<LoginProps> {
               email: this.state.email,
               platform: 'web',
               referrals_count: Math.floor(data.user.credit / 5)
+            }, () => {
+              analytics.track("user-signin")
             })
             // Manage succesfull login
-            analytics.track("user-signin")
             const user = {
               userId: data.user.userId,
               email: this.state.email,
