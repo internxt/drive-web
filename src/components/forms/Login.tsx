@@ -100,6 +100,7 @@ class Login extends React.Component<LoginProps> {
         analytics.track('user-signin-attempted', {
           status: 'error',
           msg: data.error ? data.error : 'Login error',
+          date: new Date().toISOString()
         })
         throw new Error(data.error ? data.error : 'Login error');
       }
@@ -119,6 +120,7 @@ class Login extends React.Component<LoginProps> {
         analytics.track('user-signin-attempted', {
           status: 'error',
           msg: err,
+          date: new Date().toISOString()
         })
         toast.warn(`"${err}"`);
       }
@@ -155,6 +157,7 @@ class Login extends React.Component<LoginProps> {
               analytics.track('user-signin-attempted', {
                 status: 'error',
                 msg: res.data.error ? res.data.error : 'Login error',
+                date: new Date().toISOString()
               });
               throw new Error(res.data.error ? res.data.error : res.data);
             }
@@ -162,7 +165,8 @@ class Login extends React.Component<LoginProps> {
             // Manage succesfull login
             analytics.track("user-signin", {
               email: getUserData().email,
-              userId: getUuid()
+              userId: getUuid(),
+              date: new Date().toISOString()
             })
             const user = {
               userId: data.user.userId,
@@ -251,6 +255,7 @@ class Login extends React.Component<LoginProps> {
         <Container className="login-container-box-forgot-password">
           <p className="forgotPassword" onClick={(e: any) => {
             analytics.track('user-reset-password-request', {
+              date: new Date().toISOString()
             });
             history.push('/remove');
           }}

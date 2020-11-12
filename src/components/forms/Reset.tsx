@@ -83,7 +83,8 @@ class Reset extends React.Component<ResetProps> {
                     analytics.track('user-change-password', {
                         status: 'success',
                         email: getUserData().email,
-                        user_id: getUuid()
+                        user_id: getUuid(),
+                        date: new Date().toISOString()
                     });
                     alert("Password changed successfully.");
                 }
@@ -92,7 +93,8 @@ class Reset extends React.Component<ResetProps> {
                 analytics.track('user-change-password', {
                     status: 'error',
                     email: getUserData().email,
-                    user_id: getUuid()
+                    user_id: getUuid(),
+                    date: new Date().toISOString()
                 });
                 alert(err);
             });

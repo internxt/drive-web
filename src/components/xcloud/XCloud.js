@@ -165,7 +165,8 @@ class XCloud extends React.Component {
           analytics.track('folder-created', {
             userId: getUuid(),
             email: getUserData().email,
-            platform: 'web'
+            platform: 'web',
+            date: new Date().toISOString()
           })
           this.getFolderContent(this.state.currentFolderId, false);
         })
@@ -395,7 +396,8 @@ class XCloud extends React.Component {
             userId: getUuid(),
             email: getUserData().email,
             fileId: itemId,
-            platform: 'web'
+            platform: 'web',
+            date: new Date().toISOString()
           })
           this.getFolderContent(this.state.currentFolderId);
         })
@@ -413,7 +415,8 @@ class XCloud extends React.Component {
             userId: getUuid(),
             file_id: itemId,
             email: getUserData().email,
-            platform: 'web'
+            platform: 'web',
+            date: new Date().toISOString()
           })
           this.getFolderContent(this.state.currentFolderId);
         })
@@ -483,7 +486,8 @@ class XCloud extends React.Component {
             userId: getUuid(),
             file_id: response.item.id,
             email: getUserData().email,
-            platform: 'web'
+            platform: 'web',
+            date: new Date().toISOString()
           })
           // Remove myself
           let currentCommanderItems = this.state.currentCommanderItems.filter((commanderItem) =>
@@ -525,7 +529,8 @@ class XCloud extends React.Component {
         file_type: pcb.props.type,
         email: getUserData().email,
         folder_id: pcb.props.rawItem.folder_id,
-        platform: 'web'
+        platform: 'web',
+        date: new Date().toISOString()
       })
       axios.get(`/api/storage/file/${id}`, {
         onDownloadProgress(pe) {
@@ -546,7 +551,8 @@ class XCloud extends React.Component {
           file_id: id,
           email: getUserData().email,
           file_size: res.data.size,
-          platform: 'web'
+          platform: 'web',
+          date: new Date().toISOString()
         })
         return { blob: res.data, filename: Buffer.from(res.headers['x-file-name'], 'base64').toString('utf8') }
       }).then(({ blob, filename }) => {
@@ -559,7 +565,8 @@ class XCloud extends React.Component {
           file_id: id,
           email: getUserData().email,
           msg: err,
-          platform: 'web'
+          platform: 'web',
+          date: new Date().toISOString()
         });
         if (err.response && err.response.status === 401) {
           return history.push('/login')
@@ -610,7 +617,8 @@ class XCloud extends React.Component {
         file_type: file.type,
         folder_id: parentFolderId,
         email: getUserData().email,
-        platform: 'web'
+        platform: 'web',
+        date: new Date().toISOString()
       })
       const uploadUrl = `/api/storage/folder/${parentFolderId}/upload`;
 
@@ -649,7 +657,8 @@ class XCloud extends React.Component {
               platform: 'web',
               file_size: file.size,
               file_type: file.type,
-              email: getUserData().email
+              email: getUserData().email,
+              date: new Date().toISOString(),
             })
             return { res: res, data: data };
           } else {
@@ -789,7 +798,8 @@ class XCloud extends React.Component {
           analytics.track((v.isFolder ? 'folder' : 'file') + '-delete', {
             userId: getUuid(),
             email: getUserData().email,
-            platform: 'web'
+            platform: 'web',
+            date: new Date().toISOString()
           })
           next()
         }).catch(next);
