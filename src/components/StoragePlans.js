@@ -12,8 +12,6 @@ import { getHeaders } from '../lib/auth'
 
 import { analytics, getUserData } from '../lib/analytics'
 
-const STRIPE_DEBUG = false;
-
 const stripeGlobal = window.Stripe;
 
 const PaymentBridges = [
@@ -56,7 +54,7 @@ class StoragePlans extends React.Component {
     }
 
     loadAvailableProducts() {
-        fetch('/api/stripe/products' + (STRIPE_DEBUG ? '?test=true' : ''), {
+        fetch('/api/stripe/products' + (process.env.NODE_ENV !== 'production' ? '?test=true' : ''), {
             headers: getHeaders(true, false)
         }).then(response => response.json()).then(products => {
             this.setState({
@@ -68,9 +66,10 @@ class StoragePlans extends React.Component {
         });
     }
 
+
     loadAvailablePlans() {
         const body = { product: this.state.selectedProductToBuy.id }
-        if (STRIPE_DEBUG) { body.test = true }
+        if (process.env.NODE_ENV !== 'production') { body.test = true }
         fetch('/api/stripe/plans', {
             method: 'post',
             headers: getHeaders(true, false),
@@ -90,7 +89,7 @@ class StoragePlans extends React.Component {
     handleStripePayment() {
         this.setState({ statusMessage: 'Purchasing...' });
 
-        const stripe = new stripeGlobal(STRIPE_DEBUG ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+        const stripe = new stripeGlobal(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
 
         const body = { plan: this.state.selectedPlanToBuy.id }
 
