@@ -334,11 +334,13 @@ class XCloud extends React.Component {
             size: 0,
             isDraggable: false,
             onClick: async () => {
+              analytics.track('file-welcome-open');
               fetch('/Internxt.pdf').then(res => res.blob()).then(obj => {
                 fileDownload(obj, 'Welcome.pdf')
               })
             },
             onDelete: async () => {
+              analytics.track('file-welcome-delete');
               return fetch('/api/welcome', {
                 method: 'delete',
                 headers: getHeaders(true, false)
