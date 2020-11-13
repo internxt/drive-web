@@ -162,9 +162,8 @@ class Login extends React.Component<LoginProps> {
             analytics.identify(data.user.uuid, {
               email: this.state.email,
               platform: 'web',
-              referrals_count: Math.floor(data.user.credit / 5)
-            }, () => {
-              analytics.track("user-signin")
+              referrals_count: Math.floor(data.user.credit / 5),
+              createdAt: data.user.createdAt
             })
             // Manage succesfull login
             const user = {
@@ -176,7 +175,8 @@ class Login extends React.Component<LoginProps> {
               name: data.user.name,
               lastname: data.user.lastname,
               uuid: data.user.uuid,
-              credit: data.user.credit
+              credit: data.user.credit,
+              createdAt: data.user.createdAt
             };
             if (this.props.handleKeySaved) {
               this.props.handleKeySaved(user)

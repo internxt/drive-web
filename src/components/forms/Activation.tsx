@@ -7,7 +7,6 @@ import history from '../../lib/history';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { analytics } from "../../lib/analytics";
 
 interface ActivationProps {
   match: any
@@ -33,28 +32,24 @@ class Activation extends React.Component<ActivationProps & RouteProps, Activatio
   componentDidMount() {
     // Get token from path and activate account through api call
     const token = this.props.match.params.token;
-    analytics.page('activations')
-    fetch(`https://api.internxt.com/activations/${token}`, {
-      method: "GET",
-    }).then(response => {
-      if (response.status === 200) {
-        // Successfull activation
-        this.setState({ isActivated: true });
-      } else {
-        // Wrong activation
-        this.setState({ isActivated: false });
-      }
+    fetch(`/api/user/activations/${token}`)
+      .then(res => {
+        if (res.status === 200) {
+          // Successfull activation
+          this.setState({ isActivated: true });
+        } else {
+          // Wrong activation
+          this.setState({ isActivated: false });
+        }
 
-      if (!isMobile) {
-        this.redirect();
-      }
-    }).catch(error => {
-      this.setState({ isActivated: false })
-      console.log('Activation error: ' + error);
-      if (!isMobile) {
-        this.redirect();
-      }
-    })
+        if (!isMobile) {
+          this.redirect();
+        }
+      }).catch(err => {
+        this.setState({ isActivated: false })
+        console.log('Activation error: ' + err);
+        if (!isMobile) { this.redirect(); }
+      })
   }
 
   redirect = () => {
