@@ -550,13 +550,6 @@ class XCloud extends React.Component {
         fileDownload(blob, filename);
         pcb.setState({ progress: 0 })
         resolve()
-        fetch('/api/usage', {
-          method: 'get',
-          headers: getHeaders(true, false)
-        }).then(res => res.json())
-          .then(res => {
-            if (res.total) { analytics.identify(getUuid(), { storage_used: res.total }) }
-          }).catch(() => { });
       }).catch(err => {
         analytics.track('file-download-error', {
           file_id: id,

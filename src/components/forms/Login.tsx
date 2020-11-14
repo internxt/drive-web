@@ -162,6 +162,7 @@ class Login extends React.Component<LoginProps> {
             analytics.identify(data.user.uuid, {
               email: this.state.email,
               platform: 'web',
+              referrals_credit: data.user.credit,
               referrals_count: Math.floor(data.user.credit / 5),
               createdAt: data.user.createdAt
             })
