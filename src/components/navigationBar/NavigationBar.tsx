@@ -20,6 +20,7 @@ import "./NavigationBar.scss";
 import history from '../../lib/history';
 
 import { getHeaders } from '../../lib/auth'
+import { clearLocalStorage } from '../../lib/localStorageUtils';
 
 interface NavigationBarProps {
     navbarItems: JSX.Element
@@ -181,7 +182,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                                     analytics.track('user-signout', {
                                         email: getUserData().email
                                     })
-                                    localStorage.clear();
+                                    clearLocalStorage();
                                     history.push('/login');
                                 }}>Sign out</Dropdown.Item>
                             </div>

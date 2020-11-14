@@ -148,9 +148,7 @@ class New extends React.Component<NewProps, NewState> {
                     const { token, user, uuid } = body;
                     localStorage.setItem('xToken', token);
 
-                    analytics.identify(uuid, { email: this.state.register.email }, () => {
-                        analytics.track('user-signup', { email: this.state.register.email })
-                    })
+                    analytics.identify(uuid, { email: this.state.register.email });
 
                     // Clear form fields
                     this.setState({

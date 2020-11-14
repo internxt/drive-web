@@ -24,6 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
 
 import { analytics, getUserData, getUuid } from '../../lib/analytics'
+import { clearLocalStorage } from '../../lib/localStorageUtils';
 
 class XCloud extends React.Component {
   constructor(props) {
@@ -80,7 +81,7 @@ class XCloud extends React.Component {
         })
         .catch((error) => {
           console.log('Error getting user activation status: ' + error);
-          localStorage.clear();
+          clearLocalStorage();
           history.push('/login');
         });
     }
