@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Form, Col, Container } from "react-bootstrap";
+import { Button, Form, Col, Container, Spinner } from "react-bootstrap";
 
 import history from '../../lib/history';
 import "./Login.scss";
@@ -28,7 +28,8 @@ class Login extends React.Component<LoginProps> {
     token: "",
     user: {},
     showTwoFactor: false,
-    twoFactorCode: ''
+    twoFactorCode: '',
+    isLogingIn: false
   }
 
   componentDidMount() {
@@ -116,6 +117,7 @@ class Login extends React.Component<LoginProps> {
       if (err.message.includes('not activated') && this.validateEmail(this.state.email)) {
         history.push(`/activate/${this.state.email}`);
       } else {
+        this.setState({ isLogingIn: false })
         analytics.track('user-signin-attempted', {
           status: 'error',
           msg: err.message,
@@ -132,6 +134,9 @@ class Login extends React.Component<LoginProps> {
       headers: getHeaders(true, false),
       body: JSON.stringify({ email: this.state.email })
     }).then(response => {
+      if (response.status !== 200) {
+        this.setState({ isLogingIn: false })
+      }
       if (response.status === 200) {
         // Manage credentials verification
         response.json().then((body) => {
@@ -206,11 +211,11 @@ class Login extends React.Component<LoginProps> {
         // Manage user does not exist
         toast.warn("This account doesn't exists");
       }
-    })
-      .catch(err => {
-        console.error("Login error. " + err)
-        toast.warn('Login error')
-      });
+    }).catch(err => {
+      this.setState({ isLogingIn: false })
+      console.error("Login error. " + err)
+      toast.warn('Login error')
+    });
   }
 
   render() {
@@ -229,7 +234,9 @@ class Login extends React.Component<LoginProps> {
             </div>
             <Form className="form-register" onSubmit={(e: any) => {
               e.preventDefault();
-              this.check2FANeeded();
+              this.setState({ isLogingIn: true }, () => {
+                this.check2FANeeded();
+              });
             }}>
               <Form.Row>
                 <Form.Group as={Col} controlId="email">
@@ -243,7 +250,7 @@ class Login extends React.Component<LoginProps> {
               </Form.Row>
               <Form.Row className="form-register-submit">
                 <Form.Group as={Col}>
-                  <Button className="on btn-block __btn-new-button" disabled={!isValid} type="submit">Sign in</Button>
+                  <Button className="on btn-block __btn-new-button" disabled={!isValid || this.state.isLogingIn} type="submit">{this.state.isLogingIn ? <Spinner animation="border" variant="light" style={{ fontSize: 1, width: '1rem', height: '1rem' }} /> : 'Sign in'}</Button>
                 </Form.Group>
               </Form.Row>
             </Form>
