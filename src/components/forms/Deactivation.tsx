@@ -72,10 +72,8 @@ class Deactivation extends React.Component<DeactivationProps> {
             return "";
         } else {
             return <Container>
-                        <Alert variant="danger">
-                            {this.state.result}
-                        </Alert>
-                   </Container>;
+                <Alert variant="danger">{this.state.result}</Alert>
+            </Container>;
         }
     }
 

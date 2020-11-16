@@ -599,14 +599,6 @@ class XCloud extends React.Component {
         return reject(Error('No folder ID provided'));
       }
 
-      // console.log(file)
-      analytics.track('file-upload-start', {
-        file_size: file.size,
-        file_type: file.type,
-        folder_id: parentFolderId,
-        email: getUserData().email,
-        platform: 'web'
-      })
       const uploadUrl = `/api/storage/folder/${parentFolderId}/upload`;
 
       // Headers with Auth & Mnemonic
@@ -638,12 +630,6 @@ class XCloud extends React.Component {
             console.error('Upload response data is not a JSON', err);
           }
           if (data) {
-            analytics.track('file-upload-finished', {
-              platform: 'web',
-              file_size: file.size,
-              file_type: file.type,
-              email: getUserData().email
-            })
             return { res: res, data: data };
           } else {
             throw res;
@@ -736,18 +722,6 @@ class XCloud extends React.Component {
           } else {
             resolve();
           }
-
-          if (!err) {
-            fetch('/api/usage', {
-              method: 'get',
-              headers: getHeaders(true, false)
-            }).then(res => res.json())
-              .then(res => {
-                if (res.total) {
-                  analytics.identify({ storage_used: res.total })
-                }
-              }).catch(() => { });
-          }
         },
       );
     });
@@ -781,14 +755,11 @@ class XCloud extends React.Component {
       method: 'DELETE',
       headers: getHeaders(true, false),
     };
-    let anyDeletedFile = false;
+
     if (selectedItems.length === 0) return;
     const deletionRequests = _.map(selectedItems, (v, i) => {
       if (v.onDelete) {
         return (next) => { v.onDelete(); next() }
-      }
-      if (!v.isFolder) {
-        anyDeletedFile = true;
       }
       const url = v.isFolder
         ? `/api/storage/folder/${v.id}`
@@ -808,17 +779,6 @@ class XCloud extends React.Component {
         throw err;
       } else {
         this.getFolderContent(this.state.currentFolderId, false);
-        if (anyDeletedFile) {
-          console.log('anyDeletedFile', anyDeletedFile)
-          fetch('/api/usage', {
-            method: 'get',
-            headers: getHeaders(true, false)
-          }).then(res => res.json())
-            .then(res => {
-              console.log(res.total)
-              if (res.total) { analytics.identify(getUuid(), { storage_used: res.total }) }
-            }).catch(() => { });
-        }
       }
     });
   };
