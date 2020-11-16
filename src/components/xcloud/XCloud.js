@@ -599,6 +599,14 @@ class XCloud extends React.Component {
         return reject(Error('No folder ID provided'));
       }
 
+      analytics.track('file-upload-start', {
+        file_size: file.size,
+        file_type: file.type,
+        folder_id: parentFolderId,
+        email: getUserData().email,
+        platform: 'web'
+      })
+
       const uploadUrl = `/api/storage/folder/${parentFolderId}/upload`;
 
       // Headers with Auth & Mnemonic
