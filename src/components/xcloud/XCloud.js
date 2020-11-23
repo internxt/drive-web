@@ -626,6 +626,14 @@ class XCloud extends React.Component {
           let data;
           try {
             data = await res.json();
+            analytics.track('file-upload-finished',{
+              email:getUserData().email,
+              file_size:file.size,
+              file_type: file.type,
+              file_id:data.fileId
+
+            })
+
           } catch (err) {
             console.log(err)
             analytics.track('file-upload-error', {
