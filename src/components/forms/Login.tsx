@@ -104,12 +104,13 @@ class Login extends React.Component<LoginProps> {
         })
         throw new Error(data.error ? data.error : 'Login error');
       }
-
+      
       return data;
 
     }).then(res => {
       if (!res.tfa) {
         this.doLogin();
+        
       } else {
         this.setState({ showTwoFactor: true });
       }
@@ -190,7 +191,9 @@ class Login extends React.Component<LoginProps> {
             localStorage.setItem('xToken', data.token);
             localStorage.setItem('xMnemonic', user.mnemonic);
             localStorage.setItem('xUser', JSON.stringify(user));
-
+            analytics.track('user-signin',{
+              email: this.state.email
+            })
             this.setState({
               isAuthenticated: true,
               token: data.token,
