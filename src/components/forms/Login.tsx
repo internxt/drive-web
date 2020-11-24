@@ -199,6 +199,7 @@ class Login extends React.Component<LoginProps> {
           })
             .catch(err => {
               toast.warn(`"${err.error ? err.error : err}"`);
+              this.setState({ isLogingIn: false })
             });
         });
       } else if (response.status === 400) {
