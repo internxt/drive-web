@@ -10,21 +10,38 @@ import { getHeaders } from '../../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { analytics } from "../../lib/analytics";
+import queryString, { ParsedQuery } from 'query-string'
 
 const bip39 = require('bip39')
 
 interface NewProps {
     match: any
+    location: {
+        search: string
+    }
 }
 
 interface NewState {
     isAuthenticated?: Boolean
-    register: any
-    currentContainer: JSX.Element
+    register: {
+        name: string
+        lastname: string
+        email: string
+        password: string
+        confirmPassword: string
+    }
+    currentContainer: number
     validated?: Boolean
     showModal: Boolean
     token?: string
     user?: any
+}
+
+const CONTAINERS = {
+    RegisterContainer: 1,
+    PrivacyTermsContainer: 2,
+    PasswordContainer: 3,
+    ActivationContainer: 4
 }
 
 class New extends React.Component<NewProps, NewState> {
@@ -35,7 +52,7 @@ class New extends React.Component<NewProps, NewState> {
         let isEmailParam = this.props.match.params.email && this.validateEmail(this.props.match.params.email);
 
         this.state = {
-            currentContainer: isEmailParam ? this.activationContainer() : this.registerContainer(),
+            currentContainer: isEmailParam ? CONTAINERS.ActivationContainer : CONTAINERS.RegisterContainer,
             register: {
                 name: '',
                 lastname: '',
@@ -49,7 +66,6 @@ class New extends React.Component<NewProps, NewState> {
     }
 
     componentDidMount() {
-
         if (isMobile) {
             if (isAndroid) {
                 window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
@@ -57,6 +73,16 @@ class New extends React.Component<NewProps, NewState> {
                 window.location.href = "https://itunes.apple.com/us/app/x-cloud-secure-file-storage/id1465869889";
             }
         }
+
+        const parsedQueryParams: ParsedQuery<string> = queryString.parse(this.props.location.search);
+        const isEmailQuery = parsedQueryParams.email && this.validateEmail(parsedQueryParams.email.toString())
+
+        if (isEmailQuery && parsedQueryParams.email !== this.state.register.email) {
+            this.setState({
+                register: { ...this.state.register, email: parsedQueryParams.email + '' }
+            })
+        }
+
 
         const xUser = JSON.parse(localStorage.getItem('xUser') || '{}');
         const xToken = localStorage.getItem('xToken');
@@ -163,7 +189,7 @@ class New extends React.Component<NewProps, NewState> {
                         showModal: true,
                         token,
                         user,
-                        currentContainer: this.activationContainer()
+                        currentContainer: CONTAINERS.ActivationContainer
                     });
                 });
             } else {
@@ -212,22 +238,28 @@ class New extends React.Component<NewProps, NewState> {
                     var tempReg = this.state.register;
                     tempReg.email = tempReg.email.toLowerCase().trim();
                     this.setState({
-                        currentContainer: this.privacyContainer(),
+                        currentContainer: CONTAINERS.PrivacyTermsContainer,
                         register: tempReg
                     });
                 }
             }}>
                 <Form.Row>
                     <Form.Group as={Col} controlId="name">
-                        <Form.Control placeholder="First name" required autoComplete="name" onChange={this.handleChangeRegister} value={this.state && this.state.register.name} autoFocus />
+                        <Form.Control placeholder="First name" required autoComplete="name"
+                            onChange={this.handleChangeRegister}
+                            value={this.state && this.state.register.name} autoFocus />
                     </Form.Group>
                     <Form.Group as={Col} controlId="lastname">
-                        <Form.Control placeholder="Last name" required autoComplete="lastname" onChange={this.handleChangeRegister} value={this.state && this.state.register.lastname} />
+                        <Form.Control placeholder="Last name" required autoComplete="lastname"
+                            onChange={this.handleChangeRegister}
+                            value={this.state && this.state.register.lastname} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
                     <Form.Group as={Col} controlId="email">
-                        <Form.Control placeholder="Email address" type="email" required autoComplete="email" onChange={this.handleChangeRegister} value={this.state && this.state.register.email} />
+                        <Form.Control placeholder="Email address" type="email" required autoComplete="email"
+                            onChange={this.handleChangeRegister}
+                            value={this.state && this.state.register.email} />
                     </Form.Group>
                 </Form.Row>
                 <Form.Row className="form-register-submit">
@@ -250,12 +282,12 @@ class New extends React.Component<NewProps, NewState> {
             </ul>
             <Form onSubmit={(e: any) => {
                 e.preventDefault();
-                this.setState({ currentContainer: this.passwordContainer() });
+                this.setState({ currentContainer: CONTAINERS.PasswordContainer });
             }}>
                 <Form.Row>
                     <Form.Group as={Col} controlId="name">
                         <button className="btn-block off" onClick={(e: any) => {
-                            this.setState({ currentContainer: this.registerContainer() });
+                            this.setState({ currentContainer: CONTAINERS.RegisterContainer });
                             e.preventDefault();
                         }}>Back</button>
                     </Form.Group>
@@ -297,7 +329,7 @@ class New extends React.Component<NewProps, NewState> {
                 <Form.Row className="form-register-submit">
                     <Form.Group as={Col}>
                         <Button className="btn-block off" onClick={(e: any) => {
-                            this.setState({ currentContainer: this.privacyContainer() });
+                            this.setState({ currentContainer: CONTAINERS.PrivacyTermsContainer });
                             e.preventDefault();
                         }}>Back</Button>
                     </Form.Group>
@@ -324,7 +356,10 @@ class New extends React.Component<NewProps, NewState> {
     render() {
         return (<div className="login-main">
             <Container className="login-container-box">
-                {this.state.currentContainer}
+                {this.state.currentContainer === CONTAINERS.RegisterContainer ? this.registerContainer() : ''}
+                {this.state.currentContainer === CONTAINERS.PrivacyTermsContainer ? this.privacyContainer() : ''}
+                {this.state.currentContainer === CONTAINERS.PasswordContainer ? this.passwordContainer() : ''}
+                {this.state.currentContainer === CONTAINERS.ActivationContainer ? this.activationContainer() : ''}
             </Container>
         </div>
         );
