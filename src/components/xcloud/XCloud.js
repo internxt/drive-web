@@ -23,7 +23,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import axios from 'axios'
 
-import { analytics, getUserData, getUuid } from '../../lib/analytics'
+import { analytics, getUserData } from '../../lib/analytics'
 import { clearLocalStorage } from '../../lib/localStorageUtils';
 
 class XCloud extends React.Component {
