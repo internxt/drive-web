@@ -16,7 +16,7 @@ import Security from './components/Security';
 import { ToastContainer } from 'react-toastify';
 import Checkout from './components/Checkout';
 import Referred from './components/Referred';
-
+import { analytics, PATH_NAMES } from './lib/analytics'
 
 
 class App extends React.Component {
@@ -35,6 +35,9 @@ class App extends React.Component {
   render() {
     if (window.location.pathname) {
       let pathName = window.location.pathname.split('/')[1];
+      if (pathName === 'new' && window.location.search !== '') {
+        analytics.page(PATH_NAMES[window.location.pathname])
+      }
       var toast;
 
       if (/^[a-z0-9]{10}$/.test(pathName)) {
