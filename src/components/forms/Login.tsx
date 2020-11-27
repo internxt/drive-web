@@ -192,7 +192,8 @@ class Login extends React.Component<LoginProps> {
             localStorage.setItem('xMnemonic', user.mnemonic);
             localStorage.setItem('xUser', JSON.stringify(user));
             analytics.track('user-signin',{
-              email: this.state.email
+              email: this.state.email,
+              userId: user.uuid
             })
             this.setState({
               isAuthenticated: true,

@@ -479,7 +479,7 @@ class XCloud extends React.Component {
         if (!success) {
           toast.warn(`Error moving ${keyOp.toLowerCase()} '${response.item.name}`);
         } else {
-          analytics.track(`${keyOp}-move`, {
+          analytics.track(`${keyOp}-move`.toLowerCase(), {
             file_id: response.item.id,
             email: getUserData().email,
             platform: 'web'
