@@ -104,13 +104,13 @@ class Login extends React.Component<LoginProps> {
         })
         throw new Error(data.error ? data.error : 'Login error');
       }
-      
+
       return data;
 
     }).then(res => {
       if (!res.tfa) {
         this.doLogin();
-        
+
       } else {
         this.setState({ showTwoFactor: true });
       }
@@ -165,13 +165,6 @@ class Login extends React.Component<LoginProps> {
               throw new Error(res.data.error ? res.data.error : res.data);
             }
             var data = res.data;
-            analytics.identify(data.user.uuid, {
-              email: this.state.email,
-              platform: 'web',
-              referrals_credit: data.user.credit,
-              referrals_count: Math.floor(data.user.credit / 5),
-              createdAt: data.user.createdAt
-            })
             // Manage succesfull login
             const user = {
               userId: data.user.userId,
@@ -191,9 +184,17 @@ class Login extends React.Component<LoginProps> {
             localStorage.setItem('xToken', data.token);
             localStorage.setItem('xMnemonic', user.mnemonic);
             localStorage.setItem('xUser', JSON.stringify(user));
-            analytics.track('user-signin',{
+            analytics.identify(data.user.uuid, {
               email: this.state.email,
-              userId: user.uuid
+              platform: 'web',
+              referrals_credit: data.user.credit,
+              referrals_count: Math.floor(data.user.credit / 5),
+              createdAt: data.user.createdAt
+            }, () => {
+                analytics.track('user-signin', {
+                  email: this.state.email,
+                  userId: user.uuid
+                })
             })
             this.setState({
               isAuthenticated: true,
