@@ -23,7 +23,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import axios from 'axios'
 
-import { analytics, getUserData, getUuid } from '../../lib/analytics'
+import { analytics, getUserData } from '../../lib/analytics'
 import { clearLocalStorage } from '../../lib/localStorageUtils';
 
 class XCloud extends React.Component {
@@ -479,7 +479,7 @@ class XCloud extends React.Component {
         if (!success) {
           toast.warn(`Error moving ${keyOp.toLowerCase()} '${response.item.name}`);
         } else {
-          analytics.track(`${keyOp}-move`, {
+          analytics.track(`${keyOp}-move`.toLowerCase(), {
             file_id: response.item.id,
             email: getUserData().email,
             platform: 'web'
@@ -626,6 +626,14 @@ class XCloud extends React.Component {
           let data;
           try {
             data = await res.json();
+            analytics.track('file-upload-finished',{
+              email:getUserData().email,
+              file_size:file.size,
+              file_type: file.type,
+              file_id:data.fileId
+
+            })
+
           } catch (err) {
             console.log(err)
             analytics.track('file-upload-error', {
