@@ -23,7 +23,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import axios from 'axios'
 
-import { analytics, getUserData } from '../../lib/analytics'
+import { getUserData } from '../../lib/analytics'
 import { clearLocalStorage } from '../../lib/localStorageUtils';
 
 class XCloud extends React.Component {
@@ -163,7 +163,7 @@ class XCloud extends React.Component {
             const body = await res.json();
             throw body.error ? body.error : 'createFolder error';
           }
-          analytics.track('folder-created', {
+          window.analytics.track('folder-created', {
             email: getUserData().email,
             platform: 'web'
           })
@@ -335,13 +335,13 @@ class XCloud extends React.Component {
             size: 0,
             isDraggable: false,
             onClick: async () => {
-              analytics.track('file-welcome-open');
+              window.analytics.track('file-welcome-open');
               fetch('/Internxt.pdf').then(res => res.blob()).then(obj => {
                 fileDownload(obj, 'Welcome.pdf')
               })
             },
             onDelete: async () => {
-              analytics.track('file-welcome-delete');
+              window.analytics.track('file-welcome-delete');
               return fetch('/api/welcome', {
                 method: 'delete',
                 headers: getHeaders(true, false)
@@ -393,7 +393,7 @@ class XCloud extends React.Component {
         body: data,
       })
         .then(() => {
-          analytics.track('folder-rename', {
+          window.analytics.track('folder-rename', {
             email: getUserData().email,
             fileId: itemId,
             platform: 'web'
@@ -410,7 +410,7 @@ class XCloud extends React.Component {
         body: data,
       })
         .then(() => {
-          analytics.track('file-rename', {
+          window.analytics.track('file-rename', {
             file_id: itemId,
             email: getUserData().email,
             platform: 'web'
@@ -479,7 +479,7 @@ class XCloud extends React.Component {
         if (!success) {
           toast.warn(`Error moving ${keyOp.toLowerCase()} '${response.item.name}`);
         } else {
-          analytics.track(`${keyOp}-move`.toLowerCase(), {
+          window.analytics.track(`${keyOp}-move`.toLowerCase(), {
             file_id: response.item.id,
             email: getUserData().email,
             platform: 'web'
@@ -516,7 +516,7 @@ class XCloud extends React.Component {
         })
         return config
       })
-      analytics.track('file-download-start', {
+      window.analytics.track('file-download-start', {
         file_id: pcb.props.rawItem.id,
         file_name: pcb.props.rawItem.name,
         file_size: pcb.props.rawItem.size,
@@ -539,7 +539,7 @@ class XCloud extends React.Component {
           throw res
         }
 
-        analytics.track('file-download-finished', {
+        window.analytics.track('file-download-finished', {
           file_id: id,
           email: getUserData().email,
           file_size: res.data.size,
@@ -551,7 +551,7 @@ class XCloud extends React.Component {
         pcb.setState({ progress: 0 })
         resolve()
       }).catch(err => {
-        analytics.track('file-download-error', {
+        window.analytics.track('file-download-error', {
           file_id: id,
           email: getUserData().email,
           msg: err.message,
@@ -599,7 +599,7 @@ class XCloud extends React.Component {
         return reject(Error('No folder ID provided'));
       }
 
-      analytics.track('file-upload-start', {
+      window.analytics.track('file-upload-start', {
         file_size: file.size,
         file_type: file.type,
         folder_id: parentFolderId,
@@ -626,7 +626,7 @@ class XCloud extends React.Component {
           let data;
           try {
             data = await res.json();
-            analytics.track('file-upload-finished',{
+            window.analytics.track('file-upload-finished',{
               email:getUserData().email,
               file_size:file.size,
               file_type: file.type,
@@ -636,7 +636,7 @@ class XCloud extends React.Component {
 
           } catch (err) {
             console.log(err)
-            analytics.track('file-upload-error', {
+            window.analytics.track('file-upload-error', {
               file_size: file.size,
               file_type: file.type,
               email: getUserData().email,
@@ -782,7 +782,7 @@ class XCloud extends React.Component {
         : `/api/storage/folder/${v.folderId}/file/${v.id}`;
       return (next) =>
         fetch(url, fetchOptions).then(() => {
-          analytics.track((v.isFolder ? 'folder' : 'file') + '-delete', {
+          window.analytics.track((v.isFolder ? 'folder' : 'file') + '-delete', {
             email: getUserData().email,
             platform: 'web'
           })

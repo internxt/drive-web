@@ -7,7 +7,7 @@ import NavigationBar from './../navigationBar/NavigationBar'
 import { encryptText, passToHash, decryptText, encryptTextWithKey } from '../../lib/utils'
 import history from '../../lib/history'
 import { getHeaders } from '../../lib/auth'
-import { analytics, getUserData } from '../../lib/analytics'
+import { getUserData } from '../../lib/analytics'
 
 interface ResetProps {
     match?: any
@@ -80,7 +80,7 @@ class Reset extends React.Component<ResetProps> {
                     throw res.data.error;
                 } else {
                     console.log('cambio contraseña')
-                    analytics.track('user-change-password', {
+                    window.analytics.track('user-change-password', {
                         status: 'success',
                         email: getUserData().email
                     });
@@ -88,7 +88,7 @@ class Reset extends React.Component<ResetProps> {
                 }
             })
             .catch(err => {
-                analytics.track('user-change-password', {
+                window.analytics.track('user-change-password', {
                     status: 'error',
                     email: getUserData().email
                 });

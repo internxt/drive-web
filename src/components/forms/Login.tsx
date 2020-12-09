@@ -98,7 +98,7 @@ class Login extends React.Component<LoginProps> {
       const data = await res.json();
 
       if (res.status !== 200) {
-        analytics.track('user-signin-attempted', {
+        window.analytics.track('user-signin-attempted', {
           status: 'error',
           msg: data.error ? data.error : 'Login error',
         })
@@ -119,7 +119,7 @@ class Login extends React.Component<LoginProps> {
         history.push(`/activate/${this.state.email}`);
       } else {
         this.setState({ isLogingIn: false })
-        analytics.track('user-signin-attempted', {
+        window.analytics.track('user-signin-attempted', {
           status: 'error',
           msg: err.message,
         })
@@ -158,7 +158,7 @@ class Login extends React.Component<LoginProps> {
             return { res, data: await res.json() };
           }).then(res => {
             if (res.res.status !== 200) {
-              analytics.track('user-signin-attempted', {
+              window.analytics.track('user-signin-attempted', {
                 status: 'error',
                 msg: res.data.error ? res.data.error : 'Login error',
               });
@@ -184,14 +184,17 @@ class Login extends React.Component<LoginProps> {
             localStorage.setItem('xToken', data.token);
             localStorage.setItem('xMnemonic', user.mnemonic);
             localStorage.setItem('xUser', JSON.stringify(user));
-            analytics.identify(data.user.uuid, {
+            console.log("-----LOG IN-----")
+            console.log(typeof(analytics))
+            window.analytics.identify(data.user.uuid, {
               email: this.state.email,
               platform: 'web',
               referrals_credit: data.user.credit,
               referrals_count: Math.floor(data.user.credit / 5),
               createdAt: data.user.createdAt
             }, () => {
-                analytics.track('user-signin', {
+                console.log('AFTER IDENTIFY')
+                window.analytics.track('user-signin', {
                   email: this.state.email,
                   userId: user.uuid
                 })
@@ -266,7 +269,7 @@ class Login extends React.Component<LoginProps> {
 
         <Container className="login-container-box-forgot-password">
           <p className="forgotPassword" onClick={(e: any) => {
-            analytics.track('user-reset-password-request');
+            window.analytics.track('user-reset-password-request');
             history.push('/remove');
           }}
           >Forgot your password?</p>
