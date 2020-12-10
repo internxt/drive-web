@@ -14,7 +14,7 @@ import PrettySize from 'prettysize';
 
 import HeaderButton from './HeaderButton';
 
-import { analytics, getUserData } from '../../lib/analytics'
+import { getUserData } from '../../lib/analytics'
 
 import "./NavigationBar.scss";
 import history from '../../lib/history';
@@ -179,7 +179,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                             <Dropdown.Divider />
                             <div className="dropdown-menu-group">
                                 <Dropdown.Item onClick={(e) => {
-                                    analytics.track('user-signout', {
+                                    window.analytics.track('user-signout', {
                                         email: getUserData().email
                                     })
                                     clearLocalStorage();

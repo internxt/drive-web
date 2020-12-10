@@ -9,7 +9,6 @@ import SanitizeFilename from 'sanitize-filename';
 import TimeAgo from 'react-timeago';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { analytics } from '../../lib/analytics';
 
 class FileCommanderItem extends React.Component {
   constructor(props, state) {
@@ -104,14 +103,14 @@ class FileCommanderItem extends React.Component {
   };
 
   handleColorSelection = (value, event) => {
-    analytics.track('folder-color-selection', {
+    window.analytics.track('folder-color-selection', {
       value: value
     })
     this.setState({ selectedColor: value });
   };
 
   handleIconSelection = (value, event) => {
-    analytics.track('folder-icon-selection', {
+    window.analytics.track('folder-icon-selection', {
       value: value
     })
     this.setState({ selectedIcon: value });
@@ -287,7 +286,7 @@ class FileCommanderItem extends React.Component {
         onDoubleClick={(e) => {
           if (e.target.className.includes('FileCommanderItem')) {
             if (this.props.type == null) {
-              analytics.track('folder-opened', {
+              window.analytics.track('folder-opened', {
                 folder_name: this.state.itemName,
                 folder_id: this.props.id
               });

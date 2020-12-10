@@ -11,7 +11,6 @@ import { getHeaders } from '../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { analytics } from '../lib/analytics'
 import { clearTimeout, setTimeout } from 'timers';
 
 interface PopupShareProps {
@@ -84,7 +83,7 @@ class PopupShare extends React.Component<PopupShareProps> {
         this.generateShareLink(
             fileId, views
         ).then(link => {
-            analytics.track('file-share')
+            window.analytics.track('file-share')
             this.setState({ link: link });
         }).catch((err) => {
             if (err.status === 402) {
