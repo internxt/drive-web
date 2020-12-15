@@ -174,7 +174,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                                     }
 
                                 }}>Download</Dropdown.Item>
-                                <Dropdown.Item href="mailto:hello@internxt.com">Contact</Dropdown.Item>
+                                <Dropdown.Item href="mailto:support@internxt.zohodesk.eu">Contact</Dropdown.Item>
                             </div>
                             <Dropdown.Divider />
                             <div className="dropdown-menu-group">
