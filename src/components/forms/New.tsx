@@ -147,7 +147,7 @@ class New extends React.Component<NewProps, NewState> {
 
 
     doRegister = () => {
-        // Setup hash and salt 
+        // Setup hash and salt
         const hashObj = passToHash({ password: this.state.register.password });
         const encPass = encryptText(hashObj.hash);
         const encSalt = encryptText(hashObj.salt);
@@ -175,6 +175,12 @@ class New extends React.Component<NewProps, NewState> {
                     localStorage.setItem('xToken', token);
 
                     analytics.identify(uuid, { email: this.state.register.email });
+                    window.analytics.track('user-signup', {
+                        properties: {
+                            userId: uuid,
+                            email: this.state.register.email
+                        }
+                    })
 
                     // Clear form fields
                     this.setState({
@@ -192,6 +198,7 @@ class New extends React.Component<NewProps, NewState> {
                         currentContainer: CONTAINERS.ActivationContainer
                     });
                 });
+
             } else {
                 response.json().then((body) => {
                     // Manage account already exists (error 400)
