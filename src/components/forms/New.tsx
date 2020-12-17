@@ -64,7 +64,6 @@ class New extends React.Component<NewProps, NewState> {
         const haveInfo = (xUser && xToken && mnemonic);
 
         if (this.state.isAuthenticated === true || haveInfo) {
-            console.log('Coming From: ' + window.location.pathname)
             history.push('/app')
         }
     }
