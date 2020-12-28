@@ -174,7 +174,7 @@ class New extends React.Component<NewProps, NewState> {
                     const { token, user, uuid } = body;
                     localStorage.setItem('xToken', token);
 
-                    analytics.identify(uuid, { email: this.state.register.email });
+                    analytics.identify(uuid, { email: this.state.register.email, member_tier: 'free' });
                     window.analytics.track('user-signup', {
                         properties: {
                             userId: uuid,
