@@ -22,9 +22,10 @@ class Checkout extends React.Component<props, state> {
     }
 
     componentWillMount() {
-        if (this.checkSessionId(this.state.sessionId)) {
+        const match = this.checkSessionId(this.state.sessionId)
+        if (match) {
             if (this.state.sessionId) {
-                const stripe = new window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+                const stripe = new window.Stripe(match[1] === 'test' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
 
                 stripe.redirectToCheckout({ sessionId: this.state.sessionId }).then(result => {
                     console.log(result);
