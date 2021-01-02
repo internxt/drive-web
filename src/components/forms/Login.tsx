@@ -11,7 +11,6 @@ import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { getHeaders } from '../../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { analytics } from '../../lib/analytics'
 
 interface LoginProps {
   email?: string
@@ -184,8 +183,7 @@ class Login extends React.Component<LoginProps> {
             localStorage.setItem('xToken', data.token);
             localStorage.setItem('xMnemonic', user.mnemonic);
             localStorage.setItem('xUser', JSON.stringify(user));
-            console.log("-----LOG IN-----")
-            console.log(typeof(analytics))
+
             window.analytics.identify(data.user.uuid, {
               email: this.state.email,
               platform: 'web',
@@ -193,11 +191,10 @@ class Login extends React.Component<LoginProps> {
               referrals_count: Math.floor(data.user.credit / 5),
               createdAt: data.user.createdAt
             }, () => {
-                console.log('AFTER IDENTIFY')
-                window.analytics.track('user-signin', {
-                  email: this.state.email,
-                  userId: user.uuid
-                })
+              window.analytics.track('user-signin', {
+                email: this.state.email,
+                userId: user.uuid
+              })
             })
             this.setState({
               isAuthenticated: true,
