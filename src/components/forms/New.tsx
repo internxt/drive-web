@@ -209,7 +209,6 @@ class New extends React.Component<NewProps, NewState> {
             }
         }).catch(err => {
             console.error("Register error", err);
-            console.log('Register error');
         });
 
     }

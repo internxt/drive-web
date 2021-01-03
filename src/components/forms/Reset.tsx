@@ -79,7 +79,6 @@ class Reset extends React.Component<ResetProps> {
                     console.log(res);
                     throw res.data.error;
                 } else {
-                    console.log('cambio contraseña')
                     window.analytics.track('user-change-password', {
                         status: 'success',
                         email: getUserData().email

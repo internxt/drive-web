@@ -173,7 +173,6 @@ class XCloud extends React.Component {
   };
 
   createFolderByName = (folderName, parentFolderId) => {
-    console.log('Create folder: %s', folderName);
     // No parent id implies is a directory created on the current folder, so let's show a spinner
     if (!parentFolderId) {
       let __currentCommanderItems;
