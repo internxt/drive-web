@@ -19,6 +19,22 @@ interface LoginProps {
   isAuthenticated: Boolean
 }
 
+async function initializeUser(email: string, mnemonic: string, token: string) {
+  return fetch(`/api/initialize`, {
+    method: 'POST',
+    headers: getHeaders(true, true),
+    body: JSON.stringify({
+      email: email,
+      mnemonic: mnemonic
+    })
+  }).then(res => {
+    if (res.status !== 200) {
+      throw Error(res.statusText)
+    }
+    return res.json()
+  })
+}
+
 class Login extends React.Component<LoginProps> {
   state = {
     email: '',
@@ -131,7 +147,7 @@ class Login extends React.Component<LoginProps> {
     // Proceed with submit
     fetch("/api/login", {
       method: "post",
-      headers: getHeaders(true, false),
+      headers: getHeaders(false, false),
       body: JSON.stringify({ email: this.state.email })
     }).then(response => {
       if (response.status !== 200) {
@@ -163,12 +179,23 @@ class Login extends React.Component<LoginProps> {
               });
               throw new Error(res.data.error ? res.data.error : res.data);
             }
-            var data = res.data;
+            return res.data;
+          }).then(data => {
+            data.user.mnemonic = decryptTextWithKey(data.user.mnemonic, this.state.password)
+            if (!data.user.root_folder_id) {
+              return initializeUser(this.state.email, data.user.mnemonic, data.token).then((res) => {
+                data.user.root_folder_id = res.user.root_folder_id
+                return data
+              })
+            } else {
+              return data
+            }
+          }).then(data => {
             // Manage succesfull login
             const user = {
               userId: data.user.userId,
               email: this.state.email,
-              mnemonic: data.user.mnemonic ? decryptTextWithKey(data.user.mnemonic, this.state.password) : null,
+              mnemonic: data.user.mnemonic,
               root_folder_id: data.user.root_folder_id,
               storeMnemonic: data.user.storeMnemonic,
               name: data.user.name,

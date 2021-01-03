@@ -24,98 +24,38 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
 
 import { getUserData } from '../../lib/analytics'
-import { clearLocalStorage } from '../../lib/localStorageUtils';
 
 class XCloud extends React.Component {
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      email: '',
-      isAuthorized: false,
-      isInitialized: false,
-      isActivated: null,
-      token: '',
-      chooserModalOpen: false,
-      rateLimitModal: false,
-      currentFolderId: null,
-      currentFolderBucket: null,
-      currentCommanderItems: [],
-      namePath: [],
-      sortFunction: null,
-      searchFunction: null,
-      popupShareOpened: false,
-      showDeleteItemsPopup: false,
-    };
+  state = {
+    email: '',
+    isAuthorized: false,
+    isInitialized: false,
+    isActivated: false,
+    token: '',
+    chooserModalOpen: false,
+    rateLimitModal: false,
+    currentFolderId: null,
+    currentFolderBucket: null,
+    currentCommanderItems: [],
+    namePath: [],
+    sortFunction: null,
+    searchFunction: null,
+    popupShareOpened: false,
+    showDeleteItemsPopup: false,
+  };
 
-    this.moveEvent = {};
-  }
+  moveEvent = {};
 
   componentDidMount = () => {
     // When user is not signed in, redirect to login
     if (!this.props.user || !this.props.isAuthenticated) {
       history.push('/login');
     } else {
-      this.isUserActivated()
-        .then((data) => {
-          // If user is signed in but is not activated set property isActivated to false
-          const isActivated = data.activated;
-          if (isActivated) {
-            if (!this.props.user.root_folder_id) {
-              // Initialize user in case that is not done yet
-              this.userInitialization()
-                .then((resultId) => {
-                  this.getFolderContent(resultId);
-                })
-                .catch((error) => {
-                  const errorMsg = error ? error : '';
-                  toast.warn('User initialization error ' + errorMsg);
-                  history.push('/login');
-                });
-            } else {
-              this.getFolderContent(this.props.user.root_folder_id);
-            }
+      this.getFolderContent(this.props.user.root_folder_id);
+      this.setState({ isActivated: true, isInitialized: true });
 
-            this.setState({ isActivated, isInitialized: true });
-          }
-        })
-        .catch((error) => {
-          console.log('Error getting user activation status: ' + error);
-          clearLocalStorage();
-          history.push('/login');
-        });
     }
-  };
-
-  userInitialization = () => {
-    return new Promise((resolve, reject) => {
-      fetch('/api/initialize', {
-        method: 'post',
-        headers: getHeaders(true, true),
-        body: JSON.stringify({
-          email: this.props.user.email,
-          mnemonic: localStorage.getItem('xMnemonic'),
-        }),
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            // Successfull intialization
-            this.setState({ isInitialized: true });
-            // Set user with new root folder id
-            response.json().then((body) => {
-              let updatedUser = this.props.user;
-              updatedUser.root_folder_id = body.user.root_folder_id;
-              this.props.handleKeySaved(updatedUser);
-              resolve(body.user.root_folder_id);
-            });
-          } else {
-            reject(null);
-          }
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
   };
 
   isUserActivated = () => {
@@ -123,7 +63,7 @@ class XCloud extends React.Component {
       method: 'get',
       headers: getHeaders(true, false),
     }).then((response) => response.json())
-      .catch((error) => {
+      .catch(() => {
         console.log('Error getting user activation');
       });
   };
@@ -157,25 +97,23 @@ class XCloud extends React.Component {
           parentFolderId: this.state.currentFolderId,
           folderName,
         }),
-      })
-        .then(async (res) => {
-          if (res.status !== 201) {
-            const body = await res.json();
-            throw body.error ? body.error : 'createFolder error';
-          }
-          window.analytics.track('folder-created', {
-            email: getUserData().email,
-            platform: 'web'
-          })
-          this.getFolderContent(this.state.currentFolderId, false);
+      }).then(async (res) => {
+        if (res.status !== 201) {
+          const body = await res.json();
+          throw body.error ? body.error : 'createFolder error';
+        }
+        window.analytics.track('folder-created', {
+          email: getUserData().email,
+          platform: 'web'
         })
-        .catch((err) => {
-          if (err.includes('already exists')) {
-            toast.warn('Folder with same name already exists');
-          } else {
-            toast.warn(`"${err}"`);
-          }
-        });
+        this.getFolderContent(this.state.currentFolderId, false);
+      }).catch((err) => {
+        if (err.includes('already exists')) {
+          toast.warn('Folder with same name already exists');
+        } else {
+          toast.warn(`"${err}"`);
+        }
+      });
     } else {
       toast.warn('Invalid folder name');
     }
