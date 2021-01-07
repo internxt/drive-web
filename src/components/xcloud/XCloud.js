@@ -24,6 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
 
 import { getUserData } from '../../lib/analytics'
+import { clearLocalStorage } from '../../lib/localStorageUtils';
 
 class XCloud extends React.Component {
 
@@ -315,6 +316,7 @@ class XCloud extends React.Component {
       })
       .catch((err) => {
         if (err.status === 401) {
+          clearLocalStorage();
           history.push('/login');
         }
       });
