@@ -19,6 +19,7 @@ interface NewProps {
     location: {
         search: string
     }
+    isNewUser: boolean
 }
 
 interface NewState {
@@ -49,14 +50,15 @@ class New extends React.Component<NewProps, NewState> {
     constructor(props: NewProps) {
         super(props);
 
-        let isEmailParam = this.props.match.params.email && this.validateEmail(this.props.match.params.email);
+        let hasEmailParam = this.props.match.params.email && this.validateEmail(this.props.match.params.email);
+
 
         this.state = {
-            currentContainer: isEmailParam ? CONTAINERS.ActivationContainer : CONTAINERS.RegisterContainer,
+            currentContainer: hasEmailParam ? CONTAINERS.ActivationContainer : CONTAINERS.RegisterContainer,
             register: {
                 name: '',
                 lastname: '',
-                email: isEmailParam ? this.props.match.params.email : '',
+                email: hasEmailParam && !this.props.isNewUser ? this.props.match.params.email : '',
                 password: '',
                 confirmPassword: ''
             },
@@ -265,6 +267,7 @@ class New extends React.Component<NewProps, NewState> {
                     <Form.Group as={Col} controlId="email">
                         <Form.Control placeholder="Email address" type="email" required autoComplete="email"
                             onChange={this.handleChangeRegister}
+                            disabled={!this.props.isNewUser}
                             value={this.state && this.state.register.email} />
                     </Form.Group>
                 </Form.Row>
@@ -351,7 +354,7 @@ class New extends React.Component<NewProps, NewState> {
         return (<div className="container-register">
             <p className="logo"><img src={logo} alt="Logo" /></p>
             <p className="container-title">Activation Email</p>
-            <p className="privacy-disclaimer">Please check your email and follow the instructions to activate your account so you can start using Internxt Drive.</p>
+            <p className="privacy-disclaimer">Please check your email <b>{this.state.register.email}</b> and follow the instructions to activate your account so you can start using Internxt Drive.</p>
             <ul className="privacy-remainders" style={{ paddingTop: '20px' }}>By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy</ul>
             <button className="btn-block on" onClick={() => {
                 this.resendEmail(this.state.register.email);
