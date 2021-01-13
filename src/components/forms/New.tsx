@@ -216,8 +216,31 @@ class New extends React.Component<NewProps, NewState> {
     }
 
     updateInfo = () => {
-        // TODO: Update info
-        console.log('UPDATE INFO FROM state.register')
+        // Setup hash and salt
+        const hashObj = passToHash({ password: this.state.register.password });
+        const encPass = encryptText(hashObj.hash);
+        const encSalt = encryptText(hashObj.salt);
+
+        // Setup mnemonic
+        const mnemonic = bip39.generateMnemonic(256);
+        const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
+
+        // Body
+        const body ={
+            name: this.state.register.name,
+            lastname: this.state.register.lastname,
+            email: this.state.register.email,
+            password: encPass,
+            mnemonic: encMnemonic,
+            salt: encSalt,
+            referral: this.readReferalCookie()
+        }
+
+        return fetch('/api/appsumo/update', {
+            method: 'POST',
+            headers: getHeaders(true, false),
+            body: JSON.stringify(body)
+        })
     }
 
     resendEmail = (email: string) => {
