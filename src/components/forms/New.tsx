@@ -54,7 +54,7 @@ class New extends React.Component<NewProps, NewState> {
 
 
         this.state = {
-            currentContainer: hasEmailParam ? CONTAINERS.ActivationContainer : CONTAINERS.RegisterContainer,
+            currentContainer: hasEmailParam && this.props.isNewUser ? CONTAINERS.ActivationContainer : CONTAINERS.RegisterContainer,
             register: {
                 name: '',
                 lastname: '',
@@ -91,7 +91,7 @@ class New extends React.Component<NewProps, NewState> {
         const mnemonic = localStorage.getItem('xMnemonic');
         const haveInfo = (xUser && xToken && mnemonic);
 
-        if (this.state.isAuthenticated === true || haveInfo) {
+        if (xUser.registerCompleted && (this.state.isAuthenticated === true || haveInfo)) {
             history.push('/app')
         }
     }
@@ -215,6 +215,11 @@ class New extends React.Component<NewProps, NewState> {
 
     }
 
+    updateInfo = () => {
+        // TODO: Update info
+        console.log('UPDATE INFO FROM state.register')
+    }
+
     resendEmail = (email: string) => {
         fetch(`/api/user/resend/${email}`, {
             method: 'GET'
@@ -320,7 +325,10 @@ class New extends React.Component<NewProps, NewState> {
             <Form className="form-register" onSubmit={(e: any) => {
                 e.preventDefault();
 
-                if (this.validatePassword()) {
+                if (!this.props.isNewUser) {
+                    this.updateInfo();
+                }
+                else if (this.validatePassword()) {
                     this.doRegister();
                 }
             }}>

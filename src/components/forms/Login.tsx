@@ -44,7 +44,8 @@ class Login extends React.Component<LoginProps> {
     user: {},
     showTwoFactor: false,
     twoFactorCode: '',
-    isLogingIn: false
+    isLogingIn: false,
+    registerCompleted: true
   }
 
   componentDidMount() {
@@ -60,16 +61,21 @@ class Login extends React.Component<LoginProps> {
     const mnemonic = localStorage.getItem('xMnemonic');
     const user = JSON.parse(localStorage.getItem('xUser') || '{}');
 
-    if (user && mnemonic && this.props.handleKeySaved) {
+    if (user && user.registerCompleted && mnemonic && this.props.handleKeySaved) {
       this.props.handleKeySaved(user)
       history.push('/app')
+    } else if (user && user.registerCompleted === false) {
+      history.push('/appsumo/' + user.email)
     }
   }
 
   componentDidUpdate() {
     if (this.state.isAuthenticated && this.state.token && this.state.user) {
       const mnemonic = localStorage.getItem('xMnemonic');
-      if (mnemonic) {
+      if (!this.state.registerCompleted) {
+        history.push('/appsumo/' + this.state.email);
+      }
+      else if (mnemonic) {
         history.push('/app')
       }
     }
@@ -202,7 +208,8 @@ class Login extends React.Component<LoginProps> {
               lastname: data.user.lastname,
               uuid: data.user.uuid,
               credit: data.user.credit,
-              createdAt: data.user.createdAt
+              createdAt: data.user.createdAt,
+              registerCompleted: data.user.registerCompleted
             };
             if (this.props.handleKeySaved) {
               this.props.handleKeySaved(user)
@@ -226,7 +233,8 @@ class Login extends React.Component<LoginProps> {
             this.setState({
               isAuthenticated: true,
               token: data.token,
-              user: user
+              user: user,
+              registerCompleted: data.user.registerCompleted
             });
           })
             .catch(err => {
