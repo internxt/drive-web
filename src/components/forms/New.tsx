@@ -50,9 +50,15 @@ class New extends React.Component<NewProps, NewState> {
     constructor(props: NewProps) {
         super(props);
 
-        let hasEmailParam = this.props.match.params.email && this.validateEmail(this.props.match.params.email);
+        const qs = queryString.parse(this.props.location.search);
 
+        const hasEmailParam = this.props.match.params.email && this.validateEmail(this.props.match.params.email);
+        const hasTokenParam = qs.token;
 
+        if (hasTokenParam && typeof hasTokenParam === 'string') {
+            localStorage.setItem('xToken', hasTokenParam)
+            history.replace(history.location.pathname)
+        }
         this.state = {
             currentContainer: hasEmailParam && this.props.isNewUser ? CONTAINERS.ActivationContainer : CONTAINERS.RegisterContainer,
             register: {
