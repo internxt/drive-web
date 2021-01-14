@@ -36,6 +36,7 @@ interface NewState {
     showModal: Boolean
     token?: string
     user?: any
+    isLoading: boolean
 }
 
 const CONTAINERS = {
@@ -68,7 +69,8 @@ class New extends React.Component<NewProps, NewState> {
                 password: '',
                 confirmPassword: ''
             },
-            showModal: false
+            showModal: false,
+            isLoading: false
         };
 
     }
@@ -127,7 +129,6 @@ class New extends React.Component<NewProps, NewState> {
         if (this.state.register.email.length < 5 || !this.validateEmail(this.state.register.email)) isValid = false;
 
         return isValid;
-
     }
 
     validatePassword = () => {
@@ -141,7 +142,6 @@ class New extends React.Component<NewProps, NewState> {
         if (this.state.register.password.length < 1 && this.state.register.confirmPassword.length < 1) isValid = false;
         // Pass and confirm pass validation
         if (this.state.register.password !== this.state.register.confirmPassword) {
-            toast.warn('Password mismatch')
             isValid = false
         }
 
@@ -163,7 +163,7 @@ class New extends React.Component<NewProps, NewState> {
         const mnemonic = bip39.generateMnemonic(256);
         const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
 
-        fetch("/api/register", {
+        return fetch("/api/register", {
             method: "post",
             headers: getHeaders(true, true),
             body: JSON.stringify({
@@ -232,7 +232,7 @@ class New extends React.Component<NewProps, NewState> {
         const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
 
         // Body
-        const body ={
+        const body = {
             name: this.state.register.name,
             lastname: this.state.register.lastname,
             email: this.state.register.email,
@@ -242,11 +242,33 @@ class New extends React.Component<NewProps, NewState> {
             referral: this.readReferalCookie()
         }
 
+        const fetchHandler = async (res: Response) => {
+            const body = await res.text();
+            try {
+                const bodyJson = JSON.parse(body);
+                return { res: res, body: bodyJson }
+            } catch {
+                return { res: res, body: body }
+            }
+        }
+
         return fetch('/api/appsumo/update', {
             method: 'POST',
             headers: getHeaders(true, false),
             body: JSON.stringify(body)
-        })
+        }).then(fetchHandler).then(({ res, body }) => {
+            if (res.status !== 200) {
+                throw Error(body.error || 'Internal Server Error')
+            } else {
+                return body;
+            }
+        }).then(res => {
+            console.log('REMOVE')
+            localStorage.removeItem('xToken');
+            localStorage.removeItem('xUser');
+            history.push('/login');
+        });
+
     }
 
     resendEmail = (email: string) => {
@@ -307,7 +329,7 @@ class New extends React.Component<NewProps, NewState> {
                 </Form.Row>
                 <Form.Row className="form-register-submit">
                     <Form.Group as={Col}>
-                        <button className="on btn-block" type="submit">Continue</button>
+                        <button className="on btn-block" type="submit" disabled={!this.validateRegisterFormPart1()}>Continue</button>
                     </Form.Group>
                 </Form.Row>
             </Form>
@@ -351,13 +373,29 @@ class New extends React.Component<NewProps, NewState> {
                 <button className="off" onClick={(e: any) => { /* this.setState({ currentContainer: this.loginContainer() }) */ }}>Sign in</button>
                 <button className="on">Create account</button>
             </div>
-            <Form className="form-register" onSubmit={(e: any) => {
+            <Form className="form-register" onSubmit={async (e: any) => {
                 e.preventDefault();
 
-                if (!this.props.isNewUser) {
-                    this.updateInfo();
+                await new Promise<void>(r => this.setState({ isLoading: true }, () => r()));
+
+                if (!this.validatePassword()) {
+                    return toast.warn(<div>Password mismatch</div>);
                 }
-                else if (this.validatePassword()) {
+
+                if (!this.props.isNewUser) {
+                    this.updateInfo().catch(err => {
+                        toast.error(<div>
+                            <div>Reason: {err.message}</div>
+                            <div>Please contact us</div>
+                        </div>, {
+                            autoClose: false,
+                            closeOnClick: false
+                        });        
+                    }).finally(() => {
+                        this.setState({ isLoading: false })
+                    });
+                }
+                else {
                     this.doRegister();
                 }
             }}>
@@ -380,7 +418,7 @@ class New extends React.Component<NewProps, NewState> {
                         }}>Back</Button>
                     </Form.Group>
                     <Form.Group as={Col}>
-                        <Button className="btn-block on __btn-new-button" type="submit">Continue</Button>
+                        <Button className="btn-block on __btn-new-button" type="submit" disabled={this.state.isLoading}>Continue</Button>
                     </Form.Group>
                 </Form.Row>
             </Form>
