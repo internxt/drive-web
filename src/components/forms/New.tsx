@@ -60,12 +60,13 @@ class New extends React.Component<NewProps, NewState> {
             localStorage.setItem('xToken', hasTokenParam)
             history.replace(history.location.pathname)
         }
+
         this.state = {
             currentContainer: hasEmailParam && this.props.isNewUser ? CONTAINERS.ActivationContainer : CONTAINERS.RegisterContainer,
             register: {
                 name: '',
                 lastname: '',
-                email: hasEmailParam && !this.props.isNewUser ? this.props.match.params.email : '',
+                email: hasEmailParam ? this.props.match.params.email : '',
                 password: '',
                 confirmPassword: ''
             },
@@ -271,8 +272,12 @@ class New extends React.Component<NewProps, NewState> {
 
     }
 
-    resendEmail = (email: string) => {
-        fetch(`/api/user/resend/${email}`, {
+    resendEmail = async (email: string) => {
+        if (!this.validateEmail(email)) {
+            throw Error('No email address provided');
+        }
+        
+        return fetch(`/api/user/resend/${email}`, {
             method: 'GET'
         }).then(async res => {
             return { response: res, data: await res.json() };
@@ -280,7 +285,7 @@ class New extends React.Component<NewProps, NewState> {
             if (res.response.status !== 200) {
                 throw res.data;
             } else {
-                toast.warn(`Activation email sent to ${email}`);
+                toast.info(`Activation email sent to ${email}`);
             }
         }).catch(err => {
             toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
@@ -432,7 +437,9 @@ class New extends React.Component<NewProps, NewState> {
             <p className="privacy-disclaimer">Please check your email <b>{this.state.register.email}</b> and follow the instructions to activate your account so you can start using Internxt Drive.</p>
             <ul className="privacy-remainders" style={{ paddingTop: '20px' }}>By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy</ul>
             <button className="btn-block on" onClick={() => {
-                this.resendEmail(this.state.register.email);
+                this.resendEmail(this.state.register.email).catch(err => {
+                    toast.error(<div><div>Error sending email</div><div>Reason: {err.message}</div></div>);
+                });
             }}>Re-send activation email</button>
         </div>);
     }
