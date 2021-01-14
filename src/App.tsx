@@ -61,6 +61,20 @@ class App extends React.Component {
         <Switch>
           <Redirect from='//*' to='/*' />
           <Route exact path='/login' render={(props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+
+          <Route exact path='/activate/:email'
+            render={(props: any) => <New {...props}
+              isNewUser={true}
+              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+          <Route exact path='/appsumo/:email'
+            render={(props: any) => <New {...props}
+              isNewUser={false}
+              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+          <Route exact path='/new'
+            render={(props: any) => <New {...props}
+              isNewUser={true}
+              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/invite' render={(props) => <Referred {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
@@ -76,11 +90,11 @@ class App extends React.Component {
             isActivated={this.state.isActivated}
             handleKeySaved={this.handleKeySaved} />
           } />
-          <Route exact path='/new' render={(props: any) => <New {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
           <Route exact path='/remove' render={(props: any) => <Remove {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
-          <Route exact path='/activate/:email' render={(props: any) => <New {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
           <Route exact path='/:token([a-z0-9]{10})' render={(props) => <Share {...props} />} />
-          <Route exact path='/'><Redirect to="/login" /></Route>
+          <Route exact path='/'>
+            <Redirect to="/login" />
+          </Route>
           <Route component={NotFound} />
         </Switch>
 
