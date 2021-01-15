@@ -57,6 +57,8 @@ class New extends React.Component<NewProps, NewState> {
         const hasTokenParam = qs.token;
 
         if (hasTokenParam && typeof hasTokenParam === 'string') {
+            localStorage.removeItem('xToken');
+            localStorage.removeItem('xUser');
             localStorage.setItem('xToken', hasTokenParam)
             history.replace(history.location.pathname)
         }
