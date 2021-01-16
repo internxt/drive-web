@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { analytics } from "../../lib/analytics";
 import queryString, { ParsedQuery } from 'query-string'
+import Settings from "../../lib/settings";
 
 const bip39 = require('bip39')
 
@@ -97,9 +98,9 @@ class New extends React.Component<NewProps, NewState> {
         }
 
 
-        const xUser = JSON.parse(localStorage.getItem('xUser') || '{}');
-        const xToken = localStorage.getItem('xToken');
-        const mnemonic = localStorage.getItem('xMnemonic');
+        const xUser = Settings.getUser();
+        const xToken = Settings.get('xToken');
+        const mnemonic = Settings.get('xMnemonic');
         const haveInfo = (xUser && xToken && mnemonic);
 
         if (xUser.registerCompleted && (this.state.isAuthenticated === true || haveInfo)) {

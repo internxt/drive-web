@@ -11,6 +11,7 @@ import telegram from '../assets/Share-Icons/Telegram.svg';
 
 import { toast } from 'react-toastify';
 import copy from 'copy-to-clipboard';
+import Settings from '../lib/settings';
 
 
 class Referred extends React.Component {
@@ -31,7 +32,7 @@ class Referred extends React.Component {
     }
 
     componentDidMount() {
-        const user = JSON.parse(localStorage.getItem('xUser') || '{}');
+        const user = Settings.getUser();
         this.getCredit();
         this.setState({ textToCopy: `https://internxt.com/?ref=${user.uuid}` });
         this.setState({ copySuccess: 'Copy' });
@@ -122,7 +123,7 @@ class Referred extends React.Component {
     }
 
     render() {
-        const user = JSON.parse(localStorage.getItem('xUser') || '{}');
+        const user = Settings.getUser();
 
         return <div>
             <NavigationBar navbarItems={<h5>Referrals</h5>} showSettingsButton={true} />

@@ -11,6 +11,7 @@ import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { getHeaders } from '../../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Settings from "../../lib/settings";
 
 interface LoginProps {
   email?: string
@@ -58,8 +59,8 @@ class Login extends React.Component<LoginProps> {
     }
 
     // Check if recent login is passed and redirect user to Internxt Drive
-    const mnemonic = localStorage.getItem('xMnemonic');
-    const user = JSON.parse(localStorage.getItem('xUser') || '{}');
+    const mnemonic = Settings.get('xMnemonic');
+    const user = Settings.getUser();
 
     if (user && user.registerCompleted && mnemonic && this.props.handleKeySaved) {
       this.props.handleKeySaved(user)
@@ -71,7 +72,7 @@ class Login extends React.Component<LoginProps> {
 
   componentDidUpdate() {
     if (this.state.isAuthenticated && this.state.token && this.state.user) {
-      const mnemonic = localStorage.getItem('xMnemonic');
+      const mnemonic = Settings.get('xMnemonic');
       if (!this.state.registerCompleted) {
         history.push('/appsumo/' + this.state.email);
       }

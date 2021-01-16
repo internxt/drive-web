@@ -1,3 +1,5 @@
+import Settings from "./settings";
+
 const prettySize = require('prettysize');
 
 export const PATH_NAMES = {
@@ -10,7 +12,7 @@ export const PATH_NAMES = {
 }
 
 export function getUserData() {
-    return JSON.parse(localStorage.getItem('xUser') || "{}")
+    return Settings.getUser();
 }
 
 export function getUuid() {

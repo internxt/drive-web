@@ -1,3 +1,5 @@
+import Settings from "./settings"
+
 function getHeaders(withAuth: Boolean, withMnemonic: Boolean): Headers {
     const headers = new Headers()
     
@@ -6,11 +8,11 @@ function getHeaders(withAuth: Boolean, withMnemonic: Boolean): Headers {
     headers.append('internxt-client', 'x-cloud-web')
 
     if (withAuth) {
-        headers.append('Authorization', `Bearer ${localStorage.getItem("xToken")}`)
+        headers.append('Authorization', `Bearer ${Settings.get("xToken")}`)
     }
 
     if (withMnemonic) {
-        headers.append('internxt-mnemonic', `${localStorage.getItem("xMnemonic")}`)
+        headers.append('internxt-mnemonic', `${Settings.get("xMnemonic")}`)
     }
 
     return headers;
