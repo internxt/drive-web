@@ -19,7 +19,11 @@ import { getHeaders } from '../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-class Storage extends React.Component {
+interface StorageProps {
+    isAuthenticated: boolean
+}
+
+class Storage extends React.Component<StorageProps> {
     state = {
         page: null,
         max: 0,
@@ -99,11 +103,11 @@ class Storage extends React.Component {
 
                     <Row className="space-used-legend">
                         <Col xs={12} md={4} sm={6}>
-                            <Circle image="linear-gradient(59deg, #096dff, #00b1ff)" /> <span>Used storage space</span>
+                            <Circle color={'#fff'} image="linear-gradient(59deg, #096dff, #00b1ff)" /> <span>Used storage space</span>
                         </Col>
 
                         <Col xs={12} md={6} sm={6}>
-                            <Circle color="#e9ecef" /> <span>Unused storage space</span>
+                            <Circle color="#e9ecef" image="" /> <span>Unused storage space</span>
                         </Col>
                     </Row>
                 </InxtContainer>

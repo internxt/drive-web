@@ -31,6 +31,7 @@ interface NavigationBarProps {
     deleteItems?: any
     shareItem?: any
     uploadHandler?: any
+    showSettingsButton: boolean
 }
 
 interface NavigationBarState {
@@ -87,10 +88,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         fetch('/api/limit', {
             method: 'get',
             headers: getHeaders(true, false)
-        }
-        ).then(res => {
-            return res.json();
-        }).then(res2 => {
+        }).then(res => res.json()).then(res2 => {
             this.setState({ barLimit: res2.maxSpaceBytes })
         }).catch(err => {
             console.log('Error on fetch limit', err);
