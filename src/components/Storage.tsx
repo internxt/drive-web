@@ -18,6 +18,7 @@ import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
 import { getHeaders } from '../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AppSumoPlans from './AppSumoPlans';
 
 interface StorageProps {
     isAuthenticated: boolean
@@ -53,8 +54,7 @@ class Storage extends React.Component<StorageProps> {
         fetch('/api/limit', {
             method: 'get',
             headers: getHeaders(true, false)
-        }
-        ).then(res => {
+        }).then(res => {
             return res.json();
         }).then(res1 => {
 
@@ -63,9 +63,9 @@ class Storage extends React.Component<StorageProps> {
                 headers: getHeaders(true, false)
             }).then(res => res.json())
                 .then(res2 => {
-                    this.setState({ 
+                    this.setState({
                         max: res1.maxSpaceBytes,
-                        now: res2.total 
+                        now: res2.total
                     })
                 }).catch(err => {
                     console.log('Error getting /api/usage for storage bar', err);
@@ -92,6 +92,7 @@ class Storage extends React.Component<StorageProps> {
 
 
     render() {
+        const APPSUMO = false;
         return (
             <div className="settings">
                 <NavigationBar navbarItems={<h5>Storage</h5>} showSettingsButton={true} />
@@ -113,7 +114,11 @@ class Storage extends React.Component<StorageProps> {
                 </InxtContainer>
 
                 <InxtContainer>
-                    <StoragePlans currentPlan={this.state.max} />
+                    {
+                        APPSUMO
+                            ? <AppSumoPlans />
+                            : <StoragePlans currentPlan={this.state.max} />
+                    }
                 </InxtContainer>
 
                 <p className="deleteAccount" onClick={e => {
