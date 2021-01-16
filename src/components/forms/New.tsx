@@ -84,7 +84,7 @@ class New extends React.Component<NewProps, NewState> {
             if (isAndroid) {
                 window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
             } else if (isIOS) {
-                window.location.href = "https://itunes.apple.com/us/app/x-cloud-secure-file-storage/id1465869889";
+                window.location.href = "https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889";
             }
         }
 
