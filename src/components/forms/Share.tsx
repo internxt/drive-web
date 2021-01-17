@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { isMobile } from 'react-device-detect';
 
 interface ShareProps {
-    match: any
+    match?: any
 }
 
 class Share extends React.Component<ShareProps> {

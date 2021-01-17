@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface ActivationProps {
-  match: any
+  match?: any
 }
 
 interface ActivationState {

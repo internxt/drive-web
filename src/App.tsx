@@ -1,6 +1,6 @@
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
-
+import { Switch, Route, Redirect, Router } from 'react-router-dom';
+import history from './lib/history'
 import './App.scss';
 import Login from './components/forms/Login';
 import Remove from './components/forms/Remove';
@@ -17,7 +17,6 @@ import { ToastContainer } from 'react-toastify';
 import Checkout from './components/Checkout';
 import Referred from './components/Referred';
 import { analytics, PATH_NAMES } from './lib/analytics'
-
 
 class App extends React.Component {
   state = {
@@ -57,7 +56,7 @@ class App extends React.Component {
     }
 
     return (
-      <div>
+      <Router history={history}>
         <Switch>
           <Redirect from='//*' to='/*' />
           <Route exact path='/login' render={(props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
@@ -99,7 +98,7 @@ class App extends React.Component {
         </Switch>
 
         {toast}
-      </div>
+      </Router>
     )
   }
 }

@@ -52,7 +52,7 @@ class New extends React.Component<NewProps, NewState> {
     constructor(props: NewProps) {
         super(props);
 
-        const qs = queryString.parse(this.props.location.search);
+        const qs = queryString.parse(history.location.search);
 
         const hasEmailParam = this.props.match.params.email && this.validateEmail(this.props.match.params.email);
         const hasTokenParam = qs.token;
@@ -88,7 +88,7 @@ class New extends React.Component<NewProps, NewState> {
             }
         }
 
-        const parsedQueryParams: ParsedQuery<string> = queryString.parse(this.props.location.search);
+        const parsedQueryParams: ParsedQuery<string> = queryString.parse(history.location.search);
         const isEmailQuery = parsedQueryParams.email && this.validateEmail(parsedQueryParams.email.toString())
 
         if (isEmailQuery && parsedQueryParams.email !== this.state.register.email) {
@@ -398,7 +398,7 @@ class New extends React.Component<NewProps, NewState> {
                         </div>, {
                             autoClose: false,
                             closeOnClick: false
-                        });        
+                        });
                     }).finally(() => {
                         this.setState({ isLoading: false })
                     });

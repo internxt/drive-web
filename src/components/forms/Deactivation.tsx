@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Settings from "../../lib/settings";
 
 interface DeactivationProps {
-    match: any
+    match?: any
 }
 
 class Deactivation extends React.Component<DeactivationProps> {

@@ -9,7 +9,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import Settings from "../../lib/settings";
 
 interface RemoveProps {
-    match: any
+    match?: any
+    isAuthenticated: boolean
+    handleKeySaved: any
 }
 
 interface RemoveState {
