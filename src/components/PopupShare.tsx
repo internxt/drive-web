@@ -48,8 +48,6 @@ class PopupShare extends React.Component<PopupShareProps> {
                 if (res.status !== 200) { throw res }
                 return res.json()
             }).then((res: any) => {
-                // var link = `${process.env.REACT_APP_PROXY_URL}/${process.env.REACT_APP_API_URL}/api/storage/share/${res.token}`
-                // this.generateShortLink(link).then(resolve).catch(reject)
                 var link = `${window.location.origin}/${res.token}`;
                 resolve(link);
             }).catch((err: Response) => {
