@@ -8,6 +8,7 @@ import { encryptText, passToHash, decryptText, encryptTextWithKey } from '../../
 import history from '../../lib/history'
 import { getHeaders } from '../../lib/auth'
 import { getUserData } from '../../lib/analytics'
+import Settings from '../../lib/settings';
 
 interface ResetProps {
     match?: any
@@ -100,7 +101,7 @@ class Reset extends React.Component<ResetProps> {
             history.push('/login');
         }
 
-        var localStg = JSON.parse(localStorage.xUser);
+        var localStg = Settings.getUser();
 
         fetch("/api/login", {
             method: "post",

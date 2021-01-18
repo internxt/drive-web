@@ -17,6 +17,7 @@ import { ToastContainer } from 'react-toastify';
 import Checkout from './components/Checkout';
 import Referred from './components/Referred';
 import { analytics, PATH_NAMES } from './lib/analytics'
+import Settings from './lib/settings';
 
 class App extends React.Component {
   state = {
@@ -27,7 +28,7 @@ class App extends React.Component {
   }
   // Method for set user in props.user and localStorage
   handleKeySaved = (user: JSON) => {
-    localStorage.setItem('xUser', JSON.stringify(user));
+    Settings.set('xUser', JSON.stringify(user));
     this.setState({ isAuthenticated: true, user: user });
   }
 

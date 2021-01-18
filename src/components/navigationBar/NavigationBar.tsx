@@ -110,7 +110,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     render() {
         let user: any = null;
         try {
-            user = JSON.parse(localStorage.xUser || '{}');
+            user = Settings.getUser();
             if (user == null) {
                 throw new Error();
             }

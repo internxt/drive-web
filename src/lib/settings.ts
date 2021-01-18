@@ -11,6 +11,10 @@ export default class Settings {
     return JSON.parse(localStorage.getItem('xUser') || '{}');
   }
 
+  static del(key: string) {
+    return localStorage.removeItem(key);
+  }
+
   static clear() {
     localStorage.removeItem('xUser');
     localStorage.removeItem('xMnemonic');

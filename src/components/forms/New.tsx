@@ -58,9 +58,8 @@ class New extends React.Component<NewProps, NewState> {
         const hasTokenParam = qs.token;
 
         if (hasTokenParam && typeof hasTokenParam === 'string') {
-            localStorage.removeItem('xToken');
-            localStorage.removeItem('xUser');
-            localStorage.setItem('xToken', hasTokenParam)
+            Settings.clear();
+            Settings.set('xToken', hasTokenParam)
             history.replace(history.location.pathname)
         }
 
@@ -184,7 +183,7 @@ class New extends React.Component<NewProps, NewState> {
                 response.json().then((body) => {
                     // Manage succesfull register
                     const { token, user, uuid } = body;
-                    localStorage.setItem('xToken', token);
+                    Settings.set('xToken', token);
 
                     analytics.identify(uuid, { email: this.state.register.email, member_tier: 'free' });
                     window.analytics.track('user-signup', {
@@ -267,9 +266,7 @@ class New extends React.Component<NewProps, NewState> {
                 return body;
             }
         }).then(res => {
-            console.log('REMOVE')
-            localStorage.removeItem('xToken');
-            localStorage.removeItem('xUser');
+            Settings.clear();
             history.push('/login');
         });
 
