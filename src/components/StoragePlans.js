@@ -122,7 +122,7 @@ class StoragePlans extends React.Component {
                 <p className="title1">Storage Plans</p>
 
                 {this.state.productsLoading === true ? <div style={{ textAlign: 'center' }}>
-                    <Spinner animation="border" size="sm" />
+                    <Spinner animation="border" size="sm" style={{ fontSize: 1 }} />
                 </div> : ''}
                 {this.state.productsLoading === 'error' ? 'There was an error loading the available plans: The server was unreachable. Please check your network connection and reload.' : ''}
 

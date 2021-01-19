@@ -4,7 +4,7 @@ export default class Settings {
   }
 
   static set(key: string, value: string) {
-    return localStorage.setItem('key', value);
+    return localStorage.setItem(key, value);
   }
 
   static getUser() {

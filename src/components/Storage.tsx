@@ -10,7 +10,7 @@ import StoragePlans from './StoragePlans'
 import PrettySize from 'prettysize'
 
 import Circle from './Circle'
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Spinner } from 'react-bootstrap';
 import Popup from 'reactjs-popup';
 
 import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
@@ -30,7 +30,35 @@ class Storage extends React.Component<StorageProps> {
         max: 0,
         now: 0,
 
-        modalDeleteAccountShow: false
+        modalDeleteAccountShow: false,
+        isAppSumo: false,
+        appSumoDetails: null,
+        isLoading: true
+    }
+
+    determineAppSumo() {
+        return fetch('/api/appsumo/details', {
+            method: 'get',
+            headers: getHeaders(true, false)
+        }).then((res) => {
+            if (res.status === 200) {
+                return res.json();
+            }
+
+            throw Error('Cannot load AppSumo')
+        }).then((details) => {
+            console.log(details)
+            this.setState({
+                isAppSumo: true,
+                appSumoDetails: details
+            })
+        }).catch(err => {
+            console.log(err)
+        }).finally(() => {
+            this.setState({
+                isLoading: false
+            })
+        })
     }
 
     componentDidMount() {
@@ -38,6 +66,7 @@ class Storage extends React.Component<StorageProps> {
         if (!localStorage.xUser) {
             history.push('/login');
         } else {
+            this.determineAppSumo();
             this.usageLoader();
         }
     }
@@ -80,8 +109,7 @@ class Storage extends React.Component<StorageProps> {
         fetch('/api/deactivate', {
             method: 'GET',
             headers: getHeaders(true, false)
-        })
-            .then(res => res.json())
+        }).then(res => res.json())
             .then(res => {
                 this.setState({ modalDeleteAccountShow: false });
             }).catch(err => {
@@ -92,7 +120,6 @@ class Storage extends React.Component<StorageProps> {
 
 
     render() {
-        const APPSUMO = false;
         return (
             <div className="settings">
                 <NavigationBar navbarItems={<h5>Storage</h5>} showSettingsButton={true} />
@@ -115,9 +142,12 @@ class Storage extends React.Component<StorageProps> {
 
                 <InxtContainer>
                     {
-                        APPSUMO
-                            ? <AppSumoPlans />
-                            : <StoragePlans currentPlan={this.state.max} />
+                        this.state.isLoading ? <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <Spinner animation="border" style={{ fontSize: 1 }} />
+                        </div> :
+                            this.state.isAppSumo
+                                ? <AppSumoPlans details={this.state.appSumoDetails} />
+                                : <StoragePlans currentPlan={this.state.max} />
                     }
                 </InxtContainer>
 
