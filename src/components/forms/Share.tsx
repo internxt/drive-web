@@ -70,7 +70,11 @@ class Share extends React.Component<ShareProps> {
     }
 
     IsSendingToBrowser () {
-        toast.info('Downloading file!', this.toastOptions);
+        toast.info('Downloading file!', {
+            position: "bottom-right",
+            autoClose: false,
+            draggable: false
+        });
         this.setState({ 
             ...this.state,
             steps: { ...this.state.steps, sendingToBrowser: true }
@@ -106,26 +110,11 @@ class Share extends React.Component<ShareProps> {
         socket.on(`get-file-share-${token}-fileName`, (fileName) => this.setFileName(fileName));
         socket.on(`get-file-share-${token}-error`, (err) => this.handleSocketError(err));
 
-
-        // socket.on(`get-file-share-${token}-length`, (fileLength) => {
-        //     this.setState({ fileLength });
-        // });
-
-        // socket.on(`get-file-share-${token}-fileName`, (fileName) => {
-        //     this.setState({ fileName });
-        // });
-
         socket.on(`get-file-share-${token}-stream`, (chunk:ArrayBuffer) => {
-            console.log((chunk.byteLength / this.state.fileLength));
-            // progress = this.state.progress + ((chunk.byteLength / this.state.fileLength) * 100);
             this.increaseProgress(((chunk.byteLength / this.state.fileLength) * 100));
-            // if(!this.state.steps.sendingToBrowser) {
-            //     this.setState({ 
-            //         ...this.state,
-            //         steps: { ...this.state.steps, sendingToBrowser: true }
-            //     });
-            // } 
+
             if(!this.state.steps.sendingToBrowser) {
+                // prevent event to fire twice before react changes state.steps.sendingToBrowser to true.
                 this.IsSendingToBrowser();
             }
 
@@ -142,14 +131,6 @@ class Share extends React.Component<ShareProps> {
             
         });
     }
-
-    // showStatus () {
-    //     if(this.state.steps.downloadingFromNet) {
-    //         return "Securely retrieving files";
-    //     } else if (this.state.steps.sendingToBrowser) {
-    //         return `Downloading ${(this.state.progress).toFixed(2) + '%'}`
-    //     }
-    // }
 
     render() {
         return "";
