@@ -9,8 +9,11 @@ interface HeaderButtonProps {
 
 const HeaderButton = (props: HeaderButtonProps) => {
     return (
-        <div className="HeaderButton" onClick={props.clickHandler}>
-            <img src={props.icon} alt={props.name} />
+        <div className="HeaderButton" onClick={props.clickHandler} style={{
+            backgroundImage: `url(${props.icon})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center'
+        }}>
         </div>
     )
 }
