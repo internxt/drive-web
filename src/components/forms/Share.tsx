@@ -89,7 +89,11 @@ class Share extends React.Component<ShareProps> {
     }
 
     handleSocketError (err) {
-        console.log(err);
+        toast.warn(err, {
+            position: "bottom-right",
+            autoClose: false,
+            draggable: false
+        });
     }
 
     download() {
