@@ -2,7 +2,9 @@ import * as React from "react";
 import fileDownload from 'js-file-download';
 import { toast, ToastOptions } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import "./Share.scss";
 import { isMobile } from 'react-device-detect';
+import { socket } from "../../lib/socket";
 
 interface ShareProps {
     match?: any
@@ -20,7 +22,14 @@ class Share extends React.Component<ShareProps> {
 
     state = {
         token: this.props.match.params.token,
-        fileName: ''
+        fileName: '',
+        progress: 0,
+        fileLength: 0,
+        steps: {
+            downloadingFromNet: true,
+            sendingToBrowser: false,
+            finished: false
+        },
     }
 
     IsValidToken = (token: string) => {
@@ -47,45 +56,80 @@ class Share extends React.Component<ShareProps> {
         }
     }
 
-    download() {
-        const toastId = toast.info('Securely downloading file...', {
+    setFileLength (fileLength) {
+        this.setState({ ...this.state, fileLength });
+    }
+
+    setFileName (fileName) {
+        this.setState({ ...this.state, fileName });
+    }
+
+    increaseProgress (increase) {
+        const progress = this.state.progress + increase;
+        this.setState({ ...this.state, progress });
+    }
+
+    IsSendingToBrowser () {
+        toast.info('Downloading file!', {
             position: "bottom-right",
             autoClose: false,
             draggable: false
         });
-    
-        fetch(`/api/storage/share/${this.state.token}`)
-            .then((resp: Response) => {
-                if (resp.status !== 200) { throw resp }
+        this.setState({ 
+            ...this.state,
+            steps: { ...this.state.steps, sendingToBrowser: true }
+        });
+    }
 
-                var fileName = resp.headers.get('x-file-name');
-                if (fileName) {
-                    if (this.isBase64(fileName)) {
-                        fileName = Buffer.from(fileName, 'base64').toString('utf8')
-                    }
+    downloadIsFinished () {
+        this.setState({ 
+            ...this.state,
+            steps: { ...this.state.steps, finished: true }
+        });
+    }
 
-                    this.setState({
-                        fileName: fileName
-                    });
-                    return resp.blob();
-                } else {
-                    throw resp;
-                }
-            })
-            .then((blob: Blob) => {
-                fileDownload(blob, this.state.fileName);
-                toast.info('File has been downloaded!', this.toastOptions);
-                toast.dismiss(toastId);
-            })
-            .catch((err: Response) => {
-                if (err.status === 500) {
-                    toast.warn('Unavailable token', this.toastOptions);
-                } else {
-                    toast.warn('Error downloading file', this.toastOptions);
-                }
+    handleSocketError (err) {
+        console.log(err);
+    }
 
-                toast.dismiss(toastId);
-            });
+    download() {
+        let slices: ArrayBuffer [] = []; 
+        // let progress: number;
+
+        toast.info('Securely retrieving file ...', {
+            position: "bottom-right",
+            autoClose: false,
+            draggable: false
+        });
+
+        const token = this.state.token;
+
+        socket.emit('get-file-share', { token });
+
+        socket.on(`get-file-share-${token}-length`, (fileLength) => this.setFileLength(fileLength));
+        socket.on(`get-file-share-${token}-fileName`, (fileName) => this.setFileName(fileName));
+        socket.on(`get-file-share-${token}-error`, (err) => this.handleSocketError(err));
+
+        socket.on(`get-file-share-${token}-stream`, (chunk:ArrayBuffer) => {
+            this.increaseProgress(((chunk.byteLength / this.state.fileLength) * 100));
+
+            if(!this.state.steps.sendingToBrowser) {
+                // prevent event to fire twice before react changes state.steps.sendingToBrowser to true.
+                this.IsSendingToBrowser();
+            }
+
+            slices.push(chunk);
+        });
+
+        socket.on(`get-file-share-${token}-finished`, () => {
+            const fileBlob = new Blob(slices);
+            console.log('finished');
+            if(!this.state.steps.finished) {
+                this.downloadIsFinished();
+                fileDownload(fileBlob, this.state.fileName);
+            }
+            
+        });
     }
 
     render() {

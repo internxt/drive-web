@@ -35,6 +35,7 @@
     "react-toastify": "^6.2.0",
     "reactjs-popup": "^2.0.4",
     "sanitize-filename": "^1.6.3",
+    "socket.io-client": "^3.1.0",
     "typescript": "^4.0.3",
     "web-vitals": "^0.2.4"
   },
@@ -71,11 +72,12 @@
     "@testing-library/dom": "^7.26.0",
     "@types/analytics-node": "^3.1.3",
     "@types/react-router-dom": "^5.1.7",
+    "@types/socket.io-client": "^1.4.35",
     "prop-types": "^15.7.2",
     "sass": "^1.32.4",
     "stylelint": "^13.4.0",
     "stylelint-config-standard": "^20.0.0",
     "stylelint-scss": "^3.17.2"
   },
-  "proxy": "http://localhost:3007"
+  "proxy": "http://localhost:8000"
 }
