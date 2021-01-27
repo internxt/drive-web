@@ -132,7 +132,7 @@ class Share extends React.Component<ShareProps> {
                 this.downloadIsFinished();
                 fileDownload(fileBlob, this.state.fileName);
             }
-            
+            socket.close();
         });
     }
 
