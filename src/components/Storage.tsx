@@ -19,6 +19,7 @@ import { getHeaders } from '../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AppSumoPlans from './AppSumoPlans';
+import customPrettySize from '../lib/sizer';
 
 interface StorageProps {
     isAuthenticated: boolean
@@ -126,7 +127,7 @@ class Storage extends React.Component<StorageProps> {
                 <InxtContainer>
                     <p className="title">Storage Used</p>
 
-                    <p className="space-used-text">Used <b>{PrettySize(this.state.now, true, false)}</b> of <b>{PrettySize(this.state.max, true, false)}</b></p>
+                    <p className="space-used-text">Used <b>{customPrettySize(this.state.now)}</b> of <b>{customPrettySize(this.state.max)}</b></p>
                     <StorageProgressBar max={this.state.max} now={this.state.now} />
 
                     <Row className="space-used-legend">

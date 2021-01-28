@@ -10,7 +10,6 @@ import uploadFileIcon from '../../assets/Dashboard-Icons/Upload.svg';
 import newFolder from '../../assets/Dashboard-Icons/Add-folder.svg';
 import deleteFile from '../../assets/Dashboard-Icons/Delete.svg';
 import share from '../../assets/Dashboard-Icons/Share.svg';
-import PrettySize from 'prettysize';
 
 import HeaderButton from './HeaderButton';
 
@@ -21,6 +20,7 @@ import history from '../../lib/history';
 
 import { getHeaders } from '../../lib/auth'
 import Settings from '../../lib/settings';
+import customPrettySize from '../../lib/sizer';
 
 interface NavigationBarProps {
     navbarItems: JSX.Element
@@ -134,7 +134,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                             <div className="dropdown-menu-group info">
                                 <p className="name-lastname">{user.name} {user.lastname}</p>
                                 <ProgressBar className="mini-progress-bar" now={this.state.barUsage} max={this.state.barLimit} />
-                                <p className="space-used">Used <strong>{PrettySize(this.state.barUsage)}</strong> of <strong>{PrettySize(this.state.barLimit)}</strong></p>
+                                <p className="space-used">Used <strong>{customPrettySize(this.state.barUsage)}</strong> of <strong>{customPrettySize(this.state.barLimit)}</strong></p>
                             </div>
                             <Dropdown.Divider />
                             <div className="dropdown-menu-group">
