@@ -666,7 +666,7 @@ class XCloud extends React.Component {
               __currentCommanderItems.splice(index, 1);
               this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
             }).finally(() => {
-              this.getFolderContent(this.state.currentFolderId)
+              this.getFolderContent(this.state.currentFolderId, false, false)
             });
         },
         (err, results) => {
@@ -676,7 +676,7 @@ class XCloud extends React.Component {
             toast.warn(`"${err}"`);
           } else if (parentFolderId === currentFolderId) {
             resolve();
-            this.getFolderContent(currentFolderId);
+            this.getFolderContent(currentFolderId, false, false);
           } else {
             resolve();
           }

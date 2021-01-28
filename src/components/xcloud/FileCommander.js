@@ -230,7 +230,7 @@ class FileCommander extends React.Component {
           toast.warn(`"${errmsg}"`);
         }
 
-        this.props.getFolderContent(this.props.currentFolderId);
+        this.props.getFolderContent(this.props.currentFolderId, false, false);
       },
     );
 
