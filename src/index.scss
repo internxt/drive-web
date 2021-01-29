@@ -16,12 +16,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-body,
-html,
-#root,
-#root > div {
+html {
   margin: 0;
   padding: 0;
+  height: 100%;
+}
+
+body {
+ height: 100%;
+}
+
+#root {
   height: 100%;
 }
 

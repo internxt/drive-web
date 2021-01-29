@@ -1,0 +1,15 @@
+.loading-file-explorer {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .MuiLinearProgress-root {
+    border-radius: 20px;
+    width: 300px;
+    background-color: #f0f0f0;
+    .MuiLinearProgress-bar {
+      background-color: #4585f5;
+    }
+  }
+}

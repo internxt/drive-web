@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { compare } from 'natural-orderby'
+import LoadingFileExplorer from './LoadingFileExplorer';
 
 const SORT_TYPES = {
   DATE_ADDED: 'Date_Added',
@@ -229,7 +230,7 @@ class FileCommander extends React.Component {
           toast.warn(`"${errmsg}"`);
         }
 
-        this.props.getFolderContent(this.props.currentFolderId);
+        this.props.getFolderContent(this.props.currentFolderId, false, false);
       },
     );
 
@@ -415,7 +416,7 @@ class FileCommander extends React.Component {
           onDragLeave={this.handleDragLeave}
           onDrop={this.handleDrop}
         >
-          {list.length > 0 ? (
+          {this.props.isLoading ? <LoadingFileExplorer /> : list.length > 0 ? (
             list.map((item, i) => {
               return (
                 <FileCommanderItem

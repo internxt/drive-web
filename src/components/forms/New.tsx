@@ -208,6 +208,8 @@ class New extends React.Component<NewProps, NewState> {
                         user,
                         currentContainer: CONTAINERS.ActivationContainer
                     });
+
+                    history.push('/login');
                 });
 
             } else {
@@ -450,7 +452,9 @@ class New extends React.Component<NewProps, NewState> {
                 {this.state.currentContainer === CONTAINERS.RegisterContainer ? this.registerContainer() : ''}
                 {this.state.currentContainer === CONTAINERS.PrivacyTermsContainer ? this.privacyContainer() : ''}
                 {this.state.currentContainer === CONTAINERS.PasswordContainer ? this.passwordContainer() : ''}
-                {this.state.currentContainer === CONTAINERS.ActivationContainer ? this.activationContainer() : ''}
+            </Container>
+            <Container className="login-container-box-forgot-password">
+                <p className="forgotPassword"></p>
             </Container>
         </div>
         );

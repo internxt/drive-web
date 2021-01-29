@@ -222,7 +222,7 @@ class Security extends React.Component {
             })
         }).then(res => {
             if (res.status === 200) {
-                toast.warn('Your Two-Factor Authentication has been activated!');
+                toast.info('Your Two-Factor Authentication has been activated!');
                 this.setState({ showButtons: false });
                 this.componentDidMount();
             } else {

@@ -41,12 +41,18 @@
   width: 35px;
   height: 35px;
   border-radius: 4.2px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
 
   .Extension {
     font-size: 8px;
     font-weight: bolder;
     color: #2e7bff;
-    line-height: 50px;
+    line-height: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

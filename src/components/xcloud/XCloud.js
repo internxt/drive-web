@@ -44,6 +44,7 @@ class XCloud extends React.Component {
     searchFunction: null,
     popupShareOpened: false,
     showDeleteItemsPopup: false,
+    isLoading: true
   };
 
   moveEvent = {};
@@ -72,7 +73,7 @@ class XCloud extends React.Component {
   setSortFunction = (newSortFunc) => {
     // Set new sort function on state and call getFolderContent for refresh files list
     this.setState({ sortFunction: newSortFunc });
-    this.getFolderContent(this.state.currentFolderId);
+    this.getFolderContent(this.state.currentFolderId, false, false);
   };
 
   setSearchFunction = (e) => {
@@ -222,7 +223,9 @@ class XCloud extends React.Component {
     });
   };
 
-  getFolderContent = async (rootId, updateNamePath = true) => {
+  getFolderContent = async (rootId, updateNamePath = true, showLoading = true) => {
+
+    await new Promise((resolve) => this.setState({ isLoading: showLoading }, () => resolve()));
 
     let welcomeFile = await fetch('/api/welcome', {
       method: 'get',
@@ -231,7 +234,7 @@ class XCloud extends React.Component {
       .then(body => body.file_exists)
       .catch(() => false)
 
-    fetch(`/api/storage/folder/${rootId}`, {
+    return fetch(`/api/storage/folder/${rootId}`, {
       method: 'get',
       headers: getHeaders(true, true),
     })
@@ -294,6 +297,7 @@ class XCloud extends React.Component {
           currentCommanderItems: _.concat(newCommanderFolders, newCommanderFiles),
           currentFolderId: data.id,
           currentFolderBucket: data.bucket,
+          isLoading: false
         });
 
         if (updateNamePath) {
@@ -662,7 +666,7 @@ class XCloud extends React.Component {
               __currentCommanderItems.splice(index, 1);
               this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
             }).finally(() => {
-              this.getFolderContent(this.state.currentFolderId)
+              this.getFolderContent(this.state.currentFolderId, false, false)
             });
         },
         (err, results) => {
@@ -672,7 +676,7 @@ class XCloud extends React.Component {
             toast.warn(`"${err}"`);
           } else if (parentFolderId === currentFolderId) {
             resolve();
-            this.getFolderContent(currentFolderId);
+            this.getFolderContent(currentFolderId, false, false);
           } else {
             resolve();
           }
@@ -835,6 +839,7 @@ class XCloud extends React.Component {
             updateMeta={this.updateMeta}
             currentFolderId={this.state.currentFolderId}
             getFolderContent={this.getFolderContent}
+            isLoading={this.state.isLoading}
           />
 
           {this.getSelectedItems().length > 0 && this.state.popupShareOpened ? (
@@ -845,9 +850,7 @@ class XCloud extends React.Component {
                 this.setState({ popupShareOpened: false });
               }}
             />
-          ) : (
-              ''
-            )}
+          ) : ''}
 
           <Popup
             open={this.state.showDeleteItemsPopup}
