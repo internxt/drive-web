@@ -108,7 +108,7 @@ class XCloud extends React.Component {
           email: getUserData().email,
           platform: 'web'
         })
-        this.getFolderContent(this.state.currentFolderId, false);
+        this.getFolderContent(this.state.currentFolderId, false, false);
       }).catch((err) => {
         if (err.includes('already exists')) {
           toast.warn('Folder with same name already exists');
@@ -736,7 +736,7 @@ class XCloud extends React.Component {
       if (err) {
         throw err;
       } else {
-        this.getFolderContent(this.state.currentFolderId, false);
+        this.getFolderContent(this.state.currentFolderId, false, false);
       }
     });
   };
