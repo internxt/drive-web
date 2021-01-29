@@ -453,6 +453,9 @@ class New extends React.Component<NewProps, NewState> {
                 {this.state.currentContainer === CONTAINERS.PrivacyTermsContainer ? this.privacyContainer() : ''}
                 {this.state.currentContainer === CONTAINERS.PasswordContainer ? this.passwordContainer() : ''}
             </Container>
+            <Container className="login-container-box-forgot-password">
+                <p className="forgotPassword"></p>
+            </Container>
         </div>
         );
     }

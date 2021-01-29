@@ -1,5 +1,12 @@
+.login-main {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .login-container-box {
-  margin: 7% auto auto auto;
   background-color: white;
   width: 472px !important;
   border: solid 1px #eaeced;
@@ -13,13 +20,11 @@
 }
 
 .login-container-box-forgot-password {
-  margin: 0% auto auto auto;
-  background-color: white;
   width: 550px !important;
   padding: 40px !important;
 
   > p {
-    margin: -30px auto -30px auto;
+    margin: -30px auto;
     font-size: 15px;
   }
 }
