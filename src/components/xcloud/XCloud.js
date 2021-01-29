@@ -86,7 +86,7 @@ class XCloud extends React.Component {
       };
     }
     this.setState({ searchFunction: func });
-    this.getFolderContent(this.state.currentFolderId);
+    this.getFolderContent(this.state.currentFolderId, false, false);
   };
 
   createFolder = () => {

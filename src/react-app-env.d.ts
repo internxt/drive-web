@@ -11,6 +11,7 @@ declare namespace NodeJS {
         REACT_APP_API_URL: string
         REACT_APP_SEGMENT_KEY: string
         REACT_APP_SEGMENT_DEBUG: string
+        REACT_APP_RECAPTCHA_V3: string
     }
 }
 
