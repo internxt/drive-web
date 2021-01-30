@@ -80,7 +80,7 @@
   display: flex;
   margin: 0 0 0;
 
-  .ShareLink {
+  >div:first-of-type {
     width: 100%;
     border-right: solid 1px #ededed;
     padding: 19px 0 4px 28px;
@@ -91,15 +91,32 @@
   .ShareCopy {
     float: right;
     margin: 13px 5px 0 0;
+    position: relative;
+    width: 105px;
 
     a {
-      background-color: transparent;
       width: auto;
-      height: auto;
-      margin: auto;
+      background-color: transparent;
       border: solid 0;
       font-family: inherit;
-      color: #4b66ff !important;
+      color: #4b66ff !important;  
+      position: absolute;
+      text-decoration: none;
     }
+
+    .copy-effect {
+      animation-duration: 1s;
+      animation-name: fadeOutTop;
+    }
+  }
+}
+
+@keyframes fadeOutTop {
+  from {
+    opacity: 1
+  }
+  to {
+      opacity: 0;
+      transform: translateY(-70%);
   }
 }

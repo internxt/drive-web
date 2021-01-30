@@ -2,6 +2,7 @@ import React from 'react'
 import Popup from 'reactjs-popup';
 import './PopupShare.scss'
 import history from '../lib/history'
+import ClickToSelect from '@mapbox/react-click-to-select'
 
 import CloseIcon from '../assets/Dashboard-Icons/close-tab.svg'
 import FolderBlueIcon from '../assets/Folders/Folder-Blue.svg'
@@ -22,7 +23,8 @@ interface PopupShareProps {
 class PopupShare extends React.Component<PopupShareProps> {
     state = {
         link: null,
-        views: 1
+        views: 1,
+        animationCss: ''
     }
 
     generateShortLink = (url: string) => {
@@ -137,12 +139,20 @@ class PopupShare extends React.Component<PopupShareProps> {
                 </div>
 
                 <div className="ShareFooter">
-                    <div className="ShareLink">{this.state.link == null ? <p>Loading...</p> : <p>{this.state.link}</p>}</div>
-                    <div className="ShareCopy"><a href="# " onClick={(e) => {
-                        if (this.state.link) {
-                            copy('Hello,\nHow are things going? I’m using Internxt Drive, a secure, simple, private and eco-friendly cloud storage service https://internxt.com/drive\nI wanted to share a file with you through this direct secure link: ' + this.state.link + '')
-                        }
-                    }}>Copy</a></div>
+                    <ClickToSelect containerElement="div">
+                        <p>{this.state.link == null ? 'Loading...' : this.state.link}</p>
+                    </ClickToSelect>
+                    <div className="ShareCopy">
+                        <a href="# " className={this.state.animationCss} style={{ opacity: this.state.animationCss === '' ? 0 : 1 }} >Copy</a>
+                        <a href="# " onClick={(e: any) => {
+                            this.setState({ animationCss: 'copy-effect' }, () => {
+                                setTimeout(() => { this.setState({ animationCss: '' }) }, 1000)
+                            })
+                            if (this.state.link) {
+                                copy('Hello,\nHow are things going? I’m using Internxt Drive, a secure, simple, private and eco-friendly cloud storage service https://internxt.com/drive\nI wanted to share a file with you through this direct secure link: ' + this.state.link + '')
+                            }
+                        }}>Copy</a>
+                    </div>
                 </div>
             </div>
         </Popup>
