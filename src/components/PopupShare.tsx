@@ -65,6 +65,9 @@ class PopupShare extends React.Component<PopupShareProps> {
 
     timeout: NodeJS.Timeout = setTimeout(() => { }, 0);
     handleChange(e) {
+        if (this.state.link) {
+            this.setState({ link: null })
+        }
         const views = e.currentTarget.value
         clearTimeout(this.timeout)
         this.timeout = setTimeout(() => {
