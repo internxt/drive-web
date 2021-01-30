@@ -251,7 +251,6 @@ class Login extends React.Component<LoginProps> {
       return (<div className="login-main">
         <Container className="login-container-box">
           <div className="container-register">
-            <p className="logo"><img src={logo} alt="Logo" /></p>
             <p className="container-title">Sign in to Internxt</p>
             <div className="menu-box">
               <button className="on">Sign in</button>
@@ -300,7 +299,6 @@ class Login extends React.Component<LoginProps> {
       return (<div className="login-main">
         <Container className="login-container-box">
           <div className="container-register">
-            <p className="logo"><img src={logo} alt="Logo" /></p>
             <p className="container-title">Security Verification</p>
             <p className="privacy-disclaimer">Enter your 6 digit authenticator code below</p>
             <Form className="form-register container-register two-factor" onSubmit={(e: any) => {
