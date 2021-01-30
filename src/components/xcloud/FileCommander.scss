@@ -2,6 +2,7 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 #FileCommander-info {
@@ -45,6 +46,7 @@
 
 // NO TOCAR, Si quieres modificar los estilos de los iconos, ve a FileCommanderItem.scss
 #FileCommander-items {
+  height: 100%;
   &.mosaico {
     margin-top: 13px;
     padding: 0 38px;

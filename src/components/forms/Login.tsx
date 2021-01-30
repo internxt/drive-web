@@ -3,7 +3,6 @@ import { Button, Form, Col, Container, Spinner } from "react-bootstrap";
 
 import history from '../../lib/history';
 import "./Login.scss";
-import logo from '../../assets/drive-logo.svg';
 import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../lib/utils';
 
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
