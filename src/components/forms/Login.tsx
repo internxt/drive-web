@@ -12,28 +12,13 @@ import { getHeaders } from '../../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Settings from "../../lib/settings";
+import { initializeUser } from "../../services/auth.service";
 
 interface LoginProps {
   email?: string
   password?: string
   handleKeySaved?: (user: any) => void
   isAuthenticated: Boolean
-}
-
-async function initializeUser(email: string, mnemonic: string, token: string) {
-  return fetch(`/api/initialize`, {
-    method: 'POST',
-    headers: getHeaders(true, true),
-    body: JSON.stringify({
-      email: email,
-      mnemonic: mnemonic
-    })
-  }).then(res => {
-    if (res.status !== 200) {
-      throw Error(res.statusText)
-    }
-    return res.json()
-  })
 }
 
 class Login extends React.Component<LoginProps> {
@@ -190,7 +175,7 @@ class Login extends React.Component<LoginProps> {
           }).then(data => {
             data.user.mnemonic = decryptTextWithKey(data.user.mnemonic, this.state.password)
             if (!data.user.root_folder_id) {
-              return initializeUser(this.state.email, data.user.mnemonic, data.token).then((res) => {
+              return initializeUser(this.state.email, data.user.mnemonic).then((res) => {
                 data.user.root_folder_id = res.user.root_folder_id
                 return data
               })

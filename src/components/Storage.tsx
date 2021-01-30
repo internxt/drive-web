@@ -7,7 +7,6 @@ import InxtContainer from './InxtContainer'
 import './Plans.css'
 import StorageProgressBar from './StorageProgressBar';
 import StoragePlans from './StoragePlans'
-import PrettySize from 'prettysize'
 
 import Circle from './Circle'
 import { Row, Col, Spinner } from 'react-bootstrap';

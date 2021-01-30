@@ -4,7 +4,7 @@ import { Container, Form, Col, Button } from "react-bootstrap";
 import logo from '../../assets/drive-logo.svg';
 import history from '../../lib/history';
 
-import { encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
+import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 import { getHeaders } from '../../lib/auth'
 import { toast } from 'react-toastify';
@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { analytics } from "../../lib/analytics";
 import queryString, { ParsedQuery } from 'query-string'
 import Settings from "../../lib/settings";
+import { initializeUser } from "../../services/auth.service";
 
 const bip39 = require('bip39')
 
@@ -183,7 +184,6 @@ class New extends React.Component<NewProps, NewState> {
                 response.json().then((body) => {
                     // Manage succesfull register
                     const { token, user, uuid } = body;
-                    Settings.set('xToken', token);
 
                     analytics.identify(uuid, { email: this.state.register.email, member_tier: 'free' });
                     window.analytics.track('user-signup', {
@@ -193,23 +193,16 @@ class New extends React.Component<NewProps, NewState> {
                         }
                     })
 
-                    // Clear form fields
-                    this.setState({
-                        register: {
-                            name: '',
-                            lastname: '',
-                            email: this.state.register.email,
-                            password: '',
-                            confirmPassword: '',
-                        },
-                        validated: false,
-                        showModal: true,
-                        token,
-                        user,
-                        currentContainer: CONTAINERS.ActivationContainer
-                    });
+                    Settings.set('xToken', token);
+                    user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.register.password);
+                    Settings.set('xUser', JSON.stringify(user))
+                    Settings.set('xMnemonic', user.mnemonic)
 
-                    history.push('/login');
+                    initializeUser(this.state.register.email, user.mnemonic).then((rootFolderInfo) => {
+                        user.root_folder_id = rootFolderInfo.user.root_folder_id;
+                        Settings.set('xUser', JSON.stringify(user));
+                        history.push('/login');
+                    });
                 });
 
             } else {
@@ -278,7 +271,7 @@ class New extends React.Component<NewProps, NewState> {
         if (!this.validateEmail(email)) {
             throw Error('No email address provided');
         }
-        
+
         return fetch(`/api/user/resend/${email}`, {
             method: 'GET'
         }).then(async res => {
