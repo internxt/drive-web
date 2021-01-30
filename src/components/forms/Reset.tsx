@@ -38,8 +38,11 @@ class Reset extends React.Component<ResetProps> {
         return !(!localStorage.xToken);
     }
 
-    handleChangePassword = (e: any) => {
+    handleChangePassword = async (e: any) => {
+
         e.preventDefault();
+
+        await this.getSalt();
 
         if (!this.state.salt) {
             return alert('Internal server error. Please reload.');
@@ -96,24 +99,22 @@ class Reset extends React.Component<ResetProps> {
             });
     }
 
+    getSalt = () => {
+        const email = Settings.getUser().email;
+
+        return fetch("/api/login", {
+            method: "post",
+            headers: getHeaders(false, false),
+            body: JSON.stringify({ email })
+        })
+            .then(res => res.json())
+            .then(res => new Promise<void>(resolve => this.setState({ salt: decryptText(res.sKey) }, () => resolve())))
+    }
+
     componentDidMount() {
         if (!this.isLoggedIn()) {
             history.push('/login');
         }
-
-        var localStg = Settings.getUser();
-
-        fetch("/api/login", {
-            method: "post",
-            headers: getHeaders(false, false),
-            body: JSON.stringify({ email: localStg.email })
-        })
-            .then(res => res.json())
-            .then(res => {
-                this.setState({ salt: decryptText(res.sKey) });
-            }).catch(err => {
-                alert('Error:\n' + (err.error ? err.error : 'Internal server error'));
-            });
     }
 
     validateForm = () => {
