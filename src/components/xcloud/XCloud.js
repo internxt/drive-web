@@ -275,11 +275,13 @@ class XCloud extends React.Component {
             type: 'pdf',
             size: 0,
             isDraggable: false,
-            onClick: async () => {
-              window.analytics.track('file-welcome-open');
-              fetch('/Internxt.pdf').then(res => res.blob()).then(obj => {
-                fileDownload(obj, 'Welcome.pdf')
-              })
+            get onClick() {
+              return () => {
+                window.analytics.track('file-welcome-open');
+                return fetch('/Internxt.pdf').then(res => res.blob()).then(obj => {
+                  fileDownload(obj, 'Welcome.pdf')
+                })
+              }
             },
             onDelete: async () => {
               window.analytics.track('file-welcome-delete');
