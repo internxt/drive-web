@@ -260,8 +260,16 @@ class New extends React.Component<NewProps, NewState> {
                 return body;
             }
         }).then(res => {
-            Settings.clear();
-            history.push('/login');
+            const xToken = res.token;
+            const xUser = res.user;
+            xUser.mnemonic = mnemonic;
+
+            return initializeUser(this.state.register.email, xUser.mnemonic).then((rootFolderInfo) => {
+                xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
+                Settings.set('xToken', xToken);
+                Settings.set('xMnemonic', mnemonic);
+                Settings.set('xUser', JSON.stringify(xUser));
+            });
         });
 
     }
@@ -379,7 +387,9 @@ class New extends React.Component<NewProps, NewState> {
                 }
 
                 if (!this.props.isNewUser) {
-                    this.updateInfo().catch(err => {
+                    this.updateInfo().then(() => {
+                        history.push('/login');
+                    }).catch(err => {
                         toast.error(<div>
                             <div>Reason: {err.message}</div>
                             <div>Please contact us</div>
