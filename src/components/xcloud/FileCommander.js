@@ -188,7 +188,7 @@ class FileCommander extends React.Component {
   };
 
   isAcceptableSize = (size) => {
-    return parseInt(size) <= 209715200 ? true : false;
+    return parseInt(size) <= 1024 * 1024 * 500 ? true : false;
   };
 
   handleDrop = (e, parentId = null) => {
@@ -212,7 +212,7 @@ class FileCommander extends React.Component {
                   });
               } else {
                 toast.warn(
-                  `File too large.\nYou can only upload or download files of up to 200 MB through the web app`,
+                  `File too large.\nYou can only upload or download files of up to 500 MB through the web app`,
                 );
               }
             })
@@ -436,7 +436,7 @@ class FileCommander extends React.Component {
                     item.isFolder
                       ? this.props.openFolder.bind(null, item.id)
                       : (item.onClick ? item.onClick : this.props.downloadFile.bind(null, item.fileId))
-                  
+
                   }
                   selectHandler={this.props.selectItems}
                   isLoading={!!item.isLoading}
