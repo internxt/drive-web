@@ -99,7 +99,7 @@
       background-color: transparent;
       border: solid 0;
       font-family: inherit;
-      color: #4b66ff !important;  
+      color: #4b66ff !important;
       position: absolute;
       text-decoration: none;
     }
@@ -113,10 +113,11 @@
 
 @keyframes fadeOutTop {
   from {
-    opacity: 1
+    opacity: 1;
   }
+
   to {
-      opacity: 0;
-      transform: translateY(-70%);
+    opacity: 0;
+    transform: translateY(-70%);
   }
 }
