@@ -1,0 +1,86 @@
+.Teams {
+   
+    .teams-box {
+        width: 641px;
+        border: solid 1px #eaeced;
+        border-radius: 6px;
+        height: max-content;
+        text-align: center;
+
+        .lista-container {
+            padding: 0px;
+        }
+    }
+    .btn {
+        box-shadow: none !important;
+    }
+
+    .teams-title {
+        font-size: 25px;
+        font-weight: bold;
+        font-style: normal;
+        letter-spacing: -0.2px;
+        color: #000;
+        text-align: center;
+    }
+
+    .teams-description {
+        text-align: justify;
+        color: #737880;
+        letter-spacing: -0.1px;
+        font-size: 14px;
+        line-height: 1.57;
+    }
+
+    .mail-container {
+        .mail-box {
+            border-radius: 3.9px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #ced4da;
+            padding: 10px 16px;
+            color: #5c6066;
+            font-weight: 500;
+            line-height: 1.53;
+            letter-spacing: -0.1px;
+            height: 50px;
+
+        }
+        .invite-button {
+            background-color: #4585f5;
+            border-color: transparent;
+        }    
+    }
+
+    .teams-lista {
+        text-align: left;
+        color: #000000;
+        letter-spacing: -0.1px;
+        font-size: 14px;
+        line-height: 1.57;
+        max-height: 300px;
+        margin-bottom: 10px;
+        height: auto;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        border: 0px;
+
+        .list-group-item{
+            border: 0px;
+        }
+    }
+
+    .trash{
+        margin-left: auto;
+
+    }
+
+    .isPeople{
+        margin-left: 10px;
+        
+        
+    }
+    
+
+
+}

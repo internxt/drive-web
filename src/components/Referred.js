@@ -3,6 +3,7 @@ import { Button, Container, Dropdown, DropdownButton, Form } from 'react-bootstr
 import NavigationBar from './navigationBar/NavigationBar';
 import './Referred.scss';
 import { getHeaders } from '../lib/auth';
+import Settings from '../lib/settings';
 
 
 import twitter from '../assets/Share-Icons/Twitter.svg';
@@ -11,7 +12,6 @@ import telegram from '../assets/Share-Icons/Telegram.svg';
 
 import { toast } from 'react-toastify';
 import copy from 'copy-to-clipboard';
-import Settings from '../lib/settings';
 
 
 class Referred extends React.Component {
@@ -56,7 +56,6 @@ class Referred extends React.Component {
 
                 console.log(this.state.credit);
             }).catch(err => {
-                console.log("Hola desde el error", err);
             });
     }
 

@@ -3,7 +3,7 @@ import { Button, Form, Col, Container, Spinner } from "react-bootstrap";
 
 import history from '../../lib/history';
 import "./Login.scss";
-import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../lib/utils';
+import { encryptText, decryptText, passToHash } from '../../lib/utils';
 
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 
@@ -11,7 +11,9 @@ import { getHeaders } from '../../lib/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Settings from "../../lib/settings";
-import { initializeUser } from "../../services/auth.service";
+import { analytics } from '../../lib/analytics';
+const AesUtil = require('../../lib/AesUtil');
+const openpgp = require('openpgp');
 
 interface LoginProps {
   email?: string
@@ -45,6 +47,8 @@ class Login extends React.Component<LoginProps> {
     // Check if recent login is passed and redirect user to Internxt Drive
     const mnemonic = Settings.get('xMnemonic');
     const user = Settings.getUser();
+    // const xKeys = localStorage.getItem('xKeys');
+    // const xKeyPublic = localStorage.getItem('xKeyPublic');
 
     if (user && user.registerCompleted && mnemonic && this.props.handleKeySaved) {
       this.props.handleKeySaved(user)
@@ -134,7 +138,7 @@ class Login extends React.Component<LoginProps> {
     });
   }
 
-  doLogin = () => {
+  doLogin = async () => {
     // Proceed with submit
     fetch("/api/login", {
       method: "post",
@@ -146,7 +150,19 @@ class Login extends React.Component<LoginProps> {
       }
       if (response.status === 200) {
         // Manage credentials verification
-        response.json().then((body) => {
+        response.json().then(async (body) => {
+          let encPrivateKey1: string | null = null;
+          let base64publicKey: string | null = null;
+          let base64revocationKey: string | null = null;
+          if (!body.hasKeys) {
+            const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await openpgp.generateKey({
+              userIds: [{ email: 'inxt@inxt.com' }], // you can pass multiple user IDs
+              curve: 'ed25519',                                           // ECC curve name       // protects the private key
+            })
+            encPrivateKey1 = AesUtil.encrypt(privateKeyArmored, this.state.password, false);
+            base64publicKey = Buffer.from(publicKeyArmored).toString('base64');
+            base64revocationKey = Buffer.from(revocationCertificate).toString('base64');
+          }
           // Check password
           const salt = decryptText(body.sKey);
           const hashObj = passToHash({ password: this.state.password, salt });
@@ -158,7 +174,10 @@ class Login extends React.Component<LoginProps> {
             body: JSON.stringify({
               email: this.state.email,
               password: encPass,
-              tfa: this.state.twoFactorCode
+              tfa: this.state.twoFactorCode,
+              privateKey: encPrivateKey1,
+              publicKey: base64publicKey,
+              revocateKey: base64revocationKey
             })
           }).then(async res => {
             return { res, data: await res.json() };
@@ -171,17 +190,30 @@ class Login extends React.Component<LoginProps> {
               throw new Error(res.data.error ? res.data.error : res.data);
             }
             return res.data;
-          }).then(data => {
-            data.user.mnemonic = decryptTextWithKey(data.user.mnemonic, this.state.password)
-            if (!data.user.root_folder_id) {
-              return initializeUser(this.state.email, data.user.mnemonic).then((res) => {
-                data.user.root_folder_id = res.user.root_folder_id
-                return data
-              })
-            } else {
-              return data
-            }
-          }).then(data => {
+          }).then(async data => {
+            const privateKey = data.user.privateKey;
+            const publicKey = data.user.publicKey;
+            const revocateKey = data.user.revocateKey;
+            const privkeyDecrypted = AesUtil.decrypt(privateKey, this.state.password)
+
+
+            const ArmoredPublicKey = Buffer.from(publicKey, 'base64').toString()
+            const ArmoredRevocateKey = Buffer.from(revocateKey, 'base64').toString()
+
+
+            localStorage.setItem('xKeys', privkeyDecrypted);
+
+            localStorage.setItem('xKeyPublic', ArmoredPublicKey);
+
+
+            analytics.identify(data.user.uuid, {
+              email: this.state.email,
+              platform: 'web',
+              referrals_credit: data.user.credit,
+              referrals_count: Math.floor(data.user.credit / 5),
+              createdAt: data.user.createdAt
+            })
+
             // Manage succesfull login
             const user = {
               userId: data.user.userId,
@@ -192,16 +224,48 @@ class Login extends React.Component<LoginProps> {
               name: data.user.name,
               lastname: data.user.lastname,
               uuid: data.user.uuid,
+              privateKey: privkeyDecrypted,
+              publicKey: ArmoredPublicKey,
+              revocationKey: ArmoredRevocateKey,
               credit: data.user.credit,
               createdAt: data.user.createdAt,
               registerCompleted: data.user.registerCompleted
             };
+
             if (this.props.handleKeySaved) {
               this.props.handleKeySaved(user)
             }
+
             localStorage.setItem('xToken', data.token);
             localStorage.setItem('xMnemonic', user.mnemonic);
             localStorage.setItem('xUser', JSON.stringify(user));
+
+            if (data.userTeam && data.userTeam.isActivated) {
+              //Datas
+              const StoragepubKey = localStorage.xKeyPublic;
+              const mnemonicDecode = Buffer.from(data.userTeam.bridge_mnemonic, 'base64').toString()
+              const privKey = localStorage.xKeys;
+              const privateKeys = (await openpgp.key.readArmored(privKey)).keys;
+              const mnemonicDecrypt = await openpgp.decrypt({
+                message: await openpgp.message.readArmored(mnemonicDecode),              // parse armored message
+                publicKeys: (await openpgp.key.readArmored(StoragepubKey)).keys, // for verification (optional)
+                privateKeys: privateKeys                               // for decryption
+              });
+
+              const team = {
+                idTeam: data.userTeam.idTeam,
+                user: data.userTeam.bridge_user,
+                password: data.userTeam.bridge_password,
+                mnemonic: mnemonicDecrypt.data,
+                admin: data.userTeam.admin,
+                root_folder_id: data.userTeam.root_folder_id,
+                isAdmin: data.userTeam.isAdmin
+              }
+              localStorage.setItem('xTeam', JSON.stringify(team));
+              localStorage.setItem('xTokenTeam', data.tokenTeam);
+            } else {
+              console.error('NOT HAVE A TEAM')
+            }
 
             window.analytics.identify(data.user.uuid, {
               email: this.state.email,
@@ -215,17 +279,20 @@ class Login extends React.Component<LoginProps> {
                 userId: user.uuid
               })
             })
+
             this.setState({
               isAuthenticated: true,
               token: data.token,
               user: user,
-              registerCompleted: data.user.registerCompleted
+              registerCompleted: data.user.registerCompleted,
+              isTeam: false
             });
-          })
-            .catch(err => {
-              toast.warn(`"${err.error ? err.error : err}"`);
-              this.setState({ isLogingIn: false })
-            });
+
+          }).catch(err => {
+            toast.warn(`"${err.error ? err.error : err}"`);
+            this.setState({ isLogingIn: false })
+          });
+
         });
       } else if (response.status === 400) {
         // Manage other cases:

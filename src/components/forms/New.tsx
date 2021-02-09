@@ -2,6 +2,7 @@ import * as React from "react";
 import { Container, Form, Col, Button } from "react-bootstrap";
 
 import history from '../../lib/history';
+import Settings from '../../lib/settings';
 
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
@@ -10,8 +11,9 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { analytics } from "../../lib/analytics";
 import queryString, { ParsedQuery } from 'query-string'
-import Settings from "../../lib/settings";
 import { initializeUser } from "../../services/auth.service";
+const openpgp = require('openpgp');
+const AesUtil = require('../../lib/AesUtil');
 
 const bip39 = require('bip39')
 
@@ -145,6 +147,7 @@ class New extends React.Component<NewProps, NewState> {
         if (this.state.register.password.length < 1 && this.state.register.confirmPassword.length < 1) isValid = false;
         // Pass and confirm pass validation
         if (this.state.register.password !== this.state.register.confirmPassword) {
+            toast.warn('Password mismatch')
             isValid = false
         }
 
@@ -157,14 +160,25 @@ class New extends React.Component<NewProps, NewState> {
     }
 
 
-    doRegister = () => {
-        // Setup hash and salt
+    doRegister = async () => {
+        // Setup hash and salt 
         const hashObj = passToHash({ password: this.state.register.password });
         const encPass = encryptText(hashObj.hash);
         const encSalt = encryptText(hashObj.salt);
         // Setup mnemonic
         const mnemonic = bip39.generateMnemonic(256);
         const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
+
+        //Generate keys
+        const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await openpgp.generateKey({
+            userIds: [{ email: 'inxt@inxt.com' }], // you can pass multiple user IDs
+            curve: 'ed25519',                                           // ECC curve name        // protects the private key
+        });
+
+        //Datas
+        const encPrivateKey = AesUtil.encrypt(privateKeyArmored, this.state.register.password, false);
+        const codpublicKey = Buffer.from(publicKeyArmored).toString('base64');;
+        const codrevocationKey = Buffer.from(revocationCertificate).toString('base64');
 
         return fetch("/api/register", {
             method: "post",
@@ -176,7 +190,10 @@ class New extends React.Component<NewProps, NewState> {
                 password: encPass,
                 mnemonic: encMnemonic,
                 salt: encSalt,
-                referral: this.readReferalCookie()
+                referral: this.readReferalCookie(),
+                privateKey: encPrivateKey,
+                publicKey: codpublicKey,
+                revocationKey: codrevocationKey
             })
         }).then(response => {
             if (response.status === 200) {

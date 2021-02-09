@@ -9,10 +9,12 @@ import iconInxt from '../assets/PaymentBridges/inxt.svg'
 import iconPayPal from '../assets/PaymentBridges/paypal.svg'
 
 import { getHeaders } from '../lib/auth'
-
-import { analytics, getUserData } from '../lib/analytics'
+const bip39 = require('bip39')
+const openpgp = require('openpgp');
 
 const stripeGlobal = window.Stripe;
+
+const STRIPE_DEBUG = false;
 
 const PaymentBridges = [
     {
@@ -32,7 +34,7 @@ const PaymentBridges = [
     }
 ]
 
-class StoragePlans extends React.Component {
+class TeamsPlans extends React.Component {
     constructor(props) {
         super(props);
 
@@ -49,12 +51,13 @@ class StoragePlans extends React.Component {
             selectedProductToBuy: null,
             selectedPlanToBuy: null,
 
-            paymentMethod: null
+            paymentMethod: null,
+
         }
     }
 
     loadAvailableProducts() {
-        fetch('/api/stripe/products' + (process.env.NODE_ENV !== 'production' ? '?test=true' : ''), {
+        fetch('/api/stripe/teams/products' + (process.env.NODE_ENV !== 'production' || STRIPE_DEBUG ? '?test=true' : ''), {
             headers: getHeaders(true, false)
         }).then(response => response.json()).then(products => {
             this.setState({
@@ -66,11 +69,10 @@ class StoragePlans extends React.Component {
         });
     }
 
-
     loadAvailablePlans() {
         const body = { product: this.state.selectedProductToBuy.id }
-        if (process.env.NODE_ENV !== 'production') { body.test = true }
-        fetch('/api/stripe/plans', {
+        if (process.env.NODE_ENV !== 'production' || STRIPE_DEBUG) { body.test = true }
+        fetch('/api/stripe/teams/plans', {
             method: 'post',
             headers: getHeaders(true, false),
             body: JSON.stringify(body)
@@ -86,19 +88,24 @@ class StoragePlans extends React.Component {
     }
 
 
-    handleStripePayment() {
+    handleStripePayment = async () => {
+
         this.setState({ statusMessage: 'Purchasing...' });
+        const mnemonicTeam = bip39.generateMnemonic(256);
+        const publicKeyArmored = localStorage.xKeyPublic;
 
-        const stripe = new stripeGlobal(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+        const encMnemonicTeam = await openpgp.encrypt({
+            message: openpgp.message.fromText(mnemonicTeam),                 // input as Message object
+            publicKeys: ((await openpgp.key.readArmored(publicKeyArmored)).keys),// for encryption
 
-        const body = {
-            plan: this.state.selectedPlanToBuy.id,
-            product: this.state.selectedProductToBuy.id
-        };
+        });
+        const codmnemonicTeam = Buffer.from(encMnemonicTeam.data).toString('base64');
+        const stripe = new stripeGlobal(process.env.NODE_ENV !== 'production' || STRIPE_DEBUG ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+        const body = { plan: this.state.selectedPlanToBuy.id, sessionType: 'team', product: this.state.selectedProductToBuy.id, mnemonicTeam: codmnemonicTeam };
 
         if (/^pk_test_/.exec(stripe._apiKey)) { body.test = true }
 
-        fetch('/api/stripe/session', {
+        fetch('/api/stripe/teams/session', {
             method: 'POST',
             headers: getHeaders(true, false),
             body: JSON.stringify(body)
@@ -106,8 +113,9 @@ class StoragePlans extends React.Component {
             if (result.error) {
                 throw Error(result.error);
             }
-            analytics.track('user-enter-payments')
+
             this.setState({ statusMessage: 'Redirecting to Stripe...' });
+
             stripe.redirectToCheckout({ sessionId: result.id }).then(result => {
             }).catch(err => {
                 this.setState({ statusMessage: 'Failed to redirect to Stripe. Reason:' + err.message });
@@ -121,28 +129,42 @@ class StoragePlans extends React.Component {
     render() {
         if (this.state.storageStep === 1) {
             return (<div>
-                <p className="title1">Storage Plans</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <p className="title1">Team Plans</p>
+
+                </div>
+
 
                 {this.state.productsLoading === true ? <div style={{ textAlign: 'center' }}>
-                    <Spinner animation="border" size="sm" style={{ fontSize: 1 }} />
+                    <Spinner animation="border" size="sm" />
                 </div> : ''}
                 {this.state.productsLoading === 'error' ? 'There was an error loading the available plans: The server was unreachable. Please check your network connection and reload.' : ''}
+                <Row className='mt-0'>
 
-                <Row className='mt-4'>
                     {this.state.availableProducts ?
                         this.state.availableProducts.map((entry, i) => {
+
                             // Print the list of available products
                             return <InxtContainerOption
                                 key={'plan' + i}
-                                isChecked={this.props.currentPlan === entry.metadata.size_bytes * 1}
+                                isChecked={this.props.currentPlan === entry.metadata.team_size_bytes * 1}
                                 header={entry.metadata.simple_name}
                                 onClick={(e) => {
                                     // Can't select the current product or lesser
                                     this.setState({ selectedProductToBuy: entry, storageStep: 2, plansLoading: true, availablePlans: null });
                                 }}
-                                text={entry.metadata.price_eur === '0.00' ? 'Free' : <span>€{entry.metadata.price_eur}<span style={{ color: '#7e848c', fontWeight: 'normal' }}>/month</span></span>} />
+                                handleShowDescription={this.props.handleShowDescription}
+                                text={entry.metadata.price_eur === '0.00' ?
+                                    'Free' :
+                                    <span>
+                                        <span style={{ display: 'block' }}>{entry.metadata.team_members !== 'unlimited' ? `Up to ${entry.metadata.team_members} members` : 'Unlimited'}</span>
+                                        <span style={{ display: 'block' }}>€{entry.metadata.price_eur}<span style={{ textAlign: 'center', color: '#7e848c', fontWeight: 'normal' }}>/month</span></span>
+                                    </span>
+                                } />
+
                         })
                         : ''}
+
                 </Row>
             </div>);
         }
@@ -178,13 +200,6 @@ class StoragePlans extends React.Component {
                                 isChecked={false}
                                 header={'€' + fixedPrice}
                                 onClick={(e) => {
-                                    analytics.track('plan-subscription-selected', {
-                                        price: fixedPrice,
-                                        plan_type: entry.name,
-                                        payment_type: PaymentBridges[0].name,
-                                        plan_length: entry.interval_count,
-                                        email: getUserData().email
-                                    })
                                     this.setState({ selectedPlanToBuy: entry, storageStep: 4, paymentMethod: PaymentBridges[0].name });
                                 }}
                                 text={<span><span style={{ color: '#7e848c', fontWeight: 'normal' }}>Prepay{entry.interval_count === 1 ? ' per' : ''}</span>&nbsp;{entry.interval_count !== 1 ? entry.interval_count + ' ' : ''}month{entry.interval_count > 1 ? 's' : ''}</span>} />
@@ -233,7 +248,7 @@ class StoragePlans extends React.Component {
                                 height: '40px',
                                 background: 'linear-gradient(74deg, #096dff, #00b1ff)',
                                 borderWidth: '0px'
-                            }}>Subscribe</Button>
+                            }}>Subscribe now</Button>
 
                     </div>
                         : <div style={{ textAlign: 'center' }}>Comming soon...</div>}
@@ -244,4 +259,4 @@ class StoragePlans extends React.Component {
     }
 }
 
-export default StoragePlans;
+export default TeamsPlans;

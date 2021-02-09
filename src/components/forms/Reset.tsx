@@ -1,4 +1,5 @@
 import React from 'react';
+import Settings from '../../lib/settings';
 import { Container } from 'react-bootstrap';
 import './Login.scss';
 import './Reset.scss';
@@ -8,7 +9,8 @@ import { encryptText, passToHash, decryptText, encryptTextWithKey } from '../../
 import history from '../../lib/history'
 import { getHeaders } from '../../lib/auth'
 import { getUserData } from '../../lib/analytics'
-import Settings from '../../lib/settings';
+const AesUtil =  require('../../lib/AesUtil');
+
 
 interface ResetProps {
     match?: any
@@ -63,6 +65,7 @@ class Reset extends React.Component<ResetProps> {
 
         // Encrypt the mnemonic
         var encryptedMnemonic = encryptTextWithKey(localStorage.xMnemonic, this.state.newPassword);
+        var encryptedPrivateKey = AesUtil.encrypt(localStorage.xKeys,this.state.newPassword,false); 
 
         fetch('/api/user/password', {
             method: 'PATCH',
@@ -71,7 +74,8 @@ class Reset extends React.Component<ResetProps> {
                 currentPassword: encryptedCurrentPassword,
                 newPassword: encryptedNewPassword,
                 newSalt: encryptedNewSalt,
-                mnemonic: encryptedMnemonic
+                mnemonic: encryptedMnemonic,
+                privateKey: encryptedPrivateKey
             })
         })
             .then(async res => {
@@ -80,7 +84,6 @@ class Reset extends React.Component<ResetProps> {
             })
             .then(res => {
                 if (res.res.status !== 200) {
-                    console.log(res);
                     throw res.data.error;
                 } else {
                     window.analytics.track('user-change-password', {
@@ -123,7 +126,7 @@ class Reset extends React.Component<ResetProps> {
 
     render() {
         return <div>
-            <NavigationBar navbarItems={<h5>Settings</h5>} showSettingsButton={false} />
+            <NavigationBar navbarItems={<h5>Settings</h5>} isTeam={false} isMember={false} isAdmin={false} />
             <Container className="login-main">
                 <Container className="login-container-box edit-password-box">
                     <div className="container-register">

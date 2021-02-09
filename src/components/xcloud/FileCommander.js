@@ -32,18 +32,21 @@ class FileCommander extends React.Component {
       namePath: this.props.namePath,
       selectedSortType: SORT_TYPES.DATE_ADDED,
       dragDropStyle: '',
-      treeSize: 0
+      treeSize: 0,
+      isTeam: this.props.isTeam
     };
   }
 
   componentDidUpdate(prevProps) {
     if (
       this.props.currentCommanderItems !== prevProps.currentCommanderItems ||
-      this.props.namePath !== prevProps.namePath
+      this.props.namePath !== prevProps.namePath ||
+      this.props.isTeam !== prevProps.isTeam
     ) {
       this.setState({
         currentCommanderItems: this.props.currentCommanderItems,
         namePath: this.props.namePath,
+        isTeam: this.props.isTeam
       });
     }
   }
@@ -230,7 +233,13 @@ class FileCommander extends React.Component {
           toast.warn(`"${errmsg}"`);
         }
 
-        this.props.getFolderContent(this.props.currentFolderId, false, false);
+        let idTeam = this.props.namePath[this.props.namePath.length -1].id_team;
+
+        if (idTeam) {
+          this.props.getFolderContent(this.props.currentFolderId, true, idTeam);
+        } else {
+          this.props.getFolderContent(this.props.currentFolderId);
+        }
       },
     );
 
@@ -389,7 +398,7 @@ class FileCommander extends React.Component {
             </div>
           }
           {
-            <div>
+            <div className="FileCommander-options">
               {/*
               <ButtonGroup className="switch-view">
                 <Button onClick={() => {
@@ -424,6 +433,7 @@ class FileCommander extends React.Component {
                   selectableKey={item.id}
                   ref={this.myRef}
                   id={item.id}
+                  id_team={item.id_team}
                   rawItem={item}
                   name={item.name}
                   type={item.type}

@@ -10,6 +10,8 @@ import uploadFileIcon from '../../assets/Dashboard-Icons/Upload.svg';
 import newFolder from '../../assets/Dashboard-Icons/Add-folder.svg';
 import deleteFile from '../../assets/Dashboard-Icons/Delete.svg';
 import share from '../../assets/Dashboard-Icons/Share.svg';
+// import teamsIcon from '../../assets/Dashboard-Icons/teamsIcon.svg';
+// import personalIcon from '../../assets/Dashboard-Icons/personalIcon.svg';
 
 import HeaderButton from './HeaderButton';
 
@@ -24,21 +26,30 @@ import customPrettySize from '../../lib/sizer';
 
 interface NavigationBarProps {
     navbarItems: JSX.Element
-    showFileButtons?: Boolean
+    showFileButtons?: boolean
+    showSettingsButton?: boolean
     setSearchFunction?: any
     uploadFile?: any
     createFolder?: any
     deleteItems?: any
     shareItem?: any
     uploadHandler?: any
-    showSettingsButton: boolean
+    showTeamSettings?: any
+    isTeam?: boolean
+    handleChangeWorkspace?: any
+    isAdmin?: boolean
+    isMember?: boolean
 }
 
 interface NavigationBarState {
     navbarItems: JSX.Element
+    workspace: string
     menuButton: any
     barLimit: number
     barUsage: number
+    isTeam: boolean
+    isAdmin: boolean
+    isMember: boolean
 }
 
 class NavigationBar extends React.Component<NavigationBarProps, NavigationBarState> {
@@ -48,12 +59,46 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         this.state = {
             menuButton: null,
             navbarItems: props.navbarItems,
+            workspace: 'My Workspace',
             barLimit: 1024 * 1024 * 1024 * 2,
             barUsage: 0,
+            isTeam: this.props.isTeam || false,
+            isAdmin: this.props.isAdmin || false,
+            isMember: this.props.isMember || false,
         };
     }
 
+    async getUsage(isTeam: Boolean = false) {
+        const limit = await fetch('/api/limit/', {
+            headers: getHeaders(true, false, isTeam)
+        }).then(res => res.json()).catch(() => null)
+
+        const usage = await fetch('/api/usage/', {
+            headers: getHeaders(true, false, isTeam)
+        }).then(res3 => res3.json()).catch(() => null)
+
+        if (limit && usage) {
+            this.setState({
+                barUsage: usage.total,
+                barLimit: limit.maxSpaceBytes
+            })
+        }
+    }
+
     componentDidMount() {
+        if (localStorage.getItem('xTeam')) {
+            const admin = JSON.parse(localStorage.getItem('xTeam') || '{}').isAdmin
+            if (admin) {
+                this.setState({ isAdmin: true });
+
+            } else {
+                this.setState({ isAdmin: false });
+
+            }
+        } else {
+            this.setState({ isAdmin: true });
+
+        }
         let user = null;
         try {
             user = JSON.parse(localStorage.xUser).email;
@@ -84,7 +129,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
             })
         }
 
-
         fetch('/api/limit', {
             method: 'get',
             headers: getHeaders(true, false)
@@ -105,7 +149,27 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         }).catch(err => {
             console.log('Error on fetch usage', err);
         });
+        this.getUsage(this.state.isTeam);
     }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.isTeam !== prevProps.isTeam) {
+            this.getUsage(this.props.isTeam);
+            this.setState({ isTeam: this.props.isTeam || false });
+        }
+    }
+
+    handleChangeWorkspace(e) {
+        if (this.state.isTeam) {
+            this.setState({ workspace: 'My Workspace', isTeam: false }, () => {
+                this.props.handleChangeWorkspace && this.props.handleChangeWorkspace(this.state.isTeam);
+            });
+        } else {
+            this.setState({ workspace: 'Team Workspace', isTeam: true }, () => {
+                this.props.handleChangeWorkspace && this.props.handleChangeWorkspace(this.state.isTeam);
+            });
+        }//
+    }//
 
     render() {
         let user: any = null;
@@ -142,6 +206,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                                 <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
                                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                                 <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>
+                                {this.state.isAdmin ? <Dropdown.Item onClick={(e) => { history.push('/teams');; }}>Teams</Dropdown.Item> : ''}
                                 <Dropdown.Item onClick={(e) => {
                                     function getOperatingSystem() {
                                         let operatingSystem = 'Not known';

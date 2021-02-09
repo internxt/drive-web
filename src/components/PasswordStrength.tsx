@@ -21,7 +21,6 @@ class PasswordStrength extends React.Component<PasswordStrengthProps, PasswordSt
             return this.setState({ percentage: 0 })
         }
         const result = CheckPasswordStrength(password);
-        console.log(result)
         this.setState({
             percentage: Math.floor((result.id + 1) * 100 / 3)
         })

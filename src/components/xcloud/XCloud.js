@@ -24,6 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
 
 import { getUserData } from '../../lib/analytics'
+import { clearLocalStorage } from '../../lib/localStorageUtils';
 import Settings from '../../lib/settings';
 
 class XCloud extends React.Component {
@@ -32,7 +33,8 @@ class XCloud extends React.Component {
     email: '',
     isAuthorized: false,
     isInitialized: false,
-    isActivated: false,
+      isActivated: null,
+      isTeam: this.props.isTeam,
     token: '',
     chooserModalOpen: false,
     rateLimitModal: false,
@@ -44,7 +46,9 @@ class XCloud extends React.Component {
     searchFunction: null,
     popupShareOpened: false,
     showDeleteItemsPopup: false,
-    isLoading: true
+      isLoading: true,
+      isAdmin: true,
+      isMember: false,
   };
 
   moveEvent = {};
@@ -54,21 +58,196 @@ class XCloud extends React.Component {
     if (!this.props.user || !this.props.isAuthenticated) {
       history.push('/login');
     } else {
+      this.isUserActivated().then((data) => {
+        // If user is signed in but is not activated set property isActivated to false
+        const isActivated = data.activated;
+        if (isActivated) {
+          if (!this.props.user.root_folder_id) {
+            // Initialize user in case that is not done yet
+            this.userInitialization()
+              .then((resultId) => {
+                this.getFolderContent(resultId);
+              })
+              .catch((error) => {
+                const errorMsg = error ? error : '';
+                toast.warn('User initialization error ' + errorMsg);
+                history.push('/login');
+              });
+          } else {
       this.getFolderContent(this.props.user.root_folder_id);
-      this.setState({ isActivated: true, isInitialized: true });
+            this.setState({ currentFolderId: this.props.user.root_folder_id });
+          }
+
+          if (!data.activatedTeam) {
+            // All: Push Team component with activation template.
+          }
+
+          const team = JSON.parse(localStorage.getItem("xTeam"));
+          if (!team) {
+            this.getTeamByUser().then((team) => {
+              localStorage.clear();
+              history.push('/login')
+              toast.info('Subscription has been completed please login ');
+
+            }).catch((err) => { });
+          } else if (team && !team.root_folder_id) {
+            this.teamInitialization();
+            this.setState({ currentFolderId: this.props.user.root_folder_id });
+
+          }
+
+          this.setState({ isActivated, isInitialized: true });
+        }
+      }).catch((error) => {
+        console.log('Error getting user activation status: ' + error);
+        clearLocalStorage();
+        history.push('/login');
+      });
+    }
+  };
+
+  handleChangeWorkspace = (event) => {
+    if (event) {
+      const team = JSON.parse(localStorage.getItem("xTeam"));
+
+      if (!team) {
+        history.push("/teams");
+      } else if (team && !team.root_folder_id) {
+        this.teamInitialization();
+
+      } else {
+        this.getFolderContent(team.root_folder_id);
+        this.setState({
+          currentFolderId: team.root_folder_id,
+          isTeam: true,
+          namePath: [],
+
+        })
+      }
+    } else {
+      const user = JSON.parse(localStorage.getItem("xUser"));
+      !user.root_folder_id ? this.userInitialization() : this.getFolderContent(user.root_folder_id);
+      this.setState({
+        currentFolderId: user.root_folder_id,
+        isTeam: false,
+        namePath: [],
+
+      })
+    }
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.isTeam !== prevProps.isTeam) {
+      this.setState({ isTeam: this.props.isTeam });
 
     }
+  }
+
+  teamInitialization = () => {
+    return new Promise((resolve, reject) => {
+      fetch('/api/teams/initialize', {
+        method: 'post',
+        headers: getHeaders(true, true),
+        body: JSON.stringify({
+          email: JSON.parse(localStorage.getItem("xTeam") || "{}").user,
+          mnemonic: JSON.parse(localStorage.getItem("xTeam") || "{}").mnemonic
+        }),
+      }).then((response) => {
+        if (response.status === 200) {
+          response.json().then((body) => {
+            const xteam = localStorage.getItem("xTeam");
+            const xTeamJson = JSON.parse(xteam);
+            xTeamJson.root_folder_id = body.userData.root_folder_id;
+            localStorage.setItem('xTeam', JSON.stringify(xTeamJson));
+            resolve(body);
+          });
+        } else {
+          reject(null);
+        }
+      }).then(folder => {
+      }).catch((error) => {
+        reject(error);
+      });
+    });
+  }
+
+  userInitialization = () => {
+    return new Promise((resolve, reject) => {
+      fetch('/api/initialize', {
+        method: 'post',
+        headers: getHeaders(true, true),
+        body: JSON.stringify({
+          email: this.props.user.email,
+          mnemonic: localStorage.getItem('xMnemonic'),
+        }),
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            // Successfull intialization
+            this.setState({ isInitialized: true });
+            // Set user with new root folder id
+            response.json().then((body) => {
+              let updatedUser = this.props.user;
+              updatedUser.root_folder_id = body.user.root_folder_id;
+              this.props.handleKeySaved(updatedUser);
+              resolve(body.user.root_folder_id);
+            });
+          } else {
+            reject(null);
+    }
+        }).then(folderId => {
+          this.getFolderContent(folderId)
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   };
 
   isUserActivated = () => {
     return fetch('/api/user/isactivated', {
       method: 'get',
       headers: getHeaders(true, false),
+    }).then((response) => response.json()
+    ).catch(() => {
+      console.log('Error getting user activation');
+    });
+  };
+
+  isTeamActivated = () => {
+    const team = JSON.parse(localStorage.getItem('xTeam'));
+    return fetch(`/api/team/isactivated/${team.bridge_user}`, {
+      method: 'get',
+      headers: getHeaders(true, false),
     }).then((response) => response.json())
       .catch(() => {
         console.log('Error getting user activation');
       });
-  };
+  }
+
+  getTeamByUser = () => {
+    return new Promise((resolve, reject) => {
+      const user = JSON.parse(localStorage.getItem("xUser"));
+      fetch(`/api/teams-members/${user.email}`, {
+        method: 'get',
+        headers: getHeaders(true, false)
+      }).then((result) => {
+        if (result.status !== 200) { return; }
+        return result.json()
+      }).then(result => {
+        if (result.admin === user.email) {
+          result.rol = 'admin';
+          this.setState({ isAdmin: true, isMember: false });
+        } else {
+          result.rol = 'member';
+          this.setState({ isAdmin: false, isMember: true });
+        }
+        resolve(result);
+      }).catch(err => {
+        console.log(err)
+        reject(err);
+      });
+    });
+  }
 
   setSortFunction = (newSortFunc) => {
     // Set new sort function on state and call getFolderContent for refresh files list
@@ -94,10 +273,11 @@ class XCloud extends React.Component {
     if (folderName && folderName !== '') {
       fetch(`/api/storage/folder`, {
         method: 'post',
-        headers: getHeaders(true, true),
+        headers: getHeaders(true, true, this.state.isTeam),
         body: JSON.stringify({
           parentFolderId: this.state.currentFolderId,
           folderName,
+          teamId: _.last(this.state.namePath) && _.last(this.state.namePath).hasOwnProperty('id_team') ? _.last(this.state.namePath).id_team : null
         }),
       }).then(async (res) => {
         if (res.status !== 201) {
@@ -198,10 +378,11 @@ class XCloud extends React.Component {
     return new Promise((resolve, reject) => {
       fetch(`/api/storage/folder`, {
         method: 'post',
-        headers: getHeaders(true, true),
+        headers: getHeaders(true, true, this.state.isTeam),
         body: JSON.stringify({
           parentFolderId,
           folderName,
+          teamId: _.last(this.state.namePath) && _.last(this.state.namePath).hasOwnProperty('id_team') ? _.last(this.state.namePath).id_team : null
         }),
       })
         .then(async (res) => {
@@ -223,29 +404,24 @@ class XCloud extends React.Component {
     });
   };
 
-  getFolderContent = async (rootId, updateNamePath = true, showLoading = true) => {
-
-    await new Promise((resolve) => this.setState({ isLoading: showLoading }, () => resolve()));
-
+  getFolderContent = async (rootId, updateNamePath = true, showLoading = true, isTeam = false) => {
     let welcomeFile = await fetch('/api/welcome', {
       method: 'get',
-      headers: getHeaders(true, false)
+      headers: getHeaders(true, false, isTeam)
     }).then(res => res.json())
       .then(body => body.file_exists)
       .catch(() => false)
 
     return fetch(`/api/storage/folder/${rootId}`, {
       method: 'get',
-      headers: getHeaders(true, true),
-    })
-      .then((res) => {
+      headers: getHeaders(true, true, isTeam)
+    }).then((res) => {
         if (res.status !== 200) {
           throw res;
         } else {
           return res.json();
         }
-      })
-      .then((data) => {
+    }).then((data) => {
         this.deselectAll();
 
         // Set new items list
@@ -287,7 +463,7 @@ class XCloud extends React.Component {
               window.analytics.track('file-welcome-delete');
               return fetch('/api/welcome', {
                 method: 'delete',
-                headers: getHeaders(true, false)
+              headers: getHeaders(true, false, isTeam)
               }).catch(err => {
                 console.error('Cannot delete welcome file, reason: %s', err.message)
               })
@@ -308,12 +484,21 @@ class XCloud extends React.Component {
             this.state.namePath.length === 0 ||
             this.state.namePath[this.state.namePath.length - 1].id !== data.id
           ) {
-            const folderName = this.props.user.root_folder_id === data.id ? 'All Files' : data.name;
+          let folderName = '';
+
+          if (this.state.isTeam) {
+            const rootFolderIdTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').root_folder_id;
+            folderName = rootFolderIdTeam === data.id ? 'All Files' : data.name;
+          } else {
+            folderName = this.props.user.root_folder_id === data.id ? 'All Files' : data.name;
+          }
+
             this.setState({
               namePath: this.pushNamePath({
                 name: folderName,
                 id: data.id,
                 bucket: data.bucket,
+              id_team: data.id_team
               }),
               isAuthorized: true,
             });
@@ -334,7 +519,7 @@ class XCloud extends React.Component {
     if (isFolder) {
       fetch(`/api/storage/folder/${itemId}/meta`, {
         method: 'post',
-        headers: getHeaders(true, true),
+        headers: getHeaders(true, true, this.state.isTeam),
         body: data,
       })
         .then(() => {
@@ -351,7 +536,7 @@ class XCloud extends React.Component {
     } else {
       fetch(`/api/storage/file/${itemId}/meta`, {
         method: 'post',
-        headers: getHeaders(true, true),
+        headers: getHeaders(true, true, this.state.isTeam),
         body: data,
       })
         .then(() => {
@@ -411,7 +596,7 @@ class XCloud extends React.Component {
       data[keyOp.toLowerCase() + 'Id'] = item.fileId || item.id;
       fetch(`/api/storage/move${keyOp}`, {
         method: 'post',
-        headers: getHeaders(true, true),
+        headers: getHeaders(true, true, this.state.isTeam),
         body: JSON.stringify(data),
       }).then(async (res) => {
         const response = await res.json();
@@ -455,7 +640,7 @@ class XCloud extends React.Component {
   downloadFile = (id, _class, pcb) => {
     return new Promise((resolve) => {
       axios.interceptors.request.use((config) => {
-        const headers = getHeaders(true, true)
+        const headers = getHeaders(true, true, this.state.isTeam)
         headers.forEach((value, key) => {
           config.headers[key] = value
         })
@@ -555,7 +740,7 @@ class XCloud extends React.Component {
       const uploadUrl = `/api/storage/folder/${parentFolderId}/upload`;
 
       // Headers with Auth & Mnemonic
-      let headers = getHeaders(true, true);
+      let headers = getHeaders(true, true, this.state.isTeam);
       headers.delete('content-type');
 
       // Data
@@ -713,7 +898,7 @@ class XCloud extends React.Component {
     //const bucket = _.last(this.state.namePath).bucket;
     const fetchOptions = {
       method: 'DELETE',
-      headers: getHeaders(true, false),
+      headers: getHeaders(true, false, this.state.isTeam),
     };
 
     if (selectedItems.length === 0) return;
@@ -777,7 +962,7 @@ class XCloud extends React.Component {
 
   folderTraverseUp() {
     this.setState(this.popNamePath(), () => {
-      this.getFolderContent(_.last(this.state.namePath).id, false);
+      this.getFolderContent(_.last(this.state.namePath).id, false, _.last(this.state.namePath).id_team);
     });
   }
 
@@ -810,6 +995,10 @@ class XCloud extends React.Component {
     history.push('/storage');
   };
 
+  showTeamSettings = () => {
+    history.push("/teams/settings");
+  }
+
   render() {
     // Check authentication
     if (this.props.isAuthenticated && this.state.isActivated && this.state.isInitialized) {
@@ -824,6 +1013,9 @@ class XCloud extends React.Component {
             deleteItems={this.deleteItems}
             setSearchFunction={this.setSearchFunction}
             shareItem={this.shareItem}
+            showTeamSettings={this.showTeamSettings}
+            handleChangeWorkspace={this.handleChangeWorkspace}
+            isTeam={this.state.isTeam}
             style
           />
 
@@ -842,10 +1034,12 @@ class XCloud extends React.Component {
             currentFolderId={this.state.currentFolderId}
             getFolderContent={this.getFolderContent}
             isLoading={this.state.isLoading}
+            isTeam={this.state.isTeam}
           />
 
           {this.getSelectedItems().length > 0 && this.state.popupShareOpened ? (
             <PopupShare
+              isTeam={this.state.isTeam}
               open={this.state.popupShareOpened}
               item={this.getSelectedItems()[0]}
               onClose={() => {
