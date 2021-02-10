@@ -45,7 +45,7 @@ class TeamsPlans extends React.Component {
             productsLoading: true,
             plansLoading: true,
 
-            availableProducts: null,
+            availableProducts: [],
             availablePlans: null,
 
             selectedProductToBuy: null,
