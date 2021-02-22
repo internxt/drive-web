@@ -1,3 +1,19 @@
+export interface UserSettings {
+  createdAt: Date
+  credit: number
+  email: string
+  lastname: string
+  mnemonic: string
+  name: string
+  privateKey: string
+  publicKey: string
+  registerCompleted: boolean
+  revocationKey: string
+  root_folder_id: number
+  userId: string
+  uuid: string
+}
+
 export default class Settings {
   static get(key: string): string | null {
     return localStorage.getItem(key);
@@ -7,7 +23,7 @@ export default class Settings {
     return localStorage.setItem(key, value);
   }
 
-  static getUser() {
+  static getUser(): UserSettings {
     return JSON.parse(localStorage.getItem('xUser') || '{}');
   }
 

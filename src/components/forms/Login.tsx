@@ -3,7 +3,7 @@ import { Button, Form, Col, Container, Spinner } from "react-bootstrap";
 
 import history from '../../lib/history';
 import "./Login.scss";
-import { encryptText, decryptText, passToHash } from '../../lib/utils';
+import { encryptText, decryptText, passToHash, decryptTextWithKey } from '../../lib/utils';
 
 import { isMobile, isAndroid, isIOS } from 'react-device-detect'
 
@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Settings from "../../lib/settings";
 import { analytics } from '../../lib/analytics';
+import { decryptPGP } from "../../lib/utilspgp";
 const AesUtil = require('../../lib/AesUtil');
 const openpgp = require('openpgp');
 
@@ -224,6 +225,8 @@ class Login extends React.Component<LoginProps> {
           registerCompleted: data.user.registerCompleted
         };
 
+        user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.password);
+
         if (this.props.handleKeySaved) {
           this.props.handleKeySaved(user)
         }
@@ -233,16 +236,8 @@ class Login extends React.Component<LoginProps> {
         Settings.set('xUser', JSON.stringify(user));
 
         if (data.userTeam && data.userTeam.isActivated) {
-          //Datas
-          const StoragepubKey = localStorage.xKeyPublic;
-          const mnemonicDecode = Buffer.from(data.userTeam.bridge_mnemonic, 'base64').toString()
-          const privKey = localStorage.xKeys;
-          const privateKeys = (await openpgp.key.readArmored(privKey)).keys;
-          const mnemonicDecrypt = await openpgp.decrypt({
-            message: await openpgp.message.readArmored(mnemonicDecode),
-            publicKeys: (await openpgp.key.readArmored(StoragepubKey)).keys,
-            privateKeys: privateKeys
-          });
+          const mnemonicDecode = Buffer.from(data.userTeam.bridge_mnemonic, 'base64').toString();
+          const mnemonicDecrypt = await decryptPGP(mnemonicDecode);
 
           const team = {
             idTeam: data.userTeam.idTeam,
@@ -253,6 +248,7 @@ class Login extends React.Component<LoginProps> {
             root_folder_id: data.userTeam.root_folder_id,
             isAdmin: data.userTeam.isAdmin
           }
+
           Settings.set('xTeam', JSON.stringify(team));
           Settings.set('xTokenTeam', data.tokenTeam);
         } else {

@@ -87,7 +87,7 @@ class XCloud extends React.Component {
             this.getTeamByUser().then((team) => {
               localStorage.clear();
               history.push('/login')
-              toast.info('Subscription has been completed please login ');
+              toast.info('Subscription has been completed please login');
 
             }).catch((err) => { });
           } else if (team && !team.root_folder_id) {
@@ -207,8 +207,8 @@ class XCloud extends React.Component {
     return fetch('/api/user/isactivated', {
       method: 'get',
       headers: getHeaders(true, false),
-    }).then((response) => response.json()
-    ).catch(() => {
+    }).then((response) => response.json())
+      .catch(() => {
       console.log('Error getting user activation');
     });
   };

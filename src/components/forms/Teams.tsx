@@ -8,13 +8,12 @@ import history from '../../lib/history';
 import InxtContainer from './../InxtContainer';
 import TeamsPlans from './../TeamPlans';
 import { getHeaders } from '../../lib/auth';
-//saveTeamsMembersimport { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
 import './Teams.scss';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 import Popup from 'reactjs-popup';
-const openpgp = require('openpgp');
+import { encryptPGP } from '../../lib/utilspgp';
 
 
 interface Props {
@@ -75,7 +74,7 @@ class Teams extends React.Component<Props, State> {
             isTeamActivated: false,
             menuTitle: 'Create',
             visibility: '',
-            showDescription: false,
+            showDescription: true,
             templateOption: renderOption,
             template: () => { },
             dataSource: [],
@@ -144,18 +143,10 @@ class Teams extends React.Component<Props, State> {
                 //Datas
                 const bridgePass = JSON.parse(localStorage.getItem("xTeam") || "{}").password;
                 const mnemonicTeam = JSON.parse(localStorage.getItem("xTeam") || "{}").mnemonic;
-                const publicKeyArmored = Buffer.from(keys.publicKey, 'base64').toString()
 
                 //Encrypt
-                const EncryptBridgePass = await openpgp.encrypt({
-                    message: openpgp.message.fromText(bridgePass),
-                    publicKeys: ((await openpgp.key.readArmored(publicKeyArmored)).keys),
-                });
-                const EncryptMnemonicTeam = await openpgp.encrypt({
-                    message: openpgp.message.fromText(mnemonicTeam),
-                    publicKeys: ((await openpgp.key.readArmored(publicKeyArmored)).keys),
-
-                });
+                const EncryptBridgePass = await encryptPGP(bridgePass)
+                const EncryptMnemonicTeam = await encryptPGP(mnemonicTeam)
 
                 const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64')
                 const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64')
@@ -184,8 +175,7 @@ class Teams extends React.Component<Props, State> {
                     toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
                 });
 
-            }).catch((error) => {
-            });
+            })
         }).catch((error) => {
             console.log('Error getting pubKey', error);
         });
@@ -203,57 +193,6 @@ class Teams extends React.Component<Props, State> {
 
     }
 
-    renderProductDescription = (): JSX.Element => {
-        if (this.state.showDescription) {
-            return (
-                <InxtContainer>
-                    <p className="title1">Plans Description</p>
-
-                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <div style={{ textAlign: 'center', display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ paddingRight: 12 }}>
-                                <p className="title1">20GB</p>
-                                <p>Secure file sharing</p>
-                                <p>Access anywhere</p>
-                                <p>End-to-end encryption</p>
-                                <p>Collaboration</p>
-                                <p>Administration tools</p>
-                            </div>
-
-                            <div style={{ border: 'solid 1px #eaeced' }}></div>
-                        </div>
-
-                        <div style={{ textAlign: 'center', display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ paddingRight: 12 }}>
-                                <p className="title1">200GB</p>
-                                <p>Secure file sharing</p>
-                                <p>Access anywhere</p>
-                                <p>End-to-end encryption</p>
-                                <p>Collaboration</p>
-                                <p>Administration tools</p>
-                            </div>
-
-                            <div style={{ border: 'solid 1px #eaeced' }}></div>
-                        </div>
-
-                        <div style={{ textAlign: 'center', display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{}}>
-                                <p className="title1">2TB</p>
-                                <p>Secure file sharing</p>
-                                <p>Access anywhere</p>
-                                <p>End-to-end encryption</p>
-                                <p>Collaboration</p>
-                                <p>Administration tools</p>
-                            </div>
-                        </div>
-                    </div>
-                </InxtContainer>
-            );
-        } else {
-            return <div></div>
-        }
-    }
-
     renderPlans = (): JSX.Element => {
         return (
             <div className="settings">
@@ -262,8 +201,6 @@ class Teams extends React.Component<Props, State> {
                 <InxtContainer>
                     <TeamsPlans handleShowDescription={this.handleShowDescription} />
                 </InxtContainer>
-
-                {this.renderProductDescription()}
             </div>
         );
     }
