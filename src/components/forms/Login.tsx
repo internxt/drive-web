@@ -202,10 +202,7 @@ class Login extends React.Component<LoginProps> {
         const publicKey = data.user.publicKey;
         const revocateKey = data.user.revocateKey;
 
-        console.log('PRV KEY ENCRYPTED', privateKey);
         const privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password)).toString('base64');
-
-        console.log('PRV KEY DECRYPTED', privkeyDecrypted);
 
         analytics.identify(data.user.uuid, {
           email: this.state.email,

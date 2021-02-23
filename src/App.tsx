@@ -63,7 +63,6 @@ class App extends React.Component {
 
     return (
       <Router history={history}>
-        TEAMS LOCAL
         <Switch>
           <Redirect from='//*' to='/*' />
           <Route exact path='/login' render={(props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />

@@ -88,8 +88,6 @@ const AesFunctions = {
       throw Error('Missing secrets on ENV file');
     }
 
-    console.log(folderId);
-
     // base64 decoding
     const bData = Buffer.from(encdata, 'base64');
 
