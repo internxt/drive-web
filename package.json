@@ -50,7 +50,7 @@
     "eject": "react-scripts eject",
     "lint": "npm run lint:js && npm run lint:scss",
     "lint:fix": "npm run lint:js -- --fix && npm run lint:scss -- --fix",
-    "lint:js": "eslint src/**/*.{js,tsx,tsc}",
+    "lint:js": "eslint src/**/*.{js,ts,tsx,tsc}",
     "lint:scss": "stylelint src/**/*.{css,scss}"
   },
   "eslintConfig": {

@@ -1,5 +1,5 @@
-import copy from "copy-to-clipboard";
-import CryptoJS from "crypto-js";
+import copy from 'copy-to-clipboard';
+import CryptoJS from 'crypto-js';
 
 function copyToClipboard(text: string) {
   copy(text);
@@ -9,8 +9,10 @@ function copyToClipboard(text: string) {
 function removeAccents(string: string) {
   const accents = 'ÀÁÂÃÄÅĄĀāàáâãäåąßÒÓÔÕÕÖØŐòóôőõöøĎďDŽdžÈÉÊËĘèéêëęðÇçČčĆćÐÌÍÎÏĪìíîïīÙÚÛÜŰùűúûüĽĹŁľĺłÑŇŃňñńŔŕŠŚŞšśşŤťŸÝÿýŽŻŹžżźđĢĞģğ';
   const accentsOut = 'AAAAAAAAaaaaaaaasOOOOOOOOoooooooDdDZdzEEEEEeeeeeeCcCcCcDIIIIIiiiiiUUUUUuuuuuLLLlllNNNnnnRrSSSsssTtYYyyZZZzzzdGGgg';
+
   return string.split('').map((letter, index) => {
     const accentIndex = accents.indexOf(letter);
+
     return accentIndex !== -1 ? accentsOut[accentIndex] : letter;
   }).join('');
 }
@@ -28,7 +30,8 @@ function passToHash(passObject: PassObjectInterface) {
     const hashedObjetc = {
       salt: salt.toString(),
       hash: hash.toString()
-    }
+    };
+
     return hashedObjetc;
   } catch (error) {
     throw error;
@@ -50,6 +53,7 @@ function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string) {
   try {
     const bytes = CryptoJS.AES.encrypt(textToEncrypt, keyToEncrypt).toString();
     const text64 = CryptoJS.enc.Base64.parse(bytes);
+
     return text64.toString(CryptoJS.enc.Hex);
   } catch (error) {
     throw error;
@@ -59,17 +63,17 @@ function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string) {
 // AES Plain text decryption method with enc. key
 function decryptTextWithKey(encryptedText: string, keyToDecrypt: string) {
   if (!keyToDecrypt) {
-    throw new Error('No key defined. Check .env file')
+    throw new Error('No key defined. Check .env file');
   }
   try {
     const reb = CryptoJS.enc.Hex.parse(encryptedText);
     const bytes = CryptoJS.AES.decrypt(reb.toString(CryptoJS.enc.Base64), keyToDecrypt);
+
     return bytes.toString(CryptoJS.enc.Utf8);
   } catch (error) {
     throw error;
   }
 }
-
 
 export {
   copyToClipboard,
@@ -78,5 +82,5 @@ export {
   encryptText,
   decryptText,
   encryptTextWithKey,
-  decryptTextWithKey,
-}
+  decryptTextWithKey
+};

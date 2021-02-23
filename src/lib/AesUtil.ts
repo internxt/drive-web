@@ -64,7 +64,7 @@ const AesFunctions = {
     // encrypt the given text
     const encrypted = Buffer.concat([
       cipher.update(text, 'utf8'),
-      cipher.final(),
+      cipher.final()
     ]);
 
     // extract the auth tag
@@ -83,11 +83,12 @@ const AesFunctions = {
   decrypt(encdata, folderId) {
     // load env variables for deterministic encrypt/decrypt
     const CRYPTO_KEY = process.env.REACT_APP_CRYPTO_SECRET2;
+
     if (!CRYPTO_KEY) {
-      throw Error('Missing secrets on ENV file')
+      throw Error('Missing secrets on ENV file');
     }
 
-    console.log(folderId)
+    console.log(folderId);
 
     // base64 decoding
     const bData = Buffer.from(encdata, 'base64');
@@ -119,6 +120,7 @@ const AesFunctions = {
 
     // AES 256 GCM Mode
     const decipher = _crypto.createDecipheriv('aes-256-gcm', key, iv);
+
     decipher.setAuthTag(tag);
 
     // encrypt the given text
@@ -126,7 +128,7 @@ const AesFunctions = {
       decipher.update(text, 'binary', 'utf8') + decipher.final('utf8');
 
     return decrypted;
-  },
+  }
 };
 
-export default AesFunctions
+export default AesFunctions;
