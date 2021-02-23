@@ -22,12 +22,8 @@
 // load the build-in crypto functions
 const _crypto = require('crypto');
 
-// load env variables for deterministic encrypt/decrypt
-const { REACT_APP_MAGIC_IV: MAGIC_IV, REACT_APP_MAGIC_SALT: MAGIC_SALT } = process.env;
-const CRYPTO_KEY = process.env.REACT_APP_CRYPTO_SECRET2;
-
 // encrypt/decrypt functions
-module.exports = {
+const AesFunctions = {
   /**
    * Encrypts text by given key
    * @param String text to encrypt
@@ -35,27 +31,25 @@ module.exports = {
    * @returns String encrypted text, base64 encoded
    */
   encrypt(text, folderId, randomIv = false) {
+    // load env variables for deterministic encrypt/decrypt
+    const { REACT_APP_MAGIC_IV: MAGIC_IV, REACT_APP_MAGIC_SALT: MAGIC_SALT } = process.env;
+    const CRYPTO_KEY = process.env.REACT_APP_CRYPTO_SECRET2;
+
     // random initialization vector
     const iv = randomIv
       ? _crypto.randomBytes(16)
-      : Buffer.from(MAGIC_IV, 'hex');
+      : Buffer.from(MAGIC_IV as string, 'hex');
 
     // random salt
     const salt = randomIv
       ? _crypto.randomBytes(64)
-      : Buffer.from(MAGIC_SALT, 'hex');
+      : Buffer.from(MAGIC_SALT as string, 'hex');
 
     // derive encryption key: 32 byte key length
     // in assumption the masterkey is a cryptographic and NOT a password there is no need for
     // a large number of iterations. It may can replaced by HKDF
     // the value of 2145 is randomly chosen!
-    const key = _crypto.pbkdf2Sync(
-      `${CRYPTO_KEY}-${folderId}`,
-      salt,
-      2145,
-      32,
-      'sha512'
-    );
+    const key = _crypto.pbkdf2Sync(`${CRYPTO_KEY}-${folderId}`, salt, 2145, 32, 'sha512');
 
     // AES 256 GCM Mode
     const cipher = _crypto.createCipheriv('aes-256-gcm', key, iv);
@@ -80,6 +74,12 @@ module.exports = {
    * @returns String decrypted (original) text
    */
   decrypt(encdata, folderId) {
+
+    // load env variables for deterministic encrypt/decrypt
+    const CRYPTO_KEY = process.env.REACT_APP_CRYPTO_SECRET2;
+
+    console.log(folderId)
+
     // base64 decoding
     const bData = Buffer.from(encdata, 'base64');
 
@@ -119,3 +119,5 @@ module.exports = {
     return decrypted;
   },
 };
+
+export default AesFunctions

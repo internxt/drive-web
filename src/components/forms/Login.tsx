@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Settings from "../../lib/settings";
 import { analytics } from '../../lib/analytics';
 import { decryptPGP } from "../../lib/utilspgp";
-const AesUtil = require('../../lib/AesUtil');
+import AesUtil from '../../lib/AesUtil';
 const openpgp = require('openpgp');
 
 interface LoginProps {
