@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Spinner, Row, Button } from 'react-bootstrap';
 import InxtContainerOption from './InxtContainerOption'
-
 import iconCloseTab from '../assets/Dashboard-Icons/close-tab.svg'
-
 import iconStripe from '../assets/PaymentBridges/stripe.svg'
-
 import { getHeaders } from '../lib/auth'
 import { encryptPGP } from '../lib/utilspgp';
 import { TextField } from '@material-ui/core';
-import Teams from './forms/Teams';
-const bip39 = require('bip39')
+import { generateMnemonic } from 'bip39'
 
 const stripeGlobal = window.Stripe;
 
@@ -66,7 +62,7 @@ export default function TeamPlans(props: any) {
     async function handleStripePayment(e) {
         e.preventDefault();
         setStatusMessage('Purchasing...')
-        const mnemonicTeam = bip39.generateMnemonic(256)
+        const mnemonicTeam = generateMnemonic(256)
         const encMnemonicTeam = await encryptPGP(mnemonicTeam)
 
         const codMnemonicTeam = Buffer.from(encMnemonicTeam.data).toString('base64');

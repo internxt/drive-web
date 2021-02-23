@@ -14,7 +14,6 @@ import { analytics } from "../../lib/analytics";
 import queryString, { ParsedQuery } from 'query-string'
 import { initializeUser } from "../../services/auth.service";
 const openpgp = require('openpgp');
-const AesUtil = require('../../lib/AesUtil');
 
 const bip39 = require('bip39')
 

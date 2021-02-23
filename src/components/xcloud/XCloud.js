@@ -33,8 +33,8 @@ class XCloud extends React.Component {
     email: '',
     isAuthorized: false,
     isInitialized: false,
-      isActivated: null,
-      isTeam: this.props.isTeam,
+    isActivated: null,
+    isTeam: this.props.isTeam,
     token: '',
     chooserModalOpen: false,
     rateLimitModal: false,
@@ -46,9 +46,9 @@ class XCloud extends React.Component {
     searchFunction: null,
     popupShareOpened: false,
     showDeleteItemsPopup: false,
-      isLoading: true,
-      isAdmin: true,
-      isMember: false,
+    isLoading: true,
+    isAdmin: true,
+    isMember: false,
   };
 
   moveEvent = {};
@@ -74,12 +74,8 @@ class XCloud extends React.Component {
                 history.push('/login');
               });
           } else {
-      this.getFolderContent(this.props.user.root_folder_id);
+            this.getFolderContent(this.props.user.root_folder_id);
             this.setState({ currentFolderId: this.props.user.root_folder_id });
-          }
-
-          if (!data.activatedTeam) {
-            // All: Push Team component with activation template.
           }
 
           const team = JSON.parse(localStorage.getItem("xTeam"));
@@ -193,7 +189,7 @@ class XCloud extends React.Component {
             });
           } else {
             reject(null);
-    }
+          }
         }).then(folderId => {
           this.getFolderContent(folderId)
         })
@@ -209,8 +205,8 @@ class XCloud extends React.Component {
       headers: getHeaders(true, false),
     }).then((response) => response.json())
       .catch(() => {
-      console.log('Error getting user activation');
-    });
+        console.log('Error getting user activation');
+      });
   };
 
   isTeamActivated = () => {
@@ -416,74 +412,74 @@ class XCloud extends React.Component {
       method: 'get',
       headers: getHeaders(true, true, isTeam)
     }).then((res) => {
-        if (res.status !== 200) {
-          throw res;
-        } else {
-          return res.json();
-        }
+      if (res.status !== 200) {
+        throw res;
+      } else {
+        return res.json();
+      }
     }).then((data) => {
-        this.deselectAll();
+      this.deselectAll();
 
-        // Set new items list
-        let newCommanderFolders = _.map(data.children, (o) =>
-          _.extend({ isFolder: true, isSelected: false, isLoading: false, isDowloading: false }, o),
-        );
-        let newCommanderFiles = data.files;
+      // Set new items list
+      let newCommanderFolders = _.map(data.children, (o) =>
+        _.extend({ isFolder: true, isSelected: false, isLoading: false, isDowloading: false }, o),
+      );
+      let newCommanderFiles = data.files;
 
-        // Apply search function if is set
-        if (this.state.searchFunction) {
-          newCommanderFolders = newCommanderFolders.filter(this.state.searchFunction);
-          newCommanderFiles = newCommanderFiles.filter(this.state.searchFunction);
-        }
+      // Apply search function if is set
+      if (this.state.searchFunction) {
+        newCommanderFolders = newCommanderFolders.filter(this.state.searchFunction);
+        newCommanderFiles = newCommanderFiles.filter(this.state.searchFunction);
+      }
 
-        // Apply sort function if is set
-        if (this.state.sortFunction) {
-          newCommanderFolders.sort(this.state.sortFunction);
-          newCommanderFiles.sort(this.state.sortFunction);
-        }
+      // Apply sort function if is set
+      if (this.state.sortFunction) {
+        newCommanderFolders.sort(this.state.sortFunction);
+        newCommanderFiles.sort(this.state.sortFunction);
+      }
 
-        if (!data.parentId && welcomeFile) {
-          newCommanderFiles = _.concat([{
-            id: 0,
-            file_id: '0',
-            fileId: '0',
-            name: 'Welcome',
-            type: 'pdf',
-            size: 0,
-            isDraggable: false,
-            get onClick() {
-              return () => {
-                window.analytics.track('file-welcome-open');
-                return fetch('/Internxt.pdf').then(res => res.blob()).then(obj => {
-                  fileDownload(obj, 'Welcome.pdf')
-                })
-              }
-            },
-            onDelete: async () => {
-              window.analytics.track('file-welcome-delete');
-              return fetch('/api/welcome', {
-                method: 'delete',
-              headers: getHeaders(true, false, isTeam)
-              }).catch(err => {
-                console.error('Cannot delete welcome file, reason: %s', err.message)
+      if (!data.parentId && welcomeFile) {
+        newCommanderFiles = _.concat([{
+          id: 0,
+          file_id: '0',
+          fileId: '0',
+          name: 'Welcome',
+          type: 'pdf',
+          size: 0,
+          isDraggable: false,
+          get onClick() {
+            return () => {
+              window.analytics.track('file-welcome-open');
+              return fetch('/Internxt.pdf').then(res => res.blob()).then(obj => {
+                fileDownload(obj, 'Welcome.pdf')
               })
             }
-          }], newCommanderFiles)
-        }
+          },
+          onDelete: async () => {
+            window.analytics.track('file-welcome-delete');
+            return fetch('/api/welcome', {
+              method: 'delete',
+              headers: getHeaders(true, false, isTeam)
+            }).catch(err => {
+              console.error('Cannot delete welcome file, reason: %s', err.message)
+            })
+          }
+        }], newCommanderFiles)
+      }
 
-        this.setState({
-          currentCommanderItems: _.concat(newCommanderFolders, newCommanderFiles),
-          currentFolderId: data.id,
-          currentFolderBucket: data.bucket,
-          isLoading: false
-        });
+      this.setState({
+        currentCommanderItems: _.concat(newCommanderFolders, newCommanderFiles),
+        currentFolderId: data.id,
+        currentFolderBucket: data.bucket,
+        isLoading: false
+      });
 
-        if (updateNamePath) {
-          // Only push path if it is not the same as actual path
-          if (
-            this.state.namePath.length === 0 ||
-            this.state.namePath[this.state.namePath.length - 1].id !== data.id
-          ) {
+      if (updateNamePath) {
+        // Only push path if it is not the same as actual path
+        if (
+          this.state.namePath.length === 0 ||
+          this.state.namePath[this.state.namePath.length - 1].id !== data.id
+        ) {
           let folderName = '';
 
           if (this.state.isTeam) {
@@ -493,18 +489,18 @@ class XCloud extends React.Component {
             folderName = this.props.user.root_folder_id === data.id ? 'All Files' : data.name;
           }
 
-            this.setState({
-              namePath: this.pushNamePath({
-                name: folderName,
-                id: data.id,
-                bucket: data.bucket,
+          this.setState({
+            namePath: this.pushNamePath({
+              name: folderName,
+              id: data.id,
+              bucket: data.bucket,
               id_team: data.id_team
-              }),
-              isAuthorized: true,
-            });
-          }
+            }),
+            isAuthorized: true,
+          });
         }
-      })
+      }
+    })
       .catch((err) => {
         if (err.status === 401) {
           Settings.clear();
