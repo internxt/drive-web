@@ -32,8 +32,15 @@ const AesFunctions = {
    */
   encrypt(text, folderId, randomIv = false) {
     // load env variables for deterministic encrypt/decrypt
-    const { REACT_APP_MAGIC_IV: MAGIC_IV, REACT_APP_MAGIC_SALT: MAGIC_SALT } = process.env;
+    const {
+      REACT_APP_MAGIC_IV: MAGIC_IV,
+      REACT_APP_MAGIC_SALT: MAGIC_SALT
+    } = process.env;
     const CRYPTO_KEY = process.env.REACT_APP_CRYPTO_SECRET2;
+
+    if (!CRYPTO_KEY || !MAGIC_IV || !MAGIC_SALT) {
+      throw Error('Missing secrets on ENV file');
+    }
 
     // random initialization vector
     const iv = randomIv
@@ -74,9 +81,11 @@ const AesFunctions = {
    * @returns String decrypted (original) text
    */
   decrypt(encdata, folderId) {
-
     // load env variables for deterministic encrypt/decrypt
     const CRYPTO_KEY = process.env.REACT_APP_CRYPTO_SECRET2;
+    if (!CRYPTO_KEY) {
+      throw Error('Missing secrets on ENV file')
+    }
 
     console.log(folderId)
 
