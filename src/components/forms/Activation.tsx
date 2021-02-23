@@ -1,10 +1,10 @@
-import * as React from "react";
+import * as React from 'react';
 import { Link, RouteProps } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
 
 import history from '../../lib/history';
 
-import { isMobile, isAndroid, isIOS } from 'react-device-detect'
+import { isMobile, isAndroid, isIOS } from 'react-device-detect';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -24,14 +24,15 @@ class Activation extends React.Component<ActivationProps & RouteProps, Activatio
   }
 
   constructor(props: ActivationProps) {
-    super(props)
+    super(props);
 
-    this.redirect = this.redirect.bind(this)
+    this.redirect = this.redirect.bind(this);
   }
 
   componentDidMount() {
     // Get token from path and activate account through api call
     const token = this.props.match.params.token;
+
     fetch(`/api/user/activations/${token}`)
       .then(res => {
         if (res.status === 200) {
@@ -46,39 +47,39 @@ class Activation extends React.Component<ActivationProps & RouteProps, Activatio
           this.redirect();
         }
       }).catch(err => {
-        this.setState({ isActivated: false })
+        this.setState({ isActivated: false });
         console.log('Activation error: ' + err);
         if (!isMobile) { this.redirect(); }
-      })
+      });
   }
 
   redirect = () => {
     if (isMobile) {
       if (isAndroid) {
-        window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
+        window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';
       } else if (isIOS) {
-        window.location.href = "https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889";
+        window.location.href = 'https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889';
       }
     } else {
       if (this.state.isActivated) {
-        toast.info('Your account has been activated successfully!', { className: 'xcloud-toast-info' })
+        toast.info('Your account has been activated successfully!', { className: 'xcloud-toast-info' });
       } else {
-        toast.warn('Invalid activation code')
-        toast.warn('Your activation code is invalid. Maybe you have used this link before and your account is already activated.')
+        toast.warn('Invalid activation code');
+        toast.warn('Your activation code is invalid. Maybe you have used this link before and your account is already activated.');
       }
-      history.push("/");
+      history.push('/');
     }
   }
 
   render() {
     if (!isMobile) {
-      return "";
+      return '';
     } else {
       if (this.state.isActivated) {
         setTimeout(this.redirect, 1000);
       }
 
-      return <Alert className="Alert" variant={this.state.isActivated ? "success" : "danger"}>
+      return <Alert className="Alert" variant={this.state.isActivated ? 'success' : 'danger'}>
         {this.state.isActivated == null ? <div>
           <h3>Activate account</h3>
           <p>Activating...</p>
@@ -93,8 +94,8 @@ class Activation extends React.Component<ActivationProps & RouteProps, Activatio
           <h3>Invalid activation code</h3>
           <p>Your activation code is invalid. Maybe you have used this link before and your account is already activated.</p>
           <p>Check you have access to your account: <a href="/login">login</a></p>
-        </div> : ""}
-      </Alert>
+        </div> : ''}
+      </Alert>;
     }
   }
 }

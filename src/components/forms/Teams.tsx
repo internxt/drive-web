@@ -15,7 +15,6 @@ import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 import Popup from 'reactjs-popup';
 import { encryptPGP } from '../../lib/utilspgp';
 
-
 interface Props {
     match?: any
     isAuthenticated: Boolean
@@ -53,291 +52,283 @@ interface Item {
 
 class Teams extends React.Component<Props, State> {
 
-    constructor(props: Props) {
-        super(props);
+  constructor(props: Props) {
+    super(props);
 
-        let renderOption = this.props.match.params.option
+    let renderOption = this.props.match.params.option;
 
-        this.state = {
-            user: {
-                email: '',
-                isAdmin: false,
-                isTeamMember: false
-            },
-            team: {
-                bridgeUser: '',
-                teamPassword: ''
-            },
-            idTeam: 0,
-            teamName: '',
-            email: '',
-            isTeamActivated: false,
-            menuTitle: 'Create',
-            visibility: '',
-            showDescription: true,
-            templateOption: renderOption,
-            template: () => { },
-            dataSource: [],
-            modalDeleteAccountShow: false,
+    this.state = {
+      user: {
+        email: '',
+        isAdmin: false,
+        isTeamMember: false
+      },
+      team: {
+        bridgeUser: '',
+        teamPassword: ''
+      },
+      idTeam: 0,
+      teamName: '',
+      email: '',
+      isTeamActivated: false,
+      menuTitle: 'Create',
+      visibility: '',
+      showDescription: true,
+      templateOption: renderOption,
+      template: () => { },
+      dataSource: [],
+      modalDeleteAccountShow: false
 
-        }
+    };
 
-        this.handleChangePass = this.handleChangePass.bind(this);
-    }
+    this.handleChangePass = this.handleChangePass.bind(this);
+  }
 
     handleShowDescription = (_showDescription) => {
-        this.setState({ showDescription: _showDescription });
+      this.setState({ showDescription: _showDescription });
     }
 
     handleChangePass = (event: React.FormEvent<HTMLInputElement>) => {
-        this.setState({ team: { ...this.state.team, teamPassword: event.currentTarget.value } });
+      this.setState({ team: { ...this.state.team, teamPassword: event.currentTarget.value } });
     }
-
 
     handlePassword = (password: any) => {
     }
 
-
     isLoggedIn = () => {
-        return !(!localStorage.xToken);
+      return !(!localStorage.xToken);
     }
 
     componentDidMount() {
-        if (!this.isLoggedIn()) {
-            history.push('/login');
-        }
+      if (!this.isLoggedIn()) {
+        history.push('/login');
+      }
 
+      if (localStorage.getItem('xTeam')) {
+        this.setState({ template: this.renderTeamSettings.bind(this) });
+      } else {
+        this.setState({ template: this.renderPlans.bind(this) });
+      }
 
-        if (localStorage.getItem('xTeam')) {
-            this.setState({ template: this.renderTeamSettings.bind(this) })
-        } else {
-            this.setState({ template: this.renderPlans.bind(this) })
-        }
+      const idTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').idTeam;
 
+      return fetch(`/api/teams/members/${idTeam}`, {
+        method: 'get',
+        headers: getHeaders(true, false)
+      }).then((response) => {
+        response.json().then((response) => {
 
-
-        const idTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').idTeam;
-        return fetch(`/api/teams/members/${idTeam}`, {
-            method: 'get',
-            headers: getHeaders(true, false),
-        }).then((response) => {
-            response.json().then((response) => {
-
-                this.setState({ dataSource: response })
-            }).catch((error) => {
-                console.log(error);
-            });
+          this.setState({ dataSource: response });
         }).catch((error) => {
-            console.log();
+          console.log(error);
         });
-
-
+      });
     }
 
     sendEmailTeamsMember = async (mail) => {
-        await fetch(`/api/user/keys/${mail}`, {
-            method: 'GET',
-            headers: getHeaders(true, false),
-        }).then((response) => {
-            response.json().then(async (keys) => {
-                //Datas
-                const bridgePass = JSON.parse(localStorage.getItem("xTeam") || "{}").password;
-                const mnemonicTeam = JSON.parse(localStorage.getItem("xTeam") || "{}").mnemonic;
+      await fetch(`/api/user/keys/${mail}`, {
+        method: 'GET',
+        headers: getHeaders(true, false)
+      }).then((response) => {
+        response.json().then(async (keys) => {
+          //Datas
+          const bridgePass = JSON.parse(localStorage.getItem('xTeam') || '{}').password;
+          const mnemonicTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').mnemonic;
 
-                //Encrypt
-                const EncryptBridgePass = await encryptPGP(bridgePass)
-                const EncryptMnemonicTeam = await encryptPGP(mnemonicTeam)
+          //Encrypt
+          const EncryptBridgePass = await encryptPGP(bridgePass);
+          const EncryptMnemonicTeam = await encryptPGP(mnemonicTeam);
 
-                const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64')
-                const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64')
-                const bridgeuser = JSON.parse(localStorage.getItem("xTeam") || "{}").user;
-                const idTeam = JSON.parse(localStorage.getItem("xTeam") || "{}").idTeam;
-            
-                await fetch('/api/teams/team-invitations', {
-                    method: 'POST',
-                    headers: getHeaders(true, false, true),
-                    body: JSON.stringify({
-                        email: mail,
-                        bridgePass: base64bridge_password,
-                        mnemonicTeam: base64Mnemonic,
-                        bridgeuser: bridgeuser,
-                        idTeam: idTeam
-                    })
-                }).then(async res => {
-                    return { response: res, data: await res.json() };
-                }).then(res => {
-                    if (res.response.status !== 200) {
-                        throw res.data;
-                    } else {
-                        toast.info(`Invitation email sent to ${mail}`);
-                    }
-                }).catch(err => {
-                    toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
-                });
+          const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
+          const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');
+          const bridgeuser = JSON.parse(localStorage.getItem('xTeam') || '{}').user;
+          const idTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').idTeam;
 
+          await fetch('/api/teams/team-invitations', {
+            method: 'POST',
+            headers: getHeaders(true, false, true),
+            body: JSON.stringify({
+              email: mail,
+              bridgePass: base64bridge_password,
+              mnemonicTeam: base64Mnemonic,
+              bridgeuser: bridgeuser,
+              idTeam: idTeam
             })
-        }).catch((error) => {
-            console.log('Error getting pubKey', error);
+          }).then(async res => {
+            return { response: res, data: await res.json() };
+          }).then(res => {
+            if (res.response.status !== 200) {
+              throw res.data;
+            } else {
+              toast.info(`Invitation email sent to ${mail}`);
+            }
+          }).catch(err => {
+            toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
+          });
+
         });
+      }).catch((error) => {
+        console.log('Error getting pubKey', error);
+      });
     }
 
-
     handleEmailChange = (event) => {
-        this.setState({
-            email: event.target.value
-        });
+      this.setState({
+        email: event.target.value
+      });
     }
 
     formRegisterSubmit = (e: any) => {
-        e.preventDefault();
+      e.preventDefault();
 
     }
 
     renderPlans = (): JSX.Element => {
-        return (
-            <div className="settings">
-                <NavigationBar navbarItems={<h5>Teams</h5>} isTeam={false} showSettingsButton={true} showFileButtons={false} isAdmin={false} isMember={false} />
+      return (
+        <div className="settings">
+          <NavigationBar navbarItems={<h5>Teams</h5>} isTeam={false} showSettingsButton={true} showFileButtons={false} isAdmin={false} isMember={false} />
 
-                <InxtContainer>
-                    <TeamsPlans handleShowDescription={this.handleShowDescription} />
-                </InxtContainer>
-            </div>
-        );
+          <InxtContainer>
+            <TeamsPlans handleShowDescription={this.handleShowDescription} />
+          </InxtContainer>
+        </div>
+      );
     }
 
     handleChangeName = (event: React.FormEvent<HTMLInputElement>) => {
-        this.setState({ teamName: event.currentTarget.value });
+      this.setState({ teamName: event.currentTarget.value });
     }
 
-
     handleKeySaved = (user: JSON) => {
-        localStorage.setItem('xUser', JSON.stringify(user));
+      localStorage.setItem('xUser', JSON.stringify(user));
     }
 
     validateEmailInvitations = (email) => {
-        // eslint-disable-next-line no-control-regex
-        const emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/
-        return emailPattern.test(email.toLowerCase());
+      // eslint-disable-next-line no-control-regex
+      const emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
+
+      return emailPattern.test(email.toLowerCase());
     }
 
     sendInvitation = (e: any) => {
-        e.preventDefault()
-        const mails = this.state.email;
-        if (mails !== undefined && this.validateEmailInvitations(mails)) {
-            this.sendEmailTeamsMember(mails)
-        } else {
-            toast.warn(`Please, enter a valid email before sending out the invite`);
-        }
-        return
+      e.preventDefault();
+      const mails = this.state.email;
+
+      if (mails !== undefined && this.validateEmailInvitations(mails)) {
+        this.sendEmailTeamsMember(mails);
+      } else {
+        toast.warn('Please, enter a valid email before sending out the invite');
+      }
+      return;
     }
 
     handleCancelAccount = () => {
-        fetch('/api/teams/deleteAccount', {
-            method: 'POST',
-            headers: getHeaders(true, false,true),
-            body: JSON.stringify({ email: this.state.email })
-        }).then(async res => {
-            return { response: res, data: await res.json() };
-        }).then(res => {
-            this.setState({ modalDeleteAccountShow: false });
-            if (res.response.status !== 200) {
-                throw res.data;
-            } else {
-                toast.info(`The request has been sent to hello@internxt.com`);
-            }
-        }).catch(err => {
-            toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
-        });
+      fetch('/api/teams/deleteAccount', {
+        method: 'POST',
+        headers: getHeaders(true, false, true),
+        body: JSON.stringify({ email: this.state.email })
+      }).then(async res => {
+        return { response: res, data: await res.json() };
+      }).then(res => {
+        this.setState({ modalDeleteAccountShow: false });
+        if (res.response.status !== 200) {
+          throw res.data;
+        } else {
+          toast.info('The request has been sent to hello@internxt.com');
+        }
+      }).catch(err => {
+        toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
+      });
     }
 
-
     deletePeople = (item: Item) => {
-        const idTeam = JSON.parse(localStorage.getItem("xTeam") || "{}").idTeam
-        fetch(`/api/teams/${item.isMember ? 'member' : 'invitation'}`, {
-            method: 'delete',
-            headers: getHeaders(true, false),
-            body: JSON.stringify({
-                item: item,
-                idTeam: idTeam
-            })
-        }).then((response) => {
-            if (response.status === 200) {
-                toast.info('The user has been successfully deleted');
-            }
-        }).catch(err => {
-            toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
-        });
+      const idTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').idTeam;
+
+      fetch(`/api/teams/${item.isMember ? 'member' : 'invitation'}`, {
+        method: 'delete',
+        headers: getHeaders(true, false),
+        body: JSON.stringify({
+          item: item,
+          idTeam: idTeam
+        })
+      }).then((response) => {
+        if (response.status === 200) {
+          toast.info('The user has been successfully deleted');
+        }
+      }).catch(err => {
+        toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
+      });
     }
 
     renderTeamSettings() {
-        return <div>
-            <NavigationBar navbarItems={<h5>Teams</h5>} isTeam={true} showSettingsButton={true} showFileButtons={false} isAdmin={true} isMember={false} />
-            <div className="Teams">
-                <Container className="teams-box p-5">
-                    <Form className="form-register" onSubmit={this.sendInvitation}>
+      return <div>
+        <NavigationBar navbarItems={<h5>Teams</h5>} isTeam={true} showSettingsButton={true} showFileButtons={false} isAdmin={true} isMember={false} />
+        <div className="Teams">
+          <Container className="teams-box p-5">
+            <Form className="form-register" onSubmit={this.sendInvitation}>
 
-                        <div className="teams-title">Manage your Team</div>
-                        <div className="teams-description py-3">Welcome to your Team Drive account. Here you can add and remove team members and invitations.</div>
-                        <Container className="mail-container mt-4">
-                            <div className="row">
-                                <div className="col-10 pl-0">
-                                    <Form.Control className="mail-box" type="email" placeholder="example@example.com" value={this.state.email} onChange={this.handleEmailChange} />
-                                </div>
-                                <Button className="invite-button col-2" type="submit" onClick={() => {
+              <div className="teams-title">Manage your Team</div>
+              <div className="teams-description py-3">Welcome to your Team Drive account. Here you can add and remove team members and invitations.</div>
+              <Container className="mail-container mt-4">
+                <div className="row">
+                  <div className="col-10 pl-0">
+                    <Form.Control className="mail-box" type="email" placeholder="example@example.com" value={this.state.email} onChange={this.handleEmailChange} />
+                  </div>
+                  <Button className="invite-button col-2" type="submit" onClick={() => {
 
-                                }}>Invite</Button>
-                            </div>
-                        </Container>
-                    </Form>
-                    <Container fluid className="lista-container mt-4">
-                        <ListGroup className='teams-lista'>
-                            {this.state.dataSource.map(item => {
-                                return <ListGroup.Item >
-                                    <div className="row">
-                                        <div className='col-11'><span>{item.user}</span></div>
-                                        <div className='col-1'><span onClick={this.deletePeople.bind(this, item)}><i className="far fa-trash-alt"></i></span></div>
-                                    </div>
-                                </ListGroup.Item>
-                            })}
-                        </ListGroup>
-                    </Container>
-
-                </Container>
-                <p className="deleteAccount" onClick={e => {
-                    this.setState({ modalDeleteAccountShow: true });
-                }}>Permanently Delete Account</p>
-
-                <Popup open={this.state.modalDeleteAccountShow} className="popup--full-screen">
-                    <div className="popup--full-screen__content delete-account-specific">
-                        <div className="popup--full-screen__close-button-wrapper">
-                            <img src={closeTab} onClick={e => {
-                                this.setState({ modalDeleteAccountShow: false });
-                            }} alt="Close tab" />
-                        </div>
-                        <div className="message-wrapper">
-                            <h1>Are you sure?</h1>
-                            <p className="delete-account-advertising">All your files will be gone forever and you will lose access to your Internxt Drive account. Any active subscriptions you might have will also be cancelled. Once you click delete account, a request will be sent to hello@internxt.com and the account will be deleted in a few hours.</p>
-                            <div className="buttons-wrapper">
-                                <div className="default-button button-primary delete-account-button"
-                                    onClick={this.handleCancelAccount}>
-                                    Delete account
-                                    </div>
-                            </div>
-
-                        </div>
+                  }}>Invite</Button>
+                </div>
+              </Container>
+            </Form>
+            <Container fluid className="lista-container mt-4">
+              <ListGroup className='teams-lista'>
+                {this.state.dataSource.map(item => {
+                  return <ListGroup.Item >
+                    <div className="row">
+                      <div className='col-11'><span>{item.user}</span></div>
+                      <div className='col-1'><span onClick={this.deletePeople.bind(this, item)}><i className="far fa-trash-alt"></i></span></div>
                     </div>
-                </Popup>
+                  </ListGroup.Item>;
+                })}
+              </ListGroup>
+            </Container>
 
+          </Container>
+          <p className="deleteAccount" onClick={e => {
+            this.setState({ modalDeleteAccountShow: true });
+          }}>Permanently Delete Account</p>
+
+          <Popup open={this.state.modalDeleteAccountShow} className="popup--full-screen">
+            <div className="popup--full-screen__content delete-account-specific">
+              <div className="popup--full-screen__close-button-wrapper">
+                <img src={closeTab} onClick={e => {
+                  this.setState({ modalDeleteAccountShow: false });
+                }} alt="Close tab" />
+              </div>
+              <div className="message-wrapper">
+                <h1>Are you sure?</h1>
+                <p className="delete-account-advertising">All your files will be gone forever and you will lose access to your Internxt Drive account. Any active subscriptions you might have will also be cancelled. Once you click delete account, a request will be sent to hello@internxt.com and the account will be deleted in a few hours.</p>
+                <div className="buttons-wrapper">
+                  <div className="default-button button-primary delete-account-button"
+                    onClick={this.handleCancelAccount}>
+                                    Delete account
+                  </div>
+                </div>
+
+              </div>
             </div>
+          </Popup>
+
         </div>
+      </div>;
     }
 
     render() {
-        return (
-            <div>
-                {this.state.template()}
-            </div>
-        );
+      return (
+        <div>
+          {this.state.template()}
+        </div>
+      );
     }
 }
 

@@ -21,9 +21,9 @@ import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import axios from 'axios'
+import axios from 'axios';
 
-import { getUserData } from '../../lib/analytics'
+import { getUserData } from '../../lib/analytics';
 import { clearLocalStorage } from '../../lib/localStorageUtils';
 import Settings from '../../lib/settings';
 
@@ -48,7 +48,7 @@ class XCloud extends React.Component {
     showDeleteItemsPopup: false,
     isLoading: true,
     isAdmin: true,
-    isMember: false,
+    isMember: false
   };
 
   moveEvent = {};
@@ -61,6 +61,7 @@ class XCloud extends React.Component {
       this.isUserActivated().then((data) => {
         // If user is signed in but is not activated set property isActivated to false
         const isActivated = data.activated;
+
         if (isActivated) {
           if (!this.props.user.root_folder_id) {
             // Initialize user in case that is not done yet
@@ -70,6 +71,7 @@ class XCloud extends React.Component {
               })
               .catch((error) => {
                 const errorMsg = error ? error : '';
+
                 toast.warn('User initialization error ' + errorMsg);
                 history.push('/login');
               });
@@ -78,11 +80,12 @@ class XCloud extends React.Component {
             this.setState({ currentFolderId: this.props.user.root_folder_id });
           }
 
-          const team = JSON.parse(localStorage.getItem("xTeam"));
+          const team = JSON.parse(localStorage.getItem('xTeam'));
+
           if (!team) {
             this.getTeamByUser().then((team) => {
               localStorage.clear();
-              history.push('/login')
+              history.push('/login');
               toast.info('Subscription has been completed please login');
 
             }).catch((err) => { });
@@ -104,10 +107,10 @@ class XCloud extends React.Component {
 
   handleChangeWorkspace = (event) => {
     if (event) {
-      const team = JSON.parse(localStorage.getItem("xTeam"));
+      const team = JSON.parse(localStorage.getItem('xTeam'));
 
       if (!team) {
-        history.push("/teams");
+        history.push('/teams');
       } else if (team && !team.root_folder_id) {
         this.teamInitialization();
 
@@ -116,19 +119,20 @@ class XCloud extends React.Component {
         this.setState({
           currentFolderId: team.root_folder_id,
           isTeam: true,
-          namePath: [],
+          namePath: []
 
-        })
+        });
       }
     } else {
-      const user = JSON.parse(localStorage.getItem("xUser"));
+      const user = JSON.parse(localStorage.getItem('xUser'));
+
       !user.root_folder_id ? this.userInitialization() : this.getFolderContent(user.root_folder_id);
       this.setState({
         currentFolderId: user.root_folder_id,
         isTeam: false,
-        namePath: [],
+        namePath: []
 
-      })
+      });
     }
   }
   componentDidUpdate(prevProps) {
@@ -144,14 +148,15 @@ class XCloud extends React.Component {
         method: 'post',
         headers: getHeaders(true, true),
         body: JSON.stringify({
-          email: JSON.parse(localStorage.getItem("xTeam") || "{}").user,
-          mnemonic: JSON.parse(localStorage.getItem("xTeam") || "{}").mnemonic
-        }),
+          email: JSON.parse(localStorage.getItem('xTeam') || '{}').user,
+          mnemonic: JSON.parse(localStorage.getItem('xTeam') || '{}').mnemonic
+        })
       }).then((response) => {
         if (response.status === 200) {
           response.json().then((body) => {
-            const xteam = localStorage.getItem("xTeam");
+            const xteam = localStorage.getItem('xTeam');
             const xTeamJson = JSON.parse(xteam);
+
             xTeamJson.root_folder_id = body.userData.root_folder_id;
             localStorage.setItem('xTeam', JSON.stringify(xTeamJson));
             resolve(body);
@@ -173,8 +178,8 @@ class XCloud extends React.Component {
         headers: getHeaders(true, true),
         body: JSON.stringify({
           email: this.props.user.email,
-          mnemonic: localStorage.getItem('xMnemonic'),
-        }),
+          mnemonic: localStorage.getItem('xMnemonic')
+        })
       })
         .then((response) => {
           if (response.status === 200) {
@@ -183,6 +188,7 @@ class XCloud extends React.Component {
             // Set user with new root folder id
             response.json().then((body) => {
               let updatedUser = this.props.user;
+
               updatedUser.root_folder_id = body.user.root_folder_id;
               this.props.handleKeySaved(updatedUser);
               resolve(body.user.root_folder_id);
@@ -191,7 +197,7 @@ class XCloud extends React.Component {
             reject(null);
           }
         }).then(folderId => {
-          this.getFolderContent(folderId)
+          this.getFolderContent(folderId);
         })
         .catch((error) => {
           reject(error);
@@ -202,7 +208,7 @@ class XCloud extends React.Component {
   isUserActivated = () => {
     return fetch('/api/user/isactivated', {
       method: 'get',
-      headers: getHeaders(true, false),
+      headers: getHeaders(true, false)
     }).then((response) => response.json())
       .catch(() => {
         console.log('Error getting user activation');
@@ -211,9 +217,10 @@ class XCloud extends React.Component {
 
   isTeamActivated = () => {
     const team = JSON.parse(localStorage.getItem('xTeam'));
+
     return fetch(`/api/team/isactivated/${team.bridge_user}`, {
       method: 'get',
-      headers: getHeaders(true, false),
+      headers: getHeaders(true, false)
     }).then((response) => response.json())
       .catch(() => {
         console.log('Error getting user activation');
@@ -222,13 +229,14 @@ class XCloud extends React.Component {
 
   getTeamByUser = () => {
     return new Promise((resolve, reject) => {
-      const user = JSON.parse(localStorage.getItem("xUser"));
+      const user = JSON.parse(localStorage.getItem('xUser'));
+
       fetch(`/api/teams-members/${user.email}`, {
         method: 'get',
         headers: getHeaders(true, false)
       }).then((result) => {
         if (result.status !== 200) { return; }
-        return result.json()
+        return result.json();
       }).then(result => {
         if (result.admin === user.email) {
           result.rol = 'admin';
@@ -239,7 +247,7 @@ class XCloud extends React.Component {
         }
         resolve(result);
       }).catch(err => {
-        console.log(err)
+        console.log(err);
         reject(err);
       });
     });
@@ -254,7 +262,9 @@ class XCloud extends React.Component {
   setSearchFunction = (e) => {
     // Set search function depending on search text input and refresh items list
     const searchString = removeAccents(e.target.value.toString()).toLowerCase();
+
     let func = null;
+
     if (searchString) {
       func = function (item) {
         return item.name.toLowerCase().includes(searchString);
@@ -266,24 +276,26 @@ class XCloud extends React.Component {
 
   createFolder = () => {
     const folderName = prompt('Please enter folder name');
+
     if (folderName && folderName !== '') {
-      fetch(`/api/storage/folder`, {
+      fetch('/api/storage/folder', {
         method: 'post',
         headers: getHeaders(true, true, this.state.isTeam),
         body: JSON.stringify({
           parentFolderId: this.state.currentFolderId,
           folderName,
           teamId: _.last(this.state.namePath) && _.last(this.state.namePath).hasOwnProperty('id_team') ? _.last(this.state.namePath).id_team : null
-        }),
+        })
       }).then(async (res) => {
         if (res.status !== 201) {
           const body = await res.json();
+
           throw body.error ? body.error : 'createFolder error';
         }
         window.analytics.track('folder-created', {
           email: getUserData().email,
           platform: 'web'
-        })
+        });
         this.getFolderContent(this.state.currentFolderId, false, false);
       }).catch((err) => {
         if (err.includes('already exists')) {
@@ -299,13 +311,13 @@ class XCloud extends React.Component {
 
   folderNameExists = (folderName) => {
     return this.state.currentCommanderItems.find(
-      (item) => item.isFolder && item.name === folderName,
+      (item) => item.isFolder && item.name === folderName
     );
   };
 
   fileNameExists = (fileName, type) => {
     return this.state.currentCommanderItems.find(
-      (item) => !item.isFolder && item.name === fileName && item.type === type,
+      (item) => !item.isFolder && item.name === fileName && item.type === type
     );
   };
 
@@ -313,14 +325,18 @@ class XCloud extends React.Component {
 
   getNewFolderName = (name) => {
     let exists = true;
+
     let i = 1;
     const currentFolder = this.state.currentCommanderItems.filter((item) => item.isFolder);
+
     let finalName;
+
     while (exists) {
       const newName = this.getNextNewName(name, i);
+
       exists = currentFolder.find((folder) => folder.name === newName);
       i += 1;
-      finalName = newName
+      finalName = newName;
     }
 
     return finalName;
@@ -328,13 +344,17 @@ class XCloud extends React.Component {
 
   getNewFileName = (name, type) => {
     let exists = true;
+
     let i = 1;
+
     let finalName;
     const currentFiles = this.state.currentCommanderItems.filter((item) => !item.isFolder);
+
     while (exists) {
       const newName = this.getNextNewName(name, i);
+
       exists = currentFiles.find((file) => file.name === newName && file.type === type);
-      finalName = newName
+      finalName = newName;
       i += 1;
     }
 
@@ -354,6 +374,7 @@ class XCloud extends React.Component {
     // No parent id implies is a directory created on the current folder, so let's show a spinner
     if (!parentFolderId) {
       let __currentCommanderItems;
+
       if (this.folderNameExists(folderName)) {
         folderName = this.getNewName(folderName);
       }
@@ -361,7 +382,7 @@ class XCloud extends React.Component {
       __currentCommanderItems.push({
         name: folderName,
         isLoading: true,
-        isFolder: true,
+        isFolder: true
       });
 
       this.setState({ currentCommanderItems: __currentCommanderItems });
@@ -372,17 +393,18 @@ class XCloud extends React.Component {
     parentFolderId = parentFolderId || this.state.currentFolderId;
 
     return new Promise((resolve, reject) => {
-      fetch(`/api/storage/folder`, {
+      fetch('/api/storage/folder', {
         method: 'post',
         headers: getHeaders(true, true, this.state.isTeam),
         body: JSON.stringify({
           parentFolderId,
           folderName,
           teamId: _.last(this.state.namePath) && _.last(this.state.namePath).hasOwnProperty('id_team') ? _.last(this.state.namePath).id_team : null
-        }),
+        })
       })
         .then(async (res) => {
           const data = await res.json();
+
           if (res.status !== 201) {
             throw data;
           }
@@ -406,7 +428,7 @@ class XCloud extends React.Component {
       headers: getHeaders(true, false, isTeam)
     }).then(res => res.json())
       .then(body => body.file_exists)
-      .catch(() => false)
+      .catch(() => false);
 
     return fetch(`/api/storage/folder/${rootId}`, {
       method: 'get',
@@ -422,8 +444,9 @@ class XCloud extends React.Component {
 
       // Set new items list
       let newCommanderFolders = _.map(data.children, (o) =>
-        _.extend({ isFolder: true, isSelected: false, isLoading: false, isDowloading: false }, o),
+        _.extend({ isFolder: true, isSelected: false, isLoading: false, isDowloading: false }, o)
       );
+
       let newCommanderFiles = data.files;
 
       // Apply search function if is set
@@ -451,9 +474,9 @@ class XCloud extends React.Component {
             return () => {
               window.analytics.track('file-welcome-open');
               return fetch('/Internxt.pdf').then(res => res.blob()).then(obj => {
-                fileDownload(obj, 'Welcome.pdf')
-              })
-            }
+                fileDownload(obj, 'Welcome.pdf');
+              });
+            };
           },
           onDelete: async () => {
             window.analytics.track('file-welcome-delete');
@@ -461,10 +484,10 @@ class XCloud extends React.Component {
               method: 'delete',
               headers: getHeaders(true, false, isTeam)
             }).catch(err => {
-              console.error('Cannot delete welcome file, reason: %s', err.message)
-            })
+              console.error('Cannot delete welcome file, reason: %s', err.message);
+            });
           }
-        }], newCommanderFiles)
+        }], newCommanderFiles);
       }
 
       this.setState({
@@ -484,6 +507,7 @@ class XCloud extends React.Component {
 
           if (this.state.isTeam) {
             const rootFolderIdTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').root_folder_id;
+
             folderName = rootFolderIdTeam === data.id ? 'All Files' : data.name;
           } else {
             folderName = this.props.user.root_folder_id === data.id ? 'All Files' : data.name;
@@ -496,7 +520,7 @@ class XCloud extends React.Component {
               bucket: data.bucket,
               id_team: data.id_team
             }),
-            isAuthorized: true,
+            isAuthorized: true
           });
         }
       }
@@ -512,18 +536,19 @@ class XCloud extends React.Component {
   updateMeta = (metadata, itemId, isFolder) => {
     // Apply changes on metadata depending on type of item
     const data = JSON.stringify({ metadata });
+
     if (isFolder) {
       fetch(`/api/storage/folder/${itemId}/meta`, {
         method: 'post',
         headers: getHeaders(true, true, this.state.isTeam),
-        body: data,
+        body: data
       })
         .then(() => {
           window.analytics.track('folder-rename', {
             email: getUserData().email,
             fileId: itemId,
             platform: 'web'
-          })
+          });
           this.getFolderContent(this.state.currentFolderId);
         })
         .catch((error) => {
@@ -533,14 +558,14 @@ class XCloud extends React.Component {
       fetch(`/api/storage/file/${itemId}/meta`, {
         method: 'post',
         headers: getHeaders(true, true, this.state.isTeam),
-        body: data,
+        body: data
       })
         .then(() => {
           window.analytics.track('file-rename', {
             file_id: itemId,
             email: getUserData().email,
             platform: 'web'
-          })
+          });
           this.getFolderContent(this.state.currentFolderId);
         })
         .catch((error) => {
@@ -567,7 +592,7 @@ class XCloud extends React.Component {
         .map((item) => item.id)
         .includes(destination)
     ) {
-      return toast.warn(`You can't move a folder inside itself'`);
+      return toast.warn('You can\'t move a folder inside itself\'');
     }
 
     // Init default operation properties
@@ -576,7 +601,7 @@ class XCloud extends React.Component {
         total: 0,
         errors: 0,
         resolved: 0,
-        itemsLength: items.length,
+        itemsLength: items.length
       };
     }
 
@@ -585,15 +610,17 @@ class XCloud extends React.Component {
 
     // Move Request body
     const data = { destination };
+
     let keyOp; // Folder or File
     // Fetch for each first levels items
+
     items.forEach((item) => {
       keyOp = item.isFolder ? 'Folder' : 'File';
       data[keyOp.toLowerCase() + 'Id'] = item.fileId || item.id;
       fetch(`/api/storage/move${keyOp}`, {
         method: 'post',
         headers: getHeaders(true, true, this.state.isTeam),
-        body: JSON.stringify(data),
+        body: JSON.stringify(data)
       }).then(async (res) => {
         const response = await res.json();
         const success = res.status === 200;
@@ -609,16 +636,17 @@ class XCloud extends React.Component {
             file_id: response.item.id,
             email: getUserData().email,
             platform: 'web'
-          })
+          });
           // Remove myself
           let currentCommanderItems = this.state.currentCommanderItems.filter((commanderItem) =>
             item.isFolder
               ? !commanderItem.isFolder ||
               (commanderItem.isFolder && !(commanderItem.id === item.id))
               : commanderItem.isFolder ||
-              (!commanderItem.isFolder && !(commanderItem.fileId === item.fileId)),
+              (!commanderItem.isFolder && !(commanderItem.fileId === item.fileId))
           );
           // update state for updating commander items list
+
           this.setState({ currentCommanderItems });
         }
 
@@ -636,12 +664,13 @@ class XCloud extends React.Component {
   downloadFile = (id, _class, pcb) => {
     return new Promise((resolve) => {
       axios.interceptors.request.use((config) => {
-        const headers = getHeaders(true, true, this.state.isTeam)
+        const headers = getHeaders(true, true, this.state.isTeam);
+
         headers.forEach((value, key) => {
-          config.headers[key] = value
-        })
-        return config
-      })
+          config.headers[key] = value;
+        });
+        return config;
+      });
       window.analytics.track('file-download-start', {
         file_id: pcb.props.rawItem.id,
         file_name: pcb.props.rawItem.name,
@@ -650,19 +679,20 @@ class XCloud extends React.Component {
         email: getUserData().email,
         folder_id: pcb.props.rawItem.folder_id,
         platform: 'web'
-      })
+      });
       axios.get(`/api/storage/file/${id}`, {
         onDownloadProgress(pe) {
           if (pcb) {
-            const size = pcb.props.rawItem.size
-            const progress = Math.floor(100 * pe.loaded / size)
-            pcb.setState({ progress: progress })
+            const size = pcb.props.rawItem.size;
+            const progress = Math.floor(100 * pe.loaded / size);
+
+            pcb.setState({ progress: progress });
           }
         },
         responseType: 'blob'
       }).then(res => {
         if (res.status !== 200) {
-          throw res
+          throw res;
         }
 
         window.analytics.track('file-download-finished', {
@@ -670,12 +700,12 @@ class XCloud extends React.Component {
           email: getUserData().email,
           file_size: res.data.size,
           platform: 'web'
-        })
-        return { blob: res.data, filename: Buffer.from(res.headers['x-file-name'], 'base64').toString('utf8') }
+        });
+        return { blob: res.data, filename: Buffer.from(res.headers['x-file-name'], 'base64').toString('utf8') };
       }).then(({ blob, filename }) => {
         fileDownload(blob, filename);
-        pcb.setState({ progress: 0 })
-        resolve()
+        pcb.setState({ progress: 0 });
+        resolve();
       }).catch(err => {
         window.analytics.track('file-download-error', {
           file_id: id,
@@ -684,10 +714,11 @@ class XCloud extends React.Component {
           platform: 'web'
         });
         if (err.response && err.response.status === 401) {
-          return history.push('/login')
+          return history.push('/login');
         } else {
           err.response.data.text().then(result => {
-            const json = JSON.parse(result)
+            const json = JSON.parse(result);
+
             toast.warn(
               'Error downloading file:\n' +
               err.response.status +
@@ -696,7 +727,7 @@ class XCloud extends React.Component {
               '\n' +
               json.message +
               '\nFile id: ' +
-              id,
+              id
             );
           }).catch(textErr => {
             toast.warn(
@@ -705,12 +736,12 @@ class XCloud extends React.Component {
               ' - ' +
               err.response.statusText +
               '\nFile id: ' +
-              id,
+              id
             );
-          })
+          });
         }
-        resolve()
-      })
+        resolve();
+      });
     });
   };
 
@@ -731,25 +762,28 @@ class XCloud extends React.Component {
         folder_id: parentFolderId,
         email: getUserData().email,
         platform: 'web'
-      })
+      });
 
       const uploadUrl = `/api/storage/folder/${parentFolderId}/upload`;
 
       // Headers with Auth & Mnemonic
       let headers = getHeaders(true, true, this.state.isTeam);
+
       headers.delete('content-type');
 
       // Data
       const data = new FormData();
+
       data.append('xfile', file);
 
       fetch(uploadUrl, {
         method: 'POST',
         headers: headers,
-        body: data,
+        body: data
       })
         .then(async (res) => {
           let data;
+
           try {
             data = await res.json();
             window.analytics.track('file-upload-finished', {
@@ -757,17 +791,17 @@ class XCloud extends React.Component {
               file_size: file.size,
               file_type: file.type,
               file_id: data.fileId
-            })
+            });
 
           } catch (err) {
-            console.log(err)
+            console.log(err);
             window.analytics.track('file-upload-error', {
               file_size: file.size,
               file_type: file.type,
               email: getUserData().email,
               msg: err.message,
               platform: 'web'
-            })
+            });
             console.error('Upload response data is not a JSON', err);
           }
           if (data) {
@@ -784,24 +818,30 @@ class XCloud extends React.Component {
   handleUploadFiles = (files, parentFolderId) => {
     files = Array.from(files);
     var re = /(?:\.([^.]+))?$/;
+
     let __currentCommanderItems = this.state.currentCommanderItems;
+
     let currentFolderId = this.state.currentFolderId;
+
     parentFolderId = parentFolderId || currentFolderId;
 
     for (let i = 0; i < files.length; i++) {
       if (files[i].size >= 1024 * 1024 * 1200) {
         let arr = Array.from(files);
+
         arr.splice(i, 1);
         files = arr;
         toast.warn(
-          `File too large.\nYou can only upload or download files of up to 1200 MB through the web app`,
+          'File too large.\nYou can only upload or download files of up to 1200 MB through the web app'
         );
       }
     }
 
     for (let i = 0; i < files.length; i++) {
       let newName;
+
       let fileAtt = re.exec(files[i].name);
+
       if (this.fileNameExists(files[i].name.replace(fileAtt[0], ''), fileAtt[1])) {
         newName = this.getNewName(files[i].name.replace(fileAtt[0], ''), fileAtt[1]);
         files[i].newName = newName;
@@ -812,6 +852,7 @@ class XCloud extends React.Component {
       const newCommanderItems = files.map((file) => {
         return { name: file.newName || file.name, size: file.size, isLoading: true };
       });
+
       __currentCommanderItems = __currentCommanderItems.concat(newCommanderItems);
       this.setState({ currentCommanderItems: __currentCommanderItems });
     }
@@ -833,8 +874,9 @@ class XCloud extends React.Component {
 
               if (parentFolderId === currentFolderId) {
                 let index = __currentCommanderItems.findIndex(
-                  (obj) => obj.name === (file.newName || file.name),
+                  (obj) => obj.name === (file.newName || file.name)
                 );
+
                 __currentCommanderItems[index].isLoading = false;
                 __currentCommanderItems[index].type = re.exec(file.name)[1];
                 this.setState({ currentCommanderItems: __currentCommanderItems }, () => next());
@@ -844,12 +886,13 @@ class XCloud extends React.Component {
             })
             .catch((err) => {
               let index = __currentCommanderItems.findIndex(
-                (obj) => obj.name === (file.newName || file.name),
+                (obj) => obj.name === (file.newName || file.name)
               );
+
               __currentCommanderItems.splice(index, 1);
               this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
             }).finally(() => {
-              this.getFolderContent(this.state.currentFolderId, false, false)
+              this.getFolderContent(this.state.currentFolderId, false, false);
             });
         },
         (err, results) => {
@@ -863,7 +906,7 @@ class XCloud extends React.Component {
           } else {
             resolve();
           }
-        },
+        }
       );
     });
   };
@@ -874,6 +917,7 @@ class XCloud extends React.Component {
 
   shareItem = () => {
     const selectedItems = this.getSelectedItems();
+
     if (selectedItems && selectedItems.length === 1) {
       this.setState({ popupShareOpened: true });
     } else {
@@ -894,24 +938,25 @@ class XCloud extends React.Component {
     //const bucket = _.last(this.state.namePath).bucket;
     const fetchOptions = {
       method: 'DELETE',
-      headers: getHeaders(true, false, this.state.isTeam),
+      headers: getHeaders(true, false, this.state.isTeam)
     };
 
-    if (selectedItems.length === 0) return;
+    if (selectedItems.length === 0) {return;}
     const deletionRequests = _.map(selectedItems, (v, i) => {
       if (v.onDelete) {
-        return (next) => { v.onDelete(); next() }
+        return (next) => { v.onDelete(); next(); };
       }
       const url = v.isFolder
         ? `/api/storage/folder/${v.id}`
         : `/api/storage/folder/${v.folderId}/file/${v.id}`;
+
       return (next) =>
         fetch(url, fetchOptions).then(() => {
           window.analytics.track((v.isFolder ? 'folder' : 'file') + '-delete', {
             email: getUserData().email,
             platform: 'web'
-          })
-          next()
+          });
+          next();
         }).catch(next);
     });
 
@@ -931,6 +976,7 @@ class XCloud extends React.Component {
 
     this.state.currentCommanderItems.forEach((item) => {
       const isTargetItem = items.indexOf(item.id) !== -1 && item.isFolder === isFolder;
+
       if (isTargetItem) {
         item.isSelected = !item.isSelected;
       } else {
@@ -970,7 +1016,7 @@ class XCloud extends React.Component {
     return (previousState, currentProps) => {
       return {
         ...previousState,
-        namePath: _.dropRight(previousState.namePath),
+        namePath: _.dropRight(previousState.namePath)
       };
     };
   }
@@ -992,7 +1038,7 @@ class XCloud extends React.Component {
   };
 
   showTeamSettings = () => {
-    history.push("/teams/settings");
+    history.push('/teams/settings');
   }
 
   render() {

@@ -1,18 +1,18 @@
-import * as React from "react";
-import { Button, Form, Col, Container, Spinner } from "react-bootstrap";
+import * as React from 'react';
+import { Button, Form, Col, Container, Spinner } from 'react-bootstrap';
 
 import history from '../../lib/history';
-import "./Login.scss";
+import './Login.scss';
 import { encryptText, decryptText, passToHash, decryptTextWithKey } from '../../lib/utils';
 
-import { isMobile, isAndroid, isIOS } from 'react-device-detect'
+import { isMobile, isAndroid, isIOS } from 'react-device-detect';
 
-import { getHeaders } from '../../lib/auth'
+import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Settings from "../../lib/settings";
+import Settings from '../../lib/settings';
 import { analytics } from '../../lib/analytics';
-import { decryptPGP } from "../../lib/utilspgp";
+import { decryptPGP } from '../../lib/utilspgp';
 import AesUtil from '../../lib/AesUtil';
 const openpgp = require('openpgp');
 
@@ -28,7 +28,7 @@ class Login extends React.Component<LoginProps> {
     email: '',
     password: '',
     isAuthenticated: false,
-    token: "",
+    token: '',
     user: {},
     showTwoFactor: false,
     twoFactorCode: '',
@@ -39,9 +39,9 @@ class Login extends React.Component<LoginProps> {
   componentDidMount() {
     if (isMobile) {
       if (isAndroid) {
-        window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
+        window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';
       } else if (isIOS) {
-        window.location.href = "https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889";
+        window.location.href = 'https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889';
       }
     }
 
@@ -52,21 +52,22 @@ class Login extends React.Component<LoginProps> {
     // const xKeyPublic = localStorage.getItem('xKeyPublic');
 
     if (user && user.registerCompleted && mnemonic && this.props.handleKeySaved) {
-      this.props.handleKeySaved(user)
-      history.push('/app')
+      this.props.handleKeySaved(user);
+      history.push('/app');
     } else if (user && user.registerCompleted === false) {
-      history.push('/appsumo/' + user.email)
+      history.push('/appsumo/' + user.email);
     }
   }
 
   componentDidUpdate() {
     if (this.state.isAuthenticated && this.state.token && this.state.user) {
       const mnemonic = Settings.get('xMnemonic');
+
       if (!this.state.registerCompleted) {
         history.push('/appsumo/' + this.state.email);
       }
       else if (mnemonic) {
-        history.push('/app')
+        history.push('/app');
       }
     }
   }
@@ -74,21 +75,24 @@ class Login extends React.Component<LoginProps> {
   validateLoginForm = () => {
     let isValid = true;
     // Email validation
-    if (this.state.email.length < 5 || !this.validateEmail(this.state.email)) isValid = false;
+
+    if (this.state.email.length < 5 || !this.validateEmail(this.state.email)) {isValid = false;}
     // Pass length check
-    if (this.state.password.length < 1) isValid = false;
+    if (this.state.password.length < 1) {isValid = false;}
 
     return isValid;
   }
 
   validate2FA = () => {
-    let pattern = /^\d{3}(\s+)?\d{3}$/
+    let pattern = /^\d{3}(\s+)?\d{3}$/;
+
     return pattern.test(this.state.twoFactorCode);
   }
 
   validateEmail = (email: string) => {
     // eslint-disable-next-line no-control-regex
-    let emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/
+    let emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
+
     return emailPattern.test(email.toLowerCase());
   }
 
@@ -106,8 +110,8 @@ class Login extends React.Component<LoginProps> {
       if (res.status !== 200) {
         window.analytics.track('user-signin-attempted', {
           status: 'error',
-          msg: data.error ? data.error : 'Login error',
-        })
+          msg: data.error ? data.error : 'Login error'
+        });
         throw new Error(data.error ? data.error : 'Login error');
       }
 
@@ -122,11 +126,11 @@ class Login extends React.Component<LoginProps> {
       if (err.message.includes('not activated') && this.validateEmail(this.state.email)) {
         history.push(`/activate/${this.state.email}`);
       } else {
-        this.setState({ isLogingIn: false })
+        this.setState({ isLogingIn: false });
         window.analytics.track('user-signin-attempted', {
           status: 'error',
-          msg: err.message,
-        })
+          msg: err.message
+        });
         toast.warn(`"${err}"`);
       }
     });
@@ -136,32 +140,32 @@ class Login extends React.Component<LoginProps> {
     const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await openpgp.generateKey({
       userIds: [{ email: 'inxt@inxt.com' }],
       curve: 'ed25519'
-    })
+    });
 
     return {
       privateKeyArmored,
       privateKeyArmoredEncrypted: AesUtil.encrypt(privateKeyArmored, password, false),
       publicKeyArmored: Buffer.from(publicKeyArmored).toString('base64'),
       revocationCertificate: Buffer.from(revocationCertificate).toString('base64')
-    }
+    };
   }
 
   doLogin = async () => {
     // Proceed with submit
-    fetch("/api/login", {
-      method: "post",
+    fetch('/api/login', {
+      method: 'post',
       headers: getHeaders(false, false),
       body: JSON.stringify({ email: this.state.email })
     }).then(response => {
       if (response.status === 400) {
         return response.json().then((body) => {
-          throw Error(body.error || 'Cannot connect to server')
+          throw Error(body.error || 'Cannot connect to server');
         });
       } else if (response.status !== 200) {
-        throw Error('This account doesn\'t exists')
+        throw Error('This account doesn\'t exists');
       }
 
-      return response.json()
+      return response.json();
     }).then(async (body) => {
       // Manage credentials verification
       const keys = await this.generateNewKeys(this.state.password);
@@ -171,8 +175,8 @@ class Login extends React.Component<LoginProps> {
       const hashObj = passToHash({ password: this.state.password, salt });
       const encPass = encryptText(hashObj.hash);
 
-      return fetch("/api/access", {
-        method: "post",
+      return fetch('/api/access', {
+        method: 'post',
         headers: getHeaders(false, false),
         body: JSON.stringify({
           email: this.state.email,
@@ -188,7 +192,7 @@ class Login extends React.Component<LoginProps> {
         if (res.res.status !== 200) {
           window.analytics.track('user-signin-attempted', {
             status: 'error',
-            msg: res.data.error ? res.data.error : 'Login error',
+            msg: res.data.error ? res.data.error : 'Login error'
           });
           throw new Error(res.data.error ? res.data.error : res.data);
         }
@@ -197,7 +201,11 @@ class Login extends React.Component<LoginProps> {
         const privateKey = data.user.privateKey;
         const publicKey = data.user.publicKey;
         const revocateKey = data.user.revocateKey;
-        const privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password)).toString('base64')
+
+        console.log('PRV KEY ENCRYPTED', privateKey);
+        const privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password)).toString('base64');
+
+        console.log('PRV KEY DECRYPTED', privkeyDecrypted);
 
         analytics.identify(data.user.uuid, {
           email: this.state.email,
@@ -205,7 +213,7 @@ class Login extends React.Component<LoginProps> {
           referrals_credit: data.user.credit,
           referrals_count: Math.floor(data.user.credit / 5),
           createdAt: data.user.createdAt
-        })
+        });
 
         // Manage succesfull login
         const user = {
@@ -228,7 +236,7 @@ class Login extends React.Component<LoginProps> {
         user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.password);
 
         if (this.props.handleKeySaved) {
-          this.props.handleKeySaved(user)
+          this.props.handleKeySaved(user);
         }
 
         Settings.set('xToken', data.token);
@@ -247,12 +255,12 @@ class Login extends React.Component<LoginProps> {
             admin: data.userTeam.admin,
             root_folder_id: data.userTeam.root_folder_id,
             isAdmin: data.userTeam.isAdmin
-          }
+          };
 
           Settings.set('xTeam', JSON.stringify(team));
           Settings.set('xTokenTeam', data.tokenTeam);
         } else {
-          console.error('NOT HAVE A TEAM')
+          console.error('NOT HAVE A TEAM');
         }
 
         window.analytics.identify(data.user.uuid, {
@@ -265,8 +273,8 @@ class Login extends React.Component<LoginProps> {
           window.analytics.track('user-signin', {
             email: this.state.email,
             userId: user.uuid
-          })
-        })
+          });
+        });
 
         this.setState({
           isAuthenticated: true,
@@ -280,19 +288,18 @@ class Login extends React.Component<LoginProps> {
         throw Error(`"${err.error ? err.error : err}"`);
       });
 
-
-
     }).catch(err => {
-      console.error("Login error. " + err.message)
-      toast.warn('Login error')
+      console.error('Login error. ' + err.message);
+      toast.warn('Login error');
     }).finally(() => {
-      this.setState({ isLogingIn: false })
+      this.setState({ isLogingIn: false });
     });
   }
 
   render() {
     if (!this.state.showTwoFactor) {
       const isValid = this.validateLoginForm();
+
       return (<div className="login-main">
         <Container className="login-container-box">
           <div className="container-register">
@@ -334,6 +341,7 @@ class Login extends React.Component<LoginProps> {
       );
     } else {
       const isValid = this.validate2FA();
+
       return (<div className="login-main">
         <Container className="login-container-box">
           <div className="container-register">

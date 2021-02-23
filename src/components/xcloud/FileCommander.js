@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import async from 'async';
-import $ from 'jquery'
+import $ from 'jquery';
 
 import './FileCommander.scss';
 import FileCommanderItem from './FileCommanderItem';
@@ -11,7 +11,7 @@ import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { compare } from 'natural-orderby'
+import { compare } from 'natural-orderby';
 import LoadingFileExplorer from './LoadingFileExplorer';
 
 const SORT_TYPES = {
@@ -21,7 +21,7 @@ const SORT_TYPES = {
   NAME_ASC: 'Name_Asc',
   NAME_DESC: 'Name_Desc',
   FILETYPE_ASC: 'File_Type_Asc',
-  FILETYPE_DESC: 'File_Type_Asc',
+  FILETYPE_DESC: 'File_Type_Asc'
 };
 
 class FileCommander extends React.Component {
@@ -54,48 +54,49 @@ class FileCommander extends React.Component {
   sortItems = (sortType) => {
     // Sort commander file items depending on option selected
     let sortFunc = null;
+
     switch (sortType) {
-      case SORT_TYPES.DATE_ADDED:
-        // At this time, default order is date added
-        break;
-      case SORT_TYPES.FILETYPE_ASC:
-        sortFunc = function (a, b) {
-          return a.type.localeCompare(b.type);
-        };
-        break;
-      case SORT_TYPES.FILETYPE_DESC:
-        sortFunc = function (a, b) {
-          return b.type.localeCompare(a.type);
-        };
-        break;
-      case SORT_TYPES.NAME_ASC:
-        if (this.state.selectedSortType === SORT_TYPES.NAME_ASC) {
-          this.setState({ selectedSortType: SORT_TYPES.NAME_DESC })
-          return sortType(SORT_TYPES.NAME_DESC)
-        }
-        sortFunc = function (a, b) {
-          return compare({ order: 'asc' })(a.name, b.name)
-        };
-        break;
-      case SORT_TYPES.NAME_DESC:
-        sortFunc = function (a, b) {
-          return compare({ order: 'desc' })(a.name, b.name)
-        };
-        break;
-      case SORT_TYPES.SIZE_ASC:
-        sortFunc = function (a, b) {
-          return a.size - b.size;
-        };
-        break;
-      case SORT_TYPES.SIZE_DESC:
-        sortFunc = function (a, b) {
-          return a.size - b.size;
-        };
-        break;
-      default:
-        break;
+    case SORT_TYPES.DATE_ADDED:
+      // At this time, default order is date added
+      break;
+    case SORT_TYPES.FILETYPE_ASC:
+      sortFunc = function (a, b) {
+        return a.type.localeCompare(b.type);
+      };
+      break;
+    case SORT_TYPES.FILETYPE_DESC:
+      sortFunc = function (a, b) {
+        return b.type.localeCompare(a.type);
+      };
+      break;
+    case SORT_TYPES.NAME_ASC:
+      if (this.state.selectedSortType === SORT_TYPES.NAME_ASC) {
+        this.setState({ selectedSortType: SORT_TYPES.NAME_DESC });
+        return sortType(SORT_TYPES.NAME_DESC);
+      }
+      sortFunc = function (a, b) {
+        return compare({ order: 'asc' })(a.name, b.name);
+      };
+      break;
+    case SORT_TYPES.NAME_DESC:
+      sortFunc = function (a, b) {
+        return compare({ order: 'desc' })(a.name, b.name);
+      };
+      break;
+    case SORT_TYPES.SIZE_ASC:
+      sortFunc = function (a, b) {
+        return a.size - b.size;
+      };
+      break;
+    case SORT_TYPES.SIZE_DESC:
+      sortFunc = function (a, b) {
+        return a.size - b.size;
+      };
+      break;
+    default:
+      break;
     }
-    this.setState({ selectedSortType: sortType })
+    this.setState({ selectedSortType: sortType });
     this.props.setSortFunction(sortFunc);
   };
 
@@ -138,12 +139,14 @@ class FileCommander extends React.Component {
     // Add selected items to event data (for moving)
     const selectedItems = this.state.currentCommanderItems.filter(
       (item) =>
-        item.isSelected && item.fileId !== currentItemEvent.id && item.id !== currentItemEvent.id,
+        item.isSelected && item.fileId !== currentItemEvent.id && item.id !== currentItemEvent.id
     );
+
     let data = selectedItems.map((item) => {
       return item;
     });
     // Do not forget current drag item (even if it's or not selected, we move it)
+
     data.push(currentItemEvent);
     event.dataTransfer.setData('text/plain', JSON.stringify(data));
   };
@@ -153,7 +156,7 @@ class FileCommander extends React.Component {
     if (e.dataTransfer.types.includes('Files')) {
       e.preventDefault();
       e.stopPropagation();
-      $('#FileCommander-items').addClass('drag-over')
+      $('#FileCommander-items').addClass('drag-over');
     }
   };
 
@@ -182,12 +185,13 @@ class FileCommander extends React.Component {
 
     if (parentFolder) {
       const moveOpId = new Date().getTime();
+
       this.props.move(data, parentFolder, moveOpId);
     }
   };
 
   handleDragLeave = (e) => {
-    $('#FileCommander-items').removeClass('drag-over')
+    $('#FileCommander-items').removeClass('drag-over');
   };
 
   isAcceptableSize = (size) => {
@@ -202,6 +206,7 @@ class FileCommander extends React.Component {
       items,
       (item, nextItem) => {
         let entry = item ? item.webkitGetAsEntry() : null;
+
         if (entry) {
           this.getTotalTreeSize(entry)
             .then(() => {
@@ -215,7 +220,7 @@ class FileCommander extends React.Component {
                   });
               } else {
                 toast.warn(
-                  `File too large.\nYou can only upload or download files of up to 1200 MB through the web app`,
+                  'File too large.\nYou can only upload or download files of up to 1200 MB through the web app'
                 );
               }
             })
@@ -227,6 +232,7 @@ class FileCommander extends React.Component {
       (err) => {
         if (err) {
           let errmsg = err.error ? err.error : err;
+
           if (errmsg.includes('already exist')) {
             errmsg = 'Folder with same name already exists';
           }
@@ -240,11 +246,11 @@ class FileCommander extends React.Component {
         } else {
           this.props.getFolderContent(this.props.currentFolderId);
         }
-      },
+      }
     );
 
     e.stopPropagation();
-    $('#FileCommander-items').removeClass('drag-over')
+    $('#FileCommander-items').removeClass('drag-over');
   };
 
   setTreeSize = (newSize) => {
@@ -285,7 +291,7 @@ class FileCommander extends React.Component {
               } else {
                 resolve();
               }
-            },
+            }
           );
         });
       }
@@ -304,6 +310,7 @@ class FileCommander extends React.Component {
           .createFolderByName(item.name, uuid)
           .then((data) => {
             let folderParent = data.id;
+
             let dirReader = item.createReader();
 
             dirReader.readEntries((entries) => {
@@ -320,7 +327,7 @@ class FileCommander extends React.Component {
                   } else {
                     resolve();
                   }
-                },
+                }
               );
             });
           })
@@ -350,8 +357,8 @@ class FileCommander extends React.Component {
                   {this.state.namePath[this.state.namePath.length - 2].name}
                 </span>
               ) : (
-                  ''
-                )}
+                ''
+              )}
             </div>
           }
           {
@@ -470,10 +477,10 @@ class FileCommander extends React.Component {
               </h4>
             </div>
           ) : (
-                <div className="noItems">
-                  <h1>This folder is empty.</h1>
-                </div>
-              )}
+            <div className="noItems">
+              <h1>This folder is empty.</h1>
+            </div>
+          )}
         </div>
       </div>
     );

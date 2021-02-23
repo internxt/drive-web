@@ -23,11 +23,11 @@ class JoinTeam extends React.Component<Props, State> {
     this.state = {
       isTeamActivated: null,
       isTeamError: false,
-      member: "",
-      teamPassword: ""
+      member: '',
+      teamPassword: ''
 
     };
-    this.redirect = this.redirect.bind(this)
+    this.redirect = this.redirect.bind(this);
 
   }
 
@@ -47,31 +47,31 @@ class JoinTeam extends React.Component<Props, State> {
     }).then(response => {
       if (response.status === 200) {
         this.setState({ isTeamActivated: true });
-        toast.info("You have successfully joined to the team, please login");
+        toast.info('You have successfully joined to the team, please login');
         history.push('/');
       } else {
         // Wrong activation
-        this.setState({ isTeamActivated: false })
-        toast.warn('Your activation code is invalid. Maybe you have used this link before and your account is already activated.')
+        this.setState({ isTeamActivated: false });
+        toast.warn('Your activation code is invalid. Maybe you have used this link before and your account is already activated.');
       }
 
     }).catch(error => {
-      this.setState({ isTeamActivated: false })
-    })
+      this.setState({ isTeamActivated: false });
+    });
   }
 
   redirect = () => {
 
     if (this.state.isTeamActivated) {
-      toast.info('You have successfully joined to the team, please login', { className: 'xcloud-toast-info' })
+      toast.info('You have successfully joined to the team, please login', { className: 'xcloud-toast-info' });
     } else {
-      toast.warn('Your activation code is invalid. Maybe you have used this link before and your account is already activated.')
+      toast.warn('Your activation code is invalid. Maybe you have used this link before and your account is already activated.');
     }
-    history.push("/");
+    history.push('/');
   }
 
   render() {
-    return(<div />)
+    return (<div />);
   }
 }
 

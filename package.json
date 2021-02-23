@@ -57,7 +57,23 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "semi": "error",
+      "comma-dangle": ["error", "never"],
+      "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0, "maxBOF": 0 }],
+      "eqeqeq": "error",
+      "comma-spacing": ["error", { "before": false, "after": true }],
+      "no-trailing-spaces": ["error"],
+      "indent": ["error", 2],
+      "quotes": ["error", "single"],
+      "object-curly-spacing": ["error", "always"],
+      "newline-after-var": ["error", "always"],
+      "no-multi-spaces": "error",
+      "curly": "error",
+      "keyword-spacing": "error",
+      "space-in-parens": ["error", "never"]
+    }
   },
   "browserslist": {
     "production": [

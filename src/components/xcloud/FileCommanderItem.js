@@ -58,7 +58,7 @@ class FileCommanderItem extends React.Component {
       'starfilled',
       'video',
       'window',
-      'yinyang',
+      'yinyang'
     ];
   }
 
@@ -93,6 +93,7 @@ class FileCommanderItem extends React.Component {
     if (event.currentTarget.dataset.isfolder === 'true') {
       const moveOpId = new Date().getTime();
       var data = JSON.parse(event.dataTransfer.getData('text/plain'));
+
       this.props.move(data, this.props.id, moveOpId);
     }
 
@@ -105,14 +106,14 @@ class FileCommanderItem extends React.Component {
   handleColorSelection = (value, event) => {
     window.analytics.track('folder-color-selection', {
       value: value
-    })
+    });
     this.setState({ selectedColor: value });
   };
 
   handleIconSelection = (value, event) => {
     window.analytics.track('folder-icon-selection', {
       value: value
-    })
+    });
     this.setState({ selectedIcon: value });
   };
 
@@ -137,16 +138,16 @@ class FileCommanderItem extends React.Component {
     }
 
     if (this.state.itemName && this.props.name !== this.state.itemName)
-      metadata.itemName = this.state.itemName;
+    {metadata.itemName = this.state.itemName;}
     if (this.props.isFolder) {
       // Changes on folder item
       if (this.state.selectedColor && this.props.color !== this.state.selectedColor)
-        metadata.color = this.state.selectedColor;
+      {metadata.color = this.state.selectedColor;}
       if (
         this.state.selectedIcon &&
         (!this.props.icon || this.props.icon.id !== this.state.selectedIcon)
       )
-        metadata.icon = this.state.selectedIcon;
+      {metadata.icon = this.state.selectedIcon;}
 
       if (this.state.selectedIcon === 0) {
         metadata.icon = 'none';
@@ -170,13 +171,13 @@ class FileCommanderItem extends React.Component {
     } else {
       // When click off window, close it and apply changes
       this.setState({ showDropdown: isOpen });
-      if (isOpen === false) this.handleApplyChanges();
+      if (isOpen === false) {this.handleApplyChanges();}
     }
   };
 
   handleShowDropdown = () => {
     // Save changes when dropdown is closed
-    if (this.state.showDropdown === true) this.handleApplyChanges();
+    if (this.state.showDropdown === true) {this.handleApplyChanges();}
     else {
       // Set item name when open context menu
       this.setState({ itemName: this.props.name });
@@ -187,19 +188,19 @@ class FileCommanderItem extends React.Component {
   resetMetadataChanges = (event, reset) => {
     event.stopPropagation();
     switch (reset) {
-      case 'icon':
-        $('#iconToggle label').removeClass('active');
-        this.setState({ selectedIcon: 0 });
-        break;
-      case 'color':
-        $('#colorToggle label').removeClass('active');
-        this.setState({ selectedColor: '' });
-        break;
-      default:
-        $('#iconToggle label').removeClass('active');
-        $('#colorToggle label').removeClass('active');
-        this.setState({ selectedColor: '', selectedIcon: 0 });
-        break;
+    case 'icon':
+      $('#iconToggle label').removeClass('active');
+      this.setState({ selectedIcon: 0 });
+      break;
+    case 'color':
+      $('#colorToggle label').removeClass('active');
+      this.setState({ selectedColor: '' });
+      break;
+    default:
+      $('#iconToggle label').removeClass('active');
+      $('#colorToggle label').removeClass('active');
+      this.setState({ selectedColor: '', selectedIcon: 0 });
+      break;
     }
   };
 
@@ -268,7 +269,7 @@ class FileCommanderItem extends React.Component {
     return (
       <div
         className={
-          `FileCommanderItem` +
+          'FileCommanderItem' +
           (this.props.isSelected ? ' selected ' : ' ') +
           this.state.dragDropStyle
         }
@@ -281,7 +282,7 @@ class FileCommanderItem extends React.Component {
         data-name={this.props.rawItem.name}
         data-isfolder={!!this.props.rawItem.isFolder}
         onClick={() => {
-          this.props.selectHandler(this.props.id, this.props.isFolder, false)
+          this.props.selectHandler(this.props.id, this.props.isFolder, false);
         }}
         onDoubleClick={(e) => {
           if (e.target.className.includes('FileCommanderItem')) {
@@ -367,42 +368,42 @@ class FileCommanderItem extends React.Component {
               </Dropdown.Menu>
             </Dropdown>
           ) : (
-              <Dropdown
-                drop={'right'}
-                show={this.state.showDropdown}
-                onToggle={this.handleDropdownSelect}
-              >
-                <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown}>
+            <Dropdown
+              drop={'right'}
+              show={this.state.showDropdown}
+              onToggle={this.handleDropdownSelect}
+            >
+              <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown}>
                   ...
               </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item as="span">
-                    <input
-                      className="itemNameInput"
-                      type="text"
-                      value={this.state.itemName}
-                      onChange={this.handleNameChange}
-                    />
-                  </Dropdown.Item>
-                  <Dropdown.Divider />
-                  <Dropdown.Item as="span">
-                    <div>
-                      <span className="propText">Type: </span>
-                      <span className="propValue">
-                        {this.props.type ? this.props.type.toUpperCase() : ''}
-                      </span>
-                    </div>
-                  </Dropdown.Item>
-                  <Dropdown.Item as="span">
-                    <div>
-                      <span className="propText">Size: </span>
-                      <span className="propValue">{PrettySize(this.props.size)}</span>
-                    </div>
-                  </Dropdown.Item>
-                  {/* <Dropdown.Item eventKey="4" as="span"><span className="propText">Added: </span></Dropdown.Item> */}
-                </Dropdown.Menu>
-              </Dropdown>
-            )}
+              <Dropdown.Menu>
+                <Dropdown.Item as="span">
+                  <input
+                    className="itemNameInput"
+                    type="text"
+                    value={this.state.itemName}
+                    onChange={this.handleNameChange}
+                  />
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item as="span">
+                  <div>
+                    <span className="propText">Type: </span>
+                    <span className="propValue">
+                      {this.props.type ? this.props.type.toUpperCase() : ''}
+                    </span>
+                  </div>
+                </Dropdown.Item>
+                <Dropdown.Item as="span">
+                  <div>
+                    <span className="propText">Size: </span>
+                    <span className="propValue">{PrettySize(this.props.size)}</span>
+                  </div>
+                </Dropdown.Item>
+                {/* <Dropdown.Item eventKey="4" as="span"><span className="propText">Added: </span></Dropdown.Item> */}
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
         </div>
         <div className="itemIcon">
           {this.props.isFolder ? this.getFolderIcon() : this.getFileIcon()}
