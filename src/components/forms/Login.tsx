@@ -14,6 +14,7 @@ import Settings from '../../lib/settings';
 import { analytics } from '../../lib/analytics';
 import { decryptPGP } from '../../lib/utilspgp';
 import AesUtil from '../../lib/AesUtil';
+import { storeTeamsInfo } from '../../services/teams.service';
 const openpgp = require('openpgp');
 
 interface LoginProps {
@@ -229,6 +230,10 @@ class Login extends React.Component<LoginProps> {
         Settings.set('xToken', data.token);
         Settings.set('xMnemonic', user.mnemonic);
         Settings.set('xUser', JSON.stringify(user));
+
+        if (user.teams) {
+          await storeTeamsInfo();
+        }
 
         if (data.userTeam && data.userTeam.isActivated) {
           const mnemonicDecode = Buffer.from(data.userTeam.bridge_mnemonic, 'base64').toString();
