@@ -72,7 +72,9 @@
       "no-multi-spaces": "error",
       "curly": "error",
       "keyword-spacing": "error",
-      "space-in-parens": ["error", "never"]
+      "space-in-parens": ["error", "never"],
+      "no-unused-vars": ["error"],
+      "no-useless-constructor": ["error"]
     }
   },
   "browserslist": {

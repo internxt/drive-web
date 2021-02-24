@@ -214,23 +214,13 @@ class Login extends React.Component<LoginProps> {
 
         // Manage succesfull login
         const user = {
-          userId: data.user.userId,
+          ...data.user,
+          mnemonic: decryptTextWithKey(data.user.mnemonic, this.state.password),
           email: this.state.email,
-          mnemonic: data.user.mnemonic,
-          root_folder_id: data.user.root_folder_id,
-          storeMnemonic: data.user.storeMnemonic,
-          name: data.user.name,
-          lastname: data.user.lastname,
-          uuid: data.user.uuid,
           privateKey: privkeyDecrypted,
           publicKey: publicKey,
-          revocationKey: revocateKey,
-          credit: data.user.credit,
-          createdAt: data.user.createdAt,
-          registerCompleted: data.user.registerCompleted
+          revocationKey: revocateKey
         };
-
-        user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.password);
 
         if (this.props.handleKeySaved) {
           this.props.handleKeySaved(user);
