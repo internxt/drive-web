@@ -30,42 +30,34 @@ const AesFunctions = {
    * @param Buffer masterkey
    * @returns String encrypted text, base64 encoded
    */
-  encrypt(text, folderId, randomIv = false) {
+  encrypt(text, password, randomIv = false) {
     // load env variables for deterministic encrypt/decrypt
     const {
       REACT_APP_MAGIC_IV: MAGIC_IV,
       REACT_APP_MAGIC_SALT: MAGIC_SALT
     } = process.env;
-    const CRYPTO_KEY = process.env.REACT_APP_CRYPTO_SECRET2;
 
-    if (!CRYPTO_KEY || !MAGIC_IV || !MAGIC_SALT) {
+    if (!MAGIC_IV || !MAGIC_SALT) {
       throw Error('Missing secrets on ENV file');
     }
 
     // random initialization vector
-    const iv = randomIv
-      ? _crypto.randomBytes(16)
-      : Buffer.from(MAGIC_IV as string, 'hex');
+    const iv = randomIv ? _crypto.randomBytes(16) : Buffer.from(MAGIC_IV as string, 'hex');
 
     // random salt
-    const salt = randomIv
-      ? _crypto.randomBytes(64)
-      : Buffer.from(MAGIC_SALT as string, 'hex');
+    const salt = randomIv ? _crypto.randomBytes(64) : Buffer.from(MAGIC_SALT as string, 'hex');
 
     // derive encryption key: 32 byte key length
     // in assumption the masterkey is a cryptographic and NOT a password there is no need for
     // a large number of iterations. It may can replaced by HKDF
     // the value of 2145 is randomly chosen!
-    const key = _crypto.pbkdf2Sync(`${CRYPTO_KEY}-${folderId}`, salt, 2145, 32, 'sha512');
+    const key = _crypto.pbkdf2Sync(`${password}`, salt, 9999, 32, 'sha512');
 
     // AES 256 GCM Mode
     const cipher = _crypto.createCipheriv('aes-256-gcm', key, iv);
 
     // encrypt the given text
-    const encrypted = Buffer.concat([
-      cipher.update(text, 'utf8'),
-      cipher.final()
-    ]);
+    const encrypted = Buffer.concat([cipher.update(text, 'utf8'), cipher.final()]);
 
     // extract the auth tag
     const tag = cipher.getAuthTag();
@@ -80,14 +72,7 @@ const AesFunctions = {
    * @param Buffer masterkey
    * @returns String decrypted (original) text
    */
-  decrypt(encdata, folderId) {
-    // load env variables for deterministic encrypt/decrypt
-    const CRYPTO_KEY = process.env.REACT_APP_CRYPTO_SECRET2;
-
-    if (!CRYPTO_KEY) {
-      throw Error('Missing secrets on ENV file');
-    }
-
+  decrypt(encdata, password) {
     // base64 decoding
     const bData = Buffer.from(encdata, 'base64');
 
@@ -97,24 +82,13 @@ const AesFunctions = {
     const tag = bData.slice(80, 96);
     const text = bData.slice(96);
 
-    if (
-      salt.length === 0 ||
-      iv.length === 0 ||
-      tag.length === 0 ||
-      text.length === 0
-    ) {
+    if (salt.length === 0 || iv.length === 0 || tag.length === 0 || text.length === 0) {
       // One empty param makes Node crash
       throw new Error('Length 0, cannot decrypt');
     }
 
     // derive key using; 32 byte key length
-    const key = _crypto.pbkdf2Sync(
-      `${CRYPTO_KEY}-${folderId}`,
-      salt,
-      2145,
-      32,
-      'sha512'
-    );
+    const key = _crypto.pbkdf2Sync(password, salt, 9999, 32, 'sha512');
 
     // AES 256 GCM Mode
     const decipher = _crypto.createDecipheriv('aes-256-gcm', key, iv);

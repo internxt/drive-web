@@ -76,9 +76,9 @@ class Login extends React.Component<LoginProps> {
     let isValid = true;
     // Email validation
 
-    if (this.state.email.length < 5 || !this.validateEmail(this.state.email)) {isValid = false;}
+    if (this.state.email.length < 5 || !this.validateEmail(this.state.email)) { isValid = false; }
     // Pass length check
-    if (this.state.password.length < 1) {isValid = false;}
+    if (this.state.password.length < 1) { isValid = false; }
 
     return isValid;
   }
