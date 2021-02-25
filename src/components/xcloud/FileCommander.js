@@ -239,7 +239,7 @@ class FileCommander extends React.Component {
           toast.warn(`"${errmsg}"`);
         }
 
-        let idTeam = this.props.namePath[this.props.namePath.length -1].id_team;
+        let idTeam = this.props.namePath[this.props.namePath.length - 1].id_team;
 
         if (idTeam) {
           this.props.getFolderContent(this.props.currentFolderId, true, idTeam);

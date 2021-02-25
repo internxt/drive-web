@@ -202,7 +202,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                 <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                 <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>
-                {this.state.isAdmin ? <Dropdown.Item onClick={(e) => { history.push('/teams');; }}>Teams</Dropdown.Item> : ''}
+                {this.state.isAdmin ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Teams</Dropdown.Item> : ''}
                 <Dropdown.Item onClick={(e) => {
                   function getOperatingSystem() {
                     let operatingSystem = 'Not known';

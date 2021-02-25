@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { Alert } from 'react-bootstrap';
 import $ from 'jquery';
 import _ from 'lodash';
 import fileDownload from 'js-file-download';
@@ -24,7 +23,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
 import { getUserData } from '../../lib/analytics';
-import { clearLocalStorage } from '../../lib/localStorageUtils';
 import Settings from '../../lib/settings';
 
 class XCloud extends React.Component {
@@ -33,7 +31,6 @@ class XCloud extends React.Component {
     email: '',
     isAuthorized: false,
     isInitialized: false,
-    isActivated: null,
     isTeam: this.props.isTeam,
     token: '',
     chooserModalOpen: false,
@@ -58,11 +55,6 @@ class XCloud extends React.Component {
     if (!this.props.user || !this.props.isAuthenticated) {
       history.push('/login');
     } else {
-      this.isUserActivated().then((data) => {
-        // If user is signed in but is not activated set property isActivated to false
-        const isActivated = data.activated;
-
-        if (isActivated) {
           if (!this.props.user.root_folder_id) {
             // Initialize user in case that is not done yet
             this.userInitialization()
@@ -80,7 +72,7 @@ class XCloud extends React.Component {
             this.setState({ currentFolderId: this.props.user.root_folder_id });
           }
 
-          const team = JSON.parse(localStorage.getItem('xTeam'));
+      const team = Settings.getTeams();
 
           if (!team) {
             this.getTeamByUser().then((team) => {
@@ -92,17 +84,10 @@ class XCloud extends React.Component {
           } else if (team && !team.root_folder_id) {
             this.teamInitialization();
             this.setState({ currentFolderId: this.props.user.root_folder_id });
-
           }
 
-          this.setState({ isActivated, isInitialized: true });
+      this.setState({ isInitialized: true });
         }
-      }).catch((error) => {
-        console.log('Error getting user activation status: ' + error);
-        clearLocalStorage();
-        history.push('/login');
-      });
-    }
   };
 
   handleChangeWorkspace = (event) => {
@@ -143,31 +128,21 @@ class XCloud extends React.Component {
   }
 
   teamInitialization = () => {
-    return new Promise((resolve, reject) => {
-      fetch('/api/teams/initialize', {
+    const xTeam = Settings.getTeams();
+
+    return fetch('/api/teams/initialize', {
         method: 'post',
-        headers: getHeaders(true, true),
-        body: JSON.stringify({
-          email: JSON.parse(localStorage.getItem('xTeam') || '{}').user,
-          mnemonic: JSON.parse(localStorage.getItem('xTeam') || '{}').mnemonic
-        })
+      headers: getHeaders(true, true, false),
+      body: JSON.stringify({ email: xTeam.bridge_user, mnemonic: xTeam.bridge_mnemonic })
       }).then((response) => {
         if (response.status === 200) {
-          response.json().then((body) => {
-            const xteam = localStorage.getItem('xTeam');
-            const xTeamJson = JSON.parse(xteam);
-
-            xTeamJson.root_folder_id = body.userData.root_folder_id;
-            localStorage.setItem('xTeam', JSON.stringify(xTeamJson));
-            resolve(body);
+        return response.json().then((body) => {
+          xTeam.root_folder_id = body.userData.root_folder_id;
+          Settings.set('xTeam', JSON.stringify(xTeam));
+          return body;
           });
-        } else {
-          reject(null);
         }
-      }).then(folder => {
-      }).catch((error) => {
-        reject(error);
-      });
+      return;
     });
   }
 
@@ -1042,7 +1017,7 @@ class XCloud extends React.Component {
 
   render() {
     // Check authentication
-    if (this.props.isAuthenticated && this.state.isActivated && this.state.isInitialized) {
+    if (this.props.isAuthenticated && this.state.isInitialized) {
       return (
         <div className="App flex-column">
           <NavigationBar
@@ -1170,17 +1145,6 @@ class XCloud extends React.Component {
             <h2>
               Please <Link to="/login">login</Link> into your Internxt Drive account
             </h2>
-          </div>
-        );
-      }
-      // User not activated
-      if (this.state.isActivated === false) {
-        return (
-          <div className="App">
-            <Alert variant="danger">
-              <h3>Your account needs to be activated!</h3>
-              <p> Search your mail inbox for activation mail and follow its instructions </p>
-            </Alert>
           </div>
         );
       }

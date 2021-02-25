@@ -180,7 +180,6 @@ class New extends React.Component<NewProps, NewState> {
       const encPrivateKey = AesUtil.encrypt(privateKeyArmored, this.state.register.password, false);
       const codpublicKey = Buffer.from(publicKeyArmored).toString('base64');
 
-      ;
       const codrevocationKey = Buffer.from(revocationCertificate).toString('base64');
 
       return fetch('/api/register', {

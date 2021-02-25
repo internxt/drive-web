@@ -235,7 +235,7 @@ class Login extends React.Component<LoginProps> {
           await storeTeamsInfo();
         }
 
-        if (data.userTeam && data.userTeam.isActivated) {
+        if (data.userTeam) {
           const mnemonicDecode = Buffer.from(data.userTeam.bridge_mnemonic, 'base64').toString();
           const mnemonicDecrypt = await decryptPGP(mnemonicDecode);
 
@@ -251,8 +251,6 @@ class Login extends React.Component<LoginProps> {
 
           Settings.set('xTeam', JSON.stringify(team));
           Settings.set('xTokenTeam', data.tokenTeam);
-        } else {
-          console.error('NOT HAVE A TEAM');
         }
 
         window.analytics.identify(data.user.uuid, {

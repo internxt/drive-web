@@ -76,7 +76,8 @@
       "keyword-spacing": "error",
       "space-in-parens": ["error", "never"],
       "no-unused-vars": ["error"],
-      "no-useless-constructor": ["error"]
+      "no-useless-constructor": ["error"],
+      "no-extra-semi": ["error"]
     }
   },
   "browserslist": {
