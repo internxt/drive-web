@@ -11,7 +11,7 @@ import async from 'async';
 import FileCommander from './FileCommander';
 import NavigationBar from '../navigationBar/NavigationBar';
 import history from '../../lib/history';
-import { removeAccents } from '../../lib/utils';
+import { encryptText, removeAccents } from '../../lib/utils';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 import PopupShare from '../PopupShare';
@@ -25,6 +25,8 @@ import axios from 'axios'
 
 import { getUserData } from '../../lib/analytics'
 import Settings from '../../lib/settings';
+
+import { Environment } from 'inxt-js'
 
 class XCloud extends React.Component {
 
@@ -470,66 +472,20 @@ class XCloud extends React.Component {
         folder_id: pcb.props.rawItem.folder_id,
         platform: 'web'
       })
-      axios.get(`/api/storage/file/${id}`, {
-        onDownloadProgress(pe) {
-          if (pcb) {
-            const size = pcb.props.rawItem.size
-            const progress = Math.floor(100 * pe.loaded / size)
-            pcb.setState({ progress: progress })
-          }
-        },
-        responseType: 'blob'
-      }).then(res => {
-        if (res.status !== 200) {
-          throw res
-        }
 
-        window.analytics.track('file-download-finished', {
-          file_id: id,
-          email: getUserData().email,
-          file_size: res.data.size,
-          platform: 'web'
-        })
-        return { blob: res.data, filename: Buffer.from(res.headers['x-file-name'], 'base64').toString('utf8') }
-      }).then(({ blob, filename }) => {
-        fileDownload(blob, filename);
-        pcb.setState({ progress: 0 })
-        resolve()
-      }).catch(err => {
-        window.analytics.track('file-download-error', {
-          file_id: id,
-          email: getUserData().email,
-          msg: err.message,
-          platform: 'web'
-        });
-        if (err.response && err.response.status === 401) {
-          return history.push('/login')
-        } else {
-          err.response.data.text().then(result => {
-            const json = JSON.parse(result)
-            toast.warn(
-              'Error downloading file:\n' +
-              err.response.status +
-              ' - ' +
-              err.response.statusText +
-              '\n' +
-              json.message +
-              '\nFile id: ' +
-              id,
-            );
-          }).catch(textErr => {
-            toast.warn(
-              'Error downloading file:\n' +
-              err.response.status +
-              ' - ' +
-              err.response.statusText +
-              '\nFile id: ' +
-              id,
-            );
-          })
-        }
-        resolve()
-      })
+      const bucketId = pcb.props.bucket;
+      const fileId = pcb.props.rawItem.fileId;
+      const mnenomic = Settings.get("xMnemonic")
+
+      // TODO: put credentials
+      const config = {}
+
+      console.log("pcb props", pcb.props);
+
+      const env = new Environment(config);
+      
+      env.downloadFile(bucketId, fileId).then((blob) => fileDownload(blob, 'pruebita.txt'))
+
     });
   };
 
@@ -556,47 +512,55 @@ class XCloud extends React.Component {
 
       // Headers with Auth & Mnemonic
       let headers = getHeaders(true, true);
-      headers.delete('content-type');
+      // headers.delete('content-type');
 
       // Data
       const data = new FormData();
       data.append('xfile', file);
 
-      fetch(uploadUrl, {
-        method: 'POST',
-        headers: headers,
-        body: data,
-      })
-        .then(async (res) => {
-          let data;
-          try {
-            data = await res.json();
-            window.analytics.track('file-upload-finished', {
-              email: getUserData().email,
-              file_size: file.size,
-              file_type: file.type,
-              file_id: data.fileId
-            })
+      // TODO: put credentials
+      const config = {}
 
-          } catch (err) {
-            console.log(err)
-            window.analytics.track('file-upload-error', {
-              file_size: file.size,
-              file_type: file.type,
-              email: getUserData().email,
-              msg: err.message,
-              platform: 'web'
-            })
-            console.error('Upload response data is not a JSON', err);
-          }
-          if (data) {
-            return { res: res, data: data };
-          } else {
-            throw res;
-          }
+      const env = new Environment(config);
+
+      console.log('file', file);
+
+      const content = new Blob([file], { type: file.type });
+
+      const filenameSplitted = file.name.split(".");
+      const extension = filenameSplitted[1] ? filenameSplitted[1] : "";
+      const filename = filenameSplitted[0];
+
+      console.log(Settings.getUser());
+
+      env.uploadFile(Settings.getUser().bucket, file.name, file.size, 'eee', content)
+        .then((response) => {
+
+          console.log('createBucketEntryRes', response);
+
+          const fileId = response.id;
+          const bucket = response.bucket;
+          const name = encryptText(filename);
+          const folder_id = parentFolderId;
+          const size = file.size;
+          const encrypt_version = "";
+          const fileEntry = { fileId, file_id: fileId, bucket, size, folder_id, name, encrypt_version }
+
+          console.log('fileEntry', fileEntry);
+
+          const createFileEntry = () => {
+            const body = JSON.stringify({ file: fileEntry });
+            const params = { method: 'post', headers, body };
+            return fetch('/api/storage/file', params);
+          } 
+
+          createFileEntry()
+            .then(res => res.json())
+            .then(console.log)
+            .catch(console.error)
+          
         })
-        .then(({ res, data }) => resolve({ res, data }))
-        .catch(reject);
+
     });
   };
 

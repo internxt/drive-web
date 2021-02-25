@@ -184,6 +184,7 @@ class Login extends React.Component<LoginProps> {
           }).then(data => {
             // Manage succesfull login
             const user = {
+              ...data.user,
               userId: data.user.userId,
               email: this.state.email,
               mnemonic: data.user.mnemonic,
