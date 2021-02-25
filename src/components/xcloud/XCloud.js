@@ -105,7 +105,6 @@ class XCloud extends React.Component {
           currentFolderId: team.root_folder_id,
           isTeam: true,
           namePath: []
-
         });
       }
     } else {

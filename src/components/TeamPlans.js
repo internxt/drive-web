@@ -238,4 +238,6 @@ export default function TeamPlans(props: any) {
       </div>
     </div>;
   }
+
+  return <></>;
 }
