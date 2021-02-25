@@ -10,8 +10,8 @@ import uploadFileIcon from '../../assets/Dashboard-Icons/Upload.svg';
 import newFolder from '../../assets/Dashboard-Icons/Add-folder.svg';
 import deleteFile from '../../assets/Dashboard-Icons/Delete.svg';
 import share from '../../assets/Dashboard-Icons/Share.svg';
-// import teamsIcon from '../../assets/Dashboard-Icons/teamsIcon.svg';
-// import personalIcon from '../../assets/Dashboard-Icons/personalIcon.svg';
+import teamsIcon from '../../assets/Dashboard-Icons/teamsIcon.svg';
+import personalIcon from '../../assets/Dashboard-Icons/personalIcon.svg';
 
 import HeaderButton from './HeaderButton';
 
@@ -107,6 +107,8 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     }
 
     if (this.props.showFileButtons) {
+      const xTeam = Settings.exists('xTeam');
+
       this.setState({
         navbarItems: <Nav className="m-auto">
           <div className="top-bar">
@@ -120,6 +122,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
           <HeaderButton icon={deleteFile} name="Delete" clickHandler={this.props.deleteItems} />
           <HeaderButton icon={share} name="Share" clickHandler={this.props.shareItem} />
           <input id="uploadFileControl" type="file" onChange={this.props.uploadHandler} multiple={true} />
+          {xTeam && <HeaderButton icon={this.state.isTeam ? personalIcon : teamsIcon} name="Team" clickHandler={this.handleChangeWorkspace.bind(this)} />}
         </Nav>
       });
     }

@@ -40,6 +40,10 @@ export default class Settings {
     return localStorage.removeItem(key);
   }
 
+  static exists(key: string) {
+    return !!localStorage.getItem(key);
+  }
+
   static clear() {
     localStorage.removeItem('xUser');
     localStorage.removeItem('xMnemonic');
