@@ -100,7 +100,7 @@ class XCloud extends React.Component {
         this.teamInitialization();
 
       } else {
-        this.getFolderContent(team.root_folder_id);
+        this.getFolderContent(team.root_folder_id, true, true, true);
         this.setState({
           currentFolderId: team.root_folder_id,
           isTeam: true,
@@ -128,6 +128,10 @@ class XCloud extends React.Component {
 
   teamInitialization = () => {
     const xTeam = Settings.getTeams();
+
+    if (!Settings.exists('xTeam')) {
+      return;
+    }
 
     return fetch('/api/teams/initialize', {
         method: 'post',
@@ -396,6 +400,8 @@ class XCloud extends React.Component {
   };
 
   getFolderContent = async (rootId, updateNamePath = true, showLoading = true, isTeam = false) => {
+    await new Promise((resolve) => this.setState({ isLoading: showLoading }, () => resolve()));
+
     let welcomeFile = await fetch('/api/welcome', {
       method: 'get',
       headers: getHeaders(true, false, isTeam)
