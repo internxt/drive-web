@@ -30,7 +30,7 @@ class App extends React.Component {
     isActivated: false,
     isTeam: false
   }
-  // Method for set user in props.user and localStorage
+
   handleKeySaved = (user: JSON) => {
     Settings.set('xUser', JSON.stringify(user));
     this.setState({ isAuthenticated: true, user: user });

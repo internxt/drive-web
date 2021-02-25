@@ -178,27 +178,26 @@ class XCloud extends React.Component {
         headers: getHeaders(true, true),
         body: JSON.stringify({
           email: this.props.user.email,
-          mnemonic: localStorage.getItem('xMnemonic')
+          mnemonic: Settings.get('xMnemonic')
         })
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            // Successfull intialization
-            this.setState({ isInitialized: true });
-            // Set user with new root folder id
-            response.json().then((body) => {
-              let updatedUser = this.props.user;
+      }).then((response) => {
+        if (response.status === 200) {
+          // Successfull intialization
+          this.setState({ isInitialized: true });
+          // Set user with new root folder id
+          response.json().then((body) => {
+            let updatedUser = this.props.user;
 
-              updatedUser.root_folder_id = body.user.root_folder_id;
-              this.props.handleKeySaved(updatedUser);
-              resolve(body.user.root_folder_id);
-            });
-          } else {
-            reject(null);
-          }
-        }).then(folderId => {
-          this.getFolderContent(folderId);
-        })
+            updatedUser.root_folder_id = body.user.root_folder_id;
+            this.props.handleKeySaved(updatedUser);
+            resolve(body.user.root_folder_id);
+          });
+        } else {
+          reject(null);
+        }
+      }).then(folderId => {
+        this.getFolderContent(folderId);
+      })
         .catch((error) => {
           reject(error);
         });
@@ -941,7 +940,7 @@ class XCloud extends React.Component {
       headers: getHeaders(true, false, this.state.isTeam)
     };
 
-    if (selectedItems.length === 0) {return;}
+    if (selectedItems.length === 0) { return; }
     const deletionRequests = _.map(selectedItems, (v, i) => {
       if (v.onDelete) {
         return (next) => { v.onDelete(); next(); };

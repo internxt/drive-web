@@ -25,31 +25,31 @@ import Settings from '../../lib/settings';
 import customPrettySize from '../../lib/sizer';
 
 interface NavigationBarProps {
-    navbarItems: JSX.Element
-    showFileButtons?: boolean
-    showSettingsButton?: boolean
-    setSearchFunction?: any
-    uploadFile?: any
-    createFolder?: any
-    deleteItems?: any
-    shareItem?: any
-    uploadHandler?: any
-    showTeamSettings?: any
-    isTeam?: boolean
-    handleChangeWorkspace?: any
-    isAdmin?: boolean
-    isMember?: boolean
+  navbarItems: JSX.Element
+  showFileButtons?: boolean
+  showSettingsButton?: boolean
+  setSearchFunction?: any
+  uploadFile?: any
+  createFolder?: any
+  deleteItems?: any
+  shareItem?: any
+  uploadHandler?: any
+  showTeamSettings?: any
+  isTeam?: boolean
+  handleChangeWorkspace?: any
+  isAdmin?: boolean
+  isMember?: boolean
 }
 
 interface NavigationBarState {
-    navbarItems: JSX.Element
-    workspace: string
-    menuButton: any
-    barLimit: number
-    barUsage: number
-    isTeam: boolean
-    isAdmin: boolean
-    isMember: boolean
+  navbarItems: JSX.Element
+  workspace: string
+  menuButton: any
+  barLimit: number
+  barUsage: number
+  isTeam: boolean
+  isAdmin: boolean
+  isMember: boolean
 }
 
 class NavigationBar extends React.Component<NavigationBarProps, NavigationBarState> {
@@ -86,24 +86,17 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
   }
 
   componentDidMount() {
-    if (localStorage.getItem('xTeam')) {
-      const admin = JSON.parse(localStorage.getItem('xTeam') || '{}').isAdmin;
+    if (Settings.getTeams()) {
+      const admin = Settings.getTeams().isAdmin;
 
-      if (admin) {
-        this.setState({ isAdmin: true });
-
-      } else {
-        this.setState({ isAdmin: false });
-
-      }
+      this.setState({ isAdmin: !!admin });
     } else {
       this.setState({ isAdmin: true });
-
     }
-    let user = null;
+    let user: string;
 
     try {
-      user = JSON.parse(localStorage.xUser).email;
+      user = Settings.getUser().email;
       if (user == null) {
         throw new Error();
       }

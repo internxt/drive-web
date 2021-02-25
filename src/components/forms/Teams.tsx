@@ -14,6 +14,7 @@ import './Teams.scss';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 import Popup from 'reactjs-popup';
 import { encryptPGP } from '../../lib/utilspgp';
+import Settings from '../../lib/settings';
 
 interface Props {
     match?: any
@@ -104,7 +105,7 @@ class Teams extends React.Component<Props, State> {
         history.push('/login');
       }
 
-      if (localStorage.getItem('xTeam')) {
+      if (Settings.getTeams()) {
         this.setState({ template: this.renderTeamSettings.bind(this) });
       } else {
         this.setState({ template: this.renderPlans.bind(this) });
@@ -131,9 +132,10 @@ class Teams extends React.Component<Props, State> {
         headers: getHeaders(true, false)
       }).then((response) => {
         response.json().then(async (keys) => {
+          const xTeam = Settings.getTeams();
           //Datas
-          const bridgePass = JSON.parse(localStorage.getItem('xTeam') || '{}').password;
-          const mnemonicTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').mnemonic;
+          const bridgePass = xTeam.password;
+          const mnemonicTeam = xTeam.mnemonic;
 
           //Encrypt
           const EncryptBridgePass = await encryptPGP(bridgePass);
@@ -141,8 +143,8 @@ class Teams extends React.Component<Props, State> {
 
           const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
           const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');
-          const bridgeuser = JSON.parse(localStorage.getItem('xTeam') || '{}').user;
-          const idTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').idTeam;
+          const bridgeuser = xTeam.user;
+          const idTeam = xTeam.idTeam;
 
           await fetch('/api/teams/team-invitations', {
             method: 'POST',

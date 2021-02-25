@@ -14,5 +14,8 @@ export async function storeTeamsInfo() {
   if (userTeam && tokenTeams) {
     Settings.set('xTeam', userTeam);
     Settings.set('xTokenTeam', tokenTeams);
+  } else {
+    Settings.del('xTeam');
+    Settings.del('xTokenTeam');
   }
 }

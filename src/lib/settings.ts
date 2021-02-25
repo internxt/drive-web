@@ -14,6 +14,11 @@ export interface UserSettings {
   uuid: string
 }
 
+export interface TeamsSettings {
+  mnemonic: string
+  isAdmin: boolean
+}
+
 export default class Settings {
   static get(key: string): string | null {
     return localStorage.getItem(key);
@@ -27,6 +32,10 @@ export default class Settings {
     return JSON.parse(localStorage.getItem('xUser') || '{}');
   }
 
+  static getTeams(): TeamsSettings {
+    return JSON.parse(localStorage.getItem('xTeam') || '{}');
+  }
+
   static del(key: string) {
     return localStorage.removeItem(key);
   }
@@ -35,5 +44,7 @@ export default class Settings {
     localStorage.removeItem('xUser');
     localStorage.removeItem('xMnemonic');
     localStorage.removeItem('xToken');
+    localStorage.removeItem('xTeam');
+    localStorage.removeItem('xTokenTeam');
   }
 }

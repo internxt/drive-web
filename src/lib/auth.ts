@@ -13,7 +13,7 @@ function getHeaders(withAuth: Boolean, withMnemonic: Boolean, isTeam: Boolean = 
     }
 
     if (withMnemonic) {
-      headers.append('internxt-mnemonic', `${JSON.parse(localStorage.getItem('xTeam') || '{}').mnemonic}`);
+      headers.append('internxt-mnemonic', `${Settings.getTeams().mnemonic}`);
     }
   } else {
     if (withAuth) {
