@@ -95,9 +95,13 @@ class XCloud extends React.Component {
     const xUser = Settings.getUser();
 
     if (this.state.isTeam) {
-      this.getFolderContent(xUser.root_folder_id, false, true, false);
+      this.setState({ namePath: [{ name: 'All files', id: xUser.root_folder_id }] }, () => {
+        this.getFolderContent(xUser.root_folder_id, false, true, false);
+      });
     } else {
-      this.getFolderContent(xTeam.root_folder_id, false, true, true);
+      this.setState({ namePath: [{ name: 'All files', id: xTeam.root_folder_id }] }, () => {
+        this.getFolderContent(xTeam.root_folder_id, false, true, true);
+      });
     }
 
     this.setState({ isTeam: !this.state.isTeam });
@@ -443,13 +447,7 @@ class XCloud extends React.Component {
         ) {
           let folderName = '';
 
-          if (this.state.isTeam) {
-            const rootFolderIdTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').root_folder_id;
-
-            folderName = rootFolderIdTeam === data.id ? 'All Files' : data.name;
-          } else {
-            folderName = this.props.user.root_folder_id === data.id ? 'All Files' : data.name;
-          }
+          folderName = this.props.user.root_folder_id === data.id ? 'All Files' : data.name;
 
           this.setState({
             namePath: this.pushNamePath({
@@ -948,8 +946,7 @@ class XCloud extends React.Component {
 
   folderTraverseUp() {
     this.setState(this.popNamePath(), () => {
-      console.log('getFolderContent 17');
-      this.getFolderContent(_.last(this.state.namePath).id, false, _.last(this.state.namePath).id_team);
+      this.getFolderContent(_.last(this.state.namePath).id, false, true, this.state.isTeam);
     });
   }
 
