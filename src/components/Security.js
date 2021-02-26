@@ -60,11 +60,11 @@ class Security extends React.Component {
 
       let newBox = (() => {
         switch (buttonNumber) {
-        case 1: return this.boxStep1();
-        case 2: return this.boxStep2();
-        case 3: return this.boxStep3();
-        case 4: return this.boxStep4();
-        default:
+          case 1: return this.boxStep1();
+          case 2: return this.boxStep2();
+          case 3: return this.boxStep3();
+          case 4: return this.boxStep4();
+          default:
         }
       })();
 

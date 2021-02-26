@@ -56,45 +56,45 @@ class FileCommander extends React.Component {
     let sortFunc = null;
 
     switch (sortType) {
-    case SORT_TYPES.DATE_ADDED:
+      case SORT_TYPES.DATE_ADDED:
       // At this time, default order is date added
-      break;
-    case SORT_TYPES.FILETYPE_ASC:
-      sortFunc = function (a, b) {
-        return a.type.localeCompare(b.type);
-      };
-      break;
-    case SORT_TYPES.FILETYPE_DESC:
-      sortFunc = function (a, b) {
-        return b.type.localeCompare(a.type);
-      };
-      break;
-    case SORT_TYPES.NAME_ASC:
-      if (this.state.selectedSortType === SORT_TYPES.NAME_ASC) {
-        this.setState({ selectedSortType: SORT_TYPES.NAME_DESC });
-        return sortType(SORT_TYPES.NAME_DESC);
-      }
-      sortFunc = function (a, b) {
-        return compare({ order: 'asc' })(a.name, b.name);
-      };
-      break;
-    case SORT_TYPES.NAME_DESC:
-      sortFunc = function (a, b) {
-        return compare({ order: 'desc' })(a.name, b.name);
-      };
-      break;
-    case SORT_TYPES.SIZE_ASC:
-      sortFunc = function (a, b) {
-        return a.size - b.size;
-      };
-      break;
-    case SORT_TYPES.SIZE_DESC:
-      sortFunc = function (a, b) {
-        return a.size - b.size;
-      };
-      break;
-    default:
-      break;
+        break;
+      case SORT_TYPES.FILETYPE_ASC:
+        sortFunc = function (a, b) {
+          return a.type.localeCompare(b.type);
+        };
+        break;
+      case SORT_TYPES.FILETYPE_DESC:
+        sortFunc = function (a, b) {
+          return b.type.localeCompare(a.type);
+        };
+        break;
+      case SORT_TYPES.NAME_ASC:
+        if (this.state.selectedSortType === SORT_TYPES.NAME_ASC) {
+          this.setState({ selectedSortType: SORT_TYPES.NAME_DESC });
+          return sortType(SORT_TYPES.NAME_DESC);
+        }
+        sortFunc = function (a, b) {
+          return compare({ order: 'asc' })(a.name, b.name);
+        };
+        break;
+      case SORT_TYPES.NAME_DESC:
+        sortFunc = function (a, b) {
+          return compare({ order: 'desc' })(a.name, b.name);
+        };
+        break;
+      case SORT_TYPES.SIZE_ASC:
+        sortFunc = function (a, b) {
+          return a.size - b.size;
+        };
+        break;
+      case SORT_TYPES.SIZE_DESC:
+        sortFunc = function (a, b) {
+          return a.size - b.size;
+        };
+        break;
+      default:
+        break;
     }
     this.setState({ selectedSortType: sortType });
     this.props.setSortFunction(sortFunc);
@@ -242,8 +242,10 @@ class FileCommander extends React.Component {
         let idTeam = this.props.namePath[this.props.namePath.length - 1].id_team;
 
         if (idTeam) {
+          console.log('getFolderContent 1');
           this.props.getFolderContent(this.props.currentFolderId, true, idTeam);
         } else {
+          console.log('getFolderContent 2');
           this.props.getFolderContent(this.props.currentFolderId);
         }
       }
@@ -432,7 +434,7 @@ class FileCommander extends React.Component {
           onDragLeave={this.handleDragLeave}
           onDrop={this.handleDrop}
         >
-          {this.props.isLoading ? <LoadingFileExplorer /> : list.length > 0 ? (
+          {list.length > 0 ? (
             list.map((item, i) => {
               return (
                 <FileCommanderItem
@@ -482,6 +484,7 @@ class FileCommander extends React.Component {
             </div>
           )}
         </div>
+        {this.props.isLoading ? <div className="loading-layer"><LoadingFileExplorer /></div> : <></>}
       </div>
     );
   }

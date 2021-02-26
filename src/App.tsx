@@ -27,8 +27,7 @@ class App extends React.Component {
     token: '',
     user: {},
     isAuthenticated: false,
-    isActivated: false,
-    isTeam: false
+    isActivated: false
   }
 
   handleKeySaved = (user: JSON) => {
@@ -96,8 +95,7 @@ class App extends React.Component {
             isAuthenticated={this.state.isAuthenticated}
             user={this.state.user}
             isActivated={this.state.isActivated}
-            handleKeySaved={this.handleKeySaved}
-            isTeam={this.state.isTeam} />
+            handleKeySaved={this.handleKeySaved} />
           } />
           <Route exact path='/remove' render={(props: any) => <Remove {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
           <Route exact path='/:token([a-z0-9]{10})' render={(props) => <Share {...props} />} />

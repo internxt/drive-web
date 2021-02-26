@@ -188,19 +188,19 @@ class FileCommanderItem extends React.Component {
   resetMetadataChanges = (event, reset) => {
     event.stopPropagation();
     switch (reset) {
-    case 'icon':
-      $('#iconToggle label').removeClass('active');
-      this.setState({ selectedIcon: 0 });
-      break;
-    case 'color':
-      $('#colorToggle label').removeClass('active');
-      this.setState({ selectedColor: '' });
-      break;
-    default:
-      $('#iconToggle label').removeClass('active');
-      $('#colorToggle label').removeClass('active');
-      this.setState({ selectedColor: '', selectedIcon: 0 });
-      break;
+      case 'icon':
+        $('#iconToggle label').removeClass('active');
+        this.setState({ selectedIcon: 0 });
+        break;
+      case 'color':
+        $('#colorToggle label').removeClass('active');
+        this.setState({ selectedColor: '' });
+        break;
+      default:
+        $('#iconToggle label').removeClass('active');
+        $('#colorToggle label').removeClass('active');
+        this.setState({ selectedColor: '', selectedIcon: 0 });
+        break;
     }
   };
 

@@ -35,7 +35,7 @@ interface NavigationBarProps {
   shareItem?: any
   uploadHandler?: any
   showTeamSettings?: any
-  isTeam?: boolean
+  isTeam: boolean
   handleChangeWorkspace?: any
   isAdmin?: boolean
   isMember?: boolean
@@ -85,6 +85,25 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     }
   }
 
+  getNavBarItems(isTeam: boolean) {
+    const xTeam = Settings.exists('xTeam');
+
+    return <Nav className="m-auto">
+      <div className="top-bar">
+        <div className="search-container">
+          <input alt="Search files" className="search" required style={{ backgroundImage: 'url(' + search + ')' }} onChange={this.props.setSearchFunction} />
+        </div>
+      </div>
+
+      <HeaderButton icon={uploadFileIcon} name="Upload file" clickHandler={this.props.uploadFile} />
+      <HeaderButton icon={newFolder} name="New folder" clickHandler={this.props.createFolder} />
+      <HeaderButton icon={deleteFile} name="Delete" clickHandler={this.props.deleteItems} />
+      <HeaderButton icon={share} name="Share" clickHandler={this.props.shareItem} />
+      <input id="uploadFileControl" type="file" onChange={this.props.uploadHandler} multiple={true} />
+      {xTeam && <HeaderButton icon={isTeam ? personalIcon : teamsIcon} name="Team" clickHandler={this.handleChangeWorkspace.bind(this)} />}
+    </Nav>;
+  }
+
   componentDidMount() {
     if (Settings.getTeams()) {
       const admin = Settings.getTeams().isAdmin;
@@ -107,23 +126,8 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     }
 
     if (this.props.showFileButtons) {
-      const xTeam = Settings.exists('xTeam');
-
       this.setState({
-        navbarItems: <Nav className="m-auto">
-          <div className="top-bar">
-            <div className="search-container">
-              <input alt="Search files" className="search" required style={{ backgroundImage: 'url(' + search + ')' }} onChange={this.props.setSearchFunction} />
-            </div>
-          </div>
-
-          <HeaderButton icon={uploadFileIcon} name="Upload file" clickHandler={this.props.uploadFile} />
-          <HeaderButton icon={newFolder} name="New folder" clickHandler={this.props.createFolder} />
-          <HeaderButton icon={deleteFile} name="Delete" clickHandler={this.props.deleteItems} />
-          <HeaderButton icon={share} name="Share" clickHandler={this.props.shareItem} />
-          <input id="uploadFileControl" type="file" onChange={this.props.uploadHandler} multiple={true} />
-          {xTeam && <HeaderButton icon={this.state.isTeam ? personalIcon : teamsIcon} name="Team" clickHandler={this.handleChangeWorkspace.bind(this)} />}
-        </Nav>
+        navbarItems: this.getNavBarItems(false)
       });
     }
 
@@ -152,22 +156,18 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
 
   componentDidUpdate(prevProps) {
     if (this.props.isTeam !== prevProps.isTeam) {
-      this.getUsage(this.props.isTeam);
-      this.setState({ isTeam: this.props.isTeam || false });
+      this.setState({
+        isTeam: this.props.isTeam,
+        navbarItems: this.getNavBarItems(this.props.isTeam)
+      }, () => {
+        this.getUsage(this.props.isTeam);
+      });
     }
   }
 
-  handleChangeWorkspace(e) {
-    if (this.state.isTeam) {
-      this.setState({ workspace: 'My Workspace', isTeam: false }, () => {
-        this.props.handleChangeWorkspace && this.props.handleChangeWorkspace(this.state.isTeam);
-      });
-    } else {
-      this.setState({ workspace: 'Team Workspace', isTeam: true }, () => {
-        this.props.handleChangeWorkspace && this.props.handleChangeWorkspace(this.state.isTeam);
-      });
-    }//
-  }//
+  handleChangeWorkspace() {
+    this.props.handleChangeWorkspace && this.props.handleChangeWorkspace();
+  }
 
   render() {
     let user: any = null;
@@ -221,19 +221,19 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                   console.log(getOperatingSystem());
 
                   switch (getOperatingSystem()) {
-                  case 'WindowsOS':
-                    window.location.href = 'https://internxt.com/downloads/drive.exe';
-                    break;
-                  case 'MacOS':
-                    window.location.href = 'https://internxt.com/downloads/drive.dmg';
-                    break;
-                  case 'Linux':
-                  case 'UNIXOS':
-                    window.location.href = 'https://internxt.com/downloads/drive.deb';
-                    break;
-                  default:
-                    window.location.href = 'https://internxt.com/downloads/';
-                    break;
+                    case 'WindowsOS':
+                      window.location.href = 'https://internxt.com/downloads/drive.exe';
+                      break;
+                    case 'MacOS':
+                      window.location.href = 'https://internxt.com/downloads/drive.dmg';
+                      break;
+                    case 'Linux':
+                    case 'UNIXOS':
+                      window.location.href = 'https://internxt.com/downloads/drive.deb';
+                      break;
+                    default:
+                      window.location.href = 'https://internxt.com/downloads/';
+                      break;
                   }
 
                 }}>Download</Dropdown.Item>
