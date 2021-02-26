@@ -494,74 +494,96 @@ class XCloud extends React.Component {
     $('input#uploadFileControl').trigger('click');
   };
 
-  upload = (file, parentFolderId) => {
-    return new Promise((resolve, reject) => {
-      if (!parentFolderId) {
-        return reject(Error('No folder ID provided'));
-      }
+  getEnvironmentConfig = () => {
+    const { email, mnemonic, userId } = Settings.getUser();
+    const bridgeUrl = "https://api.internxt.com";
+    const bridgeUser = email;
+    const bridgePass = userId;
+    const encryptionKey = mnemonic;
+    return { bridgeUser, bridgePass, bridgeUrl, encryptionKey };
+  }
 
-      window.analytics.track('file-upload-start', {
-        file_size: file.size,
-        file_type: file.type,
-        folder_id: parentFolderId,
-        email: getUserData().email,
-        platform: 'web'
-      })
+  trackFileUploadStart = (file, parentFolderId) => {
+    window.analytics.track('file-upload-start', {
+      file_size: file.size,
+      file_type: file.type,
+      folder_id: parentFolderId,
+      email: getUserData().email,
+      platform: 'web'
+    });
+  }
 
-      const uploadUrl = `/api/storage/folder/${parentFolderId}/upload`;
+  trackFileUploadFinished = (file) => {
+    console.log('file', file);
+    window.analytics.track('file-upload-finished', {
+      email: getUserData().email,
+      file_size: file.size,
+      file_type: file.type,
+      file_id: file.id
+    })
+  }
 
-      // Headers with Auth & Mnemonic
-      let headers = getHeaders(true, true);
-      // headers.delete('content-type');
+  trackFileUploadError = (file, parentFolderId, msg) => {
+    window.analytics.track('file-upload-error', {
+      file_size: file.size,
+      file_type: file.type,
+      folder_id: parentFolderId,
+      email: getUserData().email,
+      msg,
+      platform: 'web'
+    })
+  }
 
-      // Data
-      const data = new FormData();
-      data.append('xfile', file);
+  upload = async (file, parentFolderId) => {
 
-      // TODO: put credentials
-      const config = {}
+    if(!parentFolderId) {
+      throw new Error('No folder ID provided');
+    }
 
-      const env = new Environment(config);
+    try {
+      this.trackFileUploadStart(file, parentFolderId);
 
-      console.log('file', file);
+      const headers = getHeaders(true, true);
+      const env = new Environment(this.getEnvironmentConfig());
 
       const content = new Blob([file], { type: file.type });
+      const response = await env.uploadFile(Settings.getUser().bucket, file.name, file.size, 'eee', content);
 
       const filenameSplitted = file.name.split(".");
       const extension = filenameSplitted[1] ? filenameSplitted[1] : "";
-      const filename = filenameSplitted[0];
+      const [filename] = filenameSplitted;
 
-      console.log(Settings.getUser());
+      const fileId = response.id;
+      const bucket = response.bucket;
+      const name = encryptText(filename);
+      const folder_id = parentFolderId;
+      const { size, type } = file;
+      const encrypt_version = "";
+      // TODO: fix mismatched fileId fields in server and remove file_id here
+      const fileEntry = { fileId, file_id: fileId, type: extension, bucket, size, folder_id, name, encrypt_version }
 
-      env.uploadFile(Settings.getUser().bucket, file.name, file.size, 'eee', content)
-        .then((response) => {
+      const createFileEntry = () => {
+        const body = JSON.stringify({ file: fileEntry });
+        const params = { method: 'post', headers, body };
+        return fetch('/api/storage/file', params);
+      } 
 
-          console.log('createBucketEntryRes', response);
+      let res;
+      const data = await createFileEntry().then(response => {
+        res = response;
+        return res.json();
+      });
 
-          const fileId = response.id;
-          const bucket = response.bucket;
-          const name = encryptText(filename);
-          const folder_id = parentFolderId;
-          const size = file.size;
-          const encrypt_version = "";
-          const fileEntry = { fileId, file_id: fileId, bucket, size, folder_id, name, encrypt_version }
+      this.trackFileUploadFinished({ size, type, id: data.id });
 
-          console.log('fileEntry', fileEntry);
+      return { res, data };
+      
+    } catch (err) {
+      this.trackFileUploadError(file, parentFolderId, err.message);
+      toast.warn(`File upload error. Reason: ${err.message}`);
 
-          const createFileEntry = () => {
-            const body = JSON.stringify({ file: fileEntry });
-            const params = { method: 'post', headers, body };
-            return fetch('/api/storage/file', params);
-          } 
-
-          createFileEntry()
-            .then(res => res.json())
-            .then(console.log)
-            .catch(console.error)
-          
-        })
-
-    });
+      throw err;
+    }
   };
 
   handleUploadFiles = (files, parentFolderId) => {
