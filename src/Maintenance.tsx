@@ -1,5 +1,5 @@
-import React from "react";
-import "./Maintenance.scss";
+import React from 'react';
+import './Maintenance.scss';
 
 function Maintenance() {
   return <div className="Maintenance">

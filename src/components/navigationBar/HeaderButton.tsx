@@ -1,5 +1,5 @@
-import * as React from 'react'
-import './HeaderButton.scss'
+import * as React from 'react';
+import './HeaderButton.scss';
 
 interface HeaderButtonProps {
     icon: string
@@ -8,14 +8,14 @@ interface HeaderButtonProps {
 }
 
 const HeaderButton = (props: HeaderButtonProps) => {
-    return (
-        <div className="HeaderButton" onClick={props.clickHandler} style={{
-            backgroundImage: `url(${props.icon})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center'
-        }}>
-        </div>
-    )
-}
+  return (
+    <div className="HeaderButton" onClick={props.clickHandler} style={{
+      backgroundImage: `url(${props.icon})`,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center'
+    }}>
+    </div>
+  );
+};
 
-export default HeaderButton
+export default HeaderButton;

@@ -1,6 +1,6 @@
-import React from "react";
-import "./Loader.scss"
+import React from 'react';
+import './Loader.scss';
 
-const Loader = (props: any) => <div className={props.className}>Loading...</div>
+const Loader = (props: any) => <div className={props.className}>Loading...</div>;
 
 export default Loader;
