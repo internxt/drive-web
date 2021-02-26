@@ -454,39 +454,46 @@ class XCloud extends React.Component {
     });
   };
 
-  downloadFile = (id, _class, pcb) => {
-    return new Promise((resolve) => {
-      axios.interceptors.request.use((config) => {
-        const headers = getHeaders(true, true)
-        headers.forEach((value, key) => {
-          config.headers[key] = value
-        })
-        return config
-      })
-      window.analytics.track('file-download-start', {
-        file_id: pcb.props.rawItem.id,
-        file_name: pcb.props.rawItem.name,
-        file_size: pcb.props.rawItem.size,
-        file_type: pcb.props.type,
-        email: getUserData().email,
-        folder_id: pcb.props.rawItem.folder_id,
-        platform: 'web'
-      })
+  trackFileDownloadStart = (file_id, file_name, file_size, file_type, folder_id) => {
+    const email = getUserData().email;
+    const data = { file_id, file_name, file_size, file_type, email, folder_id, platform: 'web' };
+    window.analytics.track('file-download-start', data);
+  }
 
-      const bucketId = pcb.props.bucket;
-      const fileId = pcb.props.rawItem.fileId;
-      const mnenomic = Settings.get("xMnemonic")
+  trackFileDownloadError = (file_id, msg) => {
+    const email = getUserData().email;
+    const data = { file_id, email, msg, platform: 'web' };
+    window.analytics.track('file-download-error', data);
+  }
 
-      // TODO: put credentials
-      const config = {}
+  trackFileDownloadFinished = (file_id, file_size) => {
+    const email = getUserData().email;
+    const data = { file_id, file_size, email, platform: 'web' };
+    window.analytics.track('file-download-finished', data);
+  }
 
-      console.log("pcb props", pcb.props);
+  downloadFile = async (id, _class, pcb) => {
+    const fileId = pcb.props.rawItem.fileId;
+    const fileName = pcb.props.rawItem.name;
+    const fileSize = pcb.props.rawItem.size;
+    const folderId = pcb.props.rawItem.folder_id;
+    const fileType = pcb.props.type;
+    const bucketId = pcb.props.bucket;
 
-      const env = new Environment(config);
+    const completeFilename = fileType ? `${fileName}.${fileType}` : `${fileName}`;
+  
+    try {
+      this.trackFileDownloadStart(fileId, fileName, fileSize, fileType, folderId);
       
-      env.downloadFile(bucketId, fileId).then((blob) => fileDownload(blob, 'pruebita.txt'))
+      const fileBlob = await new Environment(this.getEnvironmentConfig()).downloadFile(bucketId, fileId);
+      fileDownload(fileBlob, completeFilename);
 
-    });
+      this.trackFileDownloadFinished(id, fileSize);
+    } catch (err) {
+      this.trackFileDownloadError(fileId, err.message);
+
+      toast.warn(`Error downloading file: \n Reason is ${err.message} \n File id: ${fileId}`);
+    } 
   };
 
   openUploadFile = () => {
