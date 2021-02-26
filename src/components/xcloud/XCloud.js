@@ -95,35 +95,12 @@ class XCloud extends React.Component {
     const xUser = Settings.getUser();
 
     if (this.state.isTeam) {
-      this.getFolderContent(xUser.root_folder_id, true, true, false);
+      this.getFolderContent(xUser.root_folder_id, false, true, false);
     } else {
-      this.getFolderContent(xTeam.root_folder_id, true, true, true);
+      this.getFolderContent(xTeam.root_folder_id, false, true, true);
     }
 
     this.setState({ isTeam: !this.state.isTeam });
-  }
-
-  teamInitialization = () => {
-    const xTeam = Settings.getTeams();
-
-    if (!Settings.exists('xTeam')) {
-      return;
-    }
-
-    return fetch('/api/teams/initialize', {
-      method: 'post',
-      headers: getHeaders(true, true, false),
-      body: JSON.stringify({ email: xTeam.bridge_user, mnemonic: xTeam.bridge_mnemonic })
-    }).then((response) => {
-      if (response.status === 200) {
-        return response.json().then((body) => {
-          xTeam.root_folder_id = body.userData.root_folder_id;
-          Settings.set('xTeam', JSON.stringify(xTeam));
-          return body;
-        });
-      }
-      return;
-    });
   }
 
   userInitialization = () => {
@@ -228,7 +205,7 @@ class XCloud extends React.Component {
     }
     this.setState({ searchFunction: func });
     console.log('getFolderContent 9');
-    this.getFolderContent(this.state.currentFolderId, false, true);
+    this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
   };
 
   createFolder = () => {
@@ -254,7 +231,7 @@ class XCloud extends React.Component {
           platform: 'web'
         });
         console.log('getFolderContent 10');
-        this.getFolderContent(this.state.currentFolderId, false, true);
+        this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
       }).catch((err) => {
         if (err.includes('already exists')) {
           toast.warn('Folder with same name already exists');
@@ -376,7 +353,7 @@ class XCloud extends React.Component {
   openFolder = (e) => {
     return new Promise((resolve) => {
       console.log('getFolderContent 11');
-      this.getFolderContent(e);
+      this.getFolderContent(e, true, true, this.state.isTeam);
       resolve();
     });
   };
@@ -400,7 +377,7 @@ class XCloud extends React.Component {
       } else {
         return res.json();
       }
-    }).then((data) => {
+    }).then(async (data) => {
       this.deselectAll();
 
       // Set new items list
@@ -856,7 +833,7 @@ class XCloud extends React.Component {
               this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
             }).finally(() => {
               console.log('getFolderContent 14');
-              this.getFolderContent(this.state.currentFolderId, false, true);
+              this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
             });
         },
         (err, results) => {
@@ -867,7 +844,7 @@ class XCloud extends React.Component {
           } else if (parentFolderId === currentFolderId) {
             resolve();
             console.log('getFolderContent 15');
-            this.getFolderContent(currentFolderId, false, true);
+            // this.getFolderContent(currentFolderId, false, true);
           } else {
             resolve();
           }
@@ -900,6 +877,7 @@ class XCloud extends React.Component {
 
   confirmDeleteItems = () => {
     const selectedItems = this.getSelectedItems();
+
     //const bucket = _.last(this.state.namePath).bucket;
     const fetchOptions = {
       method: 'DELETE',
@@ -930,7 +908,7 @@ class XCloud extends React.Component {
         throw err;
       } else {
         console.log('getFolderContent 16');
-        this.getFolderContent(this.state.currentFolderId, false, true);
+        this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
       }
     });
   };

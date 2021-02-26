@@ -105,7 +105,7 @@ class Teams extends React.Component<Props, State> {
         history.push('/login');
       }
 
-      if (Settings.getTeams()) {
+      if (Settings.exists('xTeam')) {
         this.setState({ template: this.renderTeamSettings.bind(this) });
       } else {
         this.setState({ template: this.renderPlans.bind(this) });

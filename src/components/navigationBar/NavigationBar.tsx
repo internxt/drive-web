@@ -105,7 +105,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
   }
 
   componentDidMount() {
-    if (Settings.getTeams()) {
+    if (Settings.exists('xTeam')) {
       const admin = Settings.getTeams().isAdmin;
 
       this.setState({ isAdmin: !!admin });
@@ -158,7 +158,8 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     if (this.props.isTeam !== prevProps.isTeam) {
       this.setState({
         isTeam: this.props.isTeam,
-        navbarItems: this.getNavBarItems(this.props.isTeam)
+        navbarItems: this.getNavBarItems(this.props.isTeam),
+        workspace: this.props.isTeam ? 'Team workspace' : 'My workspace'
       }, () => {
         this.getUsage(this.props.isTeam);
       });
@@ -181,6 +182,8 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
       history.push('/login');
       return '';
     }
+
+    const isAdmin = Settings.getTeams().isAdmin;
 
     return (
       <Navbar id="mainNavBar">
@@ -205,7 +208,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                 <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>
                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                 <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>
-                {this.state.isAdmin ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Teams</Dropdown.Item> : ''}
+                {isAdmin ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Teams</Dropdown.Item> : <></>}
                 <Dropdown.Item onClick={(e) => {
                   function getOperatingSystem() {
                     let operatingSystem = 'Not known';
