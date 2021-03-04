@@ -1,0 +1,106 @@
+.pay-crypto-box {
+  height: 430px;
+
+  .container-form {
+    .container-title {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.form-main {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-container-box {
+  background-color: white;
+  width: 472px !important;
+  border: solid 1px #eaeced;
+  border-radius: 6px;
+  padding: 40px !important;
+  height: 900px;
+}
+
+.xcloud-toast-info {
+  background-color: #4585f5 !important;
+}
+
+.login-container-box-forgot-password {
+  width: 550px !important;
+  padding: 40px !important;
+
+  > p {
+    margin: -30px auto;
+    font-size: 15px;
+  }
+}
+
+.referred-description {
+  text-align: justify;
+  color: #737880;
+  letter-spacing: -0.1px;
+  font-size: 14px;
+  line-height: 1.57;
+}
+
+.container-form,
+.popup--full-screen__content {
+  margin-top: 5px;
+
+  > .logo {
+    display: inline-block;
+
+    > img {
+      width: 30px;
+      height: 45px;
+    }
+  }
+
+  .container-title {
+    display: inline-block;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 45px;
+    vertical-align: bottom;
+  }
+
+  button {
+    background-color: #4585f5;
+    border-radius: 3.4px;
+    height: 49px;
+    padding: 10px 20px;
+    margin-right: 10px;
+    cursor: pointer;
+    outline: transparent;
+
+    &.on {
+      color: white;
+      box-shadow: 0 2px 3px 0 rgba(174, 199, 242, 0.62);
+      border: solid 0 #eaeced;
+    }
+
+    &.off {
+      background-color: #f7f7f7;
+      color: #5c5c5c;
+      border: solid 0;
+    }
+  }
+}
+
+.form-payment {
+  margin-top: 37px;
+}
+
+.form-payment-submit {
+  margin-top: 18px;
+}
+
+.menu-box {
+  margin-bottom: 21px;
+  margin-top: 20px;
+  padding: 0;
+}
