@@ -103,5 +103,5 @@
     "stylelint-config-standard": "^20.0.0",
     "stylelint-scss": "^3.17.2"
   },
-  "proxy": "https://drive.internxt.com"
+  "proxy": "http://localhost:8000"
 }
