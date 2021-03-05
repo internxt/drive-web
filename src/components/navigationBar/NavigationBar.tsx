@@ -208,6 +208,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                 {!Settings.exists('xTeam') && <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>}
                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                 <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>
+                <Dropdown.Item onClick={(e) => { history.push('/token'); }}>Token</Dropdown.Item>
                 {isAdmin ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Teams</Dropdown.Item> : <></>}
                 <Dropdown.Item onClick={(e) => {
                   function getOperatingSystem() {

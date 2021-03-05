@@ -11,6 +11,7 @@ interface ResetProps {
     isAuthenticated: Boolean
 }
 
+const plans = ['20GB - €0.89/month', '200GB - €3.49/month', '2TB - €8.99/month'];
 const planA = ['pay per month - €0.99/month', 'prepay 6 months - €0.95/month', 'prepay 12 months - €0.89/month'];
 const planB = ['pay per month - €4.49/month', 'prepay 6 months - €3.99/month', 'prepay 12 months - €3.49/month'];
 const planC = ['pay per month - €9.99/month', 'prepay 6 months - €9.49/month', 'prepay 12 months - €8.99/month'];
@@ -19,7 +20,7 @@ class PayToken extends React.Component<ResetProps> {
     state = {
       token: this.props.match.params.token,
       isValidToken: true,
-      planSelector: 'A',
+      planSelector: '0',
       email: '',
       finish: false,
       error: false
@@ -67,11 +68,11 @@ class PayToken extends React.Component<ResetProps> {
     renderSwitch = () => {
 
       switch (this.state.planSelector) {
-        case 'A':
+        case '0':
           return planA.map((item, index) => <option value={index}>{item}</option>);
-        case 'B':
+        case '1':
           return planB.map((item, index) => <option value={index}>{item}</option>);
-        case 'C':
+        case '2':
           return planC.map((item, index) => <option value={index}>{item}</option>);
       }
 
@@ -108,8 +109,6 @@ class PayToken extends React.Component<ResetProps> {
                         <option>INXT</option>
                       </Form.Control>
                     </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
                     <Form.Group as={Col} controlId="planSelector">
                       <Form.Label>What plan would you like to pay for</Form.Label>
                       <Form.Control
@@ -117,23 +116,11 @@ class PayToken extends React.Component<ResetProps> {
                         onChange={this.handleChange}
                         name="planSelector"
                       >
-                        <option value="A">20GB - €0.89/month</option>
-                        <option value="B">200GB - €3.49/month</option>
-                        <option value="C">2TB - €8.99/month</option>
+                        {plans.map((item, index) => <option value={index}>{item}</option>)}
                       </Form.Control>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row>
-                    <Form.Group as={Col} controlId="paymentLengthSelector">
-                      <Form.Label>How many months would you like to pay for? (minimum €10)</Form.Label>
-                      <Form.Control
-                        as="select"
-                        name="paymentLengthSelector"
-                      >
-                        {this.renderSwitch()}
-                      </Form.Control>
-                    </Form.Group>
-                  </Form.Row>
+
                   <Form.Row>
                     <Form.Group as={Col} controlId="email">
                       <Form.Label>Email Address for account to apply payment to</Form.Label>
@@ -144,6 +131,15 @@ class PayToken extends React.Component<ResetProps> {
                         value={this.state.email}
                         onChange={this.handleChange}
                       />
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="paymentLengthSelector">
+                      <Form.Label>How many months would you like to pay for?</Form.Label>
+                      <Form.Control
+                        as="select"
+                        name="paymentLengthSelector"
+                      >
+                        {this.renderSwitch()}
+                      </Form.Control>
                     </Form.Group>
                   </Form.Row>
                   <Form.Row>
