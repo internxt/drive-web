@@ -13,13 +13,13 @@ function Finish({ error }) {
         <p
           className="finish-title"
         >
-        Failed
+          Failed
         </p>
         <div>
           <img src={CancelIcon} alt="Check" style={styles}/>
         </div>
         <div>
-          Try again later, please
+          Try again later or contact support
         </div>
       </div>
       :
@@ -27,7 +27,7 @@ function Finish({ error }) {
         <p
           className="finish-title"
         >
-            Successfull
+          Successfull
         </p>
         <div>
           <img src={CheckIcon} alt="Check" style={styles}/>

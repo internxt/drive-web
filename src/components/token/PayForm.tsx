@@ -86,11 +86,11 @@ class PayToken extends React.Component<ResetProps> {
             :
             (<Container className="form-container-box pay-crypto-box">
               <div className="container-form">
-                <p className="container-title edit-password">Pay with Internxt Token</p>
+                <p className="container-title">Pay with Internxt Tokens and get 10% discount</p>
                 <div
                   className="referred-description py-3"
                 >
-                  We currently accept Internxt tokens for crypto payments with a minimum order size of 100€.
+                  We currently accept Internxt tokens for crypto payments with a minimum order size of 10€.
                 </div>
                 <div
                   className="referred-description py-3"
@@ -125,7 +125,7 @@ class PayToken extends React.Component<ResetProps> {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} controlId="paymentLengthSelector">
-                      <Form.Label>How many months would you like to pay for? (minimum $100)</Form.Label>
+                      <Form.Label>How many months would you like to pay for? (minimum €10)</Form.Label>
                       <Form.Control
                         as="select"
                         name="paymentLengthSelector"
