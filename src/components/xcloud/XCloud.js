@@ -485,7 +485,19 @@ class XCloud extends React.Component {
     try {
       this.trackFileDownloadStart(fileId, fileName, fileSize, fileType, folderId);
       
-      const fileBlob = await new Environment(this.getEnvironmentConfig()).downloadFile(bucketId, fileId);
+      const fileBlob = await new Environment(this.getEnvironmentConfig()).downloadFile(bucketId, fileId, {
+        progressCallback: (progress, downloadedBytes, totalBytes) => {
+          pcb.setState({ progress })
+        }, 
+        finishedCallback: (err) => {
+          if(err) {
+            pcb.setState({ progress: 0 })
+          }
+        }
+      });
+
+      pcb.setState({ progress: 0 })
+
       fileDownload(fileBlob, completeFilename);
 
       this.trackFileDownloadFinished(id, fileSize);
@@ -554,7 +566,22 @@ class XCloud extends React.Component {
       const env = new Environment(this.getEnvironmentConfig());
 
       const content = new Blob([file], { type: file.type });
-      const response = await env.uploadFile(Settings.getUser().bucket, file.name, file.size, 'eee', content);
+
+      const response = await new Promise((resolve, reject) => {
+        env.uploadFile(Settings.getUser().bucket, {
+          filename: file.name,
+          fileSize: file.size,
+          fileContent: content,
+          progressCallback: (progress, downloadedBytes, totalBytes) => {},
+          finishedCallback: (err, response) => {
+            if (err) {
+              reject(err)
+            } else {
+              resolve(response)
+            }
+          }
+        });
+      })
 
       const filenameSplitted = file.name.split(".");
       const extension = filenameSplitted[1] ? filenameSplitted[1] : "";
