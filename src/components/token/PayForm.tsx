@@ -1,47 +1,57 @@
 import React from 'react';
-import { Container } from 'react-bootstrap';
 import './PayForm.scss';
-import { Form, Col, Button } from 'react-bootstrap';
+import { Form, Col, Button, Container, Row } from 'react-bootstrap';
 import NavigationBar from '../navigationBar/NavigationBar';
 import history from '../../lib/history';
 import Finish from './finish/Finish';
+import { getTokenInfo } from '../../services/token.service';
+import Settings from '../../lib/settings';
+import { getHeaders } from '../../lib/auth';
 
 interface ResetProps {
     match?: any
     isAuthenticated: Boolean
 }
 
-const plans = ['20GB - €0.89/month', '200GB - €3.49/month', '2TB - €8.99/month'];
-const planA = ['pay per month - €0.99/month', 'prepay 6 months - €0.95/month', 'prepay 12 months - €0.89/month'];
-const planB = ['pay per month - €4.49/month', 'prepay 6 months - €3.99/month', 'prepay 12 months - €3.49/month'];
-const planC = ['pay per month - €9.99/month', 'prepay 6 months - €9.49/month', 'prepay 12 months - €8.99/month'];
+const plans = ['200GB - €3.49/month', '2TB - €8.99/month'];
+const planB = ['prepay 6 months - €3.99/month', 'prepay 12 months - €3.49/month'];
+const totalPlanB = [3.99*6, 3.49*12];
+const planC = ['prepay 6 months - €9.49/month', 'prepay 12 months - €8.99/month'];
+const totalPlanC = [9.49*6, 8.99*12];
 
 class PayToken extends React.Component<ResetProps> {
+
     state = {
       token: this.props.match.params.token,
-      isValidToken: true,
       planSelector: '0',
+      paySelector: '0',
       email: '',
       finish: false,
-      error: false
-    }
-
-    IsValidToken = (token: string) => {
-      return /^[a-z0-9]{512}$/.test(token) && this.state.isValidToken;
-    }
-
-    handleChange = (event: any) => {
-      this.setState({ [event.target.id]: event.target.value });
+      error: false,
+      inxtEUR: 1,
+      inxt: '',
+      wallet: ''
     }
 
     isLoggedIn = () => {
       return !(!localStorage.xToken);
     }
 
-    componentDidMount() {
+    async componentDidMount() {
       if (!this.isLoggedIn()) {
         history.push('/login');
       }
+
+      const user = Settings.getUser();
+
+      const tokenInfo = await getTokenInfo();
+      const tokenPrice = tokenInfo.INXT.quote.EUR.price;
+
+      this.setState({ inxtEUR: tokenPrice.toFixed(2), email: user.email });
+    }
+
+    handleChange = (event: any) => {
+      this.setState({ [event.target.id]: event.target.value });
     }
 
     parseSubmit = (e) => {
@@ -54,28 +64,74 @@ class PayToken extends React.Component<ResetProps> {
         object[key] = value;
       });
 
+      object['plan'] = plans[this.state.planSelector];
+
+      switch (this.state.planSelector) {
+        case '0':
+          object['pay'] = planB[this.state.planSelector];
+          break;
+        case '1':
+          object['pay'] = planC[this.state.planSelector];
+          break;
+      }
+
+      object['inxt'] = this.renderTotalINXT();
+
       console.log(object);
 
       var json = JSON.stringify(object);
 
-      fetch('/api/token/buy', { method: 'post', body: json }).then(ok => {
-        this.setState({ finish: true, error: false });
-      }).catch(err => {
-        this.setState({ finish: true, error: true });
-      });
+      return fetch('/api/token/buy', {
+        method: 'post',
+        headers: getHeaders(true, false),
+        body: json
+      })
+        .then(res => {
+          if (res.status !== 200) {
+            throw res;
+          }
+          this.setState({ finish: true, error: false });
+        }).catch(err => {
+          this.setState({ finish: true, error: true });
+        });
     }
 
     renderSwitch = () => {
+      switch (this.state.planSelector) {
+        case '0':
+          return planB.map((item, index) => <option value={index}>{item}</option>);
+        case '1':
+          return planC.map((item, index) => <option value={index}>{item}</option>);
+      }
+    };
+
+    calculateTotalEUR = ():number => {
+      let totalEUR = 0;
 
       switch (this.state.planSelector) {
         case '0':
-          return planA.map((item, index) => <option value={index}>{item}</option>);
+          totalEUR = totalPlanB[this.state.paySelector];
+          break;
         case '1':
-          return planB.map((item, index) => <option value={index}>{item}</option>);
-        case '2':
-          return planC.map((item, index) => <option value={index}>{item}</option>);
+          totalEUR = totalPlanC[this.state.paySelector];
+          break;
       }
 
+      return totalEUR;
+    }
+
+    calculateDiscount = ():number => {
+      return this.calculateTotalEUR() * 0.1;
+    }
+
+    renderTotalINXT = () => {
+      let totalEUR = this.calculateTotalEUR();
+
+      totalEUR -= (totalEUR*0.1);
+
+      const totalINXT = (totalEUR/this.state.inxtEUR).toFixed(2);
+
+      return totalINXT;
     };
 
     render() {
@@ -92,11 +148,14 @@ class PayToken extends React.Component<ResetProps> {
                   className="referred-description py-3"
                 >
                   We currently accept Internxt tokens for crypto payments with a minimum order size of 10€.
+                  <br/>
+                  Complete the crypto payment request form below and we'll email you with a crypto invoice.
                 </div>
+
                 <div
                   className="referred-description py-3"
                 >
-                  Complete the crypto payment request form below and we'll email you with a crypto invoice.
+                  Market price of Internxt Tokens: {this.state.inxtEUR} €
                 </div>
                 <Form className="form-payment" onSubmit={this.parseSubmit} >
                   <Form.Row>
@@ -132,14 +191,26 @@ class PayToken extends React.Component<ResetProps> {
                         onChange={this.handleChange}
                       />
                     </Form.Group>
-                    <Form.Group as={Col} controlId="paymentLengthSelector">
+                    <Form.Group as={Col} controlId="paySelector">
                       <Form.Label>How many months would you like to pay for?</Form.Label>
                       <Form.Control
                         as="select"
-                        name="paymentLengthSelector"
+                        onChange={this.handleChange}
+                        name="paySelector"
                       >
                         {this.renderSwitch()}
                       </Form.Control>
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row>
+                    <Form.Group as={Col} controlId="wallet">
+                      <Form.Label>Wallet from which you are send the INXT tokens</Form.Label>
+                      <Form.Control
+                        name="wallet"
+                        value={this.state.wallet}
+                        onChange={this.handleChange}
+                        required
+                      />
                     </Form.Group>
                   </Form.Row>
                   <Form.Row>
@@ -151,6 +222,26 @@ class PayToken extends React.Component<ResetProps> {
                       />
                     </Form.Group>
                   </Form.Row>
+
+                  <Container style={{ textAlign: 'right' }}>
+                    <Row>
+                      <Col sm={10}> EUR to pay:</Col>
+                      <Col> {this.calculateTotalEUR()} €</Col>
+                    </Row>
+                    <Row>
+                      <Col sm={10}> 10% Discount: </Col>
+                      <Col> {(this.calculateTotalEUR()*0.1).toFixed(2)} €</Col>
+                    </Row>
+                    <Row>
+                      <Col sm={10}> Total </Col>
+                      <Col> {this.calculateTotalEUR() - (this.calculateTotalEUR()*0.1).toFixed(2)} €</Col>
+                    </Row>
+                    <Row style={{ fontSize: '25px', fontWeight: 600 }}>
+                      <Col sm={10}> INXT to pay:</Col>
+                      <Col>  {this.renderTotalINXT()}</Col>
+                    </Row>
+                  </Container>
+
                   <Form.Row className="form-payment-submit">
                     <Form.Group as={Col}>
                       <Button
