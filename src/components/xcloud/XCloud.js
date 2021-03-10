@@ -479,7 +479,7 @@ class XCloud extends React.Component {
             platform: 'web'
           });
           console.log('getFolderContent 12');
-          this.getFolderContent(this.state.currentFolderId, false, true, true);
+          this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
         })
         .catch((error) => {
           console.log(`Error during folder customization. Error: ${error} `);
@@ -497,7 +497,7 @@ class XCloud extends React.Component {
             platform: 'web'
           });
           console.log('getFolderContent 13');
-          this.getFolderContent(this.state.currentFolderId, false, true, true);
+          this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
         })
         .catch((error) => {
           console.log(`Error during file customization. Error: ${error} `);
@@ -699,6 +699,8 @@ class XCloud extends React.Component {
 
       // Headers with Auth & Mnemonic
       let headers = getHeaders(true, true, this.state.isTeam);
+
+      console.log('HEADERS', headers);
 
       headers.delete('content-type');
 
