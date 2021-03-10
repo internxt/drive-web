@@ -13,9 +13,8 @@ import { toast } from 'react-toastify';
 import './Teams.scss';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 import Popup from 'reactjs-popup';
-import { encryptPGP, decryptPGP } from '../../lib/utilspgp';
+import { encryptPGP } from '../../lib/utilspgp';
 import Settings from '../../lib/settings';
-import { storeTeamsInfo } from '../../services/teams.service';
 
 interface Props {
   match?: any
@@ -103,47 +102,9 @@ class Teams extends React.Component<Props, State> {
     return !(!localStorage.xToken);
   }
 
-  getTeamInfo = async() => {
-    return fetch('/api/teams/team/info', {
-      method: 'get',
-      headers: getHeaders(true, false, false)
-    }).then(res => res.json());
-  }
-
-  checkoutSessionStripe = async () => {
-    const { userTeam } = await this.getTeamInfo();
-
-    console.log('e', userTeam);
-    const mnemonic = await decryptPGP(Buffer.from(userTeam.bridge_mnemonic, 'base64').toString());
-
-    await fetch('/api/teams/checkout/session', {
-      method: 'post',
-      headers: getHeaders(true, false),
-      body: JSON.stringify({
-        checkoutSessionId: this.props.match.params.sessionId,
-        test: process.env.NODE_ENV !== 'production',
-        mnemonic: mnemonic.data
-      })
-    }).then((response) => {
-      if (response.status !== 200) {
-        throw Error(response.statusText);
-      }
-      return response.json();
-    }).then(async (res) => {
-      if (res) {
-        await storeTeamsInfo();
-      }
-    });
-  }
-
   componentDidMount() {
     if (!this.isLoggedIn()) {
       history.push('/login');
-    }
-    const checkoutSessionId = this.state.sessionIdStripe;
-
-    if (checkoutSessionId) {
-      this.checkoutSessionStripe();
     }
 
     if (Settings.exists('xTeam')) {
@@ -175,8 +136,8 @@ class Teams extends React.Component<Props, State> {
       response.json().then(async (keys) => {
         const xTeam = Settings.getTeams();
         //Datas
-        const bridgePass = xTeam.password;
-        const mnemonicTeam = xTeam.mnemonic;
+        const bridgePass = xTeam.bridge_password;
+        const mnemonicTeam = xTeam.bridge_mnemonic;
 
         //Encrypt
         const EncryptBridgePass = await encryptPGP(bridgePass);
@@ -184,18 +145,16 @@ class Teams extends React.Component<Props, State> {
 
         const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
         const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');
-        const bridgeuser = xTeam.user;
-        const idTeam = xTeam.idTeam;
+        const bridgeuser = xTeam.bridge_user;
 
-        await fetch('/api/teams/team-invitations', {
+        await fetch('/api/teams/team/invitations', {
           method: 'POST',
           headers: getHeaders(true, false, true),
           body: JSON.stringify({
             email: mail,
             bridgePass: base64bridge_password,
             mnemonicTeam: base64Mnemonic,
-            bridgeuser: bridgeuser,
-            idTeam: idTeam
+            bridgeuser: bridgeuser
           })
         }).then(async res => {
           return { response: res, data: await res.json() };
