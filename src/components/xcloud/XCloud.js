@@ -479,7 +479,7 @@ class XCloud extends React.Component {
             platform: 'web'
           });
           console.log('getFolderContent 12');
-          this.getFolderContent(this.state.currentFolderId);
+          this.getFolderContent(this.state.currentFolderId, false, true, true);
         })
         .catch((error) => {
           console.log(`Error during folder customization. Error: ${error} `);
@@ -497,7 +497,7 @@ class XCloud extends React.Component {
             platform: 'web'
           });
           console.log('getFolderContent 13');
-          this.getFolderContent(this.state.currentFolderId);
+          this.getFolderContent(this.state.currentFolderId, false, true, true);
         })
         .catch((error) => {
           console.log(`Error during file customization. Error: ${error} `);
