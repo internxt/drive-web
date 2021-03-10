@@ -3,6 +3,7 @@ import { getHeaders } from '../../lib/auth';
 import { decryptPGP } from '../../lib/utilspgp';
 import { storeTeamsInfo } from '../../services/teams.service';
 import history from '../../lib/history';
+import ActivityIndicator from '../ActivityIndicator';
 
 export default function Success(props) {
   const [sessionId, setSessionIdStripe] = useState<string>();
@@ -47,5 +48,9 @@ export default function Success(props) {
     checkoutSessionStripe();
   }, [sessionId]);
 
-  return <div>SUCCESS {sessionId}</div>;
+  return (
+    <div style={{ display: 'flex', marginTop: '12rem', justifyContent: 'center', alignContent: 'center' }}>
+      <ActivityIndicator color="#4385F4" />
+    </div>
+  );
 }
