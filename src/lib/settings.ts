@@ -17,6 +17,8 @@ export interface UserSettings {
 export interface TeamsSettings {
   bridge_mnemonic: string
   isAdmin: boolean
+  bridge_password: string
+  bridge_user: string
 }
 
 export default class Settings {
