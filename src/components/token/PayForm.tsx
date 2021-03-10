@@ -77,8 +77,6 @@ class PayToken extends React.Component<ResetProps> {
 
       object['inxt'] = this.renderTotalINXT();
 
-      console.log(object);
-
       var json = JSON.stringify(object);
 
       return fetch('/api/token/buy', {
