@@ -77,8 +77,6 @@ class PayToken extends React.Component<ResetProps> {
 
       object['inxt'] = this.renderTotalINXT();
 
-      console.log(object);
-
       var json = JSON.stringify(object);
 
       return fetch('/api/token/buy', {
@@ -234,7 +232,7 @@ class PayToken extends React.Component<ResetProps> {
                     </Row>
                     <Row>
                       <Col sm={10}> Total </Col>
-                      <Col> {(this.calculateTotalEUR() - (this.calculateTotalEUR()*0.1)).toFixed(2) } €</Col>
+                      <Col> {this.calculateTotalEUR() - (this.calculateTotalEUR()*0.1).toFixed(2)} €</Col>
                     </Row>
                     <Row style={{ fontSize: '25px', fontWeight: 600 }}>
                       <Col sm={10}> INXT to pay:</Col>
