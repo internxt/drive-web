@@ -16,6 +16,7 @@ import Popup from 'reactjs-popup';
 import { encryptPGPInvitations } from '../../lib/utilspgp';
 import Settings from '../../lib/settings';
 import { getKeys } from '../../services/teams.service';
+import trash from '../../assets/Dashboard-Icons/trash.svg';
 
 interface Props {
   match?: any
@@ -114,9 +115,7 @@ class Teams extends React.Component<Props, State> {
       this.setState({ template: this.renderPlans.bind(this) });
     }
 
-    const idTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').idTeam;
-
-    return fetch(`/api/teams/members/${idTeam}`, {
+    return fetch('/api/teams/members', {
       method: 'get',
       headers: getHeaders(true, false)
     }).then((response) => {
@@ -242,14 +241,12 @@ class Teams extends React.Component<Props, State> {
   }
 
   deletePeople = (item: Item) => {
-    const idTeam = JSON.parse(localStorage.getItem('xTeam') || '{}').idTeam;
 
     fetch(`/api/teams/${item.isMember ? 'member' : 'invitation'}`, {
       method: 'delete',
       headers: getHeaders(true, false),
       body: JSON.stringify({
-        item: item,
-        idTeam: idTeam
+        item: item
       })
     }).then((response) => {
       if (response.status === 200) {
@@ -286,7 +283,7 @@ class Teams extends React.Component<Props, State> {
                 return <ListGroup.Item >
                   <div className="row">
                     <div className='col-11'><span>{item.user}</span></div>
-                    <div className='col-1'><span onClick={this.deletePeople.bind(this, item)}><i className="far fa-trash-alt"></i></span></div>
+                    <div className='col-1'><span onClick={this.deletePeople.bind(this, item)}><img src={trash} alt='Trash'/></span></div>
                   </div>
                 </ListGroup.Item>;
               })}
