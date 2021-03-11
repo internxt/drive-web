@@ -15,7 +15,7 @@ import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 import Popup from 'reactjs-popup';
 import { encryptPGPInvitations } from '../../lib/utilspgp';
 import Settings from '../../lib/settings';
-import { getKeys } from '../../services/teams.service';
+import { existsUserToInvite, getKeys } from '../../services/teams.service';
 import trash from '../../assets/Dashboard-Icons/trash.svg';
 
 interface Props {
@@ -130,41 +130,48 @@ class Teams extends React.Component<Props, State> {
 
   sendEmailTeamsMember = async (mail) => {
 
-    const xTeam = Settings.getTeams();
-    //Datas
-    const bridgePass = xTeam.bridge_password;
-    const mnemonicTeam = xTeam.bridge_mnemonic;
+    const existUserToInvite = await existsUserToInvite(mail);
 
-    const key = await getKeys(mail);
+    if (existUserToInvite) {
 
-    //Encrypt
-    const EncryptBridgePass = await encryptPGPInvitations(bridgePass, key.publicKey);
-    const EncryptMnemonicTeam = await encryptPGPInvitations(mnemonicTeam, key.publicKey);
+      const xTeam = Settings.getTeams();
+      //Datas
+      const bridgePass = xTeam.bridge_password;
+      const mnemonicTeam = xTeam.bridge_mnemonic;
 
-    const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
-    const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');
-    const bridgeuser = xTeam.bridge_user;
+      const key = await getKeys(mail);
 
-    await fetch('/api/teams/team/invitations', {
-      method: 'POST',
-      headers: getHeaders(true, false, true),
-      body: JSON.stringify({
-        email: mail,
-        bridgePass: base64bridge_password,
-        mnemonicTeam: base64Mnemonic,
-        bridgeuser: bridgeuser
-      })
-    }).then(async res => {
-      return { response: res, data: await res.json() };
-    }).then(res => {
-      if (res.response.status !== 200) {
-        throw res.data;
-      } else {
-        toast.info(`Invitation email sent to ${mail}`);
-      }
-    }).catch(err => {
-      toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
-    });
+      //Encrypt
+      const EncryptBridgePass = await encryptPGPInvitations(bridgePass, key.publicKey);
+      const EncryptMnemonicTeam = await encryptPGPInvitations(mnemonicTeam, key.publicKey);
+
+      const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
+      const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');
+      const bridgeuser = xTeam.bridge_user;
+
+      await fetch('/api/teams/team/invitations', {
+        method: 'POST',
+        headers: getHeaders(true, false, true),
+        body: JSON.stringify({
+          email: mail,
+          bridgePass: base64bridge_password,
+          mnemonicTeam: base64Mnemonic,
+          bridgeuser: bridgeuser
+        })
+      }).then(async res => {
+        return { response: res, data: await res.json() };
+      }).then(res => {
+        if (res.response.status !== 200) {
+          throw res.data;
+        } else {
+          toast.info(`Invitation email sent to ${mail}`);
+        }
+      }).catch(err => {
+        toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
+      });
+    } else {
+      toast.warn('Please invite a valid user');
+    }
 
   }
 
