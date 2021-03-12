@@ -13,9 +13,7 @@ export async function getKeys(mail: string) {
   return fetch(`/api/user/keys/${mail}`, {
     method: 'GET',
     headers: getHeaders(true, false)
-  }).then((response) => {
-    return response.json();
-  });
+  }).then((res) => res.json());
 }
 
 export async function storeTeamsInfo() {
@@ -32,17 +30,4 @@ export async function storeTeamsInfo() {
     Settings.del('xTeam');
     Settings.del('xTokenTeam');
   }
-}
-
-export async function existsUserToInvite(mail: string) {
-  return fetch('/api/teams/user', {
-    method: 'post',
-    headers: getHeaders(true, false, false),
-    body: JSON.stringify({ email: mail })
-  }).then(res => {
-    if (res.status === 200) {
-      return true;
-    }
-    return false;
-  });
 }

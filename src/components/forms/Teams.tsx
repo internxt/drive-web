@@ -15,7 +15,7 @@ import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 import Popup from 'reactjs-popup';
 import { encryptPGPInvitations } from '../../lib/utilspgp';
 import Settings from '../../lib/settings';
-import { existsUserToInvite, getKeys } from '../../services/teams.service';
+import { getKeys } from '../../services/teams.service';
 import trash from '../../assets/Dashboard-Icons/trash.svg';
 
 interface Props {
@@ -130,49 +130,39 @@ class Teams extends React.Component<Props, State> {
 
   sendEmailTeamsMember = async (mail) => {
 
-    const existUserToInvite = await existsUserToInvite(mail);
+    const xTeam = Settings.getTeams();
+    //Datas
+    const bridgePass = xTeam.bridge_password;
+    const mnemonicTeam = xTeam.bridge_mnemonic;
 
-    if (existUserToInvite) {
+    const key = await getKeys(mail);
 
-      const xTeam = Settings.getTeams();
-      //Datas
-      const bridgePass = xTeam.bridge_password;
-      const mnemonicTeam = xTeam.bridge_mnemonic;
+    //Encrypt
+    const EncryptBridgePass = await encryptPGPInvitations(bridgePass, key.publicKey);
+    const EncryptMnemonicTeam = await encryptPGPInvitations(mnemonicTeam, key.publicKey);
 
-      const key = await getKeys(mail);
+    const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
+    const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');
+    const bridgeuser = xTeam.bridge_user;
 
-      //Encrypt
-      const EncryptBridgePass = await encryptPGPInvitations(bridgePass, key.publicKey);
-      const EncryptMnemonicTeam = await encryptPGPInvitations(mnemonicTeam, key.publicKey);
-
-      const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
-      const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');
-      const bridgeuser = xTeam.bridge_user;
-
-      await fetch('/api/teams/team/invitations', {
-        method: 'POST',
-        headers: getHeaders(true, false, true),
-        body: JSON.stringify({
-          email: mail,
-          bridgePass: base64bridge_password,
-          mnemonicTeam: base64Mnemonic,
-          bridgeuser: bridgeuser
-        })
-      }).then(async res => {
-        return { response: res, data: await res.json() };
-      }).then(res => {
-        if (res.response.status !== 200) {
-          throw res.data;
-        } else {
-          toast.info(`Invitation email sent to ${mail}`);
-        }
-      }).catch(err => {
-        toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
-      });
-    } else {
-      toast.warn('Please invite a valid user');
-    }
-
+    return fetch('/api/teams/team/invitations', {
+      method: 'POST',
+      headers: getHeaders(true, false, true),
+      body: JSON.stringify({
+        email: mail,
+        bridgePass: base64bridge_password,
+        mnemonicTeam: base64Mnemonic,
+        bridgeuser: bridgeuser
+      })
+    }).then(async res => {
+      return { response: res, data: await res.json() };
+    }).then(res => {
+      if (res.response.status !== 200) {
+        throw res.data;
+      } else {
+        toast.info(`Invitation email sent to ${mail}`);
+      }
+    });
   }
 
   handleEmailChange = (event) => {
@@ -221,7 +211,21 @@ class Teams extends React.Component<Props, State> {
     const mails = this.state.email;
 
     if (mails !== undefined && this.validateEmailInvitations(mails)) {
-      this.sendEmailTeamsMember(mails);
+      this.sendEmailTeamsMember(mails).then(() => {
+        const newDataSource = this.state.dataSource;
+
+        newDataSource.push({
+          isInvitation: true,
+          isMember: false,
+          user: mails
+        });
+
+        this.setState({
+          dataSource: newDataSource
+        });
+      }).catch((err) => {
+        toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
+      });
     } else {
       toast.warn('Please, enter a valid email before sending out the invite');
     }
@@ -249,16 +253,22 @@ class Teams extends React.Component<Props, State> {
 
   deletePeople = (item: Item) => {
 
-    fetch(`/api/teams/${item.isMember ? 'member' : 'invitation'}`, {
+    return fetch(`/api/teams/${item.isMember ? 'member' : 'invitation'}`, {
       method: 'delete',
       headers: getHeaders(true, false),
       body: JSON.stringify({
         item: item
       })
-    }).then((response) => {
-      if (response.status === 200) {
+    }).then((res) => {
+      if (res.status === 200) {
         toast.info('The user has been successfully deleted');
       }
+      const newDataSource = this.state.dataSource.filter(x => x.user !== item.user);
+
+      this.setState({
+        dataSource: newDataSource
+      });
+
     }).catch(err => {
       toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
     });
@@ -290,7 +300,7 @@ class Teams extends React.Component<Props, State> {
                 return <ListGroup.Item >
                   <div className="row">
                     <div className='col-11'><span>{item.user}</span></div>
-                    <div className='col-1'><span onClick={this.deletePeople.bind(this, item)}><img src={trash} alt='Trash'/></span></div>
+                    <div className='col-1'><span onClick={this.deletePeople.bind(this, item)}><img src={trash} alt='Trash' /></span></div>
                   </div>
                 </ListGroup.Item>;
               })}
