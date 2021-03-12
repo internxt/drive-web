@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, ListGroup } from 'react-bootstrap';
+import { Container, ListGroup, Modal } from 'react-bootstrap';
 import './Login.scss';
 import './Reset.scss';
 import { Form, Button } from 'react-bootstrap';
@@ -46,6 +46,8 @@ interface State {
   dataSource: Item[]
   modalDeleteAccountShow: boolean,
   sessionIdStripe: any
+  showDeleteModal: boolean
+  selectedItem: Item | null
 }
 
 interface Item {
@@ -83,7 +85,9 @@ class Teams extends React.Component<Props, State> {
       template: () => { },
       dataSource: [],
       modalDeleteAccountShow: false,
-      sessionIdStripe: sessionId
+      sessionIdStripe: sessionId,
+      showDeleteModal: false,
+      selectedItem: null
     };
 
     this.handleChangePass = this.handleChangePass.bind(this);
@@ -251,8 +255,10 @@ class Teams extends React.Component<Props, State> {
     });
   }
 
-  deletePeople = (item: Item) => {
-
+  deletePeople = (item: Item | null) => {
+    if (!item) {
+      return;
+    }
     return fetch(`/api/teams/${item.isMember ? 'member' : 'invitation'}`, {
       method: 'delete',
       headers: getHeaders(true, false),
@@ -276,6 +282,20 @@ class Teams extends React.Component<Props, State> {
 
   renderTeamSettings() {
     return <div>
+      <Modal show={this.state.showDeleteModal} onHide={() => this.setState({ showDeleteModal: false })}>
+        <Modal.Header closeButton>
+          <Modal.Title>Remove member</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => this.setState({ showDeleteModal: false })}>
+            No
+          </Button>
+          <Button variant="primary" onClick={() => this.deletePeople(this.state.selectedItem).finally(() => this.setState({ showDeleteModal: false }))}>
+            Yes
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <NavigationBar navbarItems={<h5>Teams</h5>} isTeam={true} showSettingsButton={true} showFileButtons={false} isAdmin={true} isMember={false} />
       <div className="Teams">
         <Container className="teams-box p-5">
@@ -288,9 +308,7 @@ class Teams extends React.Component<Props, State> {
                 <div className="col-10 pl-0">
                   <Form.Control className="mail-box" type="email" placeholder="example@example.com" value={this.state.email} onChange={this.handleEmailChange} />
                 </div>
-                <Button className="invite-button col-2" type="submit" onClick={() => {
-
-                }}>Invite</Button>
+                <Button className="invite-button col-2" type="submit">Invite</Button>
               </div>
             </Container>
           </Form>
@@ -300,7 +318,7 @@ class Teams extends React.Component<Props, State> {
                 return <ListGroup.Item >
                   <div className="row">
                     <div className='col-11'><span>{item.user}</span></div>
-                    <div className='col-1'><span onClick={this.deletePeople.bind(this, item)}><img src={trash} alt='Trash' /></span></div>
+                    <div className='col-1'><span onClick={() => this.setState({ selectedItem: item, showDeleteModal: true })}><img src={trash} alt='Trash' /></span></div>
                   </div>
                 </ListGroup.Item>;
               })}
