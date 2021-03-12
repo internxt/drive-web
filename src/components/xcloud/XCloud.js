@@ -700,8 +700,6 @@ class XCloud extends React.Component {
       // Headers with Auth & Mnemonic
       let headers = getHeaders(true, true, this.state.isTeam);
 
-      console.log('HEADERS', headers);
-
       headers.delete('content-type');
 
       // Data
