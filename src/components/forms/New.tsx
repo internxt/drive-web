@@ -12,8 +12,9 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { analytics } from '../../lib/analytics';
 import queryString, { ParsedQuery } from 'query-string';
-import { initializeKeys, initializeUser } from '../../services/auth.service';
+import { initializeUser } from '../../services/auth.service';
 import { generateNewKeys } from '../../services/pgp.service';
+import AesFunctions from '../../lib/AesUtil';
 
 const bip39 = require('bip39');
 
@@ -205,6 +206,10 @@ class New extends React.Component<NewProps, NewState> {
               }
             });
 
+            const privkeyDecrypted = Buffer.from(AesFunctions.decrypt(user.privateKey, this.state.register.password)).toString('base64');
+
+            user.privateKey = privkeyDecrypted;
+
             Settings.set('xToken', token);
             user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.register.password);
             Settings.set('xUser', JSON.stringify(user));
@@ -213,8 +218,6 @@ class New extends React.Component<NewProps, NewState> {
             initializeUser(this.state.register.email, user.mnemonic, encPass).then((rootFolderInfo) => {
               user.root_folder_id = rootFolderInfo.user.root_folder_id;
               Settings.set('xUser', JSON.stringify(user));
-            }).then(()=>{
-              initializeKeys(encPass, this.state.register.email);
               history.push('/login');
             });
           });
