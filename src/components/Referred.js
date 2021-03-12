@@ -35,7 +35,7 @@ class Referred extends React.Component {
       this.getCredit();
       this.setState({ textToCopy: `https://internxt.com/?ref=${user.uuid}` });
       this.setState({ copySuccess: 'Copy' });
-      const socialText = this.parseUrl('I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!');
+      const socialText = this.parseUrl('I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 10 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!');
 
       this.setState({ text: socialText });
     }
@@ -131,7 +131,7 @@ class Referred extends React.Component {
         <div className="Referred">
           <Container className="referred-box p-5">
             <div className="referred-title">Earn money by referring friends</div>
-            <div className="referred-description py-3">Invite friends who aren't on Internxt yet. You'll both get €5 of Internxt credit as soon as they activate their account. Start earning money today!</div>
+            <div className="referred-description py-3">Invite friends who aren't on Internxt yet. You'll both get €5 of Internxt credit as soon as they activate their account. You can redeem that credit for a premium Internxt membership, exclusive Internxt merch or Internxt tokens. Start earning money today!</div>
 
             <Container className="mail-container mt-3">
               <div className="row">
@@ -164,7 +164,7 @@ class Referred extends React.Component {
               <div className="col-2 d-flex p-0">
                 <DropdownButton className="share-container m-auto" name="menuShare" title="Share" type="toggle">
                   <Dropdown.Item className="social-button"
-                    href={`https://twitter.com/intent/tweet?url=https://internxt.com/?ref=${user.uuid}&${this.parseUrl({ text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`}
+                    href={`https://twitter.com/intent/tweet?url=https://internxt.com/?ref=${user.uuid}&${this.parseUrl({ text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 10 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`}
                     target="_blank"
                     data-size="large"
                     original-referer={`https://internxt.com/?ref=${user.uuid}`}
@@ -172,11 +172,11 @@ class Referred extends React.Component {
                     <img src={twitter} alt="" />
                   </Dropdown.Item>
                   <Dropdown.Item className="social-button" data-href={`https://internxt.com/?ref=${user.uuid}`}
-                    href={`https://www.facebook.com/sharer/sharer.php?u=https://internxt.com/?ref=${user.uuid}&amp;src=sdkpreparse&${this.parseUrl({ quote: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`} target="_blank">
+                    href={`https://www.facebook.com/sharer/sharer.php?u=https://internxt.com/?ref=${user.uuid}&amp;src=sdkpreparse&${this.parseUrl({ quote: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 10 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`} target="_blank">
                     <img src={facebook} alt="" />
                   </Dropdown.Item>
                   <Dropdown.Item className="social-button"
-                    href={`https://t.me/share/url?${this.parseUrl({ text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}&url=https://internxt.com/?ref=${user.uuid}`} target="_blank">
+                    href={`https://t.me/share/url?${this.parseUrl({ text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 10 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}&url=https://internxt.com/?ref=${user.uuid}`} target="_blank">
                     <img src={telegram} alt="" />
                   </Dropdown.Item>
                 </DropdownButton>
