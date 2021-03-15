@@ -48,11 +48,11 @@ class Storage extends React.Component {
     }
     async getUsage(isTeam = false) {
 
-      const limit = await fetch('/api/limit/', {
+      const limit = await fetch('/api/limit', {
         headers: getHeaders(true, false, isTeam)
       }).then(res => res.json()).catch(() => null);
 
-      const usage = await fetch('/api/usage/', {
+      const usage = await fetch('/api/usage', {
         headers: getHeaders(true, false, isTeam)
       }).then(res3 => res3.json()).catch(() => null);
 

@@ -69,11 +69,11 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
   }
 
   async getUsage(isTeam: Boolean = false) {
-    const limit = await fetch('/api/limit/', {
+    const limit = await fetch('/api/limit', {
       headers: getHeaders(true, false, isTeam)
     }).then(res => res.json()).catch(() => null);
 
-    const usage = await fetch('/api/usage/', {
+    const usage = await fetch('/api/usage', {
       headers: getHeaders(true, false, isTeam)
     }).then(res3 => res3.json()).catch(() => null);
 
