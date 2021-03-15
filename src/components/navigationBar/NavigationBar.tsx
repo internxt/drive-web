@@ -199,18 +199,18 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
             <Dropdown.Toggle id="1"><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
             <Dropdown.Menu>
               <div className="dropdown-menu-group info">
-                <p className="name-lastname">{user.name} {user.lastname}</p>
+                {this.state.isTeam ? <p className="name-lastname">Bussiness</p> : <p className="name-lastname">{user.name} {user.lastname}</p>}
                 <ProgressBar className="mini-progress-bar" now={this.state.barUsage} max={this.state.barLimit} />
                 <p className="space-used">Used <strong>{customPrettySize(this.state.barUsage)}</strong> of <strong>{customPrettySize(this.state.barLimit)}</strong></p>
               </div>
               <Dropdown.Divider />
               <div className="dropdown-menu-group">
-                <Dropdown.Item onClick={(e) => { history.push('/storage'); }}>Storage</Dropdown.Item>
+                {this.state.isTeam ? <></> : <Dropdown.Item onClick={(e) => { history.push('/storage'); }}>Storage</Dropdown.Item>}
                 {!Settings.exists('xTeam') && <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>}
                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
-                <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>
+                {this.state.isTeam ? <></> : <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>}
                 {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Teams</Dropdown.Item> : <></>}
-                <Dropdown.Item onClick={(e) => {
+                {this.state.isTeam ? <></> : <Dropdown.Item onClick={(e) => {
                   function getOperatingSystem() {
                     let operatingSystem = 'Not known';
 
@@ -240,7 +240,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                       break;
                   }
 
-                }}>Download</Dropdown.Item>
+                }}>Download</Dropdown.Item>}
                 <Dropdown.Item href="mailto:support@internxt.zohodesk.eu">Contact</Dropdown.Item>
               </div>
               <Dropdown.Divider />
