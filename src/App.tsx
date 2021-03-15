@@ -21,6 +21,7 @@ import JoinTeam from './components/forms/JoinTeam';
 import DeactivationTeams from './components/forms/DeactivationTeam';
 import { analytics, PATH_NAMES } from './lib/analytics';
 import Settings from './lib/settings';
+import Success from './components/teams/Success';
 
 class App extends React.Component {
   state = {
@@ -35,6 +36,8 @@ class App extends React.Component {
     this.setState({ isAuthenticated: true, user: user });
   }
 
+  handleComprobe = (sessionId: any) => {
+  }
   render() {
     if (window.location.pathname) {
       let pathName = window.location.pathname.split('/')[1];
@@ -78,6 +81,9 @@ class App extends React.Component {
             render={(props: any) => <New {...props}
               isNewUser={true}
               isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+          <Route exact path='/team/success/:sessionId' render={(props: any) =>
+            <Success {...props}
+              isAuthenticated={this.state.isAuthenticated} handleComprobe={this.handleComprobe} />} />
 
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/invite' render={(props) => <Referred {...props} isAuthenticated={this.state.isAuthenticated} />} />
@@ -86,6 +92,7 @@ class App extends React.Component {
           <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/settings' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/teams/' render={(props) => <Teams {...props} isAuthenticated={this.state.isAuthenticated} />} />
+          <Route exact path='/team/cancel/' render={(props) => <Teams {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/teams/join/:token' render={(props) => <JoinTeam {...props} />} />
           <Route path='/activations/:token' render={(props) => <Activation {...props} />} />
           <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />

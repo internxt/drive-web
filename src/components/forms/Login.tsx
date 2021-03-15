@@ -15,7 +15,7 @@ import { analytics } from '../../lib/analytics';
 import { decryptPGP } from '../../lib/utilspgp';
 import AesUtil from '../../lib/AesUtil';
 import { storeTeamsInfo } from '../../services/teams.service';
-const openpgp = require('openpgp');
+import { generateNewKeys } from '../../services/pgp.service';
 
 interface LoginProps {
   email?: string
@@ -138,16 +138,13 @@ class Login extends React.Component<LoginProps> {
   }
 
   generateNewKeys = async (password: string) => {
-    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await openpgp.generateKey({
-      userIds: [{ email: 'inxt@inxt.com' }],
-      curve: 'ed25519'
-    });
+    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
 
     return {
       privateKeyArmored,
       privateKeyArmoredEncrypted: AesUtil.encrypt(privateKeyArmored, password, false),
-      publicKeyArmored: Buffer.from(publicKeyArmored).toString('base64'),
-      revocationCertificate: Buffer.from(revocationCertificate).toString('base64')
+      publicKeyArmored,
+      revocationCertificate
     };
   }
 

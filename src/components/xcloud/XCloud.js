@@ -75,12 +75,6 @@ class XCloud extends React.Component {
       const team = Settings.getTeams();
 
       if (!team) {
-        this.getTeamByUser().then((team) => {
-          localStorage.clear();
-          history.push('/login');
-          toast.info('Subscription has been completed please login');
-
-        }).catch((err) => { });
       } else if (team && !team.root_folder_id) {
         this.setState({ currentFolderId: this.props.user.root_folder_id });
       }
@@ -485,7 +479,7 @@ class XCloud extends React.Component {
             platform: 'web'
           });
           console.log('getFolderContent 12');
-          this.getFolderContent(this.state.currentFolderId);
+          this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
         })
         .catch((error) => {
           console.log(`Error during folder customization. Error: ${error} `);
@@ -503,7 +497,7 @@ class XCloud extends React.Component {
             platform: 'web'
           });
           console.log('getFolderContent 13');
-          this.getFolderContent(this.state.currentFolderId);
+          this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
         })
         .catch((error) => {
           console.log(`Error during file customization. Error: ${error} `);

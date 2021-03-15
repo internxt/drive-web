@@ -1,3 +1,5 @@
+import openpgp from 'openpgp';
+
 export async function generateNewKeys() {
   const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await openpgp.generateKey({
     userIds: [{ email: 'inxt@inxt.com' }],

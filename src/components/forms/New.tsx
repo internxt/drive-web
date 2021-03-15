@@ -13,7 +13,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { analytics } from '../../lib/analytics';
 import queryString, { ParsedQuery } from 'query-string';
 import { initializeUser } from '../../services/auth.service';
-const openpgp = require('openpgp');
+import { generateNewKeys } from '../../services/pgp.service';
+import AesFunctions from '../../lib/AesUtil';
 
 const bip39 = require('bip39');
 
@@ -171,16 +172,10 @@ class New extends React.Component<NewProps, NewState> {
       const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
 
       //Generate keys
-      const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await openpgp.generateKey({
-        userIds: [{ email: 'inxt@inxt.com' }], // you can pass multiple user IDs
-        curve: 'ed25519' // ECC curve name        // protects the private key
-      });
+      const { privateKeyArmored, publicKeyArmored: codpublicKey, revocationCertificate: codrevocationKey } = await generateNewKeys();
 
       //Datas
       const encPrivateKey = AesUtil.encrypt(privateKeyArmored, this.state.register.password, false);
-      const codpublicKey = Buffer.from(publicKeyArmored).toString('base64');
-
-      const codrevocationKey = Buffer.from(revocationCertificate).toString('base64');
 
       return fetch('/api/register', {
         method: 'post',
@@ -211,12 +206,16 @@ class New extends React.Component<NewProps, NewState> {
               }
             });
 
+            const privkeyDecrypted = Buffer.from(AesFunctions.decrypt(user.privateKey, this.state.register.password)).toString('base64');
+
+            user.privateKey = privkeyDecrypted;
+
             Settings.set('xToken', token);
             user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.register.password);
             Settings.set('xUser', JSON.stringify(user));
             Settings.set('xMnemonic', user.mnemonic);
 
-            initializeUser(this.state.register.email, user.mnemonic).then((rootFolderInfo) => {
+            initializeUser(this.state.register.email, user.mnemonic, encPass).then((rootFolderInfo) => {
               user.root_folder_id = rootFolderInfo.user.root_folder_id;
               Settings.set('xUser', JSON.stringify(user));
               history.push('/login');
@@ -287,7 +286,7 @@ class New extends React.Component<NewProps, NewState> {
 
         xUser.mnemonic = mnemonic;
 
-        return initializeUser(this.state.register.email, xUser.mnemonic).then((rootFolderInfo) => {
+        return initializeUser(this.state.register.email, xUser.mnemonic, encPass).then((rootFolderInfo) => {
           xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
           Settings.set('xToken', xToken);
           Settings.set('xMnemonic', mnemonic);

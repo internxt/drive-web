@@ -9,6 +9,13 @@ export async function getTeamsInfo() {
   }).then(res => res.json());
 }
 
+export async function getKeys(mail: string) {
+  return fetch(`/api/user/keys/${mail}`, {
+    method: 'GET',
+    headers: getHeaders(true, false)
+  }).then((res) => res.json());
+}
+
 export async function storeTeamsInfo() {
   const { userTeam, tokenTeams } = await getTeamsInfo();
 
