@@ -4,6 +4,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  @media (max-width: 415px) {
+    align-items: center;    
+    width: 350px !important;
+    margin: auto;
+    overflow: hidden;
+    position: absolute;
+  }
 }
 
 .login-container-box {
@@ -13,6 +20,10 @@
   border-radius: 6px;
   padding: 40px !important;
   height: 460px;
+  @media (max-width: 415px) {
+    align-self: center;
+    width: 350px !important;;
+  }
 }
 
 .xcloud-toast-info {

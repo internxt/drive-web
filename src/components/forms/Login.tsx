@@ -5,8 +5,6 @@ import history from '../../lib/history';
 import './Login.scss';
 import { encryptText, decryptText, passToHash, decryptTextWithKey } from '../../lib/utils';
 
-import { isMobile, isAndroid, isIOS } from 'react-device-detect';
-
 import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -38,14 +36,6 @@ class Login extends React.Component<LoginProps> {
   }
 
   componentDidMount() {
-    if (isMobile) {
-      if (isAndroid) {
-        window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';
-      } else if (isIOS) {
-        window.location.href = 'https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889';
-      }
-    }
-
     // Check if recent login is passed and redirect user to Internxt Drive
     const mnemonic = Settings.get('xMnemonic');
     const user = Settings.getUser();
