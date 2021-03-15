@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { isMobile, isAndroid, isIOS } from 'react-device-detect';
 import $ from 'jquery';
 import _ from 'lodash';
 import fileDownload from 'js-file-download';
@@ -51,6 +52,15 @@ class XCloud extends React.Component {
   moveEvent = {};
 
   componentDidMount = () => {
+
+    if (isMobile) {
+      if (isAndroid) {
+        window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';
+      } else if (isIOS) {
+        window.location.href = 'https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889';
+      }
+    }
+
     // When user is not signed in, redirect to login
     if (!this.props.user || !this.props.isAuthenticated) {
       history.push('/login');
