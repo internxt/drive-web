@@ -6,7 +6,6 @@ import history from '../../lib/history';
 import Settings from '../../lib/settings';
 
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
-import { isMobile, isAndroid, isIOS } from 'react-device-detect';
 import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -81,13 +80,6 @@ class New extends React.Component<NewProps, NewState> {
   }
 
   componentDidMount() {
-    if (isMobile) {
-      if (isAndroid) {
-        window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';
-      } else if (isIOS) {
-        window.location.href = 'https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889';
-      }
-    }
 
     const parsedQueryParams: ParsedQuery<string> = queryString.parse(history.location.search);
     const isEmailQuery = parsedQueryParams.email && this.validateEmail(parsedQueryParams.email.toString());
