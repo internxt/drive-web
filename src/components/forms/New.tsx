@@ -377,9 +377,7 @@ class New extends React.Component<NewProps, NewState> {
           <Checkbox
             checked={this.state.checkTermsConditions}
             onChange={this.handleTermsConditions}
-            style ={{
-              color:'#4585F5'
-            }}
+            color="default"
             inputProps={{ 'aria-label': 'secondary checkbox' }}
           />
           <a href="https://internxt.com/en/legal" target="_blank" rel="noreferrer">
