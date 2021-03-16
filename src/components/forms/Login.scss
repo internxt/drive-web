@@ -5,11 +5,7 @@
   align-items: center;
   justify-content: center;
   @media (max-width: 415px) {
-    align-items: center;    
-    width: 350px !important;
     margin: auto;
-    overflow: hidden;
-    position: absolute;
   }
 }
 
