@@ -37,27 +37,11 @@ class App extends React.Component {
   }
 
   render() {
-    if (window.location.pathname) {
-      let pathName = window.location.pathname.split('/')[1];
+    const pathName = window.location.pathname.split('/')[1];
 
+    if (window.location.pathname) {
       if (pathName === 'new' && window.location.search !== '') {
         analytics.page(PATH_NAMES[window.location.pathname]);
-      }
-      var toast;
-
-      if (/^[a-z0-9]{10}$/.test(pathName)) {
-        toast = <ToastContainer />;
-      } else {
-        toast = <ToastContainer
-          position="bottom-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={true}
-          rtl={false}
-          draggable={true}
-          pauseOnHover={true}
-          className="" />;
       }
     }
 
@@ -110,7 +94,18 @@ class App extends React.Component {
           <Route component={NotFound} />
         </Switch>
 
-        {toast}
+        {/^[a-z0-9]{10}$/.test(pathName)
+          ? <ToastContainer />
+          : <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={true}
+            rtl={false}
+            draggable={true}
+            pauseOnHover={true}
+            className="" />}
       </Router>
     );
   }

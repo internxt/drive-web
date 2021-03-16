@@ -77,7 +77,8 @@
       "space-in-parens": ["error", "never"],
       "no-unused-vars": ["error"],
       "no-useless-constructor": ["error"],
-      "no-extra-semi": ["error"]
+      "no-extra-semi": ["error"],
+      "no-empty": ["error"]
     }
   },
   "browserslist": {
