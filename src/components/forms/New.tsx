@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Container, Form, Col, Button } from 'react-bootstrap';
+import Checkbox from '@material-ui/core/Checkbox';
 import AesUtil from '../../lib/AesUtil';
 
 import history from '../../lib/history';
@@ -40,6 +41,7 @@ interface NewState {
     token?: string
     user?: any
     isLoading: boolean
+    checkTermsConditions: boolean
 }
 
 const CONTAINERS = {
@@ -75,7 +77,8 @@ class New extends React.Component<NewProps, NewState> {
         confirmPassword: ''
       },
       showModal: false,
-      isLoading: false
+      isLoading: false,
+      checkTermsConditions: false
     };
 
   }
@@ -357,6 +360,10 @@ class New extends React.Component<NewProps, NewState> {
       </div>;
     }
 
+    handleTermsConditions = (event: React.ChangeEvent<HTMLInputElement>) => {
+      this.setState({ checkTermsConditions: event.target.checked });
+    };
+
     privacyContainer() {
       return (<div className="container-register">
         <p className="container-title">Internxt Security</p>
@@ -365,6 +372,19 @@ class New extends React.Component<NewProps, NewState> {
           <li>Store your Password. Keep it safe and secure.</li>
           <li>Keep an offline backup of your password.</li>
         </ul>
+
+        <div className="privacy-terms">
+          <Checkbox
+            checked={this.state.checkTermsConditions}
+            onChange={this.handleTermsConditions}
+            color="default"
+            inputProps={{ 'aria-label': 'secondary checkbox' }}
+          />
+          <a href="https://internxt.com/en/legal" target="_blank" rel="noreferrer">
+              Accept terms, conditions and privacy policy
+          </a>
+        </div>
+
         <Form onSubmit={(e: any) => {
           e.preventDefault();
           this.setState({ currentContainer: CONTAINERS.PasswordContainer });
@@ -377,7 +397,7 @@ class New extends React.Component<NewProps, NewState> {
               }}>Back</button>
             </Form.Group>
             <Form.Group as={Col}>
-              <button className="btn-block on" type="submit" autoFocus>Continue</button>
+              <button className="btn-block on" type="submit" autoFocus disabled={!this.state.checkTermsConditions}>Continue</button>
             </Form.Group>
           </Form.Row>
 
