@@ -382,7 +382,9 @@ class New extends React.Component<NewProps, NewState> {
             }}
             inputProps={{ 'aria-label': 'secondary checkbox' }}
           />
+          <a href="https://internxt.com/en/legal" target="_blank" rel="noreferrer">
               Accept terms, conditions and privacy policy
+          </a>
         </div>
 
         <Form onSubmit={(e: any) => {
