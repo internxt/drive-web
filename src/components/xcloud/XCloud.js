@@ -52,7 +52,6 @@ class XCloud extends React.Component {
   moveEvent = {};
 
   componentDidMount = () => {
-
     if (isMobile) {
       if (isAndroid) {
         window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';
@@ -78,8 +77,13 @@ class XCloud extends React.Component {
         });
       } else {
         console.log('getFolderContent 4');
-        this.getFolderContent(this.props.user.root_folder_id);
-        this.setState({ currentFolderId: this.props.user.root_folder_id });
+
+        if (!this.state.isTeam && Settings.get('workspace') === 'teams') {
+          this.handleChangeWorkspace();
+        } else {
+          this.getFolderContent(this.props.user.root_folder_id);
+          this.setState({ currentFolderId: this.props.user.root_folder_id });
+        }
       }
 
       const team = Settings.getTeams();
@@ -106,7 +110,11 @@ class XCloud extends React.Component {
       });
     }
 
-    this.setState({ isTeam: !this.state.isTeam });
+    const isTeam = !this.state.isTeam;
+
+    this.setState({ isTeam: isTeam }, () => {
+      Settings.set('workspace', isTeam ? 'teams' : 'individual');
+    });
   }
 
   userInitialization = () => {
