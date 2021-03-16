@@ -36,8 +36,6 @@ class App extends React.Component {
     this.setState({ isAuthenticated: true, user: user });
   }
 
-  handleComprobe = (sessionId: any) => {
-  }
   render() {
     if (window.location.pathname) {
       let pathName = window.location.pathname.split('/')[1];
@@ -83,7 +81,7 @@ class App extends React.Component {
               isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
           <Route exact path='/team/success/:sessionId' render={(props: any) =>
             <Success {...props}
-              isAuthenticated={this.state.isAuthenticated} handleComprobe={this.handleComprobe} />} />
+              isAuthenticated={this.state.isAuthenticated}/>} />
 
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/invite' render={(props) => <Referred {...props} isAuthenticated={this.state.isAuthenticated} />} />
