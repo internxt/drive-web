@@ -8,7 +8,7 @@ import LoadingFileExplorer from '../xcloud/LoadingFileExplorer';
 export default function Success(props) {
   const [sessionId, setSessionIdStripe] = useState<string>();
 
-  const getTeamInfo = async() => {
+  const getTeamInfo = async () => {
     return fetch('/api/teams/team/info', {
       method: 'get',
       headers: getHeaders(true, false, false)
