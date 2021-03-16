@@ -134,12 +134,12 @@ class Teams extends React.Component<Props, State> {
 
   sendEmailTeamsMember = async (mail) => {
 
+    const key = await getKeys(mail);
+
     const xTeam = Settings.getTeams();
     //Datas
     const bridgePass = xTeam.bridge_password;
     const mnemonicTeam = xTeam.bridge_mnemonic;
-
-    const key = await getKeys(mail);
 
     //Encrypt
     const EncryptBridgePass = await encryptPGPInvitations(bridgePass, key.publicKey);
@@ -198,9 +198,6 @@ class Teams extends React.Component<Props, State> {
 
   handleKeySaved = (user: JSON) => {
     localStorage.setItem('xUser', JSON.stringify(user));
-  }
-
-  handleComprobe = (sessionId: any) => {
   }
 
   validateEmailInvitations = (email) => {

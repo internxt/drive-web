@@ -84,8 +84,7 @@ class XCloud extends React.Component {
 
       const team = Settings.getTeams();
 
-      if (!team) {
-      } else if (team && !team.root_folder_id) {
+      if (team && !team.root_folder_id) {
         this.setState({ currentFolderId: this.props.user.root_folder_id });
       }
 

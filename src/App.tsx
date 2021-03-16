@@ -36,30 +36,12 @@ class App extends React.Component {
     this.setState({ isAuthenticated: true, user: user });
   }
 
-  handleComprobe = (sessionId: any) => {
-  }
   render() {
-    if (window.location.pathname) {
-      let pathName = window.location.pathname.split('/')[1];
+    const pathName = window.location.pathname.split('/')[1];
 
+    if (window.location.pathname) {
       if (pathName === 'new' && window.location.search !== '') {
         analytics.page(PATH_NAMES[window.location.pathname]);
-      }
-      var toast;
-
-      if (/^[a-z0-9]{10}$/.test(pathName)) {
-        toast = <ToastContainer />;
-      } else {
-        toast = <ToastContainer
-          position="bottom-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={true}
-          rtl={false}
-          draggable={true}
-          pauseOnHover={true}
-          className="" />;
       }
     }
 
@@ -83,7 +65,7 @@ class App extends React.Component {
               isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
           <Route exact path='/team/success/:sessionId' render={(props: any) =>
             <Success {...props}
-              isAuthenticated={this.state.isAuthenticated} handleComprobe={this.handleComprobe} />} />
+              isAuthenticated={this.state.isAuthenticated}/>} />
 
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/invite' render={(props) => <Referred {...props} isAuthenticated={this.state.isAuthenticated} />} />
@@ -112,7 +94,18 @@ class App extends React.Component {
           <Route component={NotFound} />
         </Switch>
 
-        {toast}
+        {/^[a-z0-9]{10}$/.test(pathName)
+          ? <ToastContainer />
+          : <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={true}
+            rtl={false}
+            draggable={true}
+            pauseOnHover={true}
+            className="" />}
       </Router>
     );
   }
