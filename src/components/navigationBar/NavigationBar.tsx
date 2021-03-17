@@ -199,7 +199,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
             <Dropdown.Toggle id="1"><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
             <Dropdown.Menu>
               <div className="dropdown-menu-group info">
-                <p className="name-lastname">{this.state.isTeam ? 'Bussiness' : `${user.name} ${user.lastname}`}</p>
+                <p className="name-lastname">{this.state.isTeam ? 'Business' : `${user.name} ${user.lastname}`}</p>
                 <ProgressBar className="mini-progress-bar" now={this.state.barUsage} max={this.state.barLimit} />
                 <p className="space-used">Used <strong>{customPrettySize(this.state.barUsage)}</strong> of <strong>{customPrettySize(this.state.barLimit)}</strong></p>
               </div>
@@ -209,7 +209,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                 {!Settings.exists('xTeam') && <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>}
                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                 {!this.state.isTeam && <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>}
-                {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Bussiness</Dropdown.Item> : <></>}
+                {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Business</Dropdown.Item> : <></>}
                 {!this.state.isTeam && <Dropdown.Item onClick={(e) => {
                   function getOperatingSystem() {
                     let operatingSystem = 'Not known';
