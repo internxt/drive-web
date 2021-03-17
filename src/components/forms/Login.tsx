@@ -101,7 +101,8 @@ class Login extends React.Component<LoginProps> {
       if (res.status !== 200) {
         window.analytics.track('user-signin-attempted', {
           status: 'error',
-          msg: data.error ? data.error : 'Login error'
+          msg: data.error ? data.error : 'Login error',
+          email: this.state.email
         });
         throw new Error(data.error ? data.error : 'Login error');
       }
@@ -120,7 +121,8 @@ class Login extends React.Component<LoginProps> {
         this.setState({ isLogingIn: false });
         window.analytics.track('user-signin-attempted', {
           status: 'error',
-          msg: err.message
+          msg: err.message,
+          email: this.state.email
         });
         toast.warn(`"${err}"`);
       }
@@ -180,7 +182,8 @@ class Login extends React.Component<LoginProps> {
         if (res.res.status !== 200) {
           window.analytics.track('user-signin-attempted', {
             status: 'error',
-            msg: res.data.error ? res.data.error : 'Login error'
+            msg: res.data.error ? res.data.error : 'Login error',
+            email: this.state.email
           });
           throw new Error(res.data.error ? res.data.error : res.data);
         }
