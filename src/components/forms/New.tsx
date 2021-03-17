@@ -437,7 +437,7 @@ class New extends React.Component<NewProps, NewState> {
             });
           }
           else {
-            this.doRegister();
+            this.doRegister().finally(() => this.setState({ isLoading: false }));
           }
         }}>
           <Form.Row>

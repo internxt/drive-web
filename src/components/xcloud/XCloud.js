@@ -78,7 +78,7 @@ class XCloud extends React.Component {
       } else {
         console.log('getFolderContent 4');
 
-        if (!this.state.isTeam && Settings.get('workspace') === 'teams') {
+        if (Settings.exists('xTeam') && !this.state.isTeam && Settings.get('workspace') === 'teams') {
           this.handleChangeWorkspace();
         } else {
           this.getFolderContent(this.props.user.root_folder_id);
