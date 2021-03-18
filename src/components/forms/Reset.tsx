@@ -40,13 +40,9 @@ class Reset extends React.Component<ResetProps> {
   }
 
   handleChangePassword = async (e: any) => {
-    console.log('Handle change password 1');
-
     e.preventDefault();
-    console.log('Handle change password 2');
 
     await this.getSalt();
-    console.log('Handle change password 3');
 
     if (!this.state.salt) {
       return alert('Internal server error. Please reload.');
