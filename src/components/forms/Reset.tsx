@@ -40,13 +40,9 @@ class Reset extends React.Component<ResetProps> {
   }
 
   handleChangePassword = async (e: any) => {
-    console.log('Handle change password 1');
-
     e.preventDefault();
-    console.log('Handle change password 2');
 
     await this.getSalt();
-    console.log('Handle change password 3');
 
     if (!this.state.salt) {
       return alert('Internal server error. Please reload.');
@@ -109,8 +105,6 @@ class Reset extends React.Component<ResetProps> {
   getSalt = () => {
     const email = Settings.getUser().email;
 
-    console.log('get Salt 3');
-
     return fetch('/api/login', {
       method: 'post',
       headers: getHeaders(false, false),
@@ -119,7 +113,6 @@ class Reset extends React.Component<ResetProps> {
       .then(res => res.json())
       .then(res => new Promise<void>(resolve => {
         this.setState({ salt: decryptText(res.sKey) }, () => {
-          console.log('get Salt 4');
           resolve();
         });
       }));
