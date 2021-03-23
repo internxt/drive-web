@@ -189,7 +189,7 @@ class New extends React.Component<NewProps, NewState> {
         })
       }).then(response => {
         if (response.status === 200) {
-          response.json().then((body) => {
+          return response.json().then((body) => {
             // Manage succesfull register
             const { token, user, uuid } = body;
 
@@ -210,7 +210,7 @@ class New extends React.Component<NewProps, NewState> {
             Settings.set('xUser', JSON.stringify(user));
             Settings.set('xMnemonic', user.mnemonic);
 
-            initializeUser(this.state.register.email, user.mnemonic, encPass).then((rootFolderInfo) => {
+            return initializeUser(this.state.register.email, user.mnemonic, encPass).then((rootFolderInfo) => {
               user.root_folder_id = rootFolderInfo.user.root_folder_id;
               Settings.set('xUser', JSON.stringify(user));
               history.push('/login');
@@ -218,7 +218,7 @@ class New extends React.Component<NewProps, NewState> {
           });
 
         } else {
-          response.json().then((body) => {
+          return response.json().then((body) => {
             // Manage account already exists (error 400)
             const { message } = body;
 
