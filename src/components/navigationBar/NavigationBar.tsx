@@ -170,6 +170,29 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     this.props.handleChangeWorkspace && this.props.handleChangeWorkspace();
   }
 
+  handleBilling() {
+    const user = Settings.getUser().email;
+
+    const body = {
+      test: process.env.NODE_ENV !== 'production',
+      email: user
+    };
+
+    fetch('/api/stripe/billing', {
+      method: 'post',
+      headers: getHeaders(true, false),
+      body: JSON.stringify(body)
+    }).then((res) => {
+      return res.json();
+    }).then(res => {
+      const stripeBillingURL = res.url;
+
+      window.location.href = stripeBillingURL;
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+
   render() {
     let user: any = null;
 
@@ -210,6 +233,11 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                 {!this.state.isTeam && <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>}
                 {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Business</Dropdown.Item> : <></>}
+                <Dropdown.Item
+                  onClick={(e) => this.handleBilling()}
+                >
+                  Billing
+                </Dropdown.Item>
                 {!this.state.isTeam && <Dropdown.Item onClick={(e) => {
                   function getOperatingSystem() {
                     let operatingSystem = 'Not known';
