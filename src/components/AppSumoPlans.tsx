@@ -1,5 +1,5 @@
-import React from 'react'
-import { Button } from 'react-bootstrap'
+import React from 'react';
+import { Button } from 'react-bootstrap';
 
 const AppSumoTiers = [
   { name: 'internxt_free1', size: '2GB', humanName: 'Free tier' },
@@ -10,16 +10,15 @@ const AppSumoTiers = [
   { name: 'internxt_tier5', size: '5TB', humanName: 'Tier 5' }
 ];
 
-
 interface AppSumoPlansProps {
   details?: any
 }
 
 function getAppSumoSize(name: string) {
   if (!name) {
-    return 'undefined'
+    return 'undefined';
   }
-  const find = AppSumoTiers.find(x => x.name === name)
+  const find = AppSumoTiers.find(x => x.name === name);
 
   if (find) {
     return find.humanName;

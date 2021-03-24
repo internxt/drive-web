@@ -1,17 +1,19 @@
-import * as React from "react";
-import { Button, Form, Col, Container, Spinner } from "react-bootstrap";
+import * as React from 'react';
+import { Button, Form, Col, Container, Spinner } from 'react-bootstrap';
 
 import history from '../../lib/history';
-import "./Login.scss";
-import { encryptText, decryptTextWithKey, decryptText, passToHash } from '../../lib/utils';
+import './Login.scss';
+import { encryptText, decryptText, passToHash, decryptTextWithKey } from '../../lib/utils';
 
-import { isMobile, isAndroid, isIOS } from 'react-device-detect'
-
-import { getHeaders } from '../../lib/auth'
+import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Settings from "../../lib/settings";
-import { initializeUser } from "../../services/auth.service";
+import Settings from '../../lib/settings';
+import { analytics } from '../../lib/analytics';
+import { decryptPGP } from '../../lib/utilspgp';
+import AesUtil from '../../lib/AesUtil';
+import { storeTeamsInfo } from '../../services/teams.service';
+import { generateNewKeys } from '../../services/pgp.service';
 
 interface LoginProps {
   email?: string
@@ -25,7 +27,7 @@ class Login extends React.Component<LoginProps> {
     email: '',
     password: '',
     isAuthenticated: false,
-    token: "",
+    token: '',
     user: {},
     showTwoFactor: false,
     twoFactorCode: '',
@@ -34,65 +36,58 @@ class Login extends React.Component<LoginProps> {
   }
 
   componentDidMount() {
-    if (isMobile) {
-      if (isAndroid) {
-        window.location.href = "https://play.google.com/store/apps/details?id=com.internxt.cloud";
-      } else if (isIOS) {
-        window.location.href = "https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889";
-      }
-    }
-
     // Check if recent login is passed and redirect user to Internxt Drive
     const mnemonic = Settings.get('xMnemonic');
     const user = Settings.getUser();
+    // const xKeys = localStorage.getItem('xKeys');
+    // const xKeyPublic = localStorage.getItem('xKeyPublic');
 
     if (user && user.registerCompleted && mnemonic && this.props.handleKeySaved) {
-      this.props.handleKeySaved(user)
-      history.push('/app')
+      this.props.handleKeySaved(user);
+      history.push('/app');
     } else if (user && user.registerCompleted === false) {
-      history.push('/appsumo/' + user.email)
+      history.push('/appsumo/' + user.email);
     }
   }
 
   componentDidUpdate() {
     if (this.state.isAuthenticated && this.state.token && this.state.user) {
       const mnemonic = Settings.get('xMnemonic');
+
       if (!this.state.registerCompleted) {
         history.push('/appsumo/' + this.state.email);
       }
       else if (mnemonic) {
-        history.push('/app')
+        history.push('/app');
       }
     }
   }
 
   validateLoginForm = () => {
     let isValid = true;
-
     // Email validation
-    if (this.state.email.length < 5 || !this.validateEmail(this.state.email)) isValid = false;
+
+    if (this.state.email.length < 5 || !this.validateEmail(this.state.email)) { isValid = false; }
     // Pass length check
-    if (this.state.password.length < 1) isValid = false;
+    if (this.state.password.length < 1) { isValid = false; }
 
     return isValid;
   }
 
   validate2FA = () => {
-    let pattern = /^\d{3}(\s+)?\d{3}$/
+    let pattern = /^\d{3}(\s+)?\d{3}$/;
+
     return pattern.test(this.state.twoFactorCode);
   }
 
   validateEmail = (email: string) => {
     // eslint-disable-next-line no-control-regex
-    let emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/
+    let emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
+
     return emailPattern.test(email.toLowerCase());
   }
 
-  handleChange = (event: any) => {
-    this.setState({
-      [event.target.id]: event.target.value
-    });
-  }
+  handleChange = (event: any) => this.setState({ [event.target.id]: event.target.value });
 
   check2FANeeded = () => {
     fetch('/api/login', {
@@ -107,16 +102,15 @@ class Login extends React.Component<LoginProps> {
         window.analytics.track('user-signin-attempted', {
           status: 'error',
           msg: data.error ? data.error : 'Login error',
-        })
+          email: this.state.email
+        });
         throw new Error(data.error ? data.error : 'Login error');
       }
 
       return data;
-
     }).then(res => {
       if (!res.tfa) {
         this.doLogin();
-
       } else {
         this.setState({ showTwoFactor: true });
       }
@@ -124,145 +118,179 @@ class Login extends React.Component<LoginProps> {
       if (err.message.includes('not activated') && this.validateEmail(this.state.email)) {
         history.push(`/activate/${this.state.email}`);
       } else {
-        this.setState({ isLogingIn: false })
+        this.setState({ isLogingIn: false });
         window.analytics.track('user-signin-attempted', {
           status: 'error',
           msg: err.message,
-        })
+          email: this.state.email
+        });
         toast.warn(`"${err}"`);
       }
     });
   }
 
-  doLogin = () => {
+  generateNewKeys = async (password: string) => {
+    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
+
+    return {
+      privateKeyArmored,
+      privateKeyArmoredEncrypted: AesUtil.encrypt(privateKeyArmored, password, false),
+      publicKeyArmored,
+      revocationCertificate
+    };
+  }
+
+  doLogin = async () => {
     // Proceed with submit
-    fetch("/api/login", {
-      method: "post",
+    fetch('/api/login', {
+      method: 'post',
       headers: getHeaders(false, false),
       body: JSON.stringify({ email: this.state.email })
     }).then(response => {
-      if (response.status !== 200) {
-        this.setState({ isLogingIn: false })
-      }
-      if (response.status === 200) {
-        // Manage credentials verification
-        response.json().then((body) => {
-          // Check password
-          const salt = decryptText(body.sKey);
-          const hashObj = passToHash({ password: this.state.password, salt });
-          const encPass = encryptText(hashObj.hash);
-
-          fetch("/api/access", {
-            method: "post",
-            headers: getHeaders(true, false),
-            body: JSON.stringify({
-              email: this.state.email,
-              password: encPass,
-              tfa: this.state.twoFactorCode
-            })
-          }).then(async res => {
-            return { res, data: await res.json() };
-          }).then(res => {
-            if (res.res.status !== 200) {
-              window.analytics.track('user-signin-attempted', {
-                status: 'error',
-                msg: res.data.error ? res.data.error : 'Login error',
-              });
-              throw new Error(res.data.error ? res.data.error : res.data);
-            }
-            return res.data;
-          }).then(data => {
-            data.user.mnemonic = decryptTextWithKey(data.user.mnemonic, this.state.password)
-            if (!data.user.root_folder_id) {
-              return initializeUser(this.state.email, data.user.mnemonic).then((res) => {
-                data.user.root_folder_id = res.user.root_folder_id
-                return data
-              })
-            } else {
-              return data
-            }
-          }).then(data => {
-            // Manage succesfull login
-            const user = {
-              ...data.user,
-              userId: data.user.userId,
-              email: this.state.email,
-              mnemonic: data.user.mnemonic,
-              root_folder_id: data.user.root_folder_id,
-              storeMnemonic: data.user.storeMnemonic,
-              name: data.user.name,
-              lastname: data.user.lastname,
-              uuid: data.user.uuid,
-              credit: data.user.credit,
-              createdAt: data.user.createdAt,
-              registerCompleted: data.user.registerCompleted
-            };
-            if (this.props.handleKeySaved) {
-              this.props.handleKeySaved(user)
-            }
-            localStorage.setItem('xToken', data.token);
-            localStorage.setItem('xMnemonic', user.mnemonic);
-            localStorage.setItem('xUser', JSON.stringify(user));
-
-            window.analytics.identify(data.user.uuid, {
-              email: this.state.email,
-              platform: 'web',
-              referrals_credit: data.user.credit,
-              referrals_count: Math.floor(data.user.credit / 5),
-              createdAt: data.user.createdAt
-            }, () => {
-              window.analytics.track('user-signin', {
-                email: this.state.email,
-                userId: user.uuid
-              })
-            })
-            this.setState({
-              isAuthenticated: true,
-              token: data.token,
-              user: user,
-              registerCompleted: data.user.registerCompleted
-            });
-          })
-            .catch(err => {
-              toast.warn(`"${err.error ? err.error : err}"`);
-              this.setState({ isLogingIn: false })
-            });
+      if (response.status === 400) {
+        return response.json().then((body) => {
+          throw Error(body.error || 'Cannot connect to server');
         });
-      } else if (response.status === 400) {
-        // Manage other cases:
-        // username / password do not match, user activation required...
-        response.json().then((body) => {
-          toast.warn(body.error);
-        });
-      } else {
-        // Manage user does not exist
-        toast.warn("This account doesn't exists");
+      } else if (response.status !== 200) {
+        throw Error('This account doesn\'t exists');
       }
+
+      return response.json();
+    }).then(async (body) => {
+      // Manage credentials verification
+      const keys = await this.generateNewKeys(this.state.password);
+
+      // Check password
+      const salt = decryptText(body.sKey);
+      const hashObj = passToHash({ password: this.state.password, salt });
+      const encPass = encryptText(hashObj.hash);
+
+      return fetch('/api/access', {
+        method: 'post',
+        headers: getHeaders(false, false),
+        body: JSON.stringify({
+          email: this.state.email,
+          password: encPass,
+          tfa: this.state.twoFactorCode,
+          privateKey: keys.privateKeyArmoredEncrypted,
+          publicKey: keys.publicKeyArmored,
+          revocateKey: keys.revocationCertificate
+        })
+      }).then(async res => {
+        return { res, data: await res.json() };
+      }).then(res => {
+        if (res.res.status !== 200) {
+          window.analytics.track('user-signin-attempted', {
+            status: 'error',
+            msg: res.data.error ? res.data.error : 'Login error',
+            email: this.state.email
+          });
+          throw new Error(res.data.error ? res.data.error : res.data);
+        }
+        return res.data;
+      }).then(async data => {
+        const privateKey = data.user.privateKey;
+        const publicKey = data.user.publicKey;
+        const revocateKey = data.user.revocateKey;
+
+        const privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password)).toString('base64');
+
+        analytics.identify(data.user.uuid, {
+          email: this.state.email,
+          platform: 'web',
+          referrals_credit: data.user.credit,
+          referrals_count: Math.floor(data.user.credit / 5),
+          createdAt: data.user.createdAt
+        });
+
+        // Manage succesfull login
+        const user = {
+          ...data.user,
+          mnemonic: decryptTextWithKey(data.user.mnemonic, this.state.password),
+          email: this.state.email,
+          privateKey: privkeyDecrypted,
+          publicKey: publicKey,
+          revocationKey: revocateKey
+        };
+
+        if (this.props.handleKeySaved) {
+          this.props.handleKeySaved(user);
+        }
+
+        Settings.set('xToken', data.token);
+        Settings.set('xMnemonic', user.mnemonic);
+        Settings.set('xUser', JSON.stringify(user));
+
+        if (user.teams) {
+          await storeTeamsInfo();
+        }
+
+        if (data.userTeam) {
+          const mnemonicDecode = Buffer.from(data.userTeam.bridge_mnemonic, 'base64').toString();
+          const mnemonicDecrypt = await decryptPGP(mnemonicDecode);
+
+          const team = {
+            idTeam: data.userTeam.idTeam,
+            user: data.userTeam.bridge_user,
+            password: data.userTeam.bridge_password,
+            mnemonic: mnemonicDecrypt.data,
+            admin: data.userTeam.admin,
+            root_folder_id: data.userTeam.root_folder_id,
+            isAdmin: data.userTeam.isAdmin
+          };
+
+          Settings.set('xTeam', JSON.stringify(team));
+          Settings.set('xTokenTeam', data.tokenTeam);
+        }
+
+        window.analytics.identify(data.user.uuid, {
+          email: this.state.email,
+          platform: 'web',
+          referrals_credit: data.user.credit,
+          referrals_count: Math.floor(data.user.credit / 5),
+          createdAt: data.user.createdAt
+        }, () => {
+          window.analytics.track('user-signin', {
+            email: this.state.email,
+            userId: user.uuid
+          });
+        });
+
+        this.setState({
+          isAuthenticated: true,
+          token: data.token,
+          user: user,
+          registerCompleted: data.user.registerCompleted,
+          isTeam: false
+        });
+
+      }).catch(err => {
+        throw Error(`"${err.error ? err.error : err}"`);
+      });
+
     }).catch(err => {
-      this.setState({ isLogingIn: false })
-      console.error("Login error. " + err)
-      toast.warn('Login error')
+      console.error('Login error. ' + err.message);
+      toast.warn('Login error');
+    }).finally(() => {
+      this.setState({ isLogingIn: false });
     });
   }
 
   render() {
     if (!this.state.showTwoFactor) {
       const isValid = this.validateLoginForm();
+
       return (<div className="login-main">
         <Container className="login-container-box">
           <div className="container-register">
             <p className="container-title">Sign in to Internxt</p>
             <div className="menu-box">
               <button className="on">Sign in</button>
-              <button className="off" onClick={(e: any) => {
-                history.push('/new');
-              }}>Create account</button>
+              <button className="off" onClick={(e: any) => { history.push('/new'); }}>Create account</button>
             </div>
             <Form className="form-register" onSubmit={(e: any) => {
               e.preventDefault();
-              this.setState({ isLogingIn: true }, () => {
-                this.check2FANeeded();
-              });
+              this.setState({ isLogingIn: true }, () => this.check2FANeeded());
             }}>
               <Form.Row>
                 <Form.Group as={Col} controlId="email">
@@ -280,8 +308,6 @@ class Login extends React.Component<LoginProps> {
                 </Form.Group>
               </Form.Row>
             </Form>
-
-
           </div>
         </Container>
 
@@ -289,13 +315,13 @@ class Login extends React.Component<LoginProps> {
           <p className="forgotPassword" onClick={(e: any) => {
             window.analytics.track('user-reset-password-request');
             history.push('/remove');
-          }}
-          >Forgot your password?</p>
+          }}>Forgot your password?</p>
         </Container>
       </div>
       );
     } else {
       const isValid = this.validate2FA();
+
       return (<div className="login-main">
         <Container className="login-container-box">
           <div className="container-register">
