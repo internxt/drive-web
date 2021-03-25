@@ -721,7 +721,7 @@ class XCloud extends React.Component {
     try {
       this.trackFileUploadStart(file, parentFolderId);
 
-      const headers = getHeaders(true, true);
+      const headers = getHeaders(true, true, this.state.isTeam);
       const env = new Environment(this.getEnvironmentConfig());
 
       const content = new Blob([file], { type: file.type });
