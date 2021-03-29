@@ -667,25 +667,9 @@ class XCloud extends React.Component {
           err.response.data.text().then(result => {
             const json = JSON.parse(result);
 
-            toast.warn(
-              'Error downloading file:\n' +
-              err.response.status +
-              ' - ' +
-              err.response.statusText +
-              '\n' +
-              json.message +
-              '\nFile id: ' +
-              id
-            );
+            toast.warn('Error downloading file:\n' + err.response.status + '\n' + json.message + '\nFile id: ' + id);
           }).catch(textErr => {
-            toast.warn(
-              'Error downloading file:\n' +
-              err.response.status +
-              ' - ' +
-              err.response.statusText +
-              '\nFile id: ' +
-              id
-            );
+            toast.warn('Error downloading file:\n' + err.response.status + '\nFile id: ' + id);
           });
         }
         resolve();
