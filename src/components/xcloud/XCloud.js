@@ -672,13 +672,26 @@ class XCloud extends React.Component {
   };
 
   getEnvironmentConfig = () => {
-    const { email, mnemonic, userId } = Settings.getUser();
+    let bridgeUser, bridgePass, encryptionKey, bucket;
     const bridgeUrl = 'https://api.internxt.com';
-    const bridgeUser = email;
-    const bridgePass = userId;
-    const encryptionKey = mnemonic;
 
-    return { bridgeUser, bridgePass, bridgeUrl, encryptionKey };
+    if (this.state.isTeam) {
+      const team = Settings.getTeams();
+
+      bridgeUser = team.bridge_user;
+      bridgePass = team.bridge_password;
+      encryptionKey = team.bridge_mnemonic;
+      bucket = team.bucket;
+    } else {
+      const user = Settings.getUser();
+
+      bridgeUser = user.email;
+      bridgePass = user.userId;
+      encryptionKey = user.mnemonic;
+      bucket = user.bucket;
+    }
+
+    return { bridgeUser, bridgePass, bridgeUrl, encryptionKey, bucket };
   }
 
   trackFileUploadStart = (file, parentFolderId) => {
@@ -721,13 +734,14 @@ class XCloud extends React.Component {
     try {
       this.trackFileUploadStart(file, parentFolderId);
 
-      const headers = getHeaders(true, true);
-      const env = new Environment(this.getEnvironmentConfig());
+      const headers = getHeaders(true, true, this.state.isTeam);
+      const { bridgeUser, bridgePass, bridgeUrl, encryptionKey, bucket } = this.getEnvironmentConfig();
+      const env = new Environment({ bridgeUser, bridgePass, bridgeUrl, encryptionKey });
 
       const content = new Blob([file], { type: file.type });
 
       const response = await new Promise((resolve, reject) => {
-        env.uploadFile(Settings.getUser().bucket, {
+        env.uploadFile(bucket, {
           filename: file.name,
           fileSize: file.size,
           fileContent: content,
@@ -743,11 +757,10 @@ class XCloud extends React.Component {
       });
 
       const filenameSplitted = file.name.split('.');
-      const extension = filenameSplitted[1] ? filenameSplitted[1] : '';
+      const extension = filenameSplitted[filenameSplitted.length - 1] ? filenameSplitted[filenameSplitted.length - 1] : '';
       const [filename] = filenameSplitted;
 
       const fileId = response.id;
-      const bucket = response.bucket;
       const name = encryptText(filename);
       const folder_id = parentFolderId;
       const { size, type } = file;
