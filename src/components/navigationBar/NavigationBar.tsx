@@ -23,6 +23,7 @@ import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import Settings from '../../lib/settings';
 import customPrettySize from '../../lib/sizer';
+import { toast } from 'react-toastify';
 
 interface NavigationBarProps {
   navbarItems: JSX.Element
@@ -192,7 +193,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
 
       window.location.href = stripeBillingURL;
     }).catch(error => {
-      console.log('Error on Stripe Billing', error);
+      toast.warn('Error on Stripe Billing');
     });
   }
 
