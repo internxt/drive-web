@@ -23,6 +23,7 @@ import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import Settings from '../../lib/settings';
 import customPrettySize from '../../lib/sizer';
+import { toast } from 'react-toastify';
 
 interface NavigationBarProps {
   navbarItems: JSX.Element
@@ -183,13 +184,16 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
       headers: getHeaders(true, false),
       body: JSON.stringify(body)
     }).then((res) => {
+      if (res.status !== 200) {
+        throw res;
+      }
       return res.json();
     }).then(res => {
       const stripeBillingURL = res.url;
 
       window.location.href = stripeBillingURL;
     }).catch(error => {
-      console.log('Error on Stripe Billing', error);
+      toast.warn('Error on Stripe Billing');
     });
   }
 
