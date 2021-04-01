@@ -189,7 +189,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
 
       window.location.href = stripeBillingURL;
     }).catch(error => {
-      console.log(error);
+      console.log('Error on Stripe Billing', error);
     });
   }
 
