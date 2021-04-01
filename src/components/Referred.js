@@ -54,8 +54,6 @@ class Referred extends React.Component {
           const credit = data.userCredit;
 
           this.setState({ credit: credit });
-
-          console.log(this.state.credit);
         }).catch(err => {
         });
     }
@@ -188,14 +186,12 @@ class Referred extends React.Component {
             <Button block className="referred-button"
               type="button"
               onClick={() => {
-                if (user.credit > 0) {
+                if (this.state.credit > 0) {
                   this.sendClaimEmail(this.state.email);
                 } else {
                   toast.info('You don\'t have any credit on your account');
                 }
-              }}>
-                        Claim
-            </Button>
+              }}>Claim</Button>
           </Container>
         </div>
       </div>;
