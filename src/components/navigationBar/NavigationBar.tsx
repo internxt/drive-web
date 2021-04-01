@@ -183,6 +183,9 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
       headers: getHeaders(true, false),
       body: JSON.stringify(body)
     }).then((res) => {
+      if (res.status !== 200) {
+        throw res;
+      }
       return res.json();
     }).then(res => {
       const stripeBillingURL = res.url;
