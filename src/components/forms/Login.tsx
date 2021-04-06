@@ -5,8 +5,6 @@ import history from '../../lib/history';
 import './Login.scss';
 import { encryptText, decryptText, passToHash, decryptTextWithKey } from '../../lib/utils';
 
-import { isMobile, isAndroid, isIOS } from 'react-device-detect';
-
 import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,7 +13,7 @@ import { analytics } from '../../lib/analytics';
 import { decryptPGP } from '../../lib/utilspgp';
 import AesUtil from '../../lib/AesUtil';
 import { storeTeamsInfo } from '../../services/teams.service';
-const openpgp = require('openpgp');
+import { generateNewKeys } from '../../services/pgp.service';
 
 interface LoginProps {
   email?: string
@@ -38,14 +36,6 @@ class Login extends React.Component<LoginProps> {
   }
 
   componentDidMount() {
-    if (isMobile) {
-      if (isAndroid) {
-        window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';
-      } else if (isIOS) {
-        window.location.href = 'https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889';
-      }
-    }
-
     // Check if recent login is passed and redirect user to Internxt Drive
     const mnemonic = Settings.get('xMnemonic');
     const user = Settings.getUser();
@@ -111,7 +101,8 @@ class Login extends React.Component<LoginProps> {
       if (res.status !== 200) {
         window.analytics.track('user-signin-attempted', {
           status: 'error',
-          msg: data.error ? data.error : 'Login error'
+          msg: data.error ? data.error : 'Login error',
+          email: this.state.email
         });
         throw new Error(data.error ? data.error : 'Login error');
       }
@@ -130,7 +121,8 @@ class Login extends React.Component<LoginProps> {
         this.setState({ isLogingIn: false });
         window.analytics.track('user-signin-attempted', {
           status: 'error',
-          msg: err.message
+          msg: err.message,
+          email: this.state.email
         });
         toast.warn(`"${err}"`);
       }
@@ -138,16 +130,13 @@ class Login extends React.Component<LoginProps> {
   }
 
   generateNewKeys = async (password: string) => {
-    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await openpgp.generateKey({
-      userIds: [{ email: 'inxt@inxt.com' }],
-      curve: 'ed25519'
-    });
+    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
 
     return {
       privateKeyArmored,
       privateKeyArmoredEncrypted: AesUtil.encrypt(privateKeyArmored, password, false),
-      publicKeyArmored: Buffer.from(publicKeyArmored).toString('base64'),
-      revocationCertificate: Buffer.from(revocationCertificate).toString('base64')
+      publicKeyArmored,
+      revocationCertificate
     };
   }
 
@@ -193,7 +182,8 @@ class Login extends React.Component<LoginProps> {
         if (res.res.status !== 200) {
           window.analytics.track('user-signin-attempted', {
             status: 'error',
-            msg: res.data.error ? res.data.error : 'Login error'
+            msg: res.data.error ? res.data.error : 'Login error',
+            email: this.state.email
           });
           throw new Error(res.data.error ? res.data.error : res.data);
         }

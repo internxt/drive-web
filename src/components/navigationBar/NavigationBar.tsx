@@ -23,6 +23,7 @@ import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import Settings from '../../lib/settings';
 import customPrettySize from '../../lib/sizer';
+import { toast } from 'react-toastify';
 
 interface NavigationBarProps {
   navbarItems: JSX.Element
@@ -69,11 +70,11 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
   }
 
   async getUsage(isTeam: Boolean = false) {
-    const limit = await fetch('/api/limit/', {
+    const limit = await fetch('/api/limit', {
       headers: getHeaders(true, false, isTeam)
     }).then(res => res.json()).catch(() => null);
 
-    const usage = await fetch('/api/usage/', {
+    const usage = await fetch('/api/usage', {
       headers: getHeaders(true, false, isTeam)
     }).then(res3 => res3.json()).catch(() => null);
 
@@ -170,6 +171,32 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     this.props.handleChangeWorkspace && this.props.handleChangeWorkspace();
   }
 
+  handleBilling() {
+    const user = Settings.getUser().email;
+
+    const body = {
+      test: process.env.NODE_ENV !== 'production',
+      email: user
+    };
+
+    fetch('/api/stripe/billing', {
+      method: 'post',
+      headers: getHeaders(true, false),
+      body: JSON.stringify(body)
+    }).then((res) => {
+      if (res.status !== 200) {
+        throw res;
+      }
+      return res.json();
+    }).then(res => {
+      const stripeBillingURL = res.url;
+
+      window.location.href = stripeBillingURL;
+    }).catch(error => {
+      toast.warn('Error on Stripe Billing');
+    });
+  }
+
   render() {
     let user: any = null;
 
@@ -184,6 +211,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     }
 
     const isAdmin = Settings.getTeams().isAdmin;
+    const xTeam = Settings.exists('xTeam');
 
     return (
       <Navbar id="mainNavBar">
@@ -198,19 +226,20 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
             <Dropdown.Toggle id="1"><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
             <Dropdown.Menu>
               <div className="dropdown-menu-group info">
-                <p className="name-lastname">{user.name} {user.lastname}</p>
+                <p className="name-lastname">{this.state.isTeam ? 'Business' : `${user.name} ${user.lastname}`}</p>
                 <ProgressBar className="mini-progress-bar" now={this.state.barUsage} max={this.state.barLimit} />
                 <p className="space-used">Used <strong>{customPrettySize(this.state.barUsage)}</strong> of <strong>{customPrettySize(this.state.barLimit)}</strong></p>
               </div>
               <Dropdown.Divider />
               <div className="dropdown-menu-group">
-                <Dropdown.Item onClick={(e) => { history.push('/storage'); }}>Storage</Dropdown.Item>
+                {!this.state.isTeam && <Dropdown.Item onClick={(e) => { history.push('/storage'); }}>Storage</Dropdown.Item>}
                 {!Settings.exists('xTeam') && <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>}
                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
-                <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>
                 <Dropdown.Item onClick={(e) => { history.push('/token'); }}>Token</Dropdown.Item>
-                {isAdmin ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Teams</Dropdown.Item> : <></>}
-                <Dropdown.Item onClick={(e) => {
+                {!xTeam && <Dropdown.Item onClick={(e) => this.handleBilling()}> Billing </Dropdown.Item>}
+                {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Business</Dropdown.Item> : <></>}
+                {!this.state.isTeam && <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>}
+                {!this.state.isTeam && <Dropdown.Item onClick={(e) => {
                   function getOperatingSystem() {
                     let operatingSystem = 'Not known';
 
@@ -240,7 +269,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                       break;
                   }
 
-                }}>Download</Dropdown.Item>
+                }}>Download</Dropdown.Item>}
                 <Dropdown.Item href="mailto:support@internxt.zohodesk.eu">Contact</Dropdown.Item>
               </div>
               <Dropdown.Divider />

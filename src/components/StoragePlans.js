@@ -54,7 +54,7 @@ class StoragePlans extends React.Component {
   }
 
   loadAvailableProducts() {
-    fetch('/api/stripe/products' + (process.env.NODE_ENV !== 'production' ? '?test=true' : ''), {
+    return fetch('/api/stripe/products' + (process.env.NODE_ENV !== 'production' ? '?test=true' : ''), {
       headers: getHeaders(true, false)
     }).then(response => response.json()).then(products => {
       this.setState({
@@ -70,12 +70,12 @@ class StoragePlans extends React.Component {
     const body = { product: this.state.selectedProductToBuy.id };
 
     if (process.env.NODE_ENV !== 'production') { body.test = true; }
-    fetch('/api/stripe/plans', {
+    return fetch('/api/stripe/plans', {
       method: 'post',
       headers: getHeaders(true, false),
       body: JSON.stringify(body)
-    }).then(result => result.json()).then(result => {
-      this.setState({ availablePlans: result, plansLoading: false });
+    }).then(res => res.json()).then(res => {
+      this.setState({ availablePlans: res, plansLoading: false });
     }).catch(err => {
       console.log('Error loading price plans', err.message);
     });

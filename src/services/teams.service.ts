@@ -9,6 +9,24 @@ export async function getTeamsInfo() {
   }).then(res => res.json());
 }
 
+export async function getKeys(mail: string) {
+  return fetch(`/api/user/keys/${mail}`, {
+    method: 'GET',
+    headers: getHeaders(true, false)
+  }).then(async(res) =>{
+    if (res.status === 400){
+      const res1 = await res.json();
+
+      throw res1;
+    }
+
+    if (res.status !== 200) {
+      throw new Error('This user cannot be invited');
+    }
+    return res.json();
+  });
+}
+
 export async function storeTeamsInfo() {
   const { userTeam, tokenTeams } = await getTeamsInfo();
 

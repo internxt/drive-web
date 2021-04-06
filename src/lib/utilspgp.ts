@@ -34,3 +34,18 @@ export async function encryptPGP(message: string) {
     publicKeys: publicKeyArmored.keys
   });
 }
+
+export async function encryptPGPInvitations(message: string, key: string) {
+  // User settings
+  const publicKey = Buffer.from(key, 'base64').toString();
+
+  // Prepare input
+  const originalText = openpgp.message.fromText(message);
+  const publicKeyArmored = await openpgp.key.readArmored(publicKey);
+
+  // Encrypt message
+  return openpgp.encrypt({
+    message: originalText,
+    publicKeys: publicKeyArmored.keys
+  });
+}

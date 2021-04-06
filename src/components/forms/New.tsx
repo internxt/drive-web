@@ -1,19 +1,20 @@
 import * as React from 'react';
 import { Container, Form, Col, Button } from 'react-bootstrap';
+import Checkbox from '@material-ui/core/Checkbox';
 import AesUtil from '../../lib/AesUtil';
 
 import history from '../../lib/history';
 import Settings from '../../lib/settings';
 
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
-import { isMobile, isAndroid, isIOS } from 'react-device-detect';
 import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { analytics } from '../../lib/analytics';
 import queryString, { ParsedQuery } from 'query-string';
 import { initializeUser } from '../../services/auth.service';
-const openpgp = require('openpgp');
+import { generateNewKeys } from '../../services/pgp.service';
+import AesFunctions from '../../lib/AesUtil';
 
 const bip39 = require('bip39');
 
@@ -40,6 +41,7 @@ interface NewState {
     token?: string
     user?: any
     isLoading: boolean
+    checkTermsConditions: boolean
 }
 
 const CONTAINERS = {
@@ -75,19 +77,13 @@ class New extends React.Component<NewProps, NewState> {
         confirmPassword: ''
       },
       showModal: false,
-      isLoading: false
+      isLoading: false,
+      checkTermsConditions: false
     };
 
   }
 
   componentDidMount() {
-    if (isMobile) {
-      if (isAndroid) {
-        window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';
-      } else if (isIOS) {
-        window.location.href = 'https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889';
-      }
-    }
 
     const parsedQueryParams: ParsedQuery<string> = queryString.parse(history.location.search);
     const isEmailQuery = parsedQueryParams.email && this.validateEmail(parsedQueryParams.email.toString());
@@ -171,16 +167,10 @@ class New extends React.Component<NewProps, NewState> {
       const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
 
       //Generate keys
-      const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await openpgp.generateKey({
-        userIds: [{ email: 'inxt@inxt.com' }], // you can pass multiple user IDs
-        curve: 'ed25519' // ECC curve name        // protects the private key
-      });
+      const { privateKeyArmored, publicKeyArmored: codpublicKey, revocationCertificate: codrevocationKey } = await generateNewKeys();
 
       //Datas
       const encPrivateKey = AesUtil.encrypt(privateKeyArmored, this.state.register.password, false);
-      const codpublicKey = Buffer.from(publicKeyArmored).toString('base64');
-
-      const codrevocationKey = Buffer.from(revocationCertificate).toString('base64');
 
       return fetch('/api/register', {
         method: 'post',
@@ -199,7 +189,7 @@ class New extends React.Component<NewProps, NewState> {
         })
       }).then(response => {
         if (response.status === 200) {
-          response.json().then((body) => {
+          return response.json().then((body) => {
             // Manage succesfull register
             const { token, user, uuid } = body;
 
@@ -211,12 +201,16 @@ class New extends React.Component<NewProps, NewState> {
               }
             });
 
+            const privkeyDecrypted = Buffer.from(AesFunctions.decrypt(user.privateKey, this.state.register.password)).toString('base64');
+
+            user.privateKey = privkeyDecrypted;
+
             Settings.set('xToken', token);
             user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.register.password);
             Settings.set('xUser', JSON.stringify(user));
             Settings.set('xMnemonic', user.mnemonic);
 
-            initializeUser(this.state.register.email, user.mnemonic).then((rootFolderInfo) => {
+            return initializeUser(this.state.register.email, user.mnemonic, encPass).then((rootFolderInfo) => {
               user.root_folder_id = rootFolderInfo.user.root_folder_id;
               Settings.set('xUser', JSON.stringify(user));
               history.push('/login');
@@ -224,7 +218,7 @@ class New extends React.Component<NewProps, NewState> {
           });
 
         } else {
-          response.json().then((body) => {
+          return response.json().then((body) => {
             // Manage account already exists (error 400)
             const { message } = body;
 
@@ -287,7 +281,7 @@ class New extends React.Component<NewProps, NewState> {
 
         xUser.mnemonic = mnemonic;
 
-        return initializeUser(this.state.register.email, xUser.mnemonic).then((rootFolderInfo) => {
+        return initializeUser(this.state.register.email, xUser.mnemonic, encPass).then((rootFolderInfo) => {
           xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
           Settings.set('xToken', xToken);
           Settings.set('xMnemonic', mnemonic);
@@ -366,6 +360,10 @@ class New extends React.Component<NewProps, NewState> {
       </div>;
     }
 
+    handleTermsConditions = (event: React.ChangeEvent<HTMLInputElement>) => {
+      this.setState({ checkTermsConditions: event.target.checked });
+    };
+
     privacyContainer() {
       return (<div className="container-register">
         <p className="container-title">Internxt Security</p>
@@ -374,6 +372,19 @@ class New extends React.Component<NewProps, NewState> {
           <li>Store your Password. Keep it safe and secure.</li>
           <li>Keep an offline backup of your password.</li>
         </ul>
+
+        <div className="privacy-terms">
+          <Checkbox
+            checked={this.state.checkTermsConditions}
+            onChange={this.handleTermsConditions}
+            color="default"
+            inputProps={{ 'aria-label': 'secondary checkbox' }}
+          />
+          <a href="https://internxt.com/en/legal" target="_blank" rel="noreferrer">
+              Accept terms, conditions and privacy policy
+          </a>
+        </div>
+
         <Form onSubmit={(e: any) => {
           e.preventDefault();
           this.setState({ currentContainer: CONTAINERS.PasswordContainer });
@@ -386,7 +397,7 @@ class New extends React.Component<NewProps, NewState> {
               }}>Back</button>
             </Form.Group>
             <Form.Group as={Col}>
-              <button className="btn-block on" type="submit" autoFocus>Continue</button>
+              <button className="btn-block on" type="submit" autoFocus disabled={!this.state.checkTermsConditions}>Continue</button>
             </Form.Group>
           </Form.Row>
 
@@ -426,7 +437,7 @@ class New extends React.Component<NewProps, NewState> {
             });
           }
           else {
-            this.doRegister();
+            this.doRegister().finally(() => this.setState({ isLoading: false }));
           }
         }}>
           <Form.Row>

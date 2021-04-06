@@ -4,6 +4,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 415px) {
+    margin: auto;
+  }
 }
 
 .login-container-box {
@@ -13,6 +17,11 @@
   border-radius: 6px;
   padding: 40px !important;
   height: 460px;
+
+  @media (max-width: 415px) {
+    align-self: center;
+    width: 350px !important;
+  }
 }
 
 .xcloud-toast-info {
@@ -97,11 +106,28 @@
   color: #5c6066;
   background-color: #f8f9fa;
   padding: 5px 20px 15px 40px;
-  margin-bottom: 40px;
+  margin-bottom: 5px;
 }
 
 .privacy-remainders li {
   margin-top: 12px;
+}
+
+.privacy-terms {
+  color: #737880;
+  font-size: 15px;
+  text-align: justify;
+  letter-spacing: -0.11px;
+  margin-bottom: 20px;
+  margin-top: 21px;
+}
+
+.privacy-terms a,
+a:hover,
+a:focus,
+a:active {
+  text-decoration: none;
+  color: inherit;
 }
 
 .form-register {

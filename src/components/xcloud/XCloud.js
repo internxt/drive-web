@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { isMobile, isAndroid, isIOS } from 'react-device-detect';
 import $ from 'jquery';
 import _ from 'lodash';
 import fileDownload from 'js-file-download';
@@ -51,6 +52,14 @@ class XCloud extends React.Component {
   moveEvent = {};
 
   componentDidMount = () => {
+    if (isMobile) {
+      if (isAndroid) {
+        window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';
+      } else if (isIOS) {
+        window.location.href = 'https://apps.apple.com/us/app/internxt-drive-secure-file-storage/id1465869889';
+      }
+    }
+
     // When user is not signed in, redirect to login
     if (!this.props.user || !this.props.isAuthenticated) {
       history.push('/login');
@@ -68,20 +77,18 @@ class XCloud extends React.Component {
         });
       } else {
         console.log('getFolderContent 4');
-        this.getFolderContent(this.props.user.root_folder_id);
-        this.setState({ currentFolderId: this.props.user.root_folder_id });
+
+        if (Settings.exists('xTeam') && !this.state.isTeam && Settings.get('workspace') === 'teams') {
+          this.handleChangeWorkspace();
+        } else {
+          this.getFolderContent(this.props.user.root_folder_id);
+          this.setState({ currentFolderId: this.props.user.root_folder_id });
+        }
       }
 
       const team = Settings.getTeams();
 
-      if (!team) {
-        this.getTeamByUser().then((team) => {
-          localStorage.clear();
-          history.push('/login');
-          toast.info('Subscription has been completed please login');
-
-        }).catch((err) => { });
-      } else if (team && !team.root_folder_id) {
+      if (team && !team.root_folder_id) {
         this.setState({ currentFolderId: this.props.user.root_folder_id });
       }
 
@@ -103,7 +110,11 @@ class XCloud extends React.Component {
       });
     }
 
-    this.setState({ isTeam: !this.state.isTeam });
+    const isTeam = !this.state.isTeam;
+
+    this.setState({ isTeam: isTeam }, () => {
+      Settings.set('workspace', isTeam ? 'teams' : 'individual');
+    });
   }
 
   userInitialization = () => {
@@ -485,7 +496,7 @@ class XCloud extends React.Component {
             platform: 'web'
           });
           console.log('getFolderContent 12');
-          this.getFolderContent(this.state.currentFolderId);
+          this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
         })
         .catch((error) => {
           console.log(`Error during folder customization. Error: ${error} `);
@@ -503,7 +514,7 @@ class XCloud extends React.Component {
             platform: 'web'
           });
           console.log('getFolderContent 13');
-          this.getFolderContent(this.state.currentFolderId);
+          this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
         })
         .catch((error) => {
           console.log(`Error during file customization. Error: ${error} `);
@@ -656,25 +667,9 @@ class XCloud extends React.Component {
           err.response.data.text().then(result => {
             const json = JSON.parse(result);
 
-            toast.warn(
-              'Error downloading file:\n' +
-              err.response.status +
-              ' - ' +
-              err.response.statusText +
-              '\n' +
-              json.message +
-              '\nFile id: ' +
-              id
-            );
+            toast.warn('Error downloading file:\n' + err.response.status + '\n' + json.message + '\nFile id: ' + id);
           }).catch(textErr => {
-            toast.warn(
-              'Error downloading file:\n' +
-              err.response.status +
-              ' - ' +
-              err.response.statusText +
-              '\nFile id: ' +
-              id
-            );
+            toast.warn('Error downloading file:\n' + err.response.status + '\nFile id: ' + id);
           });
         }
         resolve();

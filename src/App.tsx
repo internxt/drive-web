@@ -22,6 +22,7 @@ import JoinTeam from './components/forms/JoinTeam';
 import DeactivationTeams from './components/forms/DeactivationTeam';
 import { analytics, PATH_NAMES } from './lib/analytics';
 import Settings from './lib/settings';
+import Success from './components/teams/Success';
 
 class App extends React.Component {
   state = {
@@ -37,27 +38,11 @@ class App extends React.Component {
   }
 
   render() {
-    if (window.location.pathname) {
-      let pathName = window.location.pathname.split('/')[1];
+    const pathName = window.location.pathname.split('/')[1];
 
+    if (window.location.pathname) {
       if (pathName === 'new' && window.location.search !== '') {
         analytics.page(PATH_NAMES[window.location.pathname]);
-      }
-      var toast;
-
-      if (/^[a-z0-9]{10}$/.test(pathName)) {
-        toast = <ToastContainer />;
-      } else {
-        toast = <ToastContainer
-          position="bottom-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={true}
-          rtl={false}
-          draggable={true}
-          pauseOnHover={true}
-          className="" />;
       }
     }
 
@@ -79,6 +64,9 @@ class App extends React.Component {
             render={(props: any) => <New {...props}
               isNewUser={true}
               isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+          <Route exact path='/team/success/:sessionId' render={(props: any) =>
+            <Success {...props}
+              isAuthenticated={this.state.isAuthenticated}/>} />
 
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/invite' render={(props) => <Referred {...props} isAuthenticated={this.state.isAuthenticated} />} />
@@ -88,6 +76,7 @@ class App extends React.Component {
           <Route exact path='/settings' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/token' render={(props) => <PayToken {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/teams/' render={(props) => <Teams {...props} isAuthenticated={this.state.isAuthenticated} />} />
+          <Route exact path='/team/cancel/' render={(props) => <Teams {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/teams/join/:token' render={(props) => <JoinTeam {...props} />} />
           <Route path='/activations/:token' render={(props) => <Activation {...props} />} />
           <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
@@ -107,7 +96,18 @@ class App extends React.Component {
           <Route component={NotFound} />
         </Switch>
 
-        {toast}
+        {/^[a-z0-9]{10}$/.test(pathName)
+          ? <ToastContainer />
+          : <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={true}
+            rtl={false}
+            draggable={true}
+            pauseOnHover={true}
+            className="" />}
       </Router>
     );
   }

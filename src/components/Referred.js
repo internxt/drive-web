@@ -35,7 +35,7 @@ class Referred extends React.Component {
       this.getCredit();
       this.setState({ textToCopy: `https://internxt.com/?ref=${user.uuid}` });
       this.setState({ copySuccess: 'Copy' });
-      const socialText = this.parseUrl('I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!');
+      const socialText = this.parseUrl('I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 10 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!');
 
       this.setState({ text: socialText });
     }
@@ -54,8 +54,6 @@ class Referred extends React.Component {
           const credit = data.userCredit;
 
           this.setState({ credit: credit });
-
-          console.log(this.state.credit);
         }).catch(err => {
         });
     }
@@ -164,7 +162,7 @@ class Referred extends React.Component {
               <div className="col-2 d-flex p-0">
                 <DropdownButton className="share-container m-auto" name="menuShare" title="Share" type="toggle">
                   <Dropdown.Item className="social-button"
-                    href={`https://twitter.com/intent/tweet?url=https://internxt.com/?ref=${user.uuid}&${this.parseUrl({ text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`}
+                    href={`https://twitter.com/intent/tweet?url=https://internxt.com/?ref=${user.uuid}&${this.parseUrl({ text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 10 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`}
                     target="_blank"
                     data-size="large"
                     original-referer={`https://internxt.com/?ref=${user.uuid}`}
@@ -172,11 +170,11 @@ class Referred extends React.Component {
                     <img src={twitter} alt="" />
                   </Dropdown.Item>
                   <Dropdown.Item className="social-button" data-href={`https://internxt.com/?ref=${user.uuid}`}
-                    href={`https://www.facebook.com/sharer/sharer.php?u=https://internxt.com/?ref=${user.uuid}&amp;src=sdkpreparse&${this.parseUrl({ quote: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`} target="_blank">
+                    href={`https://www.facebook.com/sharer/sharer.php?u=https://internxt.com/?ref=${user.uuid}&amp;src=sdkpreparse&${this.parseUrl({ quote: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 10 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}`} target="_blank">
                     <img src={facebook} alt="" />
                   </Dropdown.Item>
                   <Dropdown.Item className="social-button"
-                    href={`https://t.me/share/url?${this.parseUrl({ text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 2 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}&url=https://internxt.com/?ref=${user.uuid}`} target="_blank">
+                    href={`https://t.me/share/url?${this.parseUrl({ text: 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 10 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!' })}&url=https://internxt.com/?ref=${user.uuid}`} target="_blank">
                     <img src={telegram} alt="" />
                   </Dropdown.Item>
                 </DropdownButton>
@@ -188,14 +186,12 @@ class Referred extends React.Component {
             <Button block className="referred-button"
               type="button"
               onClick={() => {
-                if (user.credit > 0) {
+                if (this.state.credit > 0) {
                   this.sendClaimEmail(this.state.email);
                 } else {
                   toast.info('You don\'t have any credit on your account');
                 }
-              }}>
-                        Claim
-            </Button>
+              }}>Claim</Button>
           </Container>
         </div>
       </div>;
