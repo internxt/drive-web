@@ -270,7 +270,7 @@ class Login extends React.Component<LoginProps> {
 
     }).catch(err => {
       console.error('Login error. ' + err.message);
-      toast.warn('Login error');
+      toast.warn(<>Login error<br />{err.message}</>);
     }).finally(() => {
       this.setState({ isLogingIn: false });
     });

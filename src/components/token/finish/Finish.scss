@@ -1,0 +1,40 @@
+.pay-finish-box {
+    height: 45px;
+}
+
+.finish-form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+  
+.finish-container-box {
+    background-color: white;
+    width: 472px !important;
+    border: solid 1px #eaeced;
+    border-radius: 6px;
+    padding: 40px !important;
+    height: 280px;
+}
+  
+.xcloud-toast-info {
+    background-color: #4585f5 !important;
+}
+
+.referred-description {
+    text-align: justify;
+    color: #737880;
+    letter-spacing: -0.1px;
+    font-size: 14px;
+    line-height: 1.57;
+}
+
+
+.finish-title {
+    display: inline-block;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 45px;
+    vertical-align: bottom;
+}
