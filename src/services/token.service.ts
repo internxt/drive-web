@@ -5,5 +5,11 @@ export async function getTokenInfo() {
   return fetch('/api/token/info', {
     method: 'get',
     headers: getHeaders(true, false, false)
-  }).then(res => res.json());
+  }).then(res => {
+    if (res.status !== 200) {
+      throw res;
+    }
+
+    return res.json();
+  });
 }
