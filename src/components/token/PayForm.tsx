@@ -208,7 +208,7 @@ class PayToken extends React.Component<ResetProps> {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} controlId="wallet">
-                      <Form.Label>Wallet from which you are send the INXT tokens</Form.Label>
+                      <Form.Label>Wallet from which you are sending INXT tokens</Form.Label>
                       <Form.Control
                         name="wallet"
                         value={this.state.wallet}
