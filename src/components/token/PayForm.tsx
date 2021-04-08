@@ -151,7 +151,7 @@ class PayToken extends React.Component<ResetProps> {
                 <div
                   className="referred-description py-3"
                 >
-                  We currently accept Internxt tokens for crypto payments with a minimum order size of 10€.
+                  We currently accept Internxt tokens for crypto payments with a minimum order size of €10.
                   <br/>
                   Complete the crypto payment request form below and we'll email you with a crypto invoice.
                 </div>
