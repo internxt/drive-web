@@ -27,7 +27,7 @@ function Finish({ error }) {
         <p
           className="finish-title"
         >
-          Successfull
+          Success
         </p>
         <div>
           <img src={CheckIcon} alt="Check" style={styles}/>
