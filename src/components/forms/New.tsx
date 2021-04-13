@@ -34,6 +34,7 @@ interface NewState {
         email: string
         password: string
         confirmPassword: string
+        referrer: string | undefined
     }
     currentContainer: number
     showModal: Boolean
@@ -58,6 +59,7 @@ class New extends React.Component<NewProps, NewState> {
 
     const hasEmailParam = this.props.match.params.email && this.validateEmail(this.props.match.params.email);
     const hasTokenParam = qs.token;
+    const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
 
     if (hasTokenParam && typeof hasTokenParam === 'string') {
       Settings.clear();
@@ -72,7 +74,8 @@ class New extends React.Component<NewProps, NewState> {
         lastname: '',
         email: hasEmailParam ? this.props.match.params.email : '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        referrer: hasReferrerParam
       },
       showModal: false,
       isLoading: false,
@@ -183,7 +186,8 @@ class New extends React.Component<NewProps, NewState> {
           referral: this.readReferalCookie(),
           privateKey: encPrivateKey,
           publicKey: codpublicKey,
-          revocationKey: codrevocationKey
+          revocationKey: codrevocationKey,
+          referrer: this.state.register.referrer
         })
       }).then(response => {
         if (response.status === 200) {
