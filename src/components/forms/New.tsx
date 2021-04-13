@@ -46,8 +46,7 @@ interface NewState {
 const CONTAINERS = {
   RegisterContainer: 1,
   PrivacyTermsContainer: 2,
-  PasswordContainer: 3,
-  ActivationContainer: 4
+  PasswordContainer: 3
 };
 
 class New extends React.Component<NewProps, NewState> {
@@ -67,7 +66,7 @@ class New extends React.Component<NewProps, NewState> {
     }
 
     this.state = {
-      currentContainer: hasEmailParam && this.props.isNewUser ? CONTAINERS.ActivationContainer : CONTAINERS.RegisterContainer,
+      currentContainer: CONTAINERS.RegisterContainer,
       register: {
         name: '',
         lastname: '',
@@ -291,26 +290,6 @@ class New extends React.Component<NewProps, NewState> {
 
     }
 
-    resendEmail = async (email: string) => {
-      if (!this.validateEmail(email)) {
-        throw Error('No email address provided');
-      }
-
-      return fetch(`/api/user/resend/${email}`, {
-        method: 'GET'
-      }).then(async res => {
-        return { response: res, data: await res.json() };
-      }).then(res => {
-        if (res.response.status !== 200) {
-          throw res.data;
-        } else {
-          toast.info(`Activation email sent to ${email}`);
-        }
-      }).catch(err => {
-        toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
-      });
-    }
-
     registerContainer() {
       return <div className="container-register">
         <p className="container-title">Create an Internxt account</p>
@@ -464,19 +443,6 @@ class New extends React.Component<NewProps, NewState> {
           </Form.Row>
         </Form>
       </div >;
-    }
-
-    activationContainer() {
-      return (<div className="container-register">
-        <p className="container-title">Activation Email</p>
-        <p className="privacy-disclaimer">Please check your email <b>{this.state.register.email}</b> and follow the instructions to activate your account so you can start using Internxt Drive.</p>
-        <ul className="privacy-remainders" style={{ paddingTop: '20px' }}>By creating an account, you are agreeing to our Terms &amp; Conditions and Privacy Policy</ul>
-        <button className="btn-block on" onClick={() => {
-          this.resendEmail(this.state.register.email).catch(err => {
-            toast.error(<div><div>Error sending email</div><div>Reason: {err.message}</div></div>);
-          });
-        }}>Re-send activation email</button>
-      </div>);
     }
 
     render() {
