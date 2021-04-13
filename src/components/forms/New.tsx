@@ -367,10 +367,10 @@ class New extends React.Component<NewProps, NewState> {
     privacyContainer() {
       return (<div className="container-register">
         <p className="container-title">Internxt Security</p>
-        <p className="privacy-disclaimer">Internxt Drive uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt Drive, we don't know your password. That means that if you ever forget it, your files are gone forever. With us, you're the only owner of your files. We strongly suggest you to:</p>
+        <p className="privacy-disclaimer">
+         Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we don't know your password. That means that if you forget it, your files will be gone. With us, you're the only owner of your files.        </p>
         <ul className="privacy-remainders">
           <li>Store your Password. Keep it safe and secure.</li>
-          <li>Keep an offline backup of your password.</li>
         </ul>
 
         <div className="privacy-terms">
