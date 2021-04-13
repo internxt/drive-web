@@ -9,7 +9,7 @@ import StorageProgressBar from './StorageProgressBar';
 import StoragePlans from './StoragePlans';
 
 import Circle from './Circle';
-import { Row, Col, Spinner } from 'react-bootstrap';
+import { Row, Col, Button, Spinner } from 'react-bootstrap';
 import Popup from 'reactjs-popup';
 
 import closeTab from '../assets/Dashboard-Icons/close-tab.svg';
@@ -19,7 +19,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AppSumoPlans from './AppSumoPlans';
 import customPrettySize from '../lib/sizer';
-
 interface StorageProps {
     isAuthenticated: boolean
 }
@@ -29,7 +28,7 @@ class Storage extends React.Component<StorageProps> {
       page: null,
       max: 0,
       now: 0,
-
+      processing: false,
       modalDeleteAccountShow: false,
       isAppSumo: false,
       appSumoDetails: null,
@@ -105,13 +104,17 @@ class Storage extends React.Component<StorageProps> {
     }
 
     handleCancelAccount = () => {
+      this.setState({ processing: true });
       fetch('/api/deactivate', {
         method: 'GET',
         headers: getHeaders(true, false)
-      }).then(res => res.json())
+      })
+        .then(res => res.json())
         .then(res => {
-          this.setState({ modalDeleteAccountShow: false });
+          this.setState({ modalDeleteAccountShow: false, processing: false });
+          toast.warn('A desactivation email has been sent to your email inbox');
         }).catch(err => {
+          this.setState({ processing: false });
           toast.warn('Error deleting account');
           console.log(err);
         });
@@ -164,10 +167,13 @@ class Storage extends React.Component<StorageProps> {
                 <h1>Are you sure?</h1>
                 <p className="delete-account-advertising">All your files will be gone forever and you will lose access to your Internxt Drive account. Any active subscriptions you might have will also be cancelled. Once you click delete account, you will receive a confirmation email.</p>
                 <div className="buttons-wrapper">
-                  <div className="default-button button-primary delete-account-button"
-                    onClick={this.handleCancelAccount}>
-                                    Delete account
-                  </div>
+                  <Button
+                    className="default-button button-primary delete-account-button"
+                    disabled={this.state.processing}
+                    onClick={this.handleCancelAccount}
+                  >
+                    {this.state.processing ? <Spinner animation="border" variant="light" style={{ fontSize: 1, width: '1rem', height: '1rem' }} /> : 'Delete account'}
+                  </Button>
                 </div>
 
               </div>
