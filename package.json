@@ -62,23 +62,67 @@
     ],
     "rules": {
       "semi": "error",
-      "comma-dangle": ["error", "never"],
-      "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0, "maxBOF": 0 }],
+      "comma-dangle": [
+        "error",
+        "never"
+      ],
+      "no-multiple-empty-lines": [
+        "error",
+        {
+          "max": 1,
+          "maxEOF": 0,
+          "maxBOF": 0
+        }
+      ],
       "eqeqeq": "error",
-      "comma-spacing": ["error", { "before": false, "after": true }],
-      "no-trailing-spaces": ["error"],
-      "indent": ["error", 2, { "SwitchCase": 1 }],
-      "quotes": ["error", "single"],
-      "object-curly-spacing": ["error", "always"],
-      "newline-after-var": ["error", "always"],
+      "comma-spacing": [
+        "error",
+        {
+          "before": false,
+          "after": true
+        }
+      ],
+      "no-trailing-spaces": [
+        "error"
+      ],
+      "indent": [
+        "error",
+        2,
+        {
+          "SwitchCase": 1
+        }
+      ],
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "newline-after-var": [
+        "error",
+        "always"
+      ],
       "no-multi-spaces": "error",
       "curly": "error",
       "keyword-spacing": "error",
-      "space-in-parens": ["error", "never"],
-      "no-unused-vars": ["error"],
-      "no-useless-constructor": ["error"],
-      "no-extra-semi": ["error"],
-      "no-empty": ["error"]
+      "space-in-parens": [
+        "error",
+        "never"
+      ],
+      "no-unused-vars": [
+        "error"
+      ],
+      "no-useless-constructor": [
+        "error"
+      ],
+      "no-extra-semi": [
+        "error"
+      ],
+      "no-empty": [
+        "error"
+      ]
     }
   },
   "browserslist": {
