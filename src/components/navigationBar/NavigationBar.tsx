@@ -212,6 +212,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
 
     const isAdmin = Settings.getTeams().isAdmin;
     const xTeam = Settings.exists('xTeam');
+    const tenGB = 10737418240;
 
     return (
       <Navbar id="mainNavBar">
@@ -236,7 +237,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                 {!Settings.exists('xTeam') && <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>}
                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                 <Dropdown.Item onClick={(e) => { history.push('/token'); }}>Token</Dropdown.Item>
-                {!xTeam && <Dropdown.Item onClick={(e) => this.handleBilling()}> Billing </Dropdown.Item>}
+                {!xTeam && (this.state.barLimit > tenGB) && <Dropdown.Item onClick={(e) => this.handleBilling()}> Billing </Dropdown.Item>}
                 {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Business</Dropdown.Item> : <></>}
                 {!this.state.isTeam && <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>}
                 {!this.state.isTeam && <Dropdown.Item onClick={(e) => {
