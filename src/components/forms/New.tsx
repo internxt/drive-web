@@ -36,7 +36,6 @@ interface NewState {
         confirmPassword: string
     }
     currentContainer: number
-    validated?: Boolean
     showModal: Boolean
     token?: string
     user?: any
@@ -219,15 +218,16 @@ class New extends React.Component<NewProps, NewState> {
 
         } else {
           return response.json().then((body) => {
-            // Manage account already exists (error 400)
-            const { message } = body;
-
-            toast.warn(`"${message}"`);
-            this.setState({ validated: false });
+            if (body.error) {
+              throw new Error(body.error);
+            } else {
+              throw new Error('Internal Server Error');
+            }
           });
         }
       }).catch(err => {
         console.error('Register error', err);
+        toast.warn(`"${err.message}"`);
       });
 
     }
