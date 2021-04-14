@@ -61,7 +61,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
       menuButton: null,
       navbarItems: props.navbarItems,
       workspace: 'My Workspace',
-      barLimit: 1024 * 1024 * 1024 * 2,
+      barLimit: 1024 * 1024 * 1024 * 10,
       barUsage: 0,
       isTeam: this.props.isTeam || false,
       isAdmin: this.props.isAdmin || false,
