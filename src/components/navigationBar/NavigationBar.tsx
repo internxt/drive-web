@@ -23,7 +23,7 @@ import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import Settings from '../../lib/settings';
 import customPrettySize from '../../lib/sizer';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 
 interface NavigationBarProps {
   navbarItems: JSX.Element
@@ -171,31 +171,31 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     this.props.handleChangeWorkspace && this.props.handleChangeWorkspace();
   }
 
-  handleBilling() {
-    const user = Settings.getUser().email;
+  // handleBilling() {
+  //   const user = Settings.getUser().email;
 
-    const body = {
-      test: process.env.NODE_ENV !== 'production',
-      email: user
-    };
+  //   const body = {
+  //     test: process.env.NODE_ENV !== 'production',
+  //     email: user
+  //   };
 
-    fetch('/api/stripe/billing', {
-      method: 'post',
-      headers: getHeaders(true, false),
-      body: JSON.stringify(body)
-    }).then((res) => {
-      if (res.status !== 200) {
-        throw res;
-      }
-      return res.json();
-    }).then(res => {
-      const stripeBillingURL = res.url;
+  //   fetch('/api/stripe/billing', {
+  //     method: 'post',
+  //     headers: getHeaders(true, false),
+  //     body: JSON.stringify(body)
+  //   }).then((res) => {
+  //     if (res.status !== 200) {
+  //       throw res;
+  //     }
+  //     return res.json();
+  //   }).then(res => {
+  //     const stripeBillingURL = res.url;
 
-      window.location.href = stripeBillingURL;
-    }).catch(error => {
-      toast.warn('Error on Stripe Billing');
-    });
-  }
+  //     window.location.href = stripeBillingURL;
+  //   }).catch(error => {
+  //     toast.warn('Error on Stripe Billing');
+  //   });
+  // }
 
   render() {
     let user: any = null;
@@ -212,7 +212,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
 
     const isAdmin = Settings.getTeams().isAdmin;
     const xTeam = Settings.exists('xTeam');
-    const tenGB = 10737418240;
+    // const tenGB = 10737418240;
 
     return (
       <Navbar id="mainNavBar">
@@ -237,7 +237,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                 {!Settings.exists('xTeam') && <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>}
                 <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
                 <Dropdown.Item onClick={(e) => { history.push('/token'); }}>Token</Dropdown.Item>
-                {!xTeam && (this.state.barLimit > tenGB) && <Dropdown.Item onClick={(e) => this.handleBilling()}> Billing </Dropdown.Item>}
+                {/* {!xTeam && (this.state.barLimit > tenGB) && <Dropdown.Item onClick={(e) => this.handleBilling()}> Billing </Dropdown.Item>} */}
                 {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Business</Dropdown.Item> : <></>}
                 {!this.state.isTeam && <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>}
                 {!this.state.isTeam && <Dropdown.Item onClick={(e) => {
