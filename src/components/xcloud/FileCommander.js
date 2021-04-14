@@ -471,14 +471,14 @@ class FileCommander extends React.Component {
                 />
               );
             })
-          ) : inRoot ? (
+          ) : inRoot ? (!this.props.isLoading &&
             <div className="noItems">
               <h1>Your Internxt Drive is empty.</h1>
               <h4 className="noItems-subtext">
                 Click the upload button or drop files in this window to get started.
               </h4>
             </div>
-          ) : (
+          ) : (!this.props.isLoading &&
             <div className="noItems">
               <h1>This folder is empty.</h1>
             </div>
