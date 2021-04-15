@@ -52,7 +52,7 @@ class Share extends React.Component<ShareProps> {
           this.download();
         }
       } else {
-        toast.warn('Invalid token', this.toastOptions);
+        toast.warn('This secure link has expired', this.toastOptions);
       }
     }
 
