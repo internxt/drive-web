@@ -1,7 +1,7 @@
 import { getHeaders } from '../lib/auth';
 import Settings from '../lib/settings';
 
-export async function initializeUser(email: string, mnemonic: string, password:string) {
+export async function initializeUser(email: string, mnemonic: string) {
   return fetch('/api/initialize', {
     method: 'POST',
     headers: getHeaders(true, true),

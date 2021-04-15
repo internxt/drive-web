@@ -14,7 +14,6 @@ import { analytics } from '../../lib/analytics';
 import queryString, { ParsedQuery } from 'query-string';
 import { initializeUser } from '../../services/auth.service';
 import { generateNewKeys } from '../../services/pgp.service';
-import AesFunctions from '../../lib/AesUtil';
 
 const bip39 = require('bip39');
 
@@ -203,16 +202,12 @@ class New extends React.Component<NewProps, NewState> {
               }
             });
 
-            const privkeyDecrypted = Buffer.from(AesFunctions.decrypt(user.privateKey, this.state.register.password)).toString('base64');
-
-            user.privateKey = privkeyDecrypted;
-
             Settings.set('xToken', token);
             user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.register.password);
             Settings.set('xUser', JSON.stringify(user));
             Settings.set('xMnemonic', user.mnemonic);
 
-            return initializeUser(this.state.register.email, user.mnemonic, encPass).then((rootFolderInfo) => {
+            return initializeUser(this.state.register.email, user.mnemonic).then((rootFolderInfo) => {
               user.root_folder_id = rootFolderInfo.user.root_folder_id;
               Settings.set('xUser', JSON.stringify(user));
               history.push('/login');
