@@ -144,7 +144,6 @@ class New extends React.Component<NewProps, NewState> {
       if (this.state.register.password.length < 1 && this.state.register.confirmPassword.length < 1) {isValid = false;}
       // Pass and confirm pass validation
       if (this.state.register.password !== this.state.register.confirmPassword) {
-        toast.warn('Password mismatch');
         isValid = false;
       }
 
@@ -396,6 +395,7 @@ class New extends React.Component<NewProps, NewState> {
           await new Promise<void>(r => this.setState({ isLoading: true }, () => r()));
 
           if (!this.validatePassword()) {
+            toast.warn(<div>Password mismatch</div>);
             this.setState({ isLoading: false });
             return;
           }
