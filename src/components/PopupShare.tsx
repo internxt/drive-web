@@ -24,7 +24,7 @@ interface PopupShareProps {
 class PopupShare extends React.Component<PopupShareProps> {
     state = {
       link: null,
-      views: 1,
+      views: 10,
       animationCss: ''
     }
 
