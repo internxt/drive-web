@@ -396,7 +396,8 @@ class New extends React.Component<NewProps, NewState> {
           await new Promise<void>(r => this.setState({ isLoading: true }, () => r()));
 
           if (!this.validatePassword()) {
-            return toast.warn(<div>Password mismatch</div>);
+            this.setState({ isLoading: false });
+            return;
           }
 
           if (!this.props.isNewUser) {
