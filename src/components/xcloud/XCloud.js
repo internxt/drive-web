@@ -825,7 +825,7 @@ class XCloud extends React.Component {
               this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
             }).finally(() => {
               console.log('getFolderContent 14');
-              this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
+              this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
             });
         },
         (err, results) => {

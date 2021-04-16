@@ -18,29 +18,29 @@ import { generateNewKeys } from '../../services/pgp.service';
 const bip39 = require('bip39');
 
 interface NewProps {
-    match: any
-    location: {
-        search: string
-    }
-    isNewUser: boolean
+  match: any
+  location: {
+    search: string
+  }
+  isNewUser: boolean
 }
 
 interface NewState {
-    isAuthenticated?: Boolean
-    register: {
-        name: string
-        lastname: string
-        email: string
-        password: string
-        confirmPassword: string
-        referrer: string | undefined
-    }
-    currentContainer: number
-    showModal: Boolean
-    token?: string
-    user?: any
-    isLoading: boolean
-    checkTermsConditions: boolean
+  isAuthenticated?: Boolean
+  register: {
+    name: string
+    lastname: string
+    email: string
+    password: string
+    confirmPassword: string
+    referrer: string | undefined
+  }
+  currentContainer: number
+  showModal: Boolean
+  token?: string
+  user?: any
+  isLoading: boolean
+  checkTermsConditions: boolean
 }
 
 const CONTAINERS = {
@@ -104,359 +104,358 @@ class New extends React.Component<NewProps, NewState> {
     }
   }
 
-    handleChangeRegister = (event: any) => {
-      var registerState = this.state.register;
+  handleChangeRegister = (event: any) => {
+    var registerState = this.state.register;
 
-      registerState[event.target.id] = event.target.value;
-      this.setState({ register: registerState });
+    registerState[event.target.id] = event.target.value;
+    this.setState({ register: registerState });
+  }
+
+  validateEmail = (email: string) => {
+    // eslint-disable-next-line no-control-regex
+    let emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
+
+    return emailPattern.test(email.toLowerCase());
+  }
+
+  validateRegisterFormPart1 = () => {
+    let isValid = true;
+
+    if (!this.state.register.name || !this.state.register.lastname || !this.state.register.email) {
+      return false;
     }
 
-    validateEmail = (email: string) => {
-      // eslint-disable-next-line no-control-regex
-      let emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
+    // Name lenght check
+    if (this.state.register.name.length < 1 && this.state.register.lastname.length < 1) { isValid = false; }
+    // Email length check and validation
+    if (this.state.register.email.length < 5 || !this.validateEmail(this.state.register.email)) { isValid = false; }
 
-      return emailPattern.test(email.toLowerCase());
+    return isValid;
+  }
+
+  validatePassword = () => {
+    let isValid = true;
+
+    if (!this.state.register.password || !this.state.register.confirmPassword) {
+      return false;
     }
 
-    validateRegisterFormPart1 = () => {
-      let isValid = true;
-
-      if (!this.state.register.name || !this.state.register.lastname || !this.state.register.email) {
-        return false;
-      }
-
-      // Name lenght check
-      if (this.state.register.name.length < 1 && this.state.register.lastname.length < 1) {isValid = false;}
-      // Email length check and validation
-      if (this.state.register.email.length < 5 || !this.validateEmail(this.state.register.email)) {isValid = false;}
-
-      return isValid;
+    // Pass length check
+    if (this.state.register.password.length < 1 && this.state.register.confirmPassword.length < 1) { isValid = false; }
+    // Pass and confirm pass validation
+    if (this.state.register.password !== this.state.register.confirmPassword) {
+      isValid = false;
     }
 
-    validatePassword = () => {
-      let isValid = true;
+    return isValid;
+  }
 
-      if (!this.state.register.password || !this.state.register.confirmPassword) {
-        return false;
-      }
+  readReferalCookie() {
+    const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
 
-      // Pass length check
-      if (this.state.register.password.length < 1 && this.state.register.confirmPassword.length < 1) {isValid = false;}
-      // Pass and confirm pass validation
-      if (this.state.register.password !== this.state.register.confirmPassword) {
-        toast.warn('Password mismatch');
-        isValid = false;
-      }
+    return cookie ? cookie[2] : null;
+  }
 
-      return isValid;
-    }
+  doRegister = async () => {
+    // Setup hash and salt
+    const hashObj = passToHash({ password: this.state.register.password });
+    const encPass = encryptText(hashObj.hash);
+    const encSalt = encryptText(hashObj.salt);
+    // Setup mnemonic
+    const mnemonic = bip39.generateMnemonic(256);
+    const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
 
-    readReferalCookie() {
-      const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
+    //Generate keys
+    const { privateKeyArmored, publicKeyArmored: codpublicKey, revocationCertificate: codrevocationKey } = await generateNewKeys();
 
-      return cookie ? cookie[2] : null;
-    }
+    //Datas
+    const encPrivateKey = AesUtil.encrypt(privateKeyArmored, this.state.register.password, false);
 
-    doRegister = async () => {
-      // Setup hash and salt
-      const hashObj = passToHash({ password: this.state.register.password });
-      const encPass = encryptText(hashObj.hash);
-      const encSalt = encryptText(hashObj.salt);
-      // Setup mnemonic
-      const mnemonic = bip39.generateMnemonic(256);
-      const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
-
-      //Generate keys
-      const { privateKeyArmored, publicKeyArmored: codpublicKey, revocationCertificate: codrevocationKey } = await generateNewKeys();
-
-      //Datas
-      const encPrivateKey = AesUtil.encrypt(privateKeyArmored, this.state.register.password, false);
-
-      return fetch('/api/register', {
-        method: 'post',
-        headers: getHeaders(true, true),
-        body: JSON.stringify({
-          name: this.state.register.name,
-          lastname: this.state.register.lastname,
-          email: this.state.register.email,
-          password: encPass,
-          mnemonic: encMnemonic,
-          salt: encSalt,
-          referral: this.readReferalCookie(),
-          privateKey: encPrivateKey,
-          publicKey: codpublicKey,
-          revocationKey: codrevocationKey,
-          referrer: this.state.register.referrer
-        })
-      }).then(response => {
-        if (response.status === 200) {
-          return response.json().then((body) => {
-            // Manage succesfull register
-            const { token, user, uuid } = body;
-
-            analytics.identify(uuid, { email: this.state.register.email, member_tier: 'free' });
-            window.analytics.track('user-signup', {
-              properties: {
-                userId: uuid,
-                email: this.state.register.email
-              }
-            });
-
-            Settings.set('xToken', token);
-            user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.register.password);
-            Settings.set('xUser', JSON.stringify(user));
-            Settings.set('xMnemonic', user.mnemonic);
-
-            return initializeUser(this.state.register.email, user.mnemonic).then((rootFolderInfo) => {
-              user.root_folder_id = rootFolderInfo.user.root_folder_id;
-              Settings.set('xUser', JSON.stringify(user));
-              history.push('/login');
-            });
-          });
-
-        } else {
-          return response.json().then((body) => {
-            if (body.error) {
-              throw new Error(body.error);
-            } else {
-              throw new Error('Internal Server Error');
-            }
-          });
-        }
-      }).catch(err => {
-        console.error('Register error', err);
-        toast.warn(`"${err.message}"`);
-      });
-
-    }
-
-    updateInfo = () => {
-      // Setup hash and salt
-      const hashObj = passToHash({ password: this.state.register.password });
-      const encPass = encryptText(hashObj.hash);
-      const encSalt = encryptText(hashObj.salt);
-
-      // Setup mnemonic
-      const mnemonic = bip39.generateMnemonic(256);
-      const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
-
-      // Body
-      const body = {
+    return fetch('/api/register', {
+      method: 'post',
+      headers: getHeaders(true, true),
+      body: JSON.stringify({
         name: this.state.register.name,
         lastname: this.state.register.lastname,
         email: this.state.register.email,
         password: encPass,
         mnemonic: encMnemonic,
         salt: encSalt,
-        referral: this.readReferalCookie()
-      };
+        referral: this.readReferalCookie(),
+        privateKey: encPrivateKey,
+        publicKey: codpublicKey,
+        revocationKey: codrevocationKey,
+        referrer: this.state.register.referrer
+      })
+    }).then(response => {
+      if (response.status === 200) {
+        return response.json().then((body) => {
+          // Manage succesfull register
+          const { token, user, uuid } = body;
 
-      const fetchHandler = async (res: Response) => {
-        const body = await res.text();
+          analytics.identify(uuid, { email: this.state.register.email, member_tier: 'free' });
+          window.analytics.track('user-signup', {
+            properties: {
+              userId: uuid,
+              email: this.state.register.email
+            }
+          });
 
-        try {
-          const bodyJson = JSON.parse(body);
+          Settings.set('xToken', token);
+          user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.register.password);
+          Settings.set('xUser', JSON.stringify(user));
+          Settings.set('xMnemonic', user.mnemonic);
 
-          return { res: res, body: bodyJson };
-        } catch {
-          return { res: res, body: body };
-        }
-      };
-
-      return fetch('/api/appsumo/update', {
-        method: 'POST',
-        headers: getHeaders(true, false),
-        body: JSON.stringify(body)
-      }).then(fetchHandler).then(({ res, body }) => {
-        if (res.status !== 200) {
-          throw Error(body.error || 'Internal Server Error');
-        } else {
-          return body;
-        }
-      }).then(res => {
-        const xToken = res.token;
-        const xUser = res.user;
-
-        xUser.mnemonic = mnemonic;
-
-        return initializeUser(this.state.register.email, xUser.mnemonic, encPass).then((rootFolderInfo) => {
-          xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
-          Settings.set('xToken', xToken);
-          Settings.set('xMnemonic', mnemonic);
-          Settings.set('xUser', JSON.stringify(xUser));
+          return initializeUser(this.state.register.email, user.mnemonic).then((rootFolderInfo) => {
+            user.root_folder_id = rootFolderInfo.user.root_folder_id;
+            Settings.set('xUser', JSON.stringify(user));
+            history.push('/login');
+          });
         });
-      });
 
-    }
-
-    registerContainer() {
-      return <div className="container-register">
-        <p className="container-title">Create an Internxt account</p>
-        <div className="menu-box">
-          <button className="off" onClick={(e) => { history.push('/login'); }}>Sign in</button>
-          <button className="on">Create account</button>
-        </div>
-        <Form className="form-register" onSubmit={(e: any) => {
-          e.preventDefault();
-
-          if (this.validateRegisterFormPart1()) {
-            var tempReg = this.state.register;
-
-            tempReg.email = tempReg.email.toLowerCase().trim();
-            this.setState({
-              currentContainer: CONTAINERS.PrivacyTermsContainer,
-              register: tempReg
-            });
+      } else {
+        return response.json().then((body) => {
+          if (body.error) {
+            throw new Error(body.error);
+          } else {
+            throw new Error('Internal Server Error');
           }
-        }}>
-          <Form.Row>
-            <Form.Group as={Col} controlId="name">
-              <Form.Control placeholder="First name" required autoComplete="name"
-                onChange={this.handleChangeRegister}
-                value={this.state && this.state.register.name} autoFocus />
-            </Form.Group>
-            <Form.Group as={Col} controlId="lastname">
-              <Form.Control placeholder="Last name" required autoComplete="lastname"
-                onChange={this.handleChangeRegister}
-                value={this.state && this.state.register.lastname} />
-            </Form.Group>
-          </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} controlId="email">
-              <Form.Control placeholder="Email address" type="email" required autoComplete="email"
-                onChange={this.handleChangeRegister}
-                disabled={!this.props.isNewUser}
-                value={this.state && this.state.register.email} />
-            </Form.Group>
-          </Form.Row>
-          <Form.Row className="form-register-submit">
-            <Form.Group as={Col}>
-              <button className="on btn-block" type="submit" disabled={!this.validateRegisterFormPart1()}>Continue</button>
-            </Form.Group>
-          </Form.Row>
-        </Form>
-      </div>;
-    }
+        });
+      }
+    }).catch(err => {
+      console.error('Register error', err);
+      toast.warn(`"${err.message}"`);
+    });
 
-    handleTermsConditions = (event: React.ChangeEvent<HTMLInputElement>) => {
-      this.setState({ checkTermsConditions: event.target.checked });
+  }
+
+  updateInfo = () => {
+    // Setup hash and salt
+    const hashObj = passToHash({ password: this.state.register.password });
+    const encPass = encryptText(hashObj.hash);
+    const encSalt = encryptText(hashObj.salt);
+
+    // Setup mnemonic
+    const mnemonic = bip39.generateMnemonic(256);
+    const encMnemonic = encryptTextWithKey(mnemonic, this.state.register.password);
+
+    // Body
+    const body = {
+      name: this.state.register.name,
+      lastname: this.state.register.lastname,
+      email: this.state.register.email,
+      password: encPass,
+      mnemonic: encMnemonic,
+      salt: encSalt,
+      referral: this.readReferalCookie()
     };
 
-    privacyContainer() {
-      return (<div className="container-register">
-        <p className="container-title">Internxt Security</p>
-        <p className="privacy-disclaimer">
-         Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we don't know your password. That means that if you forget it, your files will be gone. With us, you're the only owner of your files.        </p>
-        <ul className="privacy-remainders">
-          <li>Store your Password. Keep it safe and secure.</li>
-        </ul>
+    const fetchHandler = async (res: Response) => {
+      const body = await res.text();
 
-        <div className="privacy-terms">
-          <Checkbox
-            checked={this.state.checkTermsConditions}
-            onChange={this.handleTermsConditions}
-            color="default"
-            inputProps={{ 'aria-label': 'secondary checkbox' }}
-          />
-          <a href="https://internxt.com/en/legal" target="_blank" rel="noreferrer">
-              Accept terms, conditions and privacy policy
-          </a>
-        </div>
+      try {
+        const bodyJson = JSON.parse(body);
 
-        <Form onSubmit={(e: any) => {
-          e.preventDefault();
-          this.setState({ currentContainer: CONTAINERS.PasswordContainer });
-        }}>
-          <Form.Row>
-            <Form.Group as={Col} controlId="name">
-              <button className="btn-block off" onClick={(e: any) => {
-                this.setState({ currentContainer: CONTAINERS.RegisterContainer });
-                e.preventDefault();
-              }}>Back</button>
-            </Form.Group>
-            <Form.Group as={Col}>
-              <button className="btn-block on" type="submit" autoFocus disabled={!this.state.checkTermsConditions}>Continue</button>
-            </Form.Group>
-          </Form.Row>
+        return { res: res, body: bodyJson };
+      } catch {
+        return { res: res, body: body };
+      }
+    };
 
-        </Form>
-      </div>);
-    }
+    return fetch('/api/appsumo/update', {
+      method: 'POST',
+      headers: getHeaders(true, false),
+      body: JSON.stringify(body)
+    }).then(fetchHandler).then(({ res, body }) => {
+      if (res.status !== 200) {
+        throw Error(body.error || 'Internal Server Error');
+      } else {
+        return body;
+      }
+    }).then(res => {
+      const xToken = res.token;
+      const xUser = res.user;
 
-    passwordContainer() {
-      return <div className="container-register">
-        <p className="container-title">Create an Internxt account</p>
-        <div className="menu-box">
-          <button className="off" onClick={(e: any) => { /* this.setState({ currentContainer: this.loginContainer() }) */ }}>Sign in</button>
-          <button className="on">Create account</button>
-        </div>
-        <Form className="form-register" onSubmit={async (e: any) => {
-          e.preventDefault();
+      xUser.mnemonic = mnemonic;
 
-          await new Promise<void>(r => this.setState({ isLoading: true }, () => r()));
+      return initializeUser(this.state.register.email, xUser.mnemonic, encPass).then((rootFolderInfo) => {
+        xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
+        Settings.set('xToken', xToken);
+        Settings.set('xMnemonic', mnemonic);
+        Settings.set('xUser', JSON.stringify(xUser));
+      });
+    });
 
-          if (!this.validatePassword()) {
-            return toast.warn(<div>Password mismatch</div>);
-          }
+  }
 
-          if (!this.props.isNewUser) {
-            this.updateInfo().then(() => {
-              history.push('/login');
-            }).catch(err => {
-              toast.error(<div>
-                <div>Reason: {err.message}</div>
-                <div>Please contact us</div>
-              </div>, {
-                autoClose: false,
-                closeOnClick: false
-              });
-            }).finally(() => {
-              this.setState({ isLoading: false });
-            });
-          }
-          else {
-            this.doRegister().finally(() => this.setState({ isLoading: false }));
-          }
-        }}>
-          <Form.Row>
-            <Form.Control type="hidden" name="username" autoComplete="username" value={this.state.register.email} />
-            <Form.Group as={Col} controlId="password">
-              <Form.Control type="password" required placeholder="Password" autoComplete="new-password" onChange={this.handleChangeRegister} autoFocus />
-            </Form.Group>
-          </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} controlId="confirmPassword">
-              <Form.Control type="password" required placeholder="Confirm password" autoComplete="confirm-password" onChange={this.handleChangeRegister} />
-            </Form.Group>
-          </Form.Row>
-          <Form.Row className="form-register-submit">
-            <Form.Group as={Col}>
-              <Button className="btn-block off" onClick={(e: any) => {
-                this.setState({ currentContainer: CONTAINERS.PrivacyTermsContainer });
-                e.preventDefault();
-              }}>Back</Button>
-            </Form.Group>
-            <Form.Group as={Col}>
-              <Button className="btn-block on __btn-new-button" type="submit" disabled={this.state.isLoading}>Continue</Button>
-            </Form.Group>
-          </Form.Row>
-        </Form>
-      </div >;
-    }
-
-    render() {
-      return (<div className="login-main">
-        <Container className="login-container-box">
-          {this.state.currentContainer === CONTAINERS.RegisterContainer ? this.registerContainer() : ''}
-          {this.state.currentContainer === CONTAINERS.PrivacyTermsContainer ? this.privacyContainer() : ''}
-          {this.state.currentContainer === CONTAINERS.PasswordContainer ? this.passwordContainer() : ''}
-        </Container>
-        <Container className="login-container-box-forgot-password">
-          <p className="forgotPassword"></p>
-        </Container>
+  registerContainer() {
+    return <div className="container-register">
+      <p className="container-title">Create an Internxt account</p>
+      <div className="menu-box">
+        <button className="off" onClick={(e) => { history.push('/login'); }}>Sign in</button>
+        <button className="on">Create account</button>
       </div>
-      );
-    }
+      <Form className="form-register" onSubmit={(e: any) => {
+        e.preventDefault();
+
+        if (this.validateRegisterFormPart1()) {
+          var tempReg = this.state.register;
+
+          tempReg.email = tempReg.email.toLowerCase().trim();
+          this.setState({
+            currentContainer: CONTAINERS.PrivacyTermsContainer,
+            register: tempReg
+          });
+        }
+      }}>
+        <Form.Row>
+          <Form.Group as={Col} controlId="name">
+            <Form.Control placeholder="First name" required autoComplete="name"
+              onChange={this.handleChangeRegister}
+              value={this.state && this.state.register.name} autoFocus />
+          </Form.Group>
+          <Form.Group as={Col} controlId="lastname">
+            <Form.Control placeholder="Last name" required autoComplete="lastname"
+              onChange={this.handleChangeRegister}
+              value={this.state && this.state.register.lastname} />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="email">
+            <Form.Control placeholder="Email address" type="email" required autoComplete="email"
+              onChange={this.handleChangeRegister}
+              disabled={!this.props.isNewUser}
+              value={this.state && this.state.register.email} />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row className="form-register-submit">
+          <Form.Group as={Col}>
+            <button className="on btn-block" type="submit" disabled={!this.validateRegisterFormPart1()}>Continue</button>
+          </Form.Group>
+        </Form.Row>
+      </Form>
+    </div>;
+  }
+
+  handleTermsConditions = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ checkTermsConditions: event.target.checked });
+  };
+
+  privacyContainer() {
+    return (<div className="container-register">
+      <p className="container-title">Internxt Security</p>
+      <p className="privacy-disclaimer">
+        Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we don't know your password. That means that if you forget it, your files will be gone. With us, you're the only owner of your files.        </p>
+      <ul className="privacy-remainders">
+        <li>Store your Password. Keep it safe and secure.</li>
+      </ul>
+
+      <div className="privacy-terms">
+        <Checkbox
+          checked={this.state.checkTermsConditions}
+          onChange={this.handleTermsConditions}
+          color="default"
+          inputProps={{ 'aria-label': 'secondary checkbox' }}
+        />
+        <a href="https://internxt.com/en/legal" target="_blank" rel="noreferrer">Accept terms, conditions and privacy policy</a>
+      </div>
+
+      <Form onSubmit={(e: any) => {
+        e.preventDefault();
+        this.setState({ currentContainer: CONTAINERS.PasswordContainer });
+      }}>
+        <Form.Row>
+          <Form.Group as={Col} controlId="name">
+            <button className="btn-block off" onClick={(e: any) => {
+              this.setState({ currentContainer: CONTAINERS.RegisterContainer });
+              e.preventDefault();
+            }}>Back</button>
+          </Form.Group>
+          <Form.Group as={Col}>
+            <button className="btn-block on" type="submit" autoFocus disabled={!this.state.checkTermsConditions}>Continue</button>
+          </Form.Group>
+        </Form.Row>
+
+      </Form>
+    </div>);
+  }
+
+  passwordContainer() {
+    return <div className="container-register">
+      <p className="container-title">Create an Internxt account</p>
+      <div className="menu-box">
+        <button className="off" onClick={(e: any) => { /* this.setState({ currentContainer: this.loginContainer() }) */ }}>Sign in</button>
+        <button className="on">Create account</button>
+      </div>
+      <Form className="form-register" onSubmit={async (e: any) => {
+        e.preventDefault();
+
+        await new Promise<void>(r => this.setState({ isLoading: true }, () => r()));
+
+        if (!this.validatePassword()) {
+          toast.warn(<div>Password mismatch</div>);
+          this.setState({ isLoading: false });
+          return;
+        }
+
+        if (!this.props.isNewUser) {
+          this.updateInfo().then(() => {
+            history.push('/login');
+          }).catch(err => {
+            toast.error(<div>
+              <div>Reason: {err.message}</div>
+              <div>Please contact us</div>
+            </div>, {
+              autoClose: false,
+              closeOnClick: false
+            });
+          }).finally(() => {
+            this.setState({ isLoading: false });
+          });
+        }
+        else {
+          this.doRegister().finally(() => this.setState({ isLoading: false }));
+        }
+      }}>
+        <Form.Row>
+          <Form.Control type="hidden" name="username" autoComplete="username" value={this.state.register.email} />
+          <Form.Group as={Col} controlId="password">
+            <Form.Control type="password" required placeholder="Password" autoComplete="new-password" onChange={this.handleChangeRegister} autoFocus />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="confirmPassword">
+            <Form.Control type="password" required placeholder="Confirm password" autoComplete="confirm-password" onChange={this.handleChangeRegister} />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row className="form-register-submit">
+          <Form.Group as={Col}>
+            <Button className="btn-block off" onClick={(e: any) => {
+              this.setState({ currentContainer: CONTAINERS.PrivacyTermsContainer });
+              e.preventDefault();
+            }}>Back</Button>
+          </Form.Group>
+          <Form.Group as={Col}>
+            <Button className="btn-block on __btn-new-button" type="submit" disabled={this.state.isLoading}>Continue</Button>
+          </Form.Group>
+        </Form.Row>
+      </Form>
+    </div >;
+  }
+
+  render() {
+    return (<div className="login-main">
+      <Container className="login-container-box">
+        {this.state.currentContainer === CONTAINERS.RegisterContainer ? this.registerContainer() : ''}
+        {this.state.currentContainer === CONTAINERS.PrivacyTermsContainer ? this.privacyContainer() : ''}
+        {this.state.currentContainer === CONTAINERS.PasswordContainer ? this.passwordContainer() : ''}
+      </Container>
+      <Container className="login-container-box-forgot-password">
+        <p className="forgotPassword"></p>
+      </Container>
+    </div>
+    );
+  }
 }
 
 export default New;
