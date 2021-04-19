@@ -981,7 +981,7 @@ class XCloud extends React.Component {
     // Check authentication
     if (this.props.isAuthenticated && this.state.isInitialized) {
       return (
-        <div className="App flex-column">
+        <div className="App flex-column" style={{ minHeight: '100%', height: 'auto', display: 'flex' }}>
           <NavigationBar
             showFileButtons={true}
             showSettingsButton={true}
