@@ -134,7 +134,7 @@ class Remove extends React.Component<RemoveProps, RemoveState> {
       return (<div className="container-register">
         <p className="container-title">Deactivation Email</p>
         <p className="privacy-disclaimer">Please check your email and follow the instructions to deactivate your account so you can start using Internxt Drive again.</p>
-        <div className="privacy-remainders" style={{ padding: '20px', textAlign: 'justify' }}>Once you deactivate your account, you will be able to sign up using the same email address. Please store your password somewhere safe. With Internxt Drive, only you are the true owner of your files on the cloud. With great power there must also come great responsibility.</div>
+        <div className="desactivation-remainder">Once you deactivate your account, you will be able to sign up using the same email address. Please store your password somewhere safe. With Internxt Drive, only you are the true owner of your files on the cloud. With great power there must also come great responsibility.</div>
         <button className="btn-block on" onClick={e => {
           e.preventDefault();
           this.sendDeactivationEmail(this.state.remove.email);
