@@ -266,7 +266,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                       window.location.href = 'https://internxt.com/downloads/drive.deb';
                       break;
                     default:
-                      window.location.href = 'https://internxt.com/downloads/';
+                      window.location.href = 'https://github.com/internxt/drive-desktop/releases';
                       break;
                   }
 
