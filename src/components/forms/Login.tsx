@@ -277,7 +277,7 @@ class Login extends React.Component<LoginProps> {
     });
   }
 
-  getLimit = async () => {
+  getLimit = () => {
     fetch('/api/limit', {
       method: 'get',
       headers: getHeaders(true, false)

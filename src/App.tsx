@@ -45,7 +45,7 @@ class App extends React.Component {
     }
   }
 
-  getLimit = async () => {
+  getLimit = () => {
     fetch('/api/limit', {
       method: 'get',
       headers: getHeaders(true, false)
