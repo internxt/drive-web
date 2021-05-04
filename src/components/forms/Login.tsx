@@ -264,15 +264,29 @@ class Login extends React.Component<LoginProps> {
           isTeam: false
         });
 
+        this.getLimit();
+
       }).catch(err => {
         throw Error(`"${err.error ? err.error : err}"`);
       });
-
     }).catch(err => {
       console.error('Login error. ' + err.message);
       toast.warn(<>Login error<br />{err.message}</>);
     }).finally(() => {
       this.setState({ isLogingIn: false });
+    });
+  }
+
+  getLimit = async () => {
+    fetch('/api/limit', {
+      method: 'get',
+      headers: getHeaders(true, false)
+    }).then(res => {
+      return res.json();
+    }).then(res1 => {
+      Settings.set('limitStorage', res1.maxSpaceBytes);
+    }).catch(err => {
+      console.log('Error getting /api/limit for Login', err);
     });
   }
 

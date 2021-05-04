@@ -23,6 +23,7 @@ import DeactivationTeams from './components/forms/DeactivationTeam';
 import { analytics, PATH_NAMES } from './lib/analytics';
 import Settings from './lib/settings';
 import Success from './components/teams/Success';
+import { getHeaders } from './lib/auth';
 
 class App extends React.Component {
   state = {
@@ -35,6 +36,26 @@ class App extends React.Component {
   handleKeySaved = (user: JSON) => {
     Settings.set('xUser', JSON.stringify(user));
     this.setState({ isAuthenticated: true, user: user });
+  }
+
+  componentDidMount() {
+    if (!Settings.exists('limitStorage'))
+    {
+      this.getLimit();
+    }
+  }
+
+  getLimit = async () => {
+    fetch('/api/limit', {
+      method: 'get',
+      headers: getHeaders(true, false)
+    }).then(res => {
+      return res.json();
+    }).then(res1 => {
+      Settings.set('limitStorage', res1.maxSpaceBytes);
+    }).catch(err => {
+      console.log('Error getting /api/limit for App', err);
+    });
   }
 
   render() {
