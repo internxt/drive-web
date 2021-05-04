@@ -132,26 +132,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
       });
     }
 
-    fetch('/api/limit', {
-      method: 'get',
-      headers: getHeaders(true, false)
-    }).then(res => res.json()).then(res2 => {
-      this.setState({ barLimit: res2.maxSpaceBytes });
-    }).catch(err => {
-      console.log('Error on fetch limit', err);
-    });
-
-    fetch('/api/usage', {
-      method: 'get',
-      headers: getHeaders(true, false)
-    }
-    ).then(res => {
-      return res.json();
-    }).then(res2 => {
-      this.setState({ barUsage: res2.total });
-    }).catch(err => {
-      console.log('Error on fetch usage', err);
-    });
     this.getUsage(this.state.isTeam);
   }
 
