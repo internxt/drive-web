@@ -14,9 +14,9 @@ class StorageProgressBar extends React.Component<StorageProgressBarState, Storag
       now: 0
     }
 
-    componentDidUpdate(newProps: StorageProgressBarState) {
+    componentDidUpdate() {
       if (this.props.max !== this.state.max || this.props.now !== this.state.now) {
-        this.setState(newProps);
+        this.setState(this.props);
       }
     }
 
