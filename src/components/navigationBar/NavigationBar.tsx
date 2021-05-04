@@ -70,18 +70,14 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
   }
 
   async getUsage(isTeam: Boolean = false) {
-    const limit = await fetch('/api/limit', {
-      headers: getHeaders(true, false, isTeam)
-    }).then(res => res.json()).catch(() => null);
 
     const usage = await fetch('/api/usage', {
       headers: getHeaders(true, false, isTeam)
     }).then(res3 => res3.json()).catch(() => null);
 
-    if (limit && usage) {
+    if (usage) {
       this.setState({
-        barUsage: usage.total,
-        barLimit: limit.maxSpaceBytes
+        barUsage: usage.total
       });
     }
   }
@@ -123,7 +119,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     } catch {
       history.push('/login');
       return;
-
     }
 
     if (this.props.showFileButtons) {
@@ -132,6 +127,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
       });
     }
 
+    this.setState({ barLimit: Settings.get('limitStorage') });
     this.getUsage(this.state.isTeam);
   }
 

@@ -19,6 +19,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AppSumoPlans from './AppSumoPlans';
 import customPrettySize from '../lib/sizer';
+import Settings from '../lib/settings';
+
 interface StorageProps {
     isAuthenticated: boolean
 }
@@ -64,6 +66,7 @@ class Storage extends React.Component<StorageProps> {
       if (!localStorage.xUser) {
         history.push('/login');
       } else {
+        this.setState({ max: Settings.get('limitStorage') });
         this.determineAppSumo();
         this.usageLoader();
       }
@@ -78,29 +81,17 @@ class Storage extends React.Component<StorageProps> {
     }
 
     usageLoader = () => {
-      fetch('/api/limit', {
+      fetch('/api/usage', {
         method: 'get',
         headers: getHeaders(true, false)
-      }).then(res => {
-        return res.json();
-      }).then(res1 => {
-
-        fetch('/api/usage', {
-          method: 'get',
-          headers: getHeaders(true, false)
-        }).then(res => res.json())
-          .then(res2 => {
-            this.setState({
-              max: res1.maxSpaceBytes,
-              now: res2.total
-            });
-          }).catch(err => {
-            console.log('Error getting /api/usage for storage bar', err);
+      }).then(res => res.json())
+        .then(res2 => {
+          this.setState({
+            now: res2.total
           });
-
-      }).catch(err => {
-        console.log('Error getting /api/limit for storage bar', err);
-      });
+        }).catch(err => {
+          console.log('Error getting /api/usage for storage bar', err);
+        });
     }
 
     handleCancelAccount = () => {
