@@ -278,6 +278,8 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
                 <Dropdown.Item onClick={(e) => {
                   window.analytics.track('user-signout', {
                     email: getUserData().email
+                  }, {}, () => {
+                    window.analytics.reset();
                   });
                   Settings.clear();
                   history.push('/login');
