@@ -278,7 +278,7 @@ class New extends React.Component<NewProps, NewState> {
 
       xUser.mnemonic = mnemonic;
 
-      return initializeUser(this.state.register.email, xUser.mnemonic, encPass).then((rootFolderInfo) => {
+      return initializeUser(this.state.register.email, xUser.mnemonic).then((rootFolderInfo) => {
         xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
         Settings.set('xToken', xToken);
         Settings.set('xMnemonic', mnemonic);

@@ -52,5 +52,6 @@ export default class Settings {
     localStorage.removeItem('xToken');
     localStorage.removeItem('xTeam');
     localStorage.removeItem('xTokenTeam');
+    localStorage.removeItem('limitStorage');
   }
 }
