@@ -20,6 +20,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import AppSumoPlans from './AppSumoPlans';
 import customPrettySize from '../lib/sizer';
 import Settings from '../lib/settings';
+import { getLimit } from '../services/storage.service';
 
 interface StorageProps {
     isAuthenticated: boolean
@@ -66,9 +67,26 @@ class Storage extends React.Component<StorageProps> {
       if (!localStorage.xUser) {
         history.push('/login');
       } else {
-        this.setState({ max: Settings.get('limitStorage') });
+
+        this.setLimit();
         this.determineAppSumo();
         this.usageLoader();
+      }
+    }
+
+    setLimit = () => {
+      const ifLimit = Settings.exists('limitStorage');
+
+      if (!ifLimit)
+      {
+        getLimit().then((limitStorage) => {
+          Settings.set('limitStorage', limitStorage);
+          this.setState({ max: limitStorage });
+        });
+      }
+      else
+      {
+        this.setState({ max: Settings.get('limitStorage') });
       }
     }
 
@@ -118,7 +136,7 @@ class Storage extends React.Component<StorageProps> {
           <InxtContainer>
             <p className="title">Storage Used</p>
 
-            <p className="space-used-text">Used <b>{customPrettySize(this.state.now)}</b> of <b>{customPrettySize(this.state.max)}</b></p>
+            <p className="space-used-text">Used <b>{customPrettySize(this.state.now)}</b> of <b>{this.state.max > 0 ? customPrettySize(this.state.max) : '...'}</b></p>
             <StorageProgressBar max={this.state.max} now={this.state.now} />
 
             <Row className="space-used-legend">
