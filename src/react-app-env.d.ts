@@ -16,8 +16,9 @@ declare namespace NodeJS {
 
 interface SegmentAnalytics {
     identify: any
-    track: (eventName: string, params?: any) => void
+    track: (eventName: string, params?: any, options?: any, callback?: function) => void
     page: (pageName: string) => void
+    reset: any
 }
 
 interface Window {
