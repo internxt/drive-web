@@ -181,7 +181,9 @@ class XCloud extends React.Component {
         method: 'get',
         headers: getHeaders(true, false)
       }).then((result) => {
-        if (result.status !== 200) { return; }
+        if (result.status !== 200) {
+          return;
+        }
         return result.json();
       }).then(result => {
         if (result.admin === user.email) {
@@ -876,10 +878,14 @@ class XCloud extends React.Component {
       headers: getHeaders(true, false, this.state.isTeam)
     };
 
-    if (selectedItems.length === 0) { return; }
+    if (selectedItems.length === 0) {
+      return;
+    }
     const deletionRequests = _.map(selectedItems, (v, i) => {
       if (v.onDelete) {
-        return (next) => { v.onDelete(); next(); };
+        return (next) => {
+          v.onDelete(); next();
+        };
       }
       const url = v.isFolder
         ? `/api/storage/folder/${v.id}`

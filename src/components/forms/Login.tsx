@@ -56,8 +56,7 @@ class Login extends React.Component<LoginProps> {
 
       if (!this.state.registerCompleted) {
         history.push('/appsumo/' + this.state.email);
-      }
-      else if (mnemonic) {
+      } else if (mnemonic) {
         history.push('/app');
       }
     }
@@ -67,9 +66,13 @@ class Login extends React.Component<LoginProps> {
     let isValid = true;
     // Email validation
 
-    if (this.state.email.length < 5 || !this.validateEmail(this.state.email)) { isValid = false; }
+    if (this.state.email.length < 5 || !this.validateEmail(this.state.email)) {
+      isValid = false;
+    }
     // Pass length check
-    if (this.state.password.length < 1) { isValid = false; }
+    if (this.state.password.length < 1) {
+      isValid = false;
+    }
 
     return isValid;
   }
@@ -285,7 +288,9 @@ class Login extends React.Component<LoginProps> {
             <p className="container-title">Sign in to Internxt</p>
             <div className="menu-box">
               <button className="on">Sign in</button>
-              <button className="off" onClick={(e: any) => { history.push('/new'); }}>Create account</button>
+              <button className="off" onClick={(e: any) => {
+                history.push('/new');
+              }}>Create account</button>
             </div>
             <Form className="form-register" onSubmit={(e: any) => {
               e.preventDefault();

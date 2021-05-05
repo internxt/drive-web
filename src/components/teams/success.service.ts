@@ -11,7 +11,9 @@ export function getTeamInfo() {
       throw Error();
     }
     return res.json();
-  }).catch(() => { return {}; });
+  }).catch(() => {
+    return {};
+  });
 }
 
 export async function checkSessionStripe(sessionId: string) {

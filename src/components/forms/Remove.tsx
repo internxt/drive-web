@@ -80,7 +80,9 @@ class Remove extends React.Component<RemoveProps, RemoveState> {
     validateForm = () => {
       let isValid = true;
 
-      if (this.state.remove.email === '' || this.state.remove.email.length < 5 || !this.validateEmail(this.state.remove.email)) {isValid = false;}
+      if (this.state.remove.email === '' || this.state.remove.email.length < 5 || !this.validateEmail(this.state.remove.email)) {
+        isValid = false;
+      }
       return isValid;
     }
 

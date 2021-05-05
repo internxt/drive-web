@@ -77,15 +77,12 @@ class Storage extends React.Component<StorageProps> {
     setLimit = () => {
       const ifLimit = Settings.exists('limitStorage');
 
-      if (!ifLimit)
-      {
+      if (!ifLimit) {
         getLimit().then((limitStorage) => {
           Settings.set('limitStorage', limitStorage);
           this.setState({ max: limitStorage });
         });
-      }
-      else
-      {
+      } else {
         this.setState({ max: Settings.get('limitStorage') });
       }
     }
