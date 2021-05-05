@@ -1,5 +1,5 @@
 import LoadingFileExplorer from '../xcloud/LoadingFileExplorer';
-import { checkSessionStripe } from './success.service';
+import { checkSessionStripe } from '../../services/teams.sucess.service';
 import history from '../../lib/history';
 
 export default function Success(props) {

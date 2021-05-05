@@ -1,6 +1,6 @@
-import { getHeaders } from '../../lib/auth';
-import { decryptPGP } from '../../lib/utilspgp';
-import { storeTeamsInfo } from '../../services/teams.service';
+import { getHeaders } from '../lib/auth';
+import { decryptPGP } from '../lib/utilspgp';
+import { storeTeamsInfo } from './teams.service';
 
 export function getTeamInfo() {
   return fetch('/api/teams/team/info', {
