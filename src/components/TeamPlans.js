@@ -80,7 +80,9 @@ export default function TeamPlans(props: any) {
       headers: getHeaders(true, false),
       body: JSON.stringify(body)
     }).then(result => result.json()).then(result => {
-      if (result.error) { throw Error(result.error); }
+      if (result.error) {
+        throw Error(result.error);
+      }
 
       setStatusMessage('Redirecting to Stripe...');
 

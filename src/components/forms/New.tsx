@@ -126,9 +126,13 @@ class New extends React.Component<NewProps, NewState> {
     }
 
     // Name lenght check
-    if (this.state.register.name.length < 1 && this.state.register.lastname.length < 1) { isValid = false; }
+    if (this.state.register.name.length < 1 && this.state.register.lastname.length < 1) {
+      isValid = false;
+    }
     // Email length check and validation
-    if (this.state.register.email.length < 5 || !this.validateEmail(this.state.register.email)) { isValid = false; }
+    if (this.state.register.email.length < 5 || !this.validateEmail(this.state.register.email)) {
+      isValid = false;
+    }
 
     return isValid;
   }
@@ -141,7 +145,9 @@ class New extends React.Component<NewProps, NewState> {
     }
 
     // Pass length check
-    if (this.state.register.password.length < 1 && this.state.register.confirmPassword.length < 1) { isValid = false; }
+    if (this.state.register.password.length < 1 && this.state.register.confirmPassword.length < 1) {
+      isValid = false;
+    }
     // Pass and confirm pass validation
     if (this.state.register.password !== this.state.register.confirmPassword) {
       isValid = false;
@@ -292,7 +298,9 @@ class New extends React.Component<NewProps, NewState> {
     return <div className="container-register">
       <p className="container-title">Create an Internxt account</p>
       <div className="menu-box">
-        <button className="off" onClick={(e) => { history.push('/login'); }}>Sign in</button>
+        <button className="off" onClick={(e) => {
+          history.push('/login');
+        }}>Sign in</button>
         <button className="on">Create account</button>
       </div>
       <Form className="form-register" onSubmit={(e: any) => {
@@ -412,8 +420,7 @@ class New extends React.Component<NewProps, NewState> {
           }).finally(() => {
             this.setState({ isLoading: false });
           });
-        }
-        else {
+        } else {
           this.doRegister().finally(() => this.setState({ isLoading: false }));
         }
       }}>

@@ -52,7 +52,9 @@ class PayMethods extends React.Component<PayMethodsProps, PayMethodsState> {
           <Row className="mt-5 payMethods">
             {
               AvailablePayMethods.map(method =>
-                <Col xs={12} md={4} sm={6} onClick={(e: SyntheticEvent) => { this.setState({ choosedPayMethod: method.component }); }}>
+                <Col xs={12} md={4} sm={6} onClick={(e: SyntheticEvent) => {
+                  this.setState({ choosedPayMethod: method.component });
+                }}>
                   <Card>
                     <Card.Header className={(this.state.choosedPayMethod === method.component ? 'card-header-selected' : '')}>
                       <h5><strong>{method.name}</strong></h5>

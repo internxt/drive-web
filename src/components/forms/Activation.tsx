@@ -49,7 +49,9 @@ class Activation extends React.Component<ActivationProps & RouteProps, Activatio
       }).catch(err => {
         this.setState({ isActivated: false });
         console.log('Activation error: ' + err);
-        if (!isMobile) { this.redirect(); }
+        if (!isMobile) {
+          this.redirect();
+        }
       });
   }
 

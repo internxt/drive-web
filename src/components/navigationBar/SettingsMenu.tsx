@@ -15,6 +15,11 @@ interface SettingMenuProp {
   isTeam: boolean,
 }
 
+interface UsageResponse {
+  _id: string
+  total: number
+}
+
 const DEFAULT_LIMIT = 1024 * 1024 * 1024 * 10;
 
 function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
@@ -24,33 +29,32 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
 
   useEffect(() => {
 
-    if (!Settings.exists('limitStorage'))
-    {
+    const limitStorage = Settings.get('limitStorage');
+
+    if (limitStorage) {
+      setBarLimit(parseInt(limitStorage, 10));
+    } else {
       getLimit().then((limitStorage) => {
         Settings.set('limitStorage', limitStorage);
         setBarLimit(parseInt(limitStorage));
       });
     }
-    else
-    {
-      setBarLimit(parseInt(Settings.get('limitStorage')));
-    }
+
   }, []);
 
   useEffect(() => {
     fetch('/api/usage', {
       headers: getHeaders(true, false, isTeam)
-    }).then(res => {
-      return res.json();
-    }).then(res1 => {
-      setBarUsage(res1.total);
-    }).catch(() => null);
+    }).then(res => res.json())
+      .then((res: UsageResponse) => {
+        setBarUsage(res.total);
+      }).catch(() => null);
   }, []);
 
   const isAdmin = Settings.getTeams().isAdmin;
   const xTeam = Settings.exists('xTeam');
 
-  let user: UserSettings = null;
+  let user: UserSettings | null = null;
 
   try {
     user = Settings.getUser();
@@ -73,20 +77,40 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
         </div>
         <Dropdown.Divider />
         <div className="dropdown-menu-group">
-          {!isTeam && <Dropdown.Item onClick={(e) => { history.push('/storage'); }}>Storage</Dropdown.Item>}
-          {!Settings.exists('xTeam') && <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>}
-          <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
-          {!xTeam && <Dropdown.Item onClick={(e) => { history.push('/token'); }}>Token</Dropdown.Item>}
-          {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Business</Dropdown.Item> : <></>}
-          {!isTeam && <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>}
+          {!isTeam && <Dropdown.Item onClick={(e) => {
+            history.push('/storage');
+          }}>Storage</Dropdown.Item>}
+          {!Settings.exists('xTeam') && <Dropdown.Item onClick={(e) => {
+            history.push('/settings');
+          }}>Settings</Dropdown.Item>}
+          <Dropdown.Item onClick={(e) => {
+            history.push('/security');
+          }}>Security</Dropdown.Item>
+          {!xTeam && <Dropdown.Item onClick={(e) => {
+            history.push('/token');
+          }}>Token</Dropdown.Item>}
+          {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => {
+            history.push('/teams');
+          }}>Business</Dropdown.Item> : <></>}
+          {!isTeam && <Dropdown.Item onClick={(e) => {
+            history.push('/invite');
+          }}>Referrals</Dropdown.Item>}
           {!isTeam && <Dropdown.Item onClick={(e) => {
             function getOperatingSystem() {
               let operatingSystem = 'Not known';
 
-              if (window.navigator.appVersion.indexOf('Win') !== -1) { operatingSystem = 'WindowsOS'; }
-              if (window.navigator.appVersion.indexOf('Mac') !== -1) { operatingSystem = 'MacOS'; }
-              if (window.navigator.appVersion.indexOf('X11') !== -1) { operatingSystem = 'UNIXOS'; }
-              if (window.navigator.appVersion.indexOf('Linux') !== -1) { operatingSystem = 'LinuxOS'; }
+              if (window.navigator.appVersion.indexOf('Win') !== -1) {
+                operatingSystem = 'WindowsOS';
+              }
+              if (window.navigator.appVersion.indexOf('Mac') !== -1) {
+                operatingSystem = 'MacOS';
+              }
+              if (window.navigator.appVersion.indexOf('X11') !== -1) {
+                operatingSystem = 'UNIXOS';
+              }
+              if (window.navigator.appVersion.indexOf('Linux') !== -1) {
+                operatingSystem = 'LinuxOS';
+              }
 
               return operatingSystem;
             }

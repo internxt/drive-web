@@ -34,7 +34,9 @@ class PopupShare extends React.Component<PopupShareProps> {
           method: 'POST',
           headers: getHeaders(true, true, this.props.isTeam),
           body: JSON.stringify({ 'url': url })
-        }).then(res => res.json()).then(res => { resolve(res.shortUrl); }).catch(reject);
+        }).then(res => res.json()).then(res => {
+          resolve(res.shortUrl);
+        }).catch(reject);
       });
     }
 
@@ -48,14 +50,18 @@ class PopupShare extends React.Component<PopupShareProps> {
             'views': views
           })
         }).then((res: Response) => {
-          if (res.status !== 200) { throw res; }
+          if (res.status !== 200) {
+            throw res;
+          }
           return res.json();
         }).then((res: any) => {
           var link = `${window.location.origin}/${res.token}`;
 
           resolve(link);
         }).catch((err: Response) => {
-          if (err.status === 401) { history.push('/login'); }
+          if (err.status === 401) {
+            history.push('/login');
+          }
           reject(err);
         });
       });
@@ -119,7 +125,9 @@ class PopupShare extends React.Component<PopupShareProps> {
               </div>
             </div>
             <div className="ShareName"><p>{fileName}</p></div>
-            <div className="ShareClose"><img src={CloseIcon} onClick={e => { this.props.onClose(); }} alt="Close" /></div>
+            <div className="ShareClose"><img src={CloseIcon} onClick={e => {
+              this.props.onClose();
+            }} alt="Close" /></div>
           </div>
 
           <div className="ShareBody">
@@ -152,7 +160,9 @@ class PopupShare extends React.Component<PopupShareProps> {
               <a href="# " className={this.state.animationCss} style={{ opacity: this.state.animationCss === '' ? 0 : 1 }} >Copy</a>
               <a href="# " onClick={(e: any) => {
                 this.setState({ animationCss: 'copy-effect' }, () => {
-                  setTimeout(() => { this.setState({ animationCss: '' }); }, 1000);
+                  setTimeout(() => {
+                    this.setState({ animationCss: '' });
+                  }, 1000);
                 });
                 if (this.state.link) {
                   copy('Hello,\nHow are things going? I’m using Internxt Drive, a secure, simple, private and eco-friendly cloud storage service https://internxt.com/drive\nI wanted to share a file with you through this direct secure link: ' + this.state.link + '');
