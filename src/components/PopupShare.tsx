@@ -68,7 +68,7 @@ class PopupShare extends React.Component<PopupShareProps> {
     }
 
     componentDidMount() {
-      this.handleShareLink(1);
+      this.handleShareLink(10);
     }
 
     timeout: NodeJS.Timeout = setTimeout(() => { }, 0);
