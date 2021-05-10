@@ -233,7 +233,7 @@ class FileCommander extends React.Component {
         if (err) {
           let errmsg = err.error ? err.error : err;
 
-          if (errmsg.includes('already exist')) {
+          if (typeof errmsg === 'string' && errmsg.includes('already exist')) {
             errmsg = 'Folder with same name already exists';
           }
           toast.warn(`"${errmsg}"`);
@@ -308,6 +308,7 @@ class FileCommander extends React.Component {
           this.props.uploadDroppedFile([file], uuid).then(resolve).catch(reject);
         });
       } else if (item.isDirectory) {
+        console.log('traverseFileTree', item);
         this.props
           .createFolderByName(item.name, uuid)
           .then((data) => {
