@@ -992,7 +992,7 @@ class XCloud extends React.Component {
           <NavigationBar
             showFileButtons={true}
             showSettingsButton={true}
-            By={this.createFolder}
+            createFolder={this.createFolder}
             uploadFile={this.openUploadFile}
             uploadHandler={this.uploadFile}
             deleteItems={this.deleteItems}
