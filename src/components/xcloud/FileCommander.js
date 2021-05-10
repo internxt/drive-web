@@ -308,7 +308,6 @@ class FileCommander extends React.Component {
           this.props.uploadDroppedFile([file], uuid).then(resolve).catch(reject);
         });
       } else if (item.isDirectory) {
-        console.log('traverseFileTree', item);
         this.props
           .createFolderByName(item.name, uuid)
           .then((data) => {
