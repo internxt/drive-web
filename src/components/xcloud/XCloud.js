@@ -825,9 +825,6 @@ class XCloud extends React.Component {
 
               __currentCommanderItems.splice(index, 1);
               this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
-            }).finally(() => {
-              console.log('getFolderContent 14');
-              this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
             });
         },
         (err, results) => {
@@ -837,8 +834,6 @@ class XCloud extends React.Component {
             toast.warn(`"${err}"`);
           } else if (parentFolderId === currentFolderId) {
             resolve();
-            console.log('getFolderContent 15');
-            // this.getFolderContent(currentFolderId, false, true);
           } else {
             resolve();
           }
@@ -847,9 +842,15 @@ class XCloud extends React.Component {
     });
   };
 
-  uploadFile = (e) => this.handleUploadFiles(e.target.files);
+  uploadFile = (e) => {
+    this.handleUploadFiles(e.target.files).then(() => {
+      this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
+    });
+  }
 
-  uploadDroppedFile = (e, uuid) => this.handleUploadFiles(e, uuid);
+  uploadDroppedFile = (e, uuid) => {
+    return this.handleUploadFiles(e, uuid);
+  }
 
   shareItem = () => {
     const selectedItems = this.getSelectedItems();
