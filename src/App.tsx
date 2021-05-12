@@ -16,7 +16,7 @@ import Security from './components/Security';
 import { ToastContainer } from 'react-toastify';
 import Checkout from './components/Checkout';
 import Referred from './components/Referred';
-import PayToken from './components/token/PayForm';
+// import PayToken from './components/token/PayForm';
 import Teams from './components/forms/Teams';
 import JoinTeam from './components/forms/JoinTeam';
 import DeactivationTeams from './components/forms/DeactivationTeam';
@@ -73,7 +73,7 @@ class App extends React.Component {
           <Route path='/checkout/:sessionId' render={(props) => <Checkout {...props} />} />
           <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/settings' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/token' render={(props) => <PayToken {...props} isAuthenticated={this.state.isAuthenticated} />} />
+          {/* <Route exact path='/token' render={(props) => <PayToken {...props} isAuthenticated={this.state.isAuthenticated} />} /> */}
           <Route exact path='/teams/' render={(props) => <Teams {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/team/cancel/' render={(props) => <Teams {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route path='/teams/join/:token' render={(props) => <JoinTeam {...props} />} />

@@ -87,9 +87,9 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
           <Dropdown.Item onClick={(e) => {
             history.push('/security');
           }}>Security</Dropdown.Item>
-          {!xTeam && <Dropdown.Item onClick={(e) => {
+          {/* {!xTeam && <Dropdown.Item onClick={(e) => {
             history.push('/token');
-          }}>Token</Dropdown.Item>}
+          }}>Token</Dropdown.Item>} */}
           {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => {
             history.push('/teams');
           }}>Business</Dropdown.Item> : <></>}
