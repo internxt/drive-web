@@ -12,7 +12,7 @@ import { getHeaders } from '../lib/auth';
 
 import { analytics, getUserData } from '../lib/analytics';
 
-import Setting from '../lib/settings';
+import SessionStorage from '../lib/sessionStorage';
 
 const stripeGlobal = window.Stripe;
 
@@ -113,7 +113,7 @@ class StoragePlans extends React.Component {
       }
       analytics.track('user-enter-payments');
       this.setState({ statusMessage: 'Redirecting to Stripe...' });
-      Setting.del('limitStorage');
+      SessionStorage.del('limitStorage');
       stripe.redirectToCheckout({ sessionId: result.id }).then(result => {
       }).catch(err => {
         this.setState({ statusMessage: 'Failed to redirect to Stripe. Reason:' + err.message });
