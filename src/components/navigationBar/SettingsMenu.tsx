@@ -36,8 +36,10 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
       setBarLimit(parseInt(limitStorage, 10));
     } else {
       getLimit().then((limitStorage) => {
-        SessionStorage.set('limitStorage', limitStorage);
-        setBarLimit(parseInt(limitStorage));
+        if (limitStorage) {
+          SessionStorage.set('limitStorage', limitStorage);
+          setBarLimit(parseInt(limitStorage));
+        }
       });
     }
 
@@ -74,7 +76,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
         <div className="dropdown-menu-group info">
           <p className="name-lastname">{isTeam ? 'Business' : `${user.name} ${user.lastname}`}</p>
           <ProgressBar className="mini-progress-bar" now={barUsage} max={barLimit} />
-          <p className="space-used">Used <strong>{customPrettySize(barUsage)}</strong> of <strong>{customPrettySize(barLimit)}</strong></p>
+          <p className="space-used">Used <strong>{customPrettySize(barUsage)}</strong> of <strong>{barLimit > 0 ? customPrettySize(barLimit) : '...'}</strong></p>
         </div>
         <Dropdown.Divider />
         <div className="dropdown-menu-group">

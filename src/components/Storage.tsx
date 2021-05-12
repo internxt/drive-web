@@ -81,8 +81,10 @@ class Storage extends React.Component<StorageProps> {
         this.setState({ max: limitStorage });
       } else {
         getLimit().then((limitStorage) => {
-          SessionStorage.set('limitStorage', limitStorage);
-          this.setState({ max: limitStorage });
+          if (limitStorage) {
+            SessionStorage.set('limitStorage', limitStorage);
+            this.setState({ max: limitStorage });
+          }
         });
       }
     }
