@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AppSumoPlans from './AppSumoPlans';
 import customPrettySize from '../lib/sizer';
-import Settings from '../lib/settings';
+import SessionStorage from '../lib/sessionStorage';
 import { getLimit } from '../services/storage.service';
 
 interface StorageProps {
@@ -75,15 +75,15 @@ class Storage extends React.Component<StorageProps> {
     }
 
     setLimit = () => {
-      const ifLimit = Settings.exists('limitStorage');
+      const limitStorage = SessionStorage.get('limitStorage');
 
-      if (!ifLimit) {
+      if (limitStorage) {
+        this.setState({ max: limitStorage });
+      } else {
         getLimit().then((limitStorage) => {
-          Settings.set('limitStorage', limitStorage);
+          SessionStorage.set('limitStorage', limitStorage);
           this.setState({ max: limitStorage });
         });
-      } else {
-        this.setState({ max: Settings.get('limitStorage') });
       }
     }
 

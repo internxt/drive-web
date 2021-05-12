@@ -8,6 +8,7 @@ import { getUserData } from '../../lib/analytics';
 import customPrettySize from '../../lib/sizer';
 import account from '../../assets/Dashboard-Icons/Account.svg';
 import Settings, { UserSettings } from '../../lib/settings';
+import SessionStorage from '../../lib/sessionStorage';
 import { getHeaders } from '../../lib/auth';
 import { getLimit } from '../../services/storage.service';
 
@@ -29,13 +30,13 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
 
   useEffect(() => {
 
-    const limitStorage = Settings.get('limitStorage');
+    const limitStorage = SessionStorage.get('limitStorage');
 
     if (limitStorage) {
       setBarLimit(parseInt(limitStorage, 10));
     } else {
       getLimit().then((limitStorage) => {
-        Settings.set('limitStorage', limitStorage);
+        SessionStorage.set('limitStorage', limitStorage);
         setBarLimit(parseInt(limitStorage));
       });
     }
