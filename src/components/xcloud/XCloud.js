@@ -182,7 +182,9 @@ class XCloud extends React.Component {
         method: 'get',
         headers: getHeaders(true, false)
       }).then((result) => {
-        if (result.status !== 200) { return; }
+        if (result.status !== 200) {
+          return;
+        }
         return result.json();
       }).then(result => {
         if (result.admin === user.email) {
@@ -655,13 +657,13 @@ class XCloud extends React.Component {
         }
       });
 
-      pcb.setState({ progress: 0 });
-
       fileDownload(fileBlob, completeFilename);
 
       this.trackFileDownloadFinished(id, fileSize);
     } catch (err) {
       this.trackFileDownloadError(fileId, err.message);
+
+      pcb.setState({ progress: 0 });
 
       toast.warn(`Error downloading file: \n Reason is ${err.message} \n File id: ${fileId}`);
     }
@@ -870,9 +872,6 @@ class XCloud extends React.Component {
 
               __currentCommanderItems.splice(index, 1);
               this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
-            }).finally(() => {
-              console.log('getFolderContent 14');
-              this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
             });
         },
         (err, results) => {
@@ -882,8 +881,6 @@ class XCloud extends React.Component {
             toast.warn(`"${err}"`);
           } else if (parentFolderId === currentFolderId) {
             resolve();
-            console.log('getFolderContent 15');
-            // this.getFolderContent(currentFolderId, false, true);
           } else {
             resolve();
           }
@@ -892,9 +889,15 @@ class XCloud extends React.Component {
     });
   };
 
-  uploadFile = (e) => this.handleUploadFiles(e.target.files);
+  uploadFile = (e) => {
+    this.handleUploadFiles(e.target.files).then(() => {
+      this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
+    });
+  }
 
-  uploadDroppedFile = (e, uuid) => this.handleUploadFiles(e, uuid);
+  uploadDroppedFile = (e, uuid) => {
+    return this.handleUploadFiles(e, uuid);
+  }
 
   shareItem = () => {
     const selectedItems = this.getSelectedItems();
@@ -923,10 +926,14 @@ class XCloud extends React.Component {
       headers: getHeaders(true, false, this.state.isTeam)
     };
 
-    if (selectedItems.length === 0) { return; }
+    if (selectedItems.length === 0) {
+      return;
+    }
     const deletionRequests = _.map(selectedItems, (v, i) => {
       if (v.onDelete) {
-        return (next) => { v.onDelete(); next(); };
+        return (next) => {
+          v.onDelete(); next();
+        };
       }
       const url = v.isFolder
         ? `/api/storage/folder/${v.id}`
@@ -1028,7 +1035,7 @@ class XCloud extends React.Component {
     // Check authentication
     if (this.props.isAuthenticated && this.state.isInitialized) {
       return (
-        <div className="App flex-column">
+        <div className="App flex-column" style={{ minHeight: '100%', height: 'auto', display: 'flex' }}>
           <NavigationBar
             showFileButtons={true}
             showSettingsButton={true}

@@ -122,7 +122,8 @@
       ],
       "no-empty": [
         "error"
-      ]
+      ],
+      "brace-style": "error"
     }
   },
   "browserslist": {

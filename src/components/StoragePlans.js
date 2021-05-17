@@ -12,6 +12,8 @@ import { getHeaders } from '../lib/auth';
 
 import { analytics, getUserData } from '../lib/analytics';
 
+import SessionStorage from '../lib/sessionStorage';
+
 const stripeGlobal = window.Stripe;
 
 const PaymentBridges = [
@@ -69,7 +71,9 @@ class StoragePlans extends React.Component {
   loadAvailablePlans() {
     const body = { product: this.state.selectedProductToBuy.id };
 
-    if (process.env.NODE_ENV !== 'production') { body.test = true; }
+    if (process.env.NODE_ENV !== 'production') {
+      body.test = true;
+    }
     return fetch('/api/stripe/plans', {
       method: 'post',
       headers: getHeaders(true, false),
@@ -95,7 +99,9 @@ class StoragePlans extends React.Component {
       product: this.state.selectedProductToBuy.id
     };
 
-    if (/^pk_test_/.exec(stripe._apiKey)) { body.test = true; }
+    if (/^pk_test_/.exec(stripe._apiKey)) {
+      body.test = true;
+    }
 
     fetch('/api/stripe/session', {
       method: 'POST',
@@ -107,6 +113,7 @@ class StoragePlans extends React.Component {
       }
       analytics.track('user-enter-payments');
       this.setState({ statusMessage: 'Redirecting to Stripe...' });
+      SessionStorage.del('limitStorage');
       stripe.redirectToCheckout({ sessionId: result.id }).then(result => {
       }).catch(err => {
         this.setState({ statusMessage: 'Failed to redirect to Stripe. Reason:' + err.message });
@@ -159,6 +166,7 @@ class StoragePlans extends React.Component {
         </div> : ''}
         {this.state.plansLoading === 'error' ? 'There was an error loading the available plans: The server was unreachable. Please check your network connection and reload.' : ''}
 
+        {console.log(this.state.availablePlans)}
         <Row className='mt-4'>
           {this.state.availablePlans ?
             this.state.availablePlans.map((entry, i) => {

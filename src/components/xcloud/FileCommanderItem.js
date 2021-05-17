@@ -137,17 +137,20 @@ class FileCommanderItem extends React.Component {
       }
     }
 
-    if (this.state.itemName && this.props.name !== this.state.itemName)
-    {metadata.itemName = this.state.itemName;}
+    if (this.state.itemName && this.props.name !== this.state.itemName) {
+      metadata.itemName = this.state.itemName;
+    }
     if (this.props.isFolder) {
       // Changes on folder item
-      if (this.state.selectedColor && this.props.color !== this.state.selectedColor)
-      {metadata.color = this.state.selectedColor;}
+      if (this.state.selectedColor && this.props.color !== this.state.selectedColor) {
+        metadata.color = this.state.selectedColor;
+      }
       if (
         this.state.selectedIcon &&
         (!this.props.icon || this.props.icon.id !== this.state.selectedIcon)
-      )
-      {metadata.icon = this.state.selectedIcon;}
+      ) {
+        metadata.icon = this.state.selectedIcon;
+      }
 
       if (this.state.selectedIcon === 0) {
         metadata.icon = 'none';
@@ -171,14 +174,17 @@ class FileCommanderItem extends React.Component {
     } else {
       // When click off window, close it and apply changes
       this.setState({ showDropdown: isOpen });
-      if (isOpen === false) {this.handleApplyChanges();}
+      if (isOpen === false) {
+        this.handleApplyChanges();
+      }
     }
   };
 
   handleShowDropdown = () => {
     // Save changes when dropdown is closed
-    if (this.state.showDropdown === true) {this.handleApplyChanges();}
-    else {
+    if (this.state.showDropdown === true) {
+      this.handleApplyChanges();
+    } else {
       // Set item name when open context menu
       this.setState({ itemName: this.props.name });
     }

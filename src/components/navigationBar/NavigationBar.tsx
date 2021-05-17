@@ -1,8 +1,7 @@
 import React from 'react';
-import { Nav, Navbar, Dropdown, ProgressBar } from 'react-bootstrap';
+import { Nav, Navbar } from 'react-bootstrap';
 
 // Assets
-import account from '../../assets/Dashboard-Icons/Account.svg';
 import logo from '../../assets/drive-logo.svg';
 
 import search from '../../assets/Dashboard-Icons/Search.svg';
@@ -15,14 +14,12 @@ import personalIcon from '../../assets/Dashboard-Icons/personalIcon.svg';
 
 import HeaderButton from './HeaderButton';
 
-import { getUserData } from '../../lib/analytics';
-
 import './NavigationBar.scss';
 import history from '../../lib/history';
 
-import { getHeaders } from '../../lib/auth';
 import Settings from '../../lib/settings';
-import customPrettySize from '../../lib/sizer';
+// import { toast } from 'react-toastify';
+import SettingsMenu from './SettingsMenu';
 
 interface NavigationBarProps {
   navbarItems: JSX.Element
@@ -45,8 +42,6 @@ interface NavigationBarState {
   navbarItems: JSX.Element
   workspace: string
   menuButton: any
-  barLimit: number
-  barUsage: number
   isTeam: boolean
   isAdmin: boolean
   isMember: boolean
@@ -60,29 +55,10 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
       menuButton: null,
       navbarItems: props.navbarItems,
       workspace: 'My Workspace',
-      barLimit: 1024 * 1024 * 1024 * 2,
-      barUsage: 0,
       isTeam: this.props.isTeam || false,
       isAdmin: this.props.isAdmin || false,
       isMember: this.props.isMember || false
     };
-  }
-
-  async getUsage(isTeam: Boolean = false) {
-    const limit = await fetch('/api/limit', {
-      headers: getHeaders(true, false, isTeam)
-    }).then(res => res.json()).catch(() => null);
-
-    const usage = await fetch('/api/usage', {
-      headers: getHeaders(true, false, isTeam)
-    }).then(res3 => res3.json()).catch(() => null);
-
-    if (limit && usage) {
-      this.setState({
-        barUsage: usage.total,
-        barLimit: limit.maxSpaceBytes
-      });
-    }
   }
 
   getNavBarItems(isTeam: boolean) {
@@ -105,6 +81,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
   }
 
   componentDidMount() {
+
     if (Settings.exists('xTeam')) {
       const admin = Settings.getTeams().isAdmin;
 
@@ -122,7 +99,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     } catch {
       history.push('/login');
       return;
-
     }
 
     if (this.props.showFileButtons) {
@@ -130,28 +106,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         navbarItems: this.getNavBarItems(false)
       });
     }
-
-    fetch('/api/limit', {
-      method: 'get',
-      headers: getHeaders(true, false)
-    }).then(res => res.json()).then(res2 => {
-      this.setState({ barLimit: res2.maxSpaceBytes });
-    }).catch(err => {
-      console.log('Error on fetch limit', err);
-    });
-
-    fetch('/api/usage', {
-      method: 'get',
-      headers: getHeaders(true, false)
-    }
-    ).then(res => {
-      return res.json();
-    }).then(res2 => {
-      this.setState({ barUsage: res2.total });
-    }).catch(err => {
-      console.log('Error on fetch usage', err);
-    });
-    this.getUsage(this.state.isTeam);
   }
 
   componentDidUpdate(prevProps) {
@@ -160,8 +114,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         isTeam: this.props.isTeam,
         navbarItems: this.getNavBarItems(this.props.isTeam),
         workspace: this.props.isTeam ? 'Team workspace' : 'My workspace'
-      }, () => {
-        this.getUsage(this.props.isTeam);
       });
     }
   }
@@ -171,20 +123,6 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
   }
 
   render() {
-    let user: any = null;
-
-    try {
-      user = Settings.getUser();
-      if (user == null) {
-        throw new Error();
-      }
-    } catch {
-      history.push('/login');
-      return '';
-    }
-
-    const isAdmin = Settings.getTeams().isAdmin;
-    const xTeam = Settings.exists('xTeam');
 
     return (
       <Navbar id="mainNavBar">
@@ -195,66 +133,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
           {this.state.navbarItems}
         </Nav>
         <Nav style={{ margin: '0 13px 0 0' }}>
-          <Dropdown drop="left" className="settingsButton">
-            <Dropdown.Toggle id="1"><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
-            <Dropdown.Menu>
-              <div className="dropdown-menu-group info">
-                <p className="name-lastname">{this.state.isTeam ? 'Business' : `${user.name} ${user.lastname}`}</p>
-                <ProgressBar className="mini-progress-bar" now={this.state.barUsage} max={this.state.barLimit} />
-                <p className="space-used">Used <strong>{customPrettySize(this.state.barUsage)}</strong> of <strong>{customPrettySize(this.state.barLimit)}</strong></p>
-              </div>
-              <Dropdown.Divider />
-              <div className="dropdown-menu-group">
-                {!this.state.isTeam && <Dropdown.Item onClick={(e) => { history.push('/storage'); }}>Storage</Dropdown.Item>}
-                {!Settings.exists('xTeam') && <Dropdown.Item onClick={(e) => { history.push('/settings'); }}>Settings</Dropdown.Item>}
-                <Dropdown.Item onClick={(e) => { history.push('/security'); }}>Security</Dropdown.Item>
-                {!this.state.isTeam && <Dropdown.Item onClick={(e) => { history.push('/invite'); }}>Referrals</Dropdown.Item>}
-                {isAdmin || !xTeam ? <Dropdown.Item onClick={(e) => { history.push('/teams'); }}>Business</Dropdown.Item> : <></>}
-                {!this.state.isTeam && <Dropdown.Item onClick={(e) => {
-                  function getOperatingSystem() {
-                    let operatingSystem = 'Not known';
-
-                    if (window.navigator.appVersion.indexOf('Win') !== -1) { operatingSystem = 'WindowsOS'; }
-                    if (window.navigator.appVersion.indexOf('Mac') !== -1) { operatingSystem = 'MacOS'; }
-                    if (window.navigator.appVersion.indexOf('X11') !== -1) { operatingSystem = 'UNIXOS'; }
-                    if (window.navigator.appVersion.indexOf('Linux') !== -1) { operatingSystem = 'LinuxOS'; }
-
-                    return operatingSystem;
-                  }
-
-                  console.log(getOperatingSystem());
-
-                  switch (getOperatingSystem()) {
-                    case 'WindowsOS':
-                      window.location.href = 'https://internxt.com/downloads/drive.exe';
-                      break;
-                    case 'MacOS':
-                      window.location.href = 'https://internxt.com/downloads/drive.dmg';
-                      break;
-                    case 'Linux':
-                    case 'UNIXOS':
-                      window.location.href = 'https://internxt.com/downloads/drive.deb';
-                      break;
-                    default:
-                      window.location.href = 'https://internxt.com/downloads/';
-                      break;
-                  }
-
-                }}>Download</Dropdown.Item>}
-                <Dropdown.Item href="mailto:support@internxt.zohodesk.eu">Contact</Dropdown.Item>
-              </div>
-              <Dropdown.Divider />
-              <div className="dropdown-menu-group">
-                <Dropdown.Item onClick={(e) => {
-                  window.analytics.track('user-signout', {
-                    email: getUserData().email
-                  });
-                  Settings.clear();
-                  history.push('/login');
-                }}>Sign out</Dropdown.Item>
-              </div>
-            </Dropdown.Menu>
-          </Dropdown>
+          <SettingsMenu isTeam={this.state.isTeam} />
         </Nav>
       </Navbar>
     );
