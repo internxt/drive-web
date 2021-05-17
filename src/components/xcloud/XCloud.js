@@ -24,7 +24,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { getUserData } from '../../lib/analytics';
 import Settings from '../../lib/settings';
 
-import { Environment } from 'inxt-js';
+// import { Environment } from 'inxt-js';
+const Environment = window.inxt.Environment;
 
 class XCloud extends React.Component {
 
