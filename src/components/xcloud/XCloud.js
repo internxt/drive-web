@@ -651,7 +651,7 @@ class XCloud extends React.Component {
         },
         finishedCallback: (err) => {
           if (err) {
-            pcb.setState({ progress: 0 });
+            throw err;
           }
         }
       });
@@ -662,9 +662,9 @@ class XCloud extends React.Component {
     } catch (err) {
       this.trackFileDownloadError(fileId, err.message);
 
-      pcb.setState({ progress: 0 });
-
       toast.warn(`Error downloading file: \n Reason is ${err.message} \n File id: ${fileId}`);
+    } finally {
+      pcb.setState({ progress: 0 });
     }
   };
 
