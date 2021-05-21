@@ -21,7 +21,7 @@
     "crypto-js": "^4.0.0",
     "history": "^4.10.1",
     "immutability-helper": "^3.1.1",
-    "inxt-js": "git+ssh://git@github.com:internxt/inxt-js.git#reed-solomon-beta",
+    "inxt-js": "git+ssh://git@github.com:internxt/inxt-js.git#beta",
     "jquery": "^3.5.1",
     "js-file-download": "^0.4.12",
     "natural-orderby": "^2.0.3",
