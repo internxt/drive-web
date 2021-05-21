@@ -146,6 +146,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
               email: getUserData().email
             });
             Settings.clear();
+            Settings.del('workspace');
             history.push('/login');
           }}>Sign out</Dropdown.Item>
         </div>

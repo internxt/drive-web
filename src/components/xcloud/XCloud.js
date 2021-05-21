@@ -276,12 +276,25 @@ class XCloud extends React.Component {
   getNextNewName = (originalName, i) => `${originalName} (${i})`;
 
   getNewFolderName = (name) => {
-    let exists = true;
+    let exists = false;
 
     let i = 1;
     const currentFolder = this.state.currentCommanderItems.filter((item) => item.isFolder);
 
     let finalName;
+
+    const foldName = name.replace(/ /g, '');
+
+    currentFolder.map((folder) => {
+      const fold = folder.name.replace(/ /g, '');
+
+      if (foldName === fold) {
+        exists = true;
+      } else {
+        exists = false;
+        finalName = name;
+      }
+    });
 
     while (exists) {
       const newName = this.getNextNewName(name, i);
