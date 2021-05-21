@@ -11,7 +11,7 @@ import async from 'async';
 import FileCommander from './FileCommander';
 import NavigationBar from '../navigationBar/NavigationBar';
 import history from '../../lib/history';
-import { removeAccents } from '../../lib/utils';
+import { encryptText, removeAccents } from '../../lib/utils';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 import PopupShare from '../PopupShare';
@@ -21,10 +21,11 @@ import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import axios from 'axios';
-
 import { getUserData } from '../../lib/analytics';
 import Settings from '../../lib/settings';
+
+import { Environment } from 'inxt-js';
+import axios from 'axios';
 
 class XCloud extends React.Component {
 
@@ -624,6 +625,27 @@ class XCloud extends React.Component {
     });
   };
 
+  trackFileDownloadStart = (file_id, file_name, file_size, file_type, folder_id) => {
+    const email = getUserData().email;
+    const data = { file_id, file_name, file_size, file_type, email, folder_id, platform: 'web' };
+
+    window.analytics.track('file-download-start', data);
+  }
+
+  trackFileDownloadError = (file_id, msg) => {
+    const email = getUserData().email;
+    const data = { file_id, email, msg, platform: 'web' };
+
+    window.analytics.track('file-download-error', data);
+  }
+
+  trackFileDownloadFinished = (file_id, file_size) => {
+    const email = getUserData().email;
+    const data = { file_id, file_size, email, platform: 'web' };
+
+    window.analytics.track('file-download-finished', data);
+  }
+
   downloadFile = (id, _class, pcb) => {
     return new Promise((resolve) => {
       axios.interceptors.request.use((config) => {
@@ -697,69 +719,126 @@ class XCloud extends React.Component {
     $('input#uploadFileControl').trigger('click');
   };
 
-  upload = (file, parentFolderId) => {
-    return new Promise((resolve, reject) => {
-      if (!parentFolderId) {
-        return reject(Error('No folder ID provided'));
-      }
+  getEnvironmentConfig = () => {
+    let bridgeUser, bridgePass, encryptionKey, bucket;
+    const bridgeUrl = 'https://api.internxt.com';
 
-      window.analytics.track('file-upload-start', {
-        file_size: file.size,
-        file_type: file.type,
-        folder_id: parentFolderId,
-        email: getUserData().email,
-        platform: 'web'
+    if (this.state.isTeam) {
+      const team = Settings.getTeams();
+
+      bridgeUser = team.bridge_user;
+      bridgePass = team.bridge_password;
+      encryptionKey = team.bridge_mnemonic;
+      bucket = team.bucket;
+    } else {
+      const user = Settings.getUser();
+
+      bridgeUser = user.email;
+      bridgePass = user.userId;
+      encryptionKey = user.mnemonic;
+      bucket = user.bucket;
+    }
+
+    return { bridgeUser, bridgePass, bridgeUrl, encryptionKey, bucket };
+  }
+
+  trackFileUploadStart = (file, parentFolderId) => {
+    window.analytics.track('file-upload-start', {
+      file_size: file.size,
+      file_type: file.type,
+      folder_id: parentFolderId,
+      email: getUserData().email,
+      platform: 'web'
+    });
+  }
+
+  trackFileUploadFinished = (file) => {
+    console.log('file', file);
+    window.analytics.track('file-upload-finished', {
+      email: getUserData().email,
+      file_size: file.size,
+      file_type: file.type,
+      file_id: file.id
+    });
+  }
+
+  trackFileUploadError = (file, parentFolderId, msg) => {
+    window.analytics.track('file-upload-error', {
+      file_size: file.size,
+      file_type: file.type,
+      folder_id: parentFolderId,
+      email: getUserData().email,
+      msg,
+      platform: 'web'
+    });
+  }
+
+  upload = async (file, parentFolderId) => {
+
+    if (!parentFolderId) {
+      throw new Error('No folder ID provided');
+    }
+
+    try {
+      this.trackFileUploadStart(file, parentFolderId);
+
+      const headers = getHeaders(true, true, this.state.isTeam);
+      const { bridgeUser, bridgePass, bridgeUrl, encryptionKey, bucket } = this.getEnvironmentConfig();
+      const env = new Environment({ bridgeUser, bridgePass, bridgeUrl, encryptionKey });
+
+      const content = new Blob([file], { type: file.type });
+
+      const response = await new Promise((resolve, reject) => {
+        env.uploadFile(bucket, {
+          filename: file.name,
+          fileSize: file.size,
+          fileContent: content,
+          progressCallback: (progress, downloadedBytes, totalBytes) => {},
+          finishedCallback: (err, response) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(response);
+            }
+          }
+        });
       });
 
-      const uploadUrl = `/api/storage/folder/${parentFolderId}/upload`;
+      const filenameSplitted = file.name.split('.');
+      const extension = filenameSplitted[filenameSplitted.length - 1] ? filenameSplitted[filenameSplitted.length - 1] : '';
+      const [filename] = filenameSplitted;
 
-      // Headers with Auth & Mnemonic
-      let headers = getHeaders(true, true, this.state.isTeam);
+      const fileId = response.id;
+      const name = encryptText(filename);
+      const folder_id = parentFolderId;
+      const { size, type } = file;
+      const encrypt_version = '';
+      // TODO: fix mismatched fileId fields in server and remove file_id here
+      const fileEntry = { fileId, file_id: fileId, type: extension, bucket, size, folder_id, name, encrypt_version };
 
-      headers.delete('content-type');
+      const createFileEntry = () => {
+        const body = JSON.stringify({ file: fileEntry });
+        const params = { method: 'post', headers, body };
 
-      // Data
-      const data = new FormData();
+        return fetch('/api/storage/file', params);
+      };
 
-      data.append('xfile', file);
+      let res;
+      const data = await createFileEntry().then(response => {
+        res = response;
+        return res.json();
+      });
 
-      fetch(uploadUrl, {
-        method: 'POST',
-        headers: headers,
-        body: data
-      })
-        .then(async (res) => {
-          let data;
+      this.trackFileUploadFinished({ size, type, id: data.id });
 
-          try {
-            data = await res.json();
-            window.analytics.track('file-upload-finished', {
-              email: getUserData().email,
-              file_size: file.size,
-              file_type: file.type,
-              file_id: data.fileId
-            });
+      return { res, data };
 
-          } catch (err) {
-            console.log(err);
-            window.analytics.track('file-upload-error', {
-              file_size: file.size,
-              file_type: file.type,
-              email: getUserData().email,
-              msg: err.message,
-              platform: 'web'
-            });
-            console.error('Upload response data is not a JSON', err);
-          }
-          if (data) {
-            return { res: res, data: data };
-          } else {
-            throw res;
-          }
-        })
-        .then(({ res, data }) => resolve({ res, data }))
-        .catch(reject);
-    });
+    } catch (err) {
+      this.trackFileUploadError(file, parentFolderId, err.message);
+      toast.warn(`File upload error. Reason: ${err.message}`);
+
+      throw err;
+    }
   };
 
   handleUploadFiles = (files, parentFolderId) => {
@@ -773,13 +852,13 @@ class XCloud extends React.Component {
     parentFolderId = parentFolderId || currentFolderId;
 
     for (let i = 0; i < files.length; i++) {
-      if (files[i].size >= 1024 * 1024 * 1200) {
+      if (files[i].size >= 1024 * 1024 * 1000) {
         let arr = Array.from(files);
 
         arr.splice(i, 1);
         files = arr;
         toast.warn(
-          'File too large.\nYou can only upload or download files of up to 1200 MB through the web app'
+          'File too large.\nYou can only upload or download files of up to 1000 MB through the web app'
         );
       }
     }
