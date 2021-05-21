@@ -807,13 +807,13 @@ class XCloud extends React.Component {
     parentFolderId = parentFolderId || currentFolderId;
 
     for (let i = 0; i < files.length; i++) {
-      if (files[i].size >= 1024 * 1024 * 1200) {
+      if (files[i].size >= 1024 * 1024 * 1000) {
         let arr = Array.from(files);
 
         arr.splice(i, 1);
         files = arr;
         toast.warn(
-          'File too large.\nYou can only upload or download files of up to 1200 MB through the web app'
+          'File too large.\nYou can only upload or download files of up to 1000 MB through the web app'
         );
       }
     }
