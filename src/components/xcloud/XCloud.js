@@ -25,6 +25,7 @@ import { getUserData } from '../../lib/analytics';
 import Settings from '../../lib/settings';
 
 import { Environment } from 'inxt-js';
+import axios from 'axios';
 
 class XCloud extends React.Component {
 
@@ -632,40 +633,72 @@ class XCloud extends React.Component {
     window.analytics.track('file-download-finished', data);
   }
 
-  downloadFile = async (id, _class, pcb) => {
-    const fileId = pcb.props.rawItem.fileId;
-    const fileName = pcb.props.rawItem.name;
-    const fileSize = pcb.props.rawItem.size;
-    const folderId = pcb.props.rawItem.folder_id;
-    const fileType = pcb.props.type;
-    const bucketId = pcb.props.bucket;
+  downloadFile = (id, _class, pcb) => {
+    return new Promise((resolve) => {
+      axios.interceptors.request.use((config) => {
+        const headers = getHeaders(true, true, this.state.isTeam);
 
-    const completeFilename = fileType ? `${fileName}.${fileType}` : `${fileName}`;
-
-    try {
-      this.trackFileDownloadStart(fileId, fileName, fileSize, fileType, folderId);
-
-      const fileBlob = await new Environment(this.getEnvironmentConfig()).downloadFile(bucketId, fileId, {
-        progressCallback: (progress, downloadedBytes, totalBytes) => {
-          pcb.setState({ progress });
-        },
-        finishedCallback: (err) => {
-          if (err) {
-            throw err;
-          }
-        }
+        headers.forEach((value, key) => {
+          config.headers[key] = value;
+        });
+        return config;
       });
+      window.analytics.track('file-download-start', {
+        file_id: pcb.props.rawItem.id,
+        file_name: pcb.props.rawItem.name,
+        file_size: pcb.props.rawItem.size,
+        file_type: pcb.props.type,
+        email: getUserData().email,
+        folder_id: pcb.props.rawItem.folder_id,
+        platform: 'web'
+      });
+      axios.get(`/api/storage/file/${id}`, {
+        onDownloadProgress(pe) {
+          if (pcb) {
+            const size = pcb.props.rawItem.size;
+            const progress = Math.floor(100 * pe.loaded / size);
 
-      fileDownload(fileBlob, completeFilename);
+            pcb.setState({ progress: progress });
+          }
+        },
+        responseType: 'blob'
+      }).then(res => {
+        if (res.status !== 200) {
+          throw res;
+        }
 
-      this.trackFileDownloadFinished(id, fileSize);
-    } catch (err) {
-      this.trackFileDownloadError(fileId, err.message);
+        window.analytics.track('file-download-finished', {
+          file_id: id,
+          email: getUserData().email,
+          file_size: res.data.size,
+          platform: 'web'
+        });
+        return { blob: res.data, filename: Buffer.from(res.headers['x-file-name'], 'base64').toString('utf8') };
+      }).then(({ blob, filename }) => {
+        fileDownload(blob, filename);
+        pcb.setState({ progress: 0 });
+        resolve();
+      }).catch(err => {
+        window.analytics.track('file-download-error', {
+          file_id: id,
+          email: getUserData().email,
+          msg: err.message,
+          platform: 'web'
+        });
+        if (err.response && err.response.status === 401) {
+          return history.push('/login');
+        } else {
+          err.response.data.text().then(result => {
+            const json = JSON.parse(result);
 
-      toast.warn(`Error downloading file: \n Reason is ${err.message} \n File id: ${fileId}`);
-    } finally {
-      pcb.setState({ progress: 0 });
-    }
+            toast.warn('Error downloading file:\n' + err.response.status + '\n' + json.message + '\nFile id: ' + id);
+          }).catch(textErr => {
+            toast.warn('Error downloading file:\n' + err.response.status + '\nFile id: ' + id);
+          });
+        }
+        resolve();
+      });
+    });
   };
 
   openUploadFile = () => {
