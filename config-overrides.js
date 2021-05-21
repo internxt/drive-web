@@ -3,8 +3,8 @@ const { overrideDevServer } = require('customize-cra');
 
 const addBefore = before => config => {
   config.before = before;
-  return config
-}
+  return config;
+};
 
 module.exports = {
   webpack: function (config, env) {
