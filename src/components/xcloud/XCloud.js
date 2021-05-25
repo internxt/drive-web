@@ -27,6 +27,8 @@ import Settings from '../../lib/settings';
 import { Environment } from 'inxt-js';
 import axios from 'axios';
 
+import { createHash } from 'crypto';
+
 class XCloud extends React.Component {
 
   state = {
@@ -774,6 +776,13 @@ class XCloud extends React.Component {
   }
 
   upload = async (file, parentFolderId) => {
+    const namePath = this.state.namePath.map((x) => x.name).slice(1);
+
+    namePath.push(file.name);
+
+    const relativePath = namePath.join('/');
+
+    const hashName = createHash('ripemd160').update(relativePath).digest('hex');
 
     if (!parentFolderId) {
       throw new Error('No folder ID provided');
@@ -790,7 +799,7 @@ class XCloud extends React.Component {
 
       const response = await new Promise((resolve, reject) => {
         env.uploadFile(bucket, {
-          filename: file.name,
+          filename: hashName,
           fileSize: file.size,
           fileContent: content,
           progressCallback: (progress, downloadedBytes, totalBytes) => {},
