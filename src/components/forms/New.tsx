@@ -214,6 +214,7 @@ class New extends React.Component<NewProps, NewState> {
 
           return initializeUser(this.state.register.email, user.mnemonic).then((rootFolderInfo) => {
             user.root_folder_id = rootFolderInfo.user.root_folder_id;
+            user.bucket = rootFolderInfo.user.bucket;
             Settings.set('xUser', JSON.stringify(user));
             history.push('/login');
           });
