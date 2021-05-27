@@ -798,14 +798,6 @@ class XCloud extends React.Component {
       const content = new Blob([file], { type: file.type });
 
       const response = await new Promise((resolve, reject) => {
-        if (!bucket) {
-          // coming from autologin, data not set correctly, force re-login
-          toast.warn('Login again to start uploading files');
-          Settings.clear();
-          history.push('/login');
-          return;
-        }
-
         env.uploadFile(bucket, {
           filename: hashName,
           fileSize: file.size,
