@@ -83,7 +83,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
           {!isTeam && <Dropdown.Item onClick={(e) => {
             history.push('/storage');
           }}>Storage</Dropdown.Item>}
-          {!Settings.exists('xTeam') && <Dropdown.Item onClick={(e) => {
+          {!isTeam && <Dropdown.Item onClick={(e) => {
             history.push('/settings');
           }}>Settings</Dropdown.Item>}
           <Dropdown.Item onClick={(e) => {
