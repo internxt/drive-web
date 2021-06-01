@@ -881,6 +881,9 @@ class XCloud extends React.Component {
 
                 __currentCommanderItems[index].isLoading = false;
                 __currentCommanderItems[index].type = re.exec(file.name)[1];
+                __currentCommanderItems[index].fileId = data.fileId;
+                __currentCommanderItems[index].id = data.id;
+
                 this.setState({ currentCommanderItems: __currentCommanderItems }, () => next());
               } else {
                 next();
