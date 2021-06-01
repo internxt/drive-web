@@ -27,15 +27,16 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
 
   const [barUsage, setBarUsage] = useState<number>(0);
   const [barLimit, setBarLimit] = useState<number>(DEFAULT_LIMIT);
+  const [barLimitTeams, setBarLimitTeams] = useState<number>();
 
   useEffect(() => {
-
     const limitStorage = SessionStorage.get('limitStorage');
+    const teamsStorage = SessionStorage.get('teamsStorage');
 
     if (limitStorage) {
       setBarLimit(parseInt(limitStorage, 10));
     } else {
-      getLimit().then((limitStorage) => {
+      getLimit(false).then((limitStorage) => {
         if (limitStorage) {
           SessionStorage.set('limitStorage', limitStorage);
           setBarLimit(parseInt(limitStorage));
@@ -43,16 +44,33 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
       });
     }
 
+    if (teamsStorage) {
+      setBarLimitTeams(parseInt(teamsStorage, 10));
+    } else {
+      if (Settings.get('xTeam')) {
+        getLimit(true).then((teamsStorage) => {
+          if (teamsStorage) {
+            SessionStorage.set('teamsStorage', teamsStorage);
+            setBarLimitTeams(parseInt(teamsStorage));
+          }
+        });
+      }
+    }
+
   }, []);
 
-  useEffect(() => {
-    fetch('/api/usage', {
+  const fetchUsage = () => {
+    return fetch('/api/usage', {
       headers: getHeaders(true, false, isTeam)
     }).then(res => res.json())
       .then((res: UsageResponse) => {
         setBarUsage(res.total);
       }).catch(() => null);
-  }, []);
+  };
+
+  useEffect(() => {
+    fetchUsage().then();
+  }, [barUsage, isTeam]);
 
   const isAdmin = Settings.getTeams().isAdmin;
   const xTeam = Settings.exists('xTeam');
@@ -70,13 +88,15 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
   }
 
   return (
-    <Dropdown drop="left" className="settingsButton">
+    <Dropdown drop="left" className="settingsButton" onClick={() => {
+      fetchUsage().then();
+    }}>
       <Dropdown.Toggle id="1"><HeaderButton icon={account} name="Menu" /></Dropdown.Toggle>
       <Dropdown.Menu>
         <div className="dropdown-menu-group info">
           <p className="name-lastname">{isTeam ? 'Business' : `${user.name} ${user.lastname}`}</p>
-          <ProgressBar className="mini-progress-bar" now={barUsage} max={barLimit} />
-          <p className="space-used">Used <strong>{customPrettySize(barUsage)}</strong> of <strong>{barLimit > 0 ? customPrettySize(barLimit) : '...'}</strong></p>
+          {isTeam ? <ProgressBar className="mini-progress-bar" now={barUsage} max={barLimitTeams} /> : <ProgressBar className="mini-progress-bar" now={barUsage} max={barLimit} />}
+          <p className="space-used">Used <strong>{customPrettySize(barUsage)}</strong> of {barLimitTeams && isTeam ? <strong>{barLimitTeams > 0 ? customPrettySize(barLimitTeams) : '...'}</strong> : <strong>{barLimit > 0 ? customPrettySize(barLimit) : '...'}</strong>}</p>
         </div>
         <Dropdown.Divider />
         <div className="dropdown-menu-group">
