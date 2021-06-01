@@ -17,5 +17,6 @@ export default class SessionStorage {
 
   static clear() {
     sessionStorage.removeItem('limitStorage');
+    sessionStorage.removeItem('teamsStorage');
   }
 }

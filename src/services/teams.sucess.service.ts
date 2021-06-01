@@ -34,5 +34,7 @@ export async function checkSessionStripe(sessionId: string) {
       throw Error(res.statusText);
     }
     return res.json();
-  }).then(() => storeTeamsInfo());
+  }).then(() => storeTeamsInfo())
+    .catch((err) => {
+    });
 }
