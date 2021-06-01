@@ -25,7 +25,6 @@ import { getUserData } from '../../lib/analytics';
 import Settings from '../../lib/settings';
 
 import { Environment } from 'inxt-js';
-import axios from 'axios';
 
 import { createHash } from 'crypto';
 
