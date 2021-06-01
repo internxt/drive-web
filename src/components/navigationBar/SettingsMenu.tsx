@@ -157,7 +157,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
             }
 
           }}>Download</Dropdown.Item>}
-          <Dropdown.Item href="mailto:support@internxt.zohodesk.eu">Contact</Dropdown.Item>
+          <Dropdown.Item href="mailto:idajggytsuz7jivosite@jivo-mail.com">Contact</Dropdown.Item>
         </div>
         <Dropdown.Divider />
         <div className="dropdown-menu-group">
