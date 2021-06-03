@@ -129,7 +129,7 @@ class Referred extends React.Component {
         <div className="Referred">
           <Container className="referred-box p-5">
             <div className="referred-title">Earn money by referring friends</div>
-            <div className="referred-description py-3">Invite friends who aren't on Internxt yet. You'll both get €5 of Internxt credit as soon as they activate their account. You can redeem that credit for a premium Internxt membership, exclusive Internxt merch or Internxt tokens. Start earning money today!</div>
+            <div className="referred-description py-3">Invite friends who aren't on Internxt yet. You'll both get €5 of Internxt credit as soon as they activate their account. You can redeem that credit for a premium Internxt membership, or exclusive Internxt merch. Start earning money today!</div>
 
             <Container className="mail-container mt-3">
               <div className="row">
