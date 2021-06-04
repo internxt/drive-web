@@ -881,16 +881,22 @@ class XCloud extends React.Component {
         }
       }
     } catch (err) {
-      // TODO: Remove file from file explorer
-      let index = uploadedFiles.findIndex((obj) => obj.name === fileBeingUploaded.name);
+      this.removeFileFromFileExplorer(fileBeingUploaded.name);
 
-      uploadedFiles.splice(index, 1);
-      this.setState({ currentCommanderItems: uploadedFiles });
-
-      // Notify user
       toast.warn(err.message);
     }
   };
+
+  removeFileFromFileExplorer = (filename) => {
+    const index = this.state.currentCommanderItems.findIndex((obj) => obj.name === filename);
+
+    if (index === -1) {
+      // prevent undesired removals
+      return;
+    }
+
+    this.setState({ currentCommanderItems: Array.from(this.state.currentCommanderItems).splice(index, 1) });
+  }
 
   uploadFile = (e) => {
     this.handleUploadFiles(e.target.files).then(() => {
