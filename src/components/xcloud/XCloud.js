@@ -282,7 +282,7 @@ class XCloud extends React.Component {
     let i = 1;
     const currentFolder = this.state.currentCommanderItems.filter((item) => item.isFolder);
 
-    let finalName;
+    let finalName = name;
 
     const foldName = name.replace(/ /g, '');
 
