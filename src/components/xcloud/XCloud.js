@@ -857,6 +857,9 @@ class XCloud extends React.Component {
 
         let relativePath = this.state.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
 
+        // when a folder and its subdirectory is uploaded by drop, this.state.namePath keeps its value at the first level of the parent folder
+        // so we need to add the relative folderPath (the path from parent folder uploaded to the level of the file being uploaded)
+        // when uploading deeper files than the current level
         if (folderPath) {
           if (relativePath !== '') {
             relativePath += '/' + folderPath;
