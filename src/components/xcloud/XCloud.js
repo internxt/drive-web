@@ -11,7 +11,7 @@ import async from 'async';
 import FileCommander from './FileCommander';
 import NavigationBar from '../navigationBar/NavigationBar';
 import history from '../../lib/history';
-import { encryptText, removeAccents } from '../../lib/utils';
+import { encryptText, removeAccents, getFilenameAndExt, renameFile } from '../../lib/utils';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 import PopupShare from '../PopupShare';
@@ -269,7 +269,7 @@ class XCloud extends React.Component {
   };
 
   fileNameExists = (fileName, type) => {
-    return this.state.currentCommanderItems.find(
+    return this.state.currentCommanderItems.some(
       (item) => !item.isFolder && item.name === fileName && item.type === type
     );
   };
@@ -745,7 +745,7 @@ class XCloud extends React.Component {
   upload = async (file, parentFolderId) => {
     const namePath = this.state.namePath.map((x) => x.name).slice(1);
 
-    namePath.push(file.name);
+    namePath.push(file.newName || file.name);
 
     const relativePath = namePath.join('/');
 
@@ -762,14 +762,14 @@ class XCloud extends React.Component {
       const { bridgeUser, bridgePass, bridgeUrl, encryptionKey, bucket } = this.getEnvironmentConfig();
       const env = new Environment({ bridgeUser, bridgePass, bridgeUrl, encryptionKey });
 
-      const content = new Blob([file], { type: file.type });
+      const content = new Blob([file.content], { type: file.type });
 
       const response = await new Promise((resolve, reject) => {
         env.uploadFile(bucket, {
           filename: hashName,
           fileSize: file.size,
           fileContent: content,
-          progressCallback: (progress, downloadedBytes, totalBytes) => {},
+          progressCallback: (progress, downloadedBytes, totalBytes) => { },
           finishedCallback: (err, response) => {
             if (err) {
               reject(err);
@@ -780,17 +780,13 @@ class XCloud extends React.Component {
         });
       });
 
-      const filenameSplitted = file.name.split('.');
-      const extension = filenameSplitted[filenameSplitted.length - 1] ? filenameSplitted[filenameSplitted.length - 1] : '';
-      const [filename] = filenameSplitted;
-
       const fileId = response.id;
-      const name = encryptText(filename);
+      const name = encryptText(file.name);
       const folder_id = parentFolderId;
       const { size, type } = file;
       const encrypt_version = '';
       // TODO: fix mismatched fileId fields in server and remove file_id here
-      const fileEntry = { fileId, file_id: fileId, type: extension, bucket, size, folder_id, name, encrypt_version };
+      const fileEntry = { fileId, file_id: fileId, type, bucket, size, folder_id, name, encrypt_version };
 
       const createFileEntry = () => {
         const body = JSON.stringify({ file: fileEntry });
@@ -817,100 +813,83 @@ class XCloud extends React.Component {
     }
   };
 
-  handleUploadFiles = (files, parentFolderId) => {
+  handleUploadFiles = async (files, parentFolderId) => {
     files = Array.from(files);
-    var re = /(?:\.([^.]+))?$/;
 
-    let __currentCommanderItems = this.state.currentCommanderItems;
+    const filesToUpload = [];
+    const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
+    const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
+
+    if (showSizeWarning) {
+      toast.warn('File too large.\nYou can only upload or download files of up to 1GB through the web app');
+      return;
+    }
+
+    let uploadedFiles = this.state.currentCommanderItems;
 
     let currentFolderId = this.state.currentFolderId;
 
     parentFolderId = parentFolderId || currentFolderId;
 
-    for (let i = 0; i < files.length; i++) {
-      if (files[i].size >= 1024 * 1024 * 1000) {
-        let arr = Array.from(files);
+    files.forEach(file => {
+      const { filename, extension } = getFilenameAndExt(file.name);
 
-        arr.splice(i, 1);
-        files = arr;
-        toast.warn(
-          'File too large.\nYou can only upload or download files of up to 1000 MB through the web app'
-        );
-      }
-    }
-
-    for (let i = 0; i < files.length; i++) {
-      let newName;
-
-      let fileAtt = re.exec(files[i].name);
-
-      if (this.fileNameExists(files[i].name.replace(fileAtt[0], ''), fileAtt[1])) {
-        newName = this.getNewName(files[i].name.replace(fileAtt[0], ''), fileAtt[1]);
-        files[i].newName = newName;
-      }
-    }
-
-    if (parentFolderId === currentFolderId) {
-      const newCommanderItems = files.map((file) => {
-        return { name: file.newName || file.name, size: file.size, isLoading: true };
-      });
-
-      __currentCommanderItems = __currentCommanderItems.concat(newCommanderItems);
-      this.setState({ currentCommanderItems: __currentCommanderItems });
-    }
-
-    return new Promise((resolve, reject) => {
-      async.eachSeries(
-        files,
-        (file, next) => {
-          this.upload(file, parentFolderId)
-            .then(({ res, data }) => {
-              if (res.status === 402) {
-                this.setState({ rateLimitModal: true });
-                throw res.status;
-              }
-
-              if (res.status === 500) {
-                throw data.message;
-              }
-
-              if (parentFolderId === currentFolderId) {
-                let index = __currentCommanderItems.findIndex(
-                  (obj) => obj.name === (file.newName || file.name)
-                );
-
-                __currentCommanderItems[index].isLoading = false;
-                __currentCommanderItems[index].type = re.exec(file.name)[1];
-                __currentCommanderItems[index].fileId = data.fileId;
-                __currentCommanderItems[index].id = data.id;
-
-                this.setState({ currentCommanderItems: __currentCommanderItems }, () => next());
-              } else {
-                next();
-              }
-            })
-            .catch((err) => {
-              let index = __currentCommanderItems.findIndex(
-                (obj) => obj.name === (file.newName || file.name)
-              );
-
-              __currentCommanderItems.splice(index, 1);
-              this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
-            });
-        },
-        (err, results) => {
-          if (err) {
-            console.error('Error uploading:', err);
-            reject(err);
-            toast.warn(`"${err}"`);
-          } else if (parentFolderId === currentFolderId) {
-            resolve();
-          } else {
-            resolve();
-          }
-        }
-      );
+      filesToUpload.push({ name: filename, size: file.size, type: extension, isLoading: true, content: file });
     });
+
+    for (const file of filesToUpload) {
+      let fileNameExists = this.fileNameExists(file.name, file.type);
+
+      if (parentFolderId === currentFolderId && fileNameExists) {
+        file.name = this.getNewName(file.name, file.type);
+        // File browser object don't allow to rename, so you have to create a new File object with the old one.
+        file.content = renameFile(file.content, file.name);
+      }
+    }
+
+    uploadedFiles = uploadedFiles.concat(filesToUpload);
+
+    this.setState({ currentCommanderItems: uploadedFiles });
+
+    let fileBeingUploaded;
+
+    try {
+      for (const file of filesToUpload) {
+        fileBeingUploaded = file;
+
+        const { res, data } = await this.upload(file, parentFolderId);
+
+        if (res.status === 402) {
+          this.setState({ rateLimitModal: true });
+          throw new Error('Rate limited');
+        }
+
+        if (res.status === 500) {
+          throw new Error(data.message);
+        }
+
+        if (parentFolderId === currentFolderId) {
+          let index = uploadedFiles.findIndex(
+            (obj) => obj.name === (file.newName || file.name)
+          );
+
+          uploadedFiles[index].isLoading = false;
+          uploadedFiles[index].fileId = data.fileId;
+          uploadedFiles[index].id = data.id;
+
+          this.setState({ currentCommanderItems: uploadedFiles });
+        }
+      }
+    } catch (err) {
+      // TODO: Remove file from file explorer
+      let index = uploadedFiles.findIndex((obj) => obj.name === fileBeingUploaded.name);
+
+      uploadedFiles.splice(index, 1);
+      this.setState({ currentCommanderItems: uploadedFiles });
+
+      // Notify user
+      toast.warn(err.message);
+    }
   };
 
   uploadFile = (e) => {
