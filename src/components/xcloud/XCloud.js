@@ -337,23 +337,25 @@ class XCloud extends React.Component {
   };
 
   createFolderByName = (folderName, parentFolderId) => {
+    let newFolderName = folderName;
+
     // No parent id implies is a directory created on the current folder, so let's show a spinner
     if (!parentFolderId) {
       let __currentCommanderItems;
 
-      if (this.folderNameExists(folderName)) {
-        folderName = this.getNewName(folderName);
+      if (this.folderNameExists(newFolderName)) {
+        newFolderName = this.getNewName(newFolderName);
       }
       __currentCommanderItems = this.state.currentCommanderItems;
       __currentCommanderItems.push({
-        name: folderName,
+        name: newFolderName,
         isLoading: true,
         isFolder: true
       });
 
       this.setState({ currentCommanderItems: __currentCommanderItems });
     } else {
-      folderName = this.getNewName(folderName);
+      newFolderName = this.getNewName(newFolderName);
     }
 
     parentFolderId = parentFolderId || this.state.currentFolderId;
@@ -364,7 +366,7 @@ class XCloud extends React.Component {
         headers: getHeaders(true, true, this.state.isTeam),
         body: JSON.stringify({
           parentFolderId,
-          folderName,
+          folderName: newFolderName,
           teamId: _.last(this.state.namePath) && _.last(this.state.namePath).hasOwnProperty('id_team') ? _.last(this.state.namePath).id_team : null
         })
       })
