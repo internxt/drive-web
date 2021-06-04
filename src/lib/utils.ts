@@ -102,6 +102,11 @@ function getFilenameAndExt(entireFilename: string): IGetFilenameAndExt {
 
   return { filename, extension };
 }
+
+function renameFile(file: File, newName: string) {
+  return new File([file], newName);
+}
+
 export {
   copyToClipboard,
   removeAccents,
@@ -111,4 +116,5 @@ export {
   encryptTextWithKey,
   decryptTextWithKey,
   getFilenameAndExt,
+  renameFile
 };
