@@ -744,12 +744,8 @@ class XCloud extends React.Component {
     });
   }
 
-  upload = async (file, parentFolderId) => {
-    const namePath = this.state.namePath.map((x) => x.name).slice(1);
-
-    namePath.push(file.newName || file.name);
-
-    const relativePath = namePath.join('/');
+  upload = async (file, parentFolderId, folderPath) => {
+    const relativePath = folderPath + file.name;
 
     const hashName = createHash('ripemd160').update(relativePath).digest('hex');
 
@@ -815,7 +811,7 @@ class XCloud extends React.Component {
     }
   };
 
-  handleUploadFiles = async (files, parentFolderId) => {
+  handleUploadFiles = async (files, parentFolderId, folderPath = null) => {
     files = Array.from(files);
 
     const filesToUpload = [];
@@ -856,32 +852,49 @@ class XCloud extends React.Component {
     let fileBeingUploaded;
 
     try {
-      for (const file of filesToUpload) {
+      await async.eachLimit(filesToUpload, 1, (file, nextFile) => {
         fileBeingUploaded = file;
 
-        const { res, data } = await this.upload(file, parentFolderId);
+        let relativePath = this.state.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
 
-        if (res.status === 402) {
-          this.setState({ rateLimitModal: true });
-          throw new Error('Rate limited');
+        if (folderPath) {
+          if (relativePath !== '') {
+            relativePath += '/' + folderPath;
+          } else {
+            // if is the first path level, DO NOT ADD a '/'
+            relativePath += folderPath;
+          }
         }
 
-        if (res.status === 500) {
-          throw new Error(data.message);
-        }
+        this.upload(file, parentFolderId, relativePath)
+          .then(({ res, data }) => {
+            if (parentFolderId === currentFolderId) {
+              const index = uploadedFiles.findIndex((obj) => obj.name === file.name);
 
-        if (parentFolderId === currentFolderId) {
-          let index = uploadedFiles.findIndex(
-            (obj) => obj.name === (file.newName || file.name)
-          );
+              uploadedFiles[index].isLoading = false;
+              uploadedFiles[index].fileId = data.fileId;
+              uploadedFiles[index].id = data.id;
 
-          uploadedFiles[index].isLoading = false;
-          uploadedFiles[index].fileId = data.fileId;
-          uploadedFiles[index].id = data.id;
+              this.setState({ currentCommanderItems: uploadedFiles });
+            }
+          }).catch((err) => {
+            console.log(err);
 
-          this.setState({ currentCommanderItems: uploadedFiles });
-        }
-      }
+            this.removeFileFromFileExplorer(fileBeingUploaded.name);
+          }).finally(() => {
+            nextFile(null);
+          });
+
+        // if (res.status === 402) {
+        //   this.setState({ rateLimitModal: true });
+        //   throw new Error('Rate limited');
+        // }
+
+        // if (res.status === 500) {
+        //   throw new Error(data.message);
+        // }
+
+      });
     } catch (err) {
       this.removeFileFromFileExplorer(fileBeingUploaded.name);
 
@@ -906,8 +919,8 @@ class XCloud extends React.Component {
     });
   }
 
-  uploadDroppedFile = (e, uuid) => {
-    return this.handleUploadFiles(e, uuid);
+  uploadDroppedFile = (e, uuid, folderPath) => {
+    return this.handleUploadFiles(e, uuid, folderPath);
   }
 
   shareItem = () => {
