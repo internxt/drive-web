@@ -851,6 +851,8 @@ class XCloud extends React.Component {
 
     let fileBeingUploaded;
 
+    let uploadErrors = [];
+
     try {
       await async.eachLimit(filesToUpload, 1, (file, nextFile) => {
         fileBeingUploaded = file;
@@ -881,12 +883,17 @@ class XCloud extends React.Component {
               this.setState({ currentCommanderItems: uploadedFiles });
             }
           }).catch((err) => {
+            uploadErrors.push(err);
             console.log(err);
 
             this.removeFileFromFileExplorer(fileBeingUploaded.name);
           }).finally(() => {
             nextFile(null);
           });
+
+        if (uploadErrors.length > 0) {
+          throw new Error('There were some errors during upload');
+        }
 
         // if (res.status === 402) {
         //   this.setState({ rateLimitModal: true });
@@ -899,7 +906,12 @@ class XCloud extends React.Component {
 
       });
     } catch (err) {
-      this.removeFileFromFileExplorer(fileBeingUploaded.name);
+      if (err.message === 'There were some errors during upload') {
+        // TODO: List errors in a queue?
+        return uploadErrors.forEach(uploadError => {
+          toast.warn(uploadError.message);
+        });
+      }
 
       toast.warn(err.message);
     }
