@@ -305,7 +305,7 @@ class FileCommander extends React.Component {
       if (item.isFile) {
         // Get file
         item.file((file) => {
-          this.props.uploadDroppedFile([file], uuid).then(resolve).catch(reject);
+          this.props.uploadDroppedFile([file], uuid, path).then(resolve).catch(reject);
         });
       } else if (item.isDirectory) {
         this.props

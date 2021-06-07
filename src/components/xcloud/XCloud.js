@@ -11,7 +11,7 @@ import async from 'async';
 import FileCommander from './FileCommander';
 import NavigationBar from '../navigationBar/NavigationBar';
 import history from '../../lib/history';
-import { encryptText, removeAccents } from '../../lib/utils';
+import { encryptText, removeAccents, getFilenameAndExt, renameFile } from '../../lib/utils';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 import PopupShare from '../PopupShare';
@@ -269,7 +269,7 @@ class XCloud extends React.Component {
   };
 
   fileNameExists = (fileName, type) => {
-    return this.state.currentCommanderItems.find(
+    return this.state.currentCommanderItems.some(
       (item) => !item.isFolder && item.name === fileName && item.type === type
     );
   };
@@ -282,7 +282,7 @@ class XCloud extends React.Component {
     let i = 1;
     const currentFolder = this.state.currentCommanderItems.filter((item) => item.isFolder);
 
-    let finalName;
+    let finalName = name;
 
     const foldName = name.replace(/ /g, '');
 
@@ -337,23 +337,25 @@ class XCloud extends React.Component {
   };
 
   createFolderByName = (folderName, parentFolderId) => {
+    let newFolderName = folderName;
+
     // No parent id implies is a directory created on the current folder, so let's show a spinner
     if (!parentFolderId) {
       let __currentCommanderItems;
 
-      if (this.folderNameExists(folderName)) {
-        folderName = this.getNewName(folderName);
+      if (this.folderNameExists(newFolderName)) {
+        newFolderName = this.getNewName(newFolderName);
       }
       __currentCommanderItems = this.state.currentCommanderItems;
       __currentCommanderItems.push({
-        name: folderName,
+        name: newFolderName,
         isLoading: true,
         isFolder: true
       });
 
       this.setState({ currentCommanderItems: __currentCommanderItems });
     } else {
-      folderName = this.getNewName(folderName);
+      newFolderName = this.getNewName(newFolderName);
     }
 
     parentFolderId = parentFolderId || this.state.currentFolderId;
@@ -364,7 +366,7 @@ class XCloud extends React.Component {
         headers: getHeaders(true, true, this.state.isTeam),
         body: JSON.stringify({
           parentFolderId,
-          folderName,
+          folderName: newFolderName,
           teamId: _.last(this.state.namePath) && _.last(this.state.namePath).hasOwnProperty('id_team') ? _.last(this.state.namePath).id_team : null
         })
       })
@@ -660,15 +662,19 @@ class XCloud extends React.Component {
     try {
       this.trackFileDownloadStart(fileId, fileName, fileSize, fileType, folderId);
 
-      const fileBlob = await new Environment(this.getEnvironmentConfig()).downloadFile(bucketId, fileId, {
-        progressCallback: (progress, downloadedBytes, totalBytes) => {
-          pcb.setState({ progress });
-        },
-        finishedCallback: (err) => {
-          if (err) {
-            throw err;
+      const fileBlob = await new Promise((resolve, reject) => {
+        new Environment(this.getEnvironmentConfig()).downloadFile(bucketId, fileId, {
+          progressCallback: (progress, downloadedBytes, totalBytes) => {
+            pcb.setState({ progress });
+          },
+          finishedCallback: (err, blob) => {
+            if (err) {
+              return reject(err);
+            }
+
+            return resolve(blob);
           }
-        }
+        });
       });
 
       fileDownload(fileBlob, completeFilename);
@@ -742,12 +748,8 @@ class XCloud extends React.Component {
     });
   }
 
-  upload = async (file, parentFolderId) => {
-    const namePath = this.state.namePath.map((x) => x.name).slice(1);
-
-    namePath.push(file.name);
-
-    const relativePath = namePath.join('/');
+  upload = async (file, parentFolderId, folderPath) => {
+    const relativePath = folderPath + file.name;
 
     const hashName = createHash('ripemd160').update(relativePath).digest('hex');
 
@@ -762,14 +764,14 @@ class XCloud extends React.Component {
       const { bridgeUser, bridgePass, bridgeUrl, encryptionKey, bucket } = this.getEnvironmentConfig();
       const env = new Environment({ bridgeUser, bridgePass, bridgeUrl, encryptionKey });
 
-      const content = new Blob([file], { type: file.type });
+      const content = new Blob([file.content], { type: file.type });
 
       const response = await new Promise((resolve, reject) => {
         env.uploadFile(bucket, {
           filename: hashName,
           fileSize: file.size,
           fileContent: content,
-          progressCallback: (progress, downloadedBytes, totalBytes) => {},
+          progressCallback: (progress, downloadedBytes, totalBytes) => { },
           finishedCallback: (err, response) => {
             if (err) {
               reject(err);
@@ -780,17 +782,13 @@ class XCloud extends React.Component {
         });
       });
 
-      const filenameSplitted = file.name.split('.');
-      const extension = filenameSplitted[filenameSplitted.length - 1] ? filenameSplitted[filenameSplitted.length - 1] : '';
-      const [filename] = filenameSplitted;
-
       const fileId = response.id;
-      const name = encryptText(filename);
+      const name = encryptText(file.name);
       const folder_id = parentFolderId;
       const { size, type } = file;
       const encrypt_version = '';
       // TODO: fix mismatched fileId fields in server and remove file_id here
-      const fileEntry = { fileId, file_id: fileId, type: extension, bucket, size, folder_id, name, encrypt_version };
+      const fileEntry = { fileId, file_id: fileId, type, bucket, size, folder_id, name, encrypt_version };
 
       const createFileEntry = () => {
         const body = JSON.stringify({ file: fileEntry });
@@ -817,101 +815,124 @@ class XCloud extends React.Component {
     }
   };
 
-  handleUploadFiles = (files, parentFolderId) => {
+  handleUploadFiles = async (files, parentFolderId, folderPath = null) => {
     files = Array.from(files);
-    var re = /(?:\.([^.]+))?$/;
 
-    let __currentCommanderItems = this.state.currentCommanderItems;
+    const filesToUpload = [];
+    const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
+    const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
+
+    console.log('File size trying to be uplodaded is %s bytes', files.reduce((accum, file) => accum + file.size, 0));
+
+    if (showSizeWarning) {
+      toast.warn('File too large.\nYou can only upload or download files of up to 1GB through the web app');
+      return;
+    }
 
     let currentFolderId = this.state.currentFolderId;
 
     parentFolderId = parentFolderId || currentFolderId;
 
-    for (let i = 0; i < files.length; i++) {
-      if (files[i].size >= 1024 * 1024 * 1000) {
-        let arr = Array.from(files);
+    files.forEach(file => {
+      const { filename, extension } = getFilenameAndExt(file.name);
 
-        arr.splice(i, 1);
-        files = arr;
-        toast.warn(
-          'File too large.\nYou can only upload or download files of up to 1000 MB through the web app'
-        );
+      filesToUpload.push({ name: filename, size: file.size, type: extension, isLoading: true, content: file });
+    });
+
+    for (const file of filesToUpload) {
+      let fileNameExists = this.fileNameExists(file.name, file.type);
+
+      if (parentFolderId === currentFolderId) {
+        this.setState({ currentCommanderItems: [...this.state.currentCommanderItems, file] });
+
+        if (fileNameExists) {
+          file.name = this.getNewName(file.name, file.type);
+          // File browser object don't allow to rename, so you have to create a new File object with the old one.
+          file.content = renameFile(file.content, file.name);
+        }
       }
     }
 
-    for (let i = 0; i < files.length; i++) {
-      let newName;
+    let fileBeingUploaded;
 
-      let fileAtt = re.exec(files[i].name);
+    let uploadErrors = [];
 
-      if (this.fileNameExists(files[i].name.replace(fileAtt[0], ''), fileAtt[1])) {
-        newName = this.getNewName(files[i].name.replace(fileAtt[0], ''), fileAtt[1]);
-        files[i].newName = newName;
-      }
-    }
+    try {
+      await async.eachLimit(filesToUpload, 1, (file, nextFile) => {
+        fileBeingUploaded = file;
 
-    if (parentFolderId === currentFolderId) {
-      const newCommanderItems = files.map((file) => {
-        return { name: file.newName || file.name, size: file.size, isLoading: true };
-      });
+        let relativePath = this.state.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
 
-      __currentCommanderItems = __currentCommanderItems.concat(newCommanderItems);
-      this.setState({ currentCommanderItems: __currentCommanderItems });
-    }
-
-    return new Promise((resolve, reject) => {
-      async.eachSeries(
-        files,
-        (file, next) => {
-          this.upload(file, parentFolderId)
-            .then(({ res, data }) => {
-              if (res.status === 402) {
-                this.setState({ rateLimitModal: true });
-                throw res.status;
-              }
-
-              if (res.status === 500) {
-                throw data.message;
-              }
-
-              if (parentFolderId === currentFolderId) {
-                let index = __currentCommanderItems.findIndex(
-                  (obj) => obj.name === (file.newName || file.name)
-                );
-
-                __currentCommanderItems[index].isLoading = false;
-                __currentCommanderItems[index].type = re.exec(file.name)[1];
-                __currentCommanderItems[index].fileId = data.fileId;
-                __currentCommanderItems[index].id = data.id;
-
-                this.setState({ currentCommanderItems: __currentCommanderItems }, () => next());
-              } else {
-                next();
-              }
-            })
-            .catch((err) => {
-              let index = __currentCommanderItems.findIndex(
-                (obj) => obj.name === (file.newName || file.name)
-              );
-
-              __currentCommanderItems.splice(index, 1);
-              this.setState({ currentCommanderItems: __currentCommanderItems }, () => next(err));
-            });
-        },
-        (err, results) => {
-          if (err) {
-            console.error('Error uploading:', err);
-            reject(err);
-            toast.warn(`"${err}"`);
-          } else if (parentFolderId === currentFolderId) {
-            resolve();
+        // when a folder and its subdirectory is uploaded by drop, this.state.namePath keeps its value at the first level of the parent folder
+        // so we need to add the relative folderPath (the path from parent folder uploaded to the level of the file being uploaded)
+        // when uploading deeper files than the current level
+        if (folderPath) {
+          if (relativePath !== '') {
+            relativePath += '/' + folderPath;
           } else {
-            resolve();
+            // if is the first path level, DO NOT ADD a '/'
+            relativePath += folderPath;
           }
         }
-      );
-    });
+
+        let rateLimited = false;
+
+        this.upload(file, parentFolderId, relativePath)
+          .then(({ res, data }) => {
+            if (parentFolderId === currentFolderId) {
+              const index = this.state.currentCommanderItems.findIndex((obj) => obj.name === file.name);
+              const filesInFileExplorer = [...this.state.currentCommanderItems];
+
+              filesInFileExplorer[index].isLoading = false;
+              filesInFileExplorer[index].fileId = data.fileId;
+              filesInFileExplorer[index].id = data.id;
+
+              this.setState({ currentCommanderItems: filesInFileExplorer });
+            }
+
+            if (res.status === 402) {
+              this.setState({ rateLimitModal: true });
+              rateLimited = true;
+              throw new Error('Rate limited');
+            }
+          }).catch((err) => {
+            uploadErrors.push(err);
+            console.log(err);
+
+            this.removeFileFromFileExplorer(fileBeingUploaded.name);
+          }).finally(() => {
+            if (rateLimited) {
+              return nextFile(Error('Rate limited'));
+            }
+            nextFile(null);
+          });
+
+        if (uploadErrors.length > 0) {
+          throw new Error('There were some errors during upload');
+        }
+      });
+    } catch (err) {
+      if (err.message === 'There were some errors during upload') {
+        // TODO: List errors in a queue?
+        return uploadErrors.forEach(uploadError => {
+          toast.warn(uploadError.message);
+        });
+      }
+
+      toast.warn(err.message);
+    }
   };
+
+  removeFileFromFileExplorer = (filename) => {
+    const index = this.state.currentCommanderItems.findIndex((obj) => obj.name === filename);
+
+    if (index === -1) {
+      // prevent undesired removals
+      return;
+    }
+
+    this.setState({ currentCommanderItems: Array.from(this.state.currentCommanderItems).splice(index, 1) });
+  }
 
   uploadFile = (e) => {
     this.handleUploadFiles(e.target.files).then(() => {
@@ -919,8 +940,8 @@ class XCloud extends React.Component {
     });
   }
 
-  uploadDroppedFile = (e, uuid) => {
-    return this.handleUploadFiles(e, uuid);
+  uploadDroppedFile = (e, uuid, folderPath) => {
+    return this.handleUploadFiles(e, uuid, folderPath);
   }
 
   shareItem = () => {
