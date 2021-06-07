@@ -818,12 +818,12 @@ class XCloud extends React.Component {
     const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
     const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
 
+    console.log('File size trying to be uplodaded is %s bytes', files.reduce((accum, file) => accum + file.size, 0));
+
     if (showSizeWarning) {
       toast.warn('File too large.\nYou can only upload or download files of up to 1GB through the web app');
       return;
     }
-
-    let uploadedFiles = this.state.currentCommanderItems;
 
     let currentFolderId = this.state.currentFolderId;
 
@@ -838,16 +838,16 @@ class XCloud extends React.Component {
     for (const file of filesToUpload) {
       let fileNameExists = this.fileNameExists(file.name, file.type);
 
-      if (parentFolderId === currentFolderId && fileNameExists) {
-        file.name = this.getNewName(file.name, file.type);
-        // File browser object don't allow to rename, so you have to create a new File object with the old one.
-        file.content = renameFile(file.content, file.name);
+      if (parentFolderId === currentFolderId) {
+        this.setState({ currentCommanderItems: [...this.state.currentCommanderItems, file] });
+
+        if (fileNameExists) {
+          file.name = this.getNewName(file.name, file.type);
+          // File browser object don't allow to rename, so you have to create a new File object with the old one.
+          file.content = renameFile(file.content, file.name);
+        }
       }
     }
-
-    uploadedFiles = uploadedFiles.concat(filesToUpload);
-
-    this.setState({ currentCommanderItems: uploadedFiles });
 
     let fileBeingUploaded;
 
@@ -871,16 +871,25 @@ class XCloud extends React.Component {
           }
         }
 
+        let rateLimited = false;
+
         this.upload(file, parentFolderId, relativePath)
           .then(({ res, data }) => {
             if (parentFolderId === currentFolderId) {
-              const index = uploadedFiles.findIndex((obj) => obj.name === file.name);
+              const index = this.state.currentCommanderItems.findIndex((obj) => obj.name === file.name);
+              const filesInFileExplorer = [...this.state.currentCommanderItems];
 
-              uploadedFiles[index].isLoading = false;
-              uploadedFiles[index].fileId = data.fileId;
-              uploadedFiles[index].id = data.id;
+              filesInFileExplorer[index].isLoading = false;
+              filesInFileExplorer[index].fileId = data.fileId;
+              filesInFileExplorer[index].id = data.id;
 
-              this.setState({ currentCommanderItems: uploadedFiles });
+              this.setState({ currentCommanderItems: filesInFileExplorer });
+            }
+
+            if (res.status === 402) {
+              this.setState({ rateLimitModal: true });
+              rateLimited = true;
+              throw new Error('Rate limited');
             }
           }).catch((err) => {
             uploadErrors.push(err);
@@ -888,22 +897,15 @@ class XCloud extends React.Component {
 
             this.removeFileFromFileExplorer(fileBeingUploaded.name);
           }).finally(() => {
+            if (rateLimited) {
+              return nextFile(Error('Rate limited'));
+            }
             nextFile(null);
           });
 
         if (uploadErrors.length > 0) {
           throw new Error('There were some errors during upload');
         }
-
-        // if (res.status === 402) {
-        //   this.setState({ rateLimitModal: true });
-        //   throw new Error('Rate limited');
-        // }
-
-        // if (res.status === 500) {
-        //   throw new Error(data.message);
-        // }
-
       });
     } catch (err) {
       if (err.message === 'There were some errors during upload') {
