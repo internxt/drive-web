@@ -662,15 +662,19 @@ class XCloud extends React.Component {
     try {
       this.trackFileDownloadStart(fileId, fileName, fileSize, fileType, folderId);
 
-      const fileBlob = await new Environment(this.getEnvironmentConfig()).downloadFile(bucketId, fileId, {
-        progressCallback: (progress, downloadedBytes, totalBytes) => {
-          pcb.setState({ progress });
-        },
-        finishedCallback: (err) => {
-          if (err) {
-            throw err;
+      const fileBlob = await new Promise((resolve, reject) => {
+        new Environment(this.getEnvironmentConfig()).downloadFile(bucketId, fileId, {
+          progressCallback: (progress, downloadedBytes, totalBytes) => {
+            pcb.setState({ progress });
+          },
+          finishedCallback: (err, blob) => {
+            if (err) {
+              return reject(err);
+            }
+
+            return resolve(blob);
           }
-        }
+        });
       });
 
       fileDownload(fileBlob, completeFilename);
