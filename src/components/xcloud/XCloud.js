@@ -24,11 +24,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { getUserData } from '../../lib/analytics';
 import Settings from '../../lib/settings';
 
-import { Environment } from 'inxt-js';
-
-import { createHash } from 'crypto';
+import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
-
 class XCloud extends React.Component {
 
   state = {
@@ -666,26 +663,17 @@ class XCloud extends React.Component {
     const fileSize = pcb.props.rawItem.size;
     const folderId = pcb.props.rawItem.folder_id;
     const fileType = pcb.props.type;
-    const bucketId = pcb.props.bucket;
 
     const completeFilename = fileType ? `${fileName}.${fileType}` : `${fileName}`;
 
     try {
       this.trackFileDownloadStart(fileId, fileName, fileSize, fileType, folderId);
 
-      const fileBlob = await new Promise((resolve, reject) => {
-        new Environment(this.getEnvironmentConfig()).downloadFile(bucketId, fileId, {
-          progressCallback: (progress, downloadedBytes, totalBytes) => {
-            pcb.setState({ progress });
-          },
-          finishedCallback: (err, blob) => {
-            if (err) {
-              return reject(err);
-            }
+      const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(this.state.isTeam);
+      const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
-            return resolve(blob);
-          }
-        });
+      const fileBlob = await network.downloadFile(bucketId, fileId, {
+        progressCallback: (progress) => pcb.setState({ progress })
       });
 
       fileDownload(fileBlob, completeFilename);
@@ -704,29 +692,6 @@ class XCloud extends React.Component {
     $('input#uploadFileControl').val(null);
     $('input#uploadFileControl').trigger('click');
   };
-
-  getEnvironmentConfig = () => {
-    let bridgeUser, bridgePass, encryptionKey, bucket;
-    const bridgeUrl = 'https://api.internxt.com';
-
-    if (this.state.isTeam) {
-      const team = Settings.getTeams();
-
-      bridgeUser = team.bridge_user;
-      bridgePass = team.bridge_password;
-      encryptionKey = team.bridge_mnemonic;
-      bucket = team.bucket;
-    } else {
-      const user = Settings.getUser();
-
-      bridgeUser = user.email;
-      bridgePass = user.userId;
-      encryptionKey = user.mnemonic;
-      bucket = user.bucket;
-    }
-
-    return { bridgeUser, bridgePass, bridgeUrl, encryptionKey, bucket };
-  }
 
   trackFileUploadStart = (file, parentFolderId) => {
     window.analytics.track('file-upload-start', {
@@ -760,10 +725,6 @@ class XCloud extends React.Component {
   }
 
   upload = async (file, parentFolderId, folderPath) => {
-    const relativePath = folderPath + file.name;
-
-    const hashName = createHash('ripemd160').update(relativePath).digest('hex');
-
     if (!parentFolderId) {
       throw new Error('No folder ID provided');
     }
@@ -771,35 +732,26 @@ class XCloud extends React.Component {
     try {
       this.trackFileUploadStart(file, parentFolderId);
 
-      const headers = getHeaders(true, true, this.state.isTeam);
-      const { bridgeUser, bridgePass, bridgeUrl, encryptionKey, bucket } = this.getEnvironmentConfig();
-      const env = new Environment({ bridgeUser, bridgePass, bridgeUrl, encryptionKey });
+      const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(this.state.isTeam);
+      const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
+      const relativePath = folderPath + file.name;
       const content = new Blob([file.content], { type: file.type });
 
-      const response = await new Promise((resolve, reject) => {
-        env.uploadFile(bucket, {
-          filename: hashName,
-          fileSize: file.size,
-          fileContent: content,
-          progressCallback: (progress, downloadedBytes, totalBytes) => { },
-          finishedCallback: (err, response) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(response);
-            }
-          }
-        });
+      const fileId = await network.uploadFile(bucketId, {
+        filepath: relativePath,
+        filesize: file.size,
+        filecontent: content,
+        progressCallback: () => { }
       });
 
-      const fileId = response.id;
       const name = encryptText(file.name);
       const folder_id = parentFolderId;
       const { size, type } = file;
       const encrypt_version = '';
       // TODO: fix mismatched fileId fields in server and remove file_id here
-      const fileEntry = { fileId, file_id: fileId, type, bucket, size, folder_id, name, encrypt_version };
+      const fileEntry = { fileId, file_id: fileId, type, bucket: bucketId, size, folder_id, name, encrypt_version };
+      const headers = getHeaders(true, true, this.state.isTeam);
 
       const createFileEntry = () => {
         const body = JSON.stringify({ file: fileEntry });
