@@ -25,6 +25,7 @@ import { getUserData } from '../../lib/analytics';
 import Settings from '../../lib/settings';
 
 import { Network, getEnvironmentConfig } from '../../lib/network';
+import { storeTeamsInfo } from '../../services/teams.service';
 class XCloud extends React.Component {
 
   state = {
@@ -76,28 +77,41 @@ class XCloud extends React.Component {
         });
       } else {
         console.log('getFolderContent 4');
+        storeTeamsInfo().finally(() => {
+          if (Settings.exists('xTeam') && !this.state.isTeam && Settings.get('workspace') === 'teams') {
+            this.handleChangeWorkspace();
+          } else {
+            this.getFolderContent(this.props.user.root_folder_id);
+            this.setState({ currentFolderId: this.props.user.root_folder_id });
+          }
+          const team = Settings.getTeams();
 
-        if (Settings.exists('xTeam') && !this.state.isTeam && Settings.get('workspace') === 'teams') {
-          this.handleChangeWorkspace();
-        } else {
-          this.getFolderContent(this.props.user.root_folder_id);
-          this.setState({ currentFolderId: this.props.user.root_folder_id });
-        }
+          if (team && !team.root_folder_id) {
+            this.setState({ currentFolderId: this.props.user.root_folder_id });
+          }
+
+          this.setState({ isInitialized: true });
+        }).catch(() => {
+          Settings.del('xTeam');
+          this.setState({
+            isTeam: false
+          });
+        });
       }
 
-      const team = Settings.getTeams();
-
-      if (team && !team.root_folder_id) {
-        this.setState({ currentFolderId: this.props.user.root_folder_id });
-      }
-
-      this.setState({ isInitialized: true });
     }
   };
 
   handleChangeWorkspace = () => {
     const xTeam = Settings.getTeams();
     const xUser = Settings.getUser();
+
+    if (!Settings.exists('xTeam')) {
+      toast.warn('You cannot access the team');
+      this.setState({
+        isTeam: false
+      });
+    }
 
     if (this.state.isTeam) {
       this.setState({ namePath: [{ name: 'All files', id: xUser.root_folder_id }] }, () => {
