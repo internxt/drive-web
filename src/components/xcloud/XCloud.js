@@ -108,6 +108,9 @@ class XCloud extends React.Component {
 
     if (!Settings.exists('xTeam')) {
       toast.warn('You cannot access the team');
+      this.setState({
+        isTeam: false
+      });
     }
 
     if (this.state.isTeam) {
