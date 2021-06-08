@@ -18,7 +18,6 @@ import './NavigationBar.scss';
 import history from '../../lib/history';
 
 import Settings from '../../lib/settings';
-// import { toast } from 'react-toastify';
 import SettingsMenu from './SettingsMenu';
 
 interface NavigationBarProps {
@@ -76,7 +75,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
       <HeaderButton icon={deleteFile} name="Delete" clickHandler={this.props.deleteItems} />
       <HeaderButton icon={share} name="Share" clickHandler={this.props.shareItem} />
       <input id="uploadFileControl" type="file" onChange={this.props.uploadHandler} multiple={true} />
-      {xTeam && <HeaderButton icon={this.props.isTeam? personalIcon : teamsIcon} name="Team" clickHandler={this.handleChangeWorkspace.bind(this)} />}
+      {xTeam && <HeaderButton icon={this.props.isTeam ? personalIcon : teamsIcon} name="Team" clickHandler={this.handleChangeWorkspace.bind(this)} />}
     </Nav>;
   }
 
@@ -113,6 +112,12 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         isTeam: this.props.isTeam,
         navbarItems: this.getNavBarItems(this.props.isTeam),
         workspace: this.props.isTeam ? 'Team workspace' : 'My workspace'
+      });
+    }
+    if (Settings.exists('xTeam') && Settings.exists('teamActivation')) {
+      Settings.del('teamActivation');
+      this.setState({
+        navbarItems: this.getNavBarItems(this.props.isTeam)
       });
     }
   }

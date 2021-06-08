@@ -41,12 +41,13 @@ class JoinTeam extends React.Component<Props, State> {
       method: 'post',
       headers: getHeaders(false, false),
       body: JSON.stringify({
-        member:  this.state.member,
+        member: this.state.member,
         teamPassword: this.state.teamPassword
       })
     }).then(response => {
       if (response.status === 200) {
         this.setState({ isTeamActivated: true });
+        localStorage.setItem('teamActivation', 'true');
         toast.info('You have successfully joined to the team, please login');
         history.push('/');
       } else {
@@ -61,7 +62,6 @@ class JoinTeam extends React.Component<Props, State> {
   }
 
   redirect = () => {
-
     if (this.state.isTeamActivated) {
       toast.info('You have successfully joined to the team, please login', { className: 'xcloud-toast-info' });
     } else {

@@ -209,20 +209,25 @@ class Teams extends React.Component<Props, State> {
 
   sendInvitation = (e: any) => {
     e.preventDefault();
-    const mails = this.state.email;
+    const mail = this.state.email;
 
-    if (mails !== undefined && this.validateEmailInvitations(mails)) {
-      this.sendEmailTeamsMember(mails).then(() => {
-        const newDataSource = this.state.dataSource;
+    if (mail !== undefined && this.validateEmailInvitations(mail)) {
+      this.sendEmailTeamsMember(mail).then(() => {
 
-        newDataSource.push({
-          isInvitation: true,
-          isMember: false,
-          user: mails
-        });
+        const newDataSource: Item[] = [];
+
+        const userExists = this.state.dataSource.some(userObj => userObj.user === mail);
+
+        if (!userExists) {
+          newDataSource.push({
+            isMember: false,
+            isInvitation: true,
+            user: mail
+          });
+        }
 
         this.setState({
-          dataSource: newDataSource
+          dataSource: [...this.state.dataSource, ...newDataSource]
         });
       }).catch((err) => {
         toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);
