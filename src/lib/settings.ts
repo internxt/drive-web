@@ -1,4 +1,5 @@
 export interface UserSettings {
+  bucket: string
   createdAt: Date
   credit: number
   email: string
