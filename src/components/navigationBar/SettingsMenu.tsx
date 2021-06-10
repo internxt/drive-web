@@ -68,6 +68,18 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
       }).catch(() => null);
   };
 
+  const putLimitUser = () => {
+    if (barLimit > 0) {
+      if (barLimit < 108851651149824) {
+        return customPrettySize(barLimit);
+      } else if (barLimit >= 108851651149824) {
+        return '\u221E';
+      } else {
+        return '...';
+      }
+    }
+  };
+
   useEffect(() => {
     fetchUsage().then();
   }, [barUsage, isTeam]);
@@ -96,7 +108,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
         <div className="dropdown-menu-group info">
           <p className="name-lastname">{isTeam ? 'Business' : `${user.name} ${user.lastname}`}</p>
           {isTeam ? <ProgressBar className="mini-progress-bar" now={barUsage} max={barLimitTeams} /> : <ProgressBar className="mini-progress-bar" now={barUsage} max={barLimit} />}
-          <p className="space-used">Used <strong>{customPrettySize(barUsage)}</strong> of {barLimitTeams && isTeam ? <strong>{barLimitTeams > 0 ? customPrettySize(barLimitTeams) : '...'}</strong> : <strong>{barLimit > 0 ? customPrettySize(barLimit) : '...'}</strong>}</p>
+          <p className="space-used">Used <strong>{customPrettySize(barUsage)}</strong> of {barLimitTeams && isTeam ? <strong>{barLimitTeams > 0 ? customPrettySize(barLimitTeams) : '...'}</strong> : <strong>{putLimitUser()}</strong>}</p>
         </div>
         <Dropdown.Divider />
         <div className="dropdown-menu-group">
