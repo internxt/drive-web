@@ -68,19 +68,19 @@ class Storage extends React.Component<StorageProps> {
         history.push('/login');
       } else {
 
-        this.setLimit();
+        this.setLimitStorage();
         this.determineAppSumo();
         this.usageLoader();
       }
     }
 
-    setLimit = () => {
+    setLimitStorage = () => {
       const limitStorage = SessionStorage.get('limitStorage');
 
       if (limitStorage) {
         this.setState({ max: limitStorage });
       } else {
-        getLimit().then((limitStorage) => {
+        getLimit(false).then((limitStorage) => {
           if (limitStorage) {
             SessionStorage.set('limitStorage', limitStorage);
             this.setState({ max: limitStorage });
@@ -88,6 +88,18 @@ class Storage extends React.Component<StorageProps> {
         });
       }
     }
+
+    putLimitUser = () => {
+      if (this.state.max > 0) {
+        if (this.state.max < 108851651149824) {
+          return customPrettySize(this.state.max);
+        } else if (this.state.max >= 108851651149824) {
+          return '\u221E';
+        } else {
+          return '...';
+        }
+      }
+    };
 
     payMethodLoader = (plan) => {
       if (plan.stripe_plan_id != null) {
@@ -135,7 +147,7 @@ class Storage extends React.Component<StorageProps> {
           <InxtContainer>
             <p className="title">Storage Used</p>
 
-            <p className="space-used-text">Used <b>{customPrettySize(this.state.now)}</b> of <b>{this.state.max > 0 ? customPrettySize(this.state.max) : '...'}</b></p>
+            <p className="space-used-text">Used <b>{customPrettySize(this.state.now)}</b> of <b>{this.putLimitUser()}</b></p>
             <StorageProgressBar max={this.state.max} now={this.state.now} />
 
             <Row className="space-used-legend">
