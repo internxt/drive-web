@@ -736,6 +736,20 @@ class XCloud extends React.Component {
       this.trackFileUploadStart(file, parentFolderId);
 
       const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(this.state.isTeam);
+
+      if (!bucketId) {
+        // coming from auto-login or something else that is not loading all required data
+        window.analytics.track('file-upload-bucketid-undefined', {
+          email: getUserData().email,
+          platform: 'web'
+        });
+
+        toast.warn('Login again to start uploading files');
+        Settings.clear();
+        history.push('/login');
+        return;
+      }
+
       const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
       const relativePath = folderPath + file.name;
