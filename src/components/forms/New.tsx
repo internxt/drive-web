@@ -210,7 +210,7 @@ class New extends React.Component<NewProps, NewState> {
           Settings.set('xToken', token);
           user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.register.password);
           user.privateKey = Buffer.from(AesUtil.decrypt(user.privateKey, this.state.register.password)).toString('base64');
-
+          Settings.set('xUser', JSON.stringify(user));
           Settings.set('xMnemonic', user.mnemonic);
 
           return initializeUser(this.state.register.email, user.mnemonic).then((rootFolderInfo) => {
