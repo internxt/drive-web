@@ -26,6 +26,8 @@ import Settings from '../../lib/settings';
 
 import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
+
+import AesUtil from '../../lib/AesUtil';
 class XCloud extends React.Component {
 
   state = {
@@ -762,10 +764,11 @@ class XCloud extends React.Component {
         progressCallback: () => { }
       });
 
-      const name = encryptText(file.name);
+      const name = AesUtil.encrypt(file.name, parentFolderId, false);
+      
       const folder_id = parentFolderId;
       const { size, type } = file;
-      const encrypt_version = '';
+      const encrypt_version = '03-aes';
       // TODO: fix mismatched fileId fields in server and remove file_id here
       const fileEntry = { fileId, file_id: fileId, type, bucket: bucketId, size, folder_id, name, encrypt_version };
       const headers = getHeaders(true, true, this.state.isTeam);
