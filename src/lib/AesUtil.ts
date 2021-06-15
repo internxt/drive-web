@@ -19,11 +19,12 @@
 // TEXT:      data (utf8 string) which should be encoded. modify the code to use Buffer for binary data!
 // ENCDATA:   encrypted data as base64 string (format mentioned on top)
 
-// load the build-in crypto functions
-const _crypto = require('crypto');
+// load the built-in crypto functions
+import crypto from 'crypto';
 
 // encrypt/decrypt functions
-const AesFunctions = {
+// encrypt/decrypt functions
+export default {
   /**
    * Encrypts text by given key
    * @param String text to encrypt
@@ -31,33 +32,32 @@ const AesFunctions = {
    * @returns String encrypted text, base64 encoded
    */
   encrypt(text, password, randomIv = false) {
-    // load env variables for deterministic encrypt/decrypt
     const {
       REACT_APP_MAGIC_IV: MAGIC_IV,
       REACT_APP_MAGIC_SALT: MAGIC_SALT
     } = process.env;
 
-    if (!MAGIC_IV || !MAGIC_SALT) {
-      throw Error('Missing secrets on ENV file');
-    }
-
     // random initialization vector
-    const iv = randomIv ? _crypto.randomBytes(16) : Buffer.from(MAGIC_IV as string, 'hex');
+    const iv = randomIv
+      ? crypto.randomBytes(16)
+      : Buffer.from(MAGIC_IV || '', 'hex');
 
     // random salt
-    const salt = randomIv ? _crypto.randomBytes(64) : Buffer.from(MAGIC_SALT as string, 'hex');
+    const salt = randomIv
+      ? crypto.randomBytes(64)
+      : Buffer.from(MAGIC_SALT || '', 'hex');
 
     // derive encryption key: 32 byte key length
     // in assumption the masterkey is a cryptographic and NOT a password there is no need for
     // a large number of iterations. It may can replaced by HKDF
     // the value of 2145 is randomly chosen!
-    const key = _crypto.pbkdf2Sync(`${password}`, salt, 9999, 32, 'sha512');
+    const key = crypto.pbkdf2Sync(password, salt, 2145, 32, 'sha512');
 
     // AES 256 GCM Mode
-    const cipher = _crypto.createCipheriv('aes-256-gcm', key, iv);
+    const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
 
     // encrypt the given text
-    const encrypted = Buffer.concat([cipher.update(text, 'utf8'), cipher.final()]);
+    const encrypted = Buffer.concat([ cipher.update(text, 'utf8'), cipher.final() ]);
 
     // extract the auth tag
     const tag = cipher.getAuthTag();
@@ -72,7 +72,7 @@ const AesFunctions = {
    * @param Buffer masterkey
    * @returns String decrypted (original) text
    */
-  decrypt(encdata, password) {
+  decrypt(encdata, password, iterations?) {
     // base64 decoding
     const bData = Buffer.from(encdata, 'base64');
 
@@ -84,23 +84,22 @@ const AesFunctions = {
 
     if (salt.length === 0 || iv.length === 0 || tag.length === 0 || text.length === 0) {
       // One empty param makes Node crash
-      throw new Error('Length 0, cannot decrypt');
+      throw Error('Length 0, cannot decrypt');
     }
 
+    console.log('ITERATIONS', iterations || 2145);
+
     // derive key using; 32 byte key length
-    const key = _crypto.pbkdf2Sync(password, salt, 9999, 32, 'sha512');
+    const key = crypto.pbkdf2Sync(password, salt, iterations || 2145, 32, 'sha512');
 
     // AES 256 GCM Mode
-    const decipher = _crypto.createDecipheriv('aes-256-gcm', key, iv);
+    const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
 
     decipher.setAuthTag(tag);
 
     // encrypt the given text
-    const decrypted =
-      decipher.update(text, 'binary', 'utf8') + decipher.final('utf8');
+    const decrypted = decipher.update(text, 'binary', 'utf8') + decipher.final('utf8');
 
     return decrypted;
   }
 };
-
-export default AesFunctions;

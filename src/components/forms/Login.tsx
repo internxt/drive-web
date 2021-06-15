@@ -143,7 +143,7 @@ class Login extends React.Component<LoginProps> {
     };
   }
 
-  doLogin = async () => {
+  doLogin = async (customIterations?:number) => {
     // Proceed with submit
     fetch('/api/login', {
       method: 'post',
@@ -196,7 +196,7 @@ class Login extends React.Component<LoginProps> {
         const publicKey = data.user.publicKey;
         const revocateKey = data.user.revocateKey;
 
-        const privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password)).toString('base64');
+        const privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password, customIterations)).toString('base64');
 
         analytics.identify(data.user.uuid, {
           email: this.state.email,
@@ -223,6 +223,18 @@ class Login extends React.Component<LoginProps> {
         Settings.set('xToken', data.token);
         Settings.set('xMnemonic', user.mnemonic);
         Settings.set('xUser', JSON.stringify(user));
+
+        if (customIterations) {
+          // if we are using custom iterations is because user has keys encrypted using the old way
+          const updatedUser = await this.updateKeys(data.user.uuid);
+          const currentUser = Settings.getUser();
+
+          currentUser.privateKey = updatedUser.privateKey;
+          currentUser.publicKey = updatedUser.publicKey;
+          currentUser.revocationKey = updatedUser.revocationKey;
+
+          Settings.set('xUser', JSON.stringify(currentUser));
+        }
 
         if (user.teams) {
           await storeTeamsInfo();
@@ -271,11 +283,32 @@ class Login extends React.Component<LoginProps> {
         throw Error(`"${err.error ? err.error : err}"`);
       });
     }).catch(err => {
-      console.error('Login error. ' + err.message);
-      toast.warn(<>Login error<br />{err.message}</>);
+      if (err.message === '"Error: Unsupported state or unable to authenticate data"') {
+        this.tryLoginWithOldVersion();
+      } else {
+        console.error('Login error. ' + err.message);
+        toast.warn(<>Login error<br />{err.message}</>);
+      }
     }).finally(() => {
       this.setState({ isLogingIn: false });
     });
+  }
+
+  tryLoginWithOldVersion() {
+    this.doLogin(9999); // 9999 is the old iterations number used to encrypt
+  }
+
+  async updateKeys(userUuid: string) {
+    const { privateKeyArmored, publicKeyArmored: publicKey, revocationCertificate: revocationKey } = await generateNewKeys();
+
+    const encPrivateKey = AesUtil.encrypt(privateKeyArmored, this.state.password);
+    const updatedUser = { uuid: userUuid, publicKey, privateKey: encPrivateKey, revocationKey };
+
+    return fetch('/api/user/keys', {
+      method: 'PATCH',
+      headers: getHeaders(true, true),
+      body: JSON.stringify({ user: updatedUser })
+    }).then(() => updatedUser);
   }
 
   render() {
