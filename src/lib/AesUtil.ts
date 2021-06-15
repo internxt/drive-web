@@ -34,8 +34,7 @@ export default {
   encrypt(text, password, randomIv = false) {
     const {
       REACT_APP_MAGIC_IV: MAGIC_IV,
-      REACT_APP_MAGIC_SALT: MAGIC_SALT,
-      REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY
+      REACT_APP_MAGIC_SALT: MAGIC_SALT
     } = process.env;
 
     // random initialization vector
