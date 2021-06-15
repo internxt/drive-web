@@ -143,7 +143,7 @@ class Login extends React.Component<LoginProps> {
     };
   }
 
-  doLogin = async () => {
+  doLogin = async (customIterations?:number) => {
     // Proceed with submit
     fetch('/api/login', {
       method: 'post',
@@ -196,7 +196,7 @@ class Login extends React.Component<LoginProps> {
         const publicKey = data.user.publicKey;
         const revocateKey = data.user.revocateKey;
 
-        const privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password)).toString('base64');
+        const privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password, customIterations)).toString('base64');
 
         analytics.identify(data.user.uuid, {
           email: this.state.email,
@@ -271,11 +271,19 @@ class Login extends React.Component<LoginProps> {
         throw Error(`"${err.error ? err.error : err}"`);
       });
     }).catch(err => {
-      console.error('Login error. ' + err.message);
-      toast.warn(<>Login error<br />{err.message}</>);
+      if (err.message === '"Error: Unsupported state or unable to authenticate data"') {
+        this.tryLoginWithOldVersion();
+      } else {
+        console.error('Login error. ' + err.message);
+        toast.warn(<>Login error<br />{err.message}</>);
+      }
     }).finally(() => {
       this.setState({ isLogingIn: false });
     });
+  }
+
+  tryLoginWithOldVersion() {
+    this.doLogin(9999); // 9999 is the old iterations number used to encrypt
   }
 
   render() {
