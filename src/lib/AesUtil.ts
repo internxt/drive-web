@@ -57,7 +57,7 @@ const AesUtils = {
     const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
 
     // encrypt the given text
-    const encrypted = Buffer.concat([ cipher.update(text, 'utf8'), cipher.final() ]);
+    const encrypted = Buffer.concat([cipher.update(text, 'utf8'), cipher.final()]);
 
     // extract the auth tag
     const tag = cipher.getAuthTag();
@@ -86,8 +86,6 @@ const AesUtils = {
       // One empty param makes Node crash
       throw Error('Length 0, cannot decrypt');
     }
-
-    console.log('ITERATIONS', iterations || 2145);
 
     // derive key using; 32 byte key length
     const key = crypto.pbkdf2Sync(password, salt, iterations, 32, 'sha512');

@@ -143,7 +143,7 @@ class Login extends React.Component<LoginProps> {
     };
   }
 
-  doLogin = async (customIterations?:number) => {
+  doLogin = async () => {
     // Proceed with submit
     fetch('/api/login', {
       method: 'post',
@@ -284,13 +284,8 @@ class Login extends React.Component<LoginProps> {
         throw Error(`"${err.error ? err.error : err}"`);
       });
     }).catch(err => {
-
-      if (err.message && err.message.includes('unable to authenticate')) {
-        this.tryLoginWithOldVersion();
-      } else {
-        console.error('Login error. ' + err.message);
-        toast.warn(<>Login error<br />{err.message}</>);
-      }
+      console.error('Login error. ' + err.message);
+      toast.warn(<>Login error<br />{err.message}</>);
     }).finally(() => {
       this.setState({ isLogingIn: false });
     });
