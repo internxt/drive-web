@@ -196,7 +196,15 @@ class Login extends React.Component<LoginProps> {
         const publicKey = data.user.publicKey;
         const revocateKey = data.user.revocateKey;
 
-        const privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password)).toString('base64');
+        let privkeyDecrypted;
+        let update = false;
+
+        try {
+          privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password)).toString('base64');
+        } catch {
+          privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password, 9999)).toString('base64');
+          update = true;
+        }
 
         analytics.identify(data.user.uuid, {
           email: this.state.email,
@@ -223,6 +231,11 @@ class Login extends React.Component<LoginProps> {
         Settings.set('xToken', data.token);
         Settings.set('xMnemonic', user.mnemonic);
         Settings.set('xUser', JSON.stringify(user));
+
+        if (update) {
+          // if we are using custom iterations is because user has keys encrypted using the old way
+          await this.updateKeys();
+        }
 
         if (user.teams) {
           await storeTeamsInfo();
@@ -275,6 +288,19 @@ class Login extends React.Component<LoginProps> {
       toast.warn(<>Login error<br />{err.message}</>);
     }).finally(() => {
       this.setState({ isLogingIn: false });
+    });
+  }
+
+  updateKeys() {
+    const { privateKey: privateKeyArmored, publicKey, revocationKey } = Settings.getUser();
+
+    const encPrivateKey = AesUtil.encrypt(privateKeyArmored, this.state.password);
+    const updatedKeys = { publicKey, privateKey: encPrivateKey, revocationKey };
+
+    return fetch('/api/user/keys', {
+      method: 'PATCH',
+      headers: getHeaders(true, true),
+      body: JSON.stringify(updatedKeys)
     });
   }
 

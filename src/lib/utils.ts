@@ -1,5 +1,6 @@
 import copy from 'copy-to-clipboard';
 import CryptoJS from 'crypto-js';
+import AesUtil from './AesUtil';
 
 function copyToClipboard(text: string) {
   copy(text);
@@ -107,12 +108,23 @@ function renameFile(file: File, newName: string) {
   return new File([file], newName);
 }
 
+function encryptFilename(filename:string, folderId: string) {
+  const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
+
+  if (!CRYPTO_KEY) {
+    throw new Error('Cannot encrypt filename due to missing encryption key');
+  }
+
+  return AesUtil.encrypt(filename, `${CRYPTO_KEY}-${folderId}`);
+}
+
 export {
   copyToClipboard,
   removeAccents,
   passToHash,
   encryptText,
   decryptText,
+  encryptFilename,
   encryptTextWithKey,
   decryptTextWithKey,
   getFilenameAndExt,
