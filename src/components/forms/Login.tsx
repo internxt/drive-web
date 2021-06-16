@@ -304,7 +304,7 @@ class Login extends React.Component<LoginProps> {
 
     return fetch('/api/user/keys', {
       method: 'PATCH',
-      headers: getHeaders(true, true),
+      headers: getHeaders(true, false),
       body: JSON.stringify(updatedKeys)
     });
   }
