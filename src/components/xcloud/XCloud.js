@@ -765,10 +765,6 @@ class XCloud extends React.Component {
 
       const name = encryptFilename(file.name, parentFolderId);
 
-      console.log('parentFolderId', parentFolderId);
-      console.log('filename', file.name);
-      console.log('filename encrypted', name);
-
       const folder_id = parentFolderId;
       const { size, type } = file;
       const encrypt_version = '03-aes';
