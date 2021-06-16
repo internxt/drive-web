@@ -11,7 +11,7 @@ import async from 'async';
 import FileCommander from './FileCommander';
 import NavigationBar from '../navigationBar/NavigationBar';
 import history from '../../lib/history';
-import { removeAccents, getFilenameAndExt, renameFile } from '../../lib/utils';
+import { removeAccents, getFilenameAndExt, renameFile, encryptFilename } from '../../lib/utils';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 import PopupShare from '../PopupShare';
@@ -27,7 +27,6 @@ import Settings from '../../lib/settings';
 import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
 
-import AesUtil from '../../lib/AesUtil';
 class XCloud extends React.Component {
 
   state = {
@@ -764,8 +763,12 @@ class XCloud extends React.Component {
         progressCallback: () => { }
       });
 
-      const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
-      const name = AesUtil.encrypt(file.name, `${CRYPTO_KEY}-${parentFolderId}`);
+      const name = encryptFilename(file.name, parentFolderId);
+
+      console.log('parentFolderId', parentFolderId);
+      console.log('filename', file.name);
+      console.log('filename encrypted', name);
+
       const folder_id = parentFolderId;
       const { size, type } = file;
       const encrypt_version = '03-aes';
