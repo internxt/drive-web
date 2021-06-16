@@ -37,6 +37,10 @@ export default {
       REACT_APP_MAGIC_SALT: MAGIC_SALT
     } = process.env;
 
+    if (!MAGIC_IV || !MAGIC_SALT) {
+      throw new Error('Missing secrets on ENV file');
+    }
+
     // random initialization vector
     const iv = randomIv
       ? crypto.randomBytes(16)
