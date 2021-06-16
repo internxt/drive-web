@@ -196,7 +196,15 @@ class Login extends React.Component<LoginProps> {
         const publicKey = data.user.publicKey;
         const revocateKey = data.user.revocateKey;
 
-        const privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password, customIterations)).toString('base64');
+        let privkeyDecrypted;
+        let update = false;
+
+        try {
+          privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password)).toString('base64');
+        } catch {
+          privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password, 9999)).toString('base64');
+          update = true;
+        }
 
         analytics.identify(data.user.uuid, {
           email: this.state.email,
@@ -224,16 +232,9 @@ class Login extends React.Component<LoginProps> {
         Settings.set('xMnemonic', user.mnemonic);
         Settings.set('xUser', JSON.stringify(user));
 
-        if (customIterations) {
+        if (update) {
           // if we are using custom iterations is because user has keys encrypted using the old way
-          const updatedUser = await this.updateKeys(data.user.uuid);
-          const currentUser = Settings.getUser();
-
-          currentUser.privateKey = updatedUser.privateKey;
-          currentUser.publicKey = updatedUser.publicKey;
-          currentUser.revocationKey = updatedUser.revocationKey;
-
-          Settings.set('xUser', JSON.stringify(currentUser));
+          await this.updateKeys();
         }
 
         if (user.teams) {
@@ -283,7 +284,8 @@ class Login extends React.Component<LoginProps> {
         throw Error(`"${err.error ? err.error : err}"`);
       });
     }).catch(err => {
-      if (err.message === '"Error: Unsupported state or unable to authenticate data"') {
+
+      if (err.message && err.message.includes('unable to authenticate')) {
         this.tryLoginWithOldVersion();
       } else {
         console.error('Login error. ' + err.message);
@@ -294,21 +296,17 @@ class Login extends React.Component<LoginProps> {
     });
   }
 
-  tryLoginWithOldVersion() {
-    this.doLogin(9999); // 9999 is the old iterations number used to encrypt
-  }
-
-  async updateKeys(userUuid: string) {
-    const { privateKeyArmored, publicKeyArmored: publicKey, revocationCertificate: revocationKey } = await generateNewKeys();
+  updateKeys() {
+    const { privateKey: privateKeyArmored, publicKey, revocationKey } = Settings.getUser();
 
     const encPrivateKey = AesUtil.encrypt(privateKeyArmored, this.state.password);
-    const updatedUser = { uuid: userUuid, publicKey, privateKey: encPrivateKey, revocationKey };
+    const updatedKeys = { publicKey, privateKey: encPrivateKey, revocationKey };
 
     return fetch('/api/user/keys', {
       method: 'PATCH',
-      headers: getHeaders(true, true),
-      body: JSON.stringify({ user: updatedUser })
-    }).then(() => updatedUser);
+      headers: getHeaders(true, false),
+      body: JSON.stringify(updatedKeys)
+    });
   }
 
   render() {

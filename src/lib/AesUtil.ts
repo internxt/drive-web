@@ -24,28 +24,28 @@ import crypto from 'crypto';
 
 // encrypt/decrypt functions
 // encrypt/decrypt functions
-export default {
+const AesUtils = {
   /**
    * Encrypts text by given key
    * @param String text to encrypt
    * @param Buffer masterkey
    * @returns String encrypted text, base64 encoded
    */
-  encrypt(text, password, randomIv = false) {
+  encrypt(text: string, password: string, randomIv = false) {
     const {
       REACT_APP_MAGIC_IV: MAGIC_IV,
       REACT_APP_MAGIC_SALT: MAGIC_SALT
     } = process.env;
 
+    if (!MAGIC_IV || !MAGIC_SALT) {
+      throw new Error('Missing secrets on ENV file');
+    }
+
     // random initialization vector
-    const iv = randomIv
-      ? crypto.randomBytes(16)
-      : Buffer.from(MAGIC_IV || '', 'hex');
+    const iv = randomIv ? crypto.randomBytes(16) : Buffer.from(MAGIC_IV || '', 'hex');
 
     // random salt
-    const salt = randomIv
-      ? crypto.randomBytes(64)
-      : Buffer.from(MAGIC_SALT || '', 'hex');
+    const salt = randomIv ? crypto.randomBytes(64) : Buffer.from(MAGIC_SALT || '', 'hex');
 
     // derive encryption key: 32 byte key length
     // in assumption the masterkey is a cryptographic and NOT a password there is no need for
@@ -72,7 +72,7 @@ export default {
    * @param Buffer masterkey
    * @returns String decrypted (original) text
    */
-  decrypt(encdata, password, iterations?) {
+  decrypt(encdata: string, password: string, iterations = 2145) {
     // base64 decoding
     const bData = Buffer.from(encdata, 'base64');
 
@@ -90,7 +90,7 @@ export default {
     console.log('ITERATIONS', iterations || 2145);
 
     // derive key using; 32 byte key length
-    const key = crypto.pbkdf2Sync(password, salt, iterations || 2145, 32, 'sha512');
+    const key = crypto.pbkdf2Sync(password, salt, iterations, 32, 'sha512');
 
     // AES 256 GCM Mode
     const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
@@ -103,3 +103,5 @@ export default {
     return decrypted;
   }
 };
+
+export default AesUtils;
