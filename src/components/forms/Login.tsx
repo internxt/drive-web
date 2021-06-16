@@ -283,7 +283,8 @@ class Login extends React.Component<LoginProps> {
         throw Error(`"${err.error ? err.error : err}"`);
       });
     }).catch(err => {
-      if (err.message === '"Error: Unsupported state or unable to authenticate data"') {
+
+      if (err.message && err.message.includes('unable to authenticate')) {
         this.tryLoginWithOldVersion();
       } else {
         console.error('Login error. ' + err.message);
