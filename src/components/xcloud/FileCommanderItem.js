@@ -9,6 +9,7 @@ import SanitizeFilename from 'sanitize-filename';
 import TimeAgo from 'react-timeago';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SessionStorage from '../../lib/sessionStorage';
 
 class FileCommanderItem extends React.Component {
   constructor(props, state) {
@@ -22,7 +23,8 @@ class FileCommanderItem extends React.Component {
       isLoading: this.props.isLoading,
       isDownloading: false,
       handleExternalDrop: this.props.handleExternalDrop,
-      progress: 0
+      progress: 0,
+      id: this.props.id
     };
 
     // Folder colors definition
@@ -98,6 +100,26 @@ class FileCommanderItem extends React.Component {
     }
 
   };
+
+  checkIsLoadingFile = () => {
+    if (SessionStorage.exists(`upload file - ${this.state.itemName}`)) {
+      const json = JSON.parse((SessionStorage.get(`upload file - ${this.state.itemName}`)));
+
+      return json.isLoading;
+    }
+
+    return false;
+  }
+
+  checkIsLoadingFolder = () => {
+    if (SessionStorage.exists(`upload folder - ${this.state.itemName}`)) {
+      const json = JSON.parse((SessionStorage.get(`upload folder - ${this.state.itemName}`)));
+
+      return json.isLoading;
+    }
+
+    return false;
+  }
 
   handleNameChange = (event) => {
     if (!this.state.isLoading) {
@@ -218,7 +240,9 @@ class FileCommanderItem extends React.Component {
   getFolderIcon = () => {
     let localColor = this.state.selectedColor ? this.state.selectedColor : this.props.color;
 
-    if (this.props.isLoading) {
+    const folderLoading = this.checkIsLoadingFolder();
+
+    if (this.props.isLoading || folderLoading) {
       return (
         <div className="iconContainer">
           <Icon name="folder" color={localColor} height="75" alt="" />
@@ -244,15 +268,17 @@ class FileCommanderItem extends React.Component {
   };
 
   getFileIcon = () => {
+    const iconLoading = this.checkIsLoadingFile();
+
     return (
       <div className="iconContainer fileIconContainer">
         <div className="type">
           <span className="extension">
-            {!this.state.isLoading && !this.state.isDownloading ? this.props.type : ''}
+            {!this.state.isLoading && !this.state.isDownloading && !this.iconLoading ? this.props.type : ''}
           </span>
           {this.state.progress > 0 ? <ProgressBar className="download-pb" now={this.state.progress} /> : ''}
         </div>
-        {this.state.isLoading || this.state.isDownloading ? <ActivityIndicator /> : ''}
+        {this.state.isLoading || this.state.isDownloading || iconLoading ? <ActivityIndicator /> : ''}
       </div>
     );
   };
@@ -293,14 +319,17 @@ class FileCommanderItem extends React.Component {
         data-name={this.props.rawItem.name}
         data-isfolder={!!this.props.rawItem.isFolder}
         onClick={() => {
-          if (!this.state.isLoading) {
-            this.props.selectHandler(this.props.id, this.props.isFolder, false);
-          }
-          if (this.state.isDownloading) {
+          const itemFileLoading = this.checkIsLoadingFile();
+          const itemFolderLoading = this.checkIsLoadingFolder();
+
+          if (!itemFileLoading || !itemFolderLoading) {
             this.props.selectHandler(this.props.id, this.props.isFolder, false);
           }
         }}
         onDoubleClick={(e) => {
+          const itemFileLoading = this.checkIsLoadingFile();
+          const itemFolderLoading = this.checkIsLoadingFolder();
+
           if (e.target.className.includes('FileCommanderItem')) {
             if (this.props.type == null) {
               window.analytics.track('folder-opened', {
@@ -308,10 +337,7 @@ class FileCommanderItem extends React.Component {
                 folder_id: this.props.id
               });
             }
-            if (!this.state.isLoading) {
-              this.itemClickHandler(e);
-            }
-            if (this.state.isDownloading) {
+            if (!itemFileLoading || !itemFolderLoading) {
               this.itemClickHandler(e);
             }
           }
@@ -326,7 +352,7 @@ class FileCommanderItem extends React.Component {
         <div className="properties">
           {/* Item context menu changes depending on folder or file*/}
           {this.props.isFolder ?
-            !this.state.isLoading ?
+            !this.checkIsLoadingFolder() || !this.state.isLoading ?
               (
                 <Dropdown
                   drop={'right'}
@@ -334,7 +360,7 @@ class FileCommanderItem extends React.Component {
                   onToggle={this.handleDropdownSelect}
                 >
                   <Dropdown.Toggle as={CustomToggle} handleShowDropdown={this.handleShowDropdown}>
-                ...
+                    ...
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item as="span">
@@ -435,10 +461,10 @@ class FileCommanderItem extends React.Component {
           {this.props.isFolder ? this.getFolderIcon() : this.getFileIcon()}
         </div>
         <div className="name" title={this.props.name} onClick={() => {
-          if (!this.state.isLoading) {
-            this.itemClickHandler();
-          }
-          if (this.state.isDownloading) {
+          const itemFileLoading = this.checkIsLoadingFile();
+          const itemFolderLoading = this.checkIsLoadingFolder();
+
+          if (!itemFileLoading || !itemFolderLoading) {
             this.itemClickHandler();
           }
         }}>

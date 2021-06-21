@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { compare } from 'natural-orderby';
 import LoadingFileExplorer from './LoadingFileExplorer';
+import SessionStorage from '../../lib/sessionStorage';
 
 const SORT_TYPES = {
   DATE_ADDED: 'Date_Added',
@@ -57,7 +58,7 @@ class FileCommander extends React.Component {
 
     switch (sortType) {
       case SORT_TYPES.DATE_ADDED:
-      // At this time, default order is date added
+        // At this time, default order is date added
         break;
       case SORT_TYPES.FILETYPE_ASC:
         sortFunc = function (a, b) {
@@ -198,9 +199,38 @@ class FileCommander extends React.Component {
     return parseInt(size) <= 1024 * 1024 * 1000 ? true : false;
   };
 
+  checkSessionStorage = (entry, entryName) => {
+    if (entry) {
+      if (entry.isFile) {
+
+        const fileUploading = {
+          name: entryName,
+          isLoading: true
+        };
+
+        if (!(SessionStorage.exists(`upload file -  ${entryName}`))) {
+          SessionStorage.set(`upload file - ${entryName}`, JSON.stringify(fileUploading));
+        }
+      } else if (entry.isDirectory) {
+
+        const folderUploading = {
+          name: entryName,
+          isLoading: true
+        };
+
+        if (!(SessionStorage.exists(`upload folder -  ${entryName}`))) {
+          SessionStorage.set(`upload folder - ${entryName}`, JSON.stringify(folderUploading));
+        }
+      }
+    }
+
+  }
+
   handleDrop = (e, parentId = null) => {
     e.preventDefault();
     let items = e.dataTransfer.items;
+
+    let nameEntry = '';
 
     async.map(
       items,
@@ -208,6 +238,15 @@ class FileCommander extends React.Component {
         let entry = item ? item.webkitGetAsEntry() : null;
 
         if (entry) {
+
+          if (entry.isFile) {
+            nameEntry = entry.name.split('.').slice(0, -1).join('.');
+          } else if (entry.isDirectory) {
+            nameEntry = entry.name;
+          }
+
+          this.checkSessionStorage(entry, nameEntry);
+
           this.getTotalTreeSize(entry)
             .then(() => {
               if (this.isAcceptableSize(this.state.treeSize)) {
@@ -229,6 +268,7 @@ class FileCommander extends React.Component {
           nextItem();
         }
       },
+      //CALLBACK HANDLE DROP ASYNC FUNCTION
       (err) => {
         if (err) {
           let errmsg = err.error ? err.error : err;
@@ -239,14 +279,22 @@ class FileCommander extends React.Component {
           toast.warn(`"${errmsg}"`);
         }
 
+        if (SessionStorage.exists(`upload folder - ${nameEntry}`)) {
+          sessionStorage.removeItem(`upload folder - ${nameEntry}`);
+        }
+
+        if (SessionStorage.exists(`upload file - ${nameEntry}`)) {
+          sessionStorage.removeItem(`upload file - ${nameEntry}`);
+        }
+
         let idTeam = this.props.namePath[this.props.namePath.length - 1].id_team;
 
         if (idTeam) {
           console.log('getFolderContent 1');
-          this.props.getFolderContent(this.props.currentFolderId, true, idTeam);
+          this.props.getFolderContent(this.props.currentFolderId, true, false, idTeam);
         } else {
           console.log('getFolderContent 2');
-          this.props.getFolderContent(this.props.currentFolderId);
+          this.props.getFolderContent(this.props.currentFolderId, true, false, false);
         }
       }
     );
