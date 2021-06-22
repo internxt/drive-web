@@ -26,6 +26,7 @@ import Settings from '../../lib/settings';
 
 import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
+import SessionStorage from '../../lib/sessionStorage';
 
 class XCloud extends React.Component {
 
@@ -53,6 +54,7 @@ class XCloud extends React.Component {
   moveEvent = {};
 
   componentDidMount = () => {
+    SessionStorage.set('uploadingItems', JSON.stringify([]));
     if (isMobile) {
       if (isAndroid) {
         window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';

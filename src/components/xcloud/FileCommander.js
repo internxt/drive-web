@@ -34,7 +34,8 @@ class FileCommander extends React.Component {
       selectedSortType: SORT_TYPES.DATE_ADDED,
       dragDropStyle: '',
       treeSize: 0,
-      isTeam: this.props.isTeam
+      isTeam: this.props.isTeam,
+      currentFolderId: this.props.currentFolderId
     };
   }
 
@@ -199,31 +200,24 @@ class FileCommander extends React.Component {
     return parseInt(size) <= 1024 * 1024 * 1000 ? true : false;
   };
 
-  checkSessionStorage = (entry, entryName) => {
+  setUploadingItemsSessionStorage = (entry, entryName) => {
     if (entry) {
-      if (entry.isFile) {
+      const fileUploading = {
+        id: null,
+        type: entry.isFile ? 'file' : 'folder',
+        name: entryName,
+        isLoading: true,
+        currentFolderId: this.props.currentFolderId
+      };
 
-        const fileUploading = {
-          name: entryName,
-          isLoading: true
-        };
+      const values = JSON.parse(SessionStorage.get('uploadingItems'));
 
-        if (!(SessionStorage.exists(`upload file -  ${entryName}`))) {
-          SessionStorage.set(`upload file - ${entryName}`, JSON.stringify(fileUploading));
-        }
-      } else if (entry.isDirectory) {
+      if (values) {
+        values.push(fileUploading);
 
-        const folderUploading = {
-          name: entryName,
-          isLoading: true
-        };
-
-        if (!(SessionStorage.exists(`upload folder -  ${entryName}`))) {
-          SessionStorage.set(`upload folder - ${entryName}`, JSON.stringify(folderUploading));
-        }
+        SessionStorage.set('uploadingItems', JSON.stringify(values));
       }
     }
-
   }
 
   handleDrop = (e, parentId = null) => {
@@ -238,14 +232,9 @@ class FileCommander extends React.Component {
         let entry = item ? item.webkitGetAsEntry() : null;
 
         if (entry) {
+          nameEntry = entry.isFile ? entry.name.split('.').slice(0, -1).join('.') : entry.name;
 
-          if (entry.isFile) {
-            nameEntry = entry.name.split('.').slice(0, -1).join('.');
-          } else if (entry.isDirectory) {
-            nameEntry = entry.name;
-          }
-
-          this.checkSessionStorage(entry, nameEntry);
+          this.setUploadingItemsSessionStorage(entry, nameEntry);
 
           this.getTotalTreeSize(entry)
             .then(() => {
@@ -279,13 +268,13 @@ class FileCommander extends React.Component {
           toast.warn(`"${errmsg}"`);
         }
 
-        if (SessionStorage.exists(`upload folder - ${nameEntry}`)) {
-          sessionStorage.removeItem(`upload folder - ${nameEntry}`);
-        }
+        const itemsLists = JSON.parse(SessionStorage.get('uploadingItems'));
 
-        if (SessionStorage.exists(`upload file - ${nameEntry}`)) {
-          sessionStorage.removeItem(`upload file - ${nameEntry}`);
-        }
+        const removeItems = itemsLists.filter(item => item.name !== nameEntry);
+
+        SessionStorage.del('uploadingItems');
+
+        SessionStorage.set('uploadingItems', JSON.stringify(removeItems));
 
         let idTeam = this.props.namePath[this.props.namePath.length - 1].id_team;
 
@@ -516,6 +505,7 @@ class FileCommander extends React.Component {
                   isSelected={item.isSelected}
                   handleExternalDrop={this.handleDrop}
                   handleDragStart={this.handleDragStart}
+                  currentFolderId={this.state.currentFolderId}
                 />
               );
             })

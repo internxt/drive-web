@@ -103,30 +103,29 @@ class FileCommanderItem extends React.Component {
   };
 
   checkIsLoadingFile = () => {
-    if (SessionStorage.exists(`upload file - ${this.state.itemName}`)) {
-      const json = JSON.parse((SessionStorage.get(`upload file - ${this.state.itemName}`)));
+    const itemsLists = JSON.parse(SessionStorage.get('uploadingItems'));
 
-      return json.isLoading;
-    }
+    const loadingItems = itemsLists.filter(item => this.state.itemName === item.name && item.type === 'file' && item.currentFolderId === this.props.currentFolderId);
+    const isLoadingFile = loadingItems.length !== 0 ? true : false;
 
-    return false;
+    return isLoadingFile;
+
   }
 
   checkIsLoadingFolder = () => {
-    if (SessionStorage.exists(`upload folder ${this.props.currentFolderId} - ${this.state.itemName}`)) {
-      const json = JSON.parse((SessionStorage.get(`upload folder ${this.props.currentFolderId} - ${this.state.itemName}`)));
+    const itemsLists = JSON.parse(SessionStorage.get('uploadingItems'));
 
-      return json.isLoading;
-    }
+    const loadingItems = itemsLists.filter(item => this.state.itemName === item.name && item.type === 'folder' && item.currentFolderId === this.props.currentFolderId);
+    const isLoadingFile = loadingItems.length !== 0 ? true : false;
 
-    return false;
+    return isLoadingFile;
   }
 
   handleNameChange = (event) => {
-    const isFolderLoading = this.checkIsLoadingFolder();
-    const isFileLoading = this.checkIsLoadingFile();
+    const folderLoading = this.checkIsLoadingFolder();
+    const fileLoading = this.checkIsLoadingFile();
 
-    if (!this.state.isLoading || !isFolderLoading || !isFileLoading) {
+    if (!this.state.isLoading || !folderLoading || !fileLoading) {
       this.setState({ itemName: event.target.value });
     }
     if (this.state.isDownloading) {
@@ -323,14 +322,13 @@ class FileCommanderItem extends React.Component {
         data-name={this.props.rawItem.name}
         data-isfolder={!!this.props.rawItem.isFolder}
         onClick={() => {
-          const itemFolderLoading = this.checkIsLoadingFolder();
+          const folderLoading = this.checkIsLoadingFolder();
 
-          if (!itemFolderLoading) {
+          if (!folderLoading) {
             this.props.selectHandler(this.props.id, this.props.isFolder, false);
           }
         }}
         onDoubleClick={(e) => {
-          const itemFolderLoading = this.checkIsLoadingFolder();
 
           if (e.target.className.includes('FileCommanderItem')) {
             if (this.props.type == null) {
@@ -339,7 +337,9 @@ class FileCommanderItem extends React.Component {
                 folder_id: this.props.id
               });
             }
-            if (!itemFolderLoading) {
+            const folderLoading = this.checkIsLoadingFolder();
+
+            if (!folderLoading) {
               this.itemClickHandler(e);
             }
           }
@@ -354,7 +354,7 @@ class FileCommanderItem extends React.Component {
         <div className="properties">
           {/* Item context menu changes depending on folder or file*/}
           {this.props.isFolder ?
-            !this.checkIsLoadingFolder() || !this.state.isLoading ?
+            !this.checkIsLoadingFolder() ?
               (
                 <Dropdown
                   drop={'right'}
@@ -463,14 +463,13 @@ class FileCommanderItem extends React.Component {
           {this.props.isFolder ? this.getFolderIcon() : this.getFileIcon()}
         </div>
         <div className="name" title={this.props.name} onClick={() => {
-          const itemFolderLoading = this.checkIsLoadingFolder();
-          const itemFileLoading = this.checkIsLoadingFile();
+          const folderLoading = this.checkIsLoadingFolder();
 
-          if (!itemFolderLoading) {
+          if (!folderLoading) {
             this.itemClickHandler();
           }
 
-          if (!itemFileLoading) {
+          if (!folderLoading) {
             this.itemClickHandler();
           }
         }}>
