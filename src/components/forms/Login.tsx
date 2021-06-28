@@ -200,9 +200,9 @@ class Login extends React.Component<LoginProps> {
         let update = false;
 
         try {
-          privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password)).toString('base64');
+          privkeyDecrypted = AesUtil.decrypt(privateKey, this.state.password);
         } catch {
-          privkeyDecrypted = Buffer.from(AesUtil.decrypt(privateKey, this.state.password, 9999)).toString('base64');
+          privkeyDecrypted = AesUtil.decrypt(privateKey, this.state.password, 9999);
           update = true;
         }
 
