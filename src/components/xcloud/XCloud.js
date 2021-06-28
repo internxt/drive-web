@@ -755,7 +755,7 @@ class XCloud extends React.Component {
 
       const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
-      const relativePath = folderPath + file.name;
+      const relativePath = folderPath + file.name + (file.type ? '.' + file.type : '');
       const content = new Blob([file.content], { type: file.type });
 
       const fileId = await network.uploadFile(bucketId, {
