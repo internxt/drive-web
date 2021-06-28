@@ -179,6 +179,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
             });
             Settings.clear();
             Settings.del('workspace');
+            Settings.del('uploadingItems');
             history.push('/login');
           }}>Sign out</Dropdown.Item>
         </div>

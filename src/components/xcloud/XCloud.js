@@ -105,6 +105,10 @@ class XCloud extends React.Component {
     }
   };
 
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', SessionStorage.del('uploadingItems'));
+  }
+
   handleChangeWorkspace = () => {
     const xTeam = Settings.getTeams();
     const xUser = Settings.getUser();
@@ -827,7 +831,7 @@ class XCloud extends React.Component {
       let fileNameExists = this.fileNameExists(file.name, file.type);
 
       if (parentFolderId === currentFolderId) {
-        this.setState({ currentCommanderItems: [...this.state.currentCommanderItems, file] });
+        this.setState({ currentCommanderItems: [...this.state.currentCommanderItems] });
 
         if (fileNameExists) {
           file.name = this.getNewName(file.name, file.type);

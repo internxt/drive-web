@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import async from 'async';
 import $ from 'jquery';
+import _ from 'lodash';
 
 import './FileCommander.scss';
 import FileCommanderItem from './FileCommanderItem';
@@ -41,12 +42,16 @@ class FileCommander extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (
-      this.props.currentCommanderItems !== prevProps.currentCommanderItems ||
+      this.props.currentCommanderItems.length !== prevProps.currentCommanderItems.length ||
       this.props.namePath !== prevProps.namePath ||
-      this.props.isTeam !== prevProps.isTeam
+      this.props.isTeam !== prevProps.isTeam || this.state.currentCommanderItems.length !== this.props.currentCommanderItems.length
     ) {
+      const itemsUploadings = [];
+
+      itemsUploadings.push(JSON.parse(SessionStorage.get('uploadingItems')).filter(item => item.currentFolderId === this.props.currentFolderId && item.type === 'file'));
+
       this.setState({
-        currentCommanderItems: this.props.currentCommanderItems,
+        currentCommanderItems: _.concat(...this.props.currentCommanderItems, ...itemsUploadings),
         namePath: this.props.namePath,
         isTeam: this.props.isTeam
       });
@@ -202,20 +207,23 @@ class FileCommander extends React.Component {
 
   setUploadingItemsSessionStorage = (entry, entryName) => {
     if (entry) {
-      const fileUploading = {
-        id: null,
-        type: entry.isFile ? 'file' : 'folder',
-        name: entryName,
-        isLoading: true,
-        currentFolderId: this.props.currentFolderId
-      };
-
       const values = JSON.parse(SessionStorage.get('uploadingItems'));
 
       if (values) {
-        values.push(fileUploading);
+        entryName.map((nameItem) => {
+          const fileUploading = {
+            id: null,
+            type: entry.isFile ? 'file' : 'folder',
+            name: nameItem,
+            isLoading: true,
+            currentFolderId: this.props.currentFolderId
+          };
 
-        SessionStorage.set('uploadingItems', JSON.stringify(values));
+          values.push(fileUploading);
+          console.log(values.length);
+          SessionStorage.set('uploadingItems', JSON.stringify(values));
+        });
+
       }
     }
   }
@@ -224,7 +232,7 @@ class FileCommander extends React.Component {
     e.preventDefault();
     let items = e.dataTransfer.items;
 
-    let nameEntry = '';
+    const nameEntry = [];
 
     async.map(
       items,
@@ -232,7 +240,7 @@ class FileCommander extends React.Component {
         let entry = item ? item.webkitGetAsEntry() : null;
 
         if (entry) {
-          nameEntry = entry.isFile ? entry.name.split('.').slice(0, -1).join('.') : entry.name;
+          nameEntry.push(entry.isFile ? entry.name.split('.').slice(0, -1).join('.') : entry.name);
 
           this.setUploadingItemsSessionStorage(entry, nameEntry);
 
@@ -270,11 +278,11 @@ class FileCommander extends React.Component {
 
         const itemsLists = JSON.parse(SessionStorage.get('uploadingItems'));
 
-        const removeItems = itemsLists.filter(item => item.name !== nameEntry);
+        const differenceItems = _.differenceBy([itemsLists], [nameEntry], 'name');
 
         SessionStorage.del('uploadingItems');
 
-        SessionStorage.set('uploadingItems', JSON.stringify(removeItems));
+        SessionStorage.set('uploadingItems', JSON.stringify(differenceItems));
 
         let idTeam = this.props.namePath[this.props.namePath.length - 1].id_team;
 

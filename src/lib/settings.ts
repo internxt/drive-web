@@ -57,5 +57,6 @@ export default class Settings {
     localStorage.removeItem('limitStorage');
     sessionStorage.removeItem('limitStorage');
     sessionStorage.removeItem('teamsStorage');
+    sessionStorage.removeItem('uploadingItems');
   }
 }

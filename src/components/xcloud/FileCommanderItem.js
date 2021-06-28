@@ -106,9 +106,8 @@ class FileCommanderItem extends React.Component {
     const itemsLists = JSON.parse(SessionStorage.get('uploadingItems'));
 
     const loadingItems = itemsLists.filter(item => this.state.itemName === item.name && item.type === 'file' && item.currentFolderId === this.props.currentFolderId);
-    const isLoadingFile = loadingItems.length !== 0 ? true : false;
 
-    return isLoadingFile;
+    return loadingItems.length !== 0 ? true : false;
 
   }
 
