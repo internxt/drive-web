@@ -1,6 +1,17 @@
 import Settings from './settings';
+import * as openpgp from 'openpgp';
 
-const openpgp = require('openpgp');
+export async function isValidBase64(key: string): Promise<boolean> {
+  const isPlain = await isValid(key);
+
+  return !isPlain;
+}
+
+export async function isValid(key: string): Promise<boolean> {
+  const keyResult = await openpgp.key.readArmored(key);
+
+  return !keyResult.err;
+}
 
 export async function decryptPGP(message: string) {
   // User settings
