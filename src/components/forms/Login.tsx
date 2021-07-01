@@ -14,6 +14,7 @@ import { decryptPGP } from '../../lib/utilspgp';
 import AesUtil from '../../lib/AesUtil';
 import { storeTeamsInfo } from '../../services/teams.service';
 import { generateNewKeys } from '../../services/pgp.service';
+import { validateFormat } from '../../services/keys.service';
 
 interface LoginProps {
   email?: string
@@ -196,15 +197,7 @@ class Login extends React.Component<LoginProps> {
         const publicKey = data.user.publicKey;
         const revocateKey = data.user.revocateKey;
 
-        let privkeyDecrypted;
-        let update = false;
-
-        try {
-          privkeyDecrypted = AesUtil.decrypt(privateKey, this.state.password);
-        } catch {
-          privkeyDecrypted = AesUtil.decrypt(privateKey, this.state.password, 9999);
-          update = true;
-        }
+        const { update, privkeyDecrypted, newPrivKey } = await validateFormat(privateKey, this.state.password);
 
         analytics.identify(data.user.uuid, {
           email: this.state.email,
@@ -219,7 +212,7 @@ class Login extends React.Component<LoginProps> {
           ...data.user,
           mnemonic: decryptTextWithKey(data.user.mnemonic, this.state.password),
           email: this.state.email,
-          privateKey: privkeyDecrypted,
+          privateKey: Buffer.from(privkeyDecrypted).toString('base64'),
           publicKey: publicKey,
           revocationKey: revocateKey
         };
@@ -233,8 +226,7 @@ class Login extends React.Component<LoginProps> {
         Settings.set('xUser', JSON.stringify(user));
 
         if (update) {
-          // if we are using custom iterations is because user has keys encrypted using the old way
-          await this.updateKeys();
+          await this.updateKeys(publicKey, newPrivKey, revocateKey);
         }
 
         if (user.teams) {
@@ -291,11 +283,12 @@ class Login extends React.Component<LoginProps> {
     });
   }
 
-  updateKeys() {
-    const { privateKey: privateKeyArmored, publicKey, revocationKey } = Settings.getUser();
-
-    const encPrivateKey = AesUtil.encrypt(privateKeyArmored, this.state.password);
-    const updatedKeys = { publicKey, privateKey: encPrivateKey, revocationKey };
+  updateKeys(newPublicKey, newPrivateKey, newRevocationKey) {
+    const updatedKeys = {
+      publicKey: newPublicKey,
+      privateKey: newPrivateKey,
+      revocationKey: newRevocationKey
+    };
 
     return fetch('/api/user/keys', {
       method: 'PATCH',
