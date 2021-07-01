@@ -31,7 +31,7 @@ const AesUtils = {
    * @param Buffer masterkey
    * @returns String encrypted text, base64 encoded
    */
-  encrypt(text: string, password: string, randomIv = false) {
+  encrypt(text: string, password: string, randomIv = false, hops = 2145) {
     const {
       REACT_APP_MAGIC_IV: MAGIC_IV,
       REACT_APP_MAGIC_SALT: MAGIC_SALT
@@ -51,7 +51,7 @@ const AesUtils = {
     // in assumption the masterkey is a cryptographic and NOT a password there is no need for
     // a large number of iterations. It may can replaced by HKDF
     // the value of 2145 is randomly chosen!
-    const key = crypto.pbkdf2Sync(password, salt, 2145, 32, 'sha512');
+    const key = crypto.pbkdf2Sync(password, salt, hops, 32, 'sha512');
 
     // AES 256 GCM Mode
     const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
