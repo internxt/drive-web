@@ -831,7 +831,7 @@ class XCloud extends React.Component {
       let fileNameExists = this.fileNameExists(file.name, file.type);
 
       if (parentFolderId === currentFolderId) {
-        this.setState({ currentCommanderItems: [...this.state.currentCommanderItems] });
+        this.setState({ currentCommanderItems: [...this.state.currentCommanderItems, file] });
 
         if (fileNameExists) {
           file.name = this.getNewName(file.name, file.type);

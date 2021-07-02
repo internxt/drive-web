@@ -42,13 +42,14 @@ class FileCommander extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (
-      this.props.currentCommanderItems.length !== prevProps.currentCommanderItems.length ||
+      this.props.currentCommanderItems !== prevProps.currentCommanderItems ||
       this.props.namePath !== prevProps.namePath ||
-      this.props.isTeam !== prevProps.isTeam || this.state.currentCommanderItems.length !== this.props.currentCommanderItems.length
+      this.props.isTeam !== prevProps.isTeam
     ) {
       const itemsUploadings = [];
 
-      itemsUploadings.push(JSON.parse(SessionStorage.get('uploadingItems')).filter(item => item.currentFolderId === this.props.currentFolderId && item.type === 'file'));
+      itemsUploadings.push(JSON.parse(SessionStorage.get('uploadingItems'))
+        .filter(item => item.currentFolderId === this.props.currentFolderId && item.type === 'file' && !this.props.currentCommanderItems.find(({ name }) => item.name === name)));
 
       this.setState({
         currentCommanderItems: _.concat(...this.props.currentCommanderItems, ...itemsUploadings),
