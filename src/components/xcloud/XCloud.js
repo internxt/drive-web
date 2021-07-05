@@ -122,11 +122,11 @@ class XCloud extends React.Component {
 
     if (this.state.isTeam) {
       this.setState({ namePath: [{ name: 'All files', id: xUser.root_folder_id }] }, () => {
-        this.getFolderContent(xUser.root_folder_id, false, true, false);
+        this.getFolderContent(xUser.root_folder_id, false, false, false);
       });
     } else {
       this.setState({ namePath: [{ name: 'All files', id: xTeam.root_folder_id }] }, () => {
-        this.getFolderContent(xTeam.root_folder_id, false, true, true);
+        this.getFolderContent(xTeam.root_folder_id, false, false, true);
       });
     }
 
@@ -225,7 +225,7 @@ class XCloud extends React.Component {
     // Set new sort function on state and call getFolderContent for refresh files list
     this.setState({ sortFunction: newSortFunc });
     console.log('getFolderContent 8');
-    this.getFolderContent(this.state.currentFolderId, false, true);
+    this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
   };
 
   setSearchFunction = (e) => {
@@ -241,7 +241,7 @@ class XCloud extends React.Component {
     }
     this.setState({ searchFunction: func });
     console.log('getFolderContent 9');
-    this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
+    this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
   };
 
   createFolder = () => {
@@ -267,7 +267,7 @@ class XCloud extends React.Component {
           platform: 'web'
         });
         console.log('getFolderContent 10');
-        this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
+        this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
       }).catch((err) => {
         if (err.includes('already exists')) {
           toast.warn('Folder with same name already exists');
@@ -371,7 +371,8 @@ class XCloud extends React.Component {
         isFolder: true
       });
 
-      this.setState({ currentCommanderItems: __currentCommanderItems });
+      this.setState({ currentCommanderItems: [...__currentCommanderItems] });
+
     } else {
       newFolderName = this.getNewName(newFolderName);
     }
@@ -404,7 +405,7 @@ class XCloud extends React.Component {
   openFolder = (e) => {
     return new Promise((resolve) => {
       console.log('getFolderContent 11');
-      this.getFolderContent(e, true, true, this.state.isTeam);
+      this.getFolderContent(e, true, false, this.state.isTeam);
       resolve();
     });
   };
@@ -533,7 +534,7 @@ class XCloud extends React.Component {
             platform: 'web'
           });
           console.log('getFolderContent 12');
-          this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
+          this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
         })
         .catch((error) => {
           console.log(`Error during folder customization. Error: ${error} `);
@@ -551,7 +552,7 @@ class XCloud extends React.Component {
             platform: 'web'
           });
           console.log('getFolderContent 13');
-          this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
+          this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
         })
         .catch((error) => {
           console.log(`Error during file customization. Error: ${error} `);
@@ -987,7 +988,7 @@ class XCloud extends React.Component {
         throw err;
       } else {
         console.log('getFolderContent 16');
-        this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
+        this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
       }
     });
   };
@@ -1027,7 +1028,7 @@ class XCloud extends React.Component {
 
   folderTraverseUp() {
     this.setState(this.popNamePath(), () => {
-      this.getFolderContent(_.last(this.state.namePath).id, false, true, this.state.isTeam);
+      this.getFolderContent(_.last(this.state.namePath).id, false, false, this.state.isTeam);
     });
   }
 

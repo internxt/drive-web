@@ -30,7 +30,7 @@ class FileCommander extends React.Component {
   constructor(props, state) {
     super(props, state);
     this.state = {
-      currentCommanderItems: this.props.currentCommanderItems,
+      currentCommanderItems: [...this.props.currentCommanderItems],
       namePath: this.props.namePath,
       selectedSortType: SORT_TYPES.DATE_ADDED,
       dragDropStyle: '',
@@ -211,20 +211,16 @@ class FileCommander extends React.Component {
       const values = JSON.parse(SessionStorage.get('uploadingItems'));
 
       if (values) {
-        entryName.map((nameItem) => {
-          const fileUploading = {
-            id: null,
-            type: entry.isFile ? 'file' : 'folder',
-            name: nameItem,
-            isLoading: true,
-            currentFolderId: this.props.currentFolderId
-          };
+        const fileUploading = {
+          id: null,
+          type: entry.isFile ? 'file' : 'folder',
+          name: entryName,
+          isLoading: true,
+          currentFolderId: this.props.currentFolderId
+        };
 
-          values.push(fileUploading);
-          console.log(values.length);
-          SessionStorage.set('uploadingItems', JSON.stringify(values));
-        });
-
+        values.push(fileUploading);
+        SessionStorage.set('uploadingItems', JSON.stringify(values));
       }
     }
   }
@@ -233,7 +229,7 @@ class FileCommander extends React.Component {
     e.preventDefault();
     let items = e.dataTransfer.items;
 
-    const nameEntry = [];
+    let nameEntry = '';
 
     async.map(
       items,
@@ -241,7 +237,7 @@ class FileCommander extends React.Component {
         let entry = item ? item.webkitGetAsEntry() : null;
 
         if (entry) {
-          nameEntry.push(entry.isFile ? entry.name.split('.').slice(0, -1).join('.') : entry.name);
+          nameEntry = (entry.isFile ? entry.name.split('.').slice(0, -1).join('.') : entry.name);
 
           this.setUploadingItemsSessionStorage(entry, nameEntry);
 
@@ -254,6 +250,16 @@ class FileCommander extends React.Component {
                   })
                   .catch((err) => {
                     nextItem(err);
+                  }).finally(() => {
+                    const itemsLists = JSON.parse(SessionStorage.get('uploadingItems'));
+
+                    const nameEntry = (entry.isFile ? entry.name.split('.').slice(0, -1).join('.') : entry.name);
+
+                    const filter = itemsLists.filter(item => item.name !== nameEntry);
+
+                    SessionStorage.del('uploadingItems');
+
+                    SessionStorage.set('uploadingItems', JSON.stringify(filter));
                   });
               } else {
                 toast.warn(
@@ -276,14 +282,6 @@ class FileCommander extends React.Component {
           }
           toast.warn(`"${errmsg}"`);
         }
-
-        const itemsLists = JSON.parse(SessionStorage.get('uploadingItems'));
-
-        const differenceItems = _.differenceBy([itemsLists], [nameEntry], 'name');
-
-        SessionStorage.del('uploadingItems');
-
-        SessionStorage.set('uploadingItems', JSON.stringify(differenceItems));
 
         let idTeam = this.props.namePath[this.props.namePath.length - 1].id_team;
 
@@ -387,7 +385,7 @@ class FileCommander extends React.Component {
   };
 
   render() {
-    const list = this.state.currentCommanderItems || 0;
+    const list = [...this.state.currentCommanderItems] || 0;
     const inRoot = this.state.namePath.length === 1;
 
     return (
@@ -482,6 +480,16 @@ class FileCommander extends React.Component {
         >
           {list.length > 0 ? (
             list.map((item, i) => {
+              const itemsUploadings = JSON.parse(SessionStorage.get('uploadingItems'));
+
+              let isDraggable = true;
+
+              itemsUploadings.forEach((itemUploading) => {
+                if (itemUploading.name === item.name) {
+                  isDraggable = false;
+                }
+              });
+
               return (
                 <FileCommanderItem
                   key={item.id + '-' + i}
@@ -506,7 +514,7 @@ class FileCommander extends React.Component {
                   selectHandler={this.props.selectItems}
                   isLoading={!!item.isLoading}
                   isDownloading={!!item.isDownloading}
-                  isDraggable={item.isDraggable === false ? false : true}
+                  isDraggable={isDraggable}
                   move={this.props.move}
                   updateMeta={this.props.updateMeta}
                   hasParentFolder={!inRoot}
