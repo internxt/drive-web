@@ -405,7 +405,7 @@ class XCloud extends React.Component {
   openFolder = (e) => {
     return new Promise((resolve) => {
       console.log('getFolderContent 11');
-      this.getFolderContent(e, true, false, this.state.isTeam);
+      this.getFolderContent(e, true, true, this.state.isTeam);
       resolve();
     });
   };
