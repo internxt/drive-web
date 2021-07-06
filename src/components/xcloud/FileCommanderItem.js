@@ -124,7 +124,7 @@ class FileCommanderItem extends React.Component {
     const folderLoading = this.checkIsUploadingFolder();
     const fileLoading = this.checkIsUploadingFile();
 
-    if (!this.state.isLoading || !folderLoading || !fileLoading) {
+    if (!this.props.isLoading || !folderLoading || !fileLoading) {
       this.setState({ itemName: event.target.value });
     }
     if (this.state.isDownloading || !fileLoading) {
@@ -270,17 +270,17 @@ class FileCommanderItem extends React.Component {
   };
 
   getFileIcon = () => {
-    const iconLoading = this.checkIsUploadingFile();
+    const fileLoading = this.checkIsUploadingFile();
 
     return (
       <div className="iconContainer fileIconContainer">
         <div className="type">
           <span className="extension">
-            {!this.state.isLoading && !this.state.isDownloading && !iconLoading ? this.props.type : ''}
+            {!this.props.isLoading && !this.state.isDownloading && !fileLoading ? this.props.type : ''}
           </span>
           {this.state.progress > 0 ? <ProgressBar className="download-pb" now={this.state.progress} /> : ''}
         </div>
-        {this.state.isLoading || this.state.isDownloading || iconLoading ? <ActivityIndicator /> : ''}
+        {this.props.isLoading || this.state.isDownloading || fileLoading ? <ActivityIndicator /> : ''}
       </div>
     );
   };

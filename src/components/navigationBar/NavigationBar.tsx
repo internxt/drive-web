@@ -74,7 +74,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
       <HeaderButton icon={newFolder} name="New folder" clickHandler={this.props.createFolder} />
       <HeaderButton icon={deleteFile} name="Delete" clickHandler={this.props.deleteItems} />
       <HeaderButton icon={share} name="Share" clickHandler={this.props.shareItem} />
-      <input id="uploadFileControl" type="file" onChange={this.props.uploadHandler} multiple={true} />
+      <input id="uploadFileControl" type="file" onChange={this.props.uploadHandler} multiple={false} />
       {xTeam && <HeaderButton icon={this.props.isTeam ? personalIcon : teamsIcon} name="Team" clickHandler={this.handleChangeWorkspace.bind(this)} />}
     </Nav>;
   }

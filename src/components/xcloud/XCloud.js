@@ -27,6 +27,7 @@ import Settings from '../../lib/settings';
 import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
 import SessionStorage from '../../lib/sessionStorage';
+import { getLimit } from '../../services/storage.service';
 
 class XCloud extends React.Component {
 
@@ -79,6 +80,11 @@ class XCloud extends React.Component {
           history.push('/login');
         });
       } else {
+        getLimit(false).then((limitStorage) => {
+          if (limitStorage) {
+            SessionStorage.set('limitStorage', limitStorage);
+          }
+        });
         console.log('getFolderContent 4');
         storeTeamsInfo().finally(() => {
           if (Settings.exists('xTeam') && !this.state.isTeam && Settings.get('workspace') === 'teams') {
@@ -804,7 +810,7 @@ class XCloud extends React.Component {
     }
   };
 
-  handleUploadFiles = async (files, parentFolderId, folderPath = null) => {
+  handleUploadFiles = async (files, filesSessionStorageNotDropped = null, alreadyExists = false, parentFolderId = null, folderPath = null) => {
     files = Array.from(files);
 
     const filesToUpload = [];
@@ -832,7 +838,11 @@ class XCloud extends React.Component {
       let fileNameExists = this.fileNameExists(file.name, file.type);
 
       if (parentFolderId === currentFolderId) {
-        this.setState({ currentCommanderItems: [...this.state.currentCommanderItems, file] });
+        if (!alreadyExists) {
+          this.setState({ currentCommanderItems: [...this.state.currentCommanderItems, file] });
+        } else {
+          this.setState({ currentCommanderItems: [...this.state.currentCommanderItems] });
+        }
 
         if (fileNameExists) {
           file.name = this.getNewName(file.name, file.type);
@@ -872,11 +882,15 @@ class XCloud extends React.Component {
               const index = this.state.currentCommanderItems.findIndex((obj) => obj.name === file.name);
               const filesInFileExplorer = [...this.state.currentCommanderItems];
 
-              filesInFileExplorer[index].isLoading = false;
-              filesInFileExplorer[index].fileId = data.fileId;
-              filesInFileExplorer[index].id = data.id;
+              if (filesInFileExplorer[index] !== undefined) {
+                filesInFileExplorer[index].isLoading = false;
+                filesInFileExplorer[index].fileId = data.fileId;
+                filesInFileExplorer[index].id = data.id;
 
-              this.setState({ currentCommanderItems: filesInFileExplorer });
+                this.setState({ currentCommanderItems: filesInFileExplorer });
+              } else {
+                this.setState({ currentCommanderItems: [...this.state.currentCommanderItems] });
+              }
             }
 
             if (res.status === 402) {
@@ -892,6 +906,16 @@ class XCloud extends React.Component {
           }).finally(() => {
             if (rateLimited) {
               return nextFile(Error('Rate limited'));
+            }
+
+            if (filesSessionStorageNotDropped !== null) {
+              const itemsLists = JSON.parse(SessionStorage.get('uploadingItems'));
+
+              const filter = itemsLists.filter(item => !filesSessionStorageNotDropped.find(({ name }) => item.name === name));
+
+              SessionStorage.del('uploadingItems');
+
+              SessionStorage.set('uploadingItems', JSON.stringify(filter));
             }
             nextFile(null);
           });
@@ -923,14 +947,38 @@ class XCloud extends React.Component {
     this.setState({ currentCommanderItems: Array.from(this.state.currentCommanderItems).splice(index, 1) });
   }
 
+  setSessionStorageUploadingFile = (e) => {
+    const files = Array.from(e.target.files);
+
+    files.forEach((file) => {
+      const values = JSON.parse(SessionStorage.get('uploadingItems'));
+
+      if (values) {
+        const fileUploading = {
+          id: null,
+          type: 'file',
+          name: file.name,
+          isLoading: true,
+          currentFolderId: this.state.currentFolderId
+        };
+
+        values.push(fileUploading);
+        SessionStorage.set('uploadingItems', JSON.stringify(values));
+      }
+    });
+    return files;
+  }
+
   uploadFile = (e) => {
-    this.handleUploadFiles(e.target.files).then(() => {
+    const filesSessionStorageNotDropped = this.setSessionStorageUploadingFile(e);
+
+    this.handleUploadFiles(e.target.files, filesSessionStorageNotDropped, true).then(() => {
       this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
     });
   }
 
   uploadDroppedFile = (e, uuid, folderPath) => {
-    return this.handleUploadFiles(e, uuid, folderPath);
+    return this.handleUploadFiles(e, null, false, uuid, folderPath);
   }
 
   shareItem = () => {

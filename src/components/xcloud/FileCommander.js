@@ -484,9 +484,12 @@ class FileCommander extends React.Component {
 
               let isDraggable = true;
 
+              let isUploading = false;
+
               itemsUploadings.forEach((itemUploading) => {
                 if (itemUploading.name === item.name) {
                   isDraggable = false;
+                  isUploading = true;
                 }
               });
 
@@ -512,7 +515,7 @@ class FileCommander extends React.Component {
 
                   }
                   selectHandler={this.props.selectItems}
-                  isLoading={!!item.isLoading}
+                  isLoading={isUploading}
                   isDownloading={!!item.isDownloading}
                   isDraggable={isDraggable}
                   move={this.props.move}
@@ -522,7 +525,7 @@ class FileCommander extends React.Component {
                   isSelected={item.isSelected}
                   handleExternalDrop={this.handleDrop}
                   handleDragStart={this.handleDragStart}
-                  currentFolderId={this.state.currentFolderId}
+                  currentFolderId={this.props.currentFolderId}
                 />
               );
             })
