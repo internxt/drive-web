@@ -484,12 +484,9 @@ class FileCommander extends React.Component {
 
               let isDraggable = true;
 
-              let isUploading = false;
-
               itemsUploadings.forEach((itemUploading) => {
                 if (itemUploading.name === item.name) {
                   isDraggable = false;
-                  isUploading = true;
                 }
               });
 
@@ -515,7 +512,7 @@ class FileCommander extends React.Component {
 
                   }
                   selectHandler={this.props.selectItems}
-                  isLoading={isUploading}
+                  isLoading={!!item.isLoading}
                   isDownloading={!!item.isDownloading}
                   isDraggable={isDraggable}
                   move={this.props.move}

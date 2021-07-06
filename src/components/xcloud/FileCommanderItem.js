@@ -276,11 +276,11 @@ class FileCommanderItem extends React.Component {
       <div className="iconContainer fileIconContainer">
         <div className="type">
           <span className="extension">
-            {!this.props.isLoading && !this.state.isDownloading && !fileLoading ? this.props.type : ''}
+            {!this.state.isLoading && !this.state.isDownloading && !fileLoading ? this.props.type : ''}
           </span>
           {this.state.progress > 0 ? <ProgressBar className="download-pb" now={this.state.progress} /> : ''}
         </div>
-        {this.props.isLoading || this.state.isDownloading || fileLoading ? <ActivityIndicator /> : ''}
+        {this.state.isLoading || this.state.isDownloading || fileLoading ? <ActivityIndicator /> : ''}
       </div>
     );
   };
