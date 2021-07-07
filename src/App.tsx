@@ -5,7 +5,6 @@ import './App.scss';
 import Login from './components/forms/Login';
 import Remove from './components/forms/Remove';
 import New from './components/forms/New';
-import XCloud from './components/xcloud/XCloud';
 import Activation from './components/forms/Activation';
 import NotFound from './NotFound';
 import Deactivation from './components/forms/Deactivation';
@@ -23,6 +22,8 @@ import DeactivationTeams from './components/forms/DeactivationTeam';
 import { analytics, PATH_NAMES } from './lib/analytics';
 import Success from './components/teams/Success';
 import localStorageService from './services/localStorage.service';
+
+import XCloud from './views/XCloud/XCloud';
 
 class App extends React.Component {
   state = {

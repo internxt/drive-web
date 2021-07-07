@@ -2,13 +2,14 @@ import * as React from 'react';
 import $ from 'jquery';
 import PrettySize from 'prettysize';
 import { Dropdown, ToggleButton, ToggleButtonGroup, ProgressBar } from 'react-bootstrap';
-import './FileCommanderItem.scss';
-import Icon from '../../assets/Icon';
-import ActivityIndicator from '../ActivityIndicator';
 import SanitizeFilename from 'sanitize-filename';
 import TimeAgo from 'react-timeago';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+import './FileCommanderItem.scss';
+import Icon from '../../../assets/Icon';
+import ActivityIndicator from '../../ActivityIndicator';
 
 class FileCommanderItem extends React.Component {
   constructor(props, state) {
