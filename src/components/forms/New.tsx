@@ -4,7 +4,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import AesUtil from '../../lib/AesUtil';
 
 import history from '../../lib/history';
-import Settings from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
 
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
@@ -61,8 +61,8 @@ class New extends React.Component<NewProps, NewState> {
     const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
 
     if (hasTokenParam && typeof hasTokenParam === 'string') {
-      Settings.clear();
-      Settings.set('xToken', hasTokenParam);
+      localStorageService.clear();
+      localStorageService.set('xToken', hasTokenParam);
       history.replace(history.location.pathname);
     }
 
@@ -94,9 +94,9 @@ class New extends React.Component<NewProps, NewState> {
       });
     }
 
-    const xUser = Settings.getUser();
-    const xToken = Settings.get('xToken');
-    const mnemonic = Settings.get('xMnemonic');
+    const xUser = localStorageService.getUser();
+    const xToken = localStorageService.get('xToken');
+    const mnemonic = localStorageService.get('xMnemonic');
     const haveInfo = (xUser && xToken && mnemonic);
 
     if (xUser.registerCompleted && (this.state.isAuthenticated === true || haveInfo)) {
@@ -207,15 +207,15 @@ class New extends React.Component<NewProps, NewState> {
             }
           });
 
-          Settings.set('xToken', token);
+          localStorageService.set('xToken', token);
           user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.register.password);
-          Settings.set('xUser', JSON.stringify(user));
-          Settings.set('xMnemonic', user.mnemonic);
+          localStorageService.set('xUser', JSON.stringify(user));
+          localStorageService.set('xMnemonic', user.mnemonic);
 
           return initializeUser(this.state.register.email, user.mnemonic).then((rootFolderInfo) => {
             user.root_folder_id = rootFolderInfo.user.root_folder_id;
             user.bucket = rootFolderInfo.user.bucket;
-            Settings.set('xUser', JSON.stringify(user));
+            localStorageService.set('xUser', JSON.stringify(user));
             history.push('/login');
           });
         });
@@ -287,9 +287,9 @@ class New extends React.Component<NewProps, NewState> {
 
       return initializeUser(this.state.register.email, xUser.mnemonic).then((rootFolderInfo) => {
         xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
-        Settings.set('xToken', xToken);
-        Settings.set('xMnemonic', mnemonic);
-        Settings.set('xUser', JSON.stringify(xUser));
+        localStorageService.set('xToken', xToken);
+        localStorageService.set('xMnemonic', mnemonic);
+        localStorageService.set('xUser', JSON.stringify(xUser));
       });
     });
 

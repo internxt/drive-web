@@ -1,5 +1,5 @@
 import { getHeaders } from '../lib/auth';
-import Settings from '../lib/settings';
+import localStorageService from '../services/localStorage.service';
 import { decryptPGP } from '../lib/utilspgp';
 
 export async function getTeamsInfo() {
@@ -35,10 +35,10 @@ export async function storeTeamsInfo() {
 
     userTeam.bridge_mnemonic = mnemonic.data;
 
-    Settings.set('xTeam', JSON.stringify(userTeam));
-    Settings.set('xTokenTeam', tokenTeams);
+    localStorageService.set('xTeam', JSON.stringify(userTeam));
+    localStorageService.set('xTokenTeam', tokenTeams);
   } else {
-    Settings.del('xTeam');
-    Settings.del('xTokenTeam');
+    localStorageService.del('xTeam');
+    localStorageService.del('xTokenTeam');
   }
 }

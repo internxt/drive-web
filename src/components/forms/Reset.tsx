@@ -1,5 +1,5 @@
 import React from 'react';
-import Settings from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
 import { Container } from 'react-bootstrap';
 import './Login.scss';
 import './Reset.scss';
@@ -63,7 +63,7 @@ class Reset extends React.Component<ResetProps> {
 
     // Encrypt the mnemonic
     const encryptedMnemonic = encryptTextWithKey(localStorage.xMnemonic, this.state.newPassword);
-    const privateKey = Buffer.from(Settings.getUser().privateKey, 'base64').toString();
+    const privateKey = Buffer.from(localStorageService.getUser().privateKey, 'base64').toString();
     const privateKeyEncrypted = AesFunctions.encrypt(privateKey, this.state.newPassword);
 
     fetch('/api/user/password', {
@@ -103,7 +103,7 @@ class Reset extends React.Component<ResetProps> {
   }
 
   getSalt = () => {
-    const email = Settings.getUser().email;
+    const email = localStorageService.getUser().email;
 
     return fetch('/api/login', {
       method: 'post',

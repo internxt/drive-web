@@ -21,8 +21,9 @@ import Teams from './components/forms/Teams';
 import JoinTeam from './components/forms/JoinTeam';
 import DeactivationTeams from './components/forms/DeactivationTeam';
 import { analytics, PATH_NAMES } from './lib/analytics';
-import Settings from './lib/settings';
 import Success from './components/teams/Success';
+import localStorageService from './services/localStorage.service';
+
 class App extends React.Component {
   state = {
     token: '',
@@ -32,7 +33,7 @@ class App extends React.Component {
   }
 
   handleKeySaved = (user: JSON) => {
-    Settings.set('xUser', JSON.stringify(user));
+    localStorageService.set('xUser', JSON.stringify(user));
     this.setState({ isAuthenticated: true, user: user });
   }
 

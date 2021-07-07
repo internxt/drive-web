@@ -14,7 +14,7 @@ import './Teams.scss';
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 import Popup from 'reactjs-popup';
 import { encryptPGPInvitations } from '../../lib/utilspgp';
-import Settings from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
 import { getKeys } from '../../services/teams.service';
 import trash from '../../assets/Dashboard-Icons/trash.svg';
 
@@ -113,7 +113,7 @@ class Teams extends React.Component<Props, State> {
       history.push('/login');
     }
 
-    if (Settings.exists('xTeam')) {
+    if (localStorageService.exists('xTeam')) {
       this.setState({ template: this.renderTeamSettings.bind(this) });
     } else {
       this.setState({ template: this.renderPlans.bind(this) });
@@ -136,7 +136,7 @@ class Teams extends React.Component<Props, State> {
 
     const key = await getKeys(mail);
 
-    const xTeam = Settings.getTeams();
+    const xTeam = localStorageService.getTeams();
     //Datas
     const bridgePass = xTeam.bridge_password;
     const mnemonicTeam = xTeam.bridge_mnemonic;

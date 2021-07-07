@@ -1,4 +1,4 @@
-import Settings from './settings';
+import localStorageService from '../services/localStorage.service';
 
 const prettySize = require('prettysize');
 
@@ -12,7 +12,7 @@ export const PATH_NAMES = {
 };
 
 export function getUserData() {
-  return Settings.getUser();
+  return localStorageService.getUser();
 }
 
 export function getUuid() {

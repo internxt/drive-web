@@ -17,7 +17,7 @@ import HeaderButton from './HeaderButton';
 import './NavigationBar.scss';
 import history from '../../lib/history';
 
-import Settings from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
 import SettingsMenu from './SettingsMenu';
 
 interface NavigationBarProps {
@@ -61,7 +61,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
   }
 
   getNavBarItems(isTeam: boolean) {
-    const xTeam = Settings.exists('xTeam');
+    const xTeam = localStorageService.exists('xTeam');
 
     return <Nav className="m-auto">
       <div className="top-bar">
@@ -80,8 +80,8 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
   }
 
   componentDidMount() {
-    if (Settings.exists('xTeam')) {
-      const admin = Settings.getTeams().isAdmin;
+    if (localStorageService.exists('xTeam')) {
+      const admin = localStorageService.getTeams().isAdmin;
 
       this.setState({ isAdmin: !!admin });
     } else {
@@ -90,7 +90,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     let user: string;
 
     try {
-      user = Settings.getUser().email;
+      user = localStorageService.getUser().email;
       if (user == null) {
         throw new Error();
       }
@@ -114,8 +114,8 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         workspace: this.props.isTeam ? 'Team workspace' : 'My workspace'
       });
     }
-    if (Settings.exists('xTeam') && Settings.exists('teamActivation')) {
-      Settings.del('teamActivation');
+    if (localStorageService.exists('xTeam') && localStorageService.exists('teamActivation')) {
+      localStorageService.del('teamActivation');
       this.setState({
         navbarItems: this.getNavBarItems(this.props.isTeam)
       });

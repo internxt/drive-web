@@ -5,7 +5,7 @@ import { isMobile, isAndroid, isIOS } from 'react-device-detect';
 import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Settings from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
 
 interface RemoveProps {
     match?: any
@@ -46,9 +46,9 @@ class Remove extends React.Component<RemoveProps, RemoveState> {
       }
     }
 
-    const xUser = Settings.getUser();
-    const xToken = Settings.get('xToken');
-    const mnemonic = Settings.get('xMnemonic');
+    const xUser = localStorageService.getUser();
+    const xToken = localStorageService.get('xToken');
+    const mnemonic = localStorageService.get('xMnemonic');
     const haveInfo = (xUser && xToken && mnemonic);
 
     if (this.state.isAuthenticated === true || haveInfo) {

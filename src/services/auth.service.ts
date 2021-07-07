@@ -1,5 +1,5 @@
 import { getHeaders } from '../lib/auth';
-import Settings from '../lib/settings';
+import localStorageService from '../services/localStorage.service';
 
 export async function initializeUser(email: string, mnemonic: string) {
   return fetch('/api/initialize', {
@@ -18,9 +18,9 @@ export async function initializeUser(email: string, mnemonic: string) {
 }
 
 export function isUserSignedIn() {
-  const xUser = Settings.get('xUser');
-  const xMnemonic = Settings.get('xMnemonic');
-  const xToken = Settings.get('xToken');
+  const xUser = localStorageService.get('xUser');
+  const xMnemonic = localStorageService.get('xMnemonic');
+  const xToken = localStorageService.get('xToken');
 
   return xUser && xMnemonic && xToken;
 }

@@ -22,7 +22,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { getUserData } from '../../lib/analytics';
-import Settings from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
 
 import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
@@ -79,13 +79,13 @@ class XCloud extends React.Component {
       } else {
         console.log('getFolderContent 4');
         storeTeamsInfo().finally(() => {
-          if (Settings.exists('xTeam') && !this.state.isTeam && Settings.get('workspace') === 'teams') {
+          if (localStorageService.exists('xTeam') && !this.state.isTeam && localStorageService.get('workspace') === 'teams') {
             this.handleChangeWorkspace();
           } else {
             this.getFolderContent(this.props.user.root_folder_id);
             this.setState({ currentFolderId: this.props.user.root_folder_id });
           }
-          const team = Settings.getTeams();
+          const team = localStorageService.getTeams();
 
           if (team && !team.root_folder_id) {
             this.setState({ currentFolderId: this.props.user.root_folder_id });
@@ -93,7 +93,7 @@ class XCloud extends React.Component {
 
           this.setState({ isInitialized: true });
         }).catch(() => {
-          Settings.del('xTeam');
+          localStorageService.del('xTeam');
           this.setState({
             isTeam: false
           });
@@ -104,10 +104,10 @@ class XCloud extends React.Component {
   };
 
   handleChangeWorkspace = () => {
-    const xTeam = Settings.getTeams();
-    const xUser = Settings.getUser();
+    const xTeam = localStorageService.getTeams();
+    const xUser = localStorageService.getUser();
 
-    if (!Settings.exists('xTeam')) {
+    if (!localStorageService.exists('xTeam')) {
       toast.warn('You cannot access the team');
       this.setState({
         isTeam: false
@@ -127,7 +127,7 @@ class XCloud extends React.Component {
     const isTeam = !this.state.isTeam;
 
     this.setState({ isTeam: isTeam }, () => {
-      Settings.set('workspace', isTeam ? 'teams' : 'individual');
+      localStorageService.set('workspace', isTeam ? 'teams' : 'individual');
     });
   }
 
@@ -138,7 +138,7 @@ class XCloud extends React.Component {
         headers: getHeaders(true, true),
         body: JSON.stringify({
           email: this.props.user.email,
-          mnemonic: Settings.get('xMnemonic')
+          mnemonic: localStorageService.get('xMnemonic')
         })
       }).then((response) => {
         if (response.status === 200) {
@@ -504,7 +504,7 @@ class XCloud extends React.Component {
     })
       .catch((err) => {
         if (err.status === 401) {
-          Settings.clear();
+          localStorageService.clear();
           history.push('/login');
         }
       });
@@ -746,7 +746,7 @@ class XCloud extends React.Component {
         });
 
         toast.warn('Login again to start uploading files');
-        Settings.clear();
+        localStorageService.clear();
         history.push('/login');
         return;
       }

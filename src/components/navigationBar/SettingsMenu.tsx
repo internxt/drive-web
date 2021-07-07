@@ -7,7 +7,8 @@ import history from '../../lib/history';
 import { getUserData } from '../../lib/analytics';
 import customPrettySize from '../../lib/sizer';
 import account from '../../assets/Dashboard-Icons/Account.svg';
-import Settings, { UserSettings } from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
+import { UserSettings } from '../../lib/settings';
 import SessionStorage from '../../lib/sessionStorage';
 import { getHeaders } from '../../lib/auth';
 import { getLimit } from '../../services/storage.service';
@@ -47,7 +48,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
     if (teamsStorage) {
       setBarLimitTeams(parseInt(teamsStorage, 10));
     } else {
-      if (Settings.get('xTeam')) {
+      if (localStorageService.get('xTeam')) {
         getLimit(true).then((teamsStorage) => {
           if (teamsStorage) {
             SessionStorage.set('teamsStorage', teamsStorage);
@@ -84,13 +85,13 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
     fetchUsage().then();
   }, [barUsage, isTeam]);
 
-  const isAdmin = Settings.getTeams().isAdmin;
-  const xTeam = Settings.exists('xTeam');
+  const isAdmin = localStorageService.getTeams().isAdmin;
+  const xTeam = localStorageService.exists('xTeam');
 
   let user: UserSettings | null = null;
 
   try {
-    user = Settings.getUser();
+    user = localStorageService.getUser();
     if (user == null) {
       throw new Error();
     }
@@ -177,8 +178,8 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
             window.analytics.track('user-signout', {
               email: getUserData().email
             });
-            Settings.clear();
-            Settings.del('workspace');
+            localStorageService.clear();
+            localStorageService.del('workspace');
             history.push('/login');
           }}>Sign out</Dropdown.Item>
         </div>

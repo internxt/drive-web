@@ -3,7 +3,7 @@ import { Button, Container, Dropdown, DropdownButton, Form } from 'react-bootstr
 import NavigationBar from './navigationBar/NavigationBar';
 import './Referred.scss';
 import { getHeaders } from '../lib/auth';
-import Settings from '../lib/settings';
+import localStorageService from '../services/localStorage.service';
 
 import twitter from '../assets/Share-Icons/Twitter.svg';
 import facebook from '../assets/Share-Icons/Facebook.svg';
@@ -30,7 +30,7 @@ class Referred extends React.Component {
     }
 
     componentDidMount() {
-      const user = Settings.getUser();
+      const user = localStorageService.getUser();
 
       this.getCredit();
       this.setState({ textToCopy: `https://internxt.com/?ref=${user.uuid}` });
@@ -122,10 +122,10 @@ class Referred extends React.Component {
     }
 
     render() {
-      const user = Settings.getUser();
+      const user = localStorageService.getUser();
 
       return <div>
-        <NavigationBar navbarItems={<h5>Referrals</h5>} showSettingsButton={true} />
+        <NavigationBar navbarItems={<h5>Referrals</h5>} showlocalStorageServiceButton={true} />
         <div className="Referred">
           <Container className="referred-box p-5">
             <div className="referred-title">Earn money by referring friends</div>

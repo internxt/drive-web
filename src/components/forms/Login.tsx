@@ -8,7 +8,7 @@ import { encryptText, decryptText, passToHash, decryptTextWithKey } from '../../
 import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Settings from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
 import { analytics } from '../../lib/analytics';
 import { decryptPGP } from '../../lib/utilspgp';
 import AesUtil from '../../lib/AesUtil';
@@ -38,8 +38,8 @@ class Login extends React.Component<LoginProps> {
 
   componentDidMount() {
     // Check if recent login is passed and redirect user to Internxt Drive
-    const mnemonic = Settings.get('xMnemonic');
-    const user = Settings.getUser();
+    const mnemonic = localStorageService.get('xMnemonic');
+    const user = localStorageService.getUser();
     // const xKeys = localStorage.getItem('xKeys');
     // const xKeyPublic = localStorage.getItem('xKeyPublic');
 
@@ -53,7 +53,7 @@ class Login extends React.Component<LoginProps> {
 
   componentDidUpdate() {
     if (this.state.isAuthenticated && this.state.token && this.state.user) {
-      const mnemonic = Settings.get('xMnemonic');
+      const mnemonic = localStorageService.get('xMnemonic');
 
       if (!this.state.registerCompleted) {
         history.push('/appsumo/' + this.state.email);
@@ -221,9 +221,9 @@ class Login extends React.Component<LoginProps> {
           this.props.handleKeySaved(user);
         }
 
-        Settings.set('xToken', data.token);
-        Settings.set('xMnemonic', user.mnemonic);
-        Settings.set('xUser', JSON.stringify(user));
+        localStorageService.set('xToken', data.token);
+        localStorageService.set('xMnemonic', user.mnemonic);
+        localStorageService.set('xUser', JSON.stringify(user));
 
         if (update) {
           await this.updateKeys(publicKey, newPrivKey, revocateKey);
@@ -247,8 +247,8 @@ class Login extends React.Component<LoginProps> {
             isAdmin: data.userTeam.isAdmin
           };
 
-          Settings.set('xTeam', JSON.stringify(team));
-          Settings.set('xTokenTeam', data.tokenTeam);
+          localStorageService.set('xTeam', JSON.stringify(team));
+          localStorageService.set('xTokenTeam', data.tokenTeam);
         }
 
         window.analytics.identify(data.user.uuid, {
