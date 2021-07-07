@@ -300,10 +300,10 @@ class DealifyRegister extends React.Component<NewProps, NewState> {
   registerContainer() {
     return <div className="container-register">
       <p className="container-title">Create an Internxt account</p>
-      <div className="menu-box">
+      <div className="menu-box-dealify">
         <button className="on">Create account</button>
       </div>
-      <Form className="form-register" onSubmit={(e: any) => {
+      <Form onSubmit={(e: any) => {
         e.preventDefault();
 
         if (this.validateRegisterFormPart1()) {
@@ -343,9 +343,9 @@ class DealifyRegister extends React.Component<NewProps, NewState> {
               value={this.state && this.state.register.coupon} />
           </Form.Group>
         </Form.Row>
-        <Form.Row className="form-register-submit">
+        <Form.Row>
           <Form.Group as={Col}>
-            <button className="on btn-block" type="submit" disabled={!this.validateRegisterFormPart1()}>Continue</button>
+            <button className="on btn-block" style={{ marginTop: '0.5rem' }} type="submit" disabled={!this.validateRegisterFormPart1()}>Continue</button>
           </Form.Group>
         </Form.Row>
       </Form>

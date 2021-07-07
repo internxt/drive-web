@@ -30,7 +30,7 @@
   border: solid 1px #eaeced;
   border-radius: 6px;
   padding: 40px !important;
-  height: 460px;
+  height: 500px;
 
   @media (max-width: 415px) {
     align-self: center;
@@ -168,6 +168,11 @@ a:active {
 .menu-box {
   margin-bottom: 21px;
   margin-top: 20px;
+  padding: 0;
+}
+
+.menu-box-dealify {
+  margin-bottom: 31px;
   padding: 0;
 }
 
