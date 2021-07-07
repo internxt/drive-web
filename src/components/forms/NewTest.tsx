@@ -136,10 +136,6 @@ class New extends React.Component<NewProps, NewState> {
       isValid = false;
     }
 
-    if (!this.state.register.coupon) {
-      isValid = false;
-    }
-
     return isValid;
   }
 
@@ -193,7 +189,7 @@ class New extends React.Component<NewProps, NewState> {
         password: encPass,
         mnemonic: encMnemonic,
         salt: encSalt,
-        referral: this.readReferalCookie(),
+        referral: this.state.register.coupon,
         privateKey: encPrivateKey,
         publicKey: codpublicKey,
         revocationKey: codrevocationKey,
@@ -342,7 +338,7 @@ class New extends React.Component<NewProps, NewState> {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="coupon">
-            <Form.Control placeholder="Coupon" required
+            <Form.Control placeholder="Dealify coupon" type="text" required
               onChange={this.handleChangeRegister}
               value={this.state && this.state.register.coupon} />
           </Form.Group>
@@ -462,7 +458,7 @@ class New extends React.Component<NewProps, NewState> {
 
   render() {
     return (<div className="login-main">
-      <Container className="login-container-box">
+      <Container className='login-container-box'>
         {this.state.currentContainer === CONTAINERS.RegisterContainer ? this.registerContainer() : ''}
         {this.state.currentContainer === CONTAINERS.PrivacyTermsContainer ? this.privacyContainer() : ''}
         {this.state.currentContainer === CONTAINERS.PasswordContainer ? this.passwordContainer() : ''}

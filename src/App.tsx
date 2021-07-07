@@ -64,7 +64,7 @@ class App extends React.Component {
             render={(props: any) => <New {...props}
               isNewUser={true}
               isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
-          <Route exact path='/testnew'
+          <Route exact path='/dealify'
             render={(props: any) => <NewTest {...props}
               isNewUser={true}
               isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
