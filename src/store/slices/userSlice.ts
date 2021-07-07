@@ -1,29 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { UserSettings } from '../../models/interfaces';
 
 interface UserState {
-  value: number
+  user?: UserSettings
 };
 
 const initialState: UserState = {
-  value: 0,
+  user: undefined
 };
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    increment: (state) => {
-      state.value += 1
-    },
-    decrement: (state) => {
-      state.value -= 1
-    },
-    incrementByAmount: (state, action: PayloadAction<number>) => {
-      state.value += action.payload
-    },
-  },
+  reducers: { },
 });
 
-export const { increment, decrement, incrementByAmount } = userSlice.actions;
+export const { } = userSlice.actions;
 
 export default userSlice.reducer

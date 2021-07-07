@@ -8,10 +8,10 @@ import { getUserData } from '../../lib/analytics';
 import customPrettySize from '../../lib/sizer';
 import account from '../../assets/Dashboard-Icons/Account.svg';
 import localStorageService from '../../services/localStorage.service';
-import { UserSettings } from '../../lib/settings';
 import SessionStorage from '../../lib/sessionStorage';
 import { getHeaders } from '../../lib/auth';
 import { getLimit } from '../../services/storage.service';
+import { UserSettings } from '../../models/interfaces';
 
 interface SettingMenuProp {
   isTeam: boolean,

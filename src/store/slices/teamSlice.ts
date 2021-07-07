@@ -1,8 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { TeamsSettings } from '../../models/interfaces';
 
-interface TeamSlice {};
+interface TeamSlice {
+  team?: TeamsSettings
+};
 
-const initialState: TeamSlice = {};
+const initialState: TeamSlice = {
+  team: undefined
+};
 
 export const teamSlice = createSlice({
   name: 'team',

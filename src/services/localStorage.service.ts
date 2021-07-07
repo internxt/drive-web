@@ -1,4 +1,4 @@
-import { UserSettings, TeamsSettings } from '../lib/settings';
+import { UserSettings, TeamsSettings } from '../models/interfaces';
 
 function get(key: string): string | null {
   return localStorage.getItem(key);
@@ -35,7 +35,7 @@ function clear() {
   sessionStorage.removeItem('teamsStorage');
 }
 
-export default {
+const localStorageService = {
   set,
   get,
   getUser,
@@ -44,3 +44,5 @@ export default {
   exists,
   clear
 };
+
+export default localStorageService;
