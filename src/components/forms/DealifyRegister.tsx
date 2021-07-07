@@ -50,7 +50,7 @@ const CONTAINERS = {
   PasswordContainer: 3
 };
 
-class New extends React.Component<NewProps, NewState> {
+class DealifyRegister extends React.Component<NewProps, NewState> {
 
   constructor(props: NewProps) {
     super(props);
@@ -471,4 +471,4 @@ class New extends React.Component<NewProps, NewState> {
   }
 }
 
-export default New;
+export default DealifyRegister;
