@@ -1,47 +1,131 @@
-@font-face {
-  font-family: "Cerebri Sans";
-  src: url(./assets/fonts/CerebriSans-Medium.ttf);
-  font-weight: 500;
-  font-style: normal;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @font-face {
-  font-family: "Cerebri Sans";
-  src: url(./assets/fonts/CerebriSans-Regular.ttf);
-  font-weight: 400;
+  font-family: 'NeueEinstellung';
+  src: local('NeueEinstellung-Regular'),
+    url(./assets/fonts/NeueEinstellung-Regular.woff2) format("woff2"),
+    url(./assets/fonts/NeueEinstellung-Regular.woff) format("woff"),
+    url(./assets/fonts/NeueEinstellung-Regular.eot) format("truetype");
+  font-weight: normal;
   font-style: normal;
+  font-stretch: normal;
 }
 
-@font-face {
-  font-family: "Cerebri Sans";
-  src: url(./assets/fonts/CerebriSans-Bold.ttf);
-  font-weight: 700;
+.text-6xl {
+  font-family: 'NeueEinstellung';
+  font-size: 60px;
+  font-weight: normal;
+  font-stretch: normal;
   font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
 }
-
-@font-face {
-  font-family: "Cerebri Sans";
-  src: url(./assets/fonts/CerebriSans-SemiBold.ttf);
-  font-weight: 600;
+.text-5xl {
+  font-family: 'NeueEinstellung';
+  font-size: 48px;
+  font-weight: normal;
+  font-stretch: normal;
   font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
 }
-
-@font-face {
-  font-family: "Cerebri Sans";
-  src: url(./assets/fonts/CerebriSans-Book.ttf);
-  font-weight: 300;
+.text-4xl {
+  font-family: 'NeueEinstellung';
+  font-size: 36px;
+  font-weight: normal;
+  font-stretch: normal;
   font-style: normal;
+  line-height: 1.11;
+  letter-spacing: normal;
 }
-
-@font-face {
-  font-family: "Gotham";
-  src: url(./assets/fonts/Gotham-Book-Regular.otf);
+.text-3xl {
+  font-family: 'NeueEinstellung';
+  font-size: 30px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: normal;
+}
+.text-2xl {
+  font-family: 'NeueEinstellung';
+  font-size: 24px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+}
+.text-xl {
+  font-family: 'NeueEinstellung';
+  font-size: 20px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.4;
+  letter-spacing: normal;
+}
+.text-lg {
+  font-family: 'NeueEinstellung';
+  font-size: 18px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.56;
+  letter-spacing: normal;
+}
+.text-base {
+  font-family: 'NeueEinstellung';
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+}
+.text-sm {
+  font-family: 'NeueEinstellung';
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.43;
+  letter-spacing: normal;
+}
+.text-xs {
+  font-family: 'NeueEinstellung';
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+}
+.text-supporting-2 {
+  font-family: 'NeueEinstellung';
+  font-size: 10px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: normal;
+}
+.text-supporting-1 {
+  font-family: 'NeueEinstellung';
+  font-size: 8px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.25;
+  letter-spacing: normal;
 }
 
 /* Alberto: Since now, all elements in this page
 will have CircularStd as default font. */
 * {
-  font-family: 'Cerebri Sans', sans-serif;
+  font-family: 'NeueEinstellung';
   // font-family: Gotham;
 }
 
