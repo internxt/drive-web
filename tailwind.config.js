@@ -2,7 +2,16 @@ module.exports = {
   purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      width: {
+        'sidenav-1280': '187px',
+        'activity-1280': '296px'
+      },
+      padding: {
+        '42px': "42px",
+        '32px': '32px'
+      }
+    },
     colors: {
       "black": "#000000",
       "gray": {
@@ -77,6 +86,13 @@ module.exports = {
         "80": "#483700",
         "90": "#302400",
         "100": "#1c1500"
+      },
+      "l-neutral": {
+        "10": "#fafbfc",
+        "20": "#f4f5f7",
+        "30": "#ebecf0",
+        "40": "#dfe1e6",
+        "50": "#f4f5f7"
       }
     }
   },
