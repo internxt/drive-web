@@ -5,7 +5,6 @@ import './App.scss';
 import Login from './components/forms/Login';
 import Remove from './components/forms/Remove';
 import New from './components/forms/New';
-import XCloud from './components/xcloud/XCloud';
 import Activation from './components/forms/Activation';
 import NotFound from './NotFound';
 import Deactivation from './components/forms/Deactivation';
@@ -23,6 +22,8 @@ import DeactivationTeams from './components/forms/DeactivationTeam';
 import { analytics, PATH_NAMES } from './lib/analytics';
 import Success from './components/teams/Success';
 import localStorageService from './services/localStorage.service';
+
+import NewXCloud from './views/NewXCloud/NewXCloud';
 
 class App extends React.Component {
   state = {
@@ -82,7 +83,7 @@ class App extends React.Component {
           <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
           <Route path='/deactivationsTeams/:token' render={(props) => <DeactivationTeams {...props} />} />
           <Route path='/security' render={(props) => <Security {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/app' render={(props) => <XCloud {...props}
+          <Route exact path='/app' render={(props) => <NewXCloud {...props}
             isAuthenticated={this.state.isAuthenticated}
             user={this.state.user}
             isActivated={this.state.isActivated}

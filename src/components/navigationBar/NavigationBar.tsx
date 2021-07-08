@@ -21,7 +21,7 @@ import localStorageService from '../../services/localStorage.service';
 import SettingsMenu from './SettingsMenu';
 
 interface NavigationBarProps {
-  navbarItems: JSX.Element
+  navbarItems?: JSX.Element
   showFileButtons?: boolean
   showSettingsButton?: boolean
   setSearchFunction?: any
@@ -38,7 +38,7 @@ interface NavigationBarProps {
 }
 
 interface NavigationBarState {
-  navbarItems: JSX.Element
+  navbarItems: JSX.Element | undefined
   workspace: string
   menuButton: any
   isTeam: boolean
