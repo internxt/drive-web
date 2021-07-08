@@ -121,6 +121,7 @@ export class Network {
         progressCallback: params.progressCallback,
         finishedCallback: (err: Error | null, filecontent: Blob | null) => {
           if (err) {
+            //STATUS: ERROR DOWNLOAD FILE
             return reject(err);
           }
 

@@ -26,6 +26,7 @@ import localStorageService from '../../services/localStorage.service';
 
 import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
+import FileLogger from '../../services/fileLogger.service.js';
 
 class XCloud extends React.Component {
 
@@ -661,12 +662,15 @@ class XCloud extends React.Component {
     window.analytics.track('file-download-finished', data);
   }
 
-  downloadFile = async (id, _class, pcb) => {
+  downloadFile = async (totalPathItem, id, _class, pcb) => {
+    //STATUS: DECRYPTING DOWNLOAD FILE
     const fileId = pcb.props.rawItem.fileId;
     const fileName = pcb.props.rawItem.name;
     const fileSize = pcb.props.rawItem.size;
     const folderId = pcb.props.rawItem.folder_id;
     const fileType = pcb.props.type;
+
+    FileLogger.push({ status: 'decrypting', filePath: totalPathItem });
 
     const completeFilename = fileType ? `${fileName}.${fileType}` : `${fileName}`;
 
@@ -677,13 +681,26 @@ class XCloud extends React.Component {
       const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
       const fileBlob = await network.downloadFile(bucketId, fileId, {
-        progressCallback: (progress) => pcb.setState({ progress })
+        //STATUS: DOWNLOAD PROGRESS FILE AND DOWNLOADING
+        progressCallback: ((progress) => {
+          if (progress > 0) {
+
+            FileLogger.push({ status: 'pending', filePath: totalPathItem, progress });
+
+          }
+          pcb.setState({ progress });
+        })
       });
+
+      //STATUS: FINISH DOWNLOAD FILE
+      FileLogger.push({ status: 'success', filePath: fileId });
 
       fileDownload(fileBlob, completeFilename);
 
       this.trackFileDownloadFinished(id, fileSize);
     } catch (err) {
+      //STATUS: ERROR DOWNLOAD FILE
+      FileLogger.push({ status: 'error', filePath: fileId });
       this.trackFileDownloadError(fileId, err.message);
 
       toast.warn(`Error downloading file: \n Reason is ${err.message} \n File id: ${fileId}`);
@@ -728,7 +745,7 @@ class XCloud extends React.Component {
     });
   }
 
-  upload = async (file, parentFolderId, folderPath) => {
+  upload = async (file, parentFolderId, folderPath, filePathToUpload) => {
     if (!parentFolderId) {
       throw new Error('No folder ID provided');
     }
@@ -760,9 +777,15 @@ class XCloud extends React.Component {
         filepath: relativePath,
         filesize: file.size,
         filecontent: content,
-        progressCallback: () => { }
-      });
+        progressCallback: (progress) => {
+          //STATUS: UPLOAD FILE PROGRESS AS % AND UPLOADING
 
+          if (progress > 0) {
+
+            FileLogger.push({ status: 'pending', filePath: filePathToUpload, progress });
+          }
+        }
+      });
       const name = encryptFilename(file.name, parentFolderId);
 
       const folder_id = parentFolderId;
@@ -815,7 +838,29 @@ class XCloud extends React.Component {
 
     parentFolderId = parentFolderId || currentFolderId;
 
+    let relativePath = this.state.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+
+    // when a folder and its subdirectory is uploaded by drop, this.state.namePath keeps its value at the first level of the parent folder
+    // so we need to add the relative folderPath (the path from parent folder uploaded to the level of the file being uploaded)
+    // when uploading deeper files than the current level
+    if (folderPath) {
+      if (relativePath !== '') {
+        relativePath += '/' + folderPath;
+      } else {
+        // if is the first path level, DO NOT ADD a '/'
+        relativePath += folderPath;
+      }
+    }
+
+    let filePathToUpload = '';
+
     files.forEach(file => {
+      const path = relativePath === '' ? 'All Files' : 'All Files/';
+
+      filePathToUpload = path + relativePath + '/' + file.name;
+      //STATUS: ENCRYPTING STATUS FILES
+      FileLogger.push({ status: 'encrypting', filePath: filePathToUpload });
+
       const { filename, extension } = getFilenameAndExt(file.name);
 
       filesToUpload.push({ name: filename, size: file.size, type: extension, isLoading: true, content: file });
@@ -843,24 +888,12 @@ class XCloud extends React.Component {
       await async.eachLimit(filesToUpload, 1, (file, nextFile) => {
         fileBeingUploaded = file;
 
-        let relativePath = this.state.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-
-        // when a folder and its subdirectory is uploaded by drop, this.state.namePath keeps its value at the first level of the parent folder
-        // so we need to add the relative folderPath (the path from parent folder uploaded to the level of the file being uploaded)
-        // when uploading deeper files than the current level
-        if (folderPath) {
-          if (relativePath !== '') {
-            relativePath += '/' + folderPath;
-          } else {
-            // if is the first path level, DO NOT ADD a '/'
-            relativePath += folderPath;
-          }
-        }
-
         let rateLimited = false;
 
-        this.upload(file, parentFolderId, relativePath)
+        this.upload(file, parentFolderId, relativePath, filePathToUpload)
           .then(({ res, data }) => {
+            //STATUS: FINISH UPLOADING FILE
+            FileLogger.push({ status: 'success', filePath: filePathToUpload });
             if (parentFolderId === currentFolderId) {
               const index = this.state.currentCommanderItems.findIndex((obj) => obj.name === file.name);
               const filesInFileExplorer = [...this.state.currentCommanderItems];
@@ -878,6 +911,10 @@ class XCloud extends React.Component {
               throw new Error('Rate limited');
             }
           }).catch((err) => {
+
+            FileLogger.push({ status: 'error', filePath: filePathToUpload });
+
+            //STATUS: ERROR UPLOAD FILE
             uploadErrors.push(err);
             console.log(err);
 
@@ -894,6 +931,9 @@ class XCloud extends React.Component {
         }
       });
     } catch (err) {
+      //STATUS: ERROR UPLOAD FILE
+      FileLogger.push({ status: 'error', filePath: filePathToUpload });
+
       if (err.message === 'There were some errors during upload') {
         // TODO: List errors in a queue?
         return uploadErrors.forEach(uploadError => {
