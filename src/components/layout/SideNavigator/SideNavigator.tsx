@@ -11,8 +11,8 @@ interface SideNavigatorProps {
 const SideNavigator = ({ isVisible, setIsVisible }: SideNavigatorProps) => {
 
   return (
-    <div className={`bg-gray-10 ${isVisible ? 'col-span-2' : 'col-span-1'} pt-8`}>
-      <button className={`flex items-center absolute top-2 left-6 ${isVisible ? 'transform rotate-0 duration-500' : 'transform rotate-180 duration-500'}`}
+    <div className={`bg-gray-10 ${isVisible ? 'w-sidenav-1280-open' : 'w-sidenav-1280-closed'} pt-10`}>
+      <button className={`flex items-center absolute top-3 left-3 ${isVisible ? 'transform rotate-0 duration-500' : 'transform rotate-180 duration-500'}`}
         onClick={() => setIsVisible(!isVisible)}
       >
         <img src={getIcon(IconTypes.BackArrows)} alt="" width='16' height='16' />

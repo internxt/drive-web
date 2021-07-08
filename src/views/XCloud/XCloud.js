@@ -7,25 +7,25 @@ import fileDownload from 'js-file-download';
 import update from 'immutability-helper';
 import Popup from 'reactjs-popup';
 import async from 'async';
-
-import FileCommander from './FileCommander';
-import NavigationBar from '../navigationBar/NavigationBar';
-import history from '../../lib/history';
-import { removeAccents, getFilenameAndExt, renameFile, encryptFilename } from '../../lib/utils';
-import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
-
-import PopupShare from '../PopupShare';
-import './XCloud.scss';
-
-import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import FileCommander from '../../components/FileCommander/FileCommander';
+import NavigationBar from '../../components/navigationBar/NavigationBar';
+import { removeAccents, getFilenameAndExt, renameFile, encryptFilename } from '../../lib/utils';
+
+import PopupShare from '../../components/PopupShare';
+import './XCloud.scss';
+
+import { getHeaders } from '../../lib/auth';
+
 import { getUserData } from '../../lib/analytics';
 import localStorageService from '../../services/localStorage.service';
-
 import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
+import history from '../../lib/history';
+
+import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 
 class XCloud extends React.Component {
 

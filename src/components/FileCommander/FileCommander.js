@@ -3,16 +3,16 @@ import * as React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import async from 'async';
 import $ from 'jquery';
-
-import './FileCommander.scss';
-import FileCommanderItem from './FileCommanderItem';
-import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown arrow.svg';
-import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
+import { compare } from 'natural-orderby';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { compare } from 'natural-orderby';
-import LoadingFileExplorer from './LoadingFileExplorer';
+import './FileCommander.scss';
+import FileCommanderItem from './FileCommanderItem/FileCommanderItem';
+import LoadingFileExplorer from '../LoadingFileExplorer/LoadingFileExplorer';
+
+import DropdownArrowIcon from '../../assets/Dashboard-Icons/Dropdown arrow.svg';
+import BackToIcon from '../../assets/Dashboard-Icons/back-arrow.svg';
 
 const SORT_TYPES = {
   DATE_ADDED: 'Date_Added',

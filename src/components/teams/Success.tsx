@@ -1,4 +1,4 @@
-import LoadingFileExplorer from '../xcloud/LoadingFileExplorer';
+import LoadingFileExplorer from '../LoadingFileExplorer/LoadingFileExplorer';
 import { checkSessionStripe } from '../../services/teams.sucess.service';
 import history from '../../lib/history';
 

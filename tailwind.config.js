@@ -2,7 +2,20 @@ module.exports = {
   purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      transitionProperty: {
+        'width': 'width'
+      },
+      width: {
+        'sidenav-1280-open': '187px',
+        'sidenav-1280-closed': '40px',
+        'activity-1280': '296px'
+      },
+      padding: {
+        '42px': '42px',
+        '32px': '32px'
+      }
+    },
     colors: {
       'black': '#000000',
       'gray': {
@@ -77,6 +90,20 @@ module.exports = {
         '80': '#483700',
         '90': '#302400',
         '100': '#1c1500'
+      },
+      "neutral": {
+        "500": "#42526e",
+        "600": "#344563",
+        "700": "#253858",
+        "800": "#172b4d",
+        "900": "#091e42"
+      },
+      "l-neutral": {
+        "10": "#fafbfc",
+        "20": "#f4f5f7",
+        "30": "#ebecf0",
+        "40": "#dfe1e6",
+        "50": "#f4f5f7"
       }
     }
   },
