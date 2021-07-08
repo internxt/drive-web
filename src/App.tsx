@@ -6,6 +6,7 @@ import Login from './components/forms/Login';
 import Remove from './components/forms/Remove';
 import New from './components/forms/New';
 import XCloud from './components/xcloud/XCloud';
+import Test from './components/xcloud/Test';
 import Activation from './components/forms/Activation';
 import NotFound from './NotFound';
 import Deactivation from './components/forms/Deactivation';
@@ -50,6 +51,7 @@ class App extends React.Component {
       <Router history={history}>
         <Switch>
           <Redirect from='//*' to='/*' />
+          <Route path='/web' render={() => <Test />} />
           <Route exact path='/login' render={(props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
 
           <Route exact path='/activate/:email'
