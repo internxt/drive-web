@@ -3,7 +3,6 @@ import { useState } from 'react';
 import FileActivity from '../../components/FileActivity/FileActivity';
 import './NewXCloud.scss';
 import SideNavigator from '../../components/layout/SideNavigator/SideNavigator';
-import Header from '../../components/layout/Header';
 import { useEffect } from 'react';
 import { useAppDispatch } from '../../redux/hooks';
 import { setHasConnection } from '../../redux/slices/networkSlice';
@@ -29,7 +28,7 @@ const NewXCloud = (): NewXCloudProps => {
       <SideNavigator isVisible={isVisible} setIsVisible={setIsVisible} />
 
       <div className="flex-grow">
-        <Header />
+        2
       </div>
       <FileActivity />
 
