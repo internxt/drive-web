@@ -1,5 +1,5 @@
 import React, { SetStateAction } from 'react';
-import { getIcon } from '../../../helpers/getIcon';
+import { getIcon } from '../../../services/getIcon';
 import { IconTypes } from '../../../models/interfaces';
 import Option from './Option';
 

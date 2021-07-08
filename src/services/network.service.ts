@@ -13,12 +13,3 @@ export const checkConnectionToCloud = (): Promise<boolean> => {
     request.send();
   });
 };
-
-export const callConnectionListeners = () => {
-  window.addEventListener('offline', () => {
-    console.log('offline');
-  });
-  window.addEventListener('online', () => {
-    console.log('online');
-  });
-};
