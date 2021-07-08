@@ -83,7 +83,7 @@
   font-stretch: normal;
   font-style: normal;
   line-height: 1.43;
-  letter-spacing: normal;
+  letter-spacing: 1px;
 }
 .text-xs {
   font-family: 'NeueEinstellung';
@@ -91,7 +91,7 @@
   font-stretch: normal;
   font-style: normal;
   line-height: 1.33;
-  letter-spacing: normal;
+  letter-spacing: 1px;
 }
 .text-supporting-2 {
   font-family: 'NeueEinstellung';
@@ -110,11 +110,8 @@
   letter-spacing: normal;
 }
 
-/* Alberto: Since now, all elements in this page
-will have CircularStd as default font. */
 * {
   font-family: 'NeueEinstellung';
-  // font-family: Gotham;
 }
 
 .Alert {
