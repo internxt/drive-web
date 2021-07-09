@@ -6,6 +6,7 @@ import SideNavigator from '../../components/layout/SideNavigator/SideNavigator';
 import { useEffect } from 'react';
 import { useAppDispatch } from '../../redux/hooks';
 import { setHasConnection } from '../../redux/slices/networkSlice';
+import FileLogger from '../../components/FileLogger';
 
 interface NewXCloudProps {
 
@@ -31,6 +32,8 @@ const NewXCloud = (): NewXCloudProps => {
       <div className="flex-grow">
         2
       </div>
+
+      <FileLogger />
       <FileActivity />
     </div>
   );

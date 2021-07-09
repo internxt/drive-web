@@ -1,5 +1,4 @@
 import React from 'react';
-import FileLogger from '../FileLogger';
 
 import './FileActivity.scss';
 
@@ -37,8 +36,6 @@ class FileActivity extends React.Component<FileActivityProps, FileActivityState>
           <span className="block text-neutral-500 text-xs">Modified at: 24 Jun 2021</span>
           <span className="block text-neutral-500 text-xs">Created at: 24 Jun 2021</span>
         </div>
-
-        <FileLogger />
       </div>
     );
   }

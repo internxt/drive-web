@@ -1,34 +1,40 @@
-/* eslint-disable */ 
-
 import React from 'react';
 import { useState } from 'react';
-import { FileStatusTypes, IconTypes } from '../../models/interfaces';
+import { IconTypes, IFile } from '../../models/interfaces';
 import { getIcon } from '../../services/getIcon';
 import Item from './Item';
-
-const Button = ({ icon }: { icon: IconTypes }) => (
-  <div className='flex items-center justify-center h-4 w-4 rounded-full bg-white ml-1.5'>
-    <img src={getIcon(icon)} alt="" />
-  </div>
-);
+import items from './items.json';
 
 const FileLogger = (): JSX.Element => {
-  const [isFolder, setIsFolder] = useState(true);
-  const [fileStatus, setFileStatus] = useState(FileStatusTypes.None);
+  const [isOpen, setIsOpen] = useState(true);
+  const [isMinimized, setIsMinized] = useState(false);
+  const files: IFile[] = items;
+
+  const Button = ({ icon, onClick, style = '' }: { icon: IconTypes, onClick: () => void, style?: string }) => {
+    return (
+      <div className={`flex items-center justify-center h-4 w-4 rounded-full bg-white ml-1.5 cursor-pointer ${style}`}
+        onClick={onClick}
+      >
+        <img src={getIcon(icon)} alt="" />
+      </div>
+    );
+  };
 
   return (
-    <div className='absolute bottom-0 right-9 w-64 h-64 border bg-white'>
-      <div className='flex justify-between rounded-t-md bg-l-neutral-30 px-4 py-2.5'>
+    <div className={`flex flex-col self-end w-64 transform duration-300 ${isMinimized ? 'h-9' : 'h-64'} bg-white mr-8 mb-11 rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden': ''}`}>
+      <div className='flex justify-between bg-l-neutral-30 px-4 py-2.5 select-none'>
         <span className='text-xs font-semibold text-neutral-90'>Activity</span>
 
         <div className='flex'>
-          <Button icon={IconTypes.DoubleArrowUpBlue} />
-          <Button icon={IconTypes.CrossGray} />
+          <Button icon={IconTypes.DoubleArrowUpBlue} onClick={() => setIsMinized(!isMinimized)} style={`transform duration-500 ${!isMinimized ? 'rotate-180' : 'rotate-0'}`} />
+          <Button icon={IconTypes.CrossGray} onClick={() => setIsOpen(false)} />
         </div>
       </div>
 
-      <div className=''>
-        <Item isFolder={isFolder} fileStatus={fileStatus} />
+      <div className='overflow-y-scroll'>
+        {
+          files.map(file => <Item item={file} />)
+        }
       </div>
     </div>
   );
