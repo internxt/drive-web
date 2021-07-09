@@ -30,5 +30,7 @@ export enum IconTypes {
   AccountGray = 'accountGray',
   SupportGray = 'supportGray',
   LogOutGray = 'logOutGray',
-  BackArrows = 'backArrows'
+  BackArrows = 'backArrows',
+  InternxtLongLogo = 'internxtLongLogo',
+  InternxtShortLogo = 'internxtShortLogo'
 }

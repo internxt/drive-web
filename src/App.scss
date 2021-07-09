@@ -16,7 +16,6 @@
 .text-6xl {
   font-family: 'NeueEinstellung';
   font-size: 60px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.5;
@@ -25,7 +24,6 @@
 .text-5xl {
   font-family: 'NeueEinstellung';
   font-size: 48px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.5;
@@ -34,7 +32,6 @@
 .text-4xl {
   font-family: 'NeueEinstellung';
   font-size: 36px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.11;
@@ -43,7 +40,6 @@
 .text-3xl {
   font-family: 'NeueEinstellung';
   font-size: 30px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.2;
@@ -52,7 +48,6 @@
 .text-2xl {
   font-family: 'NeueEinstellung';
   font-size: 24px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.33;
@@ -61,7 +56,6 @@
 .text-xl {
   font-family: 'NeueEinstellung';
   font-size: 20px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.4;
@@ -70,7 +64,6 @@
 .text-lg {
   font-family: 'NeueEinstellung';
   font-size: 18px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.56;
@@ -79,7 +72,6 @@
 .text-base {
   font-family: 'NeueEinstellung';
   font-size: 16px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.5;
@@ -88,25 +80,22 @@
 .text-sm {
   font-family: 'NeueEinstellung';
   font-size: 14px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.43;
-  letter-spacing: normal;
+  letter-spacing: 1px;
 }
 .text-xs {
   font-family: 'NeueEinstellung';
   font-size: 12px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.33;
-  letter-spacing: normal;
+  letter-spacing: 1px;
 }
 .text-supporting-2 {
   font-family: 'NeueEinstellung';
   font-size: 10px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.2;
@@ -115,18 +104,14 @@
 .text-supporting-1 {
   font-family: 'NeueEinstellung';
   font-size: 8px;
-  font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.25;
   letter-spacing: normal;
 }
 
-/* Alberto: Since now, all elements in this page
-will have CircularStd as default font. */
 * {
   font-family: 'NeueEinstellung';
-  // font-family: Gotham;
 }
 
 .Alert {
