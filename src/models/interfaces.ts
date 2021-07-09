@@ -32,5 +32,20 @@ export enum IconTypes {
   LogOutGray = 'logOutGray',
   BackArrows = 'backArrows',
   InternxtLongLogo = 'internxtLongLogo',
-  InternxtShortLogo = 'internxtShortLogo'
+  InternxtShortLogo = 'internxtShortLogo',
+  FolderBlue = 'folderBlue',
+  FileSuccessGreen = 'fileSuccessGreen',
+  FileErrorRed = 'fileErrorRed',
+  FileEncryptingGray = 'fileEncryptingGray',
+  DoubleArrowUpBlue = 'doubleArrowUpBlue',
+  CrossGray ='crossGray'
+}
+
+export enum FileStatusTypes {
+  Error = 'error',
+  Success = 'success',
+  Encrypting = 'encrypting',
+  Downloading = 'downloading',
+  Uploading = 'uploading',
+  None = 'none'
 }

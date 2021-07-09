@@ -14,6 +14,10 @@ module.exports = {
       padding: {
         '42px': '42px',
         '32px': '32px'
+      },
+      fontSize: {
+        'supporting-2': '10px',
+        'supporting-1': '8px'
       }
     },
     colors: {
