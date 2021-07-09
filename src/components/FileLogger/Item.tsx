@@ -1,6 +1,6 @@
 import React from 'react';
-import { getIcon } from '../../helpers/getIcon';
 import { FileStatusTypes, IconTypes } from '../../models/interfaces';
+import { getIcon } from '../../services/getIcon';
 
 interface ItemProps {
   isFolder: boolean

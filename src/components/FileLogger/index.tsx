@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useState } from 'react';
-import { getIcon } from '../../helpers/getIcon';
 import { FileStatusTypes, IconTypes } from '../../models/interfaces';
+import { getIcon } from '../../services/getIcon';
 import Item from './Item';
 
 const Button = ({ icon }: { icon: IconTypes }) => (
