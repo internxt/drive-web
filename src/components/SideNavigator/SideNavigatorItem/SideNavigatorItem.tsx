@@ -3,7 +3,9 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import ReactTooltip from 'react-tooltip';
 
-interface OptionProps {
+import './SideNavigatorItem.scss';
+
+interface SideNavigatorItemProps {
   text: string,
   icon: string,
   hasChildren: boolean,
@@ -11,7 +13,7 @@ interface OptionProps {
   tooltipText: string
 }
 
-const Option = ({ text, icon, hasChildren, isOpen, tooltipText }: OptionProps): JSX.Element => {
+const SideNavigatorItem = ({ text, icon, hasChildren, isOpen, tooltipText }: SideNavigatorItemProps): JSX.Element => {
   const [showChildren, setShowChildren] = useState(false);
 
   useEffect(() => {
@@ -68,4 +70,4 @@ const Option = ({ text, icon, hasChildren, isOpen, tooltipText }: OptionProps): 
   );
 };
 
-export default Option;
+export default SideNavigatorItem;

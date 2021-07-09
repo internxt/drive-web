@@ -1,0 +1,20 @@
+.navigation-buttons {
+  height: max-content;
+}
+.navigation-button {
+  $size: 28px;
+
+  height: $size;
+  width: $size;
+}
+
+@layer components {
+  .pagination-button {
+    text-align: center;
+    width: 24px;
+    height: 24px;
+    line-height: 24px !important;
+
+    @apply cursor-pointer border border-l-neutral-50 rounded-1px text-neutral-500 text-xs;
+  }
+}
