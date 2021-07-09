@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TEXT */
 @font-face {
-  font-family: 'NeueEinstellung';
-  src: local('NeueEinstellung-Regular'),
-    url(./assets/fonts/NeueEinstellung-Regular.woff2) format("woff2"),
+  font-family: "NeueEinstellung";
+  src: local("NeueEinstellung-Regular"), url(./assets/fonts/NeueEinstellung-Regular.woff2) format("woff2"),
     url(./assets/fonts/NeueEinstellung-Regular.woff) format("woff"),
     url(./assets/fonts/NeueEinstellung-Regular.eot) format("truetype");
   font-weight: normal;
@@ -14,7 +14,7 @@
 }
 
 .text-6xl {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 60px;
   font-stretch: normal;
   font-style: normal;
@@ -22,7 +22,7 @@
   letter-spacing: normal;
 }
 .text-5xl {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 48px;
   font-stretch: normal;
   font-style: normal;
@@ -30,7 +30,7 @@
   letter-spacing: normal;
 }
 .text-4xl {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 36px;
   font-stretch: normal;
   font-style: normal;
@@ -38,7 +38,7 @@
   letter-spacing: normal;
 }
 .text-3xl {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 30px;
   font-stretch: normal;
   font-style: normal;
@@ -46,7 +46,7 @@
   letter-spacing: normal;
 }
 .text-2xl {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 24px;
   font-stretch: normal;
   font-style: normal;
@@ -54,15 +54,16 @@
   letter-spacing: normal;
 }
 .text-xl {
-  font-family: 'NeueEinstellung';
-  font-size: 20px;
+  font-family: "NeueEinstellung";
+  font-size: 20px; // font-family: Gotham;
+
   font-stretch: normal;
   font-style: normal;
   line-height: 1.4;
   letter-spacing: normal;
 }
 .text-lg {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 18px;
   font-stretch: normal;
   font-style: normal;
@@ -70,7 +71,7 @@
   letter-spacing: normal;
 }
 .text-base {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 16px;
   font-stretch: normal;
   font-style: normal;
@@ -78,7 +79,7 @@
   letter-spacing: normal;
 }
 .text-sm {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 14px;
   font-stretch: normal;
   font-style: normal;
@@ -86,7 +87,7 @@
   letter-spacing: normal;
 }
 .text-xs {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 12px;
   font-stretch: normal;
   font-style: normal;
@@ -94,7 +95,7 @@
   letter-spacing: normal;
 }
 .text-supporting-2 {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 10px;
   font-stretch: normal;
   font-style: normal;
@@ -102,7 +103,7 @@
   letter-spacing: normal;
 }
 .text-supporting-1 {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   font-size: 8px;
   font-stretch: normal;
   font-style: normal;
@@ -113,20 +114,38 @@
 /* Alberto: Since now, all elements in this page
 will have CircularStd as default font. */
 * {
-  font-family: 'NeueEinstellung';
+  font-family: "NeueEinstellung";
   // font-family: Gotham;
 }
 
+/* INPUTS */
+@layer components {
+  input[type="checkbox"] {
+    @apply border-2 border-neutral-500 rounded-1px;
+  }
+  input[type="text"] {
+    @apply ring-2 ring-blue-30 rounded-1px focus:ring-blue-30 focus:rounded-1px text-neutral-500 placeholder-l-neutral-50 text-sm px-1;
+
+    &:focus {
+      outline: none !important;
+    }
+  }
+}
+
+/* TABLES */
+th {
+  text-align: left;
+}
+
+/* OLD STYLES */
 .Alert {
   width: 70%;
   margin: auto;
 }
-
 .App {
   text-align: center;
   height: 100%;
 }
-
 .App-header {
   background-color: #222;
   height: 150px;
@@ -222,8 +241,6 @@ will have CircularStd as default font. */
   flex-direction: row;
   position: absolute;
   top: 0;
-  right: 0;
-  margin: 15px;
 }
 
 .popup--full-screen__close-button-wrapper img {

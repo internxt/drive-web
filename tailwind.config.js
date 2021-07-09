@@ -14,6 +14,9 @@ module.exports = {
       padding: {
         '42px': '42px',
         '32px': '32px'
+      },
+      borderRadius: {
+        '1px': '1px'
       }
     },
     colors: {
@@ -53,6 +56,7 @@ module.exports = {
         '70': '#a2191f',
         '80': '#750e13',
         '90': '#520408',
+
         '100': '#2d0709'
       },
       'orange': {
@@ -103,12 +107,14 @@ module.exports = {
         "20": "#f4f5f7",
         "30": "#ebecf0",
         "40": "#dfe1e6",
-        "50": "#f4f5f7"
+        "50": "#c1c7d0"
       }
     }
   },
   variants: {
-    extend: {}
+    extend: {
+      borderRadius: ["responsive", "focus"]
+    }
   },
   plugins: []
 };
