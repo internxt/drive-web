@@ -21,7 +21,7 @@ const FileLogger = (): JSX.Element => {
   };
 
   return (
-    <div className={`flex flex-col self-end w-64 transform duration-300 ${isMinimized ? 'h-9' : 'h-64'} bg-white mr-8 mb-11 rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden': ''}`}>
+    <div className={`absolute bottom-0 right-80 flex flex-col w-64 transform duration-300 ${isMinimized ? 'h-9' : 'h-64'} bg-white mr-8 mb-11 rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden': ''}`}>
       <div className='flex justify-between bg-l-neutral-30 px-4 py-2.5 select-none'>
         <span className='text-xs font-semibold text-neutral-90'>Activity</span>
 

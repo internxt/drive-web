@@ -28,8 +28,6 @@ import './NewXCloud.scss';
 import { setHasConnection } from '../../store/slices/networkSlice';
 import { UserSettings } from '../../models/interfaces';
 import SideNavigator from '../../components/SideNavigator/SideNavigator';
-import { useEffect } from 'react';
-import { useAppDispatch } from '../../redux/hooks';
 import FileLogger from '../../components/FileLogger';
 
 interface NewXCloudProps {
@@ -1092,8 +1090,8 @@ class NewXCloud extends React.Component<NewXCloudProps> {
             <FileView />
           </div>
 
+          <FileLogger />
           <FileActivity />
-
         </div>
       );
     } else {
