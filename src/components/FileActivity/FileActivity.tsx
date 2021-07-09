@@ -38,6 +38,14 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
             <span className="block text-neutral-500 text-base">Created at: 24 Jun 2021</span>
           </div>
         </div>
+
+        <div className="file-info-container text-left">
+          <span className="block text-neutral-500 text-xs">File: PDF</span>
+          <span className="block text-neutral-500 text-xs">Folder path: ../FilesPending</span>
+          <span className="block text-neutral-500 text-xs">Size: 55.7 MB</span>
+          <span className="block text-neutral-500 text-xs">Modified at: 24 Jun 2021</span>
+          <span className="block text-neutral-500 text-xs">Created at: 24 Jun 2021</span>
+        </div>
       </div>
     );
   }

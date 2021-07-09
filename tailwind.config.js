@@ -17,6 +17,10 @@ module.exports = {
       },
       borderRadius: {
         '1px': '1px'
+      },
+      fontSize: {
+        'supporting-2': '10px',
+        'supporting-1': '8px'
       }
     },
     colors: {
