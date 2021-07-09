@@ -57,7 +57,7 @@ class FileCommander extends React.Component {
 
     switch (sortType) {
       case SORT_TYPES.DATE_ADDED:
-      // At this time, default order is date added
+        // At this time, default order is date added
         break;
       case SORT_TYPES.FILETYPE_ASC:
         sortFunc = function (a, b) {
@@ -343,6 +343,11 @@ class FileCommander extends React.Component {
   render() {
     const list = this.state.currentCommanderItems || 0;
     const inRoot = this.state.namePath.length === 1;
+    const namePaths = this.state.namePath;
+
+    const totalPath = namePaths.map((path) => {
+      return path.name;
+    }).join('/');
 
     return (
       <div id="FileCommander">
@@ -436,6 +441,10 @@ class FileCommander extends React.Component {
         >
           {list.length > 0 ? (
             list.map((item, i) => {
+              const itemNamePath = item.isFolder ? item.name : item.name + '.' + item.type;
+
+              const totalPathItem = totalPath + '/' + itemNamePath;
+
               return (
                 <FileCommanderItem
                   key={item.id + '-' + i}
@@ -454,7 +463,7 @@ class FileCommander extends React.Component {
                   clickHandler={
                     item.isFolder
                       ? this.props.openFolder.bind(null, item.id)
-                      : (item.onClick ? item.onClick : this.props.downloadFile.bind(null, item.fileId))
+                      : (item.onClick ? item.onClick : this.props.downloadFile.bind(null, totalPathItem, item.fileId))
 
                   }
                   selectHandler={this.props.selectItems}
@@ -468,6 +477,7 @@ class FileCommander extends React.Component {
                   isSelected={item.isSelected}
                   handleExternalDrop={this.handleDrop}
                   handleDragStart={this.handleDragStart}
+                  totalPathItem={totalPathItem}
                 />
               );
             })
