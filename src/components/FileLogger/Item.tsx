@@ -62,11 +62,11 @@ const Item = ({ item }: ItemProps) => {
       </div>
 
       <div className='flex flex-col justify-start'>
-        <span className='text-xs text-neutral-90'>
+        <span className='text-xs text-neutral-900'>
           {getFileInfo().name}
         </span>
 
-        <span className='text-supporting-2 text-neutral-50'>
+        <span className='text-supporting-2 text-neutral-500'>
           {getFileInfo().status}
         </span>
       </div>
