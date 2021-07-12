@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Dropdown, ProgressBar } from 'react-bootstrap';
 import HeaderButton from './HeaderButton';
 
 import history from '../../lib/history';
-import { getUserData } from '../../lib/analytics';
 import customPrettySize from '../../lib/sizer';
 import account from '../../assets/Dashboard-Icons/Account.svg';
 import localStorageService from '../../services/localStorage.service';
@@ -12,6 +11,7 @@ import SessionStorage from '../../lib/sessionStorage';
 import { getHeaders } from '../../lib/auth';
 import { getLimit } from '../../services/storage.service';
 import { UserSettings } from '../../models/interfaces';
+import authService from '../../services/auth.service';
 
 interface SettingMenuProp {
   isTeam: boolean,
@@ -174,14 +174,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
         </div>
         <Dropdown.Divider />
         <div className="dropdown-menu-group">
-          <Dropdown.Item onClick={(e) => {
-            window.analytics.track('user-signout', {
-              email: getUserData().email
-            });
-            localStorageService.clear();
-            localStorageService.del('workspace');
-            history.push('/login');
-          }}>Sign out</Dropdown.Item>
+          <Dropdown.Item onClick={(e) => authService.logOut()}>Sign out</Dropdown.Item>
         </div>
       </Dropdown.Menu>
     </Dropdown>

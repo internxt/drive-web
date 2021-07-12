@@ -1,3 +1,5 @@
+import { FileStatusType } from './enums';
+
 export interface UserSettings {
   bucket: string
   createdAt: Date
@@ -23,7 +25,7 @@ export interface TeamsSettings {
   bridge_user: string
 }
 
-export interface IFile {
+export interface FileData {
   isFolder: boolean,
   isSelected:boolean,
   isLoading:boolean,
@@ -42,36 +44,6 @@ export interface IFile {
   iconId: number | null,
   parent_id: number | null,
   icon: string | null,
-  fileStatus: FileStatusTypes,
+  fileStatus: FileStatusType,
   progress: string
-}
-
-/* eslint-disable */ // salta el no-unused-vars, para corregirlo hay que instalar @typescript-eslint/no-unused-vars en vez de no-unused-vars
-export enum IconTypes {
-  FolderWithCrossGray = 'folderWithCrossGray',
-  ClockGray = 'clockGray',
-  AccountGray = 'accountGray',
-  SupportGray = 'supportGray',
-  LogOutGray = 'logOutGray',
-  BackArrows = 'backArrows',
-  InternxtLongLogo = 'internxtLongLogo',
-  InternxtShortLogo = 'internxtShortLogo',
-  FolderBlue = 'folderBlue',
-  FileSuccessGreen = 'fileSuccessGreen',
-  FileErrorRed = 'fileErrorRed',
-  FileEncryptingGray = 'fileEncryptingGray',
-  DoubleArrowUpBlue = 'doubleArrowUpBlue',
-  DoubleArrowUpWhite = 'doubleArrowUpWhite',
-  CrossGray = 'crossGray',
-  CrossWhite = 'crossWhite',
-  CrossNeutralBlue = 'crossNeutralBlue',
-}
-
-export enum FileStatusTypes {
-  Error = 'error',
-  Success = 'success',
-  Encrypting = 'encrypting',
-  Downloading = 'downloading',
-  Uploading = 'uploading',
-  None = 'none'
 }

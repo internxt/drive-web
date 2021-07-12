@@ -1,5 +1,5 @@
 import { createBrowserHistory } from 'history';
-import { analytics, PATH_NAMES } from './analytics';
+import { PATH_NAMES } from '../services/analytics.service';
 
 const instance = createBrowserHistory({ forceRefresh: false });
 
@@ -10,7 +10,7 @@ instance.listen((nav) => {
   if (index > -1) {
     const pageName = PATH_NAMES[keys[index]];
 
-    analytics.page(pageName);
+    window.analytics.page(pageName);
   }
 });
 

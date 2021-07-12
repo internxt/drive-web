@@ -8,12 +8,15 @@ import NavigationBar from './../navigationBar/NavigationBar';
 import { encryptText, passToHash, decryptText, encryptTextWithKey } from '../../lib/utils';
 import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
-import { getUserData } from '../../lib/analytics';
 import AesFunctions from '../../lib/AesUtil';
+import { RootState } from '../../store';
+import { connect } from 'react-redux';
+import { UserSettings } from '../../models/interfaces';
 
 interface ResetProps {
   match?: any
-  isAuthenticated: boolean
+  isAuthenticated: boolean,
+  user: UserSettings
 }
 
 class Reset extends React.Component<ResetProps> {
@@ -88,7 +91,7 @@ class Reset extends React.Component<ResetProps> {
         } else {
           window.analytics.track('user-change-password', {
             status: 'success',
-            email: getUserData().email
+            email: this.props.user.email
           });
           alert('Password changed successfully.');
         }
@@ -96,7 +99,7 @@ class Reset extends React.Component<ResetProps> {
       .catch(err => {
         window.analytics.track('user-change-password', {
           status: 'error',
-          email: getUserData().email
+          email: this.props.user.email
         });
         alert(err);
       });
@@ -164,4 +167,6 @@ class Reset extends React.Component<ResetProps> {
   }
 }
 
-export default Reset;
+export default connect((state: RootState) => ({
+  user: state.user.user
+}))(Reset);

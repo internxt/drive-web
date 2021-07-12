@@ -15,26 +15,42 @@ import Security from './components/Security';
 import { ToastContainer } from 'react-toastify';
 import Checkout from './components/Checkout';
 import Referred from './components/Referred';
-// import PayToken from './components/token/PayForm';
 import Teams from './components/forms/Teams';
 import JoinTeam from './components/forms/JoinTeam';
 import DeactivationTeams from './components/forms/DeactivationTeam';
-import { analytics, PATH_NAMES } from './lib/analytics';
+import analyticsService, { PATH_NAMES } from './services/analytics.service';
 import Success from './components/teams/Success';
-import localStorageService from './services/localStorage.service';
+import { connect } from 'react-redux';
 
 import NewXCloud from './views/NewXCloud/NewXCloud';
+import { UserSettings } from './models/interfaces';
+import { setUser } from './store/slices/userSlice';
 
-class App extends React.Component {
-  state = {
-    token: '',
-    user: {},
-    isAuthenticated: false,
-    isActivated: false
+interface AppProps {
+  setUser: (value: UserSettings) => void
+}
+
+interface AppState {
+  token: string;
+  user: UserSettings | any,
+  isAuthenticated: boolean;
+  isActivated: boolean
+}
+
+class App extends React.Component<AppProps, AppState> {
+  constructor(props: AppProps) {
+    super(props);
+
+    this.state = {
+      token: '',
+      user: {},
+      isAuthenticated: false,
+      isActivated: false
+    };
   }
 
-  handleKeySaved = (user: JSON): void => {
-    localStorageService.set('xUser', JSON.stringify(user));
+  handleKeySaved = (user: UserSettings): void => {
+    this.props.setUser(user);
     this.setState({ isAuthenticated: true, user: user });
   }
 
@@ -43,7 +59,7 @@ class App extends React.Component {
 
     if (window.location.pathname) {
       if (pathName === 'new' && window.location.search !== '') {
-        analytics.page(PATH_NAMES[window.location.pathname]);
+        analyticsService.page(PATH_NAMES[window.location.pathname]);
       }
     }
 
@@ -114,4 +130,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default connect(null, { setUser })(App);

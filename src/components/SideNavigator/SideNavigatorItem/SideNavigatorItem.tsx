@@ -4,15 +4,18 @@ interface SideNavigatorItemProps {
   text: string,
   icon: string,
   isOpen: boolean,
-  tooltipText: string
+  tooltipText?: string,
+  onClick?: () => void
 }
 
-const SideNavigatorItem = ({ text, icon, isOpen, tooltipText }: SideNavigatorItemProps): JSX.Element => {
+const SideNavigatorItem = ({ text, icon, isOpen, tooltipText, onClick }: SideNavigatorItemProps): JSX.Element => {
+  onClick = onClick || (() => {});
+
   return (
     <div>
       <div className='h-max mb-2 select-none'>
         <div className='flex items-center w-max cursor-pointer'
-          onClick={() => { }}
+          onClick={onClick}
         >
           <div className='flex items-center h-5'>
             <img src={icon} alt="" className='mr-2.5' />

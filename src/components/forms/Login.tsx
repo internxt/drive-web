@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button, Form, Col, Container, Spinner } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 import history from '../../lib/history';
 import './Login.scss';
@@ -9,18 +10,21 @@ import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import localStorageService from '../../services/localStorage.service';
-import { analytics } from '../../lib/analytics';
 import { decryptPGP } from '../../lib/utilspgp';
 import AesUtil from '../../lib/AesUtil';
 import { storeTeamsInfo } from '../../services/teams.service';
 import { generateNewKeys } from '../../services/pgp.service';
 import { validateFormat } from '../../services/keys.service';
+import { UserSettings } from '../../models/interfaces';
+import { setUser } from '../../store/slices/userSlice';
+import analyticsService from '../../services/analytics.service';
 
 interface LoginProps {
   email?: string
   password?: string
   handleKeySaved?: (user: any) => void
-  isAuthenticated: boolean
+  isAuthenticated: boolean,
+  setUser: (user: UserSettings) => void
 }
 
 class Login extends React.Component<LoginProps> {
@@ -199,7 +203,7 @@ class Login extends React.Component<LoginProps> {
 
         const { update, privkeyDecrypted, newPrivKey } = await validateFormat(privateKey, this.state.password);
 
-        analytics.identify(data.user.uuid, {
+        window.analytics.identify(data.user.uuid, {
           email: this.state.email,
           platform: 'web',
           referrals_credit: data.user.credit,
@@ -223,7 +227,7 @@ class Login extends React.Component<LoginProps> {
 
         localStorageService.set('xToken', data.token);
         localStorageService.set('xMnemonic', user.mnemonic);
-        localStorageService.set('xUser', JSON.stringify(user));
+        this.props.setUser(user);
 
         if (update) {
           await this.updateKeys(publicKey, newPrivKey, revocateKey);
@@ -258,7 +262,7 @@ class Login extends React.Component<LoginProps> {
           referrals_count: Math.floor(data.user.credit / 5),
           createdAt: data.user.createdAt
         }, () => {
-          window.analytics.track('user-signin', {
+          analyticsService.signIn({
             email: this.state.email,
             userId: user.uuid
           });
@@ -372,4 +376,4 @@ class Login extends React.Component<LoginProps> {
   }
 }
 
-export default Login;
+export default connect(null, { setUser })(Login);

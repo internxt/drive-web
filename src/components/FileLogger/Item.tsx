@@ -1,9 +1,11 @@
 import React from 'react';
-import { FileStatusTypes, IconTypes, IFile } from '../../models/interfaces';
+
+import { FileData } from '../../models/interfaces';
+import { FileStatusType, IconType } from '../../models/enums';
 import { getIcon } from '../../services/getIcon';
 
 interface ItemProps {
-  item: IFile
+  item: FileData
 }
 
 const Item = ({ item }: ItemProps) => {
@@ -11,43 +13,43 @@ const Item = ({ item }: ItemProps) => {
     const infoObj = { icon: '', status: '', name: '' };
 
     switch (item.fileStatus) {
-      case FileStatusTypes.Uploading:
-        infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.ClockGray);
+      case FileStatusType.Uploading:
+        infoObj.icon = item.isFolder ? getIcon(IconType.FolderBlue) : getIcon(IconType.ClockGray);
         infoObj.status = item.isFolder ? 'Uploading...' : item.progress + '% File uploading...';
         infoObj.name = item.name;
 
         return infoObj;
 
-      case FileStatusTypes.Downloading:
-        infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.ClockGray);
+      case FileStatusType.Downloading:
+        infoObj.icon = item.isFolder ? getIcon(IconType.FolderBlue) : getIcon(IconType.ClockGray);
         infoObj.status = item.isFolder ? 'Downloading files in folder...' : item.progress + '% File uploading...';
         infoObj.name = item.name;
 
         return infoObj;
 
-      case FileStatusTypes.Success:
-        infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.FileSuccessGreen);
+      case FileStatusType.Success:
+        infoObj.icon = item.isFolder ? getIcon(IconType.FolderBlue) : getIcon(IconType.FileSuccessGreen);
         infoObj.status = 'File downloaded';
         infoObj.name = item.name;
 
         return infoObj;
 
-      case FileStatusTypes.Error:
-        infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.FileErrorRed);
+      case FileStatusType.Error:
+        infoObj.icon = item.isFolder ? getIcon(IconType.FolderBlue) : getIcon(IconType.FileErrorRed);
         infoObj.status = 'Error during upload/download';
         infoObj.name = item.name;
 
         return infoObj;
 
-      case FileStatusTypes.Encrypting:
-        infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.FileEncryptingGray);
+      case FileStatusType.Encrypting:
+        infoObj.icon = item.isFolder ? getIcon(IconType.FolderBlue) : getIcon(IconType.FileEncryptingGray);
         infoObj.status = item.isFolder ? 'Encrypting files' : 'Encrypting file';
         infoObj.name = item.name;
 
         return infoObj;
 
       default:
-        infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.ClockGray);
+        infoObj.icon = item.isFolder ? getIcon(IconType.FolderBlue) : getIcon(IconType.ClockGray);
         infoObj.status = item.progress + ' File uploading...';
         infoObj.name = item.name;
 
