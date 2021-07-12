@@ -4,6 +4,7 @@ import { IconTypes, IFile } from '../../models/interfaces';
 import { getIcon } from '../../services/getIcon';
 import Item from './Item';
 import items from './items.json';
+import './FileLogger.scss';
 
 const FileLogger = (): JSX.Element => {
   const [isOpen, setIsOpen] = useState(true);
@@ -31,9 +32,9 @@ const FileLogger = (): JSX.Element => {
         </div>
       </div>
 
-      <div className='overflow-y-scroll'>
+      <div className='overflow-y-scroll scrollbar pt-2.5'>
         {
-          files.map(file => <Item item={file} />)
+          files.map(file => <Item item={file} key={file.id} />)
         }
       </div>
     </div>

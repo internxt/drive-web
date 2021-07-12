@@ -56,7 +56,7 @@ const Item = ({ item }: ItemProps) => {
   };
 
   return (
-    <div className='flex items-center h-8 px-4 mt-2.5'>
+    <div className='flex items-center h-8 px-4 mb-2.5'>
       <div className='flex items-center justify-center mr-2.5 w-4'>
         <img src={getFileInfo().icon} alt="" />
       </div>
