@@ -61,7 +61,10 @@ export enum IconTypes {
   FileErrorRed = 'fileErrorRed',
   FileEncryptingGray = 'fileEncryptingGray',
   DoubleArrowUpBlue = 'doubleArrowUpBlue',
-  CrossGray = 'crossGray'
+  DoubleArrowUpWhite = 'doubleArrowUpWhite',
+  CrossGray = 'crossGray',
+  CrossWhite = 'crossWhite',
+  CrossNeutralBlue = 'crossNeutralBlue',
 }
 
 export enum FileStatusTypes {

@@ -102,25 +102,25 @@ module.exports = {
       'm-neutral': {
         '10': '#7A869A'
       },
-      "l-neutral": {
-        "10": "#fafbfc",
-        "20": "#f4f5f7",
-        "30": "#ebecf0",
-        "40": "#dfe1e6",
-        "50": "#c1c7d0"
+      'l-neutral': {
+        '10': '#fafbfc',
+        '20': '#f4f5f7',
+        '30': '#ebecf0',
+        '40': '#dfe1e6',
+        '50': '#c1c7d0'
       },
       'neutral': {
-        '500': '#42526e',
-        '600': '#344563',
-        '700': '#253858',
-        '800': '#172b4d',
-        '900': '#091e42'
-      },
+        '50': '#42526e',
+        '60': '#344563',
+        '70': '#253858',
+        '80': '#172b4d',
+        '90': '#091e42'
+      }
     }
   },
   variants: {
     extend: {
-      borderRadius: ["responsive", "focus"]
+      borderRadius: ['responsive', 'focus']
     }
   },
   plugins: []
