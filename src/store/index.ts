@@ -7,11 +7,5 @@ export const store = configureStore({
   }
 });
 
-/* function logger({ getState }) {
-  return next => action => {
-    console.log()
-  }
-}
- */
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

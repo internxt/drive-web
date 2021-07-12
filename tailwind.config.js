@@ -15,6 +15,9 @@ module.exports = {
         '42px': '42px',
         '32px': '32px'
       },
+      borderRadius: {
+        '1px': '1px'
+      },
       fontSize: {
         'supporting-2': '10px',
         'supporting-1': '8px'
@@ -57,6 +60,7 @@ module.exports = {
         '70': '#a2191f',
         '80': '#750e13',
         '90': '#520408',
+
         '100': '#2d0709'
       },
       'orange': {
@@ -95,27 +99,29 @@ module.exports = {
         '90': '#302400',
         '100': '#1c1500'
       },
-      'l-neutral': {
-        '10': '#fafbfc',
-        '20': '#f4f5f7',
-        '30': '#ebecf0',
-        '40': '#dfe1e6',
-        '50': '#f4f5f7'
-      },
       'm-neutral': {
         '10': '#7A869A'
       },
+      "l-neutral": {
+        "10": "#fafbfc",
+        "20": "#f4f5f7",
+        "30": "#ebecf0",
+        "40": "#dfe1e6",
+        "50": "#c1c7d0"
+      },
       'neutral': {
-        '50': '#42526e',
-        '60': '#344563',
-        '70': '#253858',
-        '80': '#172b4d',
-        '90': '#091e42'
-      }
+        '500': '#42526e',
+        '600': '#344563',
+        '700': '#253858',
+        '800': '#172b4d',
+        '900': '#091e42'
+      },
     }
   },
   variants: {
-    extend: {}
+    extend: {
+      borderRadius: ["responsive", "focus"]
+    }
   },
   plugins: []
 };

@@ -1,13 +1,15 @@
 import React from 'react';
 
+import folderIcon from '../../assets/icons/folder.svg';
+
 import './FileActivity.scss';
 
-interface FileActivityProps { }
+interface FileListProps { }
 
-interface FileActivityState { }
+interface FileListState { }
 
-class FileActivity extends React.Component<FileActivityProps, FileActivityState> {
-  constructor(props: FileActivityProps) {
+class FileActivity extends React.Component<FileListProps, FileListState> {
+  constructor(props: FileListProps) {
     super(props);
 
     this.state = {};
@@ -17,15 +19,23 @@ class FileActivity extends React.Component<FileActivityProps, FileActivityState>
 
   render() {
     return (
-      <div className="flex flex-col w-activity-1280 bg-l-neutral-20 px-32px py-42px border">
-        <div className="text-center">
-          <div className="file-icon bg-blue-30 m-auto">
-            ICON
+      <div className="w-activity-1280 bg-l-neutral-20 px-32px py-42px">
+        <div>
+
+          <div className="text-center">
+            <img src={folderIcon} className="activity-file-icon m-auto" />
+            <div>
+              <span className="text-neutral-900 block font-semibold text-base">Folder info</span>
+              <span className="text-neutral-500 block text-sm">Folder name: FilesPending</span>
+            </div>
           </div>
 
-          <div>
-            <span className="text-neutral-900 block font-semibold text-base">Folder info</span>
-            <span className="text-neutral-500 block text-supporting-2">Folder name: FilesPending</span>
+          <div className="file-info-container text-left">
+            <span className="block text-neutral-500 text-base">File: PDF</span>
+            <span className="block text-neutral-500 text-base">Folder path: ../FilesPending</span>
+            <span className="block text-neutral-500 text-base">Size: 55.7 MB</span>
+            <span className="block text-neutral-500 text-base">Modified at: 24 Jun 2021</span>
+            <span className="block text-neutral-500 text-base">Created at: 24 Jun 2021</span>
           </div>
         </div>
 
