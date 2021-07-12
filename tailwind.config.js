@@ -110,17 +110,18 @@ module.exports = {
         '50': '#c1c7d0'
       },
       'neutral': {
-        '50': '#42526e',
-        '60': '#344563',
-        '70': '#253858',
-        '80': '#172b4d',
-        '90': '#091e42'
+        '500': '#42526e',
+        '600': '#344563',
+        '700': '#253858',
+        '800': '#172b4d',
+        '900': '#091e42'
       }
     }
   },
   variants: {
     extend: {
-      borderRadius: ['responsive', 'focus']
+      borderRadius: ["responsive", "focus"],
+      backgroundColor: ["active"]
     }
   },
   plugins: []

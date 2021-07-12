@@ -11,8 +11,8 @@ interface Props {
 }
 
 interface State {
-  isTeamActivated: Boolean | null
-  isTeamError: Boolean
+  isTeamActivated: boolean | null
+  isTeamError: boolean
   member?: string,
   teamPassword?: string
 }

@@ -15,7 +15,7 @@ import queryString, { ParsedQuery } from 'query-string';
 import { initializeUser } from '../../services/auth.service';
 import { generateNewKeys } from '../../services/pgp.service';
 
-const bip39 = require('bip39');
+import * as bip39 from 'bip39';
 
 interface NewProps {
   match: any
@@ -26,7 +26,7 @@ interface NewProps {
 }
 
 interface NewState {
-  isAuthenticated?: Boolean
+  isAuthenticated?: boolean
   register: {
     name: string
     lastname: string
@@ -36,7 +36,7 @@ interface NewState {
     referrer: string | undefined
   }
   currentContainer: number
-  showModal: Boolean
+  showModal: boolean
   token?: string
   user?: any
   isLoading: boolean
@@ -105,7 +105,7 @@ class New extends React.Component<NewProps, NewState> {
   }
 
   handleChangeRegister = (event: any) => {
-    var registerState = this.state.register;
+    const registerState = this.state.register;
 
     registerState[event.target.id] = event.target.value;
     this.setState({ register: registerState });
@@ -113,7 +113,7 @@ class New extends React.Component<NewProps, NewState> {
 
   validateEmail = (email: string) => {
     // eslint-disable-next-line no-control-regex
-    let emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
+    const emailPattern = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*"))@((?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
 
     return emailPattern.test(email.toLowerCase());
   }
@@ -308,7 +308,7 @@ class New extends React.Component<NewProps, NewState> {
         e.preventDefault();
 
         if (this.validateRegisterFormPart1()) {
-          var tempReg = this.state.register;
+          const tempReg = this.state.register;
 
           tempReg.email = tempReg.email.toLowerCase().trim();
           this.setState({

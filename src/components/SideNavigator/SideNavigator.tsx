@@ -50,15 +50,15 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
 
           <div className='flex flex-col items-start mb-10 mt-12'>
             <span className='h-3 text-xs text-m-neutral-10 font-semibold mb-3'>{!collapsed && 'Files'}</span>
-            <SideNavigatorItem text='Drive' icon={getIcon(IconTypes.FolderWithCrossGray)} hasChildren={true} isOpen={!collapsed} tooltipText='Esto es drive' />
-            <SideNavigatorItem text='Recents' icon={getIcon(IconTypes.ClockGray)} hasChildren={true} isOpen={!collapsed} tooltipText='Esto es recents' />
+            <SideNavigatorItem text='Drive' icon={getIcon(IconTypes.FolderWithCrossGray)} isOpen={!collapsed} tooltipText='Esto es drive' />
+            <SideNavigatorItem text='Recents' icon={getIcon(IconTypes.ClockGray)} isOpen={!collapsed} tooltipText='Esto es recents' />
           </div>
 
           <div className={`flex flex-col items-start transform duration-300 ${!collapsed ? 'delay-500' : 'delay-500 -translate-y-16'}`}>
             <span className='h-3 text-xs text-m-neutral-10 font-semibold mb-3'>{!collapsed && 'Configuration'}</span>
-            <SideNavigatorItem text='Account' icon={getIcon(IconTypes.AccountGray)} hasChildren={true} isOpen={!collapsed} tooltipText='Esto es account' />
-            <SideNavigatorItem text='Support' icon={getIcon(IconTypes.SupportGray)} hasChildren={true} isOpen={!collapsed} tooltipText='Esto es support' />
-            <SideNavigatorItem text='Log out' icon={getIcon(IconTypes.LogOutGray)} hasChildren={true} isOpen={!collapsed} tooltipText='Esto es log out' />
+            <SideNavigatorItem text='Account' icon={getIcon(IconTypes.AccountGray)} isOpen={!collapsed} tooltipText='Esto es account' />
+            <SideNavigatorItem text='Support' icon={getIcon(IconTypes.SupportGray)} isOpen={!collapsed} tooltipText='Esto es support' />
+            <SideNavigatorItem text='Log out' icon={getIcon(IconTypes.LogOutGray)} isOpen={!collapsed} />
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import localStorageService from '../services/localStorage.service';
 
-function getHeaders(withAuth: Boolean, withMnemonic: Boolean, isTeam: Boolean = false): Headers {
+function getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam: boolean = false): Headers {
   const headers = new Headers();
 
   headers.append('content-type', 'application/json; charset=utf-8');
