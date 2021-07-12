@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import './AppHeader.scss';
 
@@ -13,9 +13,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
     this.state = {};
   }
 
-  componentDidMount() { }
-
-  render() {
+  render(): ReactNode {
     return (
       <div className="flex justify-end w-full border py-3 px-2">
         <div className="border flex ">

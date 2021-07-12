@@ -13,8 +13,8 @@ interface ActivationProps {
 }
 
 interface ActivationState {
-  isActivated: Boolean | null
-  isError: Boolean
+  isActivated: boolean | null
+  isError: boolean
 }
 
 class Activation extends React.Component<ActivationProps & RouteProps, ActivationState> {

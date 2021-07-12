@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 interface props {
     match?: any
@@ -16,13 +16,13 @@ class Checkout extends React.Component<props, state> {
     };
   }
 
-  checkSessionId(sessionId) {
+  checkSessionId(sessionId): RegExpExecArray | null {
     const pattern = /^cs_(test|live)_[a-zA-Z0-9]+$/;
 
     return pattern.exec(sessionId);
   }
 
-  componentWillMount() {
+  componentWillMount(): void {
     const match = this.checkSessionId(this.state.sessionId);
 
     if (match) {
@@ -38,7 +38,7 @@ class Checkout extends React.Component<props, state> {
     }
   }
 
-  render() {
+  render(): ReactNode {
     if (!this.checkSessionId(this.state.sessionId)) {
       if (this.state.sessionId === 'ok' || this.state.sessionId === 'cancel') {
         return <div>{this.state.sessionId}</div>;

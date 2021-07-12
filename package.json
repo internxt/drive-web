@@ -66,7 +66,9 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
       "semi": "error",
@@ -119,9 +121,6 @@
         "error",
         "never"
       ],
-      "no-unused-vars": [
-        "error"
-      ],
       "no-useless-constructor": [
         "error"
       ],
@@ -131,7 +130,10 @@
       "no-empty": [
         "error"
       ],
-      "brace-style": "error"
+      "brace-style": "error",
+      "@typescript-eslint/no-empty-interface": "off",
+      "@typescript-eslint/no-inferrable-types": "off",
+      "@typescript-eslint/no-empty-function": "off"
     }
   },
   "browserslist": {

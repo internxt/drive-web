@@ -4,8 +4,8 @@ import { ProgressBar } from 'react-bootstrap';
 import './StorageProgressBar.scss';
 
 interface StorageProgressBarState {
-    max: Number
-    now: Number
+    max: number
+    now: number
 }
 
 class StorageProgressBar extends React.Component<StorageProgressBarState, StorageProgressBarState> {

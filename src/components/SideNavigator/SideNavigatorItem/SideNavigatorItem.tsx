@@ -1,36 +1,18 @@
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import ReactTooltip from 'react-tooltip';
-
 import './SideNavigatorItem.scss';
 
 interface SideNavigatorItemProps {
   text: string,
   icon: string,
-  hasChildren: boolean,
   isOpen: boolean,
   tooltipText: string
 }
 
-const SideNavigatorItem = ({ text, icon, hasChildren, isOpen, tooltipText }: SideNavigatorItemProps): JSX.Element => {
-  const [showChildren, setShowChildren] = useState(false);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setShowChildren(false);
-    }
-  }, [isOpen]);
-
+const SideNavigatorItem = ({ text, icon, isOpen, tooltipText }: SideNavigatorItemProps): JSX.Element => {
   return (
     <div>
       <div className='h-max mb-2 select-none'>
         <div className='flex items-center w-max cursor-pointer'
-          onClick={() => {
-            if (hasChildren && isOpen) {
-              setShowChildren(!showChildren);
-            }
-          }}
+          onClick={() => { }}
         >
           <div className='flex items-center h-5'>
             <img src={icon} alt="" className='mr-2.5' />
@@ -41,30 +23,6 @@ const SideNavigatorItem = ({ text, icon, hasChildren, isOpen, tooltipText }: Sid
             : null
           }
         </div>
-
-        {showChildren ?
-          <div className='pl-4'>
-            <div className='flex'>
-              <img src={icon} alt="" className='mr-2' />
-              {text}
-            </div>
-
-            <div className='flex'>
-              <img src={icon} alt="" className='mr-2' />
-              {text}
-            </div>
-
-            <div className='flex'>
-              <img src={icon} alt="" className='mr-2' />
-              {text}
-            </div>
-          </div>
-          :
-          null
-        }
-
-        <ReactTooltip id='mainTooltip' place='top' type='info' effect='solid'
-          className='w-32 h-6 p-0 text-center z-10' />
       </div>
     </div>
   );

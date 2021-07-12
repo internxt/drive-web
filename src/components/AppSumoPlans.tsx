@@ -14,7 +14,7 @@ interface AppSumoPlansProps {
   details?: any
 }
 
-function getAppSumoSize(name: string) {
+function getAppSumoSize(name: string): string {
   if (!name) {
     return 'undefined';
   }

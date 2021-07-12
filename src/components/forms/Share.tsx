@@ -98,7 +98,7 @@ class Share extends React.Component<ShareProps> {
     }
 
     download() {
-      let slices: ArrayBuffer [] = [];
+      const slices: ArrayBuffer [] = [];
       // let progress: number;
 
       toast.info('Securely retrieving file ...', {
