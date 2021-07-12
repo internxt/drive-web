@@ -12,7 +12,10 @@ import fileSuccessGreen from '../assets/icons/file-success-green.svg';
 import fileErrorRed from '../assets/icons/file-error-red.svg';
 import fileEncryptingGray from '../assets/icons/file-encrypting-gray.svg';
 import doubleArrowUpBlue from '../assets/icons/double-arrow-up-blue.svg';
+import doubleArrowUpWhite from '../assets/icons/double-arrow-up-white.svg';
 import crossGray from '../assets/icons/cross-gray.svg';
+import crossWhite from '../assets/icons/cross-white.svg';
+import crossNeutralBlue from '../assets/icons/cross-neutral-blue.svg';
 
 const icons = {
   folderWithCrossGray: folderWithCrossGray,
@@ -28,7 +31,10 @@ const icons = {
   fileErrorRed: fileErrorRed,
   fileEncryptingGray: fileEncryptingGray,
   doubleArrowUpBlue: doubleArrowUpBlue,
-  crossGray: crossGray
+  doubleArrowUpWhite: doubleArrowUpWhite,
+  crossGray: crossGray,
+  crossWhite: crossWhite,
+  crossNeutralBlue: crossNeutralBlue
 };
 
 export const getIcon = (iconName: IconTypes): string => {
