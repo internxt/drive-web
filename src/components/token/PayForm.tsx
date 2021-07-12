@@ -10,7 +10,7 @@ import { getHeaders } from '../../lib/auth';
 
 interface ResetProps {
     match?: any
-    isAuthenticated: Boolean
+    isAuthenticated: boolean
 }
 
 const plans = ['200GB - €3.49/month', '2TB - €8.99/month'];

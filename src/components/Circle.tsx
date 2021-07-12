@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import './Circle.scss';
 
 interface CircleProps {
@@ -6,8 +6,8 @@ interface CircleProps {
     image: string
 }
 
-const Circle = (props: CircleProps) => {
-  var style = {
+const Circle = (props: CircleProps): ReactNode => {
+  const style = {
     backgroundColor: props.color ? props.color : 'transparent',
     backgroundImage: props.image ? props.image : 'none'
   };

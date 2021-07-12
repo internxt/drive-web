@@ -40,7 +40,7 @@ class PopupShare extends React.Component<PopupShareProps> {
       });
     }
 
-    generateShareLink = (fileId: string, views: Number) => {
+    generateShareLink = (fileId: string, views: number) => {
       return new Promise((resolve, reject) => {
         fetch(`/api/storage/share/file/${fileId}`, {
           method: 'POST',
@@ -84,7 +84,7 @@ class PopupShare extends React.Component<PopupShareProps> {
       }, 750);
     }
 
-    handleShareLink(views: Number) {
+    handleShareLink(views: number) {
       let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
 
       if (!this.props.item.isFolder && this.props.item.isDraggable === false) {

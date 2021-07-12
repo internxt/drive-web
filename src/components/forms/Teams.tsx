@@ -20,15 +20,15 @@ import trash from '../../assets/Dashboard-Icons/trash.svg';
 
 interface Props {
   match?: any
-  isAuthenticated: Boolean
+  isAuthenticated: boolean
   templateOption?: string
 }
 
 interface State {
   user: {
     email: string,
-    isAdmin: Boolean,
-    isTeamMember: Boolean
+    isAdmin: boolean,
+    isTeamMember: boolean
   }
   team: {
     bridgeUser: string,
@@ -51,8 +51,8 @@ interface State {
 }
 
 interface Item {
-  isMember: Boolean
-  isInvitation: Boolean
+  isMember: boolean
+  isInvitation: boolean
   user: string
 }
 
@@ -61,8 +61,8 @@ class Teams extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    let renderOption = this.props.match.params.option;
-    let sessionId = this.props.match.params.sessionId;
+    const renderOption = this.props.match.params.option;
+    const sessionId = this.props.match.params.sessionId;
 
     this.state = {
       user: {

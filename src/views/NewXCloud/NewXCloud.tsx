@@ -34,8 +34,29 @@ interface NewXCloudProps {
   user: UserSettings | any,
   isAuthenticated: boolean;
   isActivated: boolean;
-  handleKeySaved: Function;
-  setHasConnection: Function;
+  handleKeySaved: (user: JSON) => void;
+  setHasConnection: (value: boolean) => void;
+}
+
+interface NewXCloudState {
+  email: string;
+  isAuthorized: boolean;
+  isInitialized: boolean;
+  isTeam: boolean;
+  token: string;
+  chooserModalOpen: boolean;
+  rateLimitModal: boolean;
+  currentFolderId: string;
+  currentFolderBucket: string;
+  currentCOmmanderItems: any[];
+  namePath: any[];
+  sortFunction: any;
+  searchFunction: any;
+  popupShareOpened: boolean,
+  showDeleteItemsPopup: boolean;
+  isLoading: boolean;
+  isAdmin: boolean;
+  isMember: boolean;
 }
 
 class NewXCloud extends React.Component<NewXCloudProps> {
@@ -163,7 +184,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
           this.setState({ isInitialized: true });
           // Set user with new root folder id
           response.json().then((body) => {
-            let updatedUser = this.props.user;
+            const updatedUser = this.props.user;
 
             updatedUser.root_folder_id = body.user.root_folder_id;
             this.props.handleKeySaved(updatedUser);
@@ -240,15 +261,15 @@ class NewXCloud extends React.Component<NewXCloudProps> {
   };
 
   setSearchFunction = (e) => {
-    // Set search function depending on search text input and refresh items list
     const searchString = removeAccents(e.target.value.toString()).toLowerCase();
-    let func: Function | null = null;
+    let func: ((item: any) => void) | null = null;
 
     if (searchString) {
       func = function (item) {
         return item.name.toLowerCase().includes(searchString);
       };
     }
+
     this.setState({ searchFunction: func });
     console.log('getFolderContent 9');
     this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
@@ -369,12 +390,12 @@ class NewXCloud extends React.Component<NewXCloudProps> {
 
     // No parent id implies is a directory created on the current folder, so let's show a spinner
     if (!parentFolderId) {
-      let __currentCommanderItems;
+      const __currentCommanderItems: any[] = this.state.currentCommanderItems;
 
       if (this.folderNameExists(newFolderName)) {
         newFolderName = this.getNewName(newFolderName);
       }
-      __currentCommanderItems = this.state.currentCommanderItems;
+
       __currentCommanderItems.push({
         name: newFolderName,
         isLoading: true,
@@ -420,10 +441,9 @@ class NewXCloud extends React.Component<NewXCloudProps> {
   };
 
   getFolderContent = async (rootId, updateNamePath = true, showLoading = true, isTeam = false): Promise<any> => {
-    /*@ts-ignore */
     await new Promise((resolve) => this.setState({ isLoading: showLoading }, () => resolve()));
 
-    let welcomeFile = await fetch('/api/welcome', {
+    const welcomeFile = await fetch('/api/welcome', {
       method: 'get',
       headers: getHeaders(true, false, isTeam)
     }).then(res => res.json())
@@ -501,7 +521,6 @@ class NewXCloud extends React.Component<NewXCloudProps> {
         // Only push path if it is not the same as actual path
         if (
           this.state.namePath.length === 0 ||
-          /* @ts-ignore */
           this.state.namePath[this.state.namePath.length - 1].id !== data.id
         ) {
           let folderName = '';
@@ -635,7 +654,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
             platform: 'web'
           });
           // Remove myself
-          let currentCommanderItems = this.state.currentCommanderItems.filter((commanderItem: any) =>
+          const currentCommanderItems = this.state.currentCommanderItems.filter((commanderItem: any) =>
             item.isFolder
               ? !commanderItem.isFolder ||
               (commanderItem.isFolder && !(commanderItem.id === item.id))
@@ -816,6 +835,8 @@ class NewXCloud extends React.Component<NewXCloudProps> {
   };
 
   handleUploadFiles = async (files, parentFolderId, folderPath = null) => {
+    const currentFolderId = this.state.currentFolderId;
+
     files = Array.from(files);
 
     const filesToUpload: any[] = [];
@@ -829,8 +850,6 @@ class NewXCloud extends React.Component<NewXCloudProps> {
       return;
     }
 
-    let currentFolderId = this.state.currentFolderId;
-
     parentFolderId = parentFolderId || currentFolderId;
 
     files.forEach(file => {
@@ -840,7 +859,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
     });
 
     for (const file of filesToUpload) {
-      let fileNameExists = this.fileNameExists(file.name, file.type);
+      const fileNameExists = this.fileNameExists(file.name, file.type);
 
       if (parentFolderId === currentFolderId) {
         this.setState({ currentCommanderItems: [...this.state.currentCommanderItems, file] });
@@ -854,7 +873,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
     }
 
     let fileBeingUploaded;
-    let uploadErrors: any[] = [];
+    const uploadErrors: any[] = [];
 
     try {
       await async.eachLimit(filesToUpload, 1, (file, nextFile) => {
@@ -1045,7 +1064,6 @@ class NewXCloud extends React.Component<NewXCloudProps> {
   }
 
   pushNamePath(path) {
-    /* @ts-ignore */
     return update(this.state.namePath, { $push: [path] });
   }
 

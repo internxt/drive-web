@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import FileGridItem from './FileGridItem/FileGridItem';
 
@@ -15,9 +15,7 @@ class FileGrid extends React.Component<FileGridProps, FileGridState> {
     this.state = {};
   }
 
-  componentDidMount() { }
-
-  render() {
+  render(): ReactNode {
     return (
       <div className="file-grid grid flex-wrap justify-between gap-5">
         <FileGridItem />

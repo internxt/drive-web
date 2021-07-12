@@ -33,7 +33,7 @@ class App extends React.Component {
     isActivated: false
   }
 
-  handleKeySaved = (user: JSON) => {
+  handleKeySaved = (user: JSON): void => {
     localStorageService.set('xUser', JSON.stringify(user));
     this.setState({ isAuthenticated: true, user: user });
   }

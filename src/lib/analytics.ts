@@ -1,6 +1,6 @@
 import localStorageService from '../services/localStorage.service';
 
-const prettySize = require('prettysize');
+import * as prettySize from 'prettysize';
 
 export const PATH_NAMES = {
   '/new': 'drive-web-register',
