@@ -7,8 +7,8 @@ interface LayoutState {
 }
 
 const initialState: LayoutState = {
-  showCreateFolder: true,
-  showFileLogger: true
+  showCreateFolder: false,
+  showFileLogger: false
 };
 
 export const layoutSlice = createSlice({
