@@ -116,7 +116,8 @@ module.exports = {
   },
   variants: {
     extend: {
-      borderRadius: ["responsive", "focus"]
+      borderRadius: ["responsive", "focus"],
+      backgroundColor: ["active"]
     }
   },
   plugins: []

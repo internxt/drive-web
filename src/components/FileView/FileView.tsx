@@ -3,12 +3,14 @@ import React from 'react';
 import FileList from './FileList/FileList';
 import FileGrid from './FileGrid/FileGrid';
 
+import { FileViewModes } from './models/enums';
+
 import './FileView.scss';
 
 interface FileViewProps { }
 
 interface FileViewState {
-  viewMode: 'list' | 'grid';
+  viewMode: FileViewModes;
 }
 
 class FileView extends React.Component<FileViewProps, FileViewState> {
@@ -16,26 +18,24 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
     super(props);
 
     this.state = {
-      viewMode: 'grid'
+      viewMode: FileViewModes.Grid
     };
   }
 
-  componentDidMount() { }
-
-  onPreviousPageButtonClicked() {
+  onPreviousPageButtonClicked(): void {
     console.log('previous page button clicked!');
   }
 
-  onNextPageButtonClicked() {
+  onNextPageButtonClicked(): void {
     console.log('next page button clicked!');
   }
 
   render() {
     const { viewMode } = this.state;
-    const fileViewNode = (viewMode === 'list' ?
-      <FileList /> :
-      <FileGrid />
-    );
+    const viewModes = {
+      list: <FileList />,
+      grid: <FileGrid />
+    };
 
     return (
       <div>
@@ -50,7 +50,7 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
           </div>
         </div>
 
-        { fileViewNode}
+        { viewModes[viewMode]}
 
         <div className="flex justify-center mt-16">
           <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">

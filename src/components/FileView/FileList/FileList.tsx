@@ -15,8 +15,6 @@ class FileActivity extends React.Component<FileActivityProps, FileActivityState>
     this.state = {};
   }
 
-  componentDidMount() { }
-
   render() {
     return (
       <div>

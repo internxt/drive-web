@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import folderIcon from '../../assets/icons/folder.svg';
 
@@ -15,15 +15,13 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
     this.state = {};
   }
 
-  componentDidMount() { }
-
-  render() {
+  render(): ReactNode {
     return (
       <div className="w-activity-1280 bg-l-neutral-20 px-32px py-42px">
         <div>
 
           <div className="text-center">
-            <img src={folderIcon} className="activity-file-icon m-auto" />
+            <img src={folderIcon} className="activity-file-icon m-auto" alt=""/>
             <div>
               <span className="text-neutral-900 block font-semibold text-base">Folder info</span>
               <span className="text-neutral-500 block text-sm">Folder name: FilesPending</span>

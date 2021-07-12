@@ -13,7 +13,7 @@ import AesFunctions from '../../lib/AesUtil';
 
 interface ResetProps {
   match?: any
-  isAuthenticated: Boolean
+  isAuthenticated: boolean
 }
 
 class Reset extends React.Component<ResetProps> {
@@ -78,7 +78,7 @@ class Reset extends React.Component<ResetProps> {
       })
     })
       .then(async res => {
-        var data = await res.json();
+        const data = await res.json();
 
         return { res, data };
       })
