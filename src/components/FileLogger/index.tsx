@@ -5,9 +5,16 @@ import { getIcon } from '../../services/getIcon';
 import Item from './Item';
 import items from './items.json';
 import './FileLogger.scss';
+import { useAppDispatch } from '../../store/hooks';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { showFileLogger } from '../../store/slices/layoutSlice';
+
+const selectIsOpen = (state: RootState) => state.layout.showFileLogger;
 
 const FileLogger = (): JSX.Element => {
-  const [isOpen, setIsOpen] = useState(true);
+  const dispatch = useAppDispatch();
+  const [isOpen, setIsOpen] = useState(useSelector(selectIsOpen));
   const [isMinimized, setIsMinized] = useState(false);
   const files: IFile[] = items;
 
@@ -21,6 +28,11 @@ const FileLogger = (): JSX.Element => {
     );
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+    dispatch(showFileLogger(false));
+  };
+
   return (
     <div className={`absolute bottom-0 right-80 flex flex-col w-64 transform duration-300 ${isMinimized ? 'h-9' : 'h-64'} bg-white mr-8 mb-11 rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''}`}>
       <div className='flex justify-between bg-neutral-90 px-4 py-2.5 rounded-md select-none'>
@@ -31,7 +43,7 @@ const FileLogger = (): JSX.Element => {
 
         <div className='flex'>
           <Button icon={IconTypes.DoubleArrowUpWhite} onClick={() => setIsMinized(!isMinimized)} style={`mr-1.5 transform duration-500 ${!isMinimized ? 'rotate-180' : 'rotate-0'}`} />
-          <Button icon={IconTypes.CrossNeutralBlue} onClick={() => setIsOpen(false)} />
+          <Button icon={IconTypes.CrossNeutralBlue} onClick={handleClose} />
         </div>
       </div>
 
