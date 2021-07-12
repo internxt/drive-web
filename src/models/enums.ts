@@ -16,6 +16,7 @@ export enum IconType {
     CrossGray = 'crossGray',
     CrossWhite = 'crossWhite',
     CrossNeutralBlue = 'crossNeutralBlue',
+    CrossBlue = 'crossBlue'
 }
 
 export enum FileStatusType {

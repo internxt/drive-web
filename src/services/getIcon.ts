@@ -16,6 +16,7 @@ import doubleArrowUpWhite from '../assets/icons/double-arrow-up-white.svg';
 import crossGray from '../assets/icons/cross-gray.svg';
 import crossWhite from '../assets/icons/cross-white.svg';
 import crossNeutralBlue from '../assets/icons/cross-neutral-blue.svg';
+import crossBlue from '../assets/icons/cross-blue.svg';
 
 const icons = {
   folderWithCrossGray: folderWithCrossGray,
@@ -34,7 +35,8 @@ const icons = {
   doubleArrowUpWhite: doubleArrowUpWhite,
   crossGray: crossGray,
   crossWhite: crossWhite,
-  crossNeutralBlue: crossNeutralBlue
+  crossNeutralBlue: crossNeutralBlue,
+  crossBlue: crossBlue
 };
 
 export const getIcon = (iconName: IconType): string => {

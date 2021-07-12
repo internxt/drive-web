@@ -28,6 +28,7 @@ import { setHasConnection } from '../../store/slices/networkSlice';
 import { UserSettings } from '../../models/interfaces';
 import SideNavigator from '../../components/SideNavigator/SideNavigator';
 import FileLogger from '../../components/FileLogger';
+import CreateFolder from '../../components/Modals/CreateFolder';
 
 interface NewXCloudProps {
   user: UserSettings | any,
@@ -1102,7 +1103,8 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
   render() {
     if (this.props.isAuthenticated && this.state.isInitialized) {
       return (
-        <div className="xcloud-layout flex">
+        <div className="relative xcloud-layout flex">
+          <CreateFolder />
 
           <SideNavigator />
 
