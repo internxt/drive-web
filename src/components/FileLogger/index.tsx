@@ -32,7 +32,7 @@ const FileLogger = (): JSX.Element => {
         </div>
       </div>
 
-      <div className='overflow-y-scroll scrollbar'>
+      <div className='overflow-y-scroll scrollbar pt-2.5'>
         {
           files.map(file => <Item item={file} key={file.id} />)
         }
