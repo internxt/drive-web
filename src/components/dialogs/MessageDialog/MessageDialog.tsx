@@ -1,6 +1,6 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 
-import { IconTypes } from '../../../models/interfaces';
+import { IconType } from '../../../models/enums';
 import { getIcon } from '../../../services/getIcon';
 
 import './MessageDialog.scss';
@@ -47,7 +47,7 @@ const MessageDialog = ({
           <span className='text-neutral-90 font-semibold text-xs'>{title}</span>
 
           <img
-            src={getIcon(IconTypes.CrossBlue)}
+            src={getIcon(IconType.CrossBlue)}
             alt=""
             className='message-dialog-close-button absolute mr-5 right-0 cursor-pointer'
             onClick={onCancelFn}

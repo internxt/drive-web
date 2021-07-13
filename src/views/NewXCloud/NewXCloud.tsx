@@ -33,7 +33,7 @@ interface NewXCloudProps {
   user: UserSettings | any,
   isAuthenticated: boolean;
   isActivated: boolean;
-  handleKeySaved: (user: UserSettings) => void;
+  handleKeySaved: (user: JSON) => void;
   setHasConnection: (value: boolean) => void;
 }
 

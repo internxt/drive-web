@@ -1,6 +1,6 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
+import { IconType } from '../../../models/enums';
 
-import { IconTypes } from '../../../models/interfaces';
 import { getIcon } from '../../../services/getIcon';
 
 import './InputDialog.scss';
@@ -39,7 +39,7 @@ const InputDialog = ({
   return (
     <div className="absolute flex align-middle justify-center w-full h-full">
       {/* BACKGROUND */}
-      <div className={`${isOpen ? 'block' : 'hidden'} z-40 absolute opacity-50 bg-black w-full h-full`}></div>
+      <div className={`${isOpen ? 'block' : 'hidden'} z-40 absolute opacity-80 bg-m-neutral-100 w-full h-full`}></div>
 
       {/* PANEL */}
       <div className={`input-dialog-panel ${isOpen ? 'block' : 'hidden'} relative z-50 rounded-lg px-7 py-4 bg-white text-xs`}>
@@ -47,7 +47,7 @@ const InputDialog = ({
           <span className='text-neutral-90 font-semibold text-xs'>{title}</span>
 
           <img
-            src={getIcon(IconTypes.CrossBlue)}
+            src={getIcon(IconType.CrossBlue)}
             alt=""
             className='input-dialog-close-button absolute mr-5 right-0 cursor-pointer'
             onClick={onCancelFn}
