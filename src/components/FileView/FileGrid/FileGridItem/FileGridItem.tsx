@@ -62,7 +62,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   onNameBlurred(): void {
-    console.log('on Name blurred!');
     this.setState({ isEditingName: false });
   }
 

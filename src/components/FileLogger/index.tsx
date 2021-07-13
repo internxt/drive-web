@@ -16,7 +16,7 @@ const FileLogger = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState(useSelector(selectIsOpen));
   const [isMinimized, setIsMinized] = useState(false);
-  const files: IFile[] = items;
+  const files: IFile[] | any[] = items;
 
   const Button = ({ icon, onClick, style = '' }: { icon: IconTypes, onClick?: () => void, style?: string }) => {
     return (

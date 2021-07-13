@@ -29,7 +29,6 @@ import { setHasConnection } from '../../store/slices/networkSlice';
 import { UserSettings } from '../../models/interfaces';
 import SideNavigator from '../../components/SideNavigator/SideNavigator';
 import FileLogger from '../../components/FileLogger';
-import CreateFolder from '../../components/Modals/CreateFolder';
 
 interface NewXCloudProps {
   user: UserSettings | any,
@@ -47,9 +46,9 @@ interface NewXCloudState {
   token: string;
   chooserModalOpen: boolean;
   rateLimitModal: boolean;
-  currentFolderId: string;
-  currentFolderBucket: string;
-  currentCOmmanderItems: any[];
+  currentFolderId: string | null;
+  currentFolderBucket: string | null;
+  currentCommanderItems: any[];
   namePath: any[];
   sortFunction: any;
   searchFunction: any;
@@ -60,27 +59,31 @@ interface NewXCloudState {
   isMember: boolean;
 }
 
-class NewXCloud extends React.Component<NewXCloudProps> {
-  state = {
-    email: '',
-    isAuthorized: false,
-    isInitialized: false,
-    isTeam: false,
-    token: '',
-    chooserModalOpen: false,
-    rateLimitModal: false,
-    currentFolderId: null,
-    currentFolderBucket: null,
-    currentCommanderItems: [],
-    namePath: [],
-    sortFunction: null,
-    searchFunction: null,
-    popupShareOpened: false,
-    showDeleteItemsPopup: false,
-    isLoading: true,
-    isAdmin: true,
-    isMember: false
-  };
+class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
+  constructor(props: NewXCloudProps) {
+    super(props);
+
+    this.state = {
+      email: '',
+      isAuthorized: false,
+      isInitialized: false,
+      isTeam: false,
+      token: '',
+      chooserModalOpen: false,
+      rateLimitModal: false,
+      currentFolderId: null,
+      currentFolderBucket: null,
+      currentCommanderItems: [],
+      namePath: [],
+      sortFunction: null,
+      searchFunction: null,
+      popupShareOpened: false,
+      showDeleteItemsPopup: false,
+      isLoading: true,
+      isAdmin: true,
+      isMember: false
+    };
+  }
 
   moveEvent = {};
 
@@ -1098,11 +1101,11 @@ class NewXCloud extends React.Component<NewXCloudProps> {
   }
 
   render() {
+    const modalInitialState: boolean = true;
+
     if (this.props.isAuthenticated && this.state.isInitialized) {
       return (
-        <div className="relative xcloud-layout flex">
-          <CreateFolder />
-
+        <div className="xcloud-layout flex">
           <SideNavigator />
 
           <div className="flex-grow bg-l-neutral-10 px-32px">
