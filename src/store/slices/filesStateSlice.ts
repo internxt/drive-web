@@ -16,7 +16,12 @@ export const filesStateSlice = createSlice({
   initialState,
   reducers: {
     addFileToHistory: (state, action: PayloadAction<ILoggerFile>) => {
-      state.fileHistory[action.payload.filePath] = action.payload;
+      const newEntry = {
+        [action.payload.filePath]: action.payload
+      };
+      const newState = Object.assign(newEntry, state.fileHistory);
+
+      state.fileHistory= newState;
     },
     updateFileStatus: (state, action: PayloadAction<IActionUpdateFileLoggerEntry>) => {
       const { filePath, status, progress, errorMessage } = action.payload;

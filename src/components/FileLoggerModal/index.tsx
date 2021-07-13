@@ -1,20 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { IconTypes, ILogger } from '../../models/interfaces';
+import { FileStatusTypes, IconTypes, ILogger, ILoggerFile } from '../../models/interfaces';
 import { getIcon } from '../../services/getIcon';
 import Item from './Item';
 import './FileLogger.scss';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
-import { selectShowFileLogger, showFileLogger } from '../../store/slices/layoutSlice';
+import { showFileLogger } from '../../store/slices/layoutSlice';
 import { selectLoggerFiles } from '../../store/slices/filesStateSlice';
-/* import FileLogger from '../../services/fileLogger';
- */
+import FileLogger from '../../services/fileLogger';
+
 const FileLoggerModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const isOpen = useSelector(selectShowFileLogger);
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinized] = useState(false);
   const files: ILogger = useSelector(selectLoggerFiles);
+  const [entries, setEntries] = useState<ILoggerFile[]>([]);
 
   const Button = ({ icon, onClick, style = '' }: { icon: IconTypes, onClick?: () => void, style?: string }) => {
     return (
@@ -27,12 +29,32 @@ const FileLoggerModal = (): JSX.Element => {
   };
 
   const handleClose = () => {
-    dispatch(showFileLogger(false));
+    if (hasFinished) {
+      setIsOpen(false);
+    }
   };
 
-  /* FileLogger.on('new-entry', () => {
-    console.log('triggered');
-  }); */
+  useEffect(() => {
+    FileLogger.on('new-entry', (newEntry: ILoggerFile) => {
+      setHasFinished(false);
+      setEntries(prevState => [newEntry, ...prevState]);
+    });
+
+    FileLogger.on('update-last-entry', (updatedEntry: ILoggerFile) => {
+      setEntries(prevState => {
+        const newState = prevState.filter(entry => entry.filePath !== updatedEntry.filePath);
+
+        return [updatedEntry, ...newState];
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    if (entries.length) {
+      setIsOpen(true);
+      entries.forEach(entry => entry.status !== FileStatusTypes.Success && entry.status !== FileStatusTypes.Error ? setHasFinished(false) : null);
+    }
+  }, [entries]);
 
   return (
     <div className={`absolute bottom-0 right-80 flex flex-col w-64 transform duration-300 ${isMinimized ? 'h-9' : 'h-64'} bg-white mr-8 mb-11 rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''}`}>
@@ -44,13 +66,16 @@ const FileLoggerModal = (): JSX.Element => {
 
         <div className='flex'>
           <Button icon={IconTypes.DoubleArrowUpWhite} onClick={() => setIsMinized(!isMinimized)} style={`mr-1.5 transform duration-500 ${!isMinimized ? 'rotate-180' : 'rotate-0'}`} />
-          <Button icon={IconTypes.CrossNeutralBlue} onClick={handleClose} />
+          <Button icon={hasFinished ? IconTypes.CrossNeutralBlue : IconTypes.CrossWhite} onClick={handleClose} />
         </div>
       </div>
 
-      <div className='overflow-y-scroll scrollbar pt-2.5'>
+      <div className='overflow-y-scroll scrollbar pt-2.5 h-full'>
         {
-          Object.values(files).map(file => <Item item={file} key={file.filePath} />)
+          // Object.values(files).map(file => <Item item={file} key={file.filePath} />)
+          entries.map(file => {
+            return <Item item={file} key={file.filePath} />;
+          })
         }
       </div>
     </div>

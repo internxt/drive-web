@@ -14,19 +14,19 @@ const Item = ({ item }: ItemProps): JSX.Element => {
     switch (item.status) {
       case FileStatusTypes.Uploading:
         infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.ClockGray);
-        infoObj.status = item.isFolder ? 'Uploading...' : item.progress + '% File uploading...';
+        infoObj.status = item.isFolder ? 'Uploading...' : item.progress + '% Uploading file...';
 
         return infoObj;
 
       case FileStatusTypes.Downloading:
         infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.ClockGray);
-        infoObj.status = item.isFolder ? 'Downloading files in folder...' : item.progress + '% File uploading...';
+        infoObj.status = item.isFolder ? 'Downloading files in folder...' : item.progress + '% Uploading file...';
 
         return infoObj;
 
       case FileStatusTypes.Success:
         infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.FileSuccessGreen);
-        infoObj.status = 'File downloaded';
+        infoObj.status = item.action === FileActionTypes.Download ? 'File downloaded' : 'File uploaded';
 
         return infoObj;
 
@@ -69,7 +69,7 @@ const Item = ({ item }: ItemProps): JSX.Element => {
       </div>
 
       <div className='flex flex-col text-left w-40'>
-        <span className='text-xs text-neutral-900'>
+        <span className='text-xs text-neutral-900 truncate'>
           {getFileInfo().name}
         </span>
 
