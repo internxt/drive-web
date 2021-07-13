@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { FileData } from '../../models/interfaces';
-import { FileStatusType, IconType } from '../../models/enums';
-import { getIcon } from '../../services/getIcon';
+import { FileStatusType } from '../../models/enums';
+import { getIcon, IconType } from '../../services/icon.service';
 
 interface ItemProps {
   item: FileData

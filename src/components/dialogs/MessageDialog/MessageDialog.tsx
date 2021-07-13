@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import { IconType } from '../../../models/enums';
-import { getIcon } from '../../../services/getIcon';
+import { getIcon, IconType } from '../../../services/icon.service';
 
 import './MessageDialog.scss';
 

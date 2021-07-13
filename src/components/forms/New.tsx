@@ -202,7 +202,7 @@ class New extends React.Component<NewProps, NewState> {
           const { token, user, uuid } = body;
 
           window.analytics.identify(uuid, { email: this.state.register.email, member_tier: 'free' });
-          analyticsService.signUp({
+          analyticsService.trackSignUp({
             properties: {
               userId: uuid,
               email: this.state.register.email

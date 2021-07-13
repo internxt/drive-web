@@ -3,16 +3,28 @@ import React from 'react';
 import FileListItem from './FileListItem/FileListItem';
 
 import './FileList.scss';
+import { RootState } from '../../../store';
+import { connect } from 'react-redux';
 
-interface FileActivityProps { }
+interface FileListProps {
+  items: any[]
+}
 
-interface FileActivityState { }
+interface FileListState { }
 
-class FileActivity extends React.Component<FileActivityProps, FileActivityState> {
-  constructor(props: FileActivityProps) {
+class FileList extends React.Component<FileListProps, FileListState> {
+  constructor(props: FileListProps) {
     super(props);
 
     this.state = {};
+  }
+
+  get itemsList(): JSX.Element[] {
+    return this.props.items.map((item: any, index: number) =>
+      <FileListItem
+        key={index}
+        item={item}
+      />);
   }
 
   render() {
@@ -33,9 +45,7 @@ class FileActivity extends React.Component<FileActivityProps, FileActivityState>
             </tr>
           </thead>
           <tbody>
-            <FileListItem />
-            <FileListItem />
-            <FileListItem />
+            {this.itemsList}
           </tbody>
         </table>
       </div>
@@ -43,4 +53,8 @@ class FileActivity extends React.Component<FileActivityProps, FileActivityState>
   }
 }
 
-export default FileActivity;
+export default connect(
+  (state: RootState) => ({
+    items: state.storage.items,
+    selectedItems: state.storage.selectedItems
+  }))(FileList);

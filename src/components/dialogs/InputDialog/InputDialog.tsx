@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { IconType } from '../../../models/enums';
 
-import { getIcon } from '../../../services/getIcon';
+import { getIcon } from '../../../services/icon.service';
 
 import './InputDialog.scss';
 

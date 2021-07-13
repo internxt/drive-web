@@ -27,6 +27,7 @@
     "inxt-js": "git+ssh://git@github.com:internxt/inxt-js.git#beta",
     "jquery": "^3.5.1",
     "js-file-download": "^0.4.12",
+    "moment": "^2.29.1",
     "natural-orderby": "^2.0.3",
     "openpgp": "^4.10.10",
     "popper.js": "^1.16.1",

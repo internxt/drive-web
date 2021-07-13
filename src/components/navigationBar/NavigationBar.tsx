@@ -126,8 +126,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     this.props.handleChangeWorkspace && this.props.handleChangeWorkspace();
   }
 
-  render() {
-
+  render(): JSX.Element {
     return (
       <Navbar id="mainNavBar">
         <Navbar.Brand>

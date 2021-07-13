@@ -6,8 +6,13 @@ import FileGrid from './FileGrid/FileGrid';
 import { FileViewModes } from './models/enums';
 
 import './FileView.scss';
+import LoadingFileExplorer from '../LoadingFileExplorer/LoadingFileExplorer';
+import { RootState } from '../../store';
+import { connect } from 'react-redux';
 
-interface FileViewProps { }
+interface FileViewProps {
+  isLoadingItems: boolean;
+}
 
 interface FileViewState {
   viewMode: FileViewModes;
@@ -31,6 +36,7 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
   }
 
   render(): ReactNode {
+    const { isLoadingItems } = this.props;
     const { viewMode } = this.state;
     const viewModes = {
       list: <FileList />,
@@ -50,22 +56,31 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
           </div>
         </div>
 
-        { viewModes[viewMode]}
+        { isLoadingItems ?
+          <LoadingFileExplorer /> :
+          viewModes[viewMode]
+        }
 
-        <div className="flex justify-center mt-16">
-          <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-            {'<<'}
+        { !isLoadingItems && (
+          <div className="flex justify-center mt-16">
+            <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
+              {'<<'}
+            </div>
+            <div className="pagination-button">
+              1
+            </div>
+            <div onClick={this.onNextPageButtonClicked} className="pagination-button">
+              {'>>'}
+            </div>
           </div>
-          <div className="pagination-button">
-            1
-          </div>
-          <div onClick={this.onNextPageButtonClicked} className="pagination-button">
-            {'>>'}
-          </div>
-        </div>
+        )}
       </div>
     );
   }
 }
 
-export default FileView;
+export default connect((state: RootState) => ({
+  isLoadingItems: state.storage.isLoading,
+  currentItems: state.storage.items,
+  selectedItems: state.storage.selectedItems
+}))(FileView);

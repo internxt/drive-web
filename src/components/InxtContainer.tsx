@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Container } from 'react-bootstrap';
 import './InxtContainer.scss';
 
 interface InxtContainerProps {
     style?: React.CSSProperties
     children: any,
-    text: string | Element
+    text?: string | Element
 }
 
 class InxtContainer extends React.Component<InxtContainerProps> {
-  render() {
+  render(): JSX.Element {
     return <Container className="InxtContainer" style={this.props.style}>
       {this.props.children}
     </Container>;

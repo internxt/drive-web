@@ -2,17 +2,20 @@ import React, { Fragment } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
-import folderIcon from '../../../../assets/icons/folder.svg';
+import iconService, { IconType } from '../../../../services/icon.service';
 
 import './FileGridItem.scss';
+import dateService from '../../../../services/date.service';
+
+interface FileGridItemProps {
+  item: any;
+}
 
 interface FileGridItemState {
   isEditingName: boolean;
   dirtyName: string;
   nameInputRef: React.RefObject<HTMLInputElement>;
 }
-
-interface FileGridItemProps {}
 
 class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState> {
   constructor(props: FileGridItemProps) {
@@ -37,15 +40,22 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   get nameNode(): JSX.Element {
+    const { item } = this.props;
     const { isEditingName, dirtyName, nameInputRef } = this.state;
     const ṣpanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
 
     return (
       <Fragment>
         <input ref={nameInputRef} className={isEditingName ? 'block' : 'hidden'} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
-        <span onDoubleClick={this.onNameDoubleClicked} className={`${ṣpanDisplayClass} text-neutral-900 text-sm px-1`} >FilesPending.png</span>
+        <span onDoubleClick={this.onNameDoubleClicked} className={`${ṣpanDisplayClass} text-neutral-900 text-sm px-1`} >{item.name}</span>
       </Fragment>
     );
+  }
+
+  get itemIconSrc(): string {
+    return this.props.item.isFolder ?
+      iconService.getIcon(IconType.FolderBlue) :
+      iconService.getIcon(IconType.DefaultFile);
   }
 
   onOptionsButtonClicked(): void {
@@ -53,10 +63,11 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   onNameDoubleClicked(): void {
+    const { item } = this.props;
     const { nameInputRef } = this.state;
 
     this.setState(
-      { isEditingName: true, dirtyName: '' },
+      { isEditingName: true, dirtyName: item.name },
       () => nameInputRef.current && nameInputRef.current.focus()
     );
   }
@@ -76,10 +87,11 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   onRenameButtonClicked(): void {
+    const { item } = this.props;
     const { nameInputRef } = this.state;
 
     this.setState(
-      { isEditingName: true },
+      { isEditingName: true, dirtyName: item.name },
       () => setTimeout(() => nameInputRef.current && nameInputRef.current.focus(), 0)
     );
   }
@@ -101,6 +113,8 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   render() {
+    const { item } = this.props;
+
     return (
       <div className="group file-grid-item">
         <Dropdown>
@@ -115,13 +129,13 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
             onDeleteButtonClicked={this.onDeleteButtonClicked}
           />
         </Dropdown>
-        <img className="file-icon m-auto" src={folderIcon} />
+        <img className="file-icon m-auto" src={this.itemIconSrc} />
         <div className="text-center mt-3">
           <div className="h-5 mb-1">
             {this.nameNode}
           </div>
           <span className="block text-xs text-blue-60 px-1">
-            2 weeks ago
+            {dateService.fromNow(item.updatedAt)}
           </span>
         </div>
       </div>

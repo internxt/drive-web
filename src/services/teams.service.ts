@@ -2,6 +2,18 @@ import { getHeaders } from '../lib/auth';
 import localStorageService from '../services/localStorage.service';
 import { decryptPGP } from '../lib/utilspgp';
 
+export function isTeamActivated(): Promise<any> {
+  const team: any = localStorage.getTeams();
+
+  return fetch(`/api/team/isactivated/${team.bridge_user}`, {
+    method: 'get',
+    headers: getHeaders(true, false)
+  }).then((response) => response.json())
+    .catch(() => {
+      console.log('Error getting user activation');
+    });
+}
+
 export async function getTeamsInfo() {
   return fetch('/api/teams/info', {
     method: 'get',
@@ -42,3 +54,12 @@ export async function storeTeamsInfo() {
     localStorageService.del('xTokenTeam');
   }
 }
+
+const teamsService = {
+  isTeamActivated,
+  getTeamsInfo,
+  getKeys,
+  storeTeamsInfo
+};
+
+export default teamsService;

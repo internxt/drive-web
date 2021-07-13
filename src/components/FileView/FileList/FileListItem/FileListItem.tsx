@@ -1,12 +1,16 @@
 import React, { Fragment, ReactNode } from 'react';
 
 import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
-import folderIcon from '../../../../assets/icons/folder.svg';
+import sizeService from '../../../../services/size.service';
 
 import './FileListItem.scss';
 import { Dropdown } from 'react-bootstrap';
+import dateService from '../../../../services/date.service';
+import iconService, { IconType } from '../../../../services/icon.service';
 
-interface FileListItemProps { }
+interface FileListItemProps {
+  item: any;
+}
 
 interface FileListItemState {
   isEditingName: boolean;
@@ -36,22 +40,30 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   get nameNode(): JSX.Element {
+    const { item } = this.props;
     const { isEditingName, dirtyName, nameInputRef } = this.state;
     const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
 
     return (
       <Fragment>
         <input className={isEditingName ? 'block' : 'hidden'} ref={nameInputRef} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
-        <span className={`${spanDisplayClass} text-neutral-900 text-sm px-1`} onDoubleClick={this.onNameDoubleClicked}>FilesPending</span>
+        <span className={`${spanDisplayClass} text-neutral-900 text-sm px-1`} onDoubleClick={this.onNameDoubleClicked}>{item.name}</span>
       </Fragment>
     );
   }
 
+  get itemIconSrc(): string {
+    return this.props.item.isFolder ?
+      iconService.getIcon(IconType.FolderBlue) :
+      iconService.getIcon(IconType.DefaultFile);
+  }
+
   onNameDoubleClicked(): void {
+    const { item } = this.props;
     const { nameInputRef } = this.state;
 
     this.setState(
-      { isEditingName: true, dirtyName: '' },
+      { isEditingName: true, dirtyName: item.name },
       () => nameInputRef.current && nameInputRef.current.focus()
     );
   }
@@ -71,10 +83,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   onRenameButtonClicked(): void {
+    const { item } = this.props;
     const { nameInputRef } = this.state;
 
     this.setState(
-      { isEditingName: true },
+      { isEditingName: true, dirtyName: item.name },
       () => setTimeout(() => nameInputRef.current && nameInputRef.current.focus(), 0)
     );
   }
@@ -96,24 +109,26 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   render(): ReactNode {
+    const { item } = this.props;
+
     return (
       <tr className="group file-list-item hover:bg-blue-10 border-b border-l-neutral-30 text-sm">
         <td className="px-4">
           <input type="checkbox" />
         </td>
         <td>
-          <img className="type-icon" src={folderIcon} />
+          <img className="type-icon" src={this.itemIconSrc} />
         </td>
         <td>
           <div>
             <div className="mb-1">
               {this.nameNode}
             </div>
-            <span className="block text-blue-60 text-xs px-1">Updated 2 weeks ago</span>
+            <span className="block text-blue-60 text-xs px-1">Updated {dateService.fromNow(item.updatedAt)}</span>
           </div>
         </td>
-        <td>12 July 2021. 14:57</td>
-        <td>30MB</td>
+        <td>{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
+        <td>{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
         <td>
           <div className="flex justify-center">
             <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">D</button>

@@ -13,7 +13,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import FileCommander from '../../components/FileCommander/FileCommander';
 import NavigationBar from '../../components/navigationBar/NavigationBar';
 import { removeAccents, getFilenameAndExt, renameFile, encryptFilename } from '../../lib/utils';
-import localStorageService from '../../services/localStorage.service';
 
 import PopupShare from '../../components/PopupShare';
 import './XCloud.scss';

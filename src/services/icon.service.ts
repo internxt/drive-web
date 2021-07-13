@@ -1,4 +1,3 @@
-import { IconType } from '../models/enums';
 import folderWithCrossGray from '../assets/icons/folder-with-cross-gray.svg';
 import clockGray from '../assets/icons/clock-gray.svg';
 import accountGray from '../assets/icons/account-gray.svg';
@@ -17,28 +16,58 @@ import crossGray from '../assets/icons/cross-gray.svg';
 import crossWhite from '../assets/icons/cross-white.svg';
 import crossNeutralBlue from '../assets/icons/cross-neutral-blue.svg';
 import crossBlue from '../assets/icons/cross-blue.svg';
+import defaultFile from '../assets/icons/default-file.svg';
+
+export enum IconType {
+  FolderWithCrossGray = 'folderWithCrossGray',
+  ClockGray = 'clockGray',
+  AccountGray = 'accountGray',
+  SupportGray = 'supportGray',
+  LogOutGray = 'logOutGray',
+  BackArrows = 'backArrows',
+  InternxtLongLogo = 'internxtLongLogo',
+  InternxtShortLogo = 'internxtShortLogo',
+  FolderBlue = 'folderBlue',
+  FileSuccessGreen = 'fileSuccessGreen',
+  FileErrorRed = 'fileErrorRed',
+  FileEncryptingGray = 'fileEncryptingGray',
+  DoubleArrowUpBlue = 'doubleArrowUpBlue',
+  DoubleArrowUpWhite = 'doubleArrowUpWhite',
+  CrossGray = 'crossGray',
+  CrossWhite = 'crossWhite',
+  CrossNeutralBlue = 'crossNeutralBlue',
+  CrossBlue = 'crossBlue',
+  DefaultFile = 'defaultFile'
+}
 
 const icons = {
-  folderWithCrossGray: folderWithCrossGray,
-  clockGray: clockGray,
-  accountGray: accountGray,
-  supportGray: supportGray,
-  logOutGray: logOutGray,
-  backArrows: backArrows,
-  internxtShortLogo: internxtShortLogo,
-  internxtLongLogo: internxtLongLogo,
-  folderBlue: folderBlue,
-  fileSuccessGreen: fileSuccessGreen,
-  fileErrorRed: fileErrorRed,
-  fileEncryptingGray: fileEncryptingGray,
-  doubleArrowUpBlue: doubleArrowUpBlue,
-  doubleArrowUpWhite: doubleArrowUpWhite,
-  crossGray: crossGray,
-  crossWhite: crossWhite,
-  crossNeutralBlue: crossNeutralBlue,
-  crossBlue: crossBlue
+  folderWithCrossGray,
+  clockGray,
+  accountGray,
+  supportGray,
+  logOutGray,
+  backArrows,
+  internxtShortLogo,
+  internxtLongLogo,
+  folderBlue,
+  fileSuccessGreen,
+  fileErrorRed,
+  fileEncryptingGray,
+  doubleArrowUpBlue,
+  doubleArrowUpWhite,
+  crossGray,
+  crossWhite,
+  crossNeutralBlue,
+  crossBlue,
+  defaultFile
 };
 
 export const getIcon = (iconName: IconType): string => {
   return icons[iconName];
 };
+
+const iconService = {
+  getIcon
+};
+
+export default iconService;

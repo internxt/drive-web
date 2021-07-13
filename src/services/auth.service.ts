@@ -20,7 +20,7 @@ export async function initializeUser(email: string, mnemonic: string) {
 }
 
 export function logOut() {
-  analyticsService.signOut();
+  analyticsService.trackSignOut();
   localStorageService.clear();
   localStorageService.del('workspace');
   history.push('/login');

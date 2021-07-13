@@ -262,7 +262,7 @@ class Login extends React.Component<LoginProps> {
           referrals_count: Math.floor(data.user.credit / 5),
           createdAt: data.user.createdAt
         }, () => {
-          analyticsService.signIn({
+          analyticsService.trackSignIn({
             email: this.state.email,
             userId: user.uuid
           });

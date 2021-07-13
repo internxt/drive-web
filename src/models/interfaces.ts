@@ -15,6 +15,7 @@ export interface UserSettings {
   root_folder_id: number
   userId: string
   uuid: string
+  teams?: boolean;
 }
 
 export interface TeamsSettings {

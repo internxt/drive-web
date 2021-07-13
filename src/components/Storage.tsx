@@ -18,9 +18,9 @@ import { getHeaders } from '../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AppSumoPlans from './AppSumoPlans';
-import customPrettySize from '../lib/sizer';
 import SessionStorage from '../lib/sessionStorage';
-import { getLimit } from '../services/storage.service';
+import { getLimit } from '../services/limit.service';
+import sizeService from '../services/size.service';
 
 interface StorageProps {
     isAuthenticated: boolean
@@ -92,7 +92,7 @@ class Storage extends React.Component<StorageProps> {
     putLimitUser = () => {
       if (this.state.max > 0) {
         if (this.state.max < 108851651149824) {
-          return customPrettySize(this.state.max);
+          return sizeService.bytesToString(this.state.max);
         } else if (this.state.max >= 108851651149824) {
           return '\u221E';
         } else {
@@ -147,7 +147,7 @@ class Storage extends React.Component<StorageProps> {
           <InxtContainer>
             <p className="title">Storage Used</p>
 
-            <p className="space-used-text">Used <b>{customPrettySize(this.state.now)}</b> of <b>{this.putLimitUser()}</b></p>
+            <p className="space-used-text">Used <b>{sizeService.bytesToString(this.state.now)}</b> of <b>{this.putLimitUser()}</b></p>
             <StorageProgressBar max={this.state.max} now={this.state.now} />
 
             <Row className="space-used-legend">

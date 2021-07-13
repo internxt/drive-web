@@ -2,8 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 
 import { FileData } from '../../models/interfaces';
-import { IconType } from '../../models/enums';
-import { getIcon } from '../../services/getIcon';
+import { getIcon, IconType } from '../../services/icon.service';
 import Item from './Item';
 import items from './items.json';
 import './FileLogger.scss';

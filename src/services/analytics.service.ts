@@ -1,5 +1,5 @@
 import * as prettySize from 'prettysize';
-import { AnalyticsTrack } from '../models/enums';
+import { AnalyticsTrack, DevicePlatform } from '../models/enums';
 import { UserSettings } from '../models/interfaces';
 import localStorageService from '../services/localStorage.service';
 
@@ -44,37 +44,108 @@ export function identifyPlan(newValue: number) {
   }
 }
 
-export function signOut() {
+export function trackSignOut() {
   window.analytics.track(AnalyticsTrack.SignOut, {
     email: getUser().email
   });
 }
 
-export function signIn(payload: { email: string, userId: string}): void {
+export function trackSignIn(payload: { email: string, userId: string }): void {
   window.analytics.track(AnalyticsTrack.SignIn, payload);
 }
 
-export function signUp(payload: { properties: { userId: string, email: string}}): void {
+export function trackSignUp(payload: { properties: { userId: string, email: string } }): void {
   window.analytics.track(AnalyticsTrack.SignUp, payload);
 }
 
-export function userEnterPayments(): void {
+export function trackUserEnterPayments(): void {
   window.analytics.track(AnalyticsTrack.UserEnterPayments);
 }
 
-export function planSubscriptionSelected(payload: { price: string, plan_type: string, payment_type: string, plan_length: number, email: string }) {
+export function trackPlanSubscriptionSelected(payload: { price: string, plan_type: string, payment_type: string, plan_length: number, email: string }) {
   window.analytics.track(AnalyticsTrack.PlanSubscriptionSelected, payload);
+}
+
+export function trackFolderCreated(payload: { email: string, platform: DevicePlatform }) {
+  window.analytics.track(AnalyticsTrack.FolderCreated, payload);
+}
+
+export function trackFolderRename(payload: { email: string, fileId: number, platform: DevicePlatform }) {
+  window.analytics.track(AnalyticsTrack.FolderRename, payload);
+}
+
+export function trackFileRename(payload: { email: string, file_id: number, platform: DevicePlatform }) {
+  window.analytics.track(AnalyticsTrack.FileRename, payload);
+}
+
+export function trackFileDownloadStart(payload: { file_id: number, file_name: string, file_size: number, file_type: string, email: string, folder_id: string, platform: DevicePlatform }) {
+  window.analytics.track(AnalyticsTrack.FileDownloadStart, payload);
+}
+
+export function trackFileDownloadError(payload: { file_id: number, email: string, msg: string, platform: DevicePlatform }) {
+  window.analytics.track(AnalyticsTrack.FileDownloadError, payload);
+}
+
+export function trackFileDownloadFinished(payload: { file_id: number, file_size: number, email: string, platform: DevicePlatform }) {
+  window.analytics.track(AnalyticsTrack.FileDownloadFinished, payload);
+}
+
+export function trackFileUploadStart(payload: {
+  file_size: number,
+  file_type: string, folder_id: string, email: string, platform: DevicePlatform
+}) {
+  window.analytics.track(AnalyticsTrack.FileUploadStart, payload);
+}
+
+export function trackFileUploadError(payload: {
+  file_size: number,
+  file_type: string, folder_id: string, email: string, msg: string, platform: DevicePlatform
+}) {
+  window.analytics.track(AnalyticsTrack.FileUploadError, payload);
+}
+
+export function trackFileUploadFinished(payload: { file_type: string, file_id: number, file_size: number, email: string }) {
+  window.analytics.track(AnalyticsTrack.FileUploadFinished, payload);
+}
+
+export function trackMoveItem(keyOp: string, payload: { email: string, file_id: number, platform: DevicePlatform }) {
+  window.analytics.track(`${keyOp}-move`.toLowerCase(), payload);
+}
+
+export function trackDeleteItem(itemToDelete: any, payload: { email: string, platform: DevicePlatform }) {
+  window.analytics.track(`${itemToDelete.isFolder ? 'folder' : 'file'}-delete`, payload);
+}
+
+export function trackOpenWelcomeFile() {
+  window.analytics.track(AnalyticsTrack.OpenWelcomeFile);
+}
+
+export function trackDeleteWelcomeFile() {
+  window.analytics.track(AnalyticsTrack.DeleteWelcomeFile);
 }
 
 const analyticsService = {
   page,
   identifyUsage,
   identifyPlan,
-  signOut,
-  signIn,
-  signUp,
-  userEnterPayments,
-  planSubscriptionSelected
+  trackSignOut,
+  trackSignIn,
+  trackSignUp,
+  trackUserEnterPayments,
+  trackPlanSubscriptionSelected,
+  trackFolderCreated,
+  trackFolderRename,
+  trackFileRename,
+  trackFileDownloadStart,
+  trackFileDownloadError,
+  trackFileDownloadFinished,
+  trackFileUploadStart,
+  trackFileUploadError,
+  trackFileUploadFinished,
+  trackMoveItem,
+  trackDeleteItem,
+  trackOpenWelcomeFile,
+  trackDeleteWelcomeFile
 };
 
 export default analyticsService;

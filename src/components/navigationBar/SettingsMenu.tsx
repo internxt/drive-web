@@ -4,22 +4,17 @@ import { Dropdown, ProgressBar } from 'react-bootstrap';
 import HeaderButton from './HeaderButton';
 
 import history from '../../lib/history';
-import customPrettySize from '../../lib/sizer';
+import customPrettySize from '../../services/size.service';
 import account from '../../assets/Dashboard-Icons/Account.svg';
 import localStorageService from '../../services/localStorage.service';
 import SessionStorage from '../../lib/sessionStorage';
-import { getHeaders } from '../../lib/auth';
-import { getLimit } from '../../services/storage.service';
+import { getLimit } from '../../services/limit.service';
 import { UserSettings } from '../../models/interfaces';
 import authService from '../../services/auth.service';
+import usageService, { UsageResponse } from '../../services/usage.service';
 
 interface SettingMenuProp {
-  isTeam: boolean,
-}
-
-interface UsageResponse {
-  _id: string
-  total: number
+  isTeam: boolean
 }
 
 const DEFAULT_LIMIT = 1024 * 1024 * 1024 * 10;
@@ -61,9 +56,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
   }, []);
 
   const fetchUsage = () => {
-    return fetch('/api/usage', {
-      headers: getHeaders(true, false, isTeam)
-    }).then(res => res.json())
+    return usageService.fetchUsage()
       .then((res: UsageResponse) => {
         setBarUsage(res.total);
       }).catch(() => null);

@@ -128,7 +128,7 @@ class StoragePlans extends React.Component<StoragePlansProps, StoragePlansState>
       if (result.error) {
         throw Error(result.error);
       }
-      analyticsService.userEnterPayments();
+      analyticsService.trackUserEnterPayments();
       this.setState({ statusMessage: 'Redirecting to Stripe...' });
       SessionStorage.del('limitStorage');
       stripe.redirectToCheckout({ sessionId: result.id }).then(result => {
@@ -201,7 +201,7 @@ class StoragePlans extends React.Component<StoragePlansProps, StoragePlansState>
                 isChecked={false}
                 header={'€' + fixedPrice}
                 onClick={() => {
-                  analyticsService.planSubscriptionSelected({
+                  analyticsService.trackPlanSubscriptionSelected({
                     price: fixedPrice,
                     plan_type: entry.name,
                     payment_type: PaymentBridges[0].name,

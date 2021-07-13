@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { getIcon } from '../../services/getIcon';
-import { IconType } from '../../models/enums';
+import { getIcon, IconType } from '../../services/icon.service';
 import SideNavigatorItem from './SideNavigatorItem/SideNavigatorItem';
 
 import './SideNavigator.scss';
