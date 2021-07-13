@@ -24,6 +24,7 @@ import Success from './components/teams/Success';
 import localStorageService from './services/localStorage.service';
 
 import NewXCloud from './views/NewXCloud/NewXCloud';
+import XCloud from './views/XCloud/XCloud';
 
 class App extends React.Component {
   state = {
@@ -83,7 +84,7 @@ class App extends React.Component {
           <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
           <Route path='/deactivationsTeams/:token' render={(props) => <DeactivationTeams {...props} />} />
           <Route path='/security' render={(props) => <Security {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/app' render={(props) => <NewXCloud {...props}
+          <Route exact path='/app' render={(props) => <XCloud {...props}
             isAuthenticated={this.state.isAuthenticated}
             user={this.state.user}
             isActivated={this.state.isActivated}

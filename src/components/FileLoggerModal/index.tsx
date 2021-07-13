@@ -32,7 +32,11 @@ const FileLoggerModal = (): JSX.Element => {
   useEffect(() => {
     FileLogger.on('new-entry', (newEntry: ILoggerFile) => {
       setHasFinished(false);
-      setEntries(prevState => [newEntry, ...prevState]);
+      setEntries(prevState => {
+        const newState = prevState.filter(entry => entry.filePath !== newEntry.filePath);
+
+        return [newEntry, ...newState];
+      });
     });
 
     FileLogger.on('update-last-entry', (updatedEntry: ILoggerFile) => {
