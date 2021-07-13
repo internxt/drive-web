@@ -8,7 +8,7 @@ interface LayoutState {
 
 const initialState: LayoutState = {
   showCreateFolder: false,
-  showFileLogger: false
+  showFileLogger: true
 };
 
 export const layoutSlice = createSlice({
@@ -29,4 +29,5 @@ export const {
   showFileLogger
 } = layoutSlice.actions;
 export const selectShowCreateFolder = (state: RootState) => state.layout.showCreateFolder;
+export const selectShowFileLogger = (state: RootState) => state.layout.showFileLogger;
 export default layoutSlice.reducer;

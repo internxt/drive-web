@@ -28,7 +28,7 @@ import './NewXCloud.scss';
 import { setHasConnection } from '../../store/slices/networkSlice';
 import { UserSettings } from '../../models/interfaces';
 import SideNavigator from '../../components/SideNavigator/SideNavigator';
-import FileLogger from '../../components/FileLogger';
+import FileLogger from '../../components/FileLoggerModal';
 import CreateFolder from '../../components/Modals/CreateFolder';
 
 interface NewXCloudProps {

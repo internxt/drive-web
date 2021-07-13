@@ -1,22 +1,20 @@
 import React from 'react';
 import { useState } from 'react';
-import { IconTypes, IFile } from '../../models/interfaces';
+import { IconTypes, ILogger } from '../../models/interfaces';
 import { getIcon } from '../../services/getIcon';
 import Item from './Item';
-import items from './items.json';
 import './FileLogger.scss';
 import { useAppDispatch } from '../../store/hooks';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
-import { showFileLogger } from '../../store/slices/layoutSlice';
-
-const selectIsOpen = (state: RootState) => state.layout.showFileLogger;
-
-const FileLogger = (): JSX.Element => {
+import { selectShowFileLogger, showFileLogger } from '../../store/slices/layoutSlice';
+import { selectLoggerFiles } from '../../store/slices/filesStateSlice';
+/* import FileLogger from '../../services/fileLogger';
+ */
+const FileLoggerModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const [isOpen, setIsOpen] = useState(useSelector(selectIsOpen));
+  const isOpen = useSelector(selectShowFileLogger);
   const [isMinimized, setIsMinized] = useState(false);
-  const files: IFile[] = items;
+  const files: ILogger = useSelector(selectLoggerFiles);
 
   const Button = ({ icon, onClick, style = '' }: { icon: IconTypes, onClick?: () => void, style?: string }) => {
     return (
@@ -29,9 +27,12 @@ const FileLogger = (): JSX.Element => {
   };
 
   const handleClose = () => {
-    setIsOpen(false);
     dispatch(showFileLogger(false));
   };
+
+  /* FileLogger.on('new-entry', () => {
+    console.log('triggered');
+  }); */
 
   return (
     <div className={`absolute bottom-0 right-80 flex flex-col w-64 transform duration-300 ${isMinimized ? 'h-9' : 'h-64'} bg-white mr-8 mb-11 rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''}`}>
@@ -49,11 +50,11 @@ const FileLogger = (): JSX.Element => {
 
       <div className='overflow-y-scroll scrollbar pt-2.5'>
         {
-          files.map(file => <Item item={file} key={file.id} />)
+          Object.values(files).map(file => <Item item={file} key={file.filePath} />)
         }
       </div>
     </div>
   );
 };
 
-export default FileLogger;
+export default FileLoggerModal;

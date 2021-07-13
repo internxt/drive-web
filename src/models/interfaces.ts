@@ -23,27 +23,17 @@ export interface TeamsSettings {
   bridge_user: string
 }
 
-export interface IFile {
+export interface ILogger {
+  [filePath: string]: ILoggerFile
+}
+
+export interface ILoggerFile {
+  action: FileActionTypes,
+  filePath: string,
+  status: FileStatusTypes,
+  progress?: number,
   isFolder: boolean,
-  isSelected:boolean,
-  isLoading:boolean,
-  isDowloading:boolean,
-  id: number,
-  parentId: number,
-  name: string,
-  bucket: string | null,
-  user_id: number,
-  icon_id: number | null,
-  color: string | null,
-  encrypt_version: string | null,
-  createdAt: string,
-  updatedAt: string,
-  userId: number,
-  iconId: number | null,
-  parent_id: number | null,
-  icon: string | null,
-  fileStatus: FileStatusTypes,
-  progress: string
+  errorMessage?: string
 }
 
 /* eslint-disable */ // salta el no-unused-vars, para corregirlo hay que instalar @typescript-eslint/no-unused-vars en vez de no-unused-vars
@@ -72,7 +62,14 @@ export enum FileStatusTypes {
   Error = 'error',
   Success = 'success',
   Encrypting = 'encrypting',
+  Decrypting = 'decrypting',
+  Pending = 'pending',
   Downloading = 'downloading',
   Uploading = 'uploading',
-  None = 'none'
+  CreatingDirectoryStructure = 'creating-directoy-structure'
+}
+
+export enum FileActionTypes {
+  Download = 'download',
+  Upload = 'upload'
 }
