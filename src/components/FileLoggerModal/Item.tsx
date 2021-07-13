@@ -54,9 +54,9 @@ const Item = ({ item }: ItemProps): JSX.Element => {
 
         return infoObj;
 
-      default:
+      default: // Pending
         infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.ClockGray);
-        infoObj.status = item.progress + ' Pending to upload';
+        infoObj.status = item.progress + item.action === FileActionTypes.Download ? ' Pending to download' : 'Pending to upload';
 
         return infoObj;
     }

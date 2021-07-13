@@ -1,21 +1,15 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { FileStatusTypes, IconTypes, ILogger, ILoggerFile } from '../../models/interfaces';
+import { FileStatusTypes, IconTypes, ILoggerFile } from '../../models/interfaces';
 import { getIcon } from '../../services/getIcon';
 import Item from './Item';
 import './FileLogger.scss';
-import { useAppDispatch } from '../../store/hooks';
-import { useSelector } from 'react-redux';
-import { showFileLogger } from '../../store/slices/layoutSlice';
-import { selectLoggerFiles } from '../../store/slices/filesStateSlice';
 import FileLogger from '../../services/fileLogger';
 
 const FileLoggerModal = (): JSX.Element => {
-  const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinized] = useState(false);
-  const files: ILogger = useSelector(selectLoggerFiles);
   const [entries, setEntries] = useState<ILoggerFile[]>([]);
 
   const Button = ({ icon, onClick, style = '' }: { icon: IconTypes, onClick?: () => void, style?: string }) => {
@@ -31,6 +25,7 @@ const FileLoggerModal = (): JSX.Element => {
   const handleClose = () => {
     if (hasFinished) {
       setIsOpen(false);
+      setEntries([]);
     }
   };
 
@@ -66,7 +61,7 @@ const FileLoggerModal = (): JSX.Element => {
 
         <div className='flex'>
           <Button icon={IconTypes.DoubleArrowUpWhite} onClick={() => setIsMinized(!isMinimized)} style={`mr-1.5 transform duration-500 ${!isMinimized ? 'rotate-180' : 'rotate-0'}`} />
-          <Button icon={hasFinished ? IconTypes.CrossNeutralBlue : IconTypes.CrossWhite} onClick={handleClose} />
+          <Button icon={!hasFinished ? IconTypes.CrossNeutralBlue : IconTypes.CrossWhite} onClick={handleClose} />
         </div>
       </div>
 
