@@ -43,6 +43,10 @@ module.exports = {
     },
     colors: {
       'black': '#000000',
+      'pink': {
+        '10': '#FCE7F3',
+        '60': '#DB2777'
+      },
       'gray': {
         '10': '#f4f4f4',
         '20': '#e0e0e0',

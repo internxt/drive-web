@@ -116,13 +116,17 @@
 /* INPUTS */
 @layer components {
   input[type="checkbox"] {
-    @apply border-2 border-neutral-500 rounded-1px text-xs text-neutral-500 w-2 h-2 my-3.5;
+    @apply border-2 border-neutral-500 rounded-1px text-xs text-neutral-500 w-2 h-2;
   }
   input[type="text"], input[type="email"], input[type="password"] {
     @apply ring-1 ring-m-neutral-100 rounded focus:ring-blue-60 text-neutral-500 placeholder-m-neutral-100 text-sm mb-3 px-3 py-2;
 
     &:focus {
       outline: none !important;
+    }
+
+    &.error {
+      @apply border-l-8 focus:ring-pink-60 border-pink-60 ring-pink-60 bg-pink-10
     }
   }
 }
