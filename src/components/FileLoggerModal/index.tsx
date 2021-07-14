@@ -51,7 +51,7 @@ const FileLoggerModal = (): JSX.Element => {
   useEffect(() => {
     if (entries.length) {
       setIsOpen(true);
-      entries.forEach(entry => entry.status !== FileStatusTypes.Success && entry.status !== FileStatusTypes.Error ? setHasFinished(false) : null);
+      entries.forEach(entry => entry.status !== FileStatusTypes.Success && entry.status !== FileStatusTypes.Error ? setHasFinished(false) : setHasFinished(true));
     }
   }, [entries]);
 

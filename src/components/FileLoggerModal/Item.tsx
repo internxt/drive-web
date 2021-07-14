@@ -20,7 +20,7 @@ const Item = ({ item }: ItemProps): JSX.Element => {
 
       case FileStatusTypes.Downloading:
         infoObj.icon = item.isFolder ? getIcon(IconTypes.FolderBlue) : getIcon(IconTypes.ClockGray);
-        infoObj.status = item.isFolder ? 'Downloading files in folder...' : item.progress + '% Uploading file...';
+        infoObj.status = item.isFolder ? 'Downloading files in folder...' : item.progress + '% Downloading file...';
 
         return infoObj;
 
