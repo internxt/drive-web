@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route, Redirect, Router } from 'react-router-dom';
 import history from './lib/history';
 import './App.scss';
-import Login from './components/forms/Login';
+import Login from './views/Login';
 import Remove from './components/forms/Remove';
 import New from './components/forms/New';
 import Activation from './components/forms/Activation';
@@ -25,6 +25,7 @@ import { connect } from 'react-redux';
 import NewXCloud from './views/NewXCloud/NewXCloud';
 import { UserSettings } from './models/interfaces';
 import { setUser } from './store/slices/userSlice';
+import XCloud from './views/XCloud/XCloud';
 
 interface AppProps {
   setUser: (value: UserSettings) => void

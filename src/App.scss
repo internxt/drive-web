@@ -56,11 +56,9 @@
 .text-xl {
   font-family: "NeueEinstellung";
   font-size: 20px; // font-family: Gotham;
-
   font-stretch: normal;
   font-style: normal;
   line-height: 1.4;
-  letter-spacing: normal;
 }
 .text-lg {
   font-family: "NeueEinstellung";
@@ -118,10 +116,10 @@
 /* INPUTS */
 @layer components {
   input[type="checkbox"] {
-    @apply border-2 border-neutral-500 rounded-1px;
+    @apply border-2 border-neutral-500 rounded-1px text-xs text-neutral-500 w-2 h-2 my-3.5;
   }
-  input[type="text"] {
-    @apply ring-2 ring-blue-30 rounded-1px focus:ring-blue-30 focus:rounded-1px text-neutral-500 placeholder-l-neutral-50 text-sm px-1;
+  input[type="text"], input[type="email"], input[type="password"] {
+    @apply ring-1 ring-m-neutral-100 rounded focus:ring-blue-60 text-neutral-500 placeholder-m-neutral-100 text-sm mb-3 px-3 py-2;
 
     &:focus {
       outline: none !important;

@@ -16,7 +16,10 @@ export enum IconTypes {
   CrossGray = 'crossGray',
   CrossWhite = 'crossWhite',
   CrossNeutralBlue = 'crossNeutralBlue',
-  CrossBlue = 'crossBlue'
+  CrossBlue = 'crossBlue',
+  ArrowUpWhite = 'arrowUpWhite',
+  MailGray = 'mailGray',
+  LockGray = 'lockGray'
 }
 
 export enum FileStatusTypes {
@@ -41,4 +44,9 @@ export enum AnalyticsTrack {
     SignUp = 'user-signup',
     UserEnterPayments = 'user-enter-payments',
     PlanSubscriptionSelected = 'plan-subscription-selected'
+}
+
+export enum IconPosition {
+  Right = 'right',
+  Left = 'left'
 }
