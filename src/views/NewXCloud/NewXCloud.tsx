@@ -18,7 +18,6 @@ import { removeAccents, getFilenameAndExt, renameFile, encryptFilename } from '.
 
 import { getHeaders } from '../../lib/auth';
 
-import { getUserData } from '../../lib/analytics';
 import localStorageService from '../../services/localStorage.service';
 import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
@@ -28,8 +27,7 @@ import './NewXCloud.scss';
 import { setHasConnection } from '../../store/slices/networkSlice';
 import { UserSettings } from '../../models/interfaces';
 import SideNavigator from '../../components/SideNavigator/SideNavigator';
-import FileLogger from '../../components/FileLoggerModal';
-import CreateFolder from '../../components/Modals/CreateFolder';
+import FileLogger from '../../components/FileLogger';
 
 interface NewXCloudProps {
   user: UserSettings | any,
@@ -47,9 +45,9 @@ interface NewXCloudState {
   token: string;
   chooserModalOpen: boolean;
   rateLimitModal: boolean;
-  currentFolderId: string;
-  currentFolderBucket: string;
-  currentCOmmanderItems: any[];
+  currentFolderId: string | null;
+  currentFolderBucket: string | null;
+  currentCommanderItems: any[];
   namePath: any[];
   sortFunction: any;
   searchFunction: any;
@@ -60,27 +58,31 @@ interface NewXCloudState {
   isMember: boolean;
 }
 
-class NewXCloud extends React.Component<NewXCloudProps> {
-  state = {
-    email: '',
-    isAuthorized: false,
-    isInitialized: false,
-    isTeam: false,
-    token: '',
-    chooserModalOpen: false,
-    rateLimitModal: false,
-    currentFolderId: null,
-    currentFolderBucket: null,
-    currentCommanderItems: [],
-    namePath: [],
-    sortFunction: null,
-    searchFunction: null,
-    popupShareOpened: false,
-    showDeleteItemsPopup: false,
-    isLoading: true,
-    isAdmin: true,
-    isMember: false
-  };
+class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
+  constructor(props: NewXCloudProps) {
+    super(props);
+
+    this.state = {
+      email: '',
+      isAuthorized: false,
+      isInitialized: false,
+      isTeam: false,
+      token: '',
+      chooserModalOpen: false,
+      rateLimitModal: false,
+      currentFolderId: null,
+      currentFolderBucket: null,
+      currentCommanderItems: [],
+      namePath: [],
+      sortFunction: null,
+      searchFunction: null,
+      popupShareOpened: false,
+      showDeleteItemsPopup: false,
+      isLoading: true,
+      isAdmin: true,
+      isMember: false
+    };
+  }
 
   moveEvent = {};
 
@@ -295,7 +297,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
           throw body.error ? body.error : 'createFolder error';
         }
         window.analytics.track('folder-created', {
-          email: getUserData().email,
+          email: this.props.user.email,
           platform: 'web'
         });
         console.log('getFolderContent 10');
@@ -560,7 +562,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
       })
         .then(() => {
           window.analytics.track('folder-rename', {
-            email: getUserData().email,
+            email: this.props.user.email,
             fileId: itemId,
             platform: 'web'
           });
@@ -579,7 +581,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
         .then(() => {
           window.analytics.track('file-rename', {
             file_id: itemId,
-            email: getUserData().email,
+            email: this.props.user.email,
             platform: 'web'
           });
           console.log('getFolderContent 13');
@@ -651,7 +653,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
         } else {
           window.analytics.track(`${keyOp}-move`.toLowerCase(), {
             file_id: response.item.id,
-            email: getUserData().email,
+            email: this.props.user.email,
             platform: 'web'
           });
           // Remove myself
@@ -679,21 +681,21 @@ class NewXCloud extends React.Component<NewXCloudProps> {
   };
 
   trackFileDownloadStart = (file_id, file_name, file_size, file_type, folder_id) => {
-    const email = getUserData().email;
+    const email = this.props.user.email;
     const data = { file_id, file_name, file_size, file_type, email, folder_id, platform: 'web' };
 
     window.analytics.track('file-download-start', data);
   }
 
   trackFileDownloadError = (file_id, msg) => {
-    const email = getUserData().email;
+    const email = this.props.user.email;
     const data = { file_id, email, msg, platform: 'web' };
 
     window.analytics.track('file-download-error', data);
   }
 
   trackFileDownloadFinished = (file_id, file_size) => {
-    const email = getUserData().email;
+    const email = this.props.user.email;
     const data = { file_id, file_size, email, platform: 'web' };
 
     window.analytics.track('file-download-finished', data);
@@ -740,7 +742,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
       file_size: file.size,
       file_type: file.type,
       folder_id: parentFolderId,
-      email: getUserData().email,
+      email: this.props.user.email,
       platform: 'web'
     });
   }
@@ -748,7 +750,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
   trackFileUploadFinished = (file) => {
     console.log('file', file);
     window.analytics.track('file-upload-finished', {
-      email: getUserData().email,
+      email: this.props.user.email,
       file_size: file.size,
       file_type: file.type,
       file_id: file.id
@@ -760,7 +762,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
       file_size: file.size,
       file_type: file.type,
       folder_id: parentFolderId,
-      email: getUserData().email,
+      email: this.props.user.email,
       msg,
       platform: 'web'
     });
@@ -779,7 +781,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
       if (!bucketId) {
         // coming from auto-login or something else that is not loading all required data
         window.analytics.track('file-upload-bucketid-undefined', {
-          email: getUserData().email,
+          email: this.props.user.email,
           platform: 'web'
         });
 
@@ -1008,7 +1010,7 @@ class NewXCloud extends React.Component<NewXCloudProps> {
       return (next) =>
         fetch(url, fetchOptions).then(() => {
           window.analytics.track((v.isFolder ? 'folder' : 'file') + '-delete', {
-            email: getUserData().email,
+            email: this.props.user.email,
             platform: 'web'
           });
           next();
@@ -1098,11 +1100,11 @@ class NewXCloud extends React.Component<NewXCloudProps> {
   }
 
   render() {
+    const modalInitialState: boolean = true;
+
     if (this.props.isAuthenticated && this.state.isInitialized) {
       return (
-        <div className="relative xcloud-layout flex">
-          <CreateFolder />
-
+        <div className="xcloud-layout flex">
           <SideNavigator />
 
           <div className="flex-grow bg-l-neutral-10 px-32px">

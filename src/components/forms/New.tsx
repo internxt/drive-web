@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Container, Form, Col, Button } from 'react-bootstrap';
 import Checkbox from '@material-ui/core/Checkbox';
 import AesUtil from '../../lib/AesUtil';
+import * as bip39 from 'bip39';
+import { connect } from 'react-redux';
 
 import history from '../../lib/history';
 import localStorageService from '../../services/localStorage.service';
@@ -10,19 +12,20 @@ import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 
 import { getHeaders } from '../../lib/auth';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { analytics } from '../../lib/analytics';
 import queryString, { ParsedQuery } from 'query-string';
 import { initializeUser } from '../../services/auth.service';
 import { generateNewKeys } from '../../services/pgp.service';
-
-import * as bip39 from 'bip39';
+import { setUser } from '../../store/slices/userSlice';
+import { UserSettings } from '../../models/interfaces';
+import analyticsService from '../../services/analytics.service';
 
 interface NewProps {
   match: any
   location: {
     search: string
   }
-  isNewUser: boolean
+  isNewUser: boolean,
+  setUser: (user: UserSettings) => void
 }
 
 interface NewState {
@@ -84,7 +87,6 @@ class New extends React.Component<NewProps, NewState> {
   }
 
   componentDidMount() {
-
     const parsedQueryParams: ParsedQuery<string> = queryString.parse(history.location.search);
     const isEmailQuery = parsedQueryParams.email && this.validateEmail(parsedQueryParams.email.toString());
 
@@ -199,8 +201,8 @@ class New extends React.Component<NewProps, NewState> {
           // Manage succesfull register
           const { token, user, uuid } = body;
 
-          analytics.identify(uuid, { email: this.state.register.email, member_tier: 'free' });
-          window.analytics.track('user-signup', {
+          window.analytics.identify(uuid, { email: this.state.register.email, member_tier: 'free' });
+          analyticsService.signUp({
             properties: {
               userId: uuid,
               email: this.state.register.email
@@ -209,13 +211,13 @@ class New extends React.Component<NewProps, NewState> {
 
           localStorageService.set('xToken', token);
           user.mnemonic = decryptTextWithKey(user.mnemonic, this.state.register.password);
-          localStorageService.set('xUser', JSON.stringify(user));
+          this.props.setUser(user);
           localStorageService.set('xMnemonic', user.mnemonic);
 
           return initializeUser(this.state.register.email, user.mnemonic).then((rootFolderInfo) => {
             user.root_folder_id = rootFolderInfo.user.root_folder_id;
             user.bucket = rootFolderInfo.user.bucket;
-            localStorageService.set('xUser', JSON.stringify(user));
+            this.props.setUser(user);
             history.push('/login');
           });
         });
@@ -289,7 +291,7 @@ class New extends React.Component<NewProps, NewState> {
         xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
         localStorageService.set('xToken', xToken);
         localStorageService.set('xMnemonic', mnemonic);
-        localStorageService.set('xUser', JSON.stringify(xUser));
+        this.props.setUser(xUser);
       });
     });
 
@@ -466,4 +468,4 @@ class New extends React.Component<NewProps, NewState> {
   }
 }
 
-export default New;
+export default connect(null, { setUser })(New);

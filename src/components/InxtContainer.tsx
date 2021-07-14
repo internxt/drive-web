@@ -4,7 +4,8 @@ import './InxtContainer.scss';
 
 interface InxtContainerProps {
     style?: React.CSSProperties
-    children: any
+    children: any,
+    text: string | Element
 }
 
 class InxtContainer extends React.Component<InxtContainerProps> {

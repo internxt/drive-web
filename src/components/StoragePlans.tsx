@@ -1,18 +1,18 @@
 import React from 'react';
 import { Spinner, Row, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
+
 import InxtContainerOption from './InxtContainerOption';
-
 import iconCloseTab from '../assets/Dashboard-Icons/close-tab.svg';
-
 import iconStripe from '../assets/PaymentBridges/stripe.svg';
 import iconInxt from '../assets/PaymentBridges/inxt.svg';
 import iconPayPal from '../assets/PaymentBridges/paypal.svg';
-
 import { getHeaders } from '../lib/auth';
 
-import { analytics, getUserData } from '../lib/analytics';
-
 import SessionStorage from '../lib/sessionStorage';
+import { RootState } from '../store';
+import analyticsService from '../services/analytics.service';
+import { UserSettings } from '../models/interfaces';
 
 const stripeGlobal = window.Stripe;
 
@@ -34,7 +34,24 @@ const PaymentBridges = [
   }
 ];
 
-class StoragePlans extends React.Component {
+interface StoragePlansProps {
+  currentPlan: any;
+  user: UserSettings
+}
+
+interface StoragePlansState {
+  statusMessage: string;
+  storageStep: number;
+  productsLoading: boolean | any;
+  plansLoading: boolean | any;
+  availableProducts: any[] | null;
+  availablePlans: any[] | null;
+  selectedProductToBuy: any | null;
+  selectedPlanToBuy: any | null;
+  paymentMethod: any | null;
+}
+
+class StoragePlans extends React.Component<StoragePlansProps, StoragePlansState> {
   constructor(props) {
     super(props);
 
@@ -69,7 +86,7 @@ class StoragePlans extends React.Component {
   }
 
   loadAvailablePlans() {
-    const body = { product: this.state.selectedProductToBuy.id };
+    const body: { product: string, test?: boolean } = { product: this.state.selectedProductToBuy.id };
 
     if (process.env.NODE_ENV !== 'production') {
       body.test = true;
@@ -94,7 +111,7 @@ class StoragePlans extends React.Component {
 
     const stripe = new stripeGlobal(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
 
-    const body = {
+    const body: { plan: string, product: string, test?: boolean } = {
       plan: this.state.selectedPlanToBuy.id,
       product: this.state.selectedProductToBuy.id
     };
@@ -111,7 +128,7 @@ class StoragePlans extends React.Component {
       if (result.error) {
         throw Error(result.error);
       }
-      analytics.track('user-enter-payments');
+      analyticsService.userEnterPayments();
       this.setState({ statusMessage: 'Redirecting to Stripe...' });
       SessionStorage.del('limitStorage');
       stripe.redirectToCheckout({ sessionId: result.id }).then(result => {
@@ -142,7 +159,7 @@ class StoragePlans extends React.Component {
                 key={'plan' + i}
                 isChecked={this.props.currentPlan === entry.metadata.size_bytes * 1}
                 header={entry.metadata.simple_name}
-                onClick={(e) => {
+                onClick={() => {
                   // Can't select the current product or lesser
                   this.setState({ selectedProductToBuy: entry, storageStep: 2, plansLoading: true, availablePlans: null });
                 }}
@@ -183,13 +200,13 @@ class StoragePlans extends React.Component {
                 key={'plan' + i}
                 isChecked={false}
                 header={'€' + fixedPrice}
-                onClick={(e) => {
-                  analytics.track('plan-subscription-selected', {
+                onClick={() => {
+                  analyticsService.planSubscriptionSelected({
                     price: fixedPrice,
                     plan_type: entry.name,
                     payment_type: PaymentBridges[0].name,
                     plan_length: entry.interval_count,
-                    email: getUserData().email
+                    email: this.props.user.email
                   });
                   this.setState({ selectedPlanToBuy: entry, storageStep: 4, paymentMethod: PaymentBridges[0].name });
                 }}
@@ -213,7 +230,7 @@ class StoragePlans extends React.Component {
                 style={entry.border}
                 header={<img src={entry.logo} alt="Logo" />}
                 text={entry.name}
-                onClick={e => {
+                onClick={() => {
                   this.setState({ storageStep: 4, paymentMethod: entry.name });
                 }}
               />;
@@ -250,4 +267,6 @@ class StoragePlans extends React.Component {
   }
 }
 
-export default StoragePlans;
+export default connect((state: RootState) => ({
+  user: state.user.user
+}))(StoragePlans);

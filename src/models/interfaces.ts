@@ -1,3 +1,5 @@
+import { FileActionTypes, FileStatusTypes } from './enums';
+
 export interface UserSettings {
   bucket: string
   createdAt: Date
@@ -23,10 +25,28 @@ export interface TeamsSettings {
   bridge_user: string
 }
 
-export interface ILogger {
-  [filePath: string]: ILoggerFile
+export interface FileData {
+  isFolder: boolean,
+  isSelected:boolean,
+  isLoading:boolean,
+  isDowloading:boolean,
+  id: number,
+  parentId: number,
+  name: string,
+  bucket: string | null,
+  user_id: number,
+  icon_id: number | null,
+  color: string | null,
+  encrypt_version: string | null,
+  createdAt: string,
+  updatedAt: string,
+  userId: number,
+  iconId: number | null,
+  parent_id: number | null,
+  icon: string | null,
+  fileStatus: FileStatusTypes,
+  progress: string
 }
-
 export interface ILoggerFile {
   action: FileActionTypes,
   filePath: string,
@@ -34,42 +54,4 @@ export interface ILoggerFile {
   progress?: number,
   isFolder: boolean,
   errorMessage?: string
-}
-
-/* eslint-disable */ // salta el no-unused-vars, para corregirlo hay que instalar @typescript-eslint/no-unused-vars en vez de no-unused-vars
-export enum IconTypes {
-  FolderWithCrossGray = 'folderWithCrossGray',
-  ClockGray = 'clockGray',
-  AccountGray = 'accountGray',
-  SupportGray = 'supportGray',
-  LogOutGray = 'logOutGray',
-  BackArrows = 'backArrows',
-  InternxtLongLogo = 'internxtLongLogo',
-  InternxtShortLogo = 'internxtShortLogo',
-  FolderBlue = 'folderBlue',
-  FileSuccessGreen = 'fileSuccessGreen',
-  FileErrorRed = 'fileErrorRed',
-  FileEncryptingGray = 'fileEncryptingGray',
-  DoubleArrowUpBlue = 'doubleArrowUpBlue',
-  DoubleArrowUpWhite = 'doubleArrowUpWhite',
-  CrossGray = 'crossGray',
-  CrossWhite = 'crossWhite',
-  CrossNeutralBlue = 'crossNeutralBlue',
-  CrossBlue = 'crossBlue'
-}
-
-export enum FileStatusTypes {
-  Error = 'error',
-  Success = 'success',
-  Encrypting = 'encrypting',
-  Decrypting = 'decrypting',
-  Pending = 'pending',
-  Downloading = 'downloading',
-  Uploading = 'uploading',
-  CreatingDirectoryStructure = 'creating-directoy-structure'
-}
-
-export enum FileActionTypes {
-  Download = 'download',
-  Upload = 'upload'
 }

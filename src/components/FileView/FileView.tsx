@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import FileList from './FileList/FileList';
 import FileGrid from './FileGrid/FileGrid';
@@ -30,7 +30,7 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
     console.log('next page button clicked!');
   }
 
-  render() {
+  render(): ReactNode {
     const { viewMode } = this.state;
     const viewModes = {
       list: <FileList />,

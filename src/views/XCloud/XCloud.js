@@ -13,13 +13,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import FileCommander from '../../components/FileCommander/FileCommander';
 import NavigationBar from '../../components/navigationBar/NavigationBar';
 import { removeAccents, getFilenameAndExt, renameFile, encryptFilename } from '../../lib/utils';
+import localStorageService from '../../services/localStorage.service';
 
 import PopupShare from '../../components/PopupShare';
 import './XCloud.scss';
 
 import { getHeaders } from '../../lib/auth';
 
-import { getUserData } from '../../lib/analytics';
 import localStorageService from '../../services/localStorage.service';
 import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
@@ -262,7 +262,7 @@ class XCloud extends React.Component {
           throw body.error ? body.error : 'createFolder error';
         }
         window.analytics.track('folder-created', {
-          email: getUserData().email,
+          email: localStorage.getUser().email,
           platform: 'web'
         });
         console.log('getFolderContent 10');
@@ -527,7 +527,7 @@ class XCloud extends React.Component {
       })
         .then(() => {
           window.analytics.track('folder-rename', {
-            email: getUserData().email,
+            email: localStorageService.getUser().email,
             fileId: itemId,
             platform: 'web'
           });
@@ -546,7 +546,7 @@ class XCloud extends React.Component {
         .then(() => {
           window.analytics.track('file-rename', {
             file_id: itemId,
-            email: getUserData().email,
+            email: localStorageService.getUser().email,
             platform: 'web'
           });
           console.log('getFolderContent 13');
@@ -618,7 +618,7 @@ class XCloud extends React.Component {
         } else {
           window.analytics.track(`${keyOp}-move`.toLowerCase(), {
             file_id: response.item.id,
-            email: getUserData().email,
+            email: localStorageService.getUser().email,
             platform: 'web'
           });
           // Remove myself
@@ -646,21 +646,21 @@ class XCloud extends React.Component {
   };
 
   trackFileDownloadStart = (file_id, file_name, file_size, file_type, folder_id) => {
-    const email = getUserData().email;
+    const email = localStorageService.getUser().email;
     const data = { file_id, file_name, file_size, file_type, email, folder_id, platform: 'web' };
 
     window.analytics.track('file-download-start', data);
   }
 
   trackFileDownloadError = (file_id, msg) => {
-    const email = getUserData().email;
+    const email = localStorageService.getUser()().email;
     const data = { file_id, email, msg, platform: 'web' };
 
     window.analytics.track('file-download-error', data);
   }
 
   trackFileDownloadFinished = (file_id, file_size) => {
-    const email = getUserData().email;
+    const email = localStorageService.getUser()().email;
     const data = { file_id, file_size, email, platform: 'web' };
 
     window.analytics.track('file-download-finished', data);
@@ -724,7 +724,7 @@ class XCloud extends React.Component {
       file_size: file.size,
       file_type: file.type,
       folder_id: parentFolderId,
-      email: getUserData().email,
+      email: localStorageService.getUser().email,
       platform: 'web'
     });
   }
@@ -732,7 +732,7 @@ class XCloud extends React.Component {
   trackFileUploadFinished = (file) => {
     console.log('file', file);
     window.analytics.track('file-upload-finished', {
-      email: getUserData().email,
+      email: localStorageService.getUser().email,
       file_size: file.size,
       file_type: file.type,
       file_id: file.id
@@ -744,7 +744,7 @@ class XCloud extends React.Component {
       file_size: file.size,
       file_type: file.type,
       folder_id: parentFolderId,
-      email: getUserData().email,
+      email: localStorageService.getUser().email,
       msg,
       platform: 'web'
     });
@@ -763,7 +763,7 @@ class XCloud extends React.Component {
       if (!bucketId) {
         // coming from auto-login or something else that is not loading all required data
         window.analytics.track('file-upload-bucketid-undefined', {
-          email: getUserData().email,
+          email: localStorageService.getUser().email,
           platform: 'web'
         });
 
@@ -1015,7 +1015,7 @@ class XCloud extends React.Component {
       return (next) =>
         fetch(url, fetchOptions).then(() => {
           window.analytics.track((v.isFolder ? 'folder' : 'file') + '-delete', {
-            email: getUserData().email,
+            email: localStorageService.getUser().email,
             platform: 'web'
           });
           next();

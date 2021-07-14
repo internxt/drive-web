@@ -2,22 +2,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '..';
 
 interface LayoutState {
-  showCreateFolder: boolean,
   showFileLogger: boolean
 }
 
 const initialState: LayoutState = {
-  showCreateFolder: false,
-  showFileLogger: true
+  showFileLogger: false
 };
 
 export const layoutSlice = createSlice({
   name: 'layout',
   initialState,
   reducers: {
-    showCreateFolder: (state, action: PayloadAction<boolean>) => {
-      state.showCreateFolder = action.payload;
-    },
     showFileLogger: (state, action: PayloadAction<boolean>) => {
       state.showFileLogger = action.payload;
     }
@@ -25,9 +20,6 @@ export const layoutSlice = createSlice({
 });
 
 export const {
-  showCreateFolder,
   showFileLogger
 } = layoutSlice.actions;
-export const selectShowCreateFolder = (state: RootState) => state.layout.showCreateFolder;
-export const selectShowFileLogger = (state: RootState) => state.layout.showFileLogger;
 export default layoutSlice.reducer;
