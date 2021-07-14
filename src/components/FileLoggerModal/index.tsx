@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { FileStatusTypes, IconTypes, ILoggerFile } from '../../models/interfaces';
+import { ILoggerFile } from '../../models/interfaces';
 import { getIcon } from '../../services/getIcon';
 import Item from './Item';
 import './FileLogger.scss';
 import FileLogger from '../../services/fileLogger';
+import { FileStatusTypes, IconTypes } from '../../models/enums';
 
 const FileLoggerModal = (): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);

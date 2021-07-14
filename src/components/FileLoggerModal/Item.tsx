@@ -1,5 +1,6 @@
 import React from 'react';
-import { FileActionTypes, FileStatusTypes, IconTypes, ILoggerFile } from '../../models/interfaces';
+import { FileActionTypes, FileStatusTypes, IconTypes } from '../../models/enums';
+import { ILoggerFile } from '../../models/interfaces';
 import { getIcon } from '../../services/getIcon';
 
 interface ItemProps {
