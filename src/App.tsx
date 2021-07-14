@@ -84,7 +84,7 @@ class App extends React.Component {
           <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
           <Route path='/deactivationsTeams/:token' render={(props) => <DeactivationTeams {...props} />} />
           <Route path='/security' render={(props) => <Security {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/app' render={(props) => <XCloud {...props}
+          <Route exact path='/app' render={(props) => <NewXCloud {...props}
             isAuthenticated={this.state.isAuthenticated}
             user={this.state.user}
             isActivated={this.state.isActivated}
