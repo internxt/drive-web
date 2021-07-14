@@ -82,25 +82,26 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   confirmNameChange() {
     const { user, item, currentFolderId } = this.props;
-    const itemId: number | string = item.fileId | item.id;
-    const { dirtyName } = this.state;
+    const { dirtyName, nameInputRef } = this.state;
     const data = JSON.stringify({ metadata: { itemName: dirtyName } });
 
-    if (item.isFolder) {
-      folderService.updateMetaData(itemId, data)
-        .then(() => {
-          // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
-        })
-        .catch((error) => {
-          console.log(`Error during folder customization. Error: ${error} `);
-        });
-    } else {
-      fileService.updateMetaData(itemId, data).then(() => {
-        // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
-      })
-        .catch((error) => {
-          console.log(`Error during file customization. Error: ${error} `);
-        });
+    try {
+      if (item.name !== dirtyName) {
+        if (item.isFolder) {
+          folderService.updateMetaData(item.id, data)
+            .then(() => {
+              // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+            });
+        } else {
+          fileService.updateMetaData(item.fileId, data).then(() => {
+            // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+          });
+        }
+      }
+    } catch (e) {
+      console.log('Error during folder/file name change: ', e);
+    } finally {
+      nameInputRef.current?.blur();
     }
   }
 
@@ -110,7 +111,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     this.setState(
       { isEditingName: true, dirtyName: item.name },
-      () => nameInputRef.current && nameInputRef.current.focus()
+      () => nameInputRef.current?.focus()
     );
   }
 
@@ -142,7 +143,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     this.setState(
       { isEditingName: true, dirtyName: item.name },
-      () => setTimeout(() => nameInputRef.current && nameInputRef.current.focus(), 0)
+      () => setTimeout(() => nameInputRef.current?.focus(), 0)
     );
   }
 

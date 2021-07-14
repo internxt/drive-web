@@ -17,14 +17,20 @@ import history from '../../../lib/history';
 
 import './SharePopup.scss';
 
-interface SharePopup {
-  onClose: () => void
-  item: any
-  open: boolean
-  user: UserSettings
+interface SharePopupProps {
+  item: any;
+  open: boolean;
+  user: UserSettings;
+  onClose: () => void;
 }
 
-class SharePopup extends React.Component<SharePopup> {
+interface SharePopupState {
+  link: string | null;
+  views: number;
+  animationCss: string;
+}
+
+class SharePopup extends React.Component<SharePopupProps, SharePopupState> {
   state = {
     link: null,
     views: 10,
@@ -32,7 +38,7 @@ class SharePopup extends React.Component<SharePopup> {
   }
 
   componentDidMount() {
-    this.handleShareLink(10);
+    this.handleShareLink(this.state.views);
   }
 
   generateShortLink = (url: string) => {
