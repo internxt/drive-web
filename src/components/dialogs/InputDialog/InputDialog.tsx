@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IconType } from '../../../models/enums';
+import { IconTypes } from '../../../models/enums';
 
 import { getIcon } from '../../../services/getIcon';
 
@@ -24,7 +24,7 @@ const InputDialog = ({
   onCancel,
   onAccept
 }: InputDialogProps
-) => {
+): JSX.Element => {
   const [isOpen, setIsOpen] = useState(initialState);
   const [inputValue, setInputValue] = useState('');
   const onCancelFn = (() => {
@@ -47,7 +47,7 @@ const InputDialog = ({
           <span className='text-neutral-90 font-semibold text-xs'>{title}</span>
 
           <img
-            src={getIcon(IconType.CrossBlue)}
+            src={getIcon(IconTypes.CrossBlue)}
             alt=""
             className='input-dialog-close-button absolute mr-5 right-0 cursor-pointer'
             onClick={onCancelFn}

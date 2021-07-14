@@ -55,7 +55,7 @@ class PopupShare extends React.Component<PopupShareProps> {
           }
           return res.json();
         }).then((res: any) => {
-          var link = `${window.location.origin}/${res.token}`;
+          const link = `${window.location.origin}/${res.token}`;
 
           resolve(link);
         }).catch((err: Response) => {
@@ -85,7 +85,7 @@ class PopupShare extends React.Component<PopupShareProps> {
     }
 
     handleShareLink(views: number) {
-      let fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
+      const fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
 
       if (!this.props.item.isFolder && this.props.item.isDraggable === false) {
         return this.setState({
@@ -98,7 +98,7 @@ class PopupShare extends React.Component<PopupShareProps> {
         this.setState({ link: link });
       }).catch((err) => {
         if (err.status === 402) {
-          let itemType = this.props.item.isFolder ? 'older' : 'ile';
+          const itemType = this.props.item.isFolder ? 'older' : 'ile';
 
           this.setState({ link: 'Unavailable link' });
           toast.warn(`F${itemType} too large.\nYou can only share f${itemType}s of up to 200 MB through the web app`);

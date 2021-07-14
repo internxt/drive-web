@@ -3,6 +3,15 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      backgroundImage: () => ({
+        /* eslint-disable-next-line */
+        'background-login': "url('/src/assets/images/login/background-login.png')",
+      }),
+      letterSpacing: {
+        '0.2': '0.2rem',
+        '0.3': '0.3rem',
+        '0.4': '0.4rem'
+      },
       transitionProperty: {
         'width': 'width'
       },
@@ -10,6 +19,9 @@ module.exports = {
         'sidenav-1280-open': '187px',
         'sidenav-1280-closed': '40px',
         'activity-1280': '296px'
+      },
+      minWidth: {
+        '104': '26rem'
       },
       padding: {
         '42px': '42px',
@@ -21,6 +33,12 @@ module.exports = {
       fontSize: {
         'supporting-2': '10px',
         'supporting-1': '8px'
+      },
+      spacing: {
+        '50': '12.7rem',
+        '104': '26rem',
+        '112': '28rem',
+        '120': '30rem'
       }
     },
     colors: {
