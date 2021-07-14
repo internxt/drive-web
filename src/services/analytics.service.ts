@@ -74,7 +74,7 @@ export function trackFolderRename(payload: { email: string, fileId: number, plat
   window.analytics.track(AnalyticsTrack.FolderRename, payload);
 }
 
-export function trackFileRename(payload: { email: string, file_id: number, platform: DevicePlatform }) {
+export function trackFileRename(payload: { email: string, file_id: number | string, platform: DevicePlatform }) {
   window.analytics.track(AnalyticsTrack.FileRename, payload);
 }
 
@@ -124,6 +124,10 @@ export function trackDeleteWelcomeFile() {
   window.analytics.track(AnalyticsTrack.DeleteWelcomeFile);
 }
 
+export function trackFileShare() {
+  window.analytics.track(AnalyticsTrack.FileShare);
+}
+
 const analyticsService = {
   page,
   identifyUsage,
@@ -145,7 +149,8 @@ const analyticsService = {
   trackMoveItem,
   trackDeleteItem,
   trackOpenWelcomeFile,
-  trackDeleteWelcomeFile
+  trackDeleteWelcomeFile,
+  trackFileShare
 };
 
 export default analyticsService;

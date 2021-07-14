@@ -29,25 +29,37 @@ import analyticsService from '../../services/analytics.service';
 import { DevicePlatform } from '../../models/enums';
 
 import { setHasConnection } from '../../store/slices/networkSlice';
-import { setIsLoading, setItems, selectItem, resetSelectedItems } from '../../store/slices/storageSlice';
+import { storageActions } from '../../store/slices/storageSlice';
 import fileService from '../../services/file.service';
 import folderService, { ICreatedFolder } from '../../services/folder.service';
 import { RootState } from '../../store';
+import SharePopup from '../../components/popups/SharePopup/SharePopup';
+import MessageDialog from '../../components/dialogs/MessageDialog/MessageDialog';
 
 import './NewXCloud.scss';
 
 interface NewXCloudProps {
   user: UserSettings | any,
+  currentFolderId: number | null;
   isLoadingItems: boolean,
   currentItems: any[],
+  selectedItemsIds: number[]
   isAuthenticated: boolean;
   isActivated: boolean;
+  itemToShareId: number;
+  itemsToDeleteIds: number[];
+  infoItemId: number;
+  sortFunction: ((a: any, b: any) => number) | null;
   handleKeySaved: (user: JSON) => void;
   setHasConnection: (value: boolean) => void;
+  setCurrentFolderId: (value: number) => void;
+  setCurrentFolderBucket: (value: string) => void;
   setIsLoadingItems: (value: boolean) => void;
   setItems: (items: any[]) => void;
   selectItem: (itemId: number) => void;
-  resetSelectedItems: () => void
+  resetSelectedItems: () => void;
+  setItemToShare: (itemId: number) => void;
+  setItemsToDelete: (itemsIds: number[]) => void;
 }
 
 interface NewXCloudState {
@@ -56,15 +68,9 @@ interface NewXCloudState {
   isInitialized: boolean;
   isTeam: boolean;
   token: string;
-  chooserModalOpen: boolean;
   rateLimitModal: boolean;
-  currentFolderId: number | null;
-  currentFolderBucket: string | null;
   namePath: any[];
-  sortFunction: any;
   searchFunction: any;
-  popupShareOpened: boolean,
-  showDeleteItemsPopup: boolean;
   isAdmin: boolean;
   isMember: boolean;
 }
@@ -79,15 +85,9 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
       isInitialized: false,
       isTeam: false,
       token: '',
-      chooserModalOpen: false,
       rateLimitModal: false,
-      currentFolderId: null,
-      currentFolderBucket: null,
       namePath: [],
-      sortFunction: null,
       searchFunction: null,
-      popupShareOpened: false,
-      showDeleteItemsPopup: false,
       isAdmin: true,
       isMember: false
     };
@@ -112,7 +112,6 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
       if (!this.props.user.root_folder_id) {
         // Initialize user in case that is not done yet
         this.userInitialization().then((resultId) => {
-          console.log('getFolderContent 3');
           this.getFolderContent(resultId);
         }).catch((error) => {
           const errorMsg = error ? error : '';
@@ -121,18 +120,17 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
           history.push('/login');
         });
       } else {
-        console.log('getFolderContent 4');
         storeTeamsInfo().finally(() => {
           if (localStorageService.exists('xTeam') && !this.state.isTeam && localStorageService.get('workspace') === 'teams') {
             this.handleChangeWorkspace();
           } else {
             this.getFolderContent(this.props.user.root_folder_id);
-            this.setState({ currentFolderId: this.props.user.root_folder_id });
+            this.props.setCurrentFolderId(this.props.user.root_folder_id);
           }
           const team: any = localStorageService.getTeams();
 
           if (team && !team.root_folder_id) {
-            this.setState({ currentFolderId: this.props.user.root_folder_id });
+            this.props.setCurrentFolderId(this.props.user.root_folder_id);
           }
 
           this.setState({ isInitialized: true });
@@ -144,6 +142,50 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
         });
       }
 
+    }
+  };
+
+  getFolderContent = async (rootId, updateNamePath = true, showLoading = true, isTeam = false): Promise<any> => {
+    try {
+      this.props.setIsLoadingItems(true);
+
+      await fileService.fetchWelcomeFile(isTeam);
+      const content = await folderService.fetchFolderContent(rootId, isTeam);
+
+      this.props.resetSelectedItems();
+
+      // Apply search function if is set
+      if (this.state.searchFunction) {
+        content.newCommanderFolders = content.newCommanderFolders.filter(this.state.searchFunction);
+        content.newCommanderFiles = content.newCommanderFiles.filter(this.state.searchFunction);
+      }
+      // Apply sort function if is set
+      if (this.props.sortFunction) {
+        content.newCommanderFolders.sort(this.props.sortFunction);
+        content.newCommanderFiles.sort(this.props.sortFunction);
+      }
+
+      this.props.setCurrentFolderId(content.contentFolders.id);
+      this.props.setItems(_.concat(content.newCommanderFolders, content.newCommanderFiles));
+      this.props.setIsLoadingItems(false);
+      this.props.setCurrentFolderBucket(content.contentFolders.bucket);
+
+      if (updateNamePath) {
+        // Only push path if it is not the same as actual path
+        const folderName = this.updateNamesPaths(this.props.user, content.contentFolders, this.state.namePath);
+
+        this.setState({
+          namePath: this.pushNamePath({
+            name: folderName,
+            id: content.contentFolders.id,
+            bucket: content.contentFolders.bucket,
+            id_team: content.contentFolders.id_team
+          }),
+          isAuthorized: true
+        });
+      }
+    } catch (err) {
+      toast.warn(err);
     }
   };
 
@@ -237,14 +279,8 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
     });
   }
 
-  setSortFunction = (newSortFunc) => {
-    // Set new sort function on state and call getFolderContent for refresh files list
-    this.setState({ sortFunction: newSortFunc });
-    console.log('getFolderContent 8');
-    this.getFolderContent(this.state.currentFolderId, false, true);
-  };
-
   setSearchFunction = (e) => {
+    const { currentFolderId } = this.props;
     const searchString = removeAccents(e.target.value.toString()).toLowerCase();
     let func: ((item: any) => void) | null = null;
 
@@ -255,12 +291,12 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
     }
 
     this.setState({ searchFunction: func });
-    console.log('getFolderContent 9');
-    this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
+    this.getFolderContent(currentFolderId, false, true, this.state.isTeam);
   };
 
   createFolder = () => {
-    const { isTeam, currentFolderId, namePath } = this.state;
+    const { currentFolderId } = this.props;
+    const { isTeam, namePath } = this.state;
     const folderName = prompt('Please enter folder name');
 
     if (folderName && folderName !== '') {
@@ -375,7 +411,7 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
       newFolderName = this.getNewName(newFolderName);
     }
 
-    parentFolderId = parentFolderId || this.state.currentFolderId;
+    parentFolderId = parentFolderId || this.props.currentFolderId;
 
     return new Promise((resolve, reject) => {
       fetch('/api/storage/folder', {
@@ -408,80 +444,11 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
     });
   };
 
-  getFolderContent = async (rootId, updateNamePath = true, showLoading = true, isTeam = false): Promise<any> => {
-    try {
-      this.props.setIsLoadingItems(true);
-
-      await fileService.fetchWelcomeFile(isTeam);
-      const content = await folderService.fetchFolderContent(rootId, isTeam);
-
-      this.deselectAll();
-
-      // Apply search function if is set
-      if (this.state.searchFunction) {
-        content.newCommanderFolders = content.newCommanderFolders.filter(this.state.searchFunction);
-        content.newCommanderFiles = content.newCommanderFiles.filter(this.state.searchFunction);
-      }
-      // Apply sort function if is set
-      if (this.state.sortFunction) {
-        content.newCommanderFolders.sort(this.state.sortFunction);
-        content.newCommanderFiles.sort(this.state.sortFunction);
-      }
-
-      this.setState({
-        currentFolderId: content.contentFolders.id,
-        currentFolderBucket: content.contentFolders.bucket
-      });
-
-      this.props.setItems(_.concat(content.newCommanderFolders, content.newCommanderFiles));
-      this.props.setIsLoadingItems(false);
-
-      if (updateNamePath) {
-        // Only push path if it is not the same as actual path
-        const folderName = this.updateNamesPaths(this.props.user, content.contentFolders, this.state.namePath);
-
-        this.setState({
-          namePath: this.pushNamePath({
-            name: folderName,
-            id: content.contentFolders.id,
-            bucket: content.contentFolders.bucket,
-            id_team: content.contentFolders.id_team
-          }),
-          isAuthorized: true
-        });
-      }
-    } catch (err) {
-      toast.warn(err);
-    }
-  };
-
   updateNamesPaths = (user, contentFolders, namePath) => {
     if (namePath.length === 0 || namePath[namePath.length - 1].id !== contentFolders.id) {
       return user.root_folder_id === contentFolders.id ? 'All Files' : contentFolders.name;
     }
   }
-
-  updateMeta = (metadata, itemId, isFolder) => {
-    const { isTeam, currentFolderId } = this.state;
-    const data = JSON.stringify({ metadata });
-
-    if (isFolder) {
-      folderService.updateMetaData(itemId, isTeam, data)
-        .then(() => {
-          this.getFolderContent(currentFolderId, false, true, isTeam);
-        })
-        .catch((error) => {
-          console.log(`Error during folder customization. Error: ${error} `);
-        });
-    } else {
-      fileService.updateMetaData(itemId, isTeam, data).then(() => {
-        this.getFolderContent(currentFolderId, false, true, isTeam);
-      })
-        .catch((error) => {
-          console.log(`Error during file customization. Error: ${error} `);
-        });
-    }
-  };
 
   clearMoveOpEvent = (moveOpId) => {
     delete this.moveEvent[moveOpId];
@@ -675,7 +642,7 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
   };
 
   handleUploadFiles = async (files, parentFolderId, folderPath = null) => {
-    const currentFolderId = this.state.currentFolderId;
+    const currentFolderId = this.props.currentFolderId;
 
     files = Array.from(files);
 
@@ -795,7 +762,7 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
 
   uploadFile = (e) => {
     this.handleUploadFiles(e.target.files, undefined, undefined).then(() => {
-      this.getFolderContent(this.state.currentFolderId, false, false, this.state.isTeam);
+      this.getFolderContent(this.props.currentFolderId, false, false, this.state.isTeam);
     });
   }
 
@@ -803,98 +770,17 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
     return this.handleUploadFiles(e, uuid, folderPath);
   }
 
-  shareItem = () => {
-    const selectedItems = this.getSelectedItems();
+  confirmDeleteItems = async () => {
+    const { user, currentItems, itemsToDeleteIds, currentFolderId } = this.props;
+    const itemsToDelete: any[] = currentItems.filter(item => itemsToDeleteIds.includes(item.name));
 
-    if (selectedItems && selectedItems.length === 1) {
-      this.setState({ popupShareOpened: true });
-    } else {
-      toast.warn('Please select at least one file or folder to share');
+    try {
+      await folderService.deleteItems(user.teams, itemsToDelete);
+      this.getFolderContent(currentFolderId, false, true, this.state.isTeam);
+    } catch (e) {
+      console.log(e);
     }
   };
-
-  deleteItems = () => {
-    if (this.getSelectedItems().length > 0) {
-      this.setState({ showDeleteItemsPopup: true });
-    } else {
-      toast.warn('Please select at least one file or folder to delete');
-    }
-  };
-
-  confirmDeleteItems = () => {
-    const selectedItems = this.getSelectedItems();
-
-    //const bucket = _.last(this.state.namePath).bucket;
-    const fetchOptions = {
-      method: 'DELETE',
-      headers: getHeaders(true, false, this.state.isTeam)
-    };
-
-    if (selectedItems.length === 0) {
-      return;
-    }
-    const deletionRequests = _.map(selectedItems, (v, i) => {
-      if (v.onDelete) {
-        return (next) => {
-          v.onDelete(); next();
-        };
-      }
-      const url = v.isFolder
-        ? `/api/storage/folder/${v.id}`
-        : `/api/storage/folder/${v.folderId}/file/${v.id}`;
-
-      return (next) =>
-        fetch(url, fetchOptions).then(() => {
-          window.analytics.track((v.isFolder ? 'folder' : 'file') + '-delete', {
-            email: this.props.user.email,
-            platform: DevicePlatform.Web
-          });
-          next();
-        }).catch(next);
-    });
-
-    async.parallel(deletionRequests, (err, result) => {
-      if (err) {
-        throw err;
-      } else {
-        console.log('getFolderContent 16');
-        this.getFolderContent(this.state.currentFolderId, false, true, this.state.isTeam);
-      }
-    });
-  };
-
-  selectItems = (items, isFolder, unselectOthers = true) => {
-    if (typeof items === 'number') {
-      items = [items];
-    }
-
-    this.props.currentItems.forEach((item: any) => {
-      const isTargetItem = items.indexOf(item.id) !== -1 && item.isFolder === isFolder;
-
-      if (isTargetItem) {
-        item.isSelected = !item.isSelected;
-      } else {
-        if (unselectOthers) {
-          item.isSelected = false;
-        } else {
-          item.isSelected = !!item.isSelected;
-        }
-      }
-    });
-
-    this.props.setItems(this.props.currentItems);
-  };
-
-  deselectAll() {
-    this.props.currentItems.forEach((item: any) => {
-      item.isSelected = false;
-    });
-    this.props.setItems(this.props.currentItems);
-  }
-
-  getSelectedItems() {
-    return this.props.currentItems.filter((o: any) => o.isSelected === true);
-  }
 
   folderTraverseUp() {
     this.setState(this.popNamePath(), () => {
@@ -915,22 +801,40 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
     };
   }
 
-  openChooserModal() {
-    this.setState({ chooserModalOpen: true });
+  openRateLimitModal = () => {
+    this.setState({ rateLimitModal: true });
   }
-
-  closeModal = () => {
-    this.setState({ chooserModalOpen: false });
-  };
 
   closeRateLimitModal = () => {
     this.setState({ rateLimitModal: false });
   };
 
   render() {
+    const { currentItems, itemToShareId, itemsToDeleteIds, infoItemId, setItemToShare, setItemsToDelete } = this.props;
+    const itemToShare: any = currentItems.find(item => item.id === itemToShareId);
+
     if (this.props.isAuthenticated && this.state.isInitialized) {
       return (
         <div className="xcloud-layout flex">
+
+          { !!itemToShareId &&
+            <SharePopup
+              open={!!itemToShareId}
+              item={itemToShare}
+              onClose={() => setItemToShare(0)}
+            />
+          }
+
+          <MessageDialog
+            open={itemsToDeleteIds.length > 0}
+            title="Delete item"
+            message="Please confirm you want to delete this item"
+            cancelLabel="Cancel"
+            acceptLabel="Confirm"
+            onCancel={() => setItemsToDelete([])}
+            onAccept={this.confirmDeleteItems}
+          />
+
           <SideNavigator />
 
           <div className="flex-grow bg-l-neutral-10 px-32px">
@@ -939,7 +843,8 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
           </div>
 
           <FileLogger />
-          <FileActivity />
+
+          { infoItemId ? <FileActivity /> : ''}
         </div>
       );
     } else {
@@ -960,14 +865,24 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
 
 export default connect(
   (state: RootState) => ({
+    currentFolderId: state.storage.currentFolderId,
+    currentFolderBucket: state.storage.currentFolderBucket,
     isLoadingItems: state.storage.isLoading,
     currentItems: state.storage.items,
-    selectedItems: state.storage.selectedItems
+    selectedItemsIds: state.storage.selectedItems,
+    itemToShareId: state.storage.itemToShareId,
+    itemsToDeleteIds: state.storage.itemsToDeleteIds,
+    infoItemId: state.storage.infoItemId,
+    sortFunction: state.storage.sortFunction
   }),
   {
     setHasConnection,
-    setIsLoadingItems: setIsLoading,
-    setItems,
-    selectItem,
-    resetSelectedItems
+    setCurrentFolderId: storageActions.setCurrentFolderId,
+    setCurrentFolderBucket: storageActions.setCurrentFolderBucket,
+    setIsLoadingItems: storageActions.setIsLoading,
+    setItems: storageActions.setItems,
+    selectItem: storageActions.selectItem,
+    resetSelectedItems: storageActions.resetSelectedItems,
+    setItemToShare: storageActions.setItemToShare,
+    setItemsToDelete: storageActions.setItemsToDelete
   })(NewXCloud);

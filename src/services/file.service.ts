@@ -37,8 +37,9 @@ export async function deleteWelcomeFile(isTeam: boolean): Promise<Response> {
   });
 }
 
-export function updateMetaData(itemId: number, isTeam: boolean, data: any): Promise<void> {
+export function updateMetaData(itemId: string, data: any): Promise<void> {
   const user = localStorageService.getUser();
+  const isTeam = localStorageService.getUser().teams;
 
   return fetch(`/api/storage/file/${itemId}/meta`, {
     method: 'post',

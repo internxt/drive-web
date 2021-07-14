@@ -5,43 +5,39 @@ import { getIcon, IconType } from '../../../services/icon.service';
 import './MessageDialog.scss';
 
 interface MessageDialogProps {
-  initialState: boolean,
+  open: boolean;
   title: string,
   message: string,
   cancelLabel: string,
   acceptLabel: string,
-  onCancel: () => void,
+  onCancel?: () => void,
   onAccept: () => void
 }
 
 const MessageDialog = ({
-  initialState,
+  open,
   title,
   message,
   cancelLabel,
   acceptLabel,
-  onCancel,
+  onCancel = () => {},
   onAccept
 }: MessageDialogProps
 ) => {
-  const [isOpen, setIsOpen] = useState(initialState);
-  const [inputValue, setInputValue] = useState('');
   const onCancelFn = (() => {
-    (onCancel || (() => { }))();
-    setIsOpen(false);
+    onCancel();
   });
   const onAcceptFn = (() => {
-    (onAccept || (() => { }))();
-    setIsOpen(false);
+    onAccept();
   });
 
   return (
-    <div className="absolute flex align-middle justify-center w-full h-full">
+    <div className={`${open ? 'flex' : 'hidden'} absolute align-middle justify-center w-full h-full`}>
       {/* BACKGROUND */}
-      <div className={`${isOpen ? 'block' : 'hidden'} z-40 absolute opacity-50 bg-black w-full h-full`}></div>
+      <div className={`${open ? 'block' : 'hidden'} z-40 absolute opacity-50 bg-black w-full h-full`}></div>
 
       {/* PANEL */}
-      <div className={`message-dialog-panel ${isOpen ? 'block' : 'hidden'} relative z-50 rounded-lg px-7 py-4 bg-white text-xs`}>
+      <div className={`message-dialog-panel ${open ? 'block' : 'hidden'} relative z-50 rounded-lg px-7 py-4 bg-white text-xs`}>
         <div className='flex items-center justify-center w-full'>
           <span className='text-neutral-90 font-semibold text-xs'>{title}</span>
 

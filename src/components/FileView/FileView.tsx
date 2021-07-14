@@ -80,7 +80,5 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
 }
 
 export default connect((state: RootState) => ({
-  isLoadingItems: state.storage.isLoading,
-  currentItems: state.storage.items,
-  selectedItems: state.storage.selectedItems
+  isLoadingItems: state.storage.isLoading
 }))(FileView);

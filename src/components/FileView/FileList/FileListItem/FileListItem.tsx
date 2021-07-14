@@ -1,15 +1,30 @@
 import React, { Fragment, ReactNode } from 'react';
+import { connect } from 'react-redux';
+import { Dropdown } from 'react-bootstrap';
 
 import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
 import sizeService from '../../../../services/size.service';
 
 import './FileListItem.scss';
-import { Dropdown } from 'react-bootstrap';
 import dateService from '../../../../services/date.service';
 import iconService, { IconType } from '../../../../services/icon.service';
+import { RootState } from '../../../../store';
+import { selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem } from '../../../../store/slices/storageSlice';
+import downloadService from '../../../../services/download.service';
+import { UserSettings } from '../../../../models/interfaces';
+import folderService from '../../../../services/folder.service';
+import fileService from '../../../../services/file.service';
 
 interface FileListItemProps {
+  user: UserSettings;
   item: any;
+  selectedItems: number[];
+  currentFolderId: number | null;
+  selectItem: (itemId: number) => void;
+  deselectItem: (itemId: number) => void;
+  setItemToShare: (itemId: number) => void;
+  setItemsToDelete: (itemsIds: number[]) => void;
+  setInfoItem: (itemId: number) => void;
 }
 
 interface FileListItemState {
@@ -37,6 +52,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     this.onShareButtonClicked = this.onShareButtonClicked.bind(this);
     this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
     this.onDeleteButtonClicked = this.onDeleteButtonClicked.bind(this);
+    this.onSelectCheckboxChanged = this.onSelectCheckboxChanged.bind(this);
   }
 
   get nameNode(): JSX.Element {
@@ -56,6 +72,36 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     return this.props.item.isFolder ?
       iconService.getIcon(IconType.FolderBlue) :
       iconService.getIcon(IconType.DefaultFile);
+  }
+
+  get isSelected(): boolean {
+    const { item, selectedItems } = this.props;
+
+    return selectedItems.includes(item.name);
+  }
+
+  confirmNameChange() {
+    const { user, item, currentFolderId } = this.props;
+    const itemId: number | string = item.fileId | item.id;
+    const { dirtyName } = this.state;
+    const data = JSON.stringify({ metadata: { itemName: dirtyName } });
+
+    if (item.isFolder) {
+      folderService.updateMetaData(itemId, data)
+        .then(() => {
+          // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+        })
+        .catch((error) => {
+          console.log(`Error during folder customization. Error: ${error} `);
+        });
+    } else {
+      fileService.updateMetaData(itemId, data).then(() => {
+        // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+      })
+        .catch((error) => {
+          console.log(`Error during file customization. Error: ${error} `);
+        });
+    }
   }
 
   onNameDoubleClicked(): void {
@@ -78,8 +124,16 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   onEnterKeyPressed(e: React.KeyboardEvent): void {
     if (e.key === 'Enter') {
-      // TODO: save name change
+      this.confirmNameChange();
     }
+  }
+
+  onSelectCheckboxChanged(e: any) {
+    const { item, selectItem, deselectItem } = this.props;
+
+    e.target.checked ?
+      selectItem(item.name) :
+      deselectItem(item.name);
   }
 
   onRenameButtonClicked(): void {
@@ -93,19 +147,23 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   onDownloadButtonClicked(): void {
-    console.log('download button clicked!');
+    downloadService.downloadFile(this.props.item);
   }
 
   onShareButtonClicked(): void {
-    console.log('share button clicked!');
+    const { setItemToShare, item } = this.props;
+
+    setItemToShare(item.id);
   }
 
   onInfoButtonClicked(): void {
-    console.log('info button clicked!');
+    this.props.setInfoItem(this.props.item.id);
   }
 
   onDeleteButtonClicked(): void {
-    console.log('delete button clicked!');
+    const { setItemsToDelete, item } = this.props;
+
+    setItemsToDelete([item.id]);
   }
 
   render(): ReactNode {
@@ -114,7 +172,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     return (
       <tr className="group file-list-item hover:bg-blue-10 border-b border-l-neutral-30 text-sm">
         <td className="px-4">
-          <input type="checkbox" />
+          <input type="checkbox" checked={this.isSelected} onChange={this.onSelectCheckboxChanged} />
         </td>
         <td>
           <img className="type-icon" src={this.itemIconSrc} />
@@ -155,4 +213,16 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 }
 
-export default FileListItem;
+export default connect(
+  (state: RootState) => ({
+    user: state.user.user,
+    currentFolderId: state.storage.currentFolderId,
+    selectedItems: state.storage.selectedItems
+  }),
+  {
+    selectItem,
+    deselectItem,
+    setItemToShare,
+    setItemsToDelete,
+    setInfoItem
+  })(FileListItem);

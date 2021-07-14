@@ -14,7 +14,7 @@ import FileCommander from '../../components/FileCommander/FileCommander';
 import NavigationBar from '../../components/navigationBar/NavigationBar';
 import { removeAccents, getFilenameAndExt, renameFile, encryptFilename } from '../../lib/utils';
 
-import PopupShare from '../../components/PopupShare';
+import SharePopup from '../../components/popups/SharePopup/SharePopup';
 import './XCloud.scss';
 
 import { getHeaders } from '../../lib/auth';
@@ -257,7 +257,7 @@ class XCloud extends React.Component {
           throw body.error ? body.error : 'createFolder error';
         }
         window.analytics.track('folder-created', {
-          email: localStorage.getUser().email,
+          email: localStorageService.getUser().email,
           platform: 'web'
         });
         console.log('getFolderContent 10');
@@ -1137,8 +1137,7 @@ class XCloud extends React.Component {
           />
 
           {this.getSelectedItems().length > 0 && this.state.popupShareOpened ? (
-            <PopupShare
-              isTeam={this.state.isTeam}
+            <SharePopup
               open={this.state.popupShareOpened}
               item={this.getSelectedItems()[0]}
               onClose={() => {

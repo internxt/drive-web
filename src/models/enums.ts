@@ -23,7 +23,8 @@ export enum AnalyticsTrack {
     FileUploadError = 'file-upload-error',
     FileUploadFinished = 'file-upload-finished',
     OpenWelcomeFile = 'file-welcome-open',
-    DeleteWelcomeFile = 'file-welcome-delete'
+    DeleteWelcomeFile = 'file-welcome-delete',
+    FileShare = 'file-share'
 }
 
 export enum DevicePlatform {

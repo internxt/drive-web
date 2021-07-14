@@ -156,12 +156,12 @@ export async function createFolder(isTeam: boolean, currentFolderId: number | nu
   }
 }
 
-export function updateMetaData(itemId: number, isTeam: boolean, data: any): Promise<void> {
+export function updateMetaData(itemId: number, data: any): Promise<void> {
   const user: UserSettings = localStorageService.getUser();
 
   return fetch(`/api/storage/folder/${itemId}/meta`, {
     method: 'post',
-    headers: getHeaders(true, true, isTeam),
+    headers: getHeaders(true, true, !!user.teams),
     body: data
   })
     .then(() => {

@@ -3,12 +3,27 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
 import iconService, { IconType } from '../../../../services/icon.service';
+import { selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem } from '../../../../store/slices/storageSlice';
 
-import './FileGridItem.scss';
 import dateService from '../../../../services/date.service';
 
+import './FileGridItem.scss';
+import folderService from '../../../../services/folder.service';
+import fileService from '../../../../services/file.service';
+import { RootState } from '../../../../store';
+import { connect } from 'react-redux';
+import { UserSettings } from '../../../../models/interfaces';
+
 interface FileGridItemProps {
+  user: UserSettings;
   item: any;
+  selectedItems: number[];
+  currentFolderId: number | null;
+  selectItem: (itemId: number) => void;
+  deselectItem: (itemId: number) => void;
+  setItemToShare: (itemId: number) => void;
+  setItemsToDelete: (itemsIds: number[]) => void;
+  setInfoItem: (itemId: number) => void;
 }
 
 interface FileGridItemState {
@@ -58,6 +73,29 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       iconService.getIcon(IconType.DefaultFile);
   }
 
+  confirmNameChange() {
+    const { user, item, currentFolderId } = this.props;
+    const { dirtyName } = this.state;
+    const data = JSON.stringify({ metadata: { itemName: dirtyName } });
+
+    if (item.isFolder) {
+      folderService.updateMetaData(item.id, data)
+        .then(() => {
+          // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+        })
+        .catch((error) => {
+          console.log(`Error during folder customization. Error: ${error} `);
+        });
+    } else {
+      fileService.updateMetaData(item.fileId, data).then(() => {
+        // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+      })
+        .catch((error) => {
+          console.log(`Error during file customization. Error: ${error} `);
+        });
+    }
+  }
+
   onOptionsButtonClicked(): void {
     console.log('Options button clicked!');
   }
@@ -82,7 +120,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
   onEnterKeyPressed(e: React.KeyboardEvent): void {
     if (e.key === 'Enter') {
-      // TODO: save name change
+      this.confirmNameChange();
     }
   }
 
@@ -143,4 +181,16 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 }
 
-export default FileGridItem;
+export default connect(
+  (state: RootState) => ({
+    user: state.user.user,
+    currentFolderId: state.storage.currentFolderId,
+    selectedItems: state.storage.selectedItems
+  }),
+  {
+    selectItem,
+    deselectItem,
+    setItemToShare,
+    setItemsToDelete,
+    setInfoItem
+  })(FileGridItem);
