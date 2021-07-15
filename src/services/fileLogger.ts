@@ -1,3 +1,5 @@
+import EventEmitter from 'events';
+
 interface entry {
   filePath: string;
   status: string;
@@ -6,12 +8,13 @@ interface entry {
   message?: string;
 }
 
-class FileLogger {
+class FileLogger extends EventEmitter {
   head: number;
   queue?: Array<entry>;
   maxSize: number;
 
   constructor(maxSize = 50) {
+    super();
     this.maxSize = maxSize;
     this.queue = new Array(maxSize);
     this.head = 0;
@@ -24,6 +27,7 @@ class FileLogger {
     if (this.queue[this.head] == null) {
       // Create First record in Logger
       this.queue[this.head] = item;
+      this.emit('new-entry', this.getHead());
     } else if (item.filePath === this.queue[this.head].filePath) {
       try {
         // Update the last record in Logger
@@ -32,6 +36,7 @@ class FileLogger {
         } else {
           Object.assign(this.queue[this.head], item);
         }
+        this.emit('update-last-entry', this.getHead());
       } catch (err) {
         console.error(err);
       }
@@ -39,7 +44,9 @@ class FileLogger {
       // Create a new record in Logger
       this.head = (this.head + 1) % this.maxSize;
       this.queue[this.head] = item;
+      this.emit('new-entry', this.getHead());
     }
+    //console.log(this.queue[this.head]);
   }
 
   getAll() {

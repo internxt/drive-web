@@ -23,7 +23,6 @@ import history from '../../lib/history';
 
 import { UserSettings } from '../../models/interfaces';
 import SideNavigator from '../../components/SideNavigator/SideNavigator';
-import FileLogger from '../../components/FileLogger';
 import deviceService from '../../services/device.service';
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform } from '../../models/enums';
@@ -39,6 +38,7 @@ import CreateFolderDialog from '../../components/dialogs/CreateFolderDialog/Crea
 import DeleteItemsDialog from '../../components/dialogs/DeleteItemsDialog/DeleteItemsDialog';
 
 import './NewXCloud.scss';
+import FileLogger from '../../components/FileLoggerModal';
 
 interface NewXCloudProps {
   user: UserSettings | any,

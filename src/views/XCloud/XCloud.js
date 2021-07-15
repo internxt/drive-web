@@ -26,6 +26,10 @@ import history from '../../lib/history';
 
 import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 import FileLogger from '../../services/fileLogger';
+import FileLoggerModal from '../../components/FileLoggerModal/index';
+import { connect } from 'react-redux';
+import { addFileToHistory, updateFileStatus } from '../../store/slices/filesStateSlice';
+import { FileActionTypes, FileStatusTypes } from '../../models/interfaces';
 
 class XCloud extends React.Component {
 
@@ -663,7 +667,8 @@ class XCloud extends React.Component {
 
   downloadFile = async (totalPathItem, id, _class, pcb) => {
     //STATUS: DECRYPTING DOWNLOAD FILE
-    FileLogger.push({ action: 'download', status: 'decrypting', filePath: totalPathItem });
+    //this.props.dispatch(addFileToHistory({ action: FileActionTypes.Download, status: FileStatusTypes.Decrypting, filePath: totalPathItem, isFolder: false }));
+    FileLogger.push({ action: FileActionTypes.Download, status: FileStatusTypes.Decrypting, filePath: totalPathItem });
 
     const fileId = pcb.props.rawItem.fileId;
     const fileName = pcb.props.rawItem.name;
@@ -682,23 +687,23 @@ class XCloud extends React.Component {
       const fileBlob = await network.downloadFile(bucketId, fileId, {
         //STATUS: DOWNLOAD PROGRESS FILE AND DOWNLOADING
         progressCallback: ((progress) => {
-          if (progress > 0) {
-
-            FileLogger.push({ action: 'download', status: 'pending', filePath: totalPathItem, progress });
-
-          }
+          //this.props.dispatch(updateFileStatus({ filePath: totalPathItem, status: FileStatusTypes.Pending, progress: progress.toFixed(2) }));
+          FileLogger.push({ action: FileActionTypes.Download, status: FileStatusTypes.Downloading, filePath: totalPathItem, progress });
           pcb.setState({ progress });
         })
       });
 
+      //obj.status = FileStatusTypes.success;
       //STATUS: FINISH DOWNLOAD FILE
-      FileLogger.push({ action: 'download', status: 'success', filePath: totalPathItem });
+      //this.props.dispatch(updateFileStatus({ filePath: totalPathItem, status: FileStatusTypes.Success }));
+      FileLogger.push({ tion: FileActionTypes.Download, status: FileStatusTypes.Success, filePath: totalPathItem });
       fileDownload(fileBlob, completeFilename);
 
       this.trackFileDownloadFinished(id, fileSize);
     } catch (err) {
       //STATUS: ERROR DOWNLOAD FILE
-      FileLogger.push({ action: 'download', status: 'error', filePath: totalPathItem, message: err.message });
+      //this.props.dispatch(updateFileStatus({ filePath: totalPathItem, status: FileStatusTypes.Error }));
+      FileLogger.push({ action: FileActionTypes.Download, status: FileStatusTypes.Error, filePath: totalPathItem, message: err.message });
 
       this.trackFileDownloadError(fileId, err.message);
 
@@ -771,17 +776,15 @@ class XCloud extends React.Component {
 
       const relativePath = folderPath + file.name + (file.type ? '.' + file.type : '');
       const content = new Blob([file.content], { type: file.type });
-
       const fileId = await network.uploadFile(bucketId, {
         filepath: relativePath,
         filesize: file.size,
         filecontent: content,
         progressCallback: (progress) => {
           //STATUS: UPLOAD FILE PROGRESS AS % AND UPLOADING
-
           if (progress > 0) {
-
-            FileLogger.push({ action: 'upload', status: 'pending', filePath: filePathToUpload, progress });
+            //this.props.dispatch(updateFileStatus({ filePath: filePathToUpload, status: FileStatusTypes.Pending, progress: progress.toFixed(2) }));
+            FileLogger.push({ action: FileActionTypes.Upload, status: FileStatusTypes.Uploading, filePath: filePathToUpload, progress: Math.trunc(progress) });
           }
         }
       });
@@ -861,7 +864,8 @@ class XCloud extends React.Component {
 
       filePathToUpload = path + relativePath + '/' + file.name;
       //STATUS: ENCRYPTING STATUS FILES
-      FileLogger.push({ action: 'upload', status: 'encrypting', filePath: filePathToUpload });
+      //this.props.dispatch(addFileToHistory({ filePath: filePathToUpload, action: FileActionTypes.Upload, status: FileStatusTypes.Encrypting, isFolder: false }));
+      FileLogger.push({ action: FileActionTypes.Upload, status: FileStatusTypes.Encrypting, filePath: filePathToUpload });
 
       filesToUpload.push({ name: filename, size: file.size, type: extension, isLoading: true, content: file });
     });
@@ -893,7 +897,8 @@ class XCloud extends React.Component {
         this.upload(file, parentFolderId, relativePath, filePathToUpload)
           .then(({ res, data }) => {
             //STATUS: FINISH UPLOADING FILE
-            FileLogger.push({ action: 'upload', status: 'success', filePath: filePathToUpload });
+            //this.props.dispatch(updateFileStatus({ filePath: filePathToUpload, status: FileStatusTypes.Success }));
+            FileLogger.push({ action: FileActionTypes.Upload, status: FileStatusTypes.Success, filePath: filePathToUpload });
 
             if (parentFolderId === currentFolderId) {
               const index = this.state.currentCommanderItems.findIndex((obj) => obj.name === file.name);
@@ -913,8 +918,8 @@ class XCloud extends React.Component {
             }
           }).catch((err) => {
             //STATUS: ERROR UPLOAD FILE
-
-            FileLogger.push({ action: 'upload', status: 'error', filePath: filePathToUpload, message: err.message });
+            //this.props.dispatch(updateFileStatus({ filePath: relativePath, status: FileStatusTypes.Error, message: err.message }));
+            FileLogger.push({ action: FileActionTypes.Upload, status: FileStatusTypes.Error, filePath: filePathToUpload, message: err.message });
             uploadErrors.push(err);
             console.log(err);
 
@@ -932,8 +937,8 @@ class XCloud extends React.Component {
       });
     } catch (err) {
       //STATUS: ERROR UPLOAD FILE
-
-      FileLogger.push({ action: 'upload', status: 'error', filePath: filePathToUpload, message: err.message });
+      //this.props.dispatch(updateFileStatus({ filePath: relativePath, status: FileStatusTypes.Error, message: err.message }));
+      FileLogger.push({ action: FileActionTypes.Upload, status: FileStatusTypes.Error, filePath: filePathToUpload, message: err.message });
       if (err.message === 'There were some errors during upload') {
         // TODO: List errors in a queue?
         return uploadErrors.forEach(uploadError => {
@@ -1103,6 +1108,8 @@ class XCloud extends React.Component {
     if (this.props.isAuthenticated && this.state.isInitialized) {
       return (
         <div className="App flex-column" style={{ minHeight: '100%', height: 'auto', display: 'flex' }}>
+          <FileLoggerModal />
+
           <NavigationBar
             showFileButtons={true}
             showSettingsButton={true}
@@ -1236,4 +1243,8 @@ class XCloud extends React.Component {
   }
 }
 
-export default XCloud;
+const mapStateToProps = state => {
+  return state;
+};
+
+export default connect(mapStateToProps)(XCloud);

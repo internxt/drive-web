@@ -1,4 +1,4 @@
-import { FileStatusType } from './enums';
+import { FileActionTypes, FileStatusTypes } from './enums';
 
 export interface UserSettings {
   bucket: string
@@ -45,6 +45,14 @@ export interface FileData {
   iconId: number | null,
   parent_id: number | null,
   icon: string | null,
-  fileStatus: FileStatusType,
+  fileStatus: FileStatusTypes,
   progress: string
+}
+export interface ILoggerFile {
+  action: FileActionTypes,
+  filePath: string,
+  status: FileStatusTypes,
+  progress?: number,
+  isFolder: boolean,
+  errorMessage?: string
 }

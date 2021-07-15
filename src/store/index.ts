@@ -4,13 +4,15 @@ import userReducer from './slices/userSlice';
 import networkReducer from './slices/networkSlice';
 import storageReducer from './slices/storageSlice';
 import uiReducer from './slices/uiSlice';
+import filesState from './slices/filesStateSlice';
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
     network: networkReducer,
     storage: storageReducer,
-    ui: uiReducer
+    ui: uiReducer,
+    filesState: filesState
   }
 });
 
