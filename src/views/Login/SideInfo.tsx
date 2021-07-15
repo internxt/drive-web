@@ -17,9 +17,9 @@ const SideInfo = ({ texts }: SideInfoProps): JSX.Element => {
 
       <span className='w-40 text-3xl mt-7'>{texts.title}</span>
 
-      <span className='w-50 text-sm mt-6'>{texts.subtitle}</span>
+      <span className='w-50 text-base mt-6'>{texts.subtitle}</span>
 
-      <a className='text-sm font-semibold mt-9' href={texts.href}>{texts.link}</a>
+      <a className='text-base font-semibold mt-9' href={texts.href}>{texts.link}</a>
     </div>
   );
 };

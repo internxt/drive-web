@@ -41,6 +41,7 @@ export enum FileActionTypes {
 export enum AnalyticsTrack {
     SignOut = 'user-signout',
     SignIn = 'user-signin',
+    SignInAttempted = 'user-signin-attempted',
     SignUp = 'user-signup',
     UserEnterPayments = 'user-enter-payments',
     PlanSubscriptionSelected = 'plan-subscription-selected'
