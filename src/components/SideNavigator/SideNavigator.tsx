@@ -35,7 +35,7 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
     const { collapsed } = this.state;
 
     return (
-      <div className={`bg-gray-10 ${!collapsed ? 'w-sidenav-1280-open' : 'w-sidenav-1280-closed'} px-8`}>
+      <div className={`bg-l-neutral-20 ${!collapsed ? 'w-sidenav-1280-open' : 'w-sidenav-1280-closed'} px-8`}>
         <button className={`flex items-center absolute top-4 left-32 transform duration-500 ${!collapsed ? 'rotate-0' : 'rotate-180'}`}
           onClick={this.toggleCollapsed}
         >

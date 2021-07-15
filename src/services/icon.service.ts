@@ -17,6 +17,17 @@ import crossWhite from '../assets/icons/cross-white.svg';
 import crossNeutralBlue from '../assets/icons/cross-neutral-blue.svg';
 import crossBlue from '../assets/icons/cross-blue.svg';
 import defaultFile from '../assets/icons/default-file.svg';
+import breadcrumbsStorage from '../assets/icons/breadcrumbs/breadcrumbs-storage.svg';
+import breadcrumbsFolder from '../assets/icons/breadcrumbs/breadcrumbs-folder.svg';
+import defaultAvatar from '../assets/icons/default-avatar.svg';
+import upload from '../assets/icons/upload.svg';
+import listView from '../assets/icons/list-view.svg';
+import mosaicView from '../assets/icons/mosaic-view.svg';
+import createFolder from '../assets/icons/create-folder.svg';
+import downloadItems from '../assets/icons/download-items.svg';
+import deleteItems from '../assets/icons/delete-items.svg';
+import shareItems from '../assets/icons/share-items.svg';
+import actions from '../assets/icons/actions.svg';
 
 export enum IconType {
   FolderWithCrossGray = 'folderWithCrossGray',
@@ -37,7 +48,18 @@ export enum IconType {
   CrossWhite = 'crossWhite',
   CrossNeutralBlue = 'crossNeutralBlue',
   CrossBlue = 'crossBlue',
-  DefaultFile = 'defaultFile'
+  DefaultFile = 'defaultFile',
+  BreadcrumbsStorage = 'breadcrumbsStorage',
+  BreadcrumbsFolder = 'breadcrumbsFolder',
+  DefaultAvatar = 'defaultAvatar',
+  Upload = 'upload',
+  ListView = 'listView',
+  MosaicView = 'mosaicView',
+  CreateFolder = 'createFolder',
+  DownloadItems = 'downloadItems',
+  DeleteItems = 'deleteItems',
+  ShareItems = 'shareItems',
+  Actions = 'actions'
 }
 
 const icons = {
@@ -59,7 +81,18 @@ const icons = {
   crossWhite,
   crossNeutralBlue,
   crossBlue,
-  defaultFile
+  defaultFile,
+  breadcrumbsStorage,
+  breadcrumbsFolder,
+  defaultAvatar,
+  upload,
+  listView,
+  mosaicView,
+  createFolder,
+  downloadItems,
+  deleteItems,
+  shareItems,
+  actions
 };
 
 export const getIcon = (iconName: IconType): string => {

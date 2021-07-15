@@ -1,5 +1,5 @@
-import React from 'react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import { FileData } from '../../models/interfaces';
 import { getIcon, IconType } from '../../services/icon.service';
@@ -7,11 +7,10 @@ import Item from './Item';
 import items from './items.json';
 import './FileLogger.scss';
 import { useAppDispatch } from '../../store/hooks';
-import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { showFileLogger } from '../../store/slices/layoutSlice';
+import { showFileLogger } from '../../store/slices/uiSlice';
 
-const selectIsOpen = (state: RootState) => state.layout.showFileLogger;
+const selectIsOpen = (state: RootState) => state.ui.isFileLoggerOpen;
 
 const FileLogger = (): JSX.Element => {
   const dispatch = useAppDispatch();

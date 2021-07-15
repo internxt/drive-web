@@ -129,31 +129,27 @@ export async function fetchFolderContent(rootId: string, isTeam: boolean): Promi
 }
 
 export async function createFolder(isTeam: boolean, currentFolderId: number | null, folderName: string): Promise<ICreatedFolder[]> {
-  try {
-    const user = localStorageService.getUser();
-    const fetchCreateFolder = await fetch('/api/storage/folder', {
-      method: 'post',
-      headers: getHeaders(true, true, isTeam),
-      body: JSON.stringify({
-        parentFolderId: currentFolderId,
-        folderName
-      })
-    });
-    const createdFolder = await fetchCreateFolder.json();
+  const user = localStorageService.getUser();
+  const response = await fetch('/api/storage/folder', {
+    method: 'post',
+    headers: getHeaders(true, true, isTeam),
+    body: JSON.stringify({
+      parentFolderId: currentFolderId,
+      folderName
+    })
+  });
+  const responseJSON = await response.json();
 
-    if (fetchCreateFolder.status !== 201) {
-      throw new Error(`The folder cannot be created ${fetchCreateFolder.status}`);
-    }
-
-    analyticsService.trackFolderCreated({
-      email: user.email,
-      platform: DevicePlatform.Web
-    });
-
-    return createdFolder;
-  } catch (err) {
-    throw new Error(`The folder cannot be created ${err}`);
+  if (response.status !== 201) {
+    throw `The folder cannot be created ${responseJSON.error}`;
   }
+
+  analyticsService.trackFolderCreated({
+    email: user.email,
+    platform: DevicePlatform.Web
+  });
+
+  return responseJSON;
 }
 
 export function updateMetaData(itemId: number, data: any): Promise<void> {

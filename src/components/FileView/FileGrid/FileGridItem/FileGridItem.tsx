@@ -42,7 +42,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       nameInputRef: React.createRef()
     };
 
-    this.onOptionsButtonClicked = this.onOptionsButtonClicked.bind(this);
     this.onNameDoubleClicked = this.onNameDoubleClicked.bind(this);
     this.onNameBlurred = this.onNameBlurred.bind(this);
     this.onNameChanged = this.onNameChanged.bind(this);
@@ -96,10 +95,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     } finally {
       nameInputRef.current?.blur();
     }
-  }
-
-  onOptionsButtonClicked(): void {
-    console.log('Options button clicked!');
   }
 
   onNameDoubleClicked(): void {
@@ -160,7 +155,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       <div className="group file-grid-item">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
-            ···
+            <img className="m-auto" src={iconService.getIcon(IconType.Actions)} />
           </Dropdown.Toggle>
           <FileDropdownActions
             onRenameButtonClicked={this.onRenameButtonClicked}

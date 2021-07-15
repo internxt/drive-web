@@ -1,0 +1,26 @@
+@layer components {
+  .breadcrumb > li + li:before {
+    content: ">";
+    padding: 0 10px;
+
+    @apply text-blue-60;
+  }
+
+  ol.breadcrumb {
+    display: flex;
+  
+    li {
+      @apply text-sm text-neutral-500;
+    }
+
+    li.active {
+      @apply text-blue-60;
+    }
+  }
+
+  .breadcrumb-item-icon {
+    height: 12px;
+  
+    @apply mr-1;
+  }
+}

@@ -127,6 +127,19 @@
       outline: none !important;
     }
   }
+
+  button.primary,
+  button.secondary {
+    height: 28px;
+    border-radius: 4px;
+    @apply px-4 py-2 text-sm;
+  }
+  button.primary {
+    @apply bg-blue-60 text-white;
+  }
+  button.secondary {
+    @apply bg-white text-blue-60;
+  }
 }
 
 /* TABLES */

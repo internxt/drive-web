@@ -8,23 +8,20 @@ import sizeService from '../../../../services/size.service';
 import './FileListItem.scss';
 import dateService from '../../../../services/date.service';
 import iconService, { IconType } from '../../../../services/icon.service';
-import { RootState } from '../../../../store';
-import { selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem } from '../../../../store/slices/storageSlice';
+import { AppDispatch, RootState } from '../../../../store';
+import { deleteItemsThunk, selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem } from '../../../../store/slices/storageSlice';
 import downloadService from '../../../../services/download.service';
 import { UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
+import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/uiSlice';
 
 interface FileListItemProps {
   user: UserSettings;
   item: any;
   selectedItems: number[];
   currentFolderId: number | null;
-  selectItem: (itemId: number) => void;
-  deselectItem: (itemId: number) => void;
-  setItemToShare: (itemId: number) => void;
-  setItemsToDelete: (itemsIds: number[]) => void;
-  setInfoItem: (itemId: number) => void;
+  dispatch: AppDispatch
 }
 
 interface FileListItemState {
@@ -130,11 +127,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   onSelectCheckboxChanged(e: any) {
-    const { item, selectItem, deselectItem } = this.props;
+    const { item, dispatch } = this.props;
 
     e.target.checked ?
-      selectItem(item.name) :
-      deselectItem(item.name);
+      dispatch(selectItem(item.name)) :
+      dispatch(deselectItem(item.name));
   }
 
   onRenameButtonClicked(): void {
@@ -152,19 +149,20 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   onShareButtonClicked(): void {
-    const { setItemToShare, item } = this.props;
+    const { dispatch, item } = this.props;
 
-    setItemToShare(item.id);
+    dispatch(setItemToShare(item.id));
   }
 
   onInfoButtonClicked(): void {
-    this.props.setInfoItem(this.props.item.id);
+    this.props.dispatch(setInfoItem(this.props.item.id));
   }
 
   onDeleteButtonClicked(): void {
-    const { setItemsToDelete, item } = this.props;
+    const { dispatch, item } = this.props;
 
-    setItemsToDelete([item.id]);
+    dispatch(setItemsToDelete([item.id]));
+    dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
   render(): ReactNode {
@@ -190,15 +188,21 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         <td>{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
         <td>
           <div className="flex justify-center">
-            <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">D</button>
-            <button onClick={this.onShareButtonClicked} className="hover-action mr-4">S</button>
-            <button onClick={this.onDeleteButtonClicked} className="hover-action">R</button>
+            <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
+              <img src={iconService.getIcon(IconType.DownloadItems)} />
+            </button>
+            <button onClick={this.onShareButtonClicked} className="hover-action mr-4">
+              <img src={iconService.getIcon(IconType.ShareItems)} />
+            </button>
+            <button onClick={this.onDeleteButtonClicked} className="hover-action">
+              <img src={iconService.getIcon(IconType.DeleteItems)} />
+            </button>
           </div>
         </td>
         <td>
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold rounded-2xl">
-              ···
+              <img src={iconService.getIcon(IconType.Actions)} />
             </Dropdown.Toggle>
             <FileDropdownActions
               onRenameButtonClicked={this.onRenameButtonClicked}
@@ -219,11 +223,4 @@ export default connect(
     user: state.user.user,
     currentFolderId: state.storage.currentFolderId,
     selectedItems: state.storage.selectedItems
-  }),
-  {
-    selectItem,
-    deselectItem,
-    setItemToShare,
-    setItemsToDelete,
-    setInfoItem
-  })(FileListItem);
+  }))(FileListItem);

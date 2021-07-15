@@ -1,12 +1,6 @@
 .navigation-buttons {
   height: max-content;
 }
-.navigation-button {
-  $size: 28px;
-
-  height: $size;
-  width: $size;
-}
 
 @layer components {
   .pagination-button {

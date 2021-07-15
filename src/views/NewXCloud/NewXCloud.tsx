@@ -34,7 +34,9 @@ import fileService from '../../services/file.service';
 import folderService, { ICreatedFolder } from '../../services/folder.service';
 import { RootState } from '../../store';
 import SharePopup from '../../components/popups/SharePopup/SharePopup';
-import MessageDialog from '../../components/dialogs/MessageDialog/MessageDialog';
+import CreateFolderDialog from '../../components/dialogs/CreateFolderDialog/CreateFolderDialog';
+
+import DeleteItemsDialog from '../../components/dialogs/DeleteItemsDialog/DeleteItemsDialog';
 
 import './NewXCloud.scss';
 
@@ -49,6 +51,8 @@ interface NewXCloudProps {
   itemToShareId: number;
   itemsToDeleteIds: number[];
   infoItemId: number;
+  isCreateFolderDialogOpen: boolean;
+  isDeleteItemsDialogOpen: boolean;
   sortFunction: ((a: any, b: any) => number) | null;
   handleKeySaved: (user: JSON) => void;
   setHasConnection: (value: boolean) => void;
@@ -292,27 +296,6 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
 
     this.setState({ searchFunction: func });
     this.getFolderContent(currentFolderId, false, true, this.state.isTeam);
-  };
-
-  createFolder = () => {
-    const { currentFolderId } = this.props;
-    const { isTeam, namePath } = this.state;
-    const folderName = prompt('Please enter folder name');
-
-    if (folderName && folderName !== '') {
-      folderService.createFolder(isTeam, currentFolderId, folderName)
-        .then((response: ICreatedFolder[]) => {
-          this.getFolderContent(currentFolderId, false, true, isTeam);
-        }).catch((err) => {
-          if (err.includes('already exists')) {
-            toast.warn('Folder with same name already exists');
-          } else {
-            toast.warn(`"${err}"`);
-          }
-        });
-    } else {
-      toast.warn('Invalid folder name');
-    }
   };
 
   folderNameExists = (folderName) => {
@@ -770,18 +753,6 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
     return this.handleUploadFiles(e, uuid, folderPath);
   }
 
-  confirmDeleteItems = async () => {
-    const { user, currentItems, itemsToDeleteIds, currentFolderId } = this.props;
-    const itemsToDelete: any[] = currentItems.filter(item => itemsToDeleteIds.includes(item.name));
-
-    try {
-      await folderService.deleteItems(user.teams, itemsToDelete);
-      this.getFolderContent(currentFolderId, false, true, this.state.isTeam);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   folderTraverseUp() {
     this.setState(this.popNamePath(), () => {
       this.getFolderContent(_.last(this.state.namePath).id, false, true, this.state.isTeam);
@@ -810,7 +781,8 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
   };
 
   render() {
-    const { currentItems, itemToShareId, itemsToDeleteIds, infoItemId, setItemToShare, setItemsToDelete } = this.props;
+    const { isCreateFolderDialogOpen, isDeleteItemsDialogOpen } = this.props;
+    const { currentItems, itemToShareId, infoItemId, setItemToShare } = this.props;
     const itemToShare: any = currentItems.find(item => item.id === itemToShareId);
 
     if (this.props.isAuthenticated && this.state.isInitialized) {
@@ -825,19 +797,17 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
             />
           }
 
-          <MessageDialog
-            open={itemsToDeleteIds.length > 0}
-            title="Delete item"
-            message="Please confirm you want to delete this item"
-            cancelLabel="Cancel"
-            acceptLabel="Confirm"
-            onCancel={() => setItemsToDelete([])}
-            onAccept={this.confirmDeleteItems}
+          <CreateFolderDialog
+            open={isCreateFolderDialogOpen}
+          />
+
+          <DeleteItemsDialog
+            open={isDeleteItemsDialogOpen}
           />
 
           <SideNavigator />
 
-          <div className="flex-grow bg-l-neutral-10 px-32px">
+          <div className="flex-grow bg-l-neutral-20 px-32px">
             <AppHeader />
             <FileView />
           </div>
@@ -873,6 +843,8 @@ export default connect(
     itemToShareId: state.storage.itemToShareId,
     itemsToDeleteIds: state.storage.itemsToDeleteIds,
     infoItemId: state.storage.infoItemId,
+    isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
+    isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
     sortFunction: state.storage.sortFunction
   }),
   {

@@ -1,9 +1,11 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
+import folderService from '../../services/folder.service';
 
 interface StorageState {
+  isLoading: boolean;
+  isDeletingItems: boolean;
   currentFolderId: number | null;
   currentFolderBucket: string | null;
-  isLoading: boolean;
   items: any[];
   selectedItems: number[];
   itemToShareId: number;
@@ -13,9 +15,10 @@ interface StorageState {
 }
 
 const initialState: StorageState = {
+  isLoading: false,
+  isDeletingItems: false,
   currentFolderId: null,
   currentFolderBucket: null,
-  isLoading: false,
   items: [],
   selectedItems: [],
   itemToShareId: 0,
@@ -23,6 +26,19 @@ const initialState: StorageState = {
   infoItemId: 0,
   sortFunction: null
 };
+
+export const deleteItemsThunk = createAsyncThunk(
+  'storage/deleteItems',
+  async (undefined, { getState }: any) => {
+    const { user } = getState().user;
+    const { items, itemsToDeleteIds, currentFolderId } = getState().storage;
+    const itemsToDelete: any[] = items.filter(item => itemsToDeleteIds.includes(item.name));
+
+    await folderService.deleteItems(user.teams, itemsToDelete);
+
+    // this.getFolderContent(currentFolderId, false, true, !!user.teams);
+  }
+);
 
 export const storageSlice = createSlice({
   name: 'storage',
@@ -61,6 +77,18 @@ export const storageSlice = createSlice({
     setSortFunction: (state: StorageState, action: PayloadAction<((a: any, b: any) => number) | null>) => {
       state.sortFunction = action.payload;
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(deleteItemsThunk.pending, (state, action) => {
+        state.isDeletingItems = true;
+      })
+      .addCase(deleteItemsThunk.fulfilled, (state, action) => {
+        state.isDeletingItems = false;
+      })
+      .addCase(deleteItemsThunk.rejected, (state, action) => {
+        state.isDeletingItems = false;
+      });
   }
 });
 

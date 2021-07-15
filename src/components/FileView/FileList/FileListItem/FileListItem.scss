@@ -11,12 +11,22 @@ td {
 }
 
 .file-list-item-actions-button {
-    height: 16px;
-    width: 16px;
+    $size: 18px;
+    height: $size;
+    width: $size;
+
+    img {
+        width: 12px;
+        margin: auto;
+    }
 }
 
 @layer components {
     .hover-action {
         @apply transition opacity-0 group-hover:opacity-100 text-blue-60;
+
+        img {
+            width: 14px;
+        }
     }
 }
