@@ -191,7 +191,8 @@ class New extends React.Component<NewProps, NewState> {
         privateKey: encPrivateKey,
         publicKey: codpublicKey,
         revocationKey: codrevocationKey,
-        referrer: this.state.register.referrer
+        referrer: this.state.register.referrer,
+        coupon: null
       })
     }).then(response => {
       if (response.status === 200) {
