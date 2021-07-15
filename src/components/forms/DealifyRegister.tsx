@@ -310,6 +310,13 @@ class DealifyRegister extends React.Component<NewProps, NewState> {
         if (this.validateRegisterFormPart1()) {
           var tempReg = this.state.register;
 
+          const patt = /^\intnx+\-+[A-Za-z0-9]{9}\-(49|99)$/;
+
+          if (!patt.test(this.state.register.coupon)) {
+            toast.warn('Coupon not valid, try again.');
+            return;
+          }
+
           tempReg.email = tempReg.email.toLowerCase().trim();
           this.setState({
             currentContainer: CONTAINERS.PrivacyTermsContainer,
