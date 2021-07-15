@@ -20,6 +20,8 @@ import crossBlue from '../assets/icons/cross-blue.svg';
 import arrowUpWhite from '../assets/icons/arrow-up-inside-box.svg';
 import mailGray from '../assets/icons/mail-gray.svg';
 import lockGray from '../assets/icons/lock-gray.svg';
+import eyeGray from '../assets/icons/eye-gray.svg';
+import eyeSlashGray from '../assets/icons/eye-slash-gray.svg';
 
 const icons = {
   folderWithCrossGray: folderWithCrossGray,
@@ -42,7 +44,9 @@ const icons = {
   crossBlue: crossBlue,
   arrowUpWhite: arrowUpWhite,
   mailGray: mailGray,
-  lockGray: lockGray
+  lockGray: lockGray,
+  eyeGray: eyeGray,
+  eyeSlashGray: eyeSlashGray
 };
 
 export const getIcon = (iconName: IconTypes): string => {

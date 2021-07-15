@@ -2,7 +2,7 @@ import React from 'react';
 import SideInfo from './SideInfo';
 import { IconTypes } from '../../models/enums';
 import { getIcon } from '../../services/getIcon';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { UserSettings } from '../../models/interfaces';
 import { useEffect } from 'react';
 import localStorageService from '../../services/localStorage.service';
@@ -11,7 +11,7 @@ import { useHistory } from 'react-router-dom';
 import { emailRegexPattern, validateEmail } from '../../services/validation.service';
 import analyticsService from '../../services/analytics.service';
 import { toast } from 'react-toastify';
-import { check2FANeeded, doAccess, doLogin } from '../../services/auth.service';
+import { check2FANeeded, doLogin } from '../../services/auth.service';
 
 interface LoginProps {
   email?: string
@@ -36,19 +36,22 @@ const texts = {
 };
 
 const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
-  const [mnemonic, setMnemonic] = useState(localStorageService.get('xMnemonic'));
-  const [user, setUser] = useState(localStorageService.getUser());
+  const history = useHistory();
+  const { register, formState: { errors }, handleSubmit, control } = useForm<ILoginFormValues>({ mode: 'onChange' });
+
+  const mnemonic = localStorageService.get('xMnemonic');
   const [token, setToken] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [email, setEmail] = useState('');
-  const [isTeam, setIsTeam] = useState(false);
-  const [password, setPassword] = useState('');
-  const [registerCompleted, setRegisterCompleted] = useState(true);
+  const [user, setUser] = useState(localStorageService.getUser());
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [showTwoFactor, setShowTwoFactor] = useState(false);
-  const history = useHistory();
-  const { register, formState: { errors }, handleSubmit } = useForm<ILoginFormValues>({ mode: 'onChange' });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isTeam, setIsTeam] = useState(false);
+  const [registerCompleted, setRegisterCompleted] = useState(true);
+
+  const email = useWatch({ control, name: 'email', defaultValue: '' });
+  const password = useWatch({ control, name: 'password', defaultValue: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic && handleKeySaved) {
@@ -118,7 +121,6 @@ const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
       <SideInfo texts={texts} />
 
       <div className='flex w-full items-center justify-center'>
-
         <form className='flex flex-col w-56' onSubmit={handleSubmit(onSubmit)}>
           <img src={getIcon(IconTypes.InternxtLongLogo)} width='110' alt="" />
           <span className='text-sm text-neutral-500 mt-1.5 mb-6'>Cloud Storage</span>
@@ -132,16 +134,26 @@ const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
           </div>
 
           <div className='relative'>
-            <input type="password" placeholder="Password" {...register('password', { required: true, maxLength: 40 })}
+            <input type={showPassword ? 'text' : 'password'} placeholder="Password" {...register('password', { required: true, maxLength: 40 })}
               className={`w-full transform duration-200 ${errors.password ? 'error' : ''}`} />
-            <div className='absolute right-3.5 bottom-6 flex items-center justify-center'>
-              <img src={getIcon(IconTypes.LockGray)} alt="" />
+            <div className={`absolute ${password ? 'right-3 bottom-5 cursor-pointer' : 'right-3.5 bottom-6'}  flex items-center justify-center`}
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {
+                password ?
+                  showPassword ?
+                    <img src={getIcon(IconTypes.EyeSlashGray)} alt="" />
+                    :
+                    <img src={getIcon(IconTypes.EyeGray)} alt="" />
+                  :
+                  <img src={getIcon(IconTypes.LockGray)} alt="" />
+              }
             </div>
           </div>
 
           <label className='flex items-center mt-2 mb-3.5 cursor-pointer'>
             <input type="checkbox" placeholder="Remember me" {...register('remember')} />
-            <span className='text-sm text-neutral-500 ml-3'>Remember me</span>
+            <span className='text-sm text-neutral-500 ml-3 select-none'>Remember me</span>
           </label>
 
           <button type='submit' className='flex items-center justify-center bg-blue-60 py-2 rounded text-white text-sm'

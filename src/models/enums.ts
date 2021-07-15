@@ -19,7 +19,9 @@ export enum IconTypes {
   CrossBlue = 'crossBlue',
   ArrowUpWhite = 'arrowUpWhite',
   MailGray = 'mailGray',
-  LockGray = 'lockGray'
+  LockGray = 'lockGray',
+  EyeGray = 'eyeGray',
+  EyeSlashGray = 'eyeSlashGray'
 }
 
 export enum FileStatusTypes {

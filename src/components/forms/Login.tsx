@@ -105,8 +105,8 @@ class Login extends React.Component<LoginProps> {
     }).then(async res => {
 
       const data = await res.json();
-      
-      console.log('data =?', data)
+
+      console.log('data =?', data);
       if (res.status !== 200) {
         window.analytics.track('user-signin-attempted', {
           status: 'error',
