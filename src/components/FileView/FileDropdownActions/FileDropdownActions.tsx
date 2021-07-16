@@ -90,7 +90,7 @@ class FileGridItem extends React.Component<FileDropdownActionsProps, FileDropdow
           Info
         </Dropdown.Item>
         <Dropdown.Item
-          id="info"
+          id="delete"
           className="file-dropdown-actions-button"
           onClick={this.onDeleteButtonClicked}
         >

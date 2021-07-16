@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
-import folderService from '../../services/folder.service';
+import storageService from '../../services/storage.service';
 
 interface StorageState {
   isLoading: boolean;
@@ -32,9 +32,10 @@ export const deleteItemsThunk = createAsyncThunk(
   async (undefined, { getState }: any) => {
     const { user } = getState().user;
     const { items, itemsToDeleteIds, currentFolderId } = getState().storage;
-    const itemsToDelete: any[] = items.filter(item => itemsToDeleteIds.includes(item.name));
+    const itemsToDelete: any[] = items.filter(item => itemsToDeleteIds.includes(item.id));
 
-    await folderService.deleteItems(user.teams, itemsToDelete);
+    console.log(itemsToDelete);
+    await storageService.deleteItems(itemsToDelete);
 
     // this.getFolderContent(currentFolderId, false, true, !!user.teams);
   }

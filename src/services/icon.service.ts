@@ -28,6 +28,11 @@ import downloadItems from '../assets/icons/download-items.svg';
 import deleteItems from '../assets/icons/delete-items.svg';
 import shareItems from '../assets/icons/share-items.svg';
 import actions from '../assets/icons/actions.svg';
+import settings from '../assets/icons/settings.svg';
+import itemInfo from '../assets/icons/item-info.svg';
+import desktop from '../assets/icons/desktop.svg';
+import previousPage from '../assets/icons/previous-page.svg';
+import nextPage from '../assets/icons/next-page.svg';
 
 export enum IconType {
   FolderWithCrossGray = 'folderWithCrossGray',
@@ -59,7 +64,12 @@ export enum IconType {
   DownloadItems = 'downloadItems',
   DeleteItems = 'deleteItems',
   ShareItems = 'shareItems',
-  Actions = 'actions'
+  Actions = 'actions',
+  Settings = 'settings',
+  ItemInfo = 'itemInfo',
+  Desktop = 'desktop',
+  PreviousPage = 'previousPage',
+  NextPage = 'nextPage'
 }
 
 const icons = {
@@ -92,7 +102,12 @@ const icons = {
   downloadItems,
   deleteItems,
   shareItems,
-  actions
+  actions,
+  settings,
+  itemInfo,
+  desktop,
+  previousPage,
+  nextPage
 };
 
 export const getIcon = (iconName: IconType): string => {

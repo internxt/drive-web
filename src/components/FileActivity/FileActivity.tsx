@@ -1,10 +1,15 @@
 import React, { ReactNode } from 'react';
+import { connect } from 'react-redux';
 
-import folderIcon from '../../assets/icons/folder.svg';
+import iconService, { IconType } from '../../services/icon.service';
+import { AppDispatch } from '../../store';
+import { setInfoItem } from '../../store/slices/storageSlice';
 
 import './FileActivity.scss';
 
-interface FileListProps { }
+interface FileListProps {
+  dispatch: AppDispatch;
+}
 
 interface FileListState { }
 
@@ -13,40 +18,64 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
     super(props);
 
     this.state = {};
+
+    this.onCloseButtonClicked = this.onCloseButtonClicked.bind(this);
   }
 
-  render(): ReactNode {
+  onCloseButtonClicked(): void {
+    this.props.dispatch(setInfoItem(0));
+  }
+
+  render(): JSX.Element {
     return (
-      <div className="w-activity-1280 bg-l-neutral-20 px-32px py-42px">
-        <div>
+      <div className="w-activity-1280 bg-white ml-24px rounded-4px p-24px">
 
-          <div className="text-center">
-            <img src={folderIcon} className="activity-file-icon m-auto" alt=""/>
-            <div>
-              <span className="text-neutral-900 block font-semibold text-base">Folder info</span>
-              <span className="text-neutral-500 block text-sm">Folder name: FilesPending</span>
-            </div>
+        {/* HEADER */}
+        <div className="flex items-center mb-6">
+          <img className="file-activity-icon" src={iconService.getIcon(IconType.FolderBlue)} alt="" />
+          <div className="flex-grow">
+            <span className="block font-semibold text-neutral-700 text-sm">Folder info</span>
+            <span className="block text-neutral-700 text-xs">Folder name: FilesPending</span>
           </div>
-
-          <div className="file-info-container text-left">
-            <span className="block text-neutral-500 text-base">File: PDF</span>
-            <span className="block text-neutral-500 text-base">Folder path: ../FilesPending</span>
-            <span className="block text-neutral-500 text-base">Size: 55.7 MB</span>
-            <span className="block text-neutral-500 text-base">Modified at: 24 Jun 2021</span>
-            <span className="block text-neutral-500 text-base">Created at: 24 Jun 2021</span>
+          <div className="w-3 cursor-pointer" onClick={this.onCloseButtonClicked}>
+            <img className="w-full" src={iconService.getIcon(IconType.CrossBlue)} alt="" />
           </div>
         </div>
 
-        <div className="file-info-container text-left">
-          <span className="block text-neutral-500 text-xs">File: PDF</span>
-          <span className="block text-neutral-500 text-xs">Folder path: ../FilesPending</span>
-          <span className="block text-neutral-500 text-xs">Size: 55.7 MB</span>
-          <span className="block text-neutral-500 text-xs">Modified at: 24 Jun 2021</span>
-          <span className="block text-neutral-500 text-xs">Created at: 24 Jun 2021</span>
+        {/* TABS */}
+        <div className="border-b border-l-neutral-50 text-center text-sm mb-4">
+          <div className="file-activity-tabs-inner-container">
+            <div className="border-b border-blue-60 text-blue-60 w-1/2">
+              Info
+            </div>
+          </div>
+        </div>
+
+        {/* INFO TAB CONTENT */}
+        <div className="relative border-l border-dashed border-l-neutral-50 pl-4">
+          <div className="w-3 absolute bg-white -left-1.5">
+            <img className="w-full" src={iconService.getIcon(IconType.ItemInfo)} alt="" />
+          </div>
+          <div className="file-activity-info-item">
+            <span className="label">Folder path</span>
+            <span className="value">Desktop/Backups/FilePending</span>
+          </div>
+          <div className="file-activity-info-item">
+            <span className="label">Size</span>
+            <span className="value">55.7 MB</span>
+          </div>
+          <div className="file-activity-info-item">
+            <span className="label">Modified</span>
+            <span className="value">24 Jun 2021</span>
+          </div>
+          <div className="file-activity-info-item">
+            <span className="label">Created</span>
+            <span className="value">24 Jun 2021</span>
+          </div>
         </div>
       </div>
     );
   }
 }
 
-export default FileActivity;
+export default connect()(FileActivity);

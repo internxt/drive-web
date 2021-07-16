@@ -1,4 +1,7 @@
-.xcloud-layout {
-  min-height: 100%;
-  height: auto;
+@layer components {
+  .app-footer {
+    height: 115px;
+
+    @apply bg-l-neutral-20;
+  }
 }

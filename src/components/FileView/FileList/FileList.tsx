@@ -27,13 +27,13 @@ class FileList extends React.Component<FileListProps, FileListState> {
       />);
   }
 
-  render() {
+  render(): JSX.Element {
     return (
-      <div>
+      <div className="flex-grow bg-white">
         <table className="table-auto w-full">
           <thead className="border-b border-l-neutral-30 bg-white text-neutral-500 py-2 px-3 text-sm">
             <tr>
-              <th className="px-4 py-2 w-12">
+              <th className="px-4 py-2 w-12 rounded-tl-4px">
                 <input type="checkbox" />
               </th>
               <th className="w-12">Type</th>
@@ -41,7 +41,7 @@ class FileList extends React.Component<FileListProps, FileListState> {
               <th className="w-64">Modified</th>
               <th className="w-12">Size</th>
               <th className="w-24"></th>
-              <th className="w-12">Actions</th>
+              <th className="w-12 rounded-tr-4px">Actions</th>
             </tr>
           </thead>
           <tbody>

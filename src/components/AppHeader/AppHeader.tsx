@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { UserSettings } from '../../models/interfaces';
 import iconService, { IconType } from '../../services/icon.service';
@@ -17,6 +18,17 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
     super(props);
 
     this.state = {};
+
+    this.onDarkModeButtonClicked = this.onDarkModeButtonClicked.bind(this);
+    this.onLightModeButtonClicked = this.onLightModeButtonClicked.bind(this);
+  }
+
+  onDarkModeButtonClicked() {
+    console.log('dark mode button clicked!');
+  }
+
+  onLightModeButtonClicked() {
+    console.log('light mode button clicked!');
   }
 
   render(): ReactNode {
@@ -24,12 +36,32 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
 
     return (
-      <div className="flex justify-between w-full py-3">
+      <div className="flex justify-between w-full py-3 mb-2">
         <input type="text" placeholder="Search files" />
-        <div className="flex">
-          <img src={iconService.getIcon(IconType.DefaultAvatar)} alt="" className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5" />
-          <span className="welcome-message text-neutral-500 text-sm">Welcome {userFullName}</span>
-        </div>
+        <Dropdown>
+          <Dropdown.Toggle variant="success" id="dropdown-basic">
+            <img src={iconService.getIcon(IconType.Settings)} />
+          </Dropdown.Toggle>
+          <Dropdown.Menu className="file-dropdown-actions">
+            <span className="text-supporting-2 mb-1">Screen</span>
+            <Dropdown.Item
+              id="light-mode"
+              className="file-dropdown-actions-button flex"
+              onClick={this.onLightModeButtonClicked}
+            >
+              <img className="mr-2 text-neutral-900" src={iconService.getIcon(IconType.Settings)} />
+              <span>Light mode</span>
+            </Dropdown.Item>
+            <Dropdown.Item
+              id="dark-mode"
+              className="file-dropdown-actions-button flex"
+              onClick={this.onDarkModeButtonClicked}
+            >
+              <img className="mr-2" src={iconService.getIcon(IconType.Settings)} />
+              <span>Dark mode</span>
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     );
   }

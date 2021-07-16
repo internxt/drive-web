@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import $ from 'jquery';
@@ -50,7 +51,6 @@ interface NewXCloudProps {
   isActivated: boolean;
   itemToShareId: number;
   itemsToDeleteIds: number[];
-  infoItemId: number;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   sortFunction: ((a: any, b: any) => number) | null;
@@ -782,12 +782,12 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
 
   render() {
     const { isCreateFolderDialogOpen, isDeleteItemsDialogOpen } = this.props;
-    const { currentItems, itemToShareId, infoItemId, setItemToShare } = this.props;
+    const { currentItems, itemToShareId, setItemToShare } = this.props;
     const itemToShare: any = currentItems.find(item => item.id === itemToShareId);
 
     if (this.props.isAuthenticated && this.state.isInitialized) {
       return (
-        <div className="xcloud-layout flex">
+        <div className="h-auto min-h-full flex flex-col">
 
           { !!itemToShareId &&
             <SharePopup
@@ -805,16 +805,19 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
             open={isDeleteItemsDialogOpen}
           />
 
-          <SideNavigator />
-
-          <div className="flex-grow bg-l-neutral-20 px-32px">
-            <AppHeader />
-            <FileView />
-          </div>
-
           <FileLogger />
 
-          { infoItemId ? <FileActivity /> : ''}
+          <div className="flex-grow flex">
+            <SideNavigator />
+
+            <div className="flex flex-col flex-grow bg-l-neutral-20 px-24px">
+              <AppHeader />
+              <FileView />
+            </div>
+          </div>
+
+          <footer className="app-footer"></footer>
+
         </div>
       );
     } else {
@@ -842,7 +845,6 @@ export default connect(
     selectedItemsIds: state.storage.selectedItems,
     itemToShareId: state.storage.itemToShareId,
     itemsToDeleteIds: state.storage.itemsToDeleteIds,
-    infoItemId: state.storage.infoItemId,
     isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
     isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
     sortFunction: state.storage.sortFunction

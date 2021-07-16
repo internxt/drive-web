@@ -1,5 +1,7 @@
 import React from 'react';
 import { Switch, Route, Redirect, Router } from 'react-router-dom';
+import { connect } from 'react-redux';
+
 import history from './lib/history';
 import './App.scss';
 import Login from './components/forms/Login';
@@ -20,7 +22,6 @@ import JoinTeam from './components/forms/JoinTeam';
 import DeactivationTeams from './components/forms/DeactivationTeam';
 import analyticsService, { PATH_NAMES } from './services/analytics.service';
 import Success from './components/teams/Success';
-import { connect } from 'react-redux';
 
 import NewXCloud from './views/NewXCloud/NewXCloud';
 import { UserSettings } from './models/interfaces';

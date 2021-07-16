@@ -1,6 +1,34 @@
-.activity-file-icon {
-  width: 82px;
-  height: 82px;
+@layer components {
+  .file-activity-icon {
+    $size: 36px;
+    
+    width: $size;
+    height: $size;
+
+    @apply mr-3;
+  }
+
+  .file-activity-tabs-inner-container {
+    top: 1px;
+
+    @apply relative w-full flex justify-center;
+  }
+
+  .file-activity-info-item {
+    @apply mb-3;
+
+    span {
+      @apply block;
+    }
+
+    .label {
+      @apply text-xs;
+    }
+
+    .value {
+      @apply text-sm;
+    }
+  }
 }
 
 .file-info-container {

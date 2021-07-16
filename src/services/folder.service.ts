@@ -172,35 +172,18 @@ export function updateMetaData(itemId: number, data: any): Promise<void> {
     });
 }
 
-export function deleteItems(isTeam: boolean, selectedItems: any[]) {
-  const user: UserSettings = localStorageService.getUser();
+export function deleteFolder(folderData: any) {
+  const user = localStorageService.getUser();
   const fetchOptions = {
     method: 'DELETE',
-    headers: getHeaders(true, false, isTeam)
+    headers: getHeaders(true, false, !!user.teams)
   };
 
-  if (selectedItems.length === 0) {
-    return;
-  }
-
-  return _.map(selectedItems, (v) => {
-    if (v.onDelete) {
-      return (next) => {
-        v.onDelete(); next();
-      };
-    }
-    const url = v.isFolder
-      ? `/api/storage/folder/${v.id}`
-      : `/api/storage/folder/${v.folderId}/file/${v.id}`;
-
-    return (next) =>
-      fetch(url, fetchOptions).then(() => {
-        analyticsService.trackDeleteItem(v, {
-          email: user.email,
-          platform: DevicePlatform.Web
-        });
-        next();
-      }).catch(next);
+  return fetch(`/api/storage/folder/${folderData.id}`, fetchOptions).then(() => {
+    analyticsService.trackDeleteItem(folderData, {
+      email: user.email,
+      platform: DevicePlatform.Web
+    });
   });
 }
 
@@ -208,7 +191,7 @@ const folderService = {
   fetchFolderContent,
   createFolder,
   updateMetaData,
-  deleteItems
+  deleteFolder
 };
 
 export default folderService;

@@ -11,12 +11,17 @@ module.exports = {
         'sidenav-1280-closed': '40px',
         'activity-1280': '296px'
       },
+      margin: {
+        '24px': '24px'
+      },
       padding: {
         '42px': '42px',
-        '32px': '32px'
+        '24px': '24px'
       },
       borderRadius: {
-        '1px': '1px'
+        '1px': '1px',
+        '2px': '2px',
+        '4px': '4px'
       },
       fontSize: {
         'supporting-2': '10px',

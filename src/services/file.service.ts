@@ -57,11 +57,27 @@ export function updateMetaData(itemId: string, data: any): Promise<void> {
     });
 }
 
+export function deleteFile(fileData: any): Promise<void> {
+  const user = localStorageService.getUser();
+  const fetchOptions = {
+    method: 'DELETE',
+    headers: getHeaders(true, false, !!user.teams)
+  };
+
+  return fetch(`/api/storage/folder/${fileData.folderId}/file/${fileData.id}`, fetchOptions).then(() => {
+    analyticsService.trackDeleteItem(fileData, {
+      email: user.email,
+      platform: DevicePlatform.Web
+    });
+  });
+}
+
 const fileService = {
   fetchWelcomeFile,
   deleteWelcomeFile,
   openWelcomeFile,
-  updateMetaData
+  updateMetaData,
+  deleteFile
 };
 
 export default fileService;

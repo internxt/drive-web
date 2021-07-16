@@ -5,6 +5,7 @@ import SideNavigatorItem from './SideNavigatorItem/SideNavigatorItem';
 
 import './SideNavigator.scss';
 import authService from '../../services/auth.service';
+import { NavLink } from 'react-router-dom';
 
 interface SideNavigatorProps { }
 
@@ -49,15 +50,22 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
           }
 
           <div className='flex flex-col items-start mb-10 mt-12'>
-            <span className='h-3 text-xs text-m-neutral-10 font-semibold mb-3'>{!collapsed && 'Files'}</span>
-            <SideNavigatorItem text='Drive' icon={getIcon(IconType.FolderWithCrossGray)} isOpen={!collapsed} tooltipText='Esto es drive' />
-            <SideNavigatorItem text='Recents' icon={getIcon(IconType.ClockGray)} isOpen={!collapsed} tooltipText='Esto es recents' />
+            <span className='ml-2 h-3 text-xs text-m-neutral-100 font-semibold mb-4'>{!collapsed && 'Files'}</span>
+            <NavLink className="nav-link" to="/app">
+              <SideNavigatorItem text='Drive' icon={getIcon(IconType.FolderWithCrossGray)} isOpen={!collapsed} />
+            </NavLink>
+            <NavLink className="nav-link" to="/app/recents">
+              <SideNavigatorItem text='Recents' icon={getIcon(IconType.ClockGray)} isOpen={!collapsed} />
+            </NavLink>
           </div>
 
-          <div className={`flex flex-col items-start transform duration-300 ${!collapsed ? 'delay-500' : 'delay-500 -translate-y-16'}`}>
-            <span className='h-3 text-xs text-m-neutral-10 font-semibold mb-3'>{!collapsed && 'Configuration'}</span>
-            <SideNavigatorItem text='Account' icon={getIcon(IconType.AccountGray)} isOpen={!collapsed} tooltipText='Esto es account' />
-            <SideNavigatorItem text='Support' icon={getIcon(IconType.SupportGray)} isOpen={!collapsed} tooltipText='Esto es support' />
+          <div className={`flex flex-col items-start transform duration-300 delay-200 ${!collapsed ? '' : '-translate-y-16'}`}>
+            <span className='ml-2 h-3 text-xs text-m-neutral-100 font-semibold mb-4'>{!collapsed && 'Configuration'}</span>
+            <NavLink className="nav-link" to="/account">
+              <SideNavigatorItem text='Account' icon={getIcon(IconType.AccountGray)} isOpen={!collapsed} />
+            </NavLink>
+            <SideNavigatorItem text="App" icon={getIcon(IconType.Desktop)} isOpen={!collapsed} />
+            <SideNavigatorItem text='Support' icon={getIcon(IconType.SupportGray)} isOpen={!collapsed} />
             <SideNavigatorItem text='Log out' icon={getIcon(IconType.LogOutGray)} isOpen={!collapsed} onClick={authService.logOut} />
           </div>
         </div>

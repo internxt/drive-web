@@ -29,7 +29,7 @@ class FileGrid extends React.Component<FileGridProps, FileGridState> {
 
   render(): ReactNode {
     return (
-      <div className="file-grid grid flex-wrap justify-between gap-5">
+      <div className="file-grid grid flex-wrap justify-between gap-5 flex-grow bg-white">
         {this.itemsList}
       </div>
     );

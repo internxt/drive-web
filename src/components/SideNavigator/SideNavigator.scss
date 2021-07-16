@@ -1,0 +1,12 @@
+@layer components {
+  a.nav-link.active {
+    div {
+      border-radius: 2px;
+      @apply bg-l-neutral-40 text-blue-60;
+    }
+  }
+
+  a.nav-link {
+    width: 100%;
+  }
+}

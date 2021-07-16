@@ -10,20 +10,18 @@ import dateService from '../../../../services/date.service';
 import './FileGridItem.scss';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
-import { RootState } from '../../../../store';
+import { AppDispatch, RootState } from '../../../../store';
 import { connect } from 'react-redux';
 import { UserSettings } from '../../../../models/interfaces';
+import downloadService from '../../../../services/download.service';
+import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/uiSlice';
 
 interface FileGridItemProps {
   user: UserSettings;
   item: any;
   selectedItems: number[];
   currentFolderId: number | null;
-  selectItem: (itemId: number) => void;
-  deselectItem: (itemId: number) => void;
-  setItemToShare: (itemId: number) => void;
-  setItemsToDelete: (itemsIds: number[]) => void;
-  setInfoItem: (itemId: number) => void;
+  dispatch: AppDispatch;
 }
 
 interface FileGridItemState {
@@ -133,19 +131,24 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   onDownloadButtonClicked(): void {
-    console.log('download button clicked!');
+    downloadService.downloadFile(this.props.item);
   }
 
   onShareButtonClicked(): void {
-    console.log('share button clicked!');
+    const { dispatch, item } = this.props;
+
+    dispatch(setItemToShare(item.id));
   }
 
   onInfoButtonClicked(): void {
-    console.log('info button clicked!');
+    this.props.dispatch(setInfoItem(this.props.item.id));
   }
 
   onDeleteButtonClicked(): void {
-    console.log('delete button clicked!');
+    const { dispatch, item } = this.props;
+
+    dispatch(setItemsToDelete([item.id]));
+    dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
   render() {
@@ -184,11 +187,4 @@ export default connect(
     user: state.user.user,
     currentFolderId: state.storage.currentFolderId,
     selectedItems: state.storage.selectedItems
-  }),
-  {
-    selectItem,
-    deselectItem,
-    setItemToShare,
-    setItemsToDelete,
-    setInfoItem
-  })(FileGridItem);
+  }))(FileGridItem);

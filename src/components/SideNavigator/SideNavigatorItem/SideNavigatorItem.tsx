@@ -9,23 +9,21 @@ interface SideNavigatorItemProps {
 }
 
 const SideNavigatorItem = ({ text, icon, isOpen, tooltipText, onClick }: SideNavigatorItemProps): JSX.Element => {
-  onClick = onClick || (() => {});
+  onClick = onClick || (() => { });
 
   return (
-    <div>
-      <div className='h-max mb-2 select-none'>
-        <div className='flex items-center w-max cursor-pointer'
-          onClick={onClick}
-        >
-          <div className='flex items-center h-5'>
-            <img src={icon} alt="" className='mr-2.5' />
-          </div>
-
-          {isOpen
-            ? <span className='text-base text-neutral-10' data-for="mainTooltip" data-tip={tooltipText} data-iscapture="true">{text}</span>
-            : null
-          }
+    <div className='select-none px-3 py-1 w-full hover:bg-l-neutral-30'>
+      <div className='flex items-center w-max cursor-pointer'
+        onClick={onClick}
+      >
+        <div className='flex items-center h-5'>
+          <img src={icon} alt="" className='mr-2.5' />
         </div>
+
+        {isOpen
+          ? <span className='text-base text-neutral-10' data-for="mainTooltip" data-tip={tooltipText} data-iscapture="true">{text}</span>
+          : null
+        }
       </div>
     </div>
   );
