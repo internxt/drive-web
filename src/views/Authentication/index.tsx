@@ -10,8 +10,11 @@ import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { emailRegexPattern, validateEmail } from '../../services/validation.service';
 import analyticsService from '../../services/analytics.service';
-import { toast } from 'react-toastify';
 import { check2FANeeded, doLogin } from '../../services/auth.service';
+import AuthButton from '../../components/Buttons/AuthButton';
+import AuthInput from '../../components/Inputs/AuthInput';
+import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
+import SignUp from './SignUp';
 
 interface LoginProps {
   email?: string
@@ -21,10 +24,13 @@ interface LoginProps {
   setUser: (user: UserSettings) => void
 }
 
-export interface ILoginFormValues {
+export interface IFormValues {
+  name: string,
   email: string,
   password: string,
-  remember: boolean
+  confirmPassword: string,
+  remember: boolean,
+  acceptTerms: boolean
 }
 
 const texts = {
@@ -37,7 +43,7 @@ const texts = {
 
 const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
   const history = useHistory();
-  const { register, formState: { errors }, handleSubmit, control } = useForm<ILoginFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
 
   const mnemonic = localStorageService.get('xMnemonic');
   const [token, setToken] = useState('');
@@ -51,8 +57,13 @@ const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState<string[]>([]);
+  const [showErrors, setShowErrors] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
+  const [showRegister, setShowRegister] = useState(false);
+
+  // const [, set] = useState();
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic && handleKeySaved) {
       handleKeySaved(user);
@@ -75,15 +86,14 @@ const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
     }
   }, [isAuthenticated, token, user, registerCompleted]);
 
-  const onSubmit: SubmitHandler<ILoginFormValues> = async formData => {
+  const onSubmit: SubmitHandler<IFormValues> = async formData => {
+    setIsLoggingIn(true);
     const { email, password } = formData;
 
     console.log('login data =>', formData);
     try {
-      console.log('before check2FA');
       const res = await check2FANeeded(email);
 
-      console.log('after check2FA');
       if (!res.tfa) {
         const { data, user } = await doLogin(email, password, twoFactorCode);
 
@@ -109,61 +119,91 @@ const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
         history.push(`/activate/${email}`);
       } else {
         analyticsService.signInAttempted(email, err);
-        toast.warn(<>Login error<br />{err.message}</>);
       }
+      const error = err.message ? err.message : err;
+
+      console.log('push =>', error);
+      setLoginError(error);
+      setShowErrors(true);
     } finally {
       setIsLoggingIn(false);
     }
+  };
+
+  const handlePasswordInputClick = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
     <div className='flex h-full'>
       <SideInfo texts={texts} />
 
-      <div className='flex w-full items-center justify-center'>
-        <form className='flex flex-col w-56' onSubmit={handleSubmit(onSubmit)}>
-          <img src={getIcon(IconTypes.InternxtLongLogo)} width='110' alt="" />
-          <span className='text-sm text-neutral-500 mt-1.5 mb-6'>Cloud Storage</span>
+      <div className='flex flex-col w-full items-center justify-center'>
+        {!showRegister ?
+          <div>
+            <form className='flex flex-col w-56' onSubmit={handleSubmit(onSubmit)}>
+              <img src={getIcon(IconTypes.InternxtLongLogo)} width='110' alt="" />
+              <span className='text-sm text-neutral-500 mt-1.5 mb-6'>Cloud Storage</span>
 
-          <div className='relative'>
-            <input type="email" placeholder="Email" {...register('email', { required: true, pattern: emailRegexPattern })}
-              className={`w-full transform duration-200 ${errors.email ? 'error' : ''}`} />
-            <div className='absolute right-3.5 bottom-6 flex items-center justify-center'>
-              <img src={getIcon(IconTypes.MailGray)} alt="" />
-            </div>
-          </div>
+              <div className='relative'>
+                <AuthInput
+                  placeholder='Email'
+                  label='email'
+                  type='email'
+                  icon={IconTypes.MailGray}
+                  register={register}
+                  required={true}
+                  minLength={{ value: 1, message: 'Email must not be empty' }}
+                  pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+                  error={errors.email}
+                />
+              </div>
 
-          <div className='relative'>
-            <input type={showPassword ? 'text' : 'password'} placeholder="Password" {...register('password', { required: true, maxLength: 40 })}
-              className={`w-full transform duration-200 ${errors.password ? 'error' : ''}`} />
-            <div className={`absolute ${password ? 'right-3 bottom-5 cursor-pointer' : 'right-3.5 bottom-6'}  flex items-center justify-center`}
-              onClick={() => setShowPassword(!showPassword)}
-            >
+              <div className='relative'>
+                <AuthInput
+                  placeholder='Password'
+                  label={'password'}
+                  type={showPassword ? 'text' : 'password'}
+                  icon={password
+                    ? showPassword ? IconTypes.EyeSlashGray : IconTypes.EyeGray
+                    : IconTypes.LockGray
+                  }
+                  register={register}
+                  required={true}
+                  minLength={{ value: 1, message: 'Password must not be empty' }}
+                  error={errors.password}
+                  onClick={handlePasswordInputClick}
+                />
+              </div>
+
               {
-                password ?
-                  showPassword ?
-                    <img src={getIcon(IconTypes.EyeSlashGray)} alt="" />
-                    :
-                    <img src={getIcon(IconTypes.EyeGray)} alt="" />
-                  :
-                  <img src={getIcon(IconTypes.LockGray)} alt="" />
+                loginError && showErrors &&
+                <div className='flex ml-3 my-1'>
+                  <div className='w-1.5 h-1.5 bg-neutral-600 rounded-full mt-1.5 mr-2' />
+                  <span className='text-neutral-600 text-sm'>{loginError}</span>
+                </div>
               }
+
+              <div className='flex flex-col'>
+                <CheckboxPrimary label='remember' text='Remember me' required={false} register={register} />
+                <AuthButton isDisabled={isLoggingIn} text='Sign in' textWhenDisabled='Decrypting...' />
+              </div>
+            </form>
+
+            <div className='flex flex-col items-center w-56'>
+              <a href="" target='_blank' className='transition duration-200 easi-in-out text-sm text-center text-blue-60 hover:text-blue-80 mt-3.5'>Forgot your password?</a>
+
+              <div className='flex w-full justify-between text-sm mt-3'>
+                <span>Don't have an account?</span>
+                <button className='transition duration-200 easi-in-out text-center text-blue-60 underline hover:text-blue-80 hover:underline'
+                  onClick={() => setShowRegister(true)}
+                >Get started</button>
+              </div>
             </div>
           </div>
-
-          <label className='flex items-center mt-2 mb-3.5 cursor-pointer'>
-            <input type="checkbox" placeholder="Remember me" {...register('remember')} />
-            <span className='text-sm text-neutral-500 ml-3 select-none'>Remember me</span>
-          </label>
-
-          <button type='submit' className='flex items-center justify-center bg-blue-60 py-2 rounded text-white text-sm'
-            disabled={!errors || isLoggingIn}
-          >
-            <span>{isLoggingIn ? 'Decrypting...' : 'Sign in'}</span>
-          </button>
-
-          <a href="" className='text-sm text-blue-60 mt-3.5'>Forgot your password?</a>
-        </form>
+          :
+          <SignUp />
+        }
       </div>
     </div>
   );
