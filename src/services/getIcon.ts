@@ -22,6 +22,7 @@ import mailGray from '../assets/icons/mail-gray.svg';
 import lockGray from '../assets/icons/lock-gray.svg';
 import eyeGray from '../assets/icons/eye-gray.svg';
 import eyeSlashGray from '../assets/icons/eye-slash-gray.svg';
+import userGray from '../assets/icons/user-gray.svg';
 
 const icons = {
   folderWithCrossGray: folderWithCrossGray,
@@ -46,7 +47,8 @@ const icons = {
   mailGray: mailGray,
   lockGray: lockGray,
   eyeGray: eyeGray,
-  eyeSlashGray: eyeSlashGray
+  eyeSlashGray: eyeSlashGray,
+  userGray: userGray
 };
 
 export const getIcon = (iconName: IconTypes): string => {

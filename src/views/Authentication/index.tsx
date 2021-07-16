@@ -15,6 +15,10 @@ import AuthButton from '../../components/Buttons/AuthButton';
 import AuthInput from '../../components/Inputs/AuthInput';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
 import SignUp from './SignUp';
+import { useSelector } from 'react-redux';
+import { selectShowRegister, setShowRegister } from '../../store/slices/layoutSlice';
+import ButtonTextOnly from '../../components/Buttons/ButtonTextOnly';
+import { useAppDispatch } from '../../store/hooks';
 
 interface LoginProps {
   email?: string
@@ -26,6 +30,7 @@ interface LoginProps {
 
 export interface IFormValues {
   name: string,
+  lastname: string,
   email: string,
   password: string,
   confirmPassword: string,
@@ -44,6 +49,7 @@ const texts = {
 const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
   const history = useHistory();
   const { register, formState: { errors }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
+  const dispatch = useAppDispatch();
 
   const mnemonic = localStorageService.get('xMnemonic');
   const [token, setToken] = useState('');
@@ -61,7 +67,7 @@ const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
   const [showErrors, setShowErrors] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const [showRegister, setShowRegister] = useState(false);
+  const showRegister = useSelector(selectShowRegister);
 
   // const [, set] = useState();
   useEffect(() => {
@@ -90,7 +96,6 @@ const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
     setIsLoggingIn(true);
     const { email, password } = formData;
 
-    console.log('login data =>', formData);
     try {
       const res = await check2FANeeded(email);
 
@@ -141,40 +146,36 @@ const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
       <div className='flex flex-col w-full items-center justify-center'>
         {!showRegister ?
           <div>
-            <form className='flex flex-col w-56' onSubmit={handleSubmit(onSubmit)}>
+            <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>
               <img src={getIcon(IconTypes.InternxtLongLogo)} width='110' alt="" />
               <span className='text-sm text-neutral-500 mt-1.5 mb-6'>Cloud Storage</span>
 
-              <div className='relative'>
-                <AuthInput
-                  placeholder='Email'
-                  label='email'
-                  type='email'
-                  icon={IconTypes.MailGray}
-                  register={register}
-                  required={true}
-                  minLength={{ value: 1, message: 'Email must not be empty' }}
-                  pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
-                  error={errors.email}
-                />
-              </div>
+              <AuthInput
+                placeholder='Email'
+                label='email'
+                type='email'
+                icon={IconTypes.MailGray}
+                register={register}
+                required={true}
+                minLength={{ value: 1, message: 'Email must not be empty' }}
+                pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+                error={errors.email}
+              />
 
-              <div className='relative'>
-                <AuthInput
-                  placeholder='Password'
-                  label={'password'}
-                  type={showPassword ? 'text' : 'password'}
-                  icon={password
-                    ? showPassword ? IconTypes.EyeSlashGray : IconTypes.EyeGray
-                    : IconTypes.LockGray
-                  }
-                  register={register}
-                  required={true}
-                  minLength={{ value: 1, message: 'Password must not be empty' }}
-                  error={errors.password}
-                  onClick={handlePasswordInputClick}
-                />
-              </div>
+              <AuthInput
+                placeholder='Password'
+                label={'password'}
+                type={showPassword ? 'text' : 'password'}
+                icon={password
+                  ? showPassword ? IconTypes.EyeSlashGray : IconTypes.EyeGray
+                  : IconTypes.LockGray
+                }
+                register={register}
+                required={true}
+                minLength={{ value: 1, message: 'Password must not be empty' }}
+                error={errors.password}
+                onClick={handlePasswordInputClick}
+              />
 
               {
                 loginError && showErrors &&
@@ -190,19 +191,19 @@ const Login = ({ handleKeySaved }: LoginProps): JSX.Element => {
               </div>
             </form>
 
-            <div className='flex flex-col items-center w-56'>
+            <div className='flex flex-col items-center w-72'>
               <a href="" target='_blank' className='transition duration-200 easi-in-out text-sm text-center text-blue-60 hover:text-blue-80 mt-3.5'>Forgot your password?</a>
 
-              <div className='flex w-full justify-between text-sm mt-3'>
+              <div className='flex w-full justify-center text-sm mt-3'>
                 <span>Don't have an account?</span>
-                <button className='transition duration-200 easi-in-out text-center text-blue-60 underline hover:text-blue-80 hover:underline'
-                  onClick={() => setShowRegister(true)}
-                >Get started</button>
+                <ButtonTextOnly text='Get started' onClick={() => dispatch(setShowRegister(true))} />
               </div>
             </div>
           </div>
           :
-          <SignUp />
+          <SignUp
+            showPassword={showPassword}
+          />
         }
       </div>
     </div>

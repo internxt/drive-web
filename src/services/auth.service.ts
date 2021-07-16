@@ -2,16 +2,13 @@ import { getHeaders } from '../lib/auth';
 import localStorageService from '../services/localStorage.service';
 import history from '../lib/history';
 import analyticsService from './analytics.service';
-import React, { SetStateAction } from 'react';
-import { validateEmail } from './validation.service';
-import { History } from 'history';
 import { generateNewKeys, updateKeys } from './pgp.service';
 import AesUtils from '../lib/AesUtil';
-import { decryptText, decryptTextWithKey, encryptText, passToHash } from '../lib/utils';
+import { decryptText, decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../lib/utils';
 import { validateFormat } from './keys.service';
 import { storeTeamsInfo } from './teams.service';
 import { decryptPGP } from '../lib/utilspgp';
-import { setTokenSourceMapRange } from 'typescript';
+import * as bip39 from 'bip39';
 
 export async function initializeUser(email: string, mnemonic: string) {
   return fetch('/api/initialize', {
@@ -52,11 +49,9 @@ export const check2FANeeded = async (email: string): Promise<any> => {
       headers: getHeaders(true, true),
       body: JSON.stringify({ email })
     });
-
-    console.log('2fa response =>', response);
     const data = await response.json();
 
-    console.log('after check2FA fetch =>', data);
+    console.log('after check2FA fetch =>', response, data);
 
     if (response.status !== 200) {
       analyticsService.signInAttempted(email, data.error);
@@ -88,6 +83,7 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
     });
     const body = await response.json();
 
+    console.log(response);
     if (response.status === 400) {
       throw new Error(body.error || 'Can not connect to server');
     }
@@ -178,13 +174,125 @@ export const doAccess = async (email: string, password: string, encPass: string,
   }
 };
 
+export const readReferalCookie = () => {
+  const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
+
+  return cookie ? cookie[2] : null;
+};
+
+export const doRegister = async (name: string, lastname: string, email: string, password: string, referrer?: string) => {
+  try {
+    // Setup hash and salt
+    const hashObj = passToHash({ password });
+    const encPass = encryptText(hashObj.hash);
+    const encSalt = encryptText(hashObj.salt);
+    // Setup mnemonic
+    const mnemonic = bip39.generateMnemonic(256);
+    const encMnemonic = encryptTextWithKey(mnemonic, password);
+
+    //Generate keys
+    const { privateKeyArmored, publicKeyArmored: codpublicKey, revocationCertificate: codrevocationKey } = await generateNewKeys();
+
+    //Datas
+    const encPrivateKey = AesUtils.encrypt(privateKeyArmored, password, false);
+
+    console.log('before fetch doRegister');
+    const response = await fetch('/api/register', {
+      method: 'post',
+      headers: getHeaders(true, true),
+      body: JSON.stringify({
+        name: name,
+        lastname: lastname,
+        email: email,
+        password: encPass,
+        mnemonic: encMnemonic,
+        salt: encSalt,
+        referral: readReferalCookie(),
+        privateKey: encPrivateKey,
+        publicKey: codpublicKey,
+        revocationKey: codrevocationKey,
+        referrer: referrer
+      })
+    });
+    const body = await response.json();
+
+    console.log('after fetch', response, body);
+    if (response.status !== 200) {
+      throw new Error(body.error ? body.error : 'Internal server error');
+    }
+
+    return body;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const updateInfo = async (name: string, lastname: string, email: string, password: string) => {
+  // Setup hash and salt
+  const hashObj = passToHash({ password });
+  const encPass = encryptText(hashObj.hash);
+  const encSalt = encryptText(hashObj.salt);
+
+  // Setup mnemonic
+  const mnemonic = bip39.generateMnemonic(256);
+  const encMnemonic = encryptTextWithKey(mnemonic, password);
+
+  // Body
+  const body = {
+    name: name,
+    lastname: lastname,
+    email: email,
+    password: encPass,
+    mnemonic: encMnemonic,
+    salt: encSalt,
+    referral: readReferalCookie()
+  };
+
+  const fetchHandler = async (res: Response) => {
+    const body = await res.text();
+
+    try {
+      const bodyJson = JSON.parse(body);
+
+      return { res: res, data: bodyJson };
+    } catch {
+      return { res: res, data: body };
+    }
+  };
+
+  const response = await fetch('/api/appsumo/update', {
+    method: 'POST',
+    headers: getHeaders(true, false),
+    body: JSON.stringify(body)
+  });
+  const { res, data } = await fetchHandler(response);
+
+  if (res.status !== 200) {
+    throw Error(data.error || 'Internal Server Error');
+  }
+
+  const xToken = data.token;
+  const xUser = data.user;
+
+  xUser.mnemonic = mnemonic;
+
+  const rootFolderInfo = await initializeUser(email, xUser.mnemonic);
+
+  xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
+  localStorageService.set('xToken', xToken);
+  localStorageService.set('xMnemonic', mnemonic);
+  return xUser;
+};
+
 const authService = {
   initializeUser,
   logOut,
   isUserSignedIn,
   doLogin,
   doAccess,
-  check2FANeeded
+  doRegister,
+  check2FANeeded,
+  readReferalCookie
 };
 
 export default authService;

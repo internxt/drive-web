@@ -2,7 +2,6 @@ import React from 'react';
 import { Switch, Route, Redirect, Router } from 'react-router-dom';
 import history from './lib/history';
 import './App.scss';
-import Login from './views/Login';
 import Remove from './components/forms/Remove';
 import New from './components/forms/New';
 import Activation from './components/forms/Activation';
@@ -21,12 +20,12 @@ import DeactivationTeams from './components/forms/DeactivationTeam';
 import analyticsService, { PATH_NAMES } from './services/analytics.service';
 import Success from './components/teams/Success';
 import { connect } from 'react-redux';
-
+import Login from './views/Authentication/index';
 import NewXCloud from './views/NewXCloud/NewXCloud';
 import { UserSettings } from './models/interfaces';
 import { setUser } from './store/slices/userSlice';
 import XCloud from './views/XCloud/XCloud';
-
+import SignUp from './views/Authentication/SignUp';
 interface AppProps {
   setUser: (value: UserSettings) => void
 }
@@ -63,28 +62,34 @@ class App extends React.Component<AppProps, AppState> {
         analyticsService.page(PATH_NAMES[window.location.pathname]);
       }
     }
-
     return (
       <Router history={history}>
         <Switch>
           <Redirect from='//*' to='/*' />
-          <Route exact path='/login' render={(props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+          <Route exact path='/login' render={(props) => {
+            console.log('props =>', props);
+
+            return <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />;
+          }} />
 
           <Route exact path='/activate/:email'
-            render={(props: any) => <New {...props}
+            render={(props: any) => <SignUp {...props}
               isNewUser={true}
               isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
           <Route exact path='/appsumo/:email'
-            render={(props: any) => <New {...props}
+            render={(props: any) => <SignUp {...props}
               isNewUser={false}
               isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
           <Route exact path='/new'
-            render={(props: any) => <New {...props}
-              isNewUser={true}
-              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+            render={(props: any) => {
+              console.log('props', props);
+              return <SignUp {...props}
+                isNewUser={true}
+                isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />;
+            }} />
           <Route exact path='/team/success/:sessionId' render={(props: any) =>
             <Success {...props}
-              isAuthenticated={this.state.isAuthenticated}/>} />
+              isAuthenticated={this.state.isAuthenticated} />} />
 
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/invite' render={(props) => <Referred {...props} isAuthenticated={this.state.isAuthenticated} />} />

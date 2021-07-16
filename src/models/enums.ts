@@ -21,7 +21,8 @@ export enum IconTypes {
   MailGray = 'mailGray',
   LockGray = 'lockGray',
   EyeGray = 'eyeGray',
-  EyeSlashGray = 'eyeSlashGray'
+  EyeSlashGray = 'eyeSlashGray',
+  UserGray = 'userGray'
 }
 
 export enum FileStatusTypes {

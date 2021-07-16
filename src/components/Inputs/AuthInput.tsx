@@ -19,7 +19,7 @@ interface InputProps {
 }
 
 const InputPrimary = ({ label, type, register, required, placeholder, pattern, icon, minLength, maxLength, error, onClick }: InputProps): JSX.Element => (
-  <div>
+  <div className='relative'>
     <input type={type} placeholder={placeholder}
       {...register(label, {
         required,
@@ -30,12 +30,12 @@ const InputPrimary = ({ label, type, register, required, placeholder, pattern, i
       className={`w-full transform duration-200 ${error ? 'error' : ''}`}
     />
 
-    <div className={`absolute ${label === 'password' ? 'right-3 bottom-5 cursor-pointer' : 'right-3 bottom-6'} flex items-center justify-center`}
-      onClick={() => label === 'password' ? onClick && onClick() : null}
+    <div className={`absolute ${label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-5 cursor-pointer' : 'right-3 bottom-6'} flex items-center justify-center`}
+      onClick={() => label === 'password' || label === 'confirmPassword' ? onClick && onClick() : null}
     >
       <img src={getIcon(icon)} alt="" />
     </div>
   </div >
 );
 
-export default InputPrimary;
+export default React.memo(InputPrimary);
