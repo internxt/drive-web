@@ -194,7 +194,7 @@ class DealifyRegister extends React.Component<NewProps, NewState> {
         publicKey: codpublicKey,
         revocationKey: codrevocationKey,
         referrer: this.state.register.referrer,
-        coupon: this.state.register.coupon
+        coupon: { code: this.state.register.coupon, partner: 'dealify' }
       })
     }).then(response => {
       if (response.status === 200) {
