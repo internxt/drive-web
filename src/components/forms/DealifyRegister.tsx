@@ -194,7 +194,7 @@ class DealifyRegister extends React.Component<NewProps, NewState> {
         publicKey: codpublicKey,
         revocationKey: codrevocationKey,
         referrer: this.state.register.referrer,
-        coupon: { code: this.state.register.coupon, partner: 'dealify' }
+        coupon: { code: this.state.register.coupon, partner: 'dealify', email: this.state.register.email }
       })
     }).then(response => {
       if (response.status === 200) {
@@ -202,7 +202,7 @@ class DealifyRegister extends React.Component<NewProps, NewState> {
           // Manage succesfull register
           const { token, user, uuid } = body;
 
-          analytics.identify(uuid, { email: this.state.register.email, member_tier: 'free' });
+          analytics.identify(uuid, { email: this.state.register.email, member_tier: 'lifetime', coupon: 'dealify' });
           window.analytics.track('user-signup', {
             properties: {
               userId: uuid,
