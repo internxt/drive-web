@@ -36,10 +36,10 @@ const SignIn = ({ handleKeySaved }: SignInProps): JSX.Element => {
 
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
+  const twoFactorCode = useWatch({ control, name: 'twoFactorCode', defaultValue: '' });
   const mnemonic = localStorageService.get('xMnemonic');
   const [user, setUser] = useState(localStorageService.getUser());
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [twoFactorCode, setTwoFactorCode] = useState('');
   const [token, setToken] = useState('');
   const [registerCompleted, setRegisterCompleted] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -56,7 +56,7 @@ const SignIn = ({ handleKeySaved }: SignInProps): JSX.Element => {
     try {
       const res = await check2FANeeded(email);
 
-      if (!res.tfa) {
+      if (!res.tfa || showTwoFactor) {
         const { data, user } = await doLogin(email, password, twoFactorCode);
 
         if (handleKeySaved) {
@@ -152,6 +152,22 @@ const SignIn = ({ handleKeySaved }: SignInProps): JSX.Element => {
             error={errors.password}
             onClick={handlePasswordInputClick}
           />
+
+          {
+            showTwoFactor && (
+              <AuthInput
+                placeholder='Two factor authentication code'
+                label={'twoFactorCode'}
+                type={'text'}
+                icon={IconTypes.LockGray}
+                register={register}
+                pattern={/^\d{3}(\s+)?\d{3}$/}
+                required={true}
+                minLength={{ value: 1, message: 'Two factor code must not be empty' }}
+                error={errors.twoFactorCode}
+              />
+            )
+          }
 
           {
             loginError && showErrors &&

@@ -61,6 +61,7 @@ export interface IFormValues {
   lastname: string,
   email: string,
   password: string,
+  twoFactorCode: string,
   confirmPassword: string,
   remember: boolean,
   acceptTerms: boolean

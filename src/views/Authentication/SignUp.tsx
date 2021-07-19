@@ -1,23 +1,20 @@
-import React, { SetStateAction } from 'react';
+import React from 'react';
 import SideInfo from './SideInfo';
 import { IconTypes } from '../../models/enums';
-import { getIcon } from '../../services/getIcon';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { UserSettings } from '../../models/interfaces';
-import { useEffect } from 'react';
 import localStorageService from '../../services/localStorage.service';
 import { useState } from 'react';
 import { emailRegexPattern, validateEmail } from '../../services/validation.service';
 import analyticsService from '../../services/analytics.service';
-import { doLogin, initializeUser, readReferalCookie } from '../../services/auth.service';
+import { initializeUser, readReferalCookie } from '../../services/auth.service';
 import AuthInput from '../../components/Inputs/AuthInput';
 import { IFormValues } from '../../models/interfaces';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
 import AuthButton from '../../components/Buttons/AuthButton';
 import ButtonTextOnly from '../../components/Buttons/ButtonTextOnly';
 import { useAppDispatch } from '../../store/hooks';
-import { setShowRegister } from '../../store/slices/layoutSlice';
-import queryString, { ParsedQuery } from 'query-string';
+import queryString from 'query-string';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
 import { setUser } from '../../store/slices/userSlice';
 import { getHeaders } from '../../lib/auth';
@@ -48,7 +45,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [signupError, setSignupError] = useState<Error | string>();
-  const [showErrors, setShowErrors] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const qs = queryString.parse(history.location.search);
@@ -190,7 +187,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       }
     }).catch(err => {
       console.error('Register error', err);
-      setSignupError(err.message);
+      setSignupError(err.message || err);
+      setShowError(true);
     });
   };
 
@@ -202,7 +200,6 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       throw new Error('Passwords do not match');
     }
 
-    console.log('isNewUser?', props.isNewUser);
     if (!props.isNewUser) {
       updateInfo(name, lastname, email, password).then(() => {
         history.push('/login');
@@ -210,6 +207,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         setSignupError(err.message + ', please contact us');
       }).finally(() => {
         setIsLoading(false);
+        setShowError(true);
       });
     } else {
       doRegister(name, lastname, email, password).finally(() => setIsLoading(false));
@@ -289,7 +287,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           {
-            signupError && showErrors &&
+            signupError && showError &&
             <div className='flex ml-3 mt-1 mb-2'>
               <div className='w-1.5 h-1.5 bg-neutral-600 rounded-full mt-1.5 mr-2' />
               <span className='text-neutral-600 text-sm'>{signupError}</span>

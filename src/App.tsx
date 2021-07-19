@@ -67,12 +67,7 @@ class App extends React.Component<AppProps, AppState> {
       <Router history={history}>
         <Switch>
           <Redirect from='//*' to='/*' />
-          <Route exact path='/login' render={(props) => {
-            console.log('props =>', props);
-
-            return <SignIn {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />;
-          }} />
-
+          <Route exact path='/login' render={(props) => <SignIn {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
           <Route exact path='/activate/:email'
             render={(props: any) => <SignUp {...props}
               isNewUser={true}
