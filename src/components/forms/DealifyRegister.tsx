@@ -33,6 +33,7 @@ interface NewState {
     email: string
     password: string
     confirmPassword: string
+    coupon: string
     referrer: string | undefined
   }
   currentContainer: number
@@ -49,7 +50,7 @@ const CONTAINERS = {
   PasswordContainer: 3
 };
 
-class New extends React.Component<NewProps, NewState> {
+class DealifyRegister extends React.Component<NewProps, NewState> {
 
   constructor(props: NewProps) {
     super(props);
@@ -74,7 +75,8 @@ class New extends React.Component<NewProps, NewState> {
         email: hasEmailParam ? this.props.match.params.email : '',
         password: '',
         confirmPassword: '',
-        referrer: hasReferrerParam
+        referrer: hasReferrerParam,
+        coupon: ''
       },
       showModal: false,
       isLoading: false,
@@ -187,12 +189,12 @@ class New extends React.Component<NewProps, NewState> {
         password: encPass,
         mnemonic: encMnemonic,
         salt: encSalt,
-        referral: this.readReferalCookie(),
+        referral: this.state.register.coupon,
         privateKey: encPrivateKey,
         publicKey: codpublicKey,
         revocationKey: codrevocationKey,
         referrer: this.state.register.referrer,
-        coupon: null
+        coupon: { code: this.state.register.coupon, partner: 'dealify', email: this.state.register.email }
       })
     }).then(response => {
       if (response.status === 200) {
@@ -200,7 +202,7 @@ class New extends React.Component<NewProps, NewState> {
           // Manage succesfull register
           const { token, user, uuid } = body;
 
-          analytics.identify(uuid, { email: this.state.register.email, member_tier: 'free' });
+          analytics.identify(uuid, { email: this.state.register.email, member_tier: 'lifetime', coupon: 'dealify' });
           window.analytics.track('user-signup', {
             properties: {
               userId: uuid,
@@ -299,17 +301,21 @@ class New extends React.Component<NewProps, NewState> {
   registerContainer() {
     return <div className="container-register">
       <p className="container-title">Create an Internxt account</p>
-      <div className="menu-box">
-        <button className="off" onClick={(e) => {
-          history.push('/login');
-        }}>Sign in</button>
+      <div className="menu-box-dealify">
         <button className="on">Create account</button>
       </div>
-      <Form className="form-register" onSubmit={(e: any) => {
+      <Form onSubmit={(e: any) => {
         e.preventDefault();
 
         if (this.validateRegisterFormPart1()) {
           var tempReg = this.state.register;
+
+          const patt = /^\intnx+\-+[A-Za-z0-9]{9}\-(49|99)$/;
+
+          if (!patt.test(this.state.register.coupon)) {
+            toast.warn('Coupon not valid, try again.');
+            return;
+          }
 
           tempReg.email = tempReg.email.toLowerCase().trim();
           this.setState({
@@ -338,9 +344,16 @@ class New extends React.Component<NewProps, NewState> {
               value={this.state && this.state.register.email} />
           </Form.Group>
         </Form.Row>
-        <Form.Row className="form-register-submit">
+        <Form.Row>
+          <Form.Group as={Col} controlId="coupon">
+            <Form.Control placeholder="Dealify coupon" type="text" required
+              onChange={this.handleChangeRegister}
+              value={this.state && this.state.register.coupon} />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
           <Form.Group as={Col}>
-            <button className="on btn-block" type="submit" disabled={!this.validateRegisterFormPart1()}>Continue</button>
+            <button className="on btn-block" style={{ marginTop: '0.5rem' }} type="submit" disabled={!this.validateRegisterFormPart1()}>Continue</button>
           </Form.Group>
         </Form.Row>
       </Form>
@@ -394,7 +407,6 @@ class New extends React.Component<NewProps, NewState> {
     return <div className="container-register">
       <p className="container-title">Create an Internxt account</p>
       <div className="menu-box">
-        <button className="off" onClick={(e: any) => { /* this.setState({ currentContainer: this.loginContainer() }) */ }}>Sign in</button>
         <button className="on">Create account</button>
       </div>
       <Form className="form-register" onSubmit={async (e: any) => {
@@ -454,7 +466,7 @@ class New extends React.Component<NewProps, NewState> {
 
   render() {
     return (<div className="login-main">
-      <Container className="login-container-box">
+      <Container className='login-container-box'>
         {this.state.currentContainer === CONTAINERS.RegisterContainer ? this.registerContainer() : ''}
         {this.state.currentContainer === CONTAINERS.PrivacyTermsContainer ? this.privacyContainer() : ''}
         {this.state.currentContainer === CONTAINERS.PasswordContainer ? this.passwordContainer() : ''}
@@ -467,4 +479,4 @@ class New extends React.Component<NewProps, NewState> {
   }
 }
 
-export default New;
+export default DealifyRegister;

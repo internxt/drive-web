@@ -24,6 +24,20 @@
   }
 }
 
+.login-container-box-dealify {
+  background-color: white;
+  width: 472px !important;
+  border: solid 1px #eaeced;
+  border-radius: 6px;
+  padding: 40px !important;
+  height: 500px;
+
+  @media (max-width: 415px) {
+    align-self: center;
+    width: 350px !important;
+  }
+}
+
 .xcloud-toast-info {
   background-color: #4585f5 !important;
 }
@@ -154,6 +168,11 @@ a:active {
 .menu-box {
   margin-bottom: 21px;
   margin-top: 20px;
+  padding: 0;
+}
+
+.menu-box-dealify {
+  margin-bottom: 31px;
   padding: 0;
 }
 

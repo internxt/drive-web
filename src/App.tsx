@@ -5,6 +5,7 @@ import './App.scss';
 import Login from './components/forms/Login';
 import Remove from './components/forms/Remove';
 import New from './components/forms/New';
+import DealifyRegister from './components/forms/DealifyRegister';
 import XCloud from './components/xcloud/XCloud';
 import Activation from './components/forms/Activation';
 import NotFound from './NotFound';
@@ -63,9 +64,13 @@ class App extends React.Component {
             render={(props: any) => <New {...props}
               isNewUser={true}
               isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+          <Route exact path='/dealify'
+            render={(props: any) => <DealifyRegister {...props}
+              isNewUser={true}
+              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
           <Route exact path='/team/success/:sessionId' render={(props: any) =>
             <Success {...props}
-              isAuthenticated={this.state.isAuthenticated}/>} />
+              isAuthenticated={this.state.isAuthenticated} />} />
 
           <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
           <Route exact path='/invite' render={(props) => <Referred {...props} isAuthenticated={this.state.isAuthenticated} />} />
