@@ -55,3 +55,13 @@ export interface ILoggerFile {
   isFolder: boolean,
   errorMessage?: string
 }
+
+export interface IFormValues {
+  name: string,
+  lastname: string,
+  email: string,
+  password: string,
+  confirmPassword: string,
+  remember: boolean,
+  acceptTerms: boolean
+}

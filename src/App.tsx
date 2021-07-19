@@ -26,6 +26,7 @@ import { UserSettings } from './models/interfaces';
 import { setUser } from './store/slices/userSlice';
 import XCloud from './views/XCloud/XCloud';
 import SignUp from './views/Authentication/SignUp';
+import SignIn from './views/Authentication/SignIn';
 interface AppProps {
   setUser: (value: UserSettings) => void
 }
@@ -69,7 +70,7 @@ class App extends React.Component<AppProps, AppState> {
           <Route exact path='/login' render={(props) => {
             console.log('props =>', props);
 
-            return <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />;
+            return <SignIn {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />;
           }} />
 
           <Route exact path='/activate/:email'
