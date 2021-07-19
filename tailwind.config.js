@@ -7,7 +7,7 @@ module.exports = {
         'width': 'width'
       },
       width: {
-        'sidenav-1280-open': '187px',
+        'sidenav-1280-open': '180px',
         'sidenav-1280-closed': '40px',
         'activity-1280': '296px'
       },
@@ -21,7 +21,8 @@ module.exports = {
       borderRadius: {
         '1px': '1px',
         '2px': '2px',
-        '4px': '4px'
+        '4px': '4px',
+        '1/2': '50%'
       },
       fontSize: {
         'supporting-2': '10px',

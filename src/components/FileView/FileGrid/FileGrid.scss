@@ -1,3 +1,4 @@
 .file-grid {
     grid-template-columns: repeat(auto-fill, 180px);
+    grid-template-rows: max-content;
 }

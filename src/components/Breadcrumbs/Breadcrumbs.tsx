@@ -19,7 +19,7 @@ class Breadcrumbs extends React.Component<BreadcrumbsProps, BreadcrumbsState> {
     return this.props.items.map(item => (
       <li className={`cursor-pointer flex items-center ${item.active ? 'active' : ''}`} key={item.name} onClick={item.onClick}>
         <img className="breadcrumb-item-icon" src={item.icon} />
-        <span>{item.label}</span>
+        { item.label ? <span className="label">{item.label}</span> : null}
       </li>
     ));
   }

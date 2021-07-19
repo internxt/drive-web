@@ -11,6 +11,10 @@
   
     li {
       @apply text-sm text-neutral-500;
+
+      .label {
+        @apply ml-1;
+      }
     }
 
     li.active {
@@ -20,7 +24,6 @@
 
   .breadcrumb-item-icon {
     height: 12px;
-  
-    @apply mr-1;
+
   }
 }

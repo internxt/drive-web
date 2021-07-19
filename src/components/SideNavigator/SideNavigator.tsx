@@ -2,6 +2,7 @@ import React from 'react';
 
 import { getIcon, IconType } from '../../services/icon.service';
 import SideNavigatorItem from './SideNavigatorItem/SideNavigatorItem';
+import { ReactComponent as ReactLogo } from '../../assets/icons/internxt-long-logo.svg';
 
 import './SideNavigator.scss';
 import authService from '../../services/auth.service';
@@ -36,39 +37,78 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
     const { collapsed } = this.state;
 
     return (
-      <div className={`bg-l-neutral-20 ${!collapsed ? 'w-sidenav-1280-open' : 'w-sidenav-1280-closed'} px-8`}>
-        <button className={`flex items-center absolute top-4 left-32 transform duration-500 ${!collapsed ? 'rotate-0' : 'rotate-180'}`}
-          onClick={this.toggleCollapsed}
-        >
-          <img src={getIcon(IconType.BackArrows)} alt="" />
-        </button>
+      <div className={`${collapsed ? 'collapsed' : ''} side-navigator bg-l-neutral-20 flex flex-col justify-between`}>
 
-        <div className={`transform duration-500 ${!collapsed ? '' : '-translate-x-3'}`}>
-          {!collapsed
-            ? <div className='absolute -top-8 h-2'><img src={getIcon(IconType.InternxtLongLogo)} alt="" /></div>
-            : <div className='absolute -top-9 w-4 h-4'><img src={getIcon(IconType.InternxtShortLogo)} alt="" /></div>
-          }
+        {/* LOGO & ITEMS */}
+        <div>
+          <button className="collapse-button cursor-pointer flex items-center z-40 absolute top-5 transform"
+            onClick={this.toggleCollapsed}
+          >
+            <img src={getIcon(IconType.NextPage)} alt="" />
+          </button>
 
-          <div className='flex flex-col items-start mb-10 mt-12'>
-            <span className='ml-2 h-3 text-xs text-m-neutral-100 font-semibold mb-4'>{!collapsed && 'Files'}</span>
-            <NavLink className="nav-link" to="/app">
-              <SideNavigatorItem text='Drive' icon={getIcon(IconType.FolderWithCrossGray)} isOpen={!collapsed} />
-            </NavLink>
-            <NavLink className="nav-link" to="/app/recents">
-              <SideNavigatorItem text='Recents' icon={getIcon(IconType.ClockGray)} isOpen={!collapsed} />
-            </NavLink>
-          </div>
+          <div>
+            <div className="py-3 mb-2">
+              {collapsed ?
+                <img className='w-6 long-logo' src={getIcon(IconType.InternxtShortLogo)} alt="" /> :
+                <div className="w-28 h-auto flex items-center">
+                  <ReactLogo className="long-logo w-full h-full" />
+                </div>
+              }
+            </div>
 
-          <div className={`flex flex-col items-start transform duration-300 delay-200 ${!collapsed ? '' : '-translate-y-16'}`}>
-            <span className='ml-2 h-3 text-xs text-m-neutral-100 font-semibold mb-4'>{!collapsed && 'Configuration'}</span>
-            <NavLink className="nav-link" to="/account">
-              <SideNavigatorItem text='Account' icon={getIcon(IconType.AccountGray)} isOpen={!collapsed} />
-            </NavLink>
-            <SideNavigatorItem text="App" icon={getIcon(IconType.Desktop)} isOpen={!collapsed} />
-            <SideNavigatorItem text='Support' icon={getIcon(IconType.SupportGray)} isOpen={!collapsed} />
-            <SideNavigatorItem text='Log out' icon={getIcon(IconType.LogOutGray)} isOpen={!collapsed} onClick={authService.logOut} />
+            <div className={`${!collapsed ? 'mb-10' : ''}`}>
+              <span className='h-3 text-xs text-m-neutral-100 font-semibold mb-4'>{!collapsed && 'Storage'}</span>
+              <SideNavigatorItem
+                label='Drive'
+                to="/app"
+                icon={getIcon(IconType.FolderWithCrossGray)}
+                isOpen={!collapsed}
+              />
+              <SideNavigatorItem
+                label='Recents'
+                to="/app/recents"
+                icon={getIcon(IconType.ClockGray)}
+                isOpen={!collapsed}
+              />
+            </div>
+
+            <div>
+              <span className='h-3 text-xs text-m-neutral-100 font-semibold mb-4'>{!collapsed && 'Configuration'}</span>
+              <SideNavigatorItem
+                label='Account'
+                to="/account"
+                icon={getIcon(IconType.AccountGray)}
+                isOpen={!collapsed}
+              />
+              <SideNavigatorItem label="App" icon={getIcon(IconType.Desktop)} isOpen={!collapsed} />
+              <SideNavigatorItem label='Support' icon={getIcon(IconType.SupportGray)} isOpen={!collapsed} />
+              <SideNavigatorItem label='Log out' icon={getIcon(IconType.LogOutGray)} isOpen={!collapsed} onClick={authService.logOut} />
+            </div>
           </div>
         </div>
+
+        {/* UPGRADE */}
+        { !collapsed ? (
+          <div className="account-state-container w-full">
+            <div className="bg-white w-full rounded-4px">
+              <div className="px-4 py-2 text-xs border-b border-dashed border-l-neutral-40">
+                Jhon Doe Young
+              </div>
+              <div className="px-4 py-4 flex flex-col justify-center">
+                <div className="w-full bg-blue-10 h-1 rounded-sm">
+                  <div className="w-1/2 h-full bg-blue-60 rounded-sm"></div>
+                </div>
+                <span className="mt-1 text-supporting-2 text-m-neutral-100">338.64 MB of 10 GB</span>
+              </div>
+            </div>
+            <div className="flex">
+              <button className="w-1/2 primary">Upgrade</button>
+              <button className="w-1/2 secondary">Storage</button>
+            </div>
+          </div>) :
+          null
+        }
       </div>
     );
   }

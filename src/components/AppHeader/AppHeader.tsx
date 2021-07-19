@@ -36,32 +36,17 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
 
     return (
-      <div className="flex justify-between w-full py-3 mb-2">
+      <div className="flex justify-between w-full pl-6 py-3 mb-2">
         <input type="text" placeholder="Search files" />
-        <Dropdown>
-          <Dropdown.Toggle variant="success" id="dropdown-basic">
-            <img src={iconService.getIcon(IconType.Settings)} />
-          </Dropdown.Toggle>
-          <Dropdown.Menu className="file-dropdown-actions">
-            <span className="text-supporting-2 mb-1">Screen</span>
-            <Dropdown.Item
-              id="light-mode"
-              className="file-dropdown-actions-button flex"
-              onClick={this.onLightModeButtonClicked}
-            >
-              <img className="mr-2 text-neutral-900" src={iconService.getIcon(IconType.Settings)} />
-              <span>Light mode</span>
-            </Dropdown.Item>
-            <Dropdown.Item
-              id="dark-mode"
-              className="file-dropdown-actions-button flex"
-              onClick={this.onDarkModeButtonClicked}
-            >
-              <img className="mr-2" src={iconService.getIcon(IconType.Settings)} />
-              <span>Dark mode</span>
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+
+        { true ?
+          <button className="theme-button bg-white" onClick={this.onLightModeButtonClicked}>
+            <img src={iconService.getIcon(IconType.LightMode)} />
+          </button> :
+          <button className="theme-button bg-white" onClick={this.onDarkModeButtonClicked}>
+            <img src={iconService.getIcon(IconType.DarkMode)} />
+          </button>
+        }
       </div>
     );
   }

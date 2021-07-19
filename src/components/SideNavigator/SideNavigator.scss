@@ -1,12 +1,24 @@
 @layer components {
-  a.nav-link.active {
-    div {
-      border-radius: 2px;
-      @apply bg-l-neutral-40 text-blue-60;
+  .side-navigator {
+    @apply w-sidenav-1280-open pl-6 pr-2;
+
+    .collapse-button {
+      left: 12.3rem;
     }
   }
+  .side-navigator.collapsed {
+    @apply w-sidenav-1280-closed px-2;
 
-  a.nav-link {
-    width: 100%;
+    .collapse-button {
+      @apply left-14;
+    }
   }
+}
+
+.long-logo {
+  height: 20px;
+}
+
+.account-state-container {
+  box-shadow: 0px 4px 30px rgba(122, 134, 154, 0.12);
 }

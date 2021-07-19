@@ -33,6 +33,8 @@ import itemInfo from '../assets/icons/item-info.svg';
 import desktop from '../assets/icons/desktop.svg';
 import previousPage from '../assets/icons/previous-page.svg';
 import nextPage from '../assets/icons/next-page.svg';
+import lightMode from '../assets/icons/light-mode.svg';
+import darkMode from '../assets/icons/dark-mode.svg';
 
 export enum IconType {
   FolderWithCrossGray = 'folderWithCrossGray',
@@ -69,7 +71,9 @@ export enum IconType {
   ItemInfo = 'itemInfo',
   Desktop = 'desktop',
   PreviousPage = 'previousPage',
-  NextPage = 'nextPage'
+  NextPage = 'nextPage',
+  LightMode = 'lightMode',
+  DarkMode = 'darkMode'
 }
 
 const icons = {
@@ -107,7 +111,9 @@ const icons = {
   itemInfo,
   desktop,
   previousPage,
-  nextPage
+  nextPage,
+  lightMode,
+  darkMode
 };
 
 export const getIcon = (iconName: IconType): string => {

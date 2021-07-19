@@ -2,12 +2,13 @@ import React, { ReactNode } from 'react';
 import { connect } from 'react-redux';
 
 import iconService, { IconType } from '../../services/icon.service';
-import { AppDispatch } from '../../store';
-import { setInfoItem } from '../../store/slices/storageSlice';
+import { AppDispatch, RootState } from '../../store';
+import { setInfoItem, storageSelectors } from '../../store/slices/storageSlice';
 
 import './FileActivity.scss';
 
 interface FileListProps {
+  item: any | undefined;
   dispatch: AppDispatch;
 }
 
@@ -27,6 +28,10 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
   }
 
   render(): JSX.Element {
+    const item = this.props.item || {};
+
+    console.log(item);
+
     return (
       <div className="w-activity-1280 bg-white ml-24px rounded-4px p-24px">
 
@@ -34,8 +39,7 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
         <div className="flex items-center mb-6">
           <img className="file-activity-icon" src={iconService.getIcon(IconType.FolderBlue)} alt="" />
           <div className="flex-grow">
-            <span className="block font-semibold text-neutral-700 text-sm">Folder info</span>
-            <span className="block text-neutral-700 text-xs">Folder name: FilesPending</span>
+            <span className="block font-semibold text-neutral-700 text-sm">{item.name}</span>
           </div>
           <div className="w-3 cursor-pointer" onClick={this.onCloseButtonClicked}>
             <img className="w-full" src={iconService.getIcon(IconType.CrossBlue)} alt="" />
@@ -78,4 +82,10 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
   }
 }
 
-export default connect()(FileActivity);
+export default connect((state: RootState) => {
+  const item: any | undefined = storageSelectors.getInfoItem(state);
+
+  return {
+    item
+  };
+})(FileActivity);

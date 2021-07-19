@@ -6,3 +6,14 @@
 .welcome-message {
     line-height: 16px;
 }
+
+.theme-button {
+    $size: 18px;
+
+    border-radius: 50%;
+    width: $size;
+    height: $size;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

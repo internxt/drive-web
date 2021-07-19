@@ -48,7 +48,7 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
 
     items.push({
       name: 'storage',
-      label: 'Storage',
+      label: '',
       icon: iconService.getIcon(IconType.BreadcrumbsStorage),
       active: true
     });
@@ -126,16 +126,16 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
                 <button className="primary mr-1 flex items-center">
                   <img className="h-3 mr-2" src={iconService.getIcon(IconType.Upload)} /><span>Upload</span>
                 </button>
-                {!this.hasAnyItemSelected ? <button className="secondary mr-1" onClick={this.onCreateFolderButtonClicked}>
+                {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
                   <img src={iconService.getIcon(IconType.CreateFolder)} />
                 </button> : null}
-                {this.hasAnyItemSelected ? <button className="secondary mr-1" onClick={this.onBulkDownloadButtonClicked}>
+                {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDownloadButtonClicked}>
                   <img src={iconService.getIcon(IconType.DownloadItems)} />
                 </button> : null}
-                {this.hasAnyItemSelected ? <button className="secondary mr-1" onClick={this.onBulkDeleteButtonClicked}>
+                {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDeleteButtonClicked}>
                   <img src={iconService.getIcon(IconType.DeleteItems)} />
                 </button> : null}
-                <button className="secondary" onClick={this.onViewModeButtonClicked}>
+                <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
                   <img src={viewModesIcons[viewMode]} />
                 </button>
               </div>
@@ -146,9 +146,12 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
                 <LoadingFileExplorer /> :
                 viewModes[viewMode]
               }
+
+              {/* PAGINATION */}
               {!isLoadingItems && (
-                <div className="bg-white px-3 h-12 flex justify-center items-center rounded-b-4px">
-                  <div className="flex justify-center">
+                <div className="bg-white px-4 h-12 flex justify-center items-center rounded-b-4px">
+                  <span className="text-sm w-1/3">Showing 15 items of 450</span>
+                  <div className="flex justify-center w-1/3">
                     <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
                       <img alt="" src={iconService.getIcon(IconType.PreviousPage)} />
                     </div>
@@ -159,6 +162,7 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
                       <img alt="" src={iconService.getIcon(IconType.NextPage)} />
                     </div>
                   </div>
+                  <div className="w-1/3"></div>
                 </div>
               )}
             </div>

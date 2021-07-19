@@ -1,4 +1,6 @@
-import { createAsyncThunk, createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+import { RootState } from '../';
 import storageService from '../../services/storage.service';
 
 interface StorageState {
@@ -25,6 +27,12 @@ const initialState: StorageState = {
   itemsToDeleteIds: [],
   infoItemId: 0,
   sortFunction: null
+};
+
+export const storageSelectors = {
+  getInfoItem(state: RootState): any | undefined {
+    return state.storage.items.find(item => item.id === state.storage.infoItemId);
+  }
 };
 
 export const deleteItemsThunk = createAsyncThunk(

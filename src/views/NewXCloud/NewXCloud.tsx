@@ -810,7 +810,7 @@ class NewXCloud extends React.Component<NewXCloudProps, NewXCloudState> {
           <div className="flex-grow flex">
             <SideNavigator />
 
-            <div className="flex flex-col flex-grow bg-l-neutral-20 px-24px">
+            <div className="flex flex-col flex-grow bg-l-neutral-20 pl-4 pr-24px">
               <AppHeader />
               <FileView />
             </div>
