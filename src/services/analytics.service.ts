@@ -1,3 +1,4 @@
+import { IfVoid } from '@reduxjs/toolkit/dist/tsHelpers';
 import * as prettySize from 'prettysize';
 import { AnalyticsTrack } from '../models/enums';
 import { UserSettings } from '../models/interfaces';
@@ -50,11 +51,19 @@ export function signOut() {
   });
 }
 
-export function signIn(payload: { email: string, userId: string}): void {
+export function signIn(payload: { email: string, userId: string }): void {
   window.analytics.track(AnalyticsTrack.SignIn, payload);
 }
 
-export function signUp(payload: { properties: { userId: string, email: string}}): void {
+export function signInAttempted(email: string, error: string | Error): void {
+  window.analytics.track(AnalyticsTrack.SignInAttempted, {
+    status: 'error',
+    msg: error ? error : 'Login error',
+    email: email
+  });
+}
+
+export function signUp(payload: { properties: { userId: string, email: string } }): void {
   window.analytics.track(AnalyticsTrack.SignUp, payload);
 }
 
@@ -66,12 +75,24 @@ export function planSubscriptionSelected(payload: { price: string, plan_type: st
   window.analytics.track(AnalyticsTrack.PlanSubscriptionSelected, payload);
 }
 
+export function identify(user: any, email: string): void {
+  window.analytics.identify(user.uuid, {
+    email,
+    platform: 'web',
+    referrals_credit: user.credit,
+    referrals_count: Math.floor(user.credit / 5),
+    createdAt: user.createdAt
+  });
+}
+
 const analyticsService = {
   page,
+  identify,
   identifyUsage,
   identifyPlan,
   signOut,
   signIn,
+  signInAttempted,
   signUp,
   userEnterPayments,
   planSubscriptionSelected

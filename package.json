@@ -37,6 +37,7 @@
     "react-bootstrap": "^1.4.3",
     "react-device-detect": "^1.15.0",
     "react-dom": "^17.0.1",
+    "react-hook-form": "^7.11.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",

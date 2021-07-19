@@ -1,4 +1,4 @@
-import { IconType } from '../models/enums';
+import { IconTypes } from '../models/enums';
 import folderWithCrossGray from '../assets/icons/folder-with-cross-gray.svg';
 import clockGray from '../assets/icons/clock-gray.svg';
 import accountGray from '../assets/icons/account-gray.svg';
@@ -17,6 +17,12 @@ import crossGray from '../assets/icons/cross-gray.svg';
 import crossWhite from '../assets/icons/cross-white.svg';
 import crossNeutralBlue from '../assets/icons/cross-neutral-blue.svg';
 import crossBlue from '../assets/icons/cross-blue.svg';
+import arrowUpWhite from '../assets/icons/arrow-up-inside-box.svg';
+import mailGray from '../assets/icons/mail-gray.svg';
+import lockGray from '../assets/icons/lock-gray.svg';
+import eyeGray from '../assets/icons/eye-gray.svg';
+import eyeSlashGray from '../assets/icons/eye-slash-gray.svg';
+import userGray from '../assets/icons/user-gray.svg';
 
 const icons = {
   folderWithCrossGray: folderWithCrossGray,
@@ -36,9 +42,15 @@ const icons = {
   crossGray: crossGray,
   crossWhite: crossWhite,
   crossNeutralBlue: crossNeutralBlue,
-  crossBlue: crossBlue
+  crossBlue: crossBlue,
+  arrowUpWhite: arrowUpWhite,
+  mailGray: mailGray,
+  lockGray: lockGray,
+  eyeGray: eyeGray,
+  eyeSlashGray: eyeSlashGray,
+  userGray: userGray
 };
 
-export const getIcon = (iconName: IconType): string => {
+export const getIcon = (iconName: IconTypes): string => {
   return icons[iconName];
 };
