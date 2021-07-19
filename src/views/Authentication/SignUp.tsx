@@ -22,6 +22,7 @@ import * as bip39 from 'bip39';
 import AesUtils from '../../lib/AesUtil';
 import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
+import { truncate } from 'fs';
 
 interface SignUpProps {
 }
@@ -194,23 +195,27 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
     setIsLoading(true);
-    const { name, lastname, email, password, confirmPassword } = formData;
+    try {
+      const { name, lastname, email, password, confirmPassword } = formData;
 
-    if (password !== confirmPassword) {
-      throw new Error('Passwords do not match');
-    }
+      if (password !== confirmPassword) {
+        throw new Error('Passwords do not match');
+      }
 
-    if (!props.isNewUser) {
-      updateInfo(name, lastname, email, password).then(() => {
-        history.push('/login');
-      }).catch(err => {
-        setSignupError(err.message + ', please contact us');
-      }).finally(() => {
-        setIsLoading(false);
-        setShowError(true);
-      });
-    } else {
-      doRegister(name, lastname, email, password).finally(() => setIsLoading(false));
+      if (!props.isNewUser) {
+        await updateInfo(name, lastname, email, password).then(() => {
+          history.push('/login');
+        }).catch(err => {
+          throw new Error(err.message + ', please contact us');
+        });
+      } else {
+        await doRegister(name, lastname, email, password);
+      }
+    } catch (err) {
+      setSignupError(err.message || err);
+    } finally {
+      setShowError(true);
+      setIsLoading(false);
     }
   };
 
@@ -299,13 +304,15 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             That means that if you forget it, your files will be gone. With us, you're the only owner of your files.
           </span>
 
-          <CheckboxPrimary label='acceptTerms' text='Accept terms, conditions and privacy policy' required={false} register={register} />
+          <CheckboxPrimary label='acceptTerms' text='Accept terms, conditions and privacy policy' required={true} register={register} additionalStyling='mt-2 -mb-0' />
+          <ButtonTextOnly text='More info' onClick={() => window.open('https://internxt.com/en/legal')} additionalStyling='self-start ml-6 text-xs' />
           <div className='mt-3' />
           <AuthButton isDisabled={isLoading} text='Create an account' textWhenDisabled='Encrypting...' />
         </form>
 
-        <div className='flex flex-col items-center w-full pt-6'>
-          <ButtonTextOnly text='Log in into Internxt' onClick={() => history.push('/login')} />
+        <div className='flex justify-center items-center w-full mt-6'>
+          <span className='text-sm text-neutral-500 ml-3 select-none'>Already registered?</span>
+          <ButtonTextOnly text='Log in' onClick={() => history.push('/login')} additionalStyling='ml-1.5' />
         </div>
       </div>
     </div>
