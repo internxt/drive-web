@@ -3,20 +3,21 @@
     @apply w-sidenav-1280-open pl-6 pr-2;
 
     .collapse-button {
-      left: 12.3rem;
+      top: 22px;
+      left: 10rem;
     }
   }
   .side-navigator.collapsed {
     @apply w-sidenav-1280-closed px-2;
 
     .collapse-button {
-      @apply left-14;
+      @apply left-4;
     }
   }
 }
 
 .long-logo {
-  height: 20px;
+  height: 28px;
 }
 
 .account-state-container {

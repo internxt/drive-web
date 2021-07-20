@@ -7,11 +7,11 @@
     @apply pr-0 mb-4;
   }
 
-  a.nav-link.active {
-    @apply text-blue-60;
+  a.nav-link {
+    @apply text-neutral-900 no-underline hover:text-blue-60 w-full;
   }
 
-  a.nav-link {
-    width: 100%;
+  a.nav-link.active {
+    @apply text-blue-60;
   }
 }

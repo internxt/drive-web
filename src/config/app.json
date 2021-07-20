@@ -7,12 +7,6 @@
       "exact": true
     },
     {
-      "id":  "activate",
-      "layout": "empty",
-      "path": "/activate/:email",
-      "exact": true
-    },
-    {
       "id":  "appsumo",
       "layout": "empty",
       "path": "/appsumo/:email",
@@ -22,8 +16,7 @@
       "id": "invite",
       "layout": "empty",
       "path": "/invite",
-      "exact": true,
-      "auth": true
+      "exact": true
     },
     {
       "id": "login",
@@ -80,19 +73,13 @@
       "exact": false
     },
     {
-      "id": "activations",
-      "layout": "empty",
-      "path": "/activations/:token",
-      "exact": false
-    },
-    {
-      "id": "deactivations",
+      "id": "deactivation",
       "layout": "empty",
       "path": "/deactivationsTeams/:token",
       "exact": false
     },
     {
-      "id": "teams-deactivations",
+      "id": "teams-deactivation",
       "layout": "empty",
       "path": "/deactivations/:token",
       "exact": false
@@ -128,7 +115,7 @@
     {
       "id": "reset-token",
       "layout": "empty",
-      "path": "/reset:token",
+      "path": "/reset/:token",
       "exact": false,
       "auth": true
     },
@@ -162,7 +149,7 @@
       "id": "not-found",
       "layout": "empty",
       "path": "",
-      "exact": true
+      "exact": false
     }
   ]
 }

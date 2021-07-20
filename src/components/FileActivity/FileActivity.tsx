@@ -30,8 +30,6 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
   render(): JSX.Element {
     const item = this.props.item || {};
 
-    console.log(item);
-
     return (
       <div className="w-activity-1280 bg-white ml-24px rounded-4px p-24px">
 
@@ -64,6 +62,14 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
             <span className="label">Folder path</span>
             <span className="value">Desktop/Backups/FilePending</span>
           </div>
+
+          {
+            !item.isFolder ? <div className="file-activity-info-item">
+              <span className="label">Type</span>
+              <span className="value">{item.type}</span>
+            </div> : null
+          }
+
           <div className="file-activity-info-item">
             <span className="label">Size</span>
             <span className="value">55.7 MB</span>

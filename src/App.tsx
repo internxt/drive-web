@@ -119,20 +119,25 @@ class App extends Component<AppProps, AppState> {
     const routes: JSX.Element[] = views.map(v => {
       const viewConfig: AppViewConfig | undefined = configService.getViewConfig(v.id);
       const layoutConfig = layouts.find(l => l.id === viewConfig?.layout) || layouts[0];
+      const componentProps: {
+        key: string, exact: boolean; path: string; render: any
+      } = {
+        key: v.id,
+        exact: !!viewConfig?.exact,
+        path: viewConfig?.path,
+        render: (props: any) => createElement(
+          layoutConfig.component,
+          {},
+          createElement(
+            v.component,
+            { ...props, ...v.componentProps }
+          )
+        )
+      };
 
       return (
         <Route
-          key={v.id}
-          exact={viewConfig?.exact}
-          path={viewConfig?.path}
-          render={(props: any) => createElement(
-            layoutConfig.component,
-            {},
-            createElement(
-              v.component,
-              { ...props, ...v.componentProps }
-            )
-          )}
+          {...componentProps}
         />
       );
     });
@@ -155,10 +160,10 @@ class App extends Component<AppProps, AppState> {
         <Router history={history}>
           <Switch>
             <Redirect from='//*' to='/*' />
-            {this.routes}
             <Route exact path='/'>
               <Redirect to="/login" />
             </Route>
+            {this.routes}
           </Switch>
 
           {/^[a-z0-9]{10}$/.test(pathName)

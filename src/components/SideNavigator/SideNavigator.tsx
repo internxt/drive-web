@@ -51,7 +51,7 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
 
         {/* LOGO & ITEMS */}
         <div>
-          <button className="collapse-button cursor-pointer flex items-center z-40 absolute top-5 transform"
+          <button className="collapse-button cursor-pointer flex items-center z-40 absolute transform"
             onClick={this.toggleCollapsed}
           >
             <img src={getIcon(IconType.NextPage)} alt="" />
@@ -60,7 +60,7 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
           <div>
             <div className="py-3 mb-2">
               {collapsed ?
-                <img className='w-6 long-logo' src={getIcon(IconType.InternxtShortLogo)} alt="" /> :
+                <img className='opacity-0 w-6 long-logo' src={getIcon(IconType.InternxtShortLogo)} alt="" /> :
                 <div className="w-28 h-auto flex items-center">
                   <ReactLogo className="long-logo w-full" />
                 </div>

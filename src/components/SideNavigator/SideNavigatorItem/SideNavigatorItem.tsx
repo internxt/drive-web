@@ -31,7 +31,7 @@ const SideNavigatorItem = ({ label, tooltipLabel, to, icon, isOpen, onClick }: S
     >
       {
         to ?
-          <NavLink className={`${isOpen ? '' : 'justify-center'} nav-link flex items-center`} to={to}>{content}</NavLink> :
+          <NavLink exact className={`${isOpen ? '' : 'justify-center'} nav-link flex items-center`} to={to}>{content}</NavLink> :
           <div className={`${isOpen ? '' : 'justify-center'} flex items-center`}>{content}</div>
       }
     </div>
