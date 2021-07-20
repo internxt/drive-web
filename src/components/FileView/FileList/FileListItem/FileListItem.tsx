@@ -174,7 +174,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
           <input type="checkbox" checked={this.isSelected} onChange={this.onSelectCheckboxChanged} />
         </td>
         <td>
-          <img className="type-icon" src={this.itemIconSrc} />
+          <img alt="" className="type-icon" src={this.itemIconSrc} />
         </td>
         <td>
           <div>
@@ -189,20 +189,20 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         <td>
           <div className="flex justify-center">
             <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
-              <img src={iconService.getIcon(IconType.DownloadItems)} />
+              <img alt="" src={iconService.getIcon(IconType.DownloadItems)} />
             </button>
             <button onClick={this.onShareButtonClicked} className="hover-action mr-4">
-              <img src={iconService.getIcon(IconType.ShareItems)} />
+              <img alt="" src={iconService.getIcon(IconType.ShareItems)} />
             </button>
             <button onClick={this.onDeleteButtonClicked} className="hover-action">
-              <img src={iconService.getIcon(IconType.DeleteItems)} />
+              <img alt="" src={iconService.getIcon(IconType.DeleteItems)} />
             </button>
           </div>
         </td>
         <td>
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold rounded-2xl">
-              <img src={iconService.getIcon(IconType.Actions)} />
+              <img alt="" src={iconService.getIcon(IconType.Actions)} />
             </Dropdown.Toggle>
             <FileDropdownActions
               onRenameButtonClicked={this.onRenameButtonClicked}

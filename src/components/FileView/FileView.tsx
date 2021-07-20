@@ -124,19 +124,19 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
 
               <div className="flex">
                 <button className="primary mr-1 flex items-center">
-                  <img className="h-3 mr-2" src={iconService.getIcon(IconType.Upload)} /><span>Upload</span>
+                  <img alt="" className="h-3 mr-2" src={iconService.getIcon(IconType.Upload)} /><span>Upload</span>
                 </button>
                 {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
-                  <img src={iconService.getIcon(IconType.CreateFolder)} />
+                  <img alt="" src={iconService.getIcon(IconType.CreateFolder)} />
                 </button> : null}
                 {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDownloadButtonClicked}>
-                  <img src={iconService.getIcon(IconType.DownloadItems)} />
+                  <img alt="" src={iconService.getIcon(IconType.DownloadItems)} />
                 </button> : null}
                 {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDeleteButtonClicked}>
-                  <img src={iconService.getIcon(IconType.DeleteItems)} />
+                  <img alt="" src={iconService.getIcon(IconType.DeleteItems)} />
                 </button> : null}
                 <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
-                  <img src={viewModesIcons[viewMode]} />
+                  <img alt="" src={viewModesIcons[viewMode]} />
                 </button>
               </div>
             </div>

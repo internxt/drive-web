@@ -1,0 +1,168 @@
+{
+  "views": [
+    {
+      "id": "new",
+      "layout": "empty",
+      "path": "/new",
+      "exact": true
+    },
+    {
+      "id":  "activate",
+      "layout": "empty",
+      "path": "/activate/:email",
+      "exact": true
+    },
+    {
+      "id":  "appsumo",
+      "layout": "empty",
+      "path": "/appsumo/:email",
+      "exact": true
+    },
+    {
+      "id": "invite",
+      "layout": "empty",
+      "path": "/invite",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "login",
+      "layout": "empty",
+      "path": "/login",
+      "exact": true
+    },
+    {
+      "id": "storage",
+      "layout": "header-and-sidenav",
+      "path": "/storage",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "drive",
+      "layout": "header-and-sidenav",
+      "path": "/app",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "recents",
+      "layout": "header-and-sidenav",
+      "path": "/app/recents",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "account",
+      "layout": "header-and-sidenav",
+      "path": "/account",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "teams",
+      "layout": "empty",
+      "path": "/teams",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "teams-cancel",
+      "layout": "empty",
+      "path": "/team/cancel",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "teams-join",
+      "layout": "empty",
+      "path": "/teams/join/:token",
+      "exact": false
+    },
+    {
+      "id": "activations",
+      "layout": "empty",
+      "path": "/activations/:token",
+      "exact": false
+    },
+    {
+      "id": "deactivations",
+      "layout": "empty",
+      "path": "/deactivationsTeams/:token",
+      "exact": false
+    },
+    {
+      "id": "teams-deactivations",
+      "layout": "empty",
+      "path": "/deactivations/:token",
+      "exact": false
+    },
+    {
+      "id": "security",
+      "layout": "empty",
+      "path": "/security",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "team-success",
+      "layout": "empty",
+      "path": "/team/success/:sessionId",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "checkout",
+      "layout": "empty",
+      "path": "/checkout/:sessionId",
+      "exact": false,
+      "auth": true
+    },
+    {
+      "id": "reset",
+      "layout": "empty",
+      "path": "/reset",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "reset-token",
+      "layout": "empty",
+      "path": "/reset:token",
+      "exact": false,
+      "auth": true
+    },
+    {
+      "id": "settings",
+      "layout": "empty",
+      "path": "/settings",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "remove",
+      "layout": "empty",
+      "path": "/remove",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "share-token",
+      "layout": "empty",
+      "path": "/:token([a-z0-9]{10})",
+      "exact": true
+    },
+    {
+      "id": "maintenance",
+      "layout": "empty",
+      "path": "",
+      "exact": true
+    },
+    {
+      "id": "not-found",
+      "layout": "empty",
+      "path": "",
+      "exact": true
+    }
+  ]
+}

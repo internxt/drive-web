@@ -4,7 +4,7 @@ import { Dropdown, ProgressBar } from 'react-bootstrap';
 import HeaderButton from './HeaderButton';
 
 import history from '../../lib/history';
-import customPrettySize from '../../services/size.service';
+import { bytesToString } from '../../services/size.service';
 import account from '../../assets/Dashboard-Icons/Account.svg';
 import localStorageService from '../../services/localStorage.service';
 import SessionStorage from '../../lib/sessionStorage';
@@ -65,7 +65,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
   const putLimitUser = () => {
     if (barLimit > 0) {
       if (barLimit < 108851651149824) {
-        return customPrettySize(barLimit);
+        return bytesToString(barLimit);
       } else if (barLimit >= 108851651149824) {
         return '\u221E';
       } else {
@@ -102,7 +102,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
         <div className="dropdown-menu-group info">
           <p className="name-lastname">{isTeam ? 'Business' : `${user.name} ${user.lastname}`}</p>
           {isTeam ? <ProgressBar className="mini-progress-bar" now={barUsage} max={barLimitTeams} /> : <ProgressBar className="mini-progress-bar" now={barUsage} max={barLimit} />}
-          <p className="space-used">Used <strong>{customPrettySize(barUsage)}</strong> of {barLimitTeams && isTeam ? <strong>{barLimitTeams > 0 ? customPrettySize(barLimitTeams) : '...'}</strong> : <strong>{putLimitUser()}</strong>}</p>
+          <p className="space-used">Used <strong>{bytesToString(barUsage)}</strong> of {barLimitTeams && isTeam ? <strong>{barLimitTeams > 0 ? bytesToString(barLimitTeams) : '...'}</strong> : <strong>{putLimitUser()}</strong>}</p>
         </div>
         <Dropdown.Divider />
         <div className="dropdown-menu-group">

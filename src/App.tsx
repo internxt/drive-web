@@ -1,61 +1,147 @@
-import React from 'react';
+import { Component, createElement } from 'react';
 import { Switch, Route, Redirect, Router } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
 
+import { storeTeamsInfo } from './services/teams.service';
+import deviceService from './services/device.service';
+import { setCurrentFolderId } from './store/slices/storageSlice';
+import { setHasConnection } from './store/slices/networkSlice';
+import { AppViewConfig, UserSettings } from './models/interfaces';
+import { userActions } from './store/slices/userSlice';
+import configService from './services/config.service';
 import history from './lib/history';
-import './App.scss';
-import Login from './components/forms/Login';
-import Remove from './components/forms/Remove';
-import New from './components/forms/New';
-import Activation from './components/forms/Activation';
-import NotFound from './NotFound';
-import Deactivation from './components/forms/Deactivation';
-import Share from './components/forms/Share';
-import Reset from './components/forms/Reset';
-import Storage from './components/Storage';
-import Security from './components/Security';
-import { ToastContainer } from 'react-toastify';
-import Checkout from './components/Checkout';
-import Referred from './components/Referred';
-import Teams from './components/forms/Teams';
-import JoinTeam from './components/forms/JoinTeam';
-import DeactivationTeams from './components/forms/DeactivationTeam';
 import analyticsService, { PATH_NAMES } from './services/analytics.service';
-import Success from './components/teams/Success';
+import layouts from './layouts';
+import views from './views';
 
-import NewXCloud from './views/NewXCloud/NewXCloud';
-import { UserSettings } from './models/interfaces';
-import { setUser } from './store/slices/userSlice';
+import './App.scss';
+import { RootState } from './store';
+import localStorageService from './services/localStorage.service';
+import userService from './services/user.service';
 
 interface AppProps {
-  setUser: (value: UserSettings) => void
-}
-
-interface AppState {
-  token: string;
-  user: UserSettings | any,
   isAuthenticated: boolean;
-  isActivated: boolean
+  isInitialized: boolean;
+  user: UserSettings;
+  setHasConnection: (value: boolean) => void;
+  setUser: (value: UserSettings) => void;
+  setCurrentFolderId: (value: number) => void;
+  setIsUserInitialized: (value: boolean) => void;
 }
 
-class App extends React.Component<AppProps, AppState> {
+interface AppState { }
+
+class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
 
-    this.state = {
-      token: '',
-      user: {},
-      isAuthenticated: false,
-      isActivated: false
-    };
+    this.state = {};
   }
 
-  handleKeySaved = (user: UserSettings): void => {
-    this.props.setUser(user);
-    this.setState({ isAuthenticated: true, user: user });
+  async componentDidMount(): Promise<void> {
+    window.addEventListener('offline', () => {
+      this.props.setHasConnection(false);
+    });
+    window.addEventListener('online', () => {
+      this.props.setHasConnection(true);
+    });
+
+    deviceService.redirectForMobile();
+
+    if (this.props.user && this.props.isAuthenticated) {
+      if (!this.props.user.root_folder_id) {
+        try {
+          const rootFolderId: string = await userService.initializeUser();
+        } catch (error) {
+          const errorMsg = error ? error : '';
+
+          toast.warn('User initialization error ' + errorMsg);
+          history.push('/login');
+        }
+      } else {
+        storeTeamsInfo().finally(() => {
+          if (localStorageService.exists('xTeam') && !this.props.user.teams && localStorageService.get('workspace') === 'teams') {
+            this.handleChangeWorkspace();
+          } else {
+            // TODO: load folder content this.getFolderContent(this.props.user.root_folder_id);
+            this.props.setCurrentFolderId(this.props.user.root_folder_id);
+          }
+          const team: any = localStorageService.getTeams();
+
+          if (team && !team.root_folder_id) {
+            this.props.setCurrentFolderId(this.props.user.root_folder_id);
+          }
+
+          this.props.setIsUserInitialized(true);
+        }).catch(() => {
+          localStorageService.del('xTeam');
+          this.setState({
+            isTeam: false
+          });
+        });
+      }
+    } else {
+      console.log('(App.tsx) user is not authenticated!');
+      history.push('/login');
+    }
   }
 
-  render() {
+  handleChangeWorkspace = () => {
+    const xTeam: any = localStorageService.getTeams();
+    const xUser: UserSettings = localStorageService.getUser();
+
+    if (!localStorageService.exists('xTeam')) {
+      toast.warn('You cannot access the team');
+      this.setState({
+        isTeam: false
+      });
+    }
+
+    if (this.props.user.teams) {
+      this.setState({ namePath: [{ name: 'All files', id: xUser.root_folder_id }] }, () => {
+        this.getFolderContent(xUser.root_folder_id, false, true, false);
+      });
+    } else {
+      this.setState({ namePath: [{ name: 'All files', id: xTeam.root_folder_id }] }, () => {
+        this.getFolderContent(xTeam.root_folder_id, false, true, true);
+      });
+    }
+
+    const isTeam = !this.props.user.teams;
+
+    this.setState({ isTeam: isTeam }, () => {
+      localStorageService.set('workspace', isTeam ? 'teams' : 'individual');
+    });
+  }
+
+  get routes(): JSX.Element[] {
+    const routes: JSX.Element[] = views.map(v => {
+      const viewConfig: AppViewConfig | undefined = configService.getViewConfig(v.id);
+      const layoutConfig = layouts.find(l => l.id === viewConfig?.layout) || layouts[0];
+
+      return (
+        <Route
+          key={v.id}
+          exact={viewConfig?.exact}
+          path={viewConfig?.path}
+          render={(props: any) => createElement(
+            layoutConfig.component,
+            {},
+            createElement(
+              v.component,
+              { ...props, ...v.componentProps }
+            )
+          )}
+        />
+      );
+    });
+
+    return routes;
+  }
+
+  render(): JSX.Element {
+    const { isInitialized } = this.props;
     const pathName = window.location.pathname.split('/')[1];
 
     if (window.location.pathname) {
@@ -64,71 +150,44 @@ class App extends React.Component<AppProps, AppState> {
       }
     }
 
-    return (
-      <Router history={history}>
-        <Switch>
-          <Redirect from='//*' to='/*' />
-          <Route exact path='/login' render={(props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+    if (isInitialized) {
+      return (
+        <Router history={history}>
+          <Switch>
+            <Redirect from='//*' to='/*' />
+            {this.routes}
+            <Route exact path='/'>
+              <Redirect to="/login" />
+            </Route>
+          </Switch>
 
-          <Route exact path='/activate/:email'
-            render={(props: any) => <New {...props}
-              isNewUser={true}
-              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
-          <Route exact path='/appsumo/:email'
-            render={(props: any) => <New {...props}
-              isNewUser={false}
-              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
-          <Route exact path='/new'
-            render={(props: any) => <New {...props}
-              isNewUser={true}
-              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
-          <Route exact path='/team/success/:sessionId' render={(props: any) =>
-            <Success {...props}
-              isAuthenticated={this.state.isAuthenticated}/>} />
-
-          <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/invite' render={(props) => <Referred {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route path='/checkout/:sessionId' render={(props) => <Checkout {...props} />} />
-          <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/settings' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          {/* <Route exact path='/token' render={(props) => <PayToken {...props} isAuthenticated={this.state.isAuthenticated} />} /> */}
-          <Route exact path='/teams/' render={(props) => <Teams {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/team/cancel/' render={(props) => <Teams {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route path='/teams/join/:token' render={(props) => <JoinTeam {...props} />} />
-          <Route path='/activations/:token' render={(props) => <Activation {...props} />} />
-          <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
-          <Route path='/deactivationsTeams/:token' render={(props) => <DeactivationTeams {...props} />} />
-          <Route path='/security' render={(props) => <Security {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/app' render={(props) => <NewXCloud {...props}
-            isAuthenticated={this.state.isAuthenticated}
-            user={this.state.user}
-            isActivated={this.state.isActivated}
-            handleKeySaved={this.handleKeySaved} />
-          } />
-          <Route exact path='/remove' render={(props: any) => <Remove {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
-          <Route exact path='/:token([a-z0-9]{10})' render={(props) => <Share {...props} />} />
-          <Route exact path='/'>
-            <Redirect to="/login" />
-          </Route>
-          <Route component={NotFound} />
-        </Switch>
-
-        {/^[a-z0-9]{10}$/.test(pathName)
-          ? <ToastContainer />
-          : <ToastContainer
-            position="bottom-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick={true}
-            rtl={false}
-            draggable={true}
-            pauseOnHover={true}
-            className="" />}
-      </Router>
-    );
+          {/^[a-z0-9]{10}$/.test(pathName)
+            ? <ToastContainer />
+            : <ToastContainer
+              position="bottom-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick={true}
+              rtl={false}
+              draggable={true}
+              pauseOnHover={true}
+              className="" />}
+        </Router>
+      );
+    } else {
+      return <div></div>;
+    }
   }
 }
 
-export default connect(null, { setUser })(App);
+export default connect((state: RootState) => ({
+  isAuthenticated: state.user.isAuthenticated,
+  isInitialized: state.user.isInitialized,
+  user: state.user.user
+}), {
+  setHasConnection,
+  setUser: userActions.setUser,
+  setCurrentFolderId,
+  setIsUserInitialized: userActions.setIsUserInitialized
+})(App);

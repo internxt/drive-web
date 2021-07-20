@@ -158,7 +158,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       <div className="group file-grid-item">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
-            <img className="m-auto" src={iconService.getIcon(IconType.Actions)} />
+            <img alt="" className="m-auto" src={iconService.getIcon(IconType.Actions)} />
           </Dropdown.Toggle>
           <FileDropdownActions
             onRenameButtonClicked={this.onRenameButtonClicked}
@@ -168,7 +168,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
             onDeleteButtonClicked={this.onDeleteButtonClicked}
           />
         </Dropdown>
-        <img className="file-icon m-auto" src={this.itemIconSrc} />
+        <img alt="" className="file-icon m-auto" src={this.itemIconSrc} />
         <div className="text-center mt-3">
           <div className="h-5 mb-1">
             {this.nameNode}

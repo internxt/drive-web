@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 import './Breadcrumbs.scss';
 
@@ -18,13 +18,13 @@ class Breadcrumbs extends React.Component<BreadcrumbsProps, BreadcrumbsState> {
   get itemsList(): JSX.Element[] {
     return this.props.items.map(item => (
       <li className={`cursor-pointer flex items-center ${item.active ? 'active' : ''}`} key={item.name} onClick={item.onClick}>
-        <img className="breadcrumb-item-icon" src={item.icon} />
+        <img alt="" className="breadcrumb-item-icon" src={item.icon} />
         { item.label ? <span className="label">{item.label}</span> : null}
       </li>
     ));
   }
 
-  render(): ReactNode {
+  render(): JSX.Element {
     return (
       <nav>
         {this.itemsList.length > 0 ?

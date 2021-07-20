@@ -1,4 +1,16 @@
-import { FileActionTypes, FileStatusTypes } from './enums';
+import { AppViewLayout, FileActionTypes, FileStatusTypes } from './enums';
+
+export interface AppConfig {
+  views: AppViewConfig;
+}
+
+export interface AppViewConfig {
+  id: string;
+  layout: AppViewLayout;
+  path: string;
+  exact: boolean;
+  auth?: boolean;
+}
 
 export interface UserSettings {
   bucket: string

@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { getIcon, IconType } from '../../../services/icon.service';
 
 import './BaseDialog.scss';
@@ -17,7 +15,7 @@ const BaseDialog = ({
   onClose,
   children
 }: BaseDialogProps
-) => {
+): JSX.Element => {
   return (
     <div className={`${open ? 'flex' : 'hidden'} absolute flex align-middle justify-center w-full h-full`}>
       {/* BACKGROUND */}

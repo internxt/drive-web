@@ -9,10 +9,7 @@ interface DeleteItemsDialogProps {
   open: boolean;
 }
 
-const DeleteItemsDialog = ({
-  open
-}: DeleteItemsDialogProps
-) => {
+const DeleteItemsDialog = ({ open }: DeleteItemsDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const onCancel = (): void => {
     dispatch(setIsDeleteItemsDialogOpen(false));

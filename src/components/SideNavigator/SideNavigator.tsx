@@ -6,9 +6,13 @@ import { ReactComponent as ReactLogo } from '../../assets/icons/internxt-long-lo
 
 import './SideNavigator.scss';
 import authService from '../../services/auth.service';
-import { NavLink } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { RootState } from '../../store';
+import { UserSettings } from '../../models/interfaces';
 
-interface SideNavigatorProps { }
+interface SideNavigatorProps {
+  user: UserSettings;
+}
 
 interface SideNavigatorState {
   collapsed: boolean;
@@ -23,17 +27,23 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
     };
 
     this.toggleCollapsed = this.toggleCollapsed.bind(this);
+    this.onUpgradeButtonClicked = this.onUpgradeButtonClicked.bind(this);
   }
 
-  componentDidMount() { }
+  componentDidMount(): void { }
 
-  toggleCollapsed() {
+  onUpgradeButtonClicked() {
+    console.log('Upgrade button clicked!');
+  }
+
+  toggleCollapsed(): void {
     this.setState({
       collapsed: !this.state.collapsed
     });
   }
 
-  render() {
+  render(): JSX.Element {
+    const { user } = this.props;
     const { collapsed } = this.state;
 
     return (
@@ -52,7 +62,7 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
               {collapsed ?
                 <img className='w-6 long-logo' src={getIcon(IconType.InternxtShortLogo)} alt="" /> :
                 <div className="w-28 h-auto flex items-center">
-                  <ReactLogo className="long-logo w-full h-full" />
+                  <ReactLogo className="long-logo w-full" />
                 </div>
               }
             </div>
@@ -95,16 +105,14 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
               <div className="px-4 py-2 text-xs border-b border-dashed border-l-neutral-40">
                 Jhon Doe Young
               </div>
-              <div className="px-4 py-4 flex flex-col justify-center">
+              <div className="px-4 pt-2 pb-2 flex flex-col justify-center">
+                <span className="text-xs">{user.email}</span>
                 <div className="w-full bg-blue-10 h-1 rounded-sm">
                   <div className="w-1/2 h-full bg-blue-60 rounded-sm"></div>
                 </div>
-                <span className="mt-1 text-supporting-2 text-m-neutral-100">338.64 MB of 10 GB</span>
+                <span className="flex-grow mt-1 text-supporting-2 text-m-neutral-100">338.64 MB of 10 GB</span>
+                <button className="secondary" onClick={this.onUpgradeButtonClicked}>Upgrade</button>
               </div>
-            </div>
-            <div className="flex">
-              <button className="w-1/2 primary">Upgrade</button>
-              <button className="w-1/2 secondary">Storage</button>
             </div>
           </div>) :
           null
@@ -114,4 +122,7 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
   }
 }
 
-export default SideNavigator;
+export default connect(
+  (state: RootState) => ({
+    user: state.user.user
+  }))(SideNavigator);

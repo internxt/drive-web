@@ -1,3 +1,8 @@
+export enum AppViewLayout {
+  Empty = 'empty',
+  HeaderAndSidenav = 'header-and-sidenav'
+}
+
 export enum FileStatusType {
     Error = 'error',
     Success = 'success',

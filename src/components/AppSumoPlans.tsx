@@ -27,7 +27,7 @@ function getAppSumoSize(name: string): string {
   }
 }
 
-export default function AppSumoPlans(props: AppSumoPlansProps) {
+export default function AppSumoPlans(props: AppSumoPlansProps): JSX.Element {
   return <div>
     <p className="title1">AppSumo license <span style={{ fontWeight: 'normal', color: '#7e848c' }}>| {getAppSumoSize(props.details.planId)}</span></p>
     <div style={{ textAlign: 'center' }}>
