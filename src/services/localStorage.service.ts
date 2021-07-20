@@ -4,27 +4,29 @@ function get(key: string): string | null {
   return localStorage.getItem(key);
 }
 
-function set(key: string, value: string) {
+function set(key: string, value: string): void {
   return localStorage.setItem(key, value);
 }
 
-function getUser(): UserSettings {
-  return JSON.parse(localStorage.getItem('xUser') || '{}');
+function getUser(): UserSettings | null {
+  const stringUser: string | null = localStorage.getItem('xUser');
+
+  return stringUser ? JSON.parse(stringUser) : null;
 }
 
 function getTeams(): TeamsSettings {
   return JSON.parse(localStorage.getItem('xTeam') || '{}');
 }
 
-function del(key: string) {
-  return localStorage.removeItem(key);
+function del(key: string): void {
+  localStorage.removeItem(key);
 }
 
-function exists(key: string) {
+function exists(key: string): boolean {
   return !!localStorage.getItem(key);
 }
 
-function clear() {
+function clear(): void {
   localStorage.removeItem('xUser');
   localStorage.removeItem('xMnemonic');
   localStorage.removeItem('xToken');

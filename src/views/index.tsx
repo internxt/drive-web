@@ -19,12 +19,14 @@ import TeamSuccessView from '../views/TeamSuccessView/TeamSuccessView';
 import CheckoutView from './CheckoutView/CheckoutView';
 import RemoveView from './RemoveView/RemoveView';
 import ShareView from './ShareView/ShareView';
+import SignInView from './SignInView/SignInView';
+import SignUpView from './SignUpView/SignUpView';
 
 const views: Array<{ id: string, component: string | FunctionComponent<any> | ComponentClass<any>, componentProps?: any }> = [
-  { id: 'new', component: NewView, componentProps: { isNewUser: true } },
+  { id: 'new', component: SignUpView, componentProps: { isNewUser: true } },
   { id: 'activate', component: NewView, componentProps: { isNewUser: true } },
   { id: 'appsumo', component: NewView, componentProps: { isNewUser: false } },
-  { id: 'login', component: LoginView },
+  { id: 'login', component: SignInView },
   { id: 'invite', component: ReferredView },
   { id: 'drive', component: DriveView },
   { id: 'recents', component: DriveView },

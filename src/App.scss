@@ -13,6 +13,10 @@
   font-stretch: normal;
 }
 
+* {
+  font-family: "NeueEinstellung";
+}
+
 .text-6xl {
   font-family: "NeueEinstellung";
   font-size: 60px;
@@ -56,11 +60,9 @@
 .text-xl {
   font-family: "NeueEinstellung";
   font-size: 20px; // font-family: Gotham;
-
   font-stretch: normal;
   font-style: normal;
   line-height: 1.4;
-  letter-spacing: normal;
 }
 .text-lg {
   font-family: "NeueEinstellung";
@@ -111,23 +113,35 @@
   letter-spacing: normal;
 }
 
-* {
-  font-family: 'NeueEinstellung';
-}
-
-/* INPUTS */
 @layer components {
-  input[type="checkbox"] {
-    @apply border-2 border-neutral-500 rounded-1px;
+  /* LINKS */
+  a, .link {
+    @apply text-blue-60 hover:text-blue-80 underline;
+  
+    &.secondary {
+      @apply text-white;
+    }
   }
-  input[type="text"] {
-    @apply ring-2 ring-blue-30 rounded-1px focus:ring-blue-30 focus:rounded-1px text-neutral-500 placeholder-l-neutral-50 text-sm px-1;
+
+  /* INPUTS */
+  input[type="checkbox"] {
+    @apply border-2 border-neutral-500 rounded-1px text-xs text-neutral-500 w-3 h-3;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    @apply ring-1 ring-m-neutral-100 rounded focus:ring-blue-60 text-neutral-500 placeholder-m-neutral-100 text-sm mb-3 px-3 py-2;
 
     &:focus {
       outline: none !important;
     }
+
+    &.error {
+      @apply border-l-8 focus:ring-pink-60 border-pink-60 ring-pink-60 bg-pink-10;
+    }
   }
 
+  /* BUTTONS */
   button.primary,
   button.secondary {
     height: 32px;
@@ -158,10 +172,6 @@ th {
 .Alert {
   width: 70%;
   margin: auto;
-}
-.App {
-  text-align: center;
-  height: 100%;
 }
 .App-header {
   background-color: #222;

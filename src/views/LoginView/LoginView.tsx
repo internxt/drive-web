@@ -105,6 +105,7 @@ class LoginView extends React.Component<LoginViewProps> {
 
       const data = await res.json();
 
+      console.log('data =?', data);
       if (res.status !== 200) {
         window.analytics.track('user-signin-attempted', {
           status: 'error',

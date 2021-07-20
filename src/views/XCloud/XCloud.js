@@ -18,8 +18,6 @@ import SharePopup from '../../components/popups/SharePopup/SharePopup';
 import './XCloud.scss';
 
 import { getHeaders } from '../../lib/auth';
-
-import localStorageService from '../../services/localStorage.service';
 import { Network, getEnvironmentConfig } from '../../lib/network';
 import { storeTeamsInfo } from '../../services/teams.service';
 import history from '../../lib/history';
@@ -29,7 +27,7 @@ import FileLogger from '../../services/fileLogger';
 import FileLoggerModal from '../../components/FileLoggerModal/index';
 import { connect } from 'react-redux';
 import { addFileToHistory, updateFileStatus } from '../../store/slices/filesStateSlice';
-import { FileActionTypes, FileStatusTypes } from '../../models/interfaces';
+import { FileActionTypes, FileStatusTypes } from '../../models/enums';
 
 class XCloud extends React.Component {
 
@@ -666,6 +664,7 @@ class XCloud extends React.Component {
   }
 
   downloadFile = async (totalPathItem, id, _class, pcb) => {
+    console.log(totalPathItem, id, _class, pcb);
     //STATUS: DECRYPTING DOWNLOAD FILE
     //this.props.dispatch(addFileToHistory({ action: FileActionTypes.Download, status: FileStatusTypes.Decrypting, filePath: totalPathItem, isFolder: false }));
     FileLogger.push({ action: FileActionTypes.Download, status: FileStatusTypes.Decrypting, filePath: totalPathItem });

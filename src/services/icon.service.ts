@@ -35,6 +35,12 @@ import previousPage from '../assets/icons/previous-page.svg';
 import nextPage from '../assets/icons/next-page.svg';
 import lightMode from '../assets/icons/light-mode.svg';
 import darkMode from '../assets/icons/dark-mode.svg';
+import arrowUpWhite from '../assets/icons/arrow-up-inside-box.svg';
+import mailGray from '../assets/icons/mail-gray.svg';
+import lockGray from '../assets/icons/lock-gray.svg';
+import eyeGray from '../assets/icons/eye-gray.svg';
+import eyeSlashGray from '../assets/icons/eye-slash-gray.svg';
+import userGray from '../assets/icons/user-gray.svg';
 
 export enum IconType {
   FolderWithCrossGray = 'folderWithCrossGray',
@@ -73,7 +79,13 @@ export enum IconType {
   PreviousPage = 'previousPage',
   NextPage = 'nextPage',
   LightMode = 'lightMode',
-  DarkMode = 'darkMode'
+  DarkMode = 'darkMode',
+  ArrowUpWhite = 'arrowUpWhite',
+  MailGray = 'mailGray',
+  LockGray = 'lockGray',
+  EyeGray = 'eyeGray',
+  EyeSlashGray = 'eyeSlashGray',
+  UserGray = 'userGray'
 }
 
 const icons = {
@@ -113,7 +125,13 @@ const icons = {
   previousPage,
   nextPage,
   lightMode,
-  darkMode
+  darkMode,
+  arrowUpWhite,
+  mailGray,
+  lockGray,
+  eyeGray,
+  eyeSlashGray,
+  userGray
 };
 
 export const getIcon = (iconName: IconType): string => {

@@ -141,7 +141,7 @@ class App extends Component<AppProps, AppState> {
   }
 
   render(): JSX.Element {
-    const { isInitialized } = this.props;
+    const { isInitialized, isAuthenticated } = this.props;
     const pathName = window.location.pathname.split('/')[1];
 
     if (window.location.pathname) {
@@ -150,7 +150,7 @@ class App extends Component<AppProps, AppState> {
       }
     }
 
-    if (isInitialized) {
+    if (!isAuthenticated || isInitialized) {
       return (
         <Router history={history}>
           <Switch>
@@ -176,6 +176,7 @@ class App extends Component<AppProps, AppState> {
         </Router>
       );
     } else {
+      console.log('user not initialized!');
       return <div></div>;
     }
   }

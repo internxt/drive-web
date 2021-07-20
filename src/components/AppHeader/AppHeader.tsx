@@ -27,7 +27,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
       <div className="flex justify-between w-full pl-6 py-3 mb-2">
         <input type="text" placeholder="Search files" />
         <div className="flex items-center">
-          <img alt="" src={iconService.getIcon(IconType.DefaultAvatar)} className="user-avatar rounded-2xl mr-1 border bg-l-neutral-30" />
+          <img alt="" src={iconService.getIcon(IconType.DefaultAvatar)} className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5" />
           <span className="text-neutral-500 text-sm">Welcome {userFullName}</span>
         </div>
       </div>
