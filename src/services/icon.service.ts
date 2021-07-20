@@ -41,6 +41,7 @@ import lockGray from '../assets/icons/lock-gray.svg';
 import eyeGray from '../assets/icons/eye-gray.svg';
 import eyeSlashGray from '../assets/icons/eye-slash-gray.svg';
 import userGray from '../assets/icons/user-gray.svg';
+import search from '../assets/icons/search.svg';
 
 export enum IconType {
   FolderWithCrossGray = 'folderWithCrossGray',
@@ -85,7 +86,8 @@ export enum IconType {
   LockGray = 'lockGray',
   EyeGray = 'eyeGray',
   EyeSlashGray = 'eyeSlashGray',
-  UserGray = 'userGray'
+  UserGray = 'userGray',
+  Search = 'search'
 }
 
 const icons = {
@@ -131,7 +133,8 @@ const icons = {
   lockGray,
   eyeGray,
   eyeSlashGray,
-  userGray
+  userGray,
+  search
 };
 
 export const getIcon = (iconName: IconType): string => {

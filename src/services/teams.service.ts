@@ -14,14 +14,14 @@ export function isTeamActivated(): Promise<any> {
     });
 }
 
-export async function getTeamsInfo() {
+export async function getTeamsInfo(): Promise<any> {
   return fetch('/api/teams/info', {
     method: 'get',
     headers: getHeaders(true, false, false)
   }).then(res => res.json());
 }
 
-export async function getKeys(mail: string) {
+export async function getKeys(mail: string): Promise<Response> {
   return fetch(`/api/user/keys/${mail}`, {
     method: 'GET',
     headers: getHeaders(true, false)
@@ -39,7 +39,7 @@ export async function getKeys(mail: string) {
   });
 }
 
-export async function storeTeamsInfo() {
+export async function storeTeamsInfo(): Promise<void> {
   const { userTeam, tokenTeams } = await getTeamsInfo();
 
   if (userTeam && tokenTeams) {

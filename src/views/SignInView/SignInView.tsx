@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 
-import { setUser } from '../../store/slices/userSlice';
+import { initializeUserThunk, setUser } from '../../store/slices/userSlice';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
@@ -64,6 +64,12 @@ export default function SignInView(props: SignInProps): JSX.Element {
         dispatch(setUser(user));
         analyticsService.identify(data.user, email);
         analyticsService.trackSignIn({ email, userId: data.user.uuid });
+
+        try {
+          await dispatch(initializeUserThunk()).unwrap();
+        } catch (e) {
+          console.log(e);
+        }
 
         setIsAuthenticated(true);
         setToken(data.token);

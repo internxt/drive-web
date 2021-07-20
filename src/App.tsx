@@ -3,20 +3,19 @@ import { Switch, Route, Redirect, Router } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
 
+import { setIsUserInitialized, initializeUserThunk } from './store/slices/userSlice';
 import { storeTeamsInfo } from './services/teams.service';
 import deviceService from './services/device.service';
 import { setCurrentFolderId } from './store/slices/storageSlice';
 import { setHasConnection } from './store/slices/networkSlice';
 import { AppViewConfig, UserSettings } from './models/interfaces';
-import { userActions } from './store/slices/userSlice';
 import configService from './services/config.service';
 import history from './lib/history';
 import analyticsService, { PATH_NAMES } from './services/analytics.service';
 import layouts from './layouts';
 import views from './views';
 
-import './App.scss';
-import { RootState } from './store';
+import { AppDispatch, RootState } from './store';
 import localStorageService from './services/localStorage.service';
 import userService from './services/user.service';
 
@@ -24,10 +23,7 @@ interface AppProps {
   isAuthenticated: boolean;
   isInitialized: boolean;
   user: UserSettings;
-  setHasConnection: (value: boolean) => void;
-  setUser: (value: UserSettings) => void;
-  setCurrentFolderId: (value: number) => void;
-  setIsUserInitialized: (value: boolean) => void;
+  dispatch: AppDispatch;
 }
 
 interface AppState { }
@@ -40,79 +36,22 @@ class App extends Component<AppProps, AppState> {
   }
 
   async componentDidMount(): Promise<void> {
+    const dispatch: AppDispatch = this.props.dispatch;
+
     window.addEventListener('offline', () => {
-      this.props.setHasConnection(false);
+      dispatch(setHasConnection(false));
     });
     window.addEventListener('online', () => {
-      this.props.setHasConnection(true);
+      dispatch(setHasConnection(true));
     });
 
     deviceService.redirectForMobile();
 
-    if (this.props.user && this.props.isAuthenticated) {
-      if (!this.props.user.root_folder_id) {
-        try {
-          const rootFolderId: string = await userService.initializeUser();
-        } catch (error) {
-          const errorMsg = error ? error : '';
-
-          toast.warn('User initialization error ' + errorMsg);
-          history.push('/login');
-        }
-      } else {
-        storeTeamsInfo().finally(() => {
-          if (localStorageService.exists('xTeam') && !this.props.user.teams && localStorageService.get('workspace') === 'teams') {
-            this.handleChangeWorkspace();
-          } else {
-            // TODO: load folder content this.getFolderContent(this.props.user.root_folder_id);
-            this.props.setCurrentFolderId(this.props.user.root_folder_id);
-          }
-          const team: any = localStorageService.getTeams();
-
-          if (team && !team.root_folder_id) {
-            this.props.setCurrentFolderId(this.props.user.root_folder_id);
-          }
-
-          this.props.setIsUserInitialized(true);
-        }).catch(() => {
-          localStorageService.del('xTeam');
-          this.setState({
-            isTeam: false
-          });
-        });
-      }
-    } else {
-      console.log('(App.tsx) user is not authenticated!');
-      history.push('/login');
+    try {
+      await this.props.dispatch(initializeUserThunk()).unwrap();
+    } catch (e) {
+      console.log(e);
     }
-  }
-
-  handleChangeWorkspace = () => {
-    const xTeam: any = localStorageService.getTeams();
-    const xUser: UserSettings = localStorageService.getUser();
-
-    if (!localStorageService.exists('xTeam')) {
-      toast.warn('You cannot access the team');
-      this.setState({
-        isTeam: false
-      });
-    }
-
-    if (this.props.user.teams) {
-      this.setState({ namePath: [{ name: 'All files', id: xUser.root_folder_id }] }, () => {
-        this.getFolderContent(xUser.root_folder_id, false, true, false);
-      });
-    } else {
-      this.setState({ namePath: [{ name: 'All files', id: xTeam.root_folder_id }] }, () => {
-        this.getFolderContent(xTeam.root_folder_id, false, true, true);
-      });
-    }
-
-    const isTeam = !this.props.user.teams;
-
-    this.setState({ isTeam: isTeam }, () => {
-      localStorageService.set('workspace', isTeam ? 'teams' : 'individual');
-    });
   }
 
   get routes(): JSX.Element[] {
@@ -124,7 +63,7 @@ class App extends Component<AppProps, AppState> {
       } = {
         key: v.id,
         exact: !!viewConfig?.exact,
-        path: viewConfig?.path,
+        path: viewConfig?.path || '',
         render: (props: any) => createElement(
           layoutConfig.component,
           {},
@@ -181,7 +120,6 @@ class App extends Component<AppProps, AppState> {
         </Router>
       );
     } else {
-      console.log('user not initialized!');
       return <div></div>;
     }
   }
@@ -191,9 +129,4 @@ export default connect((state: RootState) => ({
   isAuthenticated: state.user.isAuthenticated,
   isInitialized: state.user.isInitialized,
   user: state.user.user
-}), {
-  setHasConnection,
-  setUser: userActions.setUser,
-  setCurrentFolderId,
-  setIsUserInitialized: userActions.setIsUserInitialized
-})(App);
+}))(App);

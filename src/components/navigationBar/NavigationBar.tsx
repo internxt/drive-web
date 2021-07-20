@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
 
 // Assets
@@ -19,6 +19,7 @@ import history from '../../lib/history';
 
 import localStorageService from '../../services/localStorage.service';
 import SettingsMenu from './SettingsMenu';
+import { UserSettings } from '../../models/interfaces';
 
 interface NavigationBarProps {
   navbarItems?: JSX.Element
@@ -60,7 +61,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     };
   }
 
-  getNavBarItems(isTeam: boolean) {
+  getNavBarItems(isTeam: boolean): JSX.Element {
     const xTeam = localStorageService.exists('xTeam');
 
     return <Nav className="m-auto">
@@ -79,7 +80,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     </Nav>;
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     if (localStorageService.exists('xTeam')) {
       const admin = localStorageService.getTeams().isAdmin;
 
@@ -87,10 +88,10 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     } else {
       this.setState({ isAdmin: true });
     }
-    let user: string;
 
     try {
-      user = localStorageService.getUser().email;
+      const user: UserSettings | null = localStorageService.getUser()?.email;
+
       if (user == null) {
         throw new Error();
       }
@@ -106,7 +107,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: NavigationBarProps): void {
     if (this.props.isTeam !== prevProps.isTeam) {
       this.setState({
         isTeam: this.props.isTeam,
@@ -122,7 +123,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     }
   }
 
-  handleChangeWorkspace() {
+  handleChangeWorkspace(): void {
     this.props.handleChangeWorkspace && this.props.handleChangeWorkspace();
   }
 

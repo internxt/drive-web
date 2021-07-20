@@ -3,6 +3,8 @@ import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-fo
 
 import iconService, { IconType } from '../../services/icon.service';
 
+import './AuthInput.scss';
+
 interface InputProps {
   label: Path<IFormValues>,
   type: string
@@ -26,7 +28,7 @@ const InputPrimary = ({ label, type, register, required, placeholder, pattern, i
         maxLength,
         pattern
       })}
-      className={`w-full transform duration-200 mb-2.5 ${error ? 'error' : ''}`}
+      className={`auth-input w-full transform duration-200 mb-2.5${error ? 'error' : ''}`}
     />
 
     <div className={`absolute ${label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-5 cursor-pointer' : 'right-3 bottom-6'} flex items-center justify-center`}

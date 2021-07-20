@@ -80,7 +80,6 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
     });
     const body = await response.json();
 
-    console.log(response);
     if (response.status === 400) {
       throw new Error(body.error || 'Can not connect to server');
     }
