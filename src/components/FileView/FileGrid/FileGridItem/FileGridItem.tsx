@@ -1,9 +1,9 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, ReactNode } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
 import iconService, { IconType } from '../../../../services/icon.service';
-import { setItemToShare, setItemsToDelete, setInfoItem, storageThunks, setCurrentFolderId } from '../../../../store/slices/storage';
+import { setItemToShare, setItemsToDelete, setInfoItem, storageThunks } from '../../../../store/slices/storage';
 
 import dateService from '../../../../services/date.service';
 
@@ -39,16 +39,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       dirtyName: '',
       nameInputRef: React.createRef()
     };
-
-    this.onNameBlurred = this.onNameBlurred.bind(this);
-    this.onNameChanged = this.onNameChanged.bind(this);
-    this.onEnterKeyPressed = this.onEnterKeyPressed.bind(this);
-    this.onRenameButtonClicked = this.onRenameButtonClicked.bind(this);
-    this.onDownloadButtonClicked = this.onDownloadButtonClicked.bind(this);
-    this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
-    this.onDeleteButtonClicked = this.onDeleteButtonClicked.bind(this);
-    this.onShareButtonClicked = this.onShareButtonClicked.bind(this);
-    this.onItemDoubleClicked = this.onItemDoubleClicked.bind(this);
   }
 
   get nameNode(): JSX.Element {
@@ -99,9 +89,11 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     }
   }
 
-  onNameDoubleClicked = (): void => {
+  onNameDoubleClicked = (e: MouseEvent): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
+
+    e.stopPropagation();
 
     this.setState(
       { isEditingName: true, dirtyName: item.name },
@@ -109,21 +101,21 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     );
   }
 
-  onNameBlurred(): void {
+  onNameBlurred = (): void => {
     this.setState({ isEditingName: false });
   }
 
-  onNameChanged(e: any): void {
+  onNameChanged = (e: any): void => {
     this.setState({ dirtyName: e.target.value });
   }
 
-  onEnterKeyPressed(e: React.KeyboardEvent): void {
+  onEnterKeyPressed = (e: React.KeyboardEvent): void => {
     if (e.key === 'Enter') {
       this.confirmNameChange();
     }
   }
 
-  onRenameButtonClicked(): void {
+  onRenameButtonClicked = (): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
 
@@ -133,34 +125,34 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     );
   }
 
-  onDownloadButtonClicked(): void {
+  onDownloadButtonClicked = (): void => {
     downloadService.downloadFile(this.props.item);
   }
 
-  onShareButtonClicked(): void {
+  onShareButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
     dispatch(setItemToShare(item.id));
   }
 
-  onInfoButtonClicked(): void {
+  onInfoButtonClicked = (): void => {
     this.props.dispatch(setInfoItem(this.props.item.id));
   }
 
-  onDeleteButtonClicked(): void {
+  onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
     dispatch(setItemsToDelete([item.id]));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
-  onItemDoubleClicked(): void {
+  onItemDoubleClicked = (): void => {
     const { dispatch, item } = this.props;
 
     dispatch(storageThunks.goToFolderThunk(item.id));
   }
 
-  render() {
+  render(): ReactNode {
     const { item } = this.props;
 
     return (

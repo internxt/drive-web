@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { FileViewMode } from '../../../components/FileView/models/enums';
 
 import selectors from './storageSelectors';
 import thunks, { extraReducers } from './storageThunks';
@@ -14,6 +15,7 @@ export interface StorageState {
   itemToShareId: number;
   itemsToDeleteIds: number[];
   infoItemId: number;
+  viewMode: FileViewMode;
   sortFunction: ((a: any, b: any) => number) | null;
   searchFunction: ((item: any) => boolean) | null;
 }
@@ -29,6 +31,7 @@ const initialState: StorageState = {
   itemToShareId: 0,
   itemsToDeleteIds: [],
   infoItemId: 0,
+  viewMode: FileViewMode.List,
   sortFunction: null,
   searchFunction: null
 };
@@ -78,6 +81,9 @@ export const storageSlice = createSlice({
     },
     clearNavigationStack: (state: StorageState) => {
       state.navigationStack = [];
+    },
+    setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
+      state.viewMode = action.payload;
     }
   },
   extraReducers
@@ -97,7 +103,8 @@ export const {
   setSortFunction,
   pushFolderToNavigation,
   popFolderFromNavigation,
-  clearNavigationStack
+  clearNavigationStack,
+  setViewMode
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

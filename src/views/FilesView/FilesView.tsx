@@ -47,12 +47,12 @@ interface FilesViewProps {
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   infoItemId: number;
+  viewMode: FileViewMode;
   sortFunction: ((a: any, b: any) => number) | null;
   dispatch: AppDispatch;
 }
 
 interface FilesViewState {
-  viewMode: FileViewMode;
   email: string;
   isAuthorized: boolean;
   isTeam: boolean;
@@ -69,7 +69,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     super(props);
 
     this.state = {
-      viewMode: FileViewMode.List,
       email: '',
       isAuthorized: false,
       isTeam: false,
@@ -80,11 +79,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
       isAdmin: true,
       isMember: false
     };
-
-    this.onViewModeButtonClicked = this.onViewModeButtonClicked.bind(this);
-    this.onCreateFolderButtonClicked = this.onCreateFolderButtonClicked.bind(this);
-    this.onBulkDownloadButtonClicked = this.onBulkDownloadButtonClicked.bind(this);
-    this.onBulkDeleteButtonClicked = this.onBulkDeleteButtonClicked.bind(this);
   }
 
   moveEvent = {};
@@ -124,33 +118,33 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     return folderService.createFolder(!!user.teams, currentFolderId, folderName);
   }
 
-  onViewModeButtonClicked(): void {
-    const viewMode: FileViewMode = this.state.viewMode === FileViewMode.List ?
+  onViewModeButtonClicked = (): void => {
+    const viewMode: FileViewMode = this.props.viewMode === FileViewMode.List ?
       FileViewMode.Grid :
       FileViewMode.List;
 
-    this.setState({ viewMode });
+    this.props.dispatch(storageActions.setViewMode(viewMode));
   }
 
-  onCreateFolderButtonClicked() {
+  onCreateFolderButtonClicked = () => {
     this.props.dispatch(
       uiActions.setIsCreateFolderDialogOpen(true)
     );
   }
 
-  onBulkDownloadButtonClicked() {
+  onBulkDownloadButtonClicked = () => {
     console.log('on bulk download button clicked');
   }
 
-  onBulkDeleteButtonClicked() {
+  onBulkDeleteButtonClicked = () => {
     console.log('on bulk delete button clicked!');
   }
 
-  onPreviousPageButtonClicked(): void {
+  onPreviousPageButtonClicked = (): void => {
     console.log('previous page button clicked!');
   }
 
-  onNextPageButtonClicked(): void {
+  onNextPageButtonClicked = (): void => {
     console.log('next page button clicked!');
   }
 
@@ -694,8 +688,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   };
 
   render(): JSX.Element {
-    const { isLoadingItems, infoItemId } = this.props;
-    const { viewMode } = this.state;
+    const { isLoadingItems, infoItemId, viewMode } = this.props;
     const viewModesIcons = {
       [FileViewMode.List]: iconService.getIcon(IconType.MosaicView),
       [FileViewMode.Grid]: iconService.getIcon(IconType.ListView)
@@ -786,5 +779,6 @@ export default connect(
     isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
     isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
     infoItemId: state.storage.infoItemId,
+    viewMode: state.storage.viewMode,
     sortFunction: state.storage.sortFunction
   }))(FilesView);

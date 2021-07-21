@@ -39,17 +39,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       dirtyName: '',
       nameInputRef: React.createRef()
     };
-
-    this.onNameBlurred = this.onNameBlurred.bind(this);
-    this.onNameChanged = this.onNameChanged.bind(this);
-    this.onEnterKeyPressed = this.onEnterKeyPressed.bind(this);
-    this.onRenameButtonClicked = this.onRenameButtonClicked.bind(this);
-    this.onDownloadButtonClicked = this.onDownloadButtonClicked.bind(this);
-    this.onShareButtonClicked = this.onShareButtonClicked.bind(this);
-    this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
-    this.onDeleteButtonClicked = this.onDeleteButtonClicked.bind(this);
-    this.onSelectCheckboxChanged = this.onSelectCheckboxChanged.bind(this);
-    this.onItemDoubleClicked = this.onItemDoubleClicked.bind(this);
   }
 
   get nameNode(): JSX.Element {
@@ -106,9 +95,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onNameDoubleClicked = (): void => {
+  onNameDoubleClicked = (e: MouseEvent): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
+
+    e.stopPropagation();
 
     this.setState(
       { isEditingName: true, dirtyName: item.name },
@@ -116,21 +107,21 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     );
   }
 
-  onNameBlurred(): void {
+  onNameBlurred = (): void => {
     this.setState({ isEditingName: false });
   }
 
-  onNameChanged(e: any): void {
+  onNameChanged = (e: any): void => {
     this.setState({ dirtyName: e.target.value });
   }
 
-  onEnterKeyPressed(e: React.KeyboardEvent): void {
+  onEnterKeyPressed = (e: React.KeyboardEvent): void => {
     if (e.key === 'Enter') {
       this.confirmNameChange();
     }
   }
 
-  onSelectCheckboxChanged(e: any) {
+  onSelectCheckboxChanged = (e: any): void => {
     const { item, dispatch } = this.props;
 
     e.target.checked ?
@@ -138,7 +129,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       dispatch(deselectItem(item.name));
   }
 
-  onRenameButtonClicked(): void {
+  onRenameButtonClicked = (): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
 
@@ -148,28 +139,28 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     );
   }
 
-  onDownloadButtonClicked(): void {
+  onDownloadButtonClicked = (): void => {
     downloadService.downloadFile(this.props.item);
   }
 
-  onShareButtonClicked(): void {
+  onShareButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
     dispatch(setItemToShare(item.id));
   }
 
-  onInfoButtonClicked(): void {
+  onInfoButtonClicked = (): void => {
     this.props.dispatch(setInfoItem(this.props.item.id));
   }
 
-  onDeleteButtonClicked(): void {
+  onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
     dispatch(setItemsToDelete([item.id]));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
-  onItemDoubleClicked(): void {
+  onItemDoubleClicked = (): void => {
     const { dispatch, item } = this.props;
 
     if (item.isFolder) {
