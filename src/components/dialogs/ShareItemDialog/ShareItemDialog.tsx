@@ -1,5 +1,4 @@
 import React from 'react';
-import Popup from 'reactjs-popup';
 import ClickToSelect from '@mapbox/react-click-to-select';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,34 +6,42 @@ import copy from 'copy-to-clipboard';
 import { clearTimeout, setTimeout } from 'timers';
 import { connect } from 'react-redux';
 
-import CloseIcon from '../../../assets/Dashboard-Icons/close-tab.svg';
-import FolderBlueIcon from '../../../assets/Folders/Folder-Blue.svg';
 import { getHeaders } from '../../../lib/auth';
 
 import { RootState } from '../../../store';
 import { UserSettings } from '../../../models/interfaces';
 import history from '../../../lib/history';
 
-import './SharePopup.scss';
+import './ShareItemDialog.scss';
+import BaseDialog from '../BaseDialog/BaseDialog';
 
-interface SharePopupProps {
+interface ShareItemDialogProps {
   item: any;
   open: boolean;
   user: UserSettings;
   onClose: () => void;
 }
 
-interface SharePopupState {
+interface ShareItemDialogState {
   link: string | null;
   views: number;
   animationCss: string;
 }
 
-class SharePopup extends React.Component<SharePopupProps, SharePopupState> {
+class ShareItemDialog extends React.Component<ShareItemDialogProps, ShareItemDialogState> {
   state = {
     link: null,
     views: 10,
     animationCss: ''
+  }
+
+  timeout: NodeJS.Timeout = setTimeout(() => { }, 0);
+
+  get itemFullName(): string {
+    const { item } = this.props;
+    const itemExtension: string = item.type ? `.${item.type}` : '';
+
+    return `${item.name}${itemExtension}`;
   }
 
   componentDidMount() {
@@ -84,7 +91,6 @@ class SharePopup extends React.Component<SharePopupProps, SharePopupState> {
     });
   }
 
-  timeout: NodeJS.Timeout = setTimeout(() => { }, 0);
   handleChange(e) {
     if (this.state.link) {
       this.setState({ link: null });
@@ -119,72 +125,56 @@ class SharePopup extends React.Component<SharePopupProps, SharePopupState> {
     });
   }
 
+  onCopyButtonClicked = (): void => {
+    this.setState({ animationCss: 'copy-effect' }, () => {
+      setTimeout(() => {
+        this.setState({ animationCss: '' });
+      }, 1000);
+    });
+
+    if (this.state.link) {
+      copy('Hello,\nHow are things going? I’m using Internxt Drive, a secure, simple, private and eco-friendly cloud storage service https://internxt.com/drive\nI wanted to share a file with you through this direct secure link: ' + this.state.link + '');
+    }
+  }
+
   render(): JSX.Element {
-    const fileType = this.props.item.isFolder ? '' : this.props.item.type.toUpperCase();
-    const fileName = this.props.item.isFolder ? this.props.item.name : `${this.props.item.name}.${this.props.item.type}`;
+    const { item, open } = this.props;
+    const fileType = item.isFolder ? '' : item.type.toUpperCase();
+    const fileName = item.isFolder ? item.name : `${item.name}.${item.type}`;
 
-    return (<Popup open={this.props.open} onClose={this.props.onClose}>
-      <div className="ShareContainer">
-
-        <div className="ShareHeader">
+    return (<BaseDialog title={this.itemFullName} open={open} onClose={this.props.onClose}>
+      <div>
+        <div className="text-sm text-center">
           <div>
-            <div className={this.props.item.isFolder ? 'Icon-image' : 'Icon'}>
-              {
-                this.props.item.isFolder ?
-                  <img src={FolderBlueIcon} className="Folder" alt="Folder" />
-                  : <div className="Extension">{fileType}</div>
-              }
-
-            </div>
-          </div>
-          <div className="ShareName"><p>{fileName}</p></div>
-          <div className="ShareClose"><img src={CloseIcon} onClick={e => {
-            this.props.onClose();
-          }} alt="Close" /></div>
-        </div>
-
-        <div className="ShareBody">
-          <div>
-            Share your Drive {this.props.item.isFolder ? 'folder' : 'file'} with this private link. Or enter
+            Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link. Or enter
             the number of times you'd like the link to be valid:&nbsp;&nbsp;
-            <input type="number" defaultValue={this.state.views} size={3}
-              step="1"
-              min="1"
-              onChange={this.handleChange.bind(this)}
-              style={{
-                width: '50px',
-                display: 'inline',
-                border: 'none',
-                color: '#5c6066',
-                backgroundColor: '#f8f9fa',
-                textAlign: 'center',
-                borderRadius: '3.9px',
-                appearance: 'textfield'
-              }}>
-            </input>
           </div>
         </div>
 
-        <div className="ShareFooter">
+        <div className="flex justify-center p-5">
+          <input
+            onChange={this.handleChange.bind(this)}
+            type="number"
+            defaultValue={this.state.views} size={3}
+            step="1"
+            min="1"
+            className="w-14"
+          />
+        </div>
+
+        <div className="flex justify-center items-center">
           <ClickToSelect containerElement="div">
             <p>{this.state.link == null ? 'Loading...' : this.state.link}</p>
           </ClickToSelect>
-          <div className="ShareCopy">
-            <a href="# " className={this.state.animationCss} style={{ opacity: this.state.animationCss === '' ? 0 : 1 }} >Copy</a>
-            <a href="# " onClick={(e: any) => {
-              this.setState({ animationCss: 'copy-effect' }, () => {
-                setTimeout(() => {
-                  this.setState({ animationCss: '' });
-                }, 1000);
-              });
-              if (this.state.link) {
-                copy('Hello,\nHow are things going? I’m using Internxt Drive, a secure, simple, private and eco-friendly cloud storage service https://internxt.com/drive\nI wanted to share a file with you through this direct secure link: ' + this.state.link + '');
-              }
-            }}>Copy</a>
+          <div>
+            <button className="secondary" onClick={this.onCopyButtonClicked}>Copy</button>
+            <a href="# "
+              className={`pointer-events-none relative opacity-0 -left-11 ${this.state.animationCss}`}
+            >Copy</a>
           </div>
         </div>
       </div>
-    </Popup>
+    </BaseDialog>
     );
   }
 }
@@ -192,4 +182,4 @@ class SharePopup extends React.Component<SharePopupProps, SharePopupState> {
 export default connect(
   (state: RootState) => ({
     user: state.user.user
-  }))(SharePopup);
+  }))(ShareItemDialog);

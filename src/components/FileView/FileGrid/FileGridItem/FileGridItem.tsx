@@ -3,7 +3,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
 import iconService, { IconType } from '../../../../services/icon.service';
-import { selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem } from '../../../../store/slices/storageSlice';
+import { setItemToShare, setItemsToDelete, setInfoItem, storageThunks, setCurrentFolderId } from '../../../../store/slices/storage';
 
 import dateService from '../../../../services/date.service';
 
@@ -14,7 +14,7 @@ import { AppDispatch, RootState } from '../../../../store';
 import { connect } from 'react-redux';
 import { UserSettings } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
-import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/uiSlice';
+import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
 interface FileGridItemProps {
   user: UserSettings;
@@ -40,7 +40,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       nameInputRef: React.createRef()
     };
 
-    this.onNameDoubleClicked = this.onNameDoubleClicked.bind(this);
     this.onNameBlurred = this.onNameBlurred.bind(this);
     this.onNameChanged = this.onNameChanged.bind(this);
     this.onEnterKeyPressed = this.onEnterKeyPressed.bind(this);
@@ -49,6 +48,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
     this.onDeleteButtonClicked = this.onDeleteButtonClicked.bind(this);
     this.onShareButtonClicked = this.onShareButtonClicked.bind(this);
+    this.onItemDoubleClicked = this.onItemDoubleClicked.bind(this);
   }
 
   get nameNode(): JSX.Element {
@@ -80,11 +80,15 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
         if (item.isFolder) {
           folderService.updateMetaData(item.id, data)
             .then(() => {
-              // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+              this.props.dispatch(
+                storageThunks.fetchFolderContentThunk()
+              );
             });
         } else {
           fileService.updateMetaData(item.fileId, data).then(() => {
-            // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+            this.props.dispatch(
+              storageThunks.fetchFolderContentThunk()
+            );
           });
         }
       }
@@ -95,7 +99,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     }
   }
 
-  onNameDoubleClicked(): void {
+  onNameDoubleClicked = (): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
 
@@ -107,7 +111,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
   onNameBlurred(): void {
     this.setState({ isEditingName: false });
-    console.log('name blurred!');
   }
 
   onNameChanged(e: any): void {
@@ -151,11 +154,17 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
+  onItemDoubleClicked(): void {
+    const { dispatch, item } = this.props;
+
+    dispatch(storageThunks.goToFolderThunk(item.id));
+  }
+
   render() {
     const { item } = this.props;
 
     return (
-      <div className="group file-grid-item">
+      <div className="group file-grid-item" onDoubleClick={this.onItemDoubleClicked}>
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
             <img alt="" className="m-auto" src={iconService.getIcon(IconType.Actions)} />

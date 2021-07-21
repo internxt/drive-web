@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { getIcon, IconType } from '../../../services/icon.service';
 
 import './BaseDialog.scss';
@@ -6,7 +7,7 @@ interface BaseDialogProps {
   title: string;
   open: boolean;
   onClose: () => void;
-  children: JSX.Element[];
+  children: ReactNode;
 }
 
 const BaseDialog = ({
@@ -22,16 +23,13 @@ const BaseDialog = ({
       <div className={`${open ? 'block' : 'hidden'} z-40 absolute opacity-80 bg-m-neutral-100 w-full h-full`}></div>
 
       {/* PANEL */}
-      <div className={`dialog-panel ${open ? 'block' : 'hidden'} relative z-50 rounded-lg px-7 py-4 bg-white text-xs`}>
-        <div className='flex items-center justify-center w-full'>
-          <span className='text-neutral-90 font-semibold text-xs'>{title}</span>
-
-          <img
-            src={getIcon(IconType.CrossBlue)}
-            alt=""
-            className='dialog-close-button absolute mr-5 right-0 cursor-pointer'
-            onClick={onClose}
-          />
+      <div className={`base-dialog-panel ${open ? 'block' : 'hidden'} relative z-50 rounded-lg p-8 bg-white text-xs`}>
+        <div className='flex items-center justify-center w-full mb-4'>
+          <div className="w-1/6"></div>
+          <span className='text-center w-4/6 flex-grow text-neutral-90 text-base'>{title}</span>
+          <div className="w-1/6 cursor-pointer" onClick={onClose}>
+            <img src={getIcon(IconType.CrossBlue)} alt="" className="ml-auto" />
+          </div>
         </div>
         {children}
       </div>

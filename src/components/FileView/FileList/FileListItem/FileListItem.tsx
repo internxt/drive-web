@@ -9,12 +9,12 @@ import './FileListItem.scss';
 import dateService from '../../../../services/date.service';
 import iconService, { IconType } from '../../../../services/icon.service';
 import { AppDispatch, RootState } from '../../../../store';
-import { deleteItemsThunk, selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem } from '../../../../store/slices/storageSlice';
+import { selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem, storageThunks, setCurrentFolderId } from '../../../../store/slices/storage';
 import downloadService from '../../../../services/download.service';
 import { UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
-import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/uiSlice';
+import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
 interface FileListItemProps {
   user: UserSettings;
@@ -40,7 +40,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       nameInputRef: React.createRef()
     };
 
-    this.onNameDoubleClicked = this.onNameDoubleClicked.bind(this);
     this.onNameBlurred = this.onNameBlurred.bind(this);
     this.onNameChanged = this.onNameChanged.bind(this);
     this.onEnterKeyPressed = this.onEnterKeyPressed.bind(this);
@@ -50,6 +49,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
     this.onDeleteButtonClicked = this.onDeleteButtonClicked.bind(this);
     this.onSelectCheckboxChanged = this.onSelectCheckboxChanged.bind(this);
+    this.onItemDoubleClicked = this.onItemDoubleClicked.bind(this);
   }
 
   get nameNode(): JSX.Element {
@@ -78,7 +78,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   confirmNameChange() {
-    const { user, item, currentFolderId } = this.props;
+    const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
     const data = JSON.stringify({ metadata: { itemName: dirtyName } });
 
@@ -87,11 +87,15 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         if (item.isFolder) {
           folderService.updateMetaData(item.id, data)
             .then(() => {
-              // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+              this.props.dispatch(
+                storageThunks.fetchFolderContentThunk()
+              );
             });
         } else {
           fileService.updateMetaData(item.fileId, data).then(() => {
-            // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+            this.props.dispatch(
+              storageThunks.fetchFolderContentThunk()
+            );
           });
         }
       }
@@ -102,7 +106,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onNameDoubleClicked(): void {
+  onNameDoubleClicked = (): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
 
@@ -165,11 +169,23 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
+  onItemDoubleClicked(): void {
+    const { dispatch, item } = this.props;
+
+    if (item.isFolder) {
+      dispatch(setCurrentFolderId(item.id));
+      dispatch(storageThunks.fetchFolderContentThunk());
+    }
+  }
+
   render(): ReactNode {
     const { item } = this.props;
 
     return (
-      <tr className="group file-list-item hover:bg-blue-10 border-b border-l-neutral-30 text-sm">
+      <tr
+        className="group file-list-item hover:bg-blue-10 border-b border-l-neutral-30 text-sm"
+        onDoubleClick={this.onItemDoubleClicked}
+      >
         <td className="px-4">
           <input type="checkbox" checked={this.isSelected} onChange={this.onSelectCheckboxChanged} />
         </td>

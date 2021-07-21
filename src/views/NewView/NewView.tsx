@@ -15,7 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import queryString, { ParsedQuery } from 'query-string';
 import { initializeUser } from '../../services/auth.service';
 import { generateNewKeys } from '../../services/pgp.service';
-import { setUser } from '../../store/slices/userSlice';
+import { setUser } from '../../store/slices/user';
 import { UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
 

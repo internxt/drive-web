@@ -79,7 +79,7 @@ function extendUIPropertiesOf(contentFolder: IContentFolder) {
   return { newCommanderFolders: folders, newCommanderFiles: contentFolder.files };
 }
 
-export async function fetchFolderContent(rootId: string, isTeam: boolean): Promise<any> {
+export async function fetchFolderContent(rootId: number, isTeam: boolean): Promise<any> {
   try {
     const response: Response = await fetch(`/api/storage/folder/${rootId}`, {
       method: 'get',

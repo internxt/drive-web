@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import userReducer from './slices/userSlice';
-import networkReducer from './slices/networkSlice';
-import storageReducer from './slices/storageSlice';
-import uiReducer from './slices/uiSlice';
-import filesState from './slices/filesStateSlice';
+import userReducer from './slices/user';
+import networkReducer from './slices/network';
+import storageReducer from './slices/storage';
+import uiReducer from './slices/ui';
+import filesState from './slices/files';
 
 export const store = configureStore({
   reducer: {

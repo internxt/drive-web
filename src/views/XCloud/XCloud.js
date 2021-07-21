@@ -26,7 +26,6 @@ import closeTab from '../../assets/Dashboard-Icons/close-tab.svg';
 import FileLogger from '../../services/fileLogger';
 import FileLoggerModal from '../../components/FileLoggerModal/index';
 import { connect } from 'react-redux';
-import { addFileToHistory, updateFileStatus } from '../../store/slices/filesStateSlice';
 import { FileActionTypes, FileStatusTypes } from '../../models/enums';
 
 class XCloud extends React.Component {

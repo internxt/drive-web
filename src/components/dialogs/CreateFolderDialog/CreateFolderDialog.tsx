@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { createRef, useEffect, useState } from 'react';
 
 import { useAppDispatch } from '../../../store/hooks';
 import BaseDialog from '../BaseDialog/BaseDialog';
-import { setIsCreateFolderDialogOpen } from '../../../store/slices/uiSlice';
-
-import './CreateFolderDialog.scss';
+import { setIsCreateFolderDialogOpen } from '../../../store/slices/ui';
+import { storageThunks } from '../../../store/slices/storage';
 import folderService, { ICreatedFolder } from '../../../services/folder.service';
 import { toast } from 'react-toastify';
 import { UserSettings } from '../../../models/interfaces';
 import { connect } from 'react-redux';
 import { RootState } from '../../../store';
+
+import './CreateFolderDialog.scss';
 
 interface CreateFolderDialogProps {
   open: boolean;
@@ -23,6 +24,7 @@ const CreateFolderDialog = ({
   user
 }: CreateFolderDialogProps
 ) => {
+  const [inputRef] = useState(createRef<HTMLInputElement>());
   const dispatch = useAppDispatch();
   const [inputValue, setInputValue] = useState('');
   const onCancel = (): void => {
@@ -32,7 +34,7 @@ const CreateFolderDialog = ({
     if (inputValue && inputValue !== '') {
       folderService.createFolder(!!user.teams, currentFolderId, inputValue)
         .then((response: ICreatedFolder[]) => {
-          // this.getFolderContent(currentFolderId, false, true, isTeam);
+          dispatch(storageThunks.fetchFolderContentThunk());
           dispatch(setIsCreateFolderDialogOpen(false));
         }).catch((e) => {
           if (e.includes('already exists')) {
@@ -46,21 +48,31 @@ const CreateFolderDialog = ({
     }
   };
 
+  useEffect(() => {
+    open && inputRef.current?.focus();
+  }, [open, inputRef]);
+
   return (
     <BaseDialog title="Create folder" open={open} onClose={onCancel}>
-      <input className='w-full h-7 text-xs mt-4 text-blue-60'
-        placeholder="Enter folder name"
-        value={inputValue}
-        onChange={e => setInputValue(e.target.value)}
-        type="text" />
+      <div className="px-12">
+        <input
+          ref={inputRef}
+          className='w-full h-7 text-xs text-blue-60'
+          placeholder="Enter folder name"
+          value={inputValue}
+          onChange={e => setInputValue(e.target.value)}
+          type="text"
+          autoFocus
+        />
 
-      <div className='mt-3'>
-        <button onClick={onAccept} className='px-3 h-7 text-white font-light bg-blue-60 rounded-sm'>
-          Create
-        </button>
-        <button onClick={onCancel} className='text-blue-60 font-light ml-4'>
-          Cancel
-        </button>
+        <div className='flex justify-center mt-3'>
+          <button onClick={onCancel} className='secondary'>
+            Cancel
+          </button>
+          <button onClick={onAccept} className='primary ml-2'>
+              Create
+          </button>
+        </div>
       </div>
     </BaseDialog>
   );

@@ -176,6 +176,9 @@ code {
       @apply ring-0 focus:ring-1 focus:ring-blue-60;
     }
   }
+  input[type="number"] {
+    @apply appearance-none p-2 bg-l-neutral-30 text-center text-neutral-700;
+  }
 
   /* BUTTONS */
   button.primary,

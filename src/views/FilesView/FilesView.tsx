@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import _ from 'lodash';
@@ -6,8 +6,6 @@ import update from 'immutability-helper';
 import async from 'async';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import FileView from '../../components/FileView/FileView';
 
 import { removeAccents, getFilenameAndExt, renameFile, encryptFilename } from '../../lib/utils';
 
@@ -21,17 +19,25 @@ import { UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform } from '../../models/enums';
 
-import { userActions } from '../../store/slices/userSlice';
-import { storageActions } from '../../store/slices/storageSlice';
-import fileService from '../../services/file.service';
-import folderService from '../../services/folder.service';
-import { RootState } from '../../store';
+import { uiActions } from '../../store/slices/ui';
+import { storageThunks, storageActions } from '../../store/slices/storage';
+import folderService, { ICreatedFolder } from '../../services/folder.service';
+import { AppDispatch, RootState } from '../../store';
 
-import './DriveView.scss';
+import Breadcrumbs, { BreadcrumbItemData } from '../../components/Breadcrumbs/Breadcrumbs';
+import iconService, { IconType } from '../../services/icon.service';
+import FileActivity from '../../components/FileActivity/FileActivity';
+import { FileViewMode } from '../../components/FileView/models/enums';
+import FileList from '../../components/FileView/FileList/FileList';
+import FileGrid from '../../components/FileView/FileGrid/FileGrid';
+import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFileExplorer';
 
-interface DriveViewProps {
+import './FilesView.scss';
+
+interface FilesViewProps {
   user: UserSettings | any,
-  currentFolderId: number | null;
+  currentFolderId: number;
+  selectedItems: number[];
   isLoadingItems: boolean,
   currentItems: any[],
   selectedItemsIds: number[]
@@ -40,19 +46,13 @@ interface DriveViewProps {
   itemsToDeleteIds: number[];
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
+  infoItemId: number;
   sortFunction: ((a: any, b: any) => number) | null;
-  setUser: (user: UserSettings) => void,
-  setCurrentFolderId: (value: number) => void;
-  setCurrentFolderBucket: (value: string) => void;
-  setIsLoadingItems: (value: boolean) => void;
-  setItems: (items: any[]) => void;
-  selectItem: (itemId: number) => void;
-  resetSelectedItems: () => void;
-  setItemToShare: (itemId: number) => void;
-  setItemsToDelete: (itemsIds: number[]) => void;
+  dispatch: AppDispatch;
 }
 
-interface DriveViewState {
+interface FilesViewState {
+  viewMode: FileViewMode;
   email: string;
   isAuthorized: boolean;
   isTeam: boolean;
@@ -64,11 +64,12 @@ interface DriveViewState {
   isMember: boolean;
 }
 
-class DriveView extends Component<DriveViewProps, DriveViewState> {
-  constructor(props: DriveViewProps) {
+class FilesView extends Component<FilesViewProps, FilesViewState> {
+  constructor(props: FilesViewProps) {
     super(props);
 
     this.state = {
+      viewMode: FileViewMode.List,
       email: '',
       isAuthorized: false,
       isTeam: false,
@@ -79,57 +80,79 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
       isAdmin: true,
       isMember: false
     };
+
+    this.onViewModeButtonClicked = this.onViewModeButtonClicked.bind(this);
+    this.onCreateFolderButtonClicked = this.onCreateFolderButtonClicked.bind(this);
+    this.onBulkDownloadButtonClicked = this.onBulkDownloadButtonClicked.bind(this);
+    this.onBulkDeleteButtonClicked = this.onBulkDeleteButtonClicked.bind(this);
   }
 
   moveEvent = {};
 
+  get breadcrumbItems(): BreadcrumbItemData[] {
+    const items: BreadcrumbItemData[] = [];
+
+    items.push({
+      name: 'storage',
+      label: '',
+      icon: iconService.getIcon(IconType.BreadcrumbsStorage),
+      active: true
+    });
+    items.push({
+      name: 'folder-parent-name',
+      label: 'FolderParentName',
+      icon: iconService.getIcon(IconType.BreadcrumbsFolder),
+      active: false
+    });
+
+    return items;
+  }
+
+  get hasAnyItemSelected(): boolean {
+    return this.props.selectedItems.length > 0;
+  }
+
   componentDidMount = () => {
-    this.getFolderContent(this.props.user.root_folder_id);
-  };
+    this.props.dispatch(
+      storageThunks.fetchFolderContentThunk(this.props.user.root_folder_id)
+    );
+  }
 
-  getFolderContent = async (rootId, updateNamePath = true, showLoading = true, isTeam = false): Promise<any> => {
-    try {
-      this.props.setIsLoadingItems(true);
+  onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {
+    const { user, currentFolderId } = this.props;
 
-      await fileService.fetchWelcomeFile(isTeam);
-      const content = await folderService.fetchFolderContent(rootId, isTeam);
+    return folderService.createFolder(!!user.teams, currentFolderId, folderName);
+  }
 
-      this.props.resetSelectedItems();
+  onViewModeButtonClicked(): void {
+    const viewMode: FileViewMode = this.state.viewMode === FileViewMode.List ?
+      FileViewMode.Grid :
+      FileViewMode.List;
 
-      // Apply search function if is set
-      if (this.state.searchFunction) {
-        content.newCommanderFolders = content.newCommanderFolders.filter(this.state.searchFunction);
-        content.newCommanderFiles = content.newCommanderFiles.filter(this.state.searchFunction);
-      }
-      // Apply sort function if is set
-      if (this.props.sortFunction) {
-        content.newCommanderFolders.sort(this.props.sortFunction);
-        content.newCommanderFiles.sort(this.props.sortFunction);
-      }
+    this.setState({ viewMode });
+  }
 
-      this.props.setCurrentFolderId(content.contentFolders.id);
-      this.props.setItems(_.concat(content.newCommanderFolders, content.newCommanderFiles));
-      this.props.setIsLoadingItems(false);
-      this.props.setCurrentFolderBucket(content.contentFolders.bucket);
+  onCreateFolderButtonClicked() {
+    this.props.dispatch(
+      uiActions.setIsCreateFolderDialogOpen(true)
+    );
+  }
 
-      if (updateNamePath) {
-        // Only push path if it is not the same as actual path
-        const folderName = this.updateNamesPaths(this.props.user, content.contentFolders, this.state.namePath);
+  onBulkDownloadButtonClicked() {
+    console.log('on bulk download button clicked');
+  }
 
-        this.setState({
-          namePath: this.pushNamePath({
-            name: folderName,
-            id: content.contentFolders.id,
-            bucket: content.contentFolders.bucket,
-            id_team: content.contentFolders.id_team
-          }),
-          isAuthorized: true
-        });
-      }
-    } catch (err) {
-      toast.warn(err);
-    }
-  };
+  onBulkDeleteButtonClicked() {
+    console.log('on bulk delete button clicked!');
+  }
+
+  onPreviousPageButtonClicked(): void {
+    console.log('previous page button clicked!');
+  }
+
+  onNextPageButtonClicked(): void {
+    console.log('next page button clicked!');
+  }
 
   getTeamByUser = () => {
     return new Promise((resolve, reject) => {
@@ -171,7 +194,9 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
     }
 
     this.setState({ searchFunction: func });
-    this.getFolderContent(currentFolderId, false, true, this.state.isTeam);
+    this.props.dispatch(
+      storageThunks.fetchFolderContentThunk(currentFolderId)
+    );
   };
 
   folderNameExists = (folderName) => {
@@ -265,7 +290,9 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
         isFolder: true
       });
 
-      this.props.setItems(items);
+      this.props.dispatch(
+        storageActions.setItems(items)
+      );
     } else {
       newFolderName = this.getNewName(newFolderName);
     }
@@ -297,8 +324,9 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
 
   openFolder = (e): Promise<void> => {
     return new Promise((resolve) => {
-      console.log('getFolderContent 11');
-      this.getFolderContent(e, true, true, this.state.isTeam);
+      this.props.dispatch(
+        storageThunks.fetchFolderContentThunk(e)
+      );
       resolve();
     });
   };
@@ -382,7 +410,9 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
           );
           // update state for updating commander items list
 
-          this.props.setItems(items);
+          this.props.dispatch(
+            storageActions.setItems(items)
+          );
         }
 
         if (moveEvent.total === 0) {
@@ -501,6 +531,7 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
   };
 
   handleUploadFiles = async (files, parentFolderId, folderPath = null) => {
+    const dispatch = this.props.dispatch;
     const currentFolderId = this.props.currentFolderId;
 
     files = Array.from(files);
@@ -528,7 +559,7 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
       const fileNameExists = this.fileNameExists(file.name, file.type);
 
       if (parentFolderId === currentFolderId) {
-        this.props.setItems([...this.props.currentItems, file]);
+        dispatch(storageActions.setItems([...this.props.currentItems, file]));
 
         if (fileNameExists) {
           file.name = this.getNewName(file.name, file.type);
@@ -572,7 +603,7 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
               filesInFileExplorer[index].fileId = data.fileId;
               filesInFileExplorer[index].id = data.id;
 
-              this.props.setItems(filesInFileExplorer);
+              dispatch(storageActions.setItems(filesInFileExplorer));
             }
 
             if (res.status === 402) {
@@ -611,17 +642,21 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
   removeFileFromFileExplorer = (filename) => {
     const index = this.props.currentItems.findIndex((obj: any) => obj.name === filename);
 
-    if (index === -1) {
+    if (!~index) {
       // prevent undesired removals
       return;
     }
 
-    this.props.setItems(Array.from(this.props.currentItems).splice(index, 1));
+    this.props.dispatch(
+      storageActions.setItems(Array.from(this.props.currentItems).splice(index, 1))
+    );
   }
 
   uploadFile = (e) => {
     this.handleUploadFiles(e.target.files, undefined, undefined).then(() => {
-      this.getFolderContent(this.props.currentFolderId, false, false, this.state.isTeam);
+      this.props.dispatch(
+        storageThunks.fetchFolderContentThunk(this.props.currentFolderId)
+      );
     });
   }
 
@@ -631,7 +666,9 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
 
   folderTraverseUp() {
     this.setState(this.popNamePath(), () => {
-      this.getFolderContent(_.last(this.state.namePath).id, false, true, this.state.isTeam);
+      this.props.dispatch(
+        storageThunks.fetchFolderContentThunk(_.last(this.state.namePath).id)
+      );
     });
   }
 
@@ -656,9 +693,80 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
     this.setState({ rateLimitModal: false });
   };
 
-  render() {
+  render(): JSX.Element {
+    const { isLoadingItems, infoItemId } = this.props;
+    const { viewMode } = this.state;
+    const viewModesIcons = {
+      [FileViewMode.List]: iconService.getIcon(IconType.MosaicView),
+      [FileViewMode.Grid]: iconService.getIcon(IconType.ListView)
+    };
+    const viewModes = {
+      [FileViewMode.List]: <FileList />,
+      [FileViewMode.Grid]: <FileGrid />
+    };
+
     return (
-      <FileView />
+      <Fragment>
+        <div className="flex flex-grow">
+          <div className="flex-grow flex flex-col">
+            <div className="flex justify-between pb-4">
+              <div>
+                <span className="text-base font-semibold"> Drive </span>
+                <Breadcrumbs items={this.breadcrumbItems} />
+              </div>
+
+              <div className="flex">
+                <button className="primary mr-1 flex items-center">
+                  <img alt="" className="h-3 mr-2" src={iconService.getIcon(IconType.Upload)} /><span>Upload</span>
+                </button>
+                {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
+                  <img alt="" src={iconService.getIcon(IconType.CreateFolder)} />
+                </button> : null}
+                {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDownloadButtonClicked}>
+                  <img alt="" src={iconService.getIcon(IconType.DownloadItems)} />
+                </button> : null}
+                {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDeleteButtonClicked}>
+                  <img alt="" src={iconService.getIcon(IconType.DeleteItems)} />
+                </button> : null}
+                <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
+                  <img alt="" src={viewModesIcons[viewMode]} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-between flex-grow">
+              {isLoadingItems ?
+                <LoadingFileExplorer /> :
+                viewModes[viewMode]
+              }
+
+              {/* PAGINATION */}
+              {!isLoadingItems && (
+                <div className="bg-white px-4 h-12 flex justify-center items-center rounded-b-4px">
+                  <span className="text-sm w-1/3">Showing 15 items of 450</span>
+                  <div className="flex justify-center w-1/3">
+                    <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
+                      <img alt="" src={iconService.getIcon(IconType.PreviousPage)} />
+                    </div>
+                    <div className="pagination-button">
+                      1
+                    </div>
+                    <div onClick={this.onNextPageButtonClicked} className="pagination-button">
+                      <img alt="" src={iconService.getIcon(IconType.NextPage)} />
+                    </div>
+                  </div>
+                  <div className="w-1/3"></div>
+                </div>
+              )}
+            </div>
+
+          </div>
+
+          {
+            infoItemId ? <FileActivity /> : null
+          }
+        </div>
+      </Fragment>
     );
   }
 }
@@ -667,6 +775,7 @@ export default connect(
   (state: RootState) => ({
     isAuthenticated: state.user.isAuthenticated,
     user: state.user.user,
+    selectedItems: state.storage.selectedItems,
     currentFolderId: state.storage.currentFolderId,
     currentFolderBucket: state.storage.currentFolderBucket,
     isLoadingItems: state.storage.isLoading,
@@ -676,16 +785,6 @@ export default connect(
     itemsToDeleteIds: state.storage.itemsToDeleteIds,
     isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
     isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
+    infoItemId: state.storage.infoItemId,
     sortFunction: state.storage.sortFunction
-  }),
-  {
-    setUser: userActions.setUser,
-    setCurrentFolderId: storageActions.setCurrentFolderId,
-    setCurrentFolderBucket: storageActions.setCurrentFolderBucket,
-    setIsLoadingItems: storageActions.setIsLoading,
-    setItems: storageActions.setItems,
-    selectItem: storageActions.selectItem,
-    resetSelectedItems: storageActions.resetSelectedItems,
-    setItemToShare: storageActions.setItemToShare,
-    setItemsToDelete: storageActions.setItemsToDelete
-  })(DriveView);
+  }))(FilesView);

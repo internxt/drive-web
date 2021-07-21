@@ -1,7 +1,7 @@
 import { ComponentClass, FunctionComponent } from 'react';
 
 import NewView from './NewView/NewView';
-import DriveView from './DriveView/DriveView';
+import FilesView from './FilesView/FilesView';
 import StorageView from './StorageView/StorageView';
 import NotFoundView from './NotFoundView/NotFoundView';
 import ReferredView from './ReferredView/ReferredVIew';
@@ -24,8 +24,8 @@ const views: Array<{ id: string, component: string | FunctionComponent<any> | Co
   { id: 'appsumo', component: NewView, componentProps: { isNewUser: false } },
   { id: 'login', component: SignInView },
   { id: 'invite', component: ReferredView },
-  { id: 'drive', component: DriveView },
-  { id: 'recents', component: DriveView },
+  { id: 'drive', component: FilesView },
+  { id: 'recents', component: FilesView },
   { id: 'storage', component: StorageView },
   { id: 'account', component: AccountView },
   { id: 'teams', component: TeamsView },

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '..';
-import { FileStatusTypes, ILogger, ILoggerFile } from '../../models/interfaces';
-import { IActionUpdateFileLoggerEntry } from '../../models/reduxActions';
+import { RootState } from '../..';
+import { ILogger, ILoggerFile } from '../../../models/interfaces';
+import { IActionUpdateFileLoggerEntry } from '../../../models/reduxActions';
 
 interface FilesState {
   fileHistory: ILogger

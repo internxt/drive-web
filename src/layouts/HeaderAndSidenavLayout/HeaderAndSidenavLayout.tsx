@@ -5,11 +5,11 @@ import CreateFolderDialog from '../../components/dialogs/CreateFolderDialog/Crea
 import DeleteItemsDialog from '../../components/dialogs/DeleteItemsDialog/DeleteItemsDialog';
 
 import FileLogger from '../../components/FileLoggerModal';
-import SharePopup from '../../components/popups/SharePopup/SharePopup';
+import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
 import SideNavigator from '../../components/SideNavigator/SideNavigator';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
-import { setItemToShare } from '../../store/slices/storageSlice';
+import { setItemToShare } from '../../store/slices/storage';
 
 interface HeaderAndSidenavLayoutProps {
   children: JSX.Element
@@ -22,14 +22,14 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isCreateFolderDialogOpen: boolean = useSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const isDeleteItemsDialogOpen: boolean = useSelector((state: RootState) => state.ui.isDeleteItemsDialogOpen);
   const currentItems: any[] = useSelector((state: RootState) => state.storage.items);
-  const itemToShareId: number = useSelector((state: RootState) => state.storage.infoItemId);
+  const itemToShareId: number = useSelector((state: RootState) => state.storage.itemToShareId);
   const itemToShare: any = currentItems.find(item => item.id === itemToShareId);
 
   return isAuthenticated ? (
     <div className="h-auto min-h-full flex flex-col">
 
-      { !!itemToShareId &&
-        <SharePopup
+      { !!itemToShare &&
+        <ShareItemDialog
           open={!!itemToShareId}
           item={itemToShare}
           onClose={() => dispatch(setItemToShare(0))}

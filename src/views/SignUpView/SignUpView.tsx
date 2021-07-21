@@ -14,7 +14,7 @@ import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
 import AuthButton from '../../components/Buttons/AuthButton';
 import { useAppDispatch } from '../../store/hooks';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
-import { setUser } from '../../store/slices/userSlice';
+import { setUser } from '../../store/slices/user';
 import { getHeaders } from '../../lib/auth';
 import AesUtils from '../../lib/AesUtil';
 import { generateNewKeys } from '../../services/pgp.service';
