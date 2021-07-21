@@ -139,7 +139,7 @@ export function trackFileShare(): void {
 export function identify(user: any, email: string): void {
   window.analytics.identify(user.uuid, {
     email,
-    platform: 'web',
+    platform: DevicePlatform.Web,
     referrals_credit: user.credit,
     referrals_count: Math.floor(user.credit / 5),
     createdAt: user.createdAt
@@ -148,6 +148,10 @@ export function identify(user: any, email: string): void {
 
 export function trackUserResetPasswordRequest(): void {
   window.analytics.track(AnalyticsTrack.UserResetPasswordRequest);
+}
+
+export function trackFileUploadBucketIdUndefined(payload: { email: string, platform: DevicePlatform}): void {
+  window.analytics.track(AnalyticsTrack.FileUploadBucketIdUndefined, payload);
 }
 
 const analyticsService = {
@@ -175,7 +179,8 @@ const analyticsService = {
   trackDeleteWelcomeFile,
   trackFileShare,
   signInAttempted,
-  trackUserResetPasswordRequest
+  trackUserResetPasswordRequest,
+  trackFileUploadBucketIdUndefined
 };
 
 export default analyticsService;

@@ -1,4 +1,4 @@
-import { Component, Fragment } from 'react';
+import { createRef, Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import _ from 'lodash';
@@ -53,6 +53,7 @@ interface FilesViewProps {
 }
 
 interface FilesViewState {
+  fileInputRef: React.RefObject<HTMLInputElement>;
   email: string;
   isAuthorized: boolean;
   isTeam: boolean;
@@ -69,6 +70,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     super(props);
 
     this.state = {
+      fileInputRef: createRef(),
       email: '',
       isAuthorized: false,
       isTeam: false,
@@ -116,6 +118,10 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     const { user, currentFolderId } = this.props;
 
     return folderService.createFolder(!!user.teams, currentFolderId, folderName);
+  }
+
+  onUploadButtonClicked = (): void => {
+    this.state.fileInputRef.current?.click();
   }
 
   onViewModeButtonClicked = (): void => {
@@ -420,11 +426,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     });
   };
 
-  openUploadFile = () => {
-    $('input#uploadFileControl').val(null);
-    $('input#uploadFileControl').trigger('click');
-  };
-
   trackFileUploadStart = (file, parentFolderId) => {
     analyticsService.trackFileUploadStart({
       file_size: file.size,
@@ -689,6 +690,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   render(): JSX.Element {
     const { isLoadingItems, infoItemId, viewMode } = this.props;
+    const { fileInputRef } = this.state;
     const viewModesIcons = {
       [FileViewMode.List]: iconService.getIcon(IconType.MosaicView),
       [FileViewMode.Grid]: iconService.getIcon(IconType.ListView)
@@ -709,7 +711,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
               </div>
 
               <div className="flex">
-                <button className="primary mr-1 flex items-center">
+                <button className="primary mr-1 flex items-center" onClick={this.onUploadButtonClicked}>
                   <img alt="" className="h-3 mr-2" src={iconService.getIcon(IconType.Upload)} /><span>Upload</span>
                 </button>
                 {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
@@ -752,6 +754,8 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                 </div>
               )}
             </div>
+
+            <input className="hidden" ref={fileInputRef} type="file" onChange={this.uploadFile} multiple={true} />
 
           </div>
 

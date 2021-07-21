@@ -49,7 +49,10 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     return (
       <Fragment>
         <input ref={nameInputRef} className={`${isEditingName ? 'block' : 'hidden'} dense`} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
-        <span onDoubleClick={this.onNameDoubleClicked} className={`${ṣpanDisplayClass} text-neutral-900 text-sm px-1`} >{item.name}</span>
+        <span
+          onDoubleClick={this.onNameDoubleClicked}
+          className={`${ṣpanDisplayClass} whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1`}
+        >{item.name}</span>
       </Fragment>
     );
   }

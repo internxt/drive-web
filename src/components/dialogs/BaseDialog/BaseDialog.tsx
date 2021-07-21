@@ -18,7 +18,7 @@ const BaseDialog = ({
 }: BaseDialogProps
 ): JSX.Element => {
   return (
-    <div className={`${open ? 'flex' : 'hidden'} absolute flex align-middle justify-center w-full h-full`}>
+    <div className={`${open ? 'flex' : 'hidden'} fixed flex align-middle justify-center w-full h-full`}>
       {/* BACKGROUND */}
       <div className={`${open ? 'block' : 'hidden'} z-40 absolute opacity-80 bg-m-neutral-100 w-full h-full`}></div>
 

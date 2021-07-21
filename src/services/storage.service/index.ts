@@ -1,5 +1,7 @@
-import fileService from './file.service';
-import folderService from './folder.service';
+import fileService from '../file.service';
+import folderService from '../folder.service';
+import upload from './storage-upload.service';
+import name from './storage-name.service';
 
 export function deleteItems(selectedItems: any[]): Promise<any> {
   return Promise.all(_.map(selectedItems, (v) => {
@@ -23,7 +25,9 @@ export function deleteItems(selectedItems: any[]): Promise<any> {
 }
 
 const storageService = {
-  deleteItems
+  deleteItems,
+  upload,
+  name
 };
 
 export default storageService;

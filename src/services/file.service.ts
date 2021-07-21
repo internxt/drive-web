@@ -39,7 +39,7 @@ export async function deleteWelcomeFile(isTeam: boolean): Promise<Response> {
 
 export function updateMetaData(itemId: string, data: any): Promise<void> {
   const user = localStorageService.getUser();
-  const isTeam = localStorageService.getUser().teams;
+  const isTeam = user?.teams;
 
   return fetch(`/api/storage/file/${itemId}/meta`, {
     method: 'post',
@@ -72,17 +72,12 @@ export function deleteFile(fileData: any): Promise<void> {
   });
 }
 
-export function uploadFile(): Promise<void> {
-
-}
-
 const fileService = {
   fetchWelcomeFile,
   deleteWelcomeFile,
   openWelcomeFile,
   updateMetaData,
-  deleteFile,
-  uploadFile
+  deleteFile
 };
 
 export default fileService;
