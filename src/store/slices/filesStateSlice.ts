@@ -84,7 +84,7 @@ export const filesStateSlice = createSlice({
 
 export const {
   updateFileStatusLogger,
-  clearFileLogger
+  clearFileLoggerStatus
 } = filesStateSlice.actions;
 export const selectLoggerFiles = (state: RootState) => state.filesState.fileHistory;
 export default filesStateSlice.reducer;
