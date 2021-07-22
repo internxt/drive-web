@@ -67,3 +67,11 @@ export interface ILoggerFile {
   isFolder: boolean,
   errorMessage?: string
 }
+
+export interface IActionUpdateFileLoggerEntry {
+  filePath: string,
+  action?: FileActionTypes,
+  status?: FileStatusTypes,
+  progress?: number,
+  errorMessage?: string
+}

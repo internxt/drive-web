@@ -1,19 +1,14 @@
 import { createRef, Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import $ from 'jquery';
 import _ from 'lodash';
-import update from 'immutability-helper';
-import async from 'async';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { removeAccents, getFilenameAndExt, renameFile, encryptFilename } from '../../lib/utils';
+import { removeAccents } from '../../lib/utils';
 
 import { getHeaders } from '../../lib/auth';
 
 import localStorageService from '../../services/localStorage.service';
-import { Network, getEnvironmentConfig } from '../../lib/network';
-import history from '../../lib/history';
 
 import { UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
@@ -33,6 +28,7 @@ import FileGrid from '../../components/FileView/FileGrid/FileGrid';
 import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFileExplorer';
 
 import './FilesView.scss';
+import { checkFileNameExists, getNewFolderName } from '../../services/storage.service/storage-name.service';
 
 interface FilesViewProps {
   user: UserSettings | any,
@@ -48,6 +44,7 @@ interface FilesViewProps {
   isDeleteItemsDialogOpen: boolean;
   infoItemId: number;
   viewMode: FileViewMode;
+  namePath: any[];
   sortFunction: ((a: any, b: any) => number) | null;
   dispatch: AppDispatch;
 }
@@ -55,11 +52,8 @@ interface FilesViewProps {
 interface FilesViewState {
   fileInputRef: React.RefObject<HTMLInputElement>;
   email: string;
-  isAuthorized: boolean;
-  isTeam: boolean;
   token: string;
   rateLimitModal: boolean;
-  namePath: any[];
   searchFunction: any;
   isAdmin: boolean;
   isMember: boolean;
@@ -72,11 +66,8 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     this.state = {
       fileInputRef: createRef(),
       email: '',
-      isAuthorized: false,
-      isTeam: false,
       token: '',
       rateLimitModal: false,
-      namePath: [],
       searchFunction: null,
       isAdmin: true,
       isMember: false
@@ -122,6 +113,18 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   onUploadButtonClicked = (): void => {
     this.state.fileInputRef.current?.click();
+  }
+
+  onUploadInputChanged = (e) => {
+    const { dispatch } = this.props;
+
+    dispatch(
+      storageThunks.uploadItemsThunk({ files: Array.from(e.target.files) })
+    ).then(() => {
+      dispatch(
+        storageThunks.fetchFolderContentThunk()
+      );
+    });
   }
 
   onViewModeButtonClicked = (): void => {
@@ -199,102 +202,29 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     );
   };
 
-  folderNameExists = (folderName) => {
-    return this.props.currentItems.find(
-      (item: any) => item.isFolder && item.name === folderName
-    );
-  };
-
-  fileNameExists = (fileName, type) => {
-    return this.props.currentItems.some(
-      (item: any) => !item.isFolder && item.name === fileName && item.type === type
-    );
-  };
-
-  getNextNewName = (originalName, i) => `${originalName} (${i})`;
-
-  getNewFolderName = (name) => {
-    let exists = false;
-
-    let i = 1;
-    const currentFolder = this.props.currentItems.filter((item: any) => item.isFolder);
-
-    let finalName = name;
-
-    const foldName = name.replace(/ /g, '');
-
-    currentFolder.map((folder: any) => {
-      const fold = folder.name.replace(/ /g, '');
-
-      if (foldName === fold) {
-        exists = true;
-      } else {
-        exists = false;
-        finalName = name;
-      }
-    });
-
-    while (exists) {
-      const newName = this.getNextNewName(name, i);
-
-      exists = currentFolder.find((folder: any) => folder.name === newName) !== undefined;
-      i += 1;
-      finalName = newName;
-    }
-
-    return finalName;
-  };
-
-  getNewFileName = (name, type) => {
-    let exists = true;
-
-    let i = 1;
-
-    let finalName;
-    const currentFiles = this.props.currentItems.filter((item: any) => !item.isFolder);
-
-    while (exists) {
-      const newName = this.getNextNewName(name, i);
-
-      exists = currentFiles.find((file: any) => file.name === newName && file.type === type) !== undefined;
-      finalName = newName;
-      i += 1;
-    }
-
-    return finalName;
-  };
-
-  getNewName = (name, type = undefined) => {
-    // if has type is file
-    if (type) {
-      return this.getNewFileName(name, type);
-    }
-
-    return this.getNewFolderName(name);
-  };
-
   createFolderByName = (folderName, parentFolderId) => {
+    const { currentItems, user, namePath } = this.props;
+
     let newFolderName = folderName;
 
     // No parent id implies is a directory created on the current folder, so let's show a spinner
     if (!parentFolderId) {
-      const items: any[] = this.props.currentItems;
 
-      if (this.folderNameExists(newFolderName)) {
-        newFolderName = this.getNewName(newFolderName);
+      if (checkFileNameExists(currentItems, newFolderName, undefined)) {
+        newFolderName = getNewFolderName(newFolderName, currentItems);
       }
 
-      items.push({
+      currentItems.push({
         name: newFolderName,
         isLoading: true,
         isFolder: true
       });
 
       this.props.dispatch(
-        storageActions.setItems(items)
+        storageActions.setItems(currentItems)
       );
     } else {
-      newFolderName = this.getNewName(newFolderName);
+      newFolderName = getNewFolderName(newFolderName, currentItems);
     }
 
     parentFolderId = parentFolderId || this.props.currentFolderId;
@@ -302,11 +232,11 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     return new Promise((resolve, reject) => {
       fetch('/api/storage/folder', {
         method: 'post',
-        headers: getHeaders(true, true, this.state.isTeam),
+        headers: getHeaders(true, true, user.teams),
         body: JSON.stringify({
           parentFolderId,
           folderName: newFolderName,
-          teamId: _.last(this.state.namePath) && _.last(this.state.namePath).hasOwnProperty('id_team') ? _.last(this.state.namePath).id_team : null
+          teamId: _.last(namePath) && _.last(namePath).hasOwnProperty('id_team') ? _.last(namePath).id_team : null
         })
       })
         .then(async (res) => {
@@ -348,6 +278,8 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   };
 
   move = (items, destination, moveOpId) => {
+    const { user } = this.props;
+
     // Don't want to request this...
     if (
       items
@@ -382,7 +314,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
       data[keyOp.toLowerCase() + 'Id'] = item.fileId || item.id;
       fetch(`/api/storage/move${keyOp}`, {
         method: 'post',
-        headers: getHeaders(true, true, this.state.isTeam),
+        headers: getHeaders(true, true, user.teams),
         body: JSON.stringify(data)
       }).then(async (res) => {
         const response = await res.json();
@@ -410,9 +342,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
           );
           // update state for updating commander items list
 
-          this.props.dispatch(
-            storageActions.setItems(items)
-          );
+          this.props.dispatch(storageActions.setItems(items));
         }
 
         if (moveEvent.total === 0) {
@@ -424,214 +354,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
         }
       });
     });
-  };
-
-  trackFileUploadStart = (file, parentFolderId) => {
-    analyticsService.trackFileUploadStart({
-      file_size: file.size,
-      file_type: file.type,
-      folder_id: parentFolderId,
-      email: this.props.user.email,
-      platform: DevicePlatform.Web
-    });
-  }
-
-  trackFileUploadError = (file, parentFolderId, msg) => {
-    analyticsService.trackFileUploadError({
-      file_size: file.size,
-      file_type: file.type,
-      folder_id: parentFolderId,
-      email: this.props.user.email,
-      msg,
-      platform: DevicePlatform.Web
-    });
-  }
-
-  trackFileUploadFinished = (file) => {
-    analyticsService.trackFileUploadFinished({
-      email: this.props.user.email,
-      file_size: file.size,
-      file_type: file.type,
-      file_id: file.id
-    });
-  }
-
-  upload = async (file, parentFolderId, folderPath) => {
-    if (!parentFolderId) {
-      throw new Error('No folder ID provided');
-    }
-
-    try {
-      this.trackFileUploadStart(file, parentFolderId);
-
-      const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(this.state.isTeam);
-
-      if (!bucketId) {
-        // coming from auto-login or something else that is not loading all required data
-        window.analytics.track('file-upload-bucketid-undefined', {
-          email: this.props.user.email,
-          platform: DevicePlatform.Web
-        });
-
-        toast.warn('Login again to start uploading files');
-        localStorageService.clear();
-        history.push('/login');
-        return;
-      }
-
-      const network = new Network(bridgeUser, bridgePass, encryptionKey);
-
-      const relativePath = folderPath + file.name + (file.type ? '.' + file.type : '');
-      const content = new Blob([file.content], { type: file.type });
-
-      const fileId = await network.uploadFile(bucketId, {
-        filepath: relativePath,
-        filesize: file.size,
-        filecontent: content,
-        progressCallback: () => { }
-      });
-
-      const name = encryptFilename(file.name, parentFolderId);
-
-      const folder_id = parentFolderId;
-      const { size, type } = file;
-      const encrypt_version = '03-aes';
-      // TODO: fix mismatched fileId fields in server and remove file_id here
-      const fileEntry = { fileId, file_id: fileId, type, bucket: bucketId, size, folder_id, name, encrypt_version };
-      const headers = getHeaders(true, true, this.state.isTeam);
-
-      const createFileEntry = () => {
-        const body = JSON.stringify({ file: fileEntry });
-        const params = { method: 'post', headers, body };
-
-        return fetch('/api/storage/file', params);
-      };
-
-      let res;
-      const data = await createFileEntry().then(response => {
-        res = response;
-        return res.json();
-      });
-
-      this.trackFileUploadFinished({ size, type, id: data.id });
-
-      return { res, data };
-
-    } catch (err) {
-      this.trackFileUploadError(file, parentFolderId, err.message);
-      toast.warn(`File upload error. Reason: ${err.message}`);
-
-      throw err;
-    }
-  };
-
-  handleUploadFiles = async (files, parentFolderId, folderPath = null) => {
-    const dispatch = this.props.dispatch;
-    const currentFolderId = this.props.currentFolderId;
-
-    files = Array.from(files);
-
-    const filesToUpload: any[] = [];
-    const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
-    const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
-
-    console.log('File size trying to be uplodaded is %s bytes', files.reduce((accum, file) => accum + file.size, 0));
-
-    if (showSizeWarning) {
-      toast.warn('File too large.\nYou can only upload or download files of up to 1GB through the web app');
-      return;
-    }
-
-    parentFolderId = parentFolderId || currentFolderId;
-
-    files.forEach(file => {
-      const { filename, extension } = getFilenameAndExt(file.name);
-
-      filesToUpload.push({ name: filename, size: file.size, type: extension, isLoading: true, content: file });
-    });
-
-    for (const file of filesToUpload) {
-      const fileNameExists = this.fileNameExists(file.name, file.type);
-
-      if (parentFolderId === currentFolderId) {
-        dispatch(storageActions.setItems([...this.props.currentItems, file]));
-
-        if (fileNameExists) {
-          file.name = this.getNewName(file.name, file.type);
-          // File browser object don't allow to rename, so you have to create a new File object with the old one.
-          file.content = renameFile(file.content, file.name);
-        }
-      }
-    }
-
-    let fileBeingUploaded;
-    const uploadErrors: any[] = [];
-
-    try {
-      await async.eachLimit(filesToUpload, 1, (file, nextFile) => {
-        fileBeingUploaded = file;
-
-        let relativePath = this.state.namePath.map((pathLevel: any) => pathLevel.name).slice(1).join('/');
-
-        // when a folder and its subdirectory is uploaded by drop, this.state.namePath keeps its value at the first level of the parent folder
-        // so we need to add the relative folderPath (the path from parent folder uploaded to the level of the file being uploaded)
-        // when uploading deeper files than the current level
-        if (folderPath) {
-          if (relativePath !== '') {
-            relativePath += '/' + folderPath;
-          } else {
-            // if is the first path level, DO NOT ADD a '/'
-            relativePath += folderPath;
-          }
-        }
-
-        let rateLimited = false;
-
-        this.upload(file, parentFolderId, relativePath)
-          .then(({ res, data }: any) => {
-            if (parentFolderId === currentFolderId) {
-              const { currentItems } = this.props;
-              const index = currentItems.findIndex((obj: any) => obj.name === file.name);
-              const filesInFileExplorer: any[] = [...currentItems];
-
-              filesInFileExplorer[index].isLoading = false;
-              filesInFileExplorer[index].fileId = data.fileId;
-              filesInFileExplorer[index].id = data.id;
-
-              dispatch(storageActions.setItems(filesInFileExplorer));
-            }
-
-            if (res.status === 402) {
-              this.setState({ rateLimitModal: true });
-              rateLimited = true;
-              throw new Error('Rate limited');
-            }
-          }).catch((err) => {
-            uploadErrors.push(err);
-            console.log(err);
-
-            this.removeFileFromFileExplorer(fileBeingUploaded.name);
-          }).finally(() => {
-            if (rateLimited) {
-              return nextFile(Error('Rate limited'));
-            }
-            nextFile(null);
-          });
-
-        if (uploadErrors.length > 0) {
-          throw new Error('There were some errors during upload');
-        }
-      });
-    } catch (err) {
-      if (err.message === 'There were some errors during upload') {
-        // TODO: List errors in a queue?
-        return uploadErrors.forEach(uploadError => {
-          toast.warn(uploadError.message);
-        });
-      }
-
-      toast.warn(err.message);
-    }
   };
 
   removeFileFromFileExplorer = (filename) => {
@@ -647,46 +369,15 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     );
   }
 
-  uploadFile = (e) => {
-    this.handleUploadFiles(e.target.files, undefined, undefined).then(() => {
-      this.props.dispatch(
-        storageThunks.fetchFolderContentThunk(this.props.currentFolderId)
-      );
-    });
-  }
-
-  uploadDroppedFile = (e, uuid, folderPath) => {
-    return this.handleUploadFiles(e, uuid, folderPath);
-  }
-
   folderTraverseUp() {
-    this.setState(this.popNamePath(), () => {
-      this.props.dispatch(
-        storageThunks.fetchFolderContentThunk(_.last(this.state.namePath).id)
-      );
-    });
-  }
+    const { dispatch, namePath } = this.props;
 
-  pushNamePath(path) {
-    return update(this.state.namePath, { $push: [path] });
-  }
+    dispatch(storageActions.popNamePath);
 
-  popNamePath() {
-    return (previousState, currentProps) => {
-      return {
-        ...previousState,
-        namePath: _.dropRight(previousState.namePath)
-      };
-    };
+    dispatch(
+      storageThunks.fetchFolderContentThunk(_.last(namePath).id)
+    );
   }
-
-  openRateLimitModal = () => {
-    this.setState({ rateLimitModal: true });
-  }
-
-  closeRateLimitModal = () => {
-    this.setState({ rateLimitModal: false });
-  };
 
   render(): JSX.Element {
     const { isLoadingItems, infoItemId, viewMode } = this.props;
@@ -702,7 +393,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
     return (
       <Fragment>
-        <div className="flex flex-grow">
+        <div className="flex flex-grow h-1 ">
           <div className="flex-grow flex flex-col">
             <div className="flex justify-between pb-4">
               <div>
@@ -729,33 +420,71 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
               </div>
             </div>
 
-            <div className="flex flex-col justify-between flex-grow">
-              {isLoadingItems ?
-                <LoadingFileExplorer /> :
-                viewModes[viewMode]
-              }
+            <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden">
+              <div className="flex flex-col justify-between flex-grow overflow-y-auto">
+                {isLoadingItems ?
+                  <LoadingFileExplorer /> :
+                  viewModes[viewMode]
+                }
 
-              {/* PAGINATION */}
-              {!isLoadingItems && (
-                <div className="bg-white px-4 h-12 flex justify-center items-center rounded-b-4px">
-                  <span className="text-sm w-1/3">Showing 15 items of 450</span>
-                  <div className="flex justify-center w-1/3">
-                    <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                      <img alt="" src={iconService.getIcon(IconType.PreviousPage)} />
+                {/* PAGINATION */}
+                {!isLoadingItems && (
+                  <div className="bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
+                    <span className="text-sm w-1/3">Showing 15 items of 450</span>
+                    <div className="flex justify-center w-1/3">
+                      <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
+                        <img alt="" src={iconService.getIcon(IconType.PreviousPage)} />
+                      </div>
+                      <div className="pagination-button">
+                        1
+                      </div>
+                      <div onClick={this.onNextPageButtonClicked} className="pagination-button">
+                        <img alt="" src={iconService.getIcon(IconType.NextPage)} />
+                      </div>
                     </div>
-                    <div className="pagination-button">
-                      1
-                    </div>
-                    <div onClick={this.onNextPageButtonClicked} className="pagination-button">
-                      <img alt="" src={iconService.getIcon(IconType.NextPage)} />
-                    </div>
+                    <div className="w-1/3"></div>
                   </div>
-                  <div className="w-1/3"></div>
-                </div>
-              )}
+                )}
+              </div>
+
+              {/* DRAG AND DROP */}
+              {
+                true ?
+                  (false ?
+                    <div className="p-8 absolute bg-white h-full w-full">
+                      <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">
+                        <div className="mb-28">
+                          <img alt="" src={iconService.getIcon(IconType.DragAndDrop)} className="w-36 m-auto" />
+                          <div className="text-center">
+                            <span className="font-semibold text-base text-m-neutral-100 block">
+                              Drag and drop here
+                            </span>
+                            <span className="text-sm text-m-neutral-100 block">
+                              or click on upload button
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div> :
+                    <div className="absolute bg-opacity-30 bg-blue-50 border-blue-60 border-2 rounded-6px h-full w-full flex justify-center items-end">
+                      <div className="drag-and-drop-with-items-message-container mb-10 bg-white rounded-4px flex items-center w-72 py-2 pl-2 pr-8">
+                        <img alt="" src={iconService.getIcon(IconType.DragAndDrop)} className="w-14 mr-2" />
+                        <span className="text-xs">
+                          Drop the files here to immediately upload them to <span className="text-blue-60 font-semibold">myBackup</span> folder
+                        </span>
+                      </div>
+                    </div>) :
+                  null
+              }
             </div>
 
-            <input className="hidden" ref={fileInputRef} type="file" onChange={this.uploadFile} multiple={true} />
+            <input
+              className="hidden"
+              ref={fileInputRef}
+              type="file"
+              onChange={this.onUploadInputChanged}
+              multiple={true}
+            />
 
           </div>
 
@@ -784,5 +513,6 @@ export default connect(
     isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
     infoItemId: state.storage.infoItemId,
     viewMode: state.storage.viewMode,
+    namePath: state.storage.namePath,
     sortFunction: state.storage.sortFunction
   }))(FilesView);

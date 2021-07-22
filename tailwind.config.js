@@ -15,6 +15,9 @@ module.exports = {
       transitionProperty: {
         'width': 'width'
       },
+      height: {
+        'footer': '115px'
+      },
       width: {
         'sidenav-1280-open': '180px',
         'sidenav-1280-closed': '40px',
@@ -30,10 +33,15 @@ module.exports = {
         '42px': '42px',
         '24px': '24px'
       },
+      borderWidth: {
+        '3': '3px'
+      },
       borderRadius: {
         '1px': '1px',
         '2px': '2px',
         '4px': '4px',
+        '6px': '6px',
+        '12px': '12px',
         '1/2': '50%'
       },
       fontSize: {

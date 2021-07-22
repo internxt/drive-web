@@ -16,6 +16,7 @@ export interface StorageState {
   itemsToDeleteIds: number[];
   infoItemId: number;
   viewMode: FileViewMode;
+  namePath: any[];
   sortFunction: ((a: any, b: any) => number) | null;
   searchFunction: ((item: any) => boolean) | null;
 }
@@ -32,6 +33,7 @@ const initialState: StorageState = {
   itemsToDeleteIds: [],
   infoItemId: 0,
   viewMode: FileViewMode.List,
+  namePath: [],
   sortFunction: null,
   searchFunction: null
 };
@@ -84,6 +86,12 @@ export const storageSlice = createSlice({
     },
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
+    },
+    pushNamePath: (state: StorageState, action: PayloadAction<number>) => {
+      state.namePath.push(action.payload);
+    },
+    popNamePath: (state: StorageState) => {
+      state.namePath.pop();
     }
   },
   extraReducers
@@ -104,7 +112,9 @@ export const {
   pushFolderToNavigation,
   popFolderFromNavigation,
   clearNavigationStack,
-  setViewMode
+  setViewMode,
+  pushNamePath,
+  popNamePath
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

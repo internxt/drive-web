@@ -12,47 +12,35 @@ import { UserSettings } from '../../models/interfaces';
 
 interface SideNavigatorProps {
   user: UserSettings;
+  collapsed: boolean;
+  onCollapseButtonClicked: () => void;
 }
 
-interface SideNavigatorState {
-  collapsed: boolean;
-}
+interface SideNavigatorState { }
 
 class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorState> {
   constructor(props: SideNavigatorProps) {
     super(props);
 
-    this.state = {
-      collapsed: false
-    };
-
-    this.toggleCollapsed = this.toggleCollapsed.bind(this);
-    this.onUpgradeButtonClicked = this.onUpgradeButtonClicked.bind(this);
+    this.state = { };
   }
 
   componentDidMount(): void { }
 
-  onUpgradeButtonClicked() {
+  onUpgradeButtonClicked = () => {
     console.log('Upgrade button clicked!');
   }
 
-  toggleCollapsed(): void {
-    this.setState({
-      collapsed: !this.state.collapsed
-    });
-  }
-
   render(): JSX.Element {
-    const { user } = this.props;
-    const { collapsed } = this.state;
+    const { user, collapsed, onCollapseButtonClicked } = this.props;
 
     return (
-      <div className={`${collapsed ? 'collapsed' : ''} side-navigator bg-l-neutral-20 flex flex-col justify-between`}>
+      <div className={`${collapsed ? 'collapsed' : ''} side-navigator`}>
 
         {/* LOGO & ITEMS */}
         <div>
           <button className="collapse-button cursor-pointer flex items-center z-40 absolute transform"
-            onClick={this.toggleCollapsed}
+            onClick={onCollapseButtonClicked}
           >
             <img src={getIcon(IconType.NextPage)} alt="" />
           </button>
