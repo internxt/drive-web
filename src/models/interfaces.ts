@@ -55,3 +55,7 @@ export interface ILoggerFile {
   isFolder: boolean,
   errorMessage?: string
 }
+
+export interface ILogger {
+  [filePath: string]: ILoggerFile
+}
