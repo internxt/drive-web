@@ -22,16 +22,7 @@ export const filesStateSlice = createSlice({
   name: 'filesState',
   initialState,
   reducers: {
-    addFileToHistory: (state, action: PayloadAction<ILoggerFile>) => {
-      const newEntry = {
-        [action.payload.filePath]: action.payload
-      };
-      const newState = Object.assign(newEntry, state.pendingItems);
-
-      state.pendingItems = newState;
-      state.fileHistory = { ...state.processingItems, ...state.pendingItems };
-    },
-    updateFileStatus: (state, action: PayloadAction<IActionUpdateFileLoggerEntry>) => {
+    updateFileStatusLogger: (state, action: PayloadAction<IActionUpdateFileLoggerEntry>) => {
       const { filePath, status, progress, errorMessage } = action.payload;
       const fileAction = action.payload.action;
 
@@ -60,11 +51,8 @@ export const filesStateSlice = createSlice({
               [action.payload.filePath]: state.processingItems[filePath]
             };
 
-            const newProcessingItems = objectFilter(state.processingItems, ([_, item]) => item.filepath !== filePath);
-            const newPendingItems = Object.assign(finishedItem, state.pendingItems);
-
-            state.pendingItems = newPendingItems;
-            state.processingItems = newProcessingItems;
+            state.pendingItems = Object.assign(finishedItem, state.pendingItems);
+            state.processingItems = objectFilter(state.processingItems, ([_, item]) => item.filepath !== filePath);
             state.fileHistory = { ...state.processingItems, ...state.pendingItems };
             state.fileHistory[filePath].status = status;
 
@@ -85,13 +73,18 @@ export const filesStateSlice = createSlice({
           state.fileHistory[filePath].progress = progress;
         }
       }
+    },
+    clearFileLoggerStatus: (state) => {
+      state.fileHistory = {};
+      state.processingItems = {};
+      state.pendingItems = {};
     }
   }
 });
 
 export const {
-  addFileToHistory,
-  updateFileStatus
+  updateFileStatusLogger,
+  clearFileLogger
 } = filesStateSlice.actions;
 export const selectLoggerFiles = (state: RootState) => state.filesState.fileHistory;
 export default filesStateSlice.reducer;
