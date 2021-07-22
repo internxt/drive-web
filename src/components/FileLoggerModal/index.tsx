@@ -6,11 +6,12 @@ import Item from './Item';
 import './FileLogger.scss';
 import FileLogger from '../../services/fileLogger';
 import { FileStatusTypes, IconTypes } from '../../models/enums';
-import { useAppSelector } from '../../store/hooks';
-import { selectLoggerFiles } from '../../store/slices/filesStateSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { clearFileLoggerStatus, selectLoggerFiles } from '../../store/slices/filesStateSlice';
 
 const FileLoggerModal = (): JSX.Element => {
   const fileHistory = useAppSelector(selectLoggerFiles);
+  const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinized] = useState(false);
@@ -30,6 +31,7 @@ const FileLoggerModal = (): JSX.Element => {
     if (hasFinished) {
       setIsOpen(false);
       setEntries([]);
+      dispatch(clearFileLoggerStatus());
     }
   };
 
