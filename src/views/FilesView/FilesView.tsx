@@ -449,7 +449,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
               {/* DRAG AND DROP */}
               {
-                true ?
+                false ?
                   (false ?
                     <div className="p-8 absolute bg-white h-full w-full">
                       <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">

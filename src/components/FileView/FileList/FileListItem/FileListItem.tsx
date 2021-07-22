@@ -49,7 +49,10 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     return (
       <Fragment>
         <input className={`${isEditingName ? 'block' : 'hidden'} dense`} ref={nameInputRef} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
-        <span className={`${spanDisplayClass} text-neutral-900 text-sm px-1`} onDoubleClick={this.onNameDoubleClicked}>{item.name}</span>
+        <span
+          className={`${spanDisplayClass} whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1`}
+          onDoubleClick={this.onNameDoubleClicked}
+        >{item.name}</span>
       </Fragment>
     );
   }
