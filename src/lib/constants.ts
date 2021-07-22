@@ -1,0 +1,5 @@
+const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
+
+export {
+  MAX_ALLOWED_UPLOAD_SIZE
+};

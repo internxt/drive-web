@@ -1,8 +1,8 @@
-import { MAX_ALLOWED_UPLOAD_SIZE } from './constants.service';
+import { MAX_ALLOWED_UPLOAD_SIZE } from '../lib/constants';
 
 export async function getAllItems(e, parentId = null) {
   e.preventDefault();
-  // const entries = await getEntries(e.dataTransfer.items);
+  //const entries = await getEntries(e.dataTransfer.items);
 
   // console.log(entries);
   return getEntries(e.dataTransfer.items); // entries;
@@ -16,7 +16,7 @@ async function getEntries(dataTransferItemList: DataTransferItemList) {
   const filesAboveMaxSize = [];
 
   // Use BFS to traverse entire directory/file structure
-  const queue = [];
+  const queue : unknown[] = [];
 
   // dataTransferItemList is not iterable i.e. no forEach
   for (let i = 0; i < dataTransferItemList.length; i++) {
@@ -49,9 +49,9 @@ async function getEntries(dataTransferItemList: DataTransferItemList) {
 export async function getAllFileEntries(dataTransferItemList: DataTransferItemList) {
   const fileEntries = [];
   // Use BFS to traverse entire directory/file structure
-  const queue = [];
+  const queue : unknown[] = [];
 
-  // Unfortunately dataTransferItemList is not iterable i.e. no forEach
+  // dataTransferItemList is not iterable i.e. no forEach
   for (let i = 0; i < dataTransferItemList.length; i++) {
     queue.push(dataTransferItemList[i].webkitGetAsEntry());
   }
