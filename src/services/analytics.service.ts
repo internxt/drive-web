@@ -150,7 +150,14 @@ export function trackUserResetPasswordRequest(): void {
   window.analytics.track(AnalyticsTrack.UserResetPasswordRequest);
 }
 
-export function trackFileUploadBucketIdUndefined(payload: { email: string, platform: DevicePlatform}): void {
+export function track(email: string, status: 'error' | 'success'): void {
+  window.analytics.track('user-change-password', {
+    status,
+    email
+  });
+}
+
+export function trackFileUploadBucketIdUndefined(payload: { email: string, platform: DevicePlatform }): void {
   window.analytics.track(AnalyticsTrack.FileUploadBucketIdUndefined, payload);
 }
 
@@ -180,6 +187,7 @@ const analyticsService = {
   trackFileShare,
   signInAttempted,
   trackUserResetPasswordRequest,
+  track,
   trackFileUploadBucketIdUndefined
 };
 

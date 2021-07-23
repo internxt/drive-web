@@ -1,0 +1,21 @@
+@layer components {
+    .file-grid-item {
+        border-radius: 8px;
+
+        @apply relative bg-white hover:bg-blue-20 hover:border hover:border-blue-40 p-4;
+
+        .file-grid-item-icon-container {
+            height: 105px;
+
+            @apply flex justify-center items-center w-full bg-white;
+
+            .file-icon {
+                height: 40px;
+            }
+        }
+    }
+
+    .file-grid-item-actions-button {
+        @apply top-0.5 right-0.5 rounded-1/2 w-4 h-4 bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
+    }
+}

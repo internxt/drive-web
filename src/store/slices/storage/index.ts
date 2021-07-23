@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FileViewMode } from '../../../components/FileView/models/enums';
+import { FileViewMode } from '../../../models/enums';
 
 import selectors from './storageSelectors';
 import thunks, { extraReducers } from './storageThunks';

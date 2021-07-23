@@ -2,18 +2,18 @@ import React from 'react';
 
 import FileListItem from './FileListItem/FileListItem';
 
-import './FileList.scss';
+import './FilesList.scss';
 import { RootState } from '../../../store';
 import { connect } from 'react-redux';
 
-interface FileListProps {
+interface FilesListProps {
   items: any[]
 }
 
-interface FileListState { }
+interface FilesListState { }
 
-class FileList extends React.Component<FileListProps, FileListState> {
-  constructor(props: FileListProps) {
+class FilesList extends React.Component<FilesListProps, FilesListState> {
+  constructor(props: FilesListProps) {
     super(props);
 
     this.state = {};
@@ -57,4 +57,4 @@ export default connect(
   (state: RootState) => ({
     items: state.storage.items,
     selectedItems: state.storage.selectedItems
-  }))(FileList);
+  }))(FilesList);

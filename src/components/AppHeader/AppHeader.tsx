@@ -39,7 +39,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
       <div className="flex justify-between w-full py-3 mb-2">
         <div className="flex">
           <input type="text" placeholder="Search files" className="no-ring right-icon" />
-          <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-6 relative w-4"/>
+          <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-6 relative w-4" />
         </div>
         <div className="flex items-center cursor-pointer" onClick={this.onAccountButtonClicked}>
           <Unicons.UilUser className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5 text-blue-60" />

@@ -7,13 +7,13 @@ import sizeService from '../../../../services/size.service';
 
 import './FileListItem.scss';
 import dateService from '../../../../services/date.service';
-import iconService, { IconType } from '../../../../services/icon.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem, storageThunks, setCurrentFolderId } from '../../../../store/slices/storage';
 import downloadService from '../../../../services/download.service';
 import { UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
+import iconService from '../../../../services/icon.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
 interface FileListItemProps {
@@ -59,8 +59,8 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   get itemIconSrc(): string {
     return this.props.item.isFolder ?
-      iconService.getIcon(IconType.FolderBlue) :
-      iconService.getIcon(IconType.DefaultFile);
+      iconService.getIcon('folderBlue') :
+      iconService.getIcon('defaultFile');
   }
 
   get isSelected(): boolean {
@@ -199,20 +199,20 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         <td>
           <div className="flex justify-center">
             <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
-              <img alt="" src={iconService.getIcon(IconType.DownloadItems)} />
+              <img alt="" src={iconService.getIcon('downloadItems')} />
             </button>
             <button onClick={this.onShareButtonClicked} className="hover-action mr-4">
-              <img alt="" src={iconService.getIcon(IconType.ShareItems)} />
+              <img alt="" src={iconService.getIcon('shareItems')} />
             </button>
             <button onClick={this.onDeleteButtonClicked} className="hover-action">
-              <img alt="" src={iconService.getIcon(IconType.DeleteItems)} />
+              <img alt="" src={iconService.getIcon('deleteItems')} />
             </button>
           </div>
         </td>
         <td>
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold rounded-2xl">
-              <img alt="" src={iconService.getIcon(IconType.Actions)} />
+              <img alt="" src={iconService.getIcon('actions')} />
             </Dropdown.Toggle>
             <FileDropdownActions
               onRenameButtonClicked={this.onRenameButtonClicked}

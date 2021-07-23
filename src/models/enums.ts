@@ -54,3 +54,8 @@ export enum AnalyticsTrack {
 export enum DevicePlatform {
   Web = 'web'
 }
+
+export enum FileViewMode {
+  List = 'list',
+  Grid = 'grid'
+}

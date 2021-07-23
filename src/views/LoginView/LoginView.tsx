@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { Button, Form, Col, Container, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import history from '../../lib/history';
 import { encryptText, decryptText, passToHash, decryptTextWithKey } from '../../lib/utils';
-
 import { getHeaders } from '../../lib/auth';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import localStorageService from '../../services/localStorage.service';
 import { decryptPGP } from '../../lib/utilspgp';
 import AesUtil from '../../lib/AesUtil';

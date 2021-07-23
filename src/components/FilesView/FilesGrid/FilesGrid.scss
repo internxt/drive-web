@@ -1,0 +1,9 @@
+@layout components {
+    .file-grid {
+       // grid-template-columns: repeat(auto-fill, 186px);
+        grid-template-rows: repeat(auto-fill, 177px);
+    
+        @apply grid grid-cols-4 gap-2;
+    }
+    
+}

@@ -22,9 +22,9 @@ import { AppDispatch, RootState } from '../../store';
 import Breadcrumbs, { BreadcrumbItemData } from '../../components/Breadcrumbs/Breadcrumbs';
 import iconService, { IconType } from '../../services/icon.service';
 import FileActivity from '../../components/FileActivity/FileActivity';
-import { FileViewMode } from '../../components/FileView/models/enums';
-import FileList from '../../components/FileView/FileList/FileList';
-import FileGrid from '../../components/FileView/FileGrid/FileGrid';
+import { FileViewMode } from '../../models/enums';
+import FilesList from '../../components/FilesView/FilesList/FilesList';
+import FilesGrid from '../../components/FilesView/FilesGrid/FilesGrid';
 import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFileExplorer';
 
 import './FilesView.scss';
@@ -84,13 +84,13 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     items.push({
       name: 'storage',
       label: '',
-      icon: iconService.getIcon(IconType.BreadcrumbsStorage),
+      icon: iconService.getIcon('breadcrumbsStorage'),
       active: true
     });
     items.push({
       name: 'folder-parent-name',
       label: 'FolderParentName',
-      icon: iconService.getIcon(IconType.BreadcrumbsFolder),
+      icon: iconService.getIcon('breadcrumbsFolder'),
       active: false
     });
 
@@ -404,12 +404,12 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     const { isLoadingItems, infoItemId, viewMode, isCurrentFolderEmpty, isDraggingAnItem } = this.props;
     const { fileInputRef } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: iconService.getIcon(IconType.MosaicView),
-      [FileViewMode.Grid]: iconService.getIcon(IconType.ListView)
+      [FileViewMode.List]: iconService.getIcon('mosaicView'),
+      [FileViewMode.Grid]: iconService.getIcon('listView')
     };
     const viewModes = {
-      [FileViewMode.List]: <FileList />,
-      [FileViewMode.Grid]: <FileGrid />
+      [FileViewMode.List]: <FilesList />,
+      [FileViewMode.Grid]: <FilesGrid />
     };
 
     return (
@@ -424,16 +424,16 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
               <div className="flex">
                 <button className="primary mr-1 flex items-center" onClick={this.onUploadButtonClicked}>
-                  <img alt="" className="h-3 mr-2" src={iconService.getIcon(IconType.Upload)} /><span>Upload</span>
+                  <img alt="" className="h-3 mr-2" src={iconService.getIcon('upload')} /><span>Upload</span>
                 </button>
                 {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
-                  <img alt="" src={iconService.getIcon(IconType.CreateFolder)} />
+                  <img alt="" src={iconService.getIcon('createFolder')} />
                 </button> : null}
                 {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDownloadButtonClicked}>
-                  <img alt="" src={iconService.getIcon(IconType.DownloadItems)} />
+                  <img alt="" src={iconService.getIcon('downloadItems')} />
                 </button> : null}
                 {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDeleteButtonClicked}>
-                  <img alt="" src={iconService.getIcon(IconType.DeleteItems)} />
+                  <img alt="" src={iconService.getIcon('deleteItems')} />
                 </button> : null}
                 <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
                   <img alt="" src={viewModesIcons[viewMode]} />
@@ -459,13 +459,13 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                     <span className="text-sm w-1/3">Showing 15 items of 450</span>
                     <div className="flex justify-center w-1/3">
                       <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                        <img alt="" src={iconService.getIcon(IconType.PreviousPage)} />
+                        <img alt="" src={iconService.getIcon('previousPage')} />
                       </div>
                       <div className="pagination-button">
                         1
                       </div>
                       <div onClick={this.onNextPageButtonClicked} className="pagination-button">
-                        <img alt="" src={iconService.getIcon(IconType.NextPage)} />
+                        <img alt="" src={iconService.getIcon('nextPage')} />
                       </div>
                     </div>
                     <div className="w-1/3"></div>
@@ -474,7 +474,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
               </div>
 
               {/* EMPTY FOLDER */
-                isCurrentFolderEmpty ?
+                isCurrentFolderEmpty && !isLoadingItems ?
                   <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
                     <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">
                       <div className="mb-28">

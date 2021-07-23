@@ -1,9 +1,9 @@
 import { Fragment } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import './SideNavigatorItem.scss';
+import './SidenavItem.scss';
 
-interface SideNavigatorItemProps {
+interface SidenavItemProps {
   label: string,
   tooltipLabel?: string,
   to?: string,
@@ -12,7 +12,7 @@ interface SideNavigatorItemProps {
   onClick?: () => void
 }
 
-const SideNavigatorItem = ({ label, tooltipLabel, to, icon, isOpen, onClick }: SideNavigatorItemProps): JSX.Element => {
+const SidenavItem = ({ label, tooltipLabel, to, icon, isOpen, onClick }: SidenavItemProps): JSX.Element => {
   const content: JSX.Element = (
     <Fragment>
       {icon}
@@ -39,4 +39,4 @@ const SideNavigatorItem = ({ label, tooltipLabel, to, icon, isOpen, onClick }: S
   );
 };
 
-export default SideNavigatorItem;
+export default SidenavItem;

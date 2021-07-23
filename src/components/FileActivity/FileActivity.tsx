@@ -35,12 +35,12 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
 
         {/* HEADER */}
         <div className="flex items-center mb-6">
-          <img className="file-activity-icon" src={iconService.getIcon(IconType.FolderBlue)} alt="" />
+          <img className="file-activity-icon" src={iconService.getIcon('folderBlue')} alt="" />
           <div className="flex-grow">
             <span className="block font-semibold text-neutral-700 text-sm">{item.name}</span>
           </div>
           <div className="w-3 cursor-pointer" onClick={this.onCloseButtonClicked}>
-            <img className="w-full" src={iconService.getIcon(IconType.CrossBlue)} alt="" />
+            <img className="w-full" src={iconService.getIcon('crossBlue')} alt="" />
           </div>
         </div>
 
@@ -56,7 +56,7 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
         {/* INFO TAB CONTENT */}
         <div className="relative border-l border-dashed border-l-neutral-50 pl-4">
           <div className="w-3 absolute bg-white -left-1.5">
-            <img className="w-full" src={iconService.getIcon(IconType.ItemInfo)} alt="" />
+            <img className="w-full" src={iconService.getIcon('itemInfo')} alt="" />
           </div>
           <div className="file-activity-info-item">
             <span className="label">Folder path</span>

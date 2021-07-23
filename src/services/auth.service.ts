@@ -289,4 +289,127 @@ const authService = {
   readReferalCookie
 };
 
+export const getSalt = async (): Promise<any> => {
+  const email = localStorageService.getUser().email;
+
+  const response = await fetch('/api/login', {
+    method: 'post',
+    headers: getHeaders(false, false),
+    body: JSON.stringify({ email })
+  });
+  const data = await response.json();
+  const salt = decryptText(data.sKey);
+
+  return salt;
+};
+
+export const changePassword = async (newPassword: string, currentPassword: string, email: string) => {
+  const salt = await getSalt();
+
+  if (!salt) {
+    throw new Error('Internal server error. Please reload.');
+  }
+
+  // Encrypt the password
+  const hashedCurrentPassword = passToHash({ password: currentPassword, salt }).hash;
+  const encryptedCurrentPassword = encryptText(hashedCurrentPassword);
+
+  // Encrypt the new password
+  const hashedNewPassword = passToHash({ password: newPassword });
+  const encryptedNewPassword = encryptText(hashedNewPassword.hash);
+  const encryptedNewSalt = encryptText(hashedNewPassword.salt);
+
+  // Encrypt the mnemonic
+  const encryptedMnemonic = encryptTextWithKey(localStorage.xMnemonic, newPassword);
+  const privateKey = Buffer.from(localStorageService.getUser().privateKey, 'base64').toString();
+  const privateKeyEncrypted = AesUtils.encrypt(privateKey, newPassword);
+
+  const response = await fetch('/api/user/password', {
+    method: 'PATCH',
+    headers: getHeaders(true, true),
+    body: JSON.stringify({
+      currentPassword: encryptedCurrentPassword,
+      newPassword: encryptedNewPassword,
+      newSalt: encryptedNewSalt,
+      mnemonic: encryptedMnemonic,
+      privateKey: privateKeyEncrypted
+    })
+  });
+
+  const data = await response.json();
+
+  if (response.status === 500) {
+    analyticsService.track(email, 'error');
+    throw new Error('The password you introduced does not match your current password');
+  }
+
+  if (response.status !== 200) {
+    analyticsService.track(email, 'error');
+    throw new Error(data.error);
+  }
+
+  analyticsService.track(email, 'success');
+};
+
+export const userHas2FAStored = async (): Promise<any> => {
+  const response = await fetch('/api/login', {
+    method: 'POST',
+    headers: getHeaders(true, false),
+    body: JSON.stringify({ email: JSON.parse(localStorage.xUser).email })
+  });
+  const data = await response.json();
+  const has2FA = typeof data.tfa == 'boolean' ? data : false;
+
+  return has2FA;
+};
+
+export const generateNew2FA = async (): Promise<any> => {
+  const response = await fetch('/api/tfa', {
+    method: 'GET',
+    headers: getHeaders(true, false)
+  });
+  const data = await response.json();
+
+  if (response.status !== 200) {
+    throw new Error(data);
+  }
+  return data;
+};
+
+export const deactivate2FA = async (passwordSalt: string, deactivationPassword: string, deactivationCode: string): Promise<void> => {
+  const salt = decryptText(passwordSalt);
+  const hashObj = passToHash({ password: deactivationPassword, salt });
+  const encPass = encryptText(hashObj.hash);
+
+  const response = await fetch('/api/tfa', {
+    method: 'DELETE',
+    headers: getHeaders(true, false),
+    body: JSON.stringify({
+      pass: encPass,
+      code: deactivationCode
+    })
+  });
+  const data = await response.json();
+
+  if (response.status !== 200) {
+    throw new Error(data.error);
+  }
+};
+
+export const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
+  const response = await fetch('/api/tfa', {
+    method: 'PUT',
+    headers: getHeaders(true, false),
+    body: JSON.stringify({
+      key: code,
+      code: twoFactorCode
+    })
+  });
+  const data = await response.json();
+
+  if (response.status !== 200) {
+    throw new Error(data.error);
+  }
+};
+
 export default authService;

@@ -1,9 +1,8 @@
-import React from 'react';
-import { StripeProductNames, StripeSimpleNames } from '../../../models/interfaces';
-import { getIcon } from '../../../services/icon.service';
-import ButtonPrimary from '../../Buttons/ButtonPrimary';
+import { StripeProductNames, StripeSimpleNames } from '../../../../models/interfaces';
+import { getIcon } from '../../../../services/icon.service';
+import BaseButton from '../../../../components/Buttons/BaseButton';
 
-interface PlanProps {
+interface BillingPlanItemProps {
   name: StripeProductNames,
   description: string,
   size: StripeSimpleNames,
@@ -19,7 +18,7 @@ const ListItem = ({ text }: { text: string }): JSX.Element => (
   </div>
 );
 
-const Plan = ({ name, description, size, price, buttonText, characteristics }: PlanProps): JSX.Element => {
+const BillingPlanItem = ({ name, description, size, price, buttonText, characteristics }: BillingPlanItemProps): JSX.Element => {
   return (
     <div className='w-full h-full flex flex-col justify-center text-neutral-700 p-7'>
       <h2 className='text-lg font-medium text-left'>{name}</h2>
@@ -31,7 +30,9 @@ const Plan = ({ name, description, size, price, buttonText, characteristics }: P
       </div>
       <p className='text-right text-xs font-normal -mt-0.5 mb-2'>/month</p>
 
-      <ButtonPrimary width='w-full' text={buttonText} onClick={() => { }} />
+      <BaseButton onClick={() => { }}>
+        {buttonText}
+      </BaseButton>
 
       <div className='mt-7' />
       {
@@ -41,4 +42,4 @@ const Plan = ({ name, description, size, price, buttonText, characteristics }: P
   );
 };
 
-export default Plan;
+export default BillingPlanItem;
