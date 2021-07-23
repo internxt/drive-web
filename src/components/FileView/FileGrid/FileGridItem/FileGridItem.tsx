@@ -207,7 +207,9 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
             onDeleteButtonClicked={this.onDeleteButtonClicked}
           />
         </Dropdown>
-        <img alt="" className="file-icon m-auto" src={this.itemIconSrc} />
+        <div className="w-full bg-white">
+          <img alt="" className="file-icon m-auto" src={this.itemIconSrc} />
+        </div>
         <div className="text-center mt-3">
           <div className="mb-1">
             {this.nameNode}
