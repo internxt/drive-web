@@ -10,11 +10,11 @@ import { FileViewMode } from './models/enums';
 import { AppDispatch, RootState } from '../../store';
 
 import './FileView.scss';
-import iconService, { IconType } from '../../services/icon.service';
 import folderService, { ICreatedFolder } from '../../services/folder.service';
 import { UserSettings } from '../../models/interfaces';
 import { setIsCreateFolderDialogOpen } from '../../store/slices/uiSlice';
 import FileActivity from '../FileActivity/FileActivity';
+import iconService from '../../services/icon.service';
 
 interface FileViewProps {
   user: UserSettings;
@@ -49,13 +49,13 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
     items.push({
       name: 'storage',
       label: '',
-      icon: iconService.getIcon(IconType.BreadcrumbsStorage),
+      icon: iconService.getIcon('breadcrumbsStorage'),
       active: true
     });
     items.push({
       name: 'folder-parent-name',
       label: 'FolderParentName',
-      icon: iconService.getIcon(IconType.BreadcrumbsFolder),
+      icon: iconService.getIcon('breadcrumbsFolder'),
       active: false
     });
 
@@ -104,8 +104,8 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
     const { isLoadingItems, infoItemId } = this.props;
     const { viewMode } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: iconService.getIcon(IconType.MosaicView),
-      [FileViewMode.Grid]: iconService.getIcon(IconType.ListView)
+      [FileViewMode.List]: iconService.getIcon('mosaicView'),
+      [FileViewMode.Grid]: iconService.getIcon('listView')
     };
     const viewModes = {
       [FileViewMode.List]: <FileList />,
@@ -124,16 +124,16 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
 
               <div className="flex">
                 <button className="primary mr-1 flex items-center">
-                  <img alt="" className="h-3 mr-2" src={iconService.getIcon(IconType.Upload)} /><span>Upload</span>
+                  <img alt="" className="h-3 mr-2" src={iconService.getIcon('upload')} /><span>Upload</span>
                 </button>
                 {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
-                  <img alt="" src={iconService.getIcon(IconType.CreateFolder)} />
+                  <img alt="" src={iconService.getIcon('createFolder')} />
                 </button> : null}
                 {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDownloadButtonClicked}>
-                  <img alt="" src={iconService.getIcon(IconType.DownloadItems)} />
+                  <img alt="" src={iconService.getIcon('downloadItems')} />
                 </button> : null}
                 {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDeleteButtonClicked}>
-                  <img alt="" src={iconService.getIcon(IconType.DeleteItems)} />
+                  <img alt="" src={iconService.getIcon('deleteItems')} />
                 </button> : null}
                 <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
                   <img alt="" src={viewModesIcons[viewMode]} />
@@ -153,13 +153,13 @@ class FileView extends React.Component<FileViewProps, FileViewState> {
                   <span className="text-sm w-1/3">Showing 15 items of 450</span>
                   <div className="flex justify-center w-1/3">
                     <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                      <img alt="" src={iconService.getIcon(IconType.PreviousPage)} />
+                      <img alt="" src={iconService.getIcon('previousPage')} />
                     </div>
                     <div className="pagination-button">
                       1
                     </div>
                     <div onClick={this.onNextPageButtonClicked} className="pagination-button">
-                      <img alt="" src={iconService.getIcon(IconType.NextPage)} />
+                      <img alt="" src={iconService.getIcon('nextPage')} />
                     </div>
                   </div>
                   <div className="w-1/3"></div>

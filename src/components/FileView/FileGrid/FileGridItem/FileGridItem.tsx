@@ -2,7 +2,6 @@ import React, { Fragment } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
-import iconService, { IconType } from '../../../../services/icon.service';
 import { selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem } from '../../../../store/slices/storageSlice';
 
 import dateService from '../../../../services/date.service';
@@ -15,6 +14,7 @@ import { connect } from 'react-redux';
 import { UserSettings } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/uiSlice';
+import iconService from '../../../../services/icon.service';
 
 interface FileGridItemProps {
   user: UserSettings;
@@ -66,8 +66,8 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
   get itemIconSrc(): string {
     return this.props.item.isFolder ?
-      iconService.getIcon(IconType.FolderBlue) :
-      iconService.getIcon(IconType.DefaultFile);
+      iconService.getIcon('folderBlue') :
+      iconService.getIcon('defaultFile');
   }
 
   confirmNameChange() {
@@ -158,7 +158,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       <div className="group file-grid-item">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
-            <img alt="" className="m-auto" src={iconService.getIcon(IconType.Actions)} />
+            <img alt="" className="m-auto" src={iconService.getIcon('actions')} />
           </Dropdown.Toggle>
           <FileDropdownActions
             onRenameButtonClicked={this.onRenameButtonClicked}

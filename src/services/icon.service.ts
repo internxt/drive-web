@@ -137,8 +137,8 @@ const icons = {
   search
 };
 
-// Hay que cambiarlo a iconName: keyof typeof IconType y borrar los enums
-export const getIcon = (iconName: IconType): string => {
+// Hay que cambiarlo a iconName: keyof typeof icons y borrar los enums
+export const getIcon = (iconName: keyof typeof icons): string => {
   return icons[iconName];
 };
 

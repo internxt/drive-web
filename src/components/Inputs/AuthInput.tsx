@@ -1,5 +1,6 @@
 import React from 'react';
 import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-form';
+import { IFormValues } from '../../models/interfaces';
 
 import iconService, { IconType } from '../../services/icon.service';
 

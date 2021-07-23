@@ -1,4 +1,4 @@
-import { getIcon, IconType } from '../../../services/icon.service';
+import { getIcon } from '../../../services/icon.service';
 
 import './BaseDialog.scss';
 
@@ -27,7 +27,7 @@ const BaseDialog = ({
           <span className='text-neutral-90 font-semibold text-xs'>{title}</span>
 
           <img
-            src={getIcon(IconType.CrossBlue)}
+            src={getIcon('crossBlue')}
             alt=""
             className='dialog-close-button absolute mr-5 right-0 cursor-pointer'
             onClick={onClose}

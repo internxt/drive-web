@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { UserSettings } from '../../models/interfaces';
-import iconService, { IconType } from '../../services/icon.service';
+import iconService from '../../services/icon.service';
 import { RootState } from '../../store';
 import history from '../../lib/history';
 
@@ -34,10 +34,10 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
       <div className="flex justify-between w-full py-3 mb-2">
         <div className="flex">
           <input type="text" placeholder="Search files" className="no-ring right-icon" />
-          <img className="right-5 relative" src={iconService.getIcon(IconType.Search)} alt="" />
+          <img className="right-5 relative" src={iconService.getIcon('search')} alt="" />
         </div>
         <div className="flex items-center cursor-pointer" onClick={this.onAccountButtonClicked}>
-          <img alt="" src={iconService.getIcon(IconType.DefaultAvatar)} className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5" />
+          <img alt="" src={iconService.getIcon('defaultAvatar')} className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5" />
           <span className="text-neutral-500 text-sm">Welcome {userFullName}</span>
         </div>
       </div>
