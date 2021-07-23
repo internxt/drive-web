@@ -1,13 +1,11 @@
 import { Component, createElement } from 'react';
 import { Switch, Route, Redirect, Router } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
-import { setIsUserInitialized, initializeUserThunk } from './store/slices/userSlice';
-import { storeTeamsInfo } from './services/teams.service';
+import { initializeUserThunk } from './store/slices/user';
 import deviceService from './services/device.service';
-import { setCurrentFolderId } from './store/slices/storageSlice';
-import { setHasConnection } from './store/slices/networkSlice';
+import { setHasConnection } from './store/slices/network';
 import { AppViewConfig, UserSettings } from './models/interfaces';
 import configService from './services/config.service';
 import history from './lib/history';
@@ -16,8 +14,6 @@ import layouts from './layouts';
 import views from './views';
 
 import { AppDispatch, RootState } from './store';
-import localStorageService from './services/localStorage.service';
-import userService from './services/user.service';
 
 interface AppProps {
   isAuthenticated: boolean;

@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { store } from './store';
-import { userActions } from './store/slices/userSlice';
+import { userActions } from './store/slices/user';
 
 import './index.scss';
 

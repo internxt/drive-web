@@ -2,16 +2,20 @@ import fileDownload from 'js-file-download';
 
 import localStorageService from './localStorage.service';
 import analyticsService from './analytics.service';
-import { DevicePlatform } from '../models/enums';
+import { DevicePlatform, FileActionTypes, FileStatusTypes } from '../models/enums';
 import { getEnvironmentConfig, Network } from '../lib/network';
+import fileLogger from './fileLogger';
+import { toast } from 'react-toastify';
 
-export async function downloadFile (itemData: any) {
-  const isTeam: boolean = !!localStorageService.getUser().teams;
-  const userEmail: string = localStorageService.getUser().email;
+export async function downloadFile(itemData: any): Promise<void> {
+  const isTeam: boolean = !!localStorageService.getUser()?.teams;
+  const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId || itemData.id;
   const completeFilename = itemData.type ?
     `${itemData.name}.${itemData.type}` :
     `${itemData.name}`;
+
+  fileLogger.push({ action: FileActionTypes.Download, status: FileStatusTypes.Decrypting, filePath: itemData.name });
 
   try {
     trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
@@ -20,19 +24,19 @@ export async function downloadFile (itemData: any) {
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
     const fileBlob = await network.downloadFile(bucketId, fileId, {
-      progressCallback: (progress) => {} /* pcb.setState({ progress }) */
+      progressCallback: (progress) => { } /* pcb.setState({ progress }) */
     });
 
     fileDownload(fileBlob, completeFilename);
 
+    fileLogger.push({ tion: FileActionTypes.Download, status: FileStatusTypes.Success, filePath: itemData.name });
     trackFileDownloadFinished(userEmail, fileId, itemData.size);
   } catch (err) {
+    fileLogger.push({ action: FileActionTypes.Download, status: FileStatusTypes.Error, filePath: itemData.name, message: err.message });
     trackFileDownloadError(userEmail, fileId, err.message);
+    toast.warn(`Error downloading file: \n Reason is ${err.message} \n File id: ${fileId}`);
 
     throw err;
-    /* toast.warn(`Error downloading file: \n Reason is ${err.message} \n File id: ${fileId}`); */
-  } finally {
-    // pcb.setState({ progress: 0 });
   }
 }
 

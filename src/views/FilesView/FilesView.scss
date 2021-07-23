@@ -1,8 +1,8 @@
-.navigation-buttons {
-  height: max-content;
-}
-
 @layer components {
+  .navigation-buttons {
+    height: max-content;
+  }
+
   .pagination-button {
     text-align: center;
     width: 24px;
@@ -11,4 +11,8 @@
 
     @apply cursor-pointer rounded-1px text-neutral-500 text-xs hover:bg-l-neutral-10 flex items-center justify-center;
   }
+}
+
+.drag-and-drop-with-items-message-container {
+  box-shadow: 0px 2px 15px rgba(179, 186, 197, 0.5);
 }

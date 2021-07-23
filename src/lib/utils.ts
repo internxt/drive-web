@@ -2,12 +2,17 @@ import copy from 'copy-to-clipboard';
 import CryptoJS from 'crypto-js';
 import AesUtil from './AesUtil';
 
-function copyToClipboard(text: string) {
+interface PassObjectInterface {
+  salt?: string | null
+  password: string
+}
+
+function copyToClipboard(text: string): void {
   copy(text);
 }
 
 // Method to remove accents and other special characters from string
-function removeAccents(string: string) {
+function removeAccents(string: string): string {
   const accents = 'ÀÁÂÃÄÅĄĀāàáâãäåąßÒÓÔÕÕÖØŐòóôőõöøĎďDŽdžÈÉÊËĘèéêëęðÇçČčĆćÐÌÍÎÏĪìíîïīÙÚÛÜŰùűúûüĽĹŁľĺłÑŇŃňñńŔŕŠŚŞšśşŤťŸÝÿýŽŻŹžżźđĢĞģğ';
   const accentsOut = 'AAAAAAAAaaaaaaaasOOOOOOOOoooooooDdDZdzEEEEEeeeeeeCcCcCcDIIIIIiiiiiUUUUUuuuuuLLLlllNNNnnnRrSSSsssTtYYyyZZZzzzdGGgg';
 
@@ -16,11 +21,6 @@ function removeAccents(string: string) {
 
     return accentIndex !== -1 ? accentsOut[accentIndex] : letter;
   }).join('');
-}
-
-interface PassObjectInterface {
-  salt?: string | null
-  password: string
 }
 
 // Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
@@ -40,17 +40,17 @@ function passToHash(passObject: PassObjectInterface) {
 }
 
 // AES Plain text encryption method
-function encryptText(textToEncrypt: string) {
+function encryptText(textToEncrypt: string): string {
   return encryptTextWithKey(textToEncrypt, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
 // AES Plain text decryption method
-function decryptText(encryptedText: string) {
+function decryptText(encryptedText: string): string {
   return decryptTextWithKey(encryptedText, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
 // AES Plain text encryption method with enc. key
-function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string) {
+function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string): string {
   try {
     const bytes = CryptoJS.AES.encrypt(textToEncrypt, keyToEncrypt).toString();
     const text64 = CryptoJS.enc.Base64.parse(bytes);
@@ -62,7 +62,7 @@ function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string) {
 }
 
 // AES Plain text decryption method with enc. key
-function decryptTextWithKey(encryptedText: string, keyToDecrypt: string) {
+function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string {
   if (!keyToDecrypt) {
     throw new Error('No key defined. Check .env file');
   }

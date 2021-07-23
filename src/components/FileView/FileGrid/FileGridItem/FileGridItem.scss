@@ -8,20 +8,15 @@
         .file-icon {
             height: 40px;
         }
-
-        input {
-            width: 100%;
-        }
     }
 
     .file-grid-item-actions-button {
-        background-color: white;
         height: 16px;
         width: 16px;
         border-radius: 50%;
         right: 8px;
         top: 8px;
 
-        @apply cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
+        @apply bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
     }
 }

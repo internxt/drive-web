@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import iconService, { IconType } from '../../services/icon.service';
 import { AppDispatch, RootState } from '../../store';
-import { setInfoItem, storageSelectors } from '../../store/slices/storageSlice';
+import { setInfoItem, storageSelectors } from '../../store/slices/storage';
 
 import './FileActivity.scss';
 

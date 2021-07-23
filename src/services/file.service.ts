@@ -5,7 +5,7 @@ import { DevicePlatform } from '../models/enums';
 import analyticsService from './analytics.service';
 import localStorageService from './localStorage.service';
 
-export async function fetchWelcomeFile(isTeam: boolean) {
+export async function fetchWelcomeFile(isTeam: boolean): Promise<any> {
   return fetch('/api/welcome', {
     method: 'get',
     headers: getHeaders(true, false, isTeam)
@@ -16,7 +16,7 @@ export async function fetchWelcomeFile(isTeam: boolean) {
   });
 }
 
-export async function openWelcomeFile() {
+export async function openWelcomeFile(): Promise<any> {
   analyticsService.trackOpenWelcomeFile();
 
   return fetch('/Internxt.pdf').then(res => res.blob()).then(obj => {
@@ -39,7 +39,7 @@ export async function deleteWelcomeFile(isTeam: boolean): Promise<Response> {
 
 export function updateMetaData(itemId: string, data: any): Promise<void> {
   const user = localStorageService.getUser();
-  const isTeam = localStorageService.getUser().teams;
+  const isTeam = user?.teams;
 
   return fetch(`/api/storage/file/${itemId}/meta`, {
     method: 'post',

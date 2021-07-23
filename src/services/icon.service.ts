@@ -42,6 +42,7 @@ import eyeGray from '../assets/icons/eye-gray.svg';
 import eyeSlashGray from '../assets/icons/eye-slash-gray.svg';
 import userGray from '../assets/icons/user-gray.svg';
 import search from '../assets/icons/search.svg';
+import dragAndDrop from '../assets/icons/drag-and-drop.png';
 
 export enum IconType {
   FolderWithCrossGray = 'folderWithCrossGray',
@@ -87,7 +88,8 @@ export enum IconType {
   EyeGray = 'eyeGray',
   EyeSlashGray = 'eyeSlashGray',
   UserGray = 'userGray',
-  Search = 'search'
+  Search = 'search',
+  DragAndDrop = 'dragAndDrop'
 }
 
 const icons = {
@@ -134,7 +136,8 @@ const icons = {
   eyeGray,
   eyeSlashGray,
   userGray,
-  search
+  search,
+  dragAndDrop
 };
 
 // Hay que cambiarlo a iconName: keyof typeof icons y borrar los enums

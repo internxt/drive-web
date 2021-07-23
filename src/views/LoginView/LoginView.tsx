@@ -15,7 +15,7 @@ import { storeTeamsInfo } from '../../services/teams.service';
 import { generateNewKeys } from '../../services/pgp.service';
 import { validateFormat } from '../../services/keys.service';
 import { UserSettings } from '../../models/interfaces';
-import { setUser } from '../../store/slices/userSlice';
+import { setUser } from '../../store/slices/user';
 import analyticsService from '../../services/analytics.service';
 
 import './LoginView.scss';

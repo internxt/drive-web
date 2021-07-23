@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
-import history from '../../lib/history';
-import { UserSettings } from '../../models/interfaces';
-import localStorageService from '../../services/localStorage.service';
-import { storeTeamsInfo } from '../../services/teams.service';
-import userService from '../../services/user.service';
-import { setCurrentFolderId } from './storageSlice';
+import history from '../../../lib/history';
+import { UserSettings } from '../../../models/interfaces';
+import localStorageService from '../../../services/localStorage.service';
+import { storeTeamsInfo } from '../../../services/teams.service';
+import userService from '../../../services/user.service';
+import { setCurrentFolderId } from '../storage';
 
 interface UserState {
   isInitializing: boolean;

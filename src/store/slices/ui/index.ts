@@ -34,4 +34,6 @@ export const {
   showFileLogger
 } = uiSlice.actions;
 
+export const uiActions = uiSlice.actions;
+
 export default uiSlice.reducer;

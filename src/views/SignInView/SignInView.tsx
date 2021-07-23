@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 
-import { initializeUserThunk, setUser } from '../../store/slices/userSlice';
+import { initializeUserThunk, setUser } from '../../store/slices/user';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
@@ -14,7 +14,6 @@ import localStorageService from '../../services/localStorage.service';
 import analyticsService from '../../services/analytics.service';
 import history from '../../lib/history';
 import iconService, { IconType } from '../../services/icon.service';
-import BaseButton from '../../components/Buttons/BaseButton';
 import { useSelector } from 'react-redux';
 import { IFormValues, UserSettings } from '../../models/interfaces';
 

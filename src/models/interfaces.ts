@@ -113,3 +113,10 @@ export type StripeProductNames = {
   'Drive 200GB': string,
   'Drive 2 TB': string
 }
+export interface IActionUpdateFileLoggerEntry {
+  filePath: string,
+  action?: FileActionTypes,
+  status?: FileStatusTypes,
+  progress?: number,
+  errorMessage?: string
+}

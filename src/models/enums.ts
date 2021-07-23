@@ -52,7 +52,8 @@ export enum AnalyticsTrack {
   OpenWelcomeFile = 'file-welcome-open',
   DeleteWelcomeFile = 'file-welcome-delete',
   FileShare = 'file-share',
-  UserResetPasswordRequest = 'user-reset-password-request'
+  UserResetPasswordRequest = 'user-reset-password-request',
+  FileUploadBucketIdUndefined = 'file-upload-bucketid-undefined'
 }
 
 export enum DevicePlatform {

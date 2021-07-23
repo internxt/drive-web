@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import './Breadcrumbs.scss';
 
@@ -24,7 +24,7 @@ class Breadcrumbs extends React.Component<BreadcrumbsProps, BreadcrumbsState> {
     ));
   }
 
-  render(): JSX.Element {
+  render(): ReactNode {
     return (
       <nav>
         {this.itemsList.length > 0 ?

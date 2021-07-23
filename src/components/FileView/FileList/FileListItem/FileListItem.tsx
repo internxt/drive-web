@@ -8,13 +8,13 @@ import sizeService from '../../../../services/size.service';
 import './FileListItem.scss';
 import dateService from '../../../../services/date.service';
 import { AppDispatch, RootState } from '../../../../store';
-import { deleteItemsThunk, selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem } from '../../../../store/slices/storageSlice';
+import { selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem, storageThunks, setCurrentFolderId } from '../../../../store/slices/storage';
 import downloadService from '../../../../services/download.service';
 import { UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
-import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/uiSlice';
 import iconService from '../../../../services/icon.service';
+import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
 interface FileListItemProps {
   user: UserSettings;
@@ -39,17 +39,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       dirtyName: '',
       nameInputRef: React.createRef()
     };
-
-    this.onNameDoubleClicked = this.onNameDoubleClicked.bind(this);
-    this.onNameBlurred = this.onNameBlurred.bind(this);
-    this.onNameChanged = this.onNameChanged.bind(this);
-    this.onEnterKeyPressed = this.onEnterKeyPressed.bind(this);
-    this.onRenameButtonClicked = this.onRenameButtonClicked.bind(this);
-    this.onDownloadButtonClicked = this.onDownloadButtonClicked.bind(this);
-    this.onShareButtonClicked = this.onShareButtonClicked.bind(this);
-    this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
-    this.onDeleteButtonClicked = this.onDeleteButtonClicked.bind(this);
-    this.onSelectCheckboxChanged = this.onSelectCheckboxChanged.bind(this);
   }
 
   get nameNode(): JSX.Element {
@@ -60,7 +49,10 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     return (
       <Fragment>
         <input className={`${isEditingName ? 'block' : 'hidden'} dense`} ref={nameInputRef} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
-        <span className={`${spanDisplayClass} text-neutral-900 text-sm px-1`} onDoubleClick={this.onNameDoubleClicked}>{item.name}</span>
+        <span
+          className={`${spanDisplayClass} whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1`}
+          onDoubleClick={this.onNameDoubleClicked}
+        >{item.name}</span>
       </Fragment>
     );
   }
@@ -78,7 +70,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   confirmNameChange() {
-    const { user, item, currentFolderId } = this.props;
+    const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
     const data = JSON.stringify({ metadata: { itemName: dirtyName } });
 
@@ -87,11 +79,15 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         if (item.isFolder) {
           folderService.updateMetaData(item.id, data)
             .then(() => {
-              // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+              this.props.dispatch(
+                storageThunks.fetchFolderContentThunk()
+              );
             });
         } else {
           fileService.updateMetaData(item.fileId, data).then(() => {
-            // TODO: update folder content this.getFolderContent(currentFolderId, false, true, user.teams);
+            this.props.dispatch(
+              storageThunks.fetchFolderContentThunk()
+            );
           });
         }
       }
@@ -102,9 +98,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onNameDoubleClicked(): void {
+  onNameDoubleClicked = (e: MouseEvent): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
+
+    e.stopPropagation();
 
     this.setState(
       { isEditingName: true, dirtyName: item.name },
@@ -112,21 +110,21 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     );
   }
 
-  onNameBlurred(): void {
+  onNameBlurred = (): void => {
     this.setState({ isEditingName: false });
   }
 
-  onNameChanged(e: any): void {
+  onNameChanged = (e: any): void => {
     this.setState({ dirtyName: e.target.value });
   }
 
-  onEnterKeyPressed(e: React.KeyboardEvent): void {
+  onEnterKeyPressed = (e: React.KeyboardEvent): void => {
     if (e.key === 'Enter') {
       this.confirmNameChange();
     }
   }
 
-  onSelectCheckboxChanged(e: any) {
+  onSelectCheckboxChanged = (e: any): void => {
     const { item, dispatch } = this.props;
 
     e.target.checked ?
@@ -134,7 +132,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       dispatch(deselectItem(item.name));
   }
 
-  onRenameButtonClicked(): void {
+  onRenameButtonClicked = (): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
 
@@ -144,32 +142,44 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     );
   }
 
-  onDownloadButtonClicked(): void {
+  onDownloadButtonClicked = (): void => {
     downloadService.downloadFile(this.props.item);
   }
 
-  onShareButtonClicked(): void {
+  onShareButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
     dispatch(setItemToShare(item.id));
   }
 
-  onInfoButtonClicked(): void {
+  onInfoButtonClicked = (): void => {
     this.props.dispatch(setInfoItem(this.props.item.id));
   }
 
-  onDeleteButtonClicked(): void {
+  onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
     dispatch(setItemsToDelete([item.id]));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
+  onItemDoubleClicked = (): void => {
+    const { dispatch, item } = this.props;
+
+    if (item.isFolder) {
+      dispatch(setCurrentFolderId(item.id));
+      dispatch(storageThunks.fetchFolderContentThunk());
+    }
+  }
+
   render(): ReactNode {
     const { item } = this.props;
 
     return (
-      <tr className="group file-list-item hover:bg-blue-10 border-b border-l-neutral-30 text-sm">
+      <tr
+        className="group file-list-item hover:bg-blue-10 border-b border-l-neutral-30 text-sm"
+        onDoubleClick={this.onItemDoubleClicked}
+      >
         <td className="px-4">
           <input type="checkbox" checked={this.isSelected} onChange={this.onSelectCheckboxChanged} />
         </td>

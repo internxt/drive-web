@@ -1,53 +1,42 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { FileViewMode } from '../../../components/FileView/models/enums';
 
-import { RootState } from '../';
-import storageService from '../../services/storage.service';
+import selectors from './storageSelectors';
+import thunks, { extraReducers } from './storageThunks';
 
-interface StorageState {
+export interface StorageState {
   isLoading: boolean;
   isDeletingItems: boolean;
-  currentFolderId: number | null;
+  navigationStack: number[];
+  currentFolderId: number;
   currentFolderBucket: string | null;
   items: any[];
   selectedItems: number[];
   itemToShareId: number;
   itemsToDeleteIds: number[];
   infoItemId: number;
+  viewMode: FileViewMode;
+  namePath: any[];
   sortFunction: ((a: any, b: any) => number) | null;
+  searchFunction: ((item: any) => boolean) | null;
 }
 
 const initialState: StorageState = {
   isLoading: false,
   isDeletingItems: false,
-  currentFolderId: null,
+  navigationStack: [],
+  currentFolderId: 0,
   currentFolderBucket: null,
   items: [],
   selectedItems: [],
   itemToShareId: 0,
   itemsToDeleteIds: [],
   infoItemId: 0,
-  sortFunction: null
+  viewMode: FileViewMode.List,
+  namePath: [],
+  sortFunction: null,
+  searchFunction: null
 };
-
-export const storageSelectors = {
-  getInfoItem(state: RootState): any | undefined {
-    return state.storage.items.find(item => item.id === state.storage.infoItemId);
-  }
-};
-
-export const deleteItemsThunk = createAsyncThunk(
-  'storage/deleteItems',
-  async (undefined, { getState }: any) => {
-    const { user } = getState().user;
-    const { items, itemsToDeleteIds, currentFolderId } = getState().storage;
-    const itemsToDelete: any[] = items.filter(item => itemsToDeleteIds.includes(item.id));
-
-    console.log(itemsToDelete);
-    await storageService.deleteItems(itemsToDelete);
-
-    // this.getFolderContent(currentFolderId, false, true, !!user.teams);
-  }
-);
 
 export const storageSlice = createSlice({
   name: 'storage',
@@ -85,20 +74,27 @@ export const storageSlice = createSlice({
     },
     setSortFunction: (state: StorageState, action: PayloadAction<((a: any, b: any) => number) | null>) => {
       state.sortFunction = action.payload;
+    },
+    pushFolderToNavigation: (state: StorageState, action: PayloadAction<number>) => {
+      state.navigationStack.push(action.payload);
+    },
+    popFolderFromNavigation: (state: StorageState) => {
+      state.navigationStack.pop();
+    },
+    clearNavigationStack: (state: StorageState) => {
+      state.navigationStack = [];
+    },
+    setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
+      state.viewMode = action.payload;
+    },
+    pushNamePath: (state: StorageState, action: PayloadAction<any>) => {
+      state.namePath.push(action.payload);
+    },
+    popNamePath: (state: StorageState) => {
+      state.namePath.pop();
     }
   },
-  extraReducers: (builder) => {
-    builder
-      .addCase(deleteItemsThunk.pending, (state, action) => {
-        state.isDeletingItems = true;
-      })
-      .addCase(deleteItemsThunk.fulfilled, (state, action) => {
-        state.isDeletingItems = false;
-      })
-      .addCase(deleteItemsThunk.rejected, (state, action) => {
-        state.isDeletingItems = false;
-      });
-  }
+  extraReducers
 });
 
 export const {
@@ -112,8 +108,18 @@ export const {
   setItemToShare,
   setItemsToDelete,
   setInfoItem,
-  setSortFunction
+  setSortFunction,
+  pushFolderToNavigation,
+  popFolderFromNavigation,
+  clearNavigationStack,
+  setViewMode,
+  pushNamePath,
+  popNamePath
 } = storageSlice.actions;
+
+export const storageSelectors = selectors;
+
+export const storageThunks = thunks;
 
 export const storageActions = storageSlice.actions;
 
