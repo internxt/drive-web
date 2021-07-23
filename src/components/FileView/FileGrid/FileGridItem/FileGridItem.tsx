@@ -3,7 +3,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
 import iconService, { IconType } from '../../../../services/icon.service';
-import { setItemToShare, setItemsToDelete, setInfoItem, storageThunks } from '../../../../store/slices/storage';
+import { storageActions, storageThunks } from '../../../../store/slices/storage';
 
 import dateService from '../../../../services/date.service';
 
@@ -20,13 +20,13 @@ import './FileGridItem.scss';
 interface FileGridItemProps {
   user: UserSettings;
   item: any;
+  isDraggingAnItem: boolean;
   selectedItems: number[];
   currentFolderId: number | null;
   dispatch: AppDispatch;
 }
 
 interface FileGridItemState {
-  isDraggingOver: boolean;
   isEditingName: boolean;
   dirtyName: string;
   nameInputRef: React.RefObject<HTMLInputElement>;
@@ -37,7 +37,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     super(props);
 
     this.state = {
-      isDraggingOver: false,
       isEditingName: false,
       dirtyName: '',
       nameInputRef: React.createRef()
@@ -147,17 +146,17 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   onShareButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(setItemToShare(item.id));
+    dispatch(storageActions.setItemToShare(item.id));
   }
 
   onInfoButtonClicked = (): void => {
-    this.props.dispatch(setInfoItem(this.props.item.id));
+    this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
   }
 
   onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(setItemsToDelete([item.id]));
+    dispatch(storageActions.setItemsToDelete([item.id]));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
@@ -167,30 +166,32 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     dispatch(storageThunks.goToFolderThunk(item.id));
   }
 
-  onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
-    console.log('over item!');
+  onItemDragEnter = (e: DragEvent<HTMLDivElement>): void => {
+    console.log('onItemDragEnter!');
 
-    this.setState({ isDraggingOver: true });
+    this.props.dispatch(storageActions.setIsDraggingAnItem(true));
+    // TODO: save target item data
+
     e.preventDefault();
   }
 
   onItemDragLeave = (e: DragEvent<HTMLDivElement>): void => {
-    this.setState({ isDraggingOver: false });
+    this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 
   onItemDrop = (e: DragEvent<HTMLDivElement>): void => {
-
+    console.log('onItemDrop!');
   }
 
   render(): ReactNode {
-    const { isDraggingOver } = this.state;
+    const { isDraggingAnItem } = this.props;
     const { item } = this.props;
 
     return (
       <div
-        className={`${isDraggingOver ? 'none-events-in-descendants' : 'pointer-events-auto'} group file-grid-item`}
+        className={`${isDraggingAnItem ? 'pointer-events-none only descendants' : 'pointer-events-auto'} group file-grid-item`}
         onDoubleClick={this.onItemDoubleClicked}
-        onDragOver={this.onItemDragOver}
+        onDragEnter={this.onItemDragEnter}
         onDragLeave={this.onItemDragLeave}
         onDrop={this.onItemDrop}
       >
@@ -208,12 +209,9 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
         </Dropdown>
         <img alt="" className="file-icon m-auto" src={this.itemIconSrc} />
         <div className="text-center mt-3">
-          <div className="h-5 mb-1">
+          <div className="mb-1">
             {this.nameNode}
           </div>
-          <span className="block text-xs text-blue-60 px-1">
-            {dateService.fromNow(item.updatedAt)}
-          </span>
         </div>
       </div>
     );
@@ -222,7 +220,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
 export default connect(
   (state: RootState) => ({
-    user: state.user.user,
+    isDraggingAnItem: state.storage.isDraggingAnItem,
     currentFolderId: state.storage.currentFolderId,
     selectedItems: state.storage.selectedItems
   }))(FileGridItem);

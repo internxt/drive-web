@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Unicons from '@iconscout/react-unicons';
 
 import { getIcon, IconType } from '../../services/icon.service';
 import SideNavigatorItem from './SideNavigatorItem/SideNavigatorItem';
@@ -22,7 +23,7 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
   constructor(props: SideNavigatorProps) {
     super(props);
 
-    this.state = { };
+    this.state = {};
   }
 
   componentDidMount(): void { }
@@ -39,7 +40,8 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
 
         {/* LOGO & ITEMS */}
         <div>
-          <button className="collapse-button cursor-pointer flex items-center z-40 absolute transform"
+          <button
+            className="p-4 collapse-button cursor-pointer flex items-center z-40 absolute transform"
             onClick={onCollapseButtonClicked}
           >
             <img src={getIcon(IconType.NextPage)} alt="" />
@@ -60,13 +62,13 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
               <SideNavigatorItem
                 label='Drive'
                 to="/app"
-                icon={getIcon(IconType.FolderWithCrossGray)}
+                icon={<Unicons.UilFolderMedical className="w-5" />}
                 isOpen={!collapsed}
               />
               <SideNavigatorItem
                 label='Recents'
                 to="/app/recents"
-                icon={getIcon(IconType.ClockGray)}
+                icon={<Unicons.UilClockEight className="w-5" />}
                 isOpen={!collapsed}
               />
             </div>
@@ -76,12 +78,20 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
               <SideNavigatorItem
                 label='Account'
                 to="/account"
-                icon={getIcon(IconType.AccountGray)}
+                icon={<Unicons.UilUserCircle className="w-5" />}
                 isOpen={!collapsed}
               />
-              <SideNavigatorItem label="App" icon={getIcon(IconType.Desktop)} isOpen={!collapsed} />
-              <SideNavigatorItem label='Support' icon={getIcon(IconType.SupportGray)} isOpen={!collapsed} />
-              <SideNavigatorItem label='Log out' icon={getIcon(IconType.LogOutGray)} isOpen={!collapsed} onClick={authService.logOut} />
+              <SideNavigatorItem
+                label="Support"
+                icon={<Unicons.UilChatBubbleUser className="w-5" />}
+                isOpen={!collapsed}
+              />
+              <SideNavigatorItem
+                label='Log out'
+                icon={<Unicons.UilSignout className="w-5" />}
+                isOpen={!collapsed}
+                onClick={authService.logOut}
+              />
             </div>
           </div>
         </div>

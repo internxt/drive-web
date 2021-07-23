@@ -1,6 +1,6 @@
 @layer components {
   .side-navigator-item {
-    @apply select-none py-1 w-full hover:text-blue-60 cursor-pointer pr-3;
+    @apply select-none py-1 hover:text-blue-60 cursor-pointer pr-3;
   }
 
   .collapsed.side-navigator-item {

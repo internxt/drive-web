@@ -16,11 +16,11 @@ module.exports = {
         'width': 'width'
       },
       height: {
-        'footer': '115px'
+        'footer': 'var(--footer-height)'
       },
       width: {
-        'sidenav-1280-open': '180px',
-        'sidenav-1280-closed': '40px',
+        'sidenav-1280': '180px',
+        'sidenav-1280-collapsed': '64px',
         'activity-1280': '296px'
       },
       margin: {
@@ -162,6 +162,7 @@ module.exports = {
   },
   variants: {
     extend: {
+      borderWidth: ['hover'],
       borderRadius: ['responsive', 'focus'],
       backgroundColor: ['active']
     }

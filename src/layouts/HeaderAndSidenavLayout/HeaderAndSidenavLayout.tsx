@@ -54,13 +54,12 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
       <div className="flex-grow flex">
         <SideNavigator collapsed={collapsed} onCollapseButtonClicked={toggleCollapsed} />
 
-        <div className="flex flex-col flex-grow bg-l-neutral-20 pl-4 pr-24px">
+        <div className="flex flex-col flex-grow bg-l-neutral-20 pl-8 pr-24px">
           <AppHeader />
           {children}
+          <footer className="bg-l-neutral-20 h-footer"></footer>
         </div>
       </div>
-
-      <footer className="bg-l-neutral-20 h-footer"></footer>
 
     </div>
   ) : (
