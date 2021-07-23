@@ -150,6 +150,13 @@ export function trackUserResetPasswordRequest(): void {
   window.analytics.track(AnalyticsTrack.UserResetPasswordRequest);
 }
 
+export function track(email: string, status: 'error' | 'success'): void {
+  window.analytics.track('user-change-password', {
+    status,
+    email
+  });
+}
+
 const analyticsService = {
   page,
   identify,
@@ -175,7 +182,8 @@ const analyticsService = {
   trackDeleteWelcomeFile,
   trackFileShare,
   signInAttempted,
-  trackUserResetPasswordRequest
+  trackUserResetPasswordRequest,
+  track
 };
 
 export default analyticsService;

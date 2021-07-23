@@ -5,7 +5,6 @@ import { IFormValues } from '../../../models/interfaces';
 import { store2FA } from '../../../services/auth.service';
 import AuthButton from '../../Buttons/AuthButton';
 import AuthInput from '../../Inputs/AuthInput';
-import '../../Security.css';
 import { twoFactorRegexPattern } from '../../../services/validation.service';
 import notify from '../../Notifications';
 import { getIcon } from '../../../services/icon.service';

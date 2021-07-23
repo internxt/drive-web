@@ -28,6 +28,11 @@ export enum FileActionTypes {
   Upload = 'upload'
 }
 
+export enum IconPosition {
+  Right = 'right',
+  Left = 'left'
+}
+
 export enum AnalyticsTrack {
   SignOut = 'user-signout',
   SignIn = 'user-signin',
