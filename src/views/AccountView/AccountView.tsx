@@ -23,9 +23,7 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
 
   render(): JSX.Element {
     return (
-      <div>
-        <AccountConfiguration />
-      </div >
+      <AccountConfiguration />
     );
   }
 }

@@ -15,13 +15,13 @@ interface InputProps {
   maxLength?: ValidationRule<string | number> | undefined
   placeholder: string,
   pattern?: ValidationRule<RegExp> | undefined
-  icon: IconType,
+  icon: keyof typeof IconType,
   error: FieldError | undefined
   onClick?: () => void
 }
 
 const InputPrimary = ({ label, type, register, required, placeholder, pattern, icon, minLength, maxLength, error, onClick }: InputProps): JSX.Element => (
-  <div className='relative'>
+  <div className='relative flex-1'>
     <input type={type} placeholder={placeholder}
       {...register(label, {
         required,
@@ -29,7 +29,7 @@ const InputPrimary = ({ label, type, register, required, placeholder, pattern, i
         maxLength,
         pattern
       })}
-      className={`auth-input w-full transform duration-200 mb-2.5${error ? 'error' : ''}`}
+      className={`auth-input w-full transform duration-200 mb-2.5 ${error ? 'error' : ''}`}
     />
 
     <div className={`absolute ${label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-5 cursor-pointer' : 'right-3 bottom-6'} flex items-center justify-center`}

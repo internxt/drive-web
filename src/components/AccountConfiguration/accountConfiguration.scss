@@ -1,33 +1,35 @@
-.nav-item {
-  @apply flex h-12 items-start justify-center text-sm text-m-neutral-100
-}
+.test {
+  .nav-item {
+    @apply flex h-12 items-start justify-center text-sm text-m-neutral-100;
+  }
 
-a.nav-item.nav-link:nth-child(6) {
-  @apply w-full
-}
+  a.nav-item.nav-link:nth-child(6) {
+    @apply w-full;
+  }
 
-.nav-link {
-  @apply px-6 border-b border-l-neutral-50
-}
+  .nav-link {
+    @apply px-6 border-b border-l-neutral-50;
+  }
 
-.nav-item.active {
-  @apply border-b border-blue-60
-}
+  .nav-item.active {
+    @apply border-b border-blue-60;
+  }
 
-.tab-pane {
-  @apply hidden
-}
+  .tab-pane {
+    @apply hidden;
+  }
 
-.tab-pane.show {
-  @apply flex px-8 justify-center
+  .tab-pane.show {
+    @apply flex px-8 justify-center;
+  }
 }
 
 @layer components {
   .account_config_title {
-    @apply text-center font-semibold text-base text-neutral-900
+    @apply text-center font-semibold text-base text-neutral-900;
   }
 
   .account_config_description {
-    @apply text-center font-normal text-xs text-neutral-700 mt-2
+    @apply text-center font-normal text-xs text-neutral-700 mt-2;
   }
 }

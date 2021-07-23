@@ -88,7 +88,7 @@ const Referrals = (): JSX.Element => {
           You can redeem that credit for a premium Internxt membership, or exclusive Internxt merch. Start earning money today!
         </span>
 
-        <form className='w-full mt-4 flex justify-between items-stretch' onSubmit={handleSubmit(onSubmit)}>
+        <form className='w-full mt-4 flex justify-between' onSubmit={handleSubmit(onSubmit)}>
           <AuthInput
             placeholder='example@example.com'
             label='email'
