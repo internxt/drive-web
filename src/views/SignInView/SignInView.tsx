@@ -123,7 +123,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
             placeholder='Email'
             label='email'
             type='email'
-            icon={IconType.MailGray}
+            icon='mailGray'
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -136,8 +136,8 @@ export default function SignInView(props: SignInProps): JSX.Element {
             label={'password'}
             type={showPassword ? 'text' : 'password'}
             icon={password
-              ? showPassword ? IconType.EyeSlashGray : IconType.EyeGray
-              : IconType.LockGray
+              ? showPassword ? 'eyeSlashGray' : 'eyeGray'
+              : 'lockGray'
             }
             register={register}
             required={true}
@@ -152,7 +152,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
                 placeholder='Two factor authentication code'
                 label={'twoFactorCode'}
                 type={'text'}
-                icon={IconType.LockGray}
+                icon='lockGray'
                 register={register}
                 pattern={/^\d{3}(\s+)?\d{3}$/}
                 required={true}

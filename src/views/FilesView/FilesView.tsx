@@ -82,13 +82,13 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     items.push({
       name: 'storage',
       label: '',
-      icon: iconService.getIcon(IconType.BreadcrumbsStorage),
+      icon: iconService.getIcon('breadcrumbsStorage'),
       active: true
     });
     items.push({
       name: 'folder-parent-name',
       label: 'FolderParentName',
-      icon: iconService.getIcon(IconType.BreadcrumbsFolder),
+      icon: iconService.getIcon('breadcrumbsFolder'),
       active: false
     });
 
@@ -401,8 +401,8 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     const { isLoadingItems, infoItemId, viewMode } = this.props;
     const { fileInputRef, isDragging } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: iconService.getIcon(IconType.MosaicView),
-      [FileViewMode.Grid]: iconService.getIcon(IconType.ListView)
+      [FileViewMode.List]: iconService.getIcon('mosaicView'),
+      [FileViewMode.Grid]: iconService.getIcon('listView')
     };
     const viewModes = {
       [FileViewMode.List]: <FileList />,
@@ -421,16 +421,16 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
               <div className="flex">
                 <button className="primary mr-1 flex items-center" onClick={this.onUploadButtonClicked}>
-                  <img alt="" className="h-3 mr-2" src={iconService.getIcon(IconType.Upload)} /><span>Upload</span>
+                  <img alt="" className="h-3 mr-2" src={iconService.getIcon('upload')} /><span>Upload</span>
                 </button>
                 {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
-                  <img alt="" src={iconService.getIcon(IconType.CreateFolder)} />
+                  <img alt="" src={iconService.getIcon('createFolder')} />
                 </button> : null}
                 {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDownloadButtonClicked}>
-                  <img alt="" src={iconService.getIcon(IconType.DownloadItems)} />
+                  <img alt="" src={iconService.getIcon('downloadItems')} />
                 </button> : null}
                 {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDeleteButtonClicked}>
-                  <img alt="" src={iconService.getIcon(IconType.DeleteItems)} />
+                  <img alt="" src={iconService.getIcon('deleteItems')} />
                 </button> : null}
                 <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
                   <img alt="" src={viewModesIcons[viewMode]} />
@@ -456,13 +456,13 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                     <span className="text-sm w-1/3">Showing 15 items of 450</span>
                     <div className="flex justify-center w-1/3">
                       <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                        <img alt="" src={iconService.getIcon(IconType.PreviousPage)} />
+                        <img alt="" src={iconService.getIcon('previousPage')} />
                       </div>
                       <div className="pagination-button">
                         1
                       </div>
                       <div onClick={this.onNextPageButtonClicked} className="pagination-button">
-                        <img alt="" src={iconService.getIcon(IconType.NextPage)} />
+                        <img alt="" src={iconService.getIcon('nextPage')} />
                       </div>
                     </div>
                     <div className="w-1/3"></div>
@@ -477,7 +477,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                     <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
                       <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">
                         <div className="mb-28">
-                          <img alt="" src={iconService.getIcon(IconType.DragAndDrop)} className="w-36 m-auto" />
+                          <img alt="" src={iconService.getIcon('dragAndDrop')} className="w-36 m-auto" />
                           <div className="text-center">
                             <span className="font-semibold text-base text-m-neutral-100 block">
                               Drag and drop here
@@ -491,7 +491,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                     </div> :
                     <div className="pointer-events-none absolute bg-opacity-30 bg-blue-50 border-blue-60 border-2 rounded-6px h-full w-full flex justify-center items-end">
                       <div className="drag-and-drop-with-items-message-container mb-10 bg-white rounded-4px flex items-center w-72 py-2 pl-2 pr-8">
-                        <img alt="" src={iconService.getIcon(IconType.DragAndDrop)} className="w-14 mr-2" />
+                        <img alt="" src={iconService.getIcon('dragAndDrop')} className="w-14 mr-2" />
                         <span className="text-xs">
                           Drop the files here to immediately upload them to <span className="text-blue-60 font-semibold">myBackup</span> folder
                         </span>
