@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import AccountConfiguration from '../../components/AccountConfiguration';
 
 interface AccountViewProps { }
 
@@ -22,9 +23,7 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
 
   render(): JSX.Element {
     return (
-      <div>
-        ACCOUNT VIEW
-      </div >
+      <AccountConfiguration />
     );
   }
 }

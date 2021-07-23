@@ -1,26 +1,26 @@
 import React from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
-import { getIcon, IconType } from '../../services/icon.service';
-import SideNavigatorItem from './SideNavigatorItem/SideNavigatorItem';
-import { ReactComponent as ReactLogo } from '../../assets/icons/internxt-long-logo.svg';
-
-import './SideNavigator.scss';
+import SidenavItem from './SidenavItem/SidenavItem';
 import authService from '../../services/auth.service';
 import { connect } from 'react-redux';
 import { RootState } from '../../store';
 import { UserSettings } from '../../models/interfaces';
+import { getIcon } from '../../services/icon.service';
 
-interface SideNavigatorProps {
+import { ReactComponent as ReactLogo } from '../../assets/icons/internxt-long-logo.svg';
+import './Sidenav.scss';
+
+interface SidenavProps {
   user: UserSettings;
   collapsed: boolean;
   onCollapseButtonClicked: () => void;
 }
 
-interface SideNavigatorState { }
+interface SidenavState { }
 
-class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorState> {
-  constructor(props: SideNavigatorProps) {
+class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, SidenavState> {
+  constructor(props: SidenavProps) {
     super(props);
 
     this.state = {};
@@ -44,13 +44,13 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
             className="p-4 collapse-button cursor-pointer flex items-center z-40 absolute transform"
             onClick={onCollapseButtonClicked}
           >
-            <img src={getIcon(IconType.NextPage)} alt="" />
+            <img src={getIcon('nextPage')} alt="" />
           </button>
 
           <div>
             <div className="py-3 mb-2">
               {collapsed ?
-                <img className='opacity-0 w-6 long-logo' src={getIcon(IconType.InternxtShortLogo)} alt="" /> :
+                <img className='opacity-0 w-6 long-logo' src={getIcon('internxtShortLogo')} alt="" /> :
                 <div className="w-28 h-auto flex items-center">
                   <ReactLogo className="long-logo w-full" />
                 </div>
@@ -59,13 +59,13 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
 
             <div className={`${!collapsed ? 'mb-10' : ''}`}>
               <span className='h-3 text-xs text-m-neutral-100 font-semibold mb-4'>{!collapsed && 'Storage'}</span>
-              <SideNavigatorItem
+              <SidenavItem
                 label='Drive'
                 to="/app"
                 icon={<Unicons.UilFolderMedical className="w-5" />}
                 isOpen={!collapsed}
               />
-              <SideNavigatorItem
+              <SidenavItem
                 label='Recents'
                 to="/app/recents"
                 icon={<Unicons.UilClockEight className="w-5" />}
@@ -75,18 +75,18 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
 
             <div>
               <span className='h-3 text-xs text-m-neutral-100 font-semibold mb-4'>{!collapsed && 'Configuration'}</span>
-              <SideNavigatorItem
+              <SidenavItem
                 label='Account'
                 to="/account"
                 icon={<Unicons.UilUserCircle className="w-5" />}
                 isOpen={!collapsed}
               />
-              <SideNavigatorItem
+              <SidenavItem
                 label="Support"
                 icon={<Unicons.UilChatBubbleUser className="w-5" />}
                 isOpen={!collapsed}
               />
-              <SideNavigatorItem
+              <SidenavItem
                 label='Log out'
                 icon={<Unicons.UilSignout className="w-5" />}
                 isOpen={!collapsed}
@@ -123,4 +123,4 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
 export default connect(
   (state: RootState) => ({
     user: state.user.user
-  }))(SideNavigator);
+  }))(SideNavigatorItemSideNavigator);

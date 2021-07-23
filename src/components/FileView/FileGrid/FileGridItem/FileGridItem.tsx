@@ -5,8 +5,6 @@ import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
 import iconService, { IconType } from '../../../../services/icon.service';
 import { storageActions, storageThunks } from '../../../../store/slices/storage';
 
-import dateService from '../../../../services/date.service';
-
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import { AppDispatch, RootState } from '../../../../store';
@@ -75,7 +73,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   confirmNameChange() {
-    const { user, item, currentFolderId } = this.props;
+    const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
     const data = JSON.stringify({ metadata: { itemName: dirtyName } });
 

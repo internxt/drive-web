@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { getIcon, IconType } from '../../../services/icon.service';
+import { getIcon } from '../../../services/icon.service';
 
 import './BaseDialog.scss';
 
@@ -28,7 +28,7 @@ const BaseDialog = ({
           <div className="w-1/6"></div>
           <span className='text-center w-4/6 flex-grow text-neutral-90 text-base'>{title}</span>
           <div className="w-1/6 cursor-pointer" onClick={onClose}>
-            <img src={getIcon(IconType.CrossBlue)} alt="" className="ml-auto" />
+            <img src={getIcon('crossBlue')} alt="" className="ml-auto" />
           </div>
         </div>
         {children}
