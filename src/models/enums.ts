@@ -13,19 +13,19 @@ export enum FileStatusType {
 }
 
 export enum FileStatusTypes {
-  Error = 'error',
-  Success = 'success',
-  Encrypting = 'encrypting',
-  Decrypting = 'decrypting',
-  Pending = 'pending',
-  Downloading = 'downloading',
-  Uploading = 'uploading',
-  CreatingDirectoryStructure = 'creating-directoy-structure'
+  'error',
+  'success',
+  'encrypting',
+  'decrypting',
+  'pending',
+  'downloading',
+  'uploading',
+  'creating-directory-structure'
 }
 
 export enum FileActionTypes {
-  Download = 'download',
-  Upload = 'upload'
+  'download',
+  'upload'
 }
 
 export enum AnalyticsTrack {

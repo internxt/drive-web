@@ -11,6 +11,7 @@ import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
 import { setItemToShare } from '../../store/slices/storage';
 import { useState } from 'react';
+import FileLoggerModal from '../../components/FileLoggerModal';
 
 interface HeaderAndSidenavLayoutProps {
   children: JSX.Element
@@ -49,7 +50,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
         open={isDeleteItemsDialogOpen}
       />
 
-      <FileLogger />
+      <FileLoggerModal />
 
       <div className="flex-grow flex">
         <SideNavigator collapsed={collapsed} onCollapseButtonClicked={toggleCollapsed} />

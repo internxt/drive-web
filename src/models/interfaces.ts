@@ -60,22 +60,13 @@ export interface FileData {
   progress: string
 }
 export interface ILoggerFile {
-  action: FileActionTypes,
-  filePath: string,
-  status: FileStatusTypes,
-  progress?: number,
   isFolder: boolean,
-  errorMessage?: string
+  filePath: string,
+  action: keyof typeof FileActionTypes,
+  status: keyof typeof FileStatusTypes,
+  progress?: string
 }
 
 export interface ILogger {
   [filePath: string]: ILoggerFile
-}
-export interface IActionUpdateFileLoggerEntry {
-  filePath: string,
-  action?: FileActionTypes,
-  status?: FileStatusTypes,
-  progress?: number,
-  errorMessage?: string,
-  isFolder?: boolean
 }

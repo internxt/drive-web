@@ -16,6 +16,8 @@ import downloadService from '../../../../services/download.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
 import './FileGridItem.scss';
+import queueFileLogger from '../../../../services/queueFileLogger';
+import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileGridItemProps {
   user: UserSettings;
@@ -141,7 +143,11 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   onDownloadButtonClicked = (): void => {
-    downloadService.downloadFile(this.props.item);
+    const path = '' + this.props.item.name + '.' + this.props.item.type;
+
+    this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
+
+    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
   }
 
   onShareButtonClicked = (): void => {

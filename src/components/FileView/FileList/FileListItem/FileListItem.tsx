@@ -15,6 +15,8 @@ import { UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
+import queueFileLogger from '../../../../services/queueFileLogger';
+import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileListItemProps {
   user: UserSettings;
@@ -22,6 +24,7 @@ interface FileListItemProps {
   selectedItems: number[];
   currentFolderId: number | null;
   dispatch: AppDispatch
+  namePath: any;
 }
 
 interface FileListItemState {
@@ -143,7 +146,10 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   onDownloadButtonClicked = (): void => {
-    downloadService.downloadFile(this.props.item);
+    const path = '' + this.props.item.name + '.' + this.props.item.type;
+
+    this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
+    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
   }
 
   onShareButtonClicked = (): void => {
@@ -232,5 +238,6 @@ export default connect(
   (state: RootState) => ({
     user: state.user.user,
     currentFolderId: state.storage.currentFolderId,
-    selectedItems: state.storage.selectedItems
+    selectedItems: state.storage.selectedItems,
+    namePath: state.storage.namePath
   }))(FileListItem);
