@@ -43,53 +43,64 @@ import eyeSlashGray from '../assets/icons/eye-slash-gray.svg';
 import userGray from '../assets/icons/user-gray.svg';
 import search from '../assets/icons/search.svg';
 import dragAndDrop from '../assets/icons/drag-and-drop.png';
+import houseBlue from '../assets/icons/house-blue.svg';
+import houseGray from '../assets/icons/house-gray.svg';
+import buildingGray from '../assets/icons/building-gray.svg';
+import buildingBlue from '../assets/icons/building-blue.svg';
+import checkBlue from '../assets/icons/check-blue.svg';
+import roundedTickNeutral from '../assets/icons/rounded-tick-neutral.svg';
+import roundedTickWhite from '../assets/icons/rounded-tick-white.svg';
+import clipboardBlue from '../assets/icons/clipboard-blue.svg';
+import googleAuthenticator from '../assets/icons/google-authenticator.svg';
+import appStore from '../assets/icons/app-store.svg';
+import playStore from '../assets/icons/play-store.svg';
 
 export enum IconType {
-  FolderWithCrossGray = 'folderWithCrossGray',
-  ClockGray = 'clockGray',
-  AccountGray = 'accountGray',
-  SupportGray = 'supportGray',
-  LogOutGray = 'logOutGray',
-  BackArrows = 'backArrows',
-  InternxtLongLogo = 'internxtLongLogo',
-  InternxtShortLogo = 'internxtShortLogo',
-  FolderBlue = 'folderBlue',
-  FileSuccessGreen = 'fileSuccessGreen',
-  FileErrorRed = 'fileErrorRed',
-  FileEncryptingGray = 'fileEncryptingGray',
-  DoubleArrowUpBlue = 'doubleArrowUpBlue',
-  DoubleArrowUpWhite = 'doubleArrowUpWhite',
-  CrossGray = 'crossGray',
-  CrossWhite = 'crossWhite',
-  CrossNeutralBlue = 'crossNeutralBlue',
-  CrossBlue = 'crossBlue',
-  DefaultFile = 'defaultFile',
-  BreadcrumbsStorage = 'breadcrumbsStorage',
-  BreadcrumbsFolder = 'breadcrumbsFolder',
-  DefaultAvatar = 'defaultAvatar',
-  Upload = 'upload',
-  ListView = 'listView',
-  MosaicView = 'mosaicView',
-  CreateFolder = 'createFolder',
-  DownloadItems = 'downloadItems',
-  DeleteItems = 'deleteItems',
-  ShareItems = 'shareItems',
-  Actions = 'actions',
-  Settings = 'settings',
-  ItemInfo = 'itemInfo',
-  Desktop = 'desktop',
-  PreviousPage = 'previousPage',
-  NextPage = 'nextPage',
-  LightMode = 'lightMode',
-  DarkMode = 'darkMode',
-  ArrowUpWhite = 'arrowUpWhite',
-  MailGray = 'mailGray',
-  LockGray = 'lockGray',
-  EyeGray = 'eyeGray',
-  EyeSlashGray = 'eyeSlashGray',
-  UserGray = 'userGray',
-  Search = 'search',
-  DragAndDrop = 'dragAndDrop'
+ 'folderWithCrossGray',
+ 'clockGray',
+ 'accountGray',
+ 'supportGray',
+ 'logOutGray',
+ 'backArrows',
+ 'internxtLongLogo',
+ 'internxtShortLogo',
+ 'folderBlue',
+ 'fileSuccessGreen',
+ 'fileErrorRed',
+ 'fileEncryptingGray',
+ 'doubleArrowUpBlue',
+ 'doubleArrowUpWhite',
+ 'crossGray',
+ 'crossWhite',
+ 'crossNeutralBlue',
+ 'crossBlue',
+ 'defaultFile',
+ 'breadcrumbsStorage',
+ 'breadcrumbsFolder',
+ 'defaultAvatar',
+ 'upload',
+ 'listView',
+ 'mosaicView',
+ 'createFolder',
+ 'downloadItems',
+ 'deleteItems',
+ 'shareItems',
+ 'actions',
+ 'settings',
+ 'itemInfo',
+ 'desktop',
+ 'previousPage',
+ 'nextPage',
+ 'lightMode',
+ 'darkMode',
+ 'arrowUpWhite',
+ 'mailGray',
+ 'lockGray',
+ 'eyeGray',
+ 'eyeSlashGray',
+ 'userGray',
+ 'search',
+ 'dragAndDrop'
 }
 
 const icons = {
@@ -137,10 +148,22 @@ const icons = {
   eyeSlashGray,
   userGray,
   search,
-  dragAndDrop
+  dragAndDrop,
+  houseBlue,
+  houseGray,
+  buildingGray,
+  buildingBlue,
+  checkBlue,
+  roundedTickNeutral,
+  roundedTickWhite,
+  clipboardBlue,
+  googleAuthenticator,
+  playStore,
+  appStore
 };
 
-export const getIcon = (iconName: IconType): string => {
+// Hay que cambiarlo a iconName: keyof typeof icons y borrar los enums
+export const getIcon = (iconName: keyof typeof icons): string => {
   return icons[iconName];
 };
 

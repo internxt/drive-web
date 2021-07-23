@@ -15,18 +15,7 @@ import analyticsService from '../../services/analytics.service';
 import history from '../../lib/history';
 import iconService, { IconType } from '../../services/icon.service';
 import { useSelector } from 'react-redux';
-import { UserSettings } from '../../models/interfaces';
-
-interface SignInFormData {
-  name: string,
-  lastname: string,
-  email: string,
-  password: string,
-  twoFactorCode: string,
-  confirmPassword: string,
-  remember: boolean,
-  acceptTerms: boolean
-}
+import { IFormValues, UserSettings } from '../../models/interfaces';
 
 interface SignInProps {
   email?: string,
@@ -35,7 +24,7 @@ interface SignInProps {
 
 export default function SignInView(props: SignInProps): JSX.Element {
   const dispatch = useAppDispatch();
-  const { register, formState: { errors }, handleSubmit, control } = useForm<SignInFormData>({ mode: 'onChange' });
+  const { register, formState: { errors }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const twoFactorCode = useWatch({ control, name: 'twoFactorCode', defaultValue: '' });
@@ -50,7 +39,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
   const [showPassword, setShowPassword] = useState(false);
   const user: UserSettings = useSelector((state: RootState) => state.user.user);
 
-  const onSubmit: SubmitHandler<SignInFormData> = async formData => {
+  const onSubmit: SubmitHandler<IFormValues> = async formData => {
     setIsLoggingIn(true);
     const { email, password } = formData;
 
@@ -127,14 +116,14 @@ export default function SignInView(props: SignInProps): JSX.Element {
 
       <div className='flex flex-col items-center justify-center w-full'>
         <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>
-          <img src={iconService.getIcon(IconType.InternxtLongLogo)} width='110' alt="" />
+          <img src={iconService.getIcon('internxtLongLogo')} width='110' alt="" />
           <span className='text-sm text-neutral-500 mt-1.5 mb-6'>Cloud Storage</span>
 
           <AuthInput
             placeholder='Email'
             label='email'
             type='email'
-            icon={IconType.MailGray}
+            icon='mailGray'
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -147,8 +136,8 @@ export default function SignInView(props: SignInProps): JSX.Element {
             label={'password'}
             type={showPassword ? 'text' : 'password'}
             icon={password
-              ? showPassword ? IconType.EyeSlashGray : IconType.EyeGray
-              : IconType.LockGray
+              ? showPassword ? 'eyeSlashGray' : 'eyeGray'
+              : 'lockGray'
             }
             register={register}
             required={true}
@@ -163,7 +152,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
                 placeholder='Two factor authentication code'
                 label={'twoFactorCode'}
                 type={'text'}
-                icon={IconType.LockGray}
+                icon='lockGray'
                 register={register}
                 pattern={/^\d{3}(\s+)?\d{3}$/}
                 required={true}

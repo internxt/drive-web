@@ -13,49 +13,49 @@ const Item = ({ item }: ItemProps): JSX.Element => {
 
     switch (item.status) {
       case FileStatusTypes.Uploading:
-        infoObj.icon = item.isFolder ? iconService.getIcon(IconType.FolderBlue) : iconService.getIcon(IconType.ClockGray);
+        infoObj.icon = item.isFolder ? iconService.getIcon('folderBlue') : iconService.getIcon('clockGray');
         infoObj.status = item.isFolder ? 'Uploading...' : item.progress + '% Uploading file...';
 
         return infoObj;
 
       case FileStatusTypes.Downloading:
-        infoObj.icon = item.isFolder ? iconService.getIcon(IconType.FolderBlue) : iconService.getIcon(IconType.ClockGray);
+        infoObj.icon = item.isFolder ? iconService.getIcon('folderBlue') : iconService.getIcon('clockGray');
         infoObj.status = item.isFolder ? 'Downloading files in folder...' : item.progress + '% Downloading file...';
 
         return infoObj;
 
       case FileStatusTypes.Success:
-        infoObj.icon = item.isFolder ? iconService.getIcon(IconType.FolderBlue) : iconService.getIcon(IconType.FileSuccessGreen);
+        infoObj.icon = item.isFolder ? iconService.getIcon('folderBlue') : iconService.getIcon('fileSuccessGreen');
         infoObj.status = item.action === FileActionTypes.Download ? 'File downloaded' : 'File uploaded';
 
         return infoObj;
 
       case FileStatusTypes.Error:
-        infoObj.icon = item.isFolder ? iconService.getIcon(IconType.FolderBlue) : iconService.getIcon(IconType.FileErrorRed);
+        infoObj.icon = item.isFolder ? iconService.getIcon('folderBlue') : iconService.getIcon('fileErrorRed');
         infoObj.status = item.action === FileActionTypes.Download ? 'Error during download' : 'Error during upload';
 
         return infoObj;
 
       case FileStatusTypes.Encrypting:
-        infoObj.icon = item.isFolder ? iconService.getIcon(IconType.FolderBlue) : iconService.getIcon(IconType.FileEncryptingGray);
+        infoObj.icon = item.isFolder ? iconService.getIcon('folderBlue') : iconService.getIcon('fileEncryptingGray');
         infoObj.status = item.isFolder ? 'Encrypting files' : 'Encrypting file';
 
         return infoObj;
 
       case FileStatusTypes.Decrypting:
-        infoObj.icon = item.isFolder ? iconService.getIcon(IconType.FolderBlue) : iconService.getIcon(IconType.FileEncryptingGray);
+        infoObj.icon = item.isFolder ? iconService.getIcon('folderBlue') : iconService.getIcon('fileEncryptingGray');
         infoObj.status = item.isFolder ? 'Decrypting files' : 'Decrypting file';
 
         return infoObj;
 
       case FileStatusTypes.CreatingDirectoryStructure:
-        infoObj.icon = iconService.getIcon(IconType.ClockGray);
+        infoObj.icon = iconService.getIcon('clockGray');
         infoObj.status = 'Creating directory structure';
 
         return infoObj;
 
       default: // Pending
-        infoObj.icon = item.isFolder ? iconService.getIcon(IconType.FolderBlue) : iconService.getIcon(IconType.ClockGray);
+        infoObj.icon = item.isFolder ? iconService.getIcon('folderBlue') : iconService.getIcon('clockGray');
         infoObj.status = item.progress + item.action === FileActionTypes.Download ? ' Pending to download' : 'Pending to upload';
 
         return infoObj;

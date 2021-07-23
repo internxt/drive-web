@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { getIcon, IconType } from '../../services/icon.service';
 import SideNavigatorItem from './SideNavigatorItem/SideNavigatorItem';
 import { ReactComponent as ReactLogo } from '../../assets/icons/internxt-long-logo.svg';
 
@@ -9,6 +8,7 @@ import authService from '../../services/auth.service';
 import { connect } from 'react-redux';
 import { RootState } from '../../store';
 import { UserSettings } from '../../models/interfaces';
+import { getIcon } from '../../services/icon.service';
 
 interface SideNavigatorProps {
   user: UserSettings;
@@ -42,13 +42,13 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
           <button className="collapse-button cursor-pointer flex items-center z-40 absolute transform"
             onClick={onCollapseButtonClicked}
           >
-            <img src={getIcon(IconType.NextPage)} alt="" />
+            <img src={getIcon('nextPage')} alt="" />
           </button>
 
           <div>
             <div className="py-3 mb-2">
               {collapsed ?
-                <img className='opacity-0 w-6 long-logo' src={getIcon(IconType.InternxtShortLogo)} alt="" /> :
+                <img className='opacity-0 w-6 long-logo' src={getIcon('internxtShortLogo')} alt="" /> :
                 <div className="w-28 h-auto flex items-center">
                   <ReactLogo className="long-logo w-full" />
                 </div>
@@ -60,13 +60,13 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
               <SideNavigatorItem
                 label='Drive'
                 to="/app"
-                icon={getIcon(IconType.FolderWithCrossGray)}
+                icon={getIcon('folderWithCrossGray')}
                 isOpen={!collapsed}
               />
               <SideNavigatorItem
                 label='Recents'
                 to="/app/recents"
-                icon={getIcon(IconType.ClockGray)}
+                icon={getIcon('clockGray')}
                 isOpen={!collapsed}
               />
             </div>
@@ -76,12 +76,12 @@ class SideNavigator extends React.Component<SideNavigatorProps, SideNavigatorSta
               <SideNavigatorItem
                 label='Account'
                 to="/account"
-                icon={getIcon(IconType.AccountGray)}
+                icon={getIcon('accountGray')}
                 isOpen={!collapsed}
               />
-              <SideNavigatorItem label="App" icon={getIcon(IconType.Desktop)} isOpen={!collapsed} />
-              <SideNavigatorItem label='Support' icon={getIcon(IconType.SupportGray)} isOpen={!collapsed} />
-              <SideNavigatorItem label='Log out' icon={getIcon(IconType.LogOutGray)} isOpen={!collapsed} onClick={authService.logOut} />
+              <SideNavigatorItem label="App" icon={getIcon('desktop')} isOpen={!collapsed} />
+              <SideNavigatorItem label='Support' icon={getIcon('supportGray')} isOpen={!collapsed} />
+              <SideNavigatorItem label='Log out' icon={getIcon('logOutGray')} isOpen={!collapsed} onClick={authService.logOut} />
             </div>
           </div>
         </div>

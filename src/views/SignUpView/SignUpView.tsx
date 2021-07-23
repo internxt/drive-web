@@ -4,7 +4,7 @@ import * as bip39 from 'bip39';
 import queryString from 'query-string';
 
 import SideInfo from '../Authentication/SideInfo';
-import { UserSettings } from '../../models/interfaces';
+import { IFormValues, UserSettings } from '../../models/interfaces';
 import localStorageService from '../../services/localStorage.service';
 import { emailRegexPattern, validateEmail } from '../../services/validation.service';
 import analyticsService from '../../services/analytics.service';
@@ -19,19 +19,7 @@ import { getHeaders } from '../../lib/auth';
 import AesUtils from '../../lib/AesUtil';
 import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
-import { IconType } from '../../services/icon.service';
 import BaseButton from '../../components/Buttons/BaseButton';
-
-interface SignUpFormData {
-  name: string,
-  lastname: string,
-  email: string,
-  password: string,
-  twoFactorCode: string,
-  confirmPassword: string,
-  remember: boolean,
-  acceptTerms: boolean
-}
 
 interface SignUpProps {
   match: any;
@@ -43,7 +31,7 @@ interface SignUpProps {
 
 const SignUp = (props: SignUpProps): JSX.Element => {
   console.log(props);
-  const { register, formState: { errors }, handleSubmit, control } = useForm<SignUpFormData>({ mode: 'onChange' });
+  const { register, formState: { errors }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
   const dispatch = useAppDispatch();
 
   const password = useWatch({ control, name: 'password', defaultValue: '' });
@@ -199,7 +187,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
     });
   };
 
-  const onSubmit: SubmitHandler<SignUpFormData> = async formData => {
+  const onSubmit: SubmitHandler<IFormValues> = async formData => {
     setIsLoading(true);
     try {
       const { name, lastname, email, password, confirmPassword } = formData;
@@ -237,7 +225,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Name'
             label='name'
             type='text'
-            icon={IconType.UserGray}
+            icon='userGray'
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Name must not be empty' }}
@@ -248,7 +236,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Lastname'
             label='lastname'
             type='text'
-            icon={IconType.UserGray}
+            icon='userGray'
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Lastname must not be empty' }}
@@ -259,7 +247,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Email'
             label='email'
             type='email'
-            icon={IconType.MailGray}
+            icon='mailGray'
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -272,8 +260,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             label={'password'}
             type={showPassword ? 'text' : 'password'}
             icon={password
-              ? showPassword ? IconType.EyeSlashGray : IconType.EyeGray
-              : IconType.LockGray
+              ? showPassword ? 'eyeSlashGray' : 'eyeGray'
+              : 'lockGray'
             }
             register={register}
             required={true}
@@ -287,8 +275,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             label='confirmPassword'
             type={showPassword ? 'text' : 'password'}
             icon={confirmPassword
-              ? showPassword ? IconType.EyeSlashGray : IconType.EyeGray
-              : IconType.LockGray
+              ? showPassword ? 'eyeSlashGray' : 'eyeGray'
+              : 'lockGray'
             }
             register={register}
             required={true}
