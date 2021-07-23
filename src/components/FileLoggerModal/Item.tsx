@@ -1,6 +1,6 @@
 import { FileActionTypes, FileStatusTypes } from '../../models/enums';
 import { ILoggerFile } from '../../models/interfaces';
-import iconService, { IconType } from '../../services/icon.service';
+import iconService, { getIcon, IconType } from '../../services/icon.service';
 
 interface ItemProps {
   item: ILoggerFile
@@ -55,8 +55,8 @@ const Item = ({ item }: ItemProps): JSX.Element => {
         return infoObj;
 
       default: // Pending
-        infoObj.icon = item.isFolder ? iconService.getIcon(IconType.FolderBlue) : iconService.getIcon(IconType.ClockGray);
-        infoObj.status = item.progress + item.action === FileActionTypes.Download ? ' Pending to download' : 'Pending to upload';
+        infoObj.icon = item.isFolder ? getIcon(IconType.FolderBlue) : getIcon(IconType.ClockGray);
+        infoObj.status = item.action === FileActionTypes.Download ? 'Pending to download' : 'Pending to upload';
 
         return infoObj;
     }

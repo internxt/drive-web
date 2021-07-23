@@ -5,10 +5,14 @@ import Item from './Item';
 import './FileLogger.scss';
 import FileLogger from '../../services/fileLogger';
 import { FileStatusTypes } from '../../models/enums';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { ILoggerFile } from '../../models/interfaces';
 import iconService, { IconType } from '../../services/icon.service';
+import { clearFileLoggerStatus, selectLoggerFiles } from '../../store/slices/files';
 
 const FileLoggerModal = (): JSX.Element => {
+  const fileHistory = useAppSelector(selectLoggerFiles);
+  const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinized] = useState(false);
@@ -28,6 +32,7 @@ const FileLoggerModal = (): JSX.Element => {
     if (hasFinished) {
       setIsOpen(false);
       setEntries([]);
+      dispatch(clearFileLoggerStatus());
     }
   };
 
@@ -73,10 +78,10 @@ const FileLoggerModal = (): JSX.Element => {
 
       <div className='overflow-y-scroll scrollbar pt-2.5 h-full'>
         {
-          // Object.values(files).map(file => <Item item={file} key={file.filePath} />)
-          entries.map(file => {
+          Object.values(fileHistory).map(file => <Item item={file} key={file.filePath} />)
+          /* entries.map(file => {
             return <Item item={file} key={file.filePath} />;
-          })
+          }) */
         }
       </div>
     </div>

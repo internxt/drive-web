@@ -68,10 +68,14 @@ export interface ILoggerFile {
   errorMessage?: string
 }
 
+export interface ILogger {
+  [filePath: string]: ILoggerFile
+}
 export interface IActionUpdateFileLoggerEntry {
   filePath: string,
   action?: FileActionTypes,
   status?: FileStatusTypes,
   progress?: number,
-  errorMessage?: string
+  errorMessage?: string,
+  isFolder?: boolean
 }
