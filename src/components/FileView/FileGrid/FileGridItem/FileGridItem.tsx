@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode } from 'react';
+import React, { DragEvent, Fragment, ReactNode } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
@@ -7,7 +7,6 @@ import { setItemToShare, setItemsToDelete, setInfoItem, storageThunks } from '..
 
 import dateService from '../../../../services/date.service';
 
-import './FileGridItem.scss';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import { AppDispatch, RootState } from '../../../../store';
@@ -15,6 +14,8 @@ import { connect } from 'react-redux';
 import { UserSettings } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
+
+import './FileGridItem.scss';
 
 interface FileGridItemProps {
   user: UserSettings;
@@ -25,6 +26,7 @@ interface FileGridItemProps {
 }
 
 interface FileGridItemState {
+  isDraggingOver: boolean;
   isEditingName: boolean;
   dirtyName: string;
   nameInputRef: React.RefObject<HTMLInputElement>;
@@ -35,6 +37,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     super(props);
 
     this.state = {
+      isDraggingOver: false,
       isEditingName: false,
       dirtyName: '',
       nameInputRef: React.createRef()
@@ -48,7 +51,16 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     return (
       <Fragment>
-        <input ref={nameInputRef} className={`${isEditingName ? 'block' : 'hidden'} dense`} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
+        <input
+          ref={nameInputRef}
+          className={`${isEditingName ? 'block' : 'hidden'} dense w-full`}
+          type="text" value={dirtyName}
+          placeholder="Change name folder"
+          onChange={this.onNameChanged}
+          onBlur={this.onNameBlurred}
+          onKeyPress={this.onEnterKeyPressed}
+          autoFocus
+        />
         <span
           onDoubleClick={this.onNameDoubleClicked}
           className={`${ṣpanDisplayClass} whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1`}
@@ -155,11 +167,33 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     dispatch(storageThunks.goToFolderThunk(item.id));
   }
 
+  onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
+    console.log('over item!');
+
+    this.setState({ isDraggingOver: true });
+    e.preventDefault();
+  }
+
+  onItemDragLeave = (e: DragEvent<HTMLDivElement>): void => {
+    this.setState({ isDraggingOver: false });
+  }
+
+  onItemDrop = (e: DragEvent<HTMLDivElement>): void => {
+
+  }
+
   render(): ReactNode {
+    const { isDraggingOver } = this.state;
     const { item } = this.props;
 
     return (
-      <div className="group file-grid-item" onDoubleClick={this.onItemDoubleClicked}>
+      <div
+        className={`${isDraggingOver ? 'none-events-in-descendants' : 'pointer-events-auto'} group file-grid-item`}
+        onDoubleClick={this.onItemDoubleClicked}
+        onDragOver={this.onItemDragOver}
+        onDragLeave={this.onItemDragLeave}
+        onDrop={this.onItemDrop}
+      >
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
             <img alt="" className="m-auto" src={iconService.getIcon(IconType.Actions)} />

@@ -87,7 +87,7 @@ export const storageSlice = createSlice({
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
     },
-    pushNamePath: (state: StorageState, action: PayloadAction<number>) => {
+    pushNamePath: (state: StorageState, action: PayloadAction<any>) => {
       state.namePath.push(action.payload);
     },
     popNamePath: (state: StorageState) => {

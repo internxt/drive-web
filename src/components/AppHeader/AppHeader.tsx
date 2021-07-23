@@ -28,7 +28,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   onSearchButtonClicked(): void {
-    console.log('making search!');
+    console.log('search submitted!');
   }
 
   render(): ReactNode {

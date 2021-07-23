@@ -1,4 +1,4 @@
-import { createRef, Component, Fragment } from 'react';
+import { createRef, ReactNode, Component, Fragment, DragEvent } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
@@ -53,7 +53,7 @@ interface FilesViewState {
   fileInputRef: React.RefObject<HTMLInputElement>;
   email: string;
   token: string;
-  rateLimitModal: boolean;
+  isDragging: boolean;
   searchFunction: any;
   isAdmin: boolean;
   isMember: boolean;
@@ -67,7 +67,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
       fileInputRef: createRef(),
       email: '',
       token: '',
-      rateLimitModal: false,
+      isDragging: false,
       searchFunction: null,
       isAdmin: true,
       isMember: false
@@ -379,9 +379,27 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     );
   }
 
-  render(): JSX.Element {
+  onViewDragOver = (e: DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.setState({ isDragging: true });
+  }
+
+  onViewDragLeave = (e: DragEvent<HTMLDivElement>): void => {
+    this.setState({ isDragging: false });
+  }
+
+  onViewDrop = (e: DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.setState({ isDragging: false });
+  }
+
+  render(): ReactNode {
     const { isLoadingItems, infoItemId, viewMode } = this.props;
-    const { fileInputRef } = this.state;
+    const { fileInputRef, isDragging } = this.state;
     const viewModesIcons = {
       [FileViewMode.List]: iconService.getIcon(IconType.MosaicView),
       [FileViewMode.Grid]: iconService.getIcon(IconType.ListView)
@@ -421,7 +439,12 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
             </div>
 
             <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden">
-              <div className="flex flex-col justify-between flex-grow overflow-y-auto">
+              <div
+                onDragOver={this.onViewDragOver}
+                onDragLeave={this.onViewDragLeave}
+                onDrop={this.onViewDrop}
+                className="flex flex-col justify-between flex-grow overflow-y-auto"
+              >
                 {isLoadingItems ?
                   <LoadingFileExplorer /> :
                   viewModes[viewMode]
@@ -429,7 +452,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
                 {/* PAGINATION */}
                 {!isLoadingItems && (
-                  <div className="bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
+                  <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
                     <span className="text-sm w-1/3">Showing 15 items of 450</span>
                     <div className="flex justify-center w-1/3">
                       <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
@@ -449,9 +472,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
               {/* DRAG AND DROP */}
               {
-                false ?
+                isDragging ?
                   (false ?
-                    <div className="p-8 absolute bg-white h-full w-full">
+                    <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
                       <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">
                         <div className="mb-28">
                           <img alt="" src={iconService.getIcon(IconType.DragAndDrop)} className="w-36 m-auto" />
@@ -466,7 +489,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                         </div>
                       </div>
                     </div> :
-                    <div className="absolute bg-opacity-30 bg-blue-50 border-blue-60 border-2 rounded-6px h-full w-full flex justify-center items-end">
+                    <div className="pointer-events-none absolute bg-opacity-30 bg-blue-50 border-blue-60 border-2 rounded-6px h-full w-full flex justify-center items-end">
                       <div className="drag-and-drop-with-items-message-container mb-10 bg-white rounded-4px flex items-center w-72 py-2 pl-2 pr-8">
                         <img alt="" src={iconService.getIcon(IconType.DragAndDrop)} className="w-14 mr-2" />
                         <span className="text-xs">
