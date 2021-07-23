@@ -43,6 +43,17 @@ import eyeSlashGray from '../assets/icons/eye-slash-gray.svg';
 import userGray from '../assets/icons/user-gray.svg';
 import search from '../assets/icons/search.svg';
 import dragAndDrop from '../assets/icons/drag-and-drop.png';
+import houseBlue from '../assets/icons/house-blue.svg';
+import houseGray from '../assets/icons/house-gray.svg';
+import buildingGray from '../assets/icons/building-gray.svg';
+import buildingBlue from '../assets/icons/building-blue.svg';
+import checkBlue from '../assets/icons/check-blue.svg';
+import roundedTickNeutral from '../assets/icons/rounded-tick-neutral.svg';
+import roundedTickWhite from '../assets/icons/rounded-tick-white.svg';
+import clipboardBlue from '../assets/icons/clipboard-blue.svg';
+import googleAuthenticator from '../assets/icons/google-authenticator.svg';
+import appStore from '../assets/icons/app-store.svg';
+import playStore from '../assets/icons/play-store.svg';
 
 export enum IconType {
   FolderWithCrossGray = 'folderWithCrossGray',
@@ -137,7 +148,18 @@ const icons = {
   eyeSlashGray,
   userGray,
   search,
-  dragAndDrop
+  dragAndDrop,
+  houseBlue,
+  houseGray,
+  buildingGray,
+  buildingBlue,
+  checkBlue,
+  roundedTickNeutral,
+  roundedTickWhite,
+  clipboardBlue,
+  googleAuthenticator,
+  playStore,
+  appStore
 };
 
 // Hay que cambiarlo a iconName: keyof typeof icons y borrar los enums
