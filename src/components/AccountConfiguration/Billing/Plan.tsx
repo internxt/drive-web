@@ -1,6 +1,6 @@
 import React from 'react';
 import { StripeProductNames, StripeSimpleNames } from '../../../models/interfaces';
-import { getIcon } from '../../../services/getIcon';
+import { getIcon } from '../../../services/icon.service';
 import ButtonPrimary from '../../Buttons/ButtonPrimary';
 
 interface PlanProps {

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { IFormValues } from '../../../models/interfaces';
-import { getIcon } from '../../../services/getIcon';
+import { getIcon } from '../../../services/icon.service';
 import localStorageService from '../../../services/localStorage.service';
 import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../services/referral.service';
 import { emailRegexPattern } from '../../../services/validation.service';

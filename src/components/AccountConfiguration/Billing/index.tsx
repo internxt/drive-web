@@ -1,12 +1,12 @@
 import React, { Fragment } from 'react';
 import { useState } from 'react';
-import { getIcon } from '../../../services/getIcon';
 import Plan from './Plan';
 import './billing.scss';
 import { useEffect } from 'react';
 import { loadAvailableProducts } from '../../../services/products.service';
-import notify from '../../Notifications';
 import { IStripeProduct } from '../../../models/interfaces';
+import { getIcon } from '../../../services/icon.service';
+import notify from '../../Notifications';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {

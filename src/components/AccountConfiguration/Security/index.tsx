@@ -2,10 +2,10 @@ import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { generateNew2FA, userHas2FAStored } from '../../../services/auth.service';
-import notify from '../../Notifications';
 import Deactivate2FA from './Deactivate2FA';
 import Steps from './Steps';
 import './security.scss';
+import notify from '../../Notifications';
 
 interface SecurityProps {
   isAuthenticated: boolean

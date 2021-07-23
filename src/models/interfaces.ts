@@ -67,3 +67,49 @@ export interface ILoggerFile {
   isFolder: boolean,
   errorMessage?: string
 }
+
+export interface IFormValues {
+  name: string,
+  lastname: string,
+  email: string,
+  password: string,
+  currentPassword: string,
+  twoFactorCode: string,
+  confirmPassword: string,
+  remember: boolean,
+  acceptTerms: boolean,
+  backupKey: string
+}
+
+export type IStripeProduct = {
+  id: string,
+  metadata: StripeProductMetadata,
+  name: StripeProductNames,
+  test?: boolean
+}
+
+export type StripeProductMetadata = {
+  is_drive: string,
+  member_tier: StripeMemberTiers,
+  price_eur: string,
+  simple_name: StripeSimpleNames,
+  size_bytes: string
+}
+
+export type StripeMemberTiers = {
+  infinite: string, lifetime: string, premium: string
+}
+
+export type StripeSimpleNames = {
+  'infinite': string,
+  '20TB': string,
+  '2TB': string,
+  '200GB': string,
+  '20GB': string
+}
+
+export type StripeProductNames = {
+  'Drive 20GB': string,
+  'Drive 200GB': string,
+  'Drive 2 TB': string
+}
