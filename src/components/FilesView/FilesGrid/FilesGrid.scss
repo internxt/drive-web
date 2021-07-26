@@ -1,6 +1,6 @@
 @layer components {
     .files-grid {
         max-width: fit-content;
-        @apply grid grid-cols-2 xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-2 mb-2;
+        @apply grid grid-cols-2 xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 auto-rows-min gap-2 mb-2;
     }
 }

@@ -29,7 +29,9 @@ interface FileGridItemProps {
 interface FileGridItemState {
   isEditingName: boolean;
   dirtyName: string;
+  itemRef: React.RefObject<HTMLDivElement>;
   nameInputRef: React.RefObject<HTMLInputElement>;
+  height: string;
 }
 
 class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState> {
@@ -39,8 +41,24 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     this.state = {
       isEditingName: false,
       dirtyName: '',
-      nameInputRef: React.createRef()
+      itemRef: React.createRef(),
+      nameInputRef: React.createRef(),
+      height: 'auto'
     };
+  }
+
+  componentDidMount() {
+    this.updateItemHeight();
+
+    window.addEventListener('resize', () => this.updateItemHeight());
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', () => this.updateItemHeight());
+  }
+
+  updateItemHeight = () => {
+    this.setState({ height: this.state.itemRef.current?.clientWidth + 'px' });
   }
 
   get nameNode(): JSX.Element {
@@ -191,6 +209,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   render(): ReactNode {
+    const { itemRef, height } = this.state;
     const { isDraggingAnItem, draggingTargetItemData, item } = this.props;
     const isDraggingOverThisItem: boolean = draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
     const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
@@ -199,6 +218,8 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     return (
       <div
+        ref={itemRef}
+        style={{ height }}
         className={`${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-grid-item`}
         onDoubleClick={this.onItemDoubleClicked}
         onDragOver={this.onItemDragOver}

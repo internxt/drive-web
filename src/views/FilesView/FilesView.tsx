@@ -449,7 +449,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                 onDragOver={this.onViewDragOver}
                 onDragLeave={this.onViewDragLeave}
                 onDrop={this.onViewDrop}
-                className="flex flex-col justify-between flex-grow overflow-y-auto"
+                className="flex flex-col justify-between flex-grow overflow-y-auto overflow-x-hidden"
               >
                 {isLoadingItems ?
                   <LoadingFileExplorer /> :

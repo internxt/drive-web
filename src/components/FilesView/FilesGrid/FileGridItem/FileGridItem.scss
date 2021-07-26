@@ -2,19 +2,19 @@
     .file-grid-item {
         border-radius: 8px;
 
-        @apply relative box-content bg-white hover:bg-blue-20 p-4;
+        @apply relative bg-white hover:bg-blue-20 p-4 box-border;
 
         &:hover {
             box-shadow: inset 0px 0px 0px 0.15rem var(--color-blue-40);
         }
 
         .file-grid-item-icon-container {
-            height: 105px;
+            height: 70%;
 
-            @apply flex justify-center items-center w-full bg-white;
+            @apply flex justify-center items-center w-full;
 
             .file-icon {
-                height: 40px;
+                height: 50%;
             }
         }
     }
