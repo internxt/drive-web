@@ -484,7 +484,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                             Drag and drop here
                           </span>
                           <span className="text-sm text-m-neutral-100 block">
-                            or click on upload button
+                            or use the upload button
                           </span>
                         </div>
                       </div>
