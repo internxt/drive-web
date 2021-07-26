@@ -2,7 +2,7 @@ import React from 'react';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import './accountConfiguration.scss';
-import Billing from './Billing';
+import Plans from './Plans';
 import ChangePassword from './Password';
 import Referrals from './Referrals';
 import Security from './Security';
@@ -10,9 +10,9 @@ import Security from './Security';
 const AccountConfiguration = (): JSX.Element => {
   return (
     <div className='h-full rounded-md bg-white test pb-16'>
-      <Tabs defaultActiveKey="billing" className='relative flex px-8 pt-3.5' >
-        <Tab title='Billing' eventKey='billing'>
-          <Billing />
+      <Tabs defaultActiveKey="plans" className='relative flex px-8 pt-3.5' >
+        <Tab title='Plans' eventKey='plans'>
+          <Plans />
         </Tab>
 
         <Tab title='Password' eventKey='password'>
