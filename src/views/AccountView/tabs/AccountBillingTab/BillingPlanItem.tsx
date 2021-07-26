@@ -1,4 +1,4 @@
-import { StripeProductNames, StripeSimpleNames } from '../../../../models/interfaces';
+import { IStripePlan, StripeProductNames, StripeSimpleNames } from '../../../../models/interfaces';
 import { getIcon } from '../../../../services/icon.service';
 import BaseButton from '../../../../components/Buttons/BaseButton';
 
@@ -8,6 +8,7 @@ interface BillingPlanItemProps {
   size: StripeSimpleNames,
   price: string,
   buttonText: string,
+  plans: IStripePlan[],
   characteristics: string[]
 }
 
@@ -18,7 +19,7 @@ const ListItem = ({ text }: { text: string }): JSX.Element => (
   </div>
 );
 
-const BillingPlanItem = ({ name, description, size, price, buttonText, characteristics }: BillingPlanItemProps): JSX.Element => {
+const BillingPlanItem = ({ name, description, size, price, buttonText, plans, characteristics }: BillingPlanItemProps): JSX.Element => {
   return (
     <div className='w-full h-full flex flex-col justify-center text-neutral-700 p-7'>
       <h2 className='text-lg font-medium text-left'>{name}</h2>

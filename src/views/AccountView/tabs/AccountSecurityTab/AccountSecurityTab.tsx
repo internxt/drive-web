@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { generateNew2FA, userHas2FAStored } from '../../../../services/auth.service';
+import React, { Fragment } from 'react';
 import Deactivate2FA from './Deactivate2FA';
 import Steps from './Steps';
 import notify from '../../../../components/Notifications';
@@ -16,6 +17,7 @@ const Security = ({ isAuthenticated }: SecurityProps): JSX.Element => {
   const [qr, setQr] = useState('');
   const [backupKey, setBackupKey] = useState('');
   const [passwordSalt, setPasswordSalt] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const pickStep = (selectedStep) => {
     // Unable to go two steps forward
@@ -41,6 +43,8 @@ const Security = ({ isAuthenticated }: SecurityProps): JSX.Element => {
       }
     } catch (err) {
       notify('There was an error ' + err.message, 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,28 +63,34 @@ const Security = ({ isAuthenticated }: SecurityProps): JSX.Element => {
         Follow the steps below to enable 2FA on your account.
       </p>
 
-      <div className={`${has2FA ? 'hidden' : 'flex'} justify-between my-8 security-buttons_container security-container`}>
-        <button onClick={() => pickStep(1)} className={`${currentStep === 1 ? 'security-button security-active_button' : 'security-button'}`}>
-          <span className="number">1</span><span className="text">Download App</span>
-        </button>
+      {!isLoading ?
+        <Fragment>
+          <div className={`${has2FA ? 'hidden' : 'flex'} justify-between my-8 security-buttons_container security-container`}>
+            <button onClick={() => pickStep(1)} className={`${currentStep === 1 ? 'security-button security-active_button' : 'security-button'}`}>
+              <span className="number">1</span><span className="text">Download App</span>
+            </button>
 
-        <button onClick={() => pickStep(2)} className={`${currentStep === 2 ? 'security-button security-active_button' : 'security-button'}`}>
-          <span className="number">2</span><span className="text">Scan QR Code</span>
-        </button>
+            <button onClick={() => pickStep(2)} className={`${currentStep === 2 ? 'security-button security-active_button' : 'security-button'}`}>
+              <span className="number">2</span><span className="text">Scan QR Code</span>
+            </button>
 
-        <button onClick={() => pickStep(3)} className={`${currentStep === 3 ? 'security-button security-active_button' : 'security-button'} ${currentStep - 3 < -1 && 'cursor-default'}`}>
-          <span className="number">3</span><span className="text">Backup Key</span>
-        </button>
+            <button onClick={() => pickStep(3)} className={`${currentStep === 3 ? 'security-button security-active_button' : 'security-button'} ${currentStep - 3 < -1 && 'cursor-default'}`}>
+              <span className="number">3</span><span className="text">Backup Key</span>
+            </button>
 
-        <button onClick={() => pickStep(4)} className={`${currentStep === 4 ? 'security-button security-active_button' : 'security-button'} ${currentStep - 4 < -1 && 'cursor-default'}`}>
-          <span className="number">4</span><span className="text">Enable</span>
-        </button>
-      </div>
+            <button onClick={() => pickStep(4)} className={`${currentStep === 4 ? 'security-button security-active_button' : 'security-button'} ${currentStep - 4 < -1 && 'cursor-default'}`}>
+              <span className="number">4</span><span className="text">Enable</span>
+            </button>
+          </div>
 
-      {has2FA ?
-        <Deactivate2FA passwordSalt={passwordSalt} setHas2FA={setHas2FA} />
+          {has2FA ?
+            <Deactivate2FA passwordSalt={passwordSalt} setHas2FA={setHas2FA} />
+            :
+            <Steps currentStep={currentStep} qr={qr} backupKey={backupKey} setHas2FA={setHas2FA} />
+          }
+        </Fragment>
         :
-        <Steps currentStep={currentStep} qr={qr} backupKey={backupKey} setHas2FA={setHas2FA} />
+        <span>is loading haha</span>
       }
     </div>
   );

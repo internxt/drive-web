@@ -25,8 +25,8 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
   render(): JSX.Element {
     return (
       <div className='h-full rounded-md bg-white test pb-16'>
-        <Tabs defaultActiveKey="billing" className='relative flex px-8 pt-3.5' >
-          <Tab title='Billing' eventKey='billing'>
+        <Tabs defaultActiveKey="plans" className='relative flex px-8 pt-3.5' >
+          <Tab title='Plans' eventKey='plans'>
             <AccountBillingTab />
           </Tab>
 
