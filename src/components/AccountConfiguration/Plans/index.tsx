@@ -52,7 +52,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
   );
 };
 
-const Billing = (): JSX.Element => {
+const Plans = (): JSX.Element => {
   const [currentOption, setCurrentOption] = useState<'individual' | 'business'>('individual');
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState<IBillingPlan>({});
@@ -125,4 +125,4 @@ const Billing = (): JSX.Element => {
   );
 };
 
-export default Billing;
+export default Plans;

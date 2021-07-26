@@ -1,6 +1,5 @@
 import React from 'react';
 import * as Unicons from '@iconscout/react-unicons';
-
 import SidenavItem from './SidenavItem/SidenavItem';
 import authService from '../../services/auth.service';
 import { connect } from 'react-redux';
@@ -10,26 +9,89 @@ import { getIcon } from '../../services/icon.service';
 
 import { ReactComponent as ReactLogo } from '../../assets/icons/internxt-long-logo.svg';
 import './Sidenav.scss';
+import { getLimit } from '../../services/limit.service';
+import usageService, { fetchUsage, UsageResponse } from '../../services/usage.service';
+import SessionStorage from '../../lib/sessionStorage';
+import { getHeaders } from '../../lib/auth';
+import { bytesToString } from '../../services/size.service';
+import localStorageService from '../../services/localStorage.service';
+import history from '../../lib/history';
 
 interface SidenavProps {
   user: UserSettings;
   collapsed: boolean;
   onCollapseButtonClicked: () => void;
+  isTeam: boolean
 }
 
-interface SidenavState { }
+interface SidenavState {
+  limit: number,
+  usage: number,
+  limitTeams: number,
+  usageTeams: number
+}
+
+const DEFAULT_LIMIT = 1024 * 1024 * 1024 * 10;
 
 class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, SidenavState> {
   constructor(props: SidenavProps) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      limit: DEFAULT_LIMIT,
+      usage: 0,
+      limitTeams: 0,
+      usageTeams: 0
+    };
   }
 
-  componentDidMount(): void { }
+  componentDidMount(): void {
+    const limitStorage = SessionStorage.get('limitStorage');
+    const teamsStorage = SessionStorage.get('teamsStorage');
+
+    if (limitStorage) {
+      this.setState({ limit: parseInt(limitStorage, 10) });
+    } else {
+      getLimit(false).then((limitStorage) => {
+        if (limitStorage) {
+          SessionStorage.set('limitStorage', limitStorage);
+          this.setState({ limit: parseInt(limitStorage) });
+        }
+      });
+    }
+
+    if (teamsStorage) {
+      this.setState({ limitTeams: parseInt(teamsStorage, 10) });
+    } else {
+      if (localStorageService.get('xTeam')) {
+        getLimit(true).then((teamsStorage) => {
+          if (teamsStorage) {
+            SessionStorage.set('teamsStorage', teamsStorage);
+            this.setState({ limitTeams: parseInt(teamsStorage) });
+          }
+        });
+      }
+    }
+
+    usageService.fetchUsage().then((res: UsageResponse) => {
+      this.setState({ usage: res.total });
+    }).catch(() => null);
+  }
+
+  putLimitUser = () => {
+    if (this.state.limit > 0) {
+      if (this.state.limit < 108851651149824) {
+        return bytesToString(this.state.limit);
+      } else if (this.state.limit >= 108851651149824) {
+        return '\u221E';
+      } else {
+        return '...';
+      }
+    }
+  };
 
   onUpgradeButtonClicked = () => {
-    console.log('Upgrade button clicked!');
+    history.push('/account');
   }
 
   render(): JSX.Element {
@@ -97,18 +159,21 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
         </div>
 
         {/* UPGRADE */}
-        { !collapsed ? (
+        {!collapsed ? (
           <div className="account-state-container w-full">
             <div className="bg-white w-full rounded-4px">
               <div className="px-4 py-2 text-xs border-b border-dashed border-l-neutral-40">
-                Jhon Doe Young
+                {this.props.user.name} {this.props.user.lastname}
               </div>
+
               <div className="px-4 pt-2 pb-2 flex flex-col justify-center">
                 <span className="text-xs">{user.email}</span>
-                <div className="w-full bg-blue-10 h-1 rounded-sm">
-                  <div className="w-1/2 h-full bg-blue-60 rounded-sm"></div>
+
+                <div className='flex justify-start h-1.5 w-full bg-blue-30 rounded-lg overflow-hidden'>
+                  <div className='h-full bg-blue-70' style={{ width: (this.state.usage / this.state.limit) * 100 }} />
                 </div>
-                <span className="flex-grow mt-1 text-supporting-2 text-m-neutral-100">338.64 MB of 10 GB</span>
+
+                <span className="flex-grow mt-1 text-supporting-2 text-m-neutral-100">{bytesToString(this.state.usage)} of {this.putLimitUser()}</span>
                 <button className="secondary" onClick={this.onUpgradeButtonClicked}>Upgrade</button>
               </div>
             </div>
