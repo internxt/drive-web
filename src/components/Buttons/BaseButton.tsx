@@ -1,11 +1,14 @@
 interface ButtonProps {
   children: JSX.Element[] | string;
+  disabled?: boolean;
   onClick?: () => void;
 }
 
-const BaseButton = ({ children, onClick }: ButtonProps): JSX.Element => {
+const BaseButton = ({ children, disabled, onClick }: ButtonProps): JSX.Element => {
   return (
-    <button className="flex items-center justify-center bg-blue-60 py-2 rounded text-white text-sm"
+    <button
+      className="flex items-center justify-center bg-blue-60 py-2 rounded text-white text-sm"
+      disabled={!!disabled}
       onClick={() => onClick}
     >
       {children}

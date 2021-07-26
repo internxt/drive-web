@@ -1,11 +1,11 @@
-import React from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { IFormValues } from '../../../models/interfaces';
-import AuthInput from '../../Inputs/AuthInput';
-import AuthButton from '../../Buttons/AuthButton';
+
+import { IFormValues } from '../../../../models/interfaces';
+import AuthInput from '../../../../components/Inputs/AuthInput';
+import AuthButton from '../../../../components/Buttons/AuthButton';
 import { useState } from 'react';
-import { changePassword } from '../../../services/auth.service';
-import notify from '../../Notifications';
+import { changePassword } from '../../../../services/auth.service';
+import notify from '../../../../components/Notifications';
 
 const ChangePassword = (): JSX.Element => {
   const { register, formState: { errors }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });

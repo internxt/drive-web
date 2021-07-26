@@ -1,16 +1,14 @@
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { IFormValues } from '../../../models/interfaces';
-import { getIcon } from '../../../services/icon.service';
-import localStorageService from '../../../services/localStorage.service';
-import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../services/referral.service';
-import { emailRegexPattern } from '../../../services/validation.service';
-import AuthButton from '../../Buttons/AuthButton';
-import ButtonPrimary from '../../Buttons/ButtonPrimary';
-import AuthInput from '../../Inputs/AuthInput';
-import notify from '../../Notifications';
+import { IFormValues } from '../../../../models/interfaces';
+import { getIcon } from '../../../../services/icon.service';
+import localStorageService from '../../../../services/localStorage.service';
+import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../../services/referral.service';
+import { emailRegexPattern } from '../../../../services/validation.service';
+import AuthButton from '../../../../components/Buttons/AuthButton';
+import BaseButton from '../../../../components/Buttons/BaseButton';
+import AuthInput from '../../../../components/Inputs/AuthInput';
+import notify from '../../../../components/Notifications';
 
 const Referrals = (): JSX.Element => {
   const { register, formState: { errors }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
@@ -119,7 +117,9 @@ const Referrals = (): JSX.Element => {
           You have accumulated {credit}€
         </span>
 
-        <ButtonPrimary text='Claim' width='w-36' disabled={isLoadingClaim} onClick={onClaim} />
+        <BaseButton disabled={isLoadingClaim} onClick={onClaim}>
+          Claim
+        </BaseButton>
       </div>
     </div>
   );

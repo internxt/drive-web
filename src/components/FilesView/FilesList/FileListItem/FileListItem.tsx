@@ -8,16 +8,19 @@ import sizeService from '../../../../services/size.service';
 import './FileListItem.scss';
 import dateService from '../../../../services/date.service';
 import { AppDispatch, RootState } from '../../../../store';
-import { selectItem, deselectItem, setItemToShare, setItemsToDelete, setInfoItem, storageThunks, setCurrentFolderId } from '../../../../store/slices/storage';
+import { storageActions, storageThunks } from '../../../../store/slices/storage';
 import downloadService from '../../../../services/download.service';
 import { UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
+import { ItemAction } from '../../../../models/enums';
 
 interface FileListItemProps {
   user: UserSettings;
+  isDraggingAnItem: boolean;
+  draggingTargetItemData: any;
   item: any;
   selectedItems: number[];
   currentFolderId: number | null;
@@ -128,8 +131,8 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const { item, dispatch } = this.props;
 
     e.target.checked ?
-      dispatch(selectItem(item.name)) :
-      dispatch(deselectItem(item.name));
+      dispatch(storageActions.selectItem(item.name)) :
+      dispatch(storageActions.deselectItem(item.name));
   }
 
   onRenameButtonClicked = (): void => {
@@ -149,17 +152,17 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   onShareButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(setItemToShare(item.id));
+    dispatch(storageActions.setItemToShare(item.id));
   }
 
   onInfoButtonClicked = (): void => {
-    this.props.dispatch(setInfoItem(this.props.item.id));
+    this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
   }
 
   onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(setItemsToDelete([item.id]));
+    dispatch(storageActions.setItemsToDelete([item.id]));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
@@ -167,21 +170,55 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const { dispatch, item } = this.props;
 
     if (item.isFolder) {
-      dispatch(setCurrentFolderId(item.id));
+      dispatch(storageActions.setCurrentFolderId(item.id));
       dispatch(storageThunks.fetchFolderContentThunk());
     }
   }
 
-  render(): ReactNode {
+  onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
     const { item } = this.props;
+
+    if (item.isFolder) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      this.props.dispatch(storageActions.setDraggingItemTargetData(this.props.item));
+    }
+  }
+
+  onItemDragLeave = (e: DragEvent<HTMLDivElement>): void => {
+    this.props.dispatch(storageActions.setDraggingItemTargetData(null));
+  }
+
+  onItemDrop = (e: DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    console.log('onItemDrop!');
+
+    this.props.dispatch(storageActions.setDraggingItemTargetData(null));
+  }
+
+  render(): ReactNode {
+    const { isDraggingAnItem, draggingTargetItemData, item } = this.props;
+    const isDraggingOverThisItem: boolean = draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
+    const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
+      `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
+      'pointer-events-auto';
 
     return (
       <tr
-        className="group file-list-item hover:bg-blue-10 border-b border-l-neutral-30 text-sm"
+        className={`${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
         onDoubleClick={this.onItemDoubleClicked}
+        onDragOver={this.onItemDragOver}
+        onDragLeave={this.onItemDragLeave}
+        onDrop={this.onItemDrop}
       >
         <td className="px-4">
-          <input type="checkbox" checked={this.isSelected} onChange={this.onSelectCheckboxChanged} />
+          {!item.isFolder ?
+            <input type="checkbox" checked={this.isSelected} onChange={this.onSelectCheckboxChanged} /> :
+            null
+          }
         </td>
         <td>
           <img alt="" className="type-icon" src={this.itemIconSrc} />
@@ -191,16 +228,17 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             <div className="mb-1">
               {this.nameNode}
             </div>
-            <span className="block text-blue-60 text-xs px-1">Updated {dateService.fromNow(item.updatedAt)}</span>
           </div>
         </td>
         <td>{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
         <td>{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
         <td>
           <div className="flex justify-center">
-            <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
-              <img alt="" src={iconService.getIcon('downloadItems')} />
-            </button>
+            {!item.isFolder ?
+              <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
+                <img alt="" src={iconService.getIcon('downloadItems')} />
+              </button> : null
+            }
             <button onClick={this.onShareButtonClicked} className="hover-action mr-4">
               <img alt="" src={iconService.getIcon('shareItems')} />
             </button>
@@ -215,6 +253,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
               <img alt="" src={iconService.getIcon('actions')} />
             </Dropdown.Toggle>
             <FileDropdownActions
+              hiddenActions={item.isFolder ? [ItemAction.Download] : []}
               onRenameButtonClicked={this.onRenameButtonClicked}
               onDownloadButtonClicked={this.onDownloadButtonClicked}
               onShareButtonClicked={this.onShareButtonClicked}
@@ -231,6 +270,8 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 export default connect(
   (state: RootState) => ({
     user: state.user.user,
+    isDraggingAnItem: state.storage.isDraggingAnItem,
+    draggingTargetItemData: state.storage.draggingTargetItemData,
     currentFolderId: state.storage.currentFolderId,
     selectedItems: state.storage.selectedItems
   }))(FileListItem);

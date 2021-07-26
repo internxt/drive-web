@@ -43,7 +43,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
         </div>
         <div className="flex items-center cursor-pointer" onClick={this.onAccountButtonClicked}>
           <Unicons.UilUser className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5 text-blue-60" />
-          <span className="text-neutral-500 text-sm">Welcome {userFullName}</span>
+          <span className="text-neutral-500 text-sm">{userFullName}</span>
         </div>
       </div>
     );

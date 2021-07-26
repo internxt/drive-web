@@ -1,12 +1,12 @@
 import React, { SetStateAction } from 'react';
 import { useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { IFormValues } from '../../../models/interfaces';
-import { deactivate2FA } from '../../../services/auth.service';
-import { twoFactorRegexPattern } from '../../../services/validation.service';
-import AuthButton from '../../Buttons/AuthButton';
-import AuthInput from '../../Inputs/AuthInput';
-import notify from '../../Notifications';
+import { IFormValues } from '../../../../models/interfaces';
+import { deactivate2FA } from '../../../../services/auth.service';
+import { twoFactorRegexPattern } from '../../../../services/validation.service';
+import AuthButton from '../../../../components/Buttons/AuthButton';
+import AuthInput from '../../../../components/Inputs/AuthInput';
+import notify from '../../../../components/Notifications';
 
 interface Deactivate2FAProps {
   passwordSalt: string,

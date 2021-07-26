@@ -1,4 +1,3 @@
-import React from 'react';
 import { toast } from 'react-toastify';
 import { getIcon } from '../../services/icon.service';
 import './toastify.scss';

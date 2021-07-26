@@ -1,12 +1,14 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { useState } from 'react';
-import Plan from './Plan';
-import './billing.scss';
+import Plan from './BillingPlanItem';
 import { useEffect } from 'react';
-import { loadAvailablePlans, loadAvailableProducts } from '../../../services/products.service';
-import { IBillingPlan, IStripeProduct } from '../../../models/interfaces';
-import { getIcon } from '../../../services/icon.service';
-import notify from '../../Notifications';
+
+import { loadAvailablePlans, loadAvailableProducts } from '../../../../services/products.service';
+import { IBillingPlan, IStripeProduct } from '../../../../models/interfaces';
+import { getIcon } from '../../../../services/icon.service';
+import notify from '../../../../components/Notifications';
+
+import './AccountBillingTab.scss';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -52,7 +54,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
   );
 };
 
-const Plans = (): JSX.Element => {
+const AccountBillingTab = (): JSX.Element => {
   const [currentOption, setCurrentOption] = useState<'individual' | 'business'>('individual');
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState<IBillingPlan>({});
@@ -125,4 +127,4 @@ const Plans = (): JSX.Element => {
   );
 };
 
-export default Plans;
+export default AccountBillingTab;

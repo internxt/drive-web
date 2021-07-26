@@ -1,11 +1,11 @@
+import { useEffect, useState } from 'react';
+import { generateNew2FA, userHas2FAStored } from '../../../../services/auth.service';
 import React, { Fragment } from 'react';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { generateNew2FA, userHas2FAStored } from '../../../services/auth.service';
 import Deactivate2FA from './Deactivate2FA';
 import Steps from './Steps';
-import './security.scss';
-import notify from '../../Notifications';
+import notify from '../../../../components/Notifications';
+
+import './AccountSecurityTab.scss';
 
 interface SecurityProps {
   isAuthenticated: boolean

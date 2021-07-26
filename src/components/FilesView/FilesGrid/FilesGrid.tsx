@@ -1,19 +1,19 @@
 import React, { ReactNode } from 'react';
-
-import FileGridItem from './FileGridItem/FileGridItem';
-
-import './FileGrid.scss';
-import { RootState } from '../../../store';
 import { connect } from 'react-redux';
 
-interface FileGridProps {
+import FileGridItem from './FileGridItem/FileGridItem';
+import { RootState } from '../../../store';
+
+import './FilesGrid.scss';
+
+interface FilesGridProps {
   items: any[];
 }
 
-interface FileGridState { }
+interface FilesGridState { }
 
-class FileGrid extends React.Component<FileGridProps, FileGridState> {
-  constructor(props: FileGridProps) {
+class FilesGrid extends React.Component<FilesGridProps, FilesGridState> {
+  constructor(props: FilesGridProps) {
     super(props);
 
     this.state = {};
@@ -29,7 +29,7 @@ class FileGrid extends React.Component<FileGridProps, FileGridState> {
 
   render(): ReactNode {
     return (
-      <div className="file-grid pointer-events-none grid flex-wrap justify-between gap-5 flex-grow">
+      <div className="files-grid pointer-events-none flex-grow">
         {this.itemsList}
       </div>
     );
@@ -40,4 +40,4 @@ export default connect(
   (state: RootState) => ({
     items: state.storage.items,
     selectedItems: state.storage.selectedItems
-  }))(FileGrid);
+  }))(FilesGrid);

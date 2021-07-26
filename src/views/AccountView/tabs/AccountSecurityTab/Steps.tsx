@@ -1,13 +1,14 @@
 import React, { SetStateAction } from 'react';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { IFormValues } from '../../../models/interfaces';
-import { store2FA } from '../../../services/auth.service';
-import AuthButton from '../../Buttons/AuthButton';
-import AuthInput from '../../Inputs/AuthInput';
-import { twoFactorRegexPattern } from '../../../services/validation.service';
-import notify from '../../Notifications';
-import { getIcon } from '../../../services/icon.service';
+
+import { IFormValues } from '../../../../models/interfaces';
+import { store2FA } from '../../../../services/auth.service';
+import AuthButton from '../../../../components/Buttons/AuthButton';
+import AuthInput from '../../../../components/Inputs/AuthInput';
+import { twoFactorRegexPattern } from '../../../../services/validation.service';
+import notify from '../../../../components/Notifications';
+import { getIcon } from '../../../../services/icon.service';
 
 interface StepsProps {
   currentStep: number,

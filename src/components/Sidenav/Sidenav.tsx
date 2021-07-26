@@ -170,7 +170,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
               <div className="px-4 pt-2 pb-2 flex flex-col justify-center">
                 <span className="text-xs">{user.email}</span>
 
-                <div className='flex justify-start h-1.5 w-full bg-blue-30 rounded-lg overflow-hidden'>
+                <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden'>
                   <div className='h-full bg-blue-70' style={{ width: (this.state.usage / this.state.limit) * 100 }} />
                 </div>
 
