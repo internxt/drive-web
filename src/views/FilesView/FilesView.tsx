@@ -460,7 +460,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
               {/* PAGINATION */}
               {!isLoadingItems && (
                 <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
-                  <span className="text-sm w-1/3">Showing 15 items of 450</span>
+                  <span className="text-sm w-1/3"/>
                   <div className="flex justify-center w-1/3">
                     <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
                       <img alt="" src={iconService.getIcon('previousPage')} />
