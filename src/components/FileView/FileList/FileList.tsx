@@ -37,9 +37,9 @@ class FileList extends React.Component<FileListProps, FileListState> {
                 <input type="checkbox" />
               </th>
               <th className="w-12">Type</th>
-              <th className="w-64">Name</th>
+              <th className="w-48">Name</th>
               <th className="w-64">Modified</th>
-              <th className="w-12">Size</th>
+              <th className="w-20">Size</th>
               <th className="w-24"></th>
               <th className="w-12 rounded-tr-4px">Actions</th>
             </tr>

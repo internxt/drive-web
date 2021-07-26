@@ -1,20 +1,21 @@
 import { Fragment } from 'react';
 import { NavLink } from 'react-router-dom';
-import './SideNavigatorItem.scss';
 
-interface SideNavigatorItemProps {
+import './SidenavItem.scss';
+
+interface SidenavItemProps {
   label: string,
   tooltipLabel?: string,
   to?: string,
-  icon: string,
+  icon: JSX.Element,
   isOpen: boolean,
   onClick?: () => void
 }
 
-const SideNavigatorItem = ({ label, tooltipLabel, to, icon, isOpen, onClick }: SideNavigatorItemProps): JSX.Element => {
+const SidenavItem = ({ label, tooltipLabel, to, icon, isOpen, onClick }: SidenavItemProps): JSX.Element => {
   const content: JSX.Element = (
     <Fragment>
-      <img src={icon} alt="" className='h-4' />
+      {icon}
 
       {isOpen
         ? <span className='ml-2.5 text-base text-neutral-10' data-for="mainTooltip" data-tip={tooltipLabel} data-iscapture="true">{label}</span>
@@ -38,4 +39,4 @@ const SideNavigatorItem = ({ label, tooltipLabel, to, icon, isOpen, onClick }: S
   );
 };
 
-export default SideNavigatorItem;
+export default SidenavItem;

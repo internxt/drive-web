@@ -3,7 +3,7 @@
         border-radius: 8px;
         height: 125px;
 
-        @apply relative p-3 bg-white hover:bg-blue-10;
+        @apply relative bg-white hover:bg-blue-20 hover:border hover:border-blue-40 py-3 px-6 ;
 
         .file-icon {
             height: 40px;
@@ -11,12 +11,10 @@
     }
 
     .file-grid-item-actions-button {
-        height: 16px;
-        width: 16px;
         border-radius: 50%;
         right: 8px;
         top: 8px;
 
-        @apply bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
+        @apply w-4 h-4 bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
     }
 }

@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { UserSettings } from '../../models/interfaces';
-import iconService from '../../services/icon.service';
 import { RootState } from '../../store';
 import history from '../../lib/history';
+import * as Unicons from '@iconscout/react-unicons';
 
 import './AppHeader.scss';
 
@@ -39,10 +39,10 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
       <div className="flex justify-between w-full py-3 mb-2">
         <div className="flex">
           <input type="text" placeholder="Search files" className="no-ring right-icon" />
-          <img onClick={this.onSearchButtonClicked} className="cursor-pointer right-5 relative" src={iconService.getIcon('search')} alt="" />
+          <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-6 relative w-4" />
         </div>
         <div className="flex items-center cursor-pointer" onClick={this.onAccountButtonClicked}>
-          <img alt="" src={iconService.getIcon('defaultAvatar')} className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5" />
+          <Unicons.UilUser className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5 text-blue-60" />
           <span className="text-neutral-500 text-sm">Welcome {userFullName}</span>
         </div>
       </div>

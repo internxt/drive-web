@@ -7,7 +7,8 @@ import thunks, { extraReducers } from './storageThunks';
 export interface StorageState {
   isLoading: boolean;
   isDeletingItems: boolean;
-  navigationStack: number[];
+  isDraggingAnItem: boolean;
+  draggingTargetItemData: any | null;
   currentFolderId: number;
   currentFolderBucket: string | null;
   items: any[];
@@ -24,7 +25,8 @@ export interface StorageState {
 const initialState: StorageState = {
   isLoading: false,
   isDeletingItems: false,
-  navigationStack: [],
+  isDraggingAnItem: false,
+  draggingTargetItemData: null,
   currentFolderId: 0,
   currentFolderBucket: null,
   items: [],
@@ -51,6 +53,12 @@ export const storageSlice = createSlice({
     setIsLoading: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
+    setIsDraggingAnItem: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.isDraggingAnItem = action.payload;
+    },
+    setDraggingItemTargetData: (state: StorageState, action: PayloadAction<any>) => {
+      state.draggingTargetItemData = action.payload;
+    },
     setItems: (state: StorageState, action: PayloadAction<any[]>) => {
       state.items = action.payload;
     },
@@ -75,15 +83,6 @@ export const storageSlice = createSlice({
     setSortFunction: (state: StorageState, action: PayloadAction<((a: any, b: any) => number) | null>) => {
       state.sortFunction = action.payload;
     },
-    pushFolderToNavigation: (state: StorageState, action: PayloadAction<number>) => {
-      state.navigationStack.push(action.payload);
-    },
-    popFolderFromNavigation: (state: StorageState) => {
-      state.navigationStack.pop();
-    },
-    clearNavigationStack: (state: StorageState) => {
-      state.navigationStack = [];
-    },
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
     },
@@ -101,6 +100,8 @@ export const {
   setCurrentFolderId,
   setCurrentFolderBucket,
   setIsLoading,
+  setIsDraggingAnItem,
+  setDraggingItemTargetData,
   setItems,
   selectItem,
   deselectItem,
@@ -109,9 +110,6 @@ export const {
   setItemsToDelete,
   setInfoItem,
   setSortFunction,
-  pushFolderToNavigation,
-  popFolderFromNavigation,
-  clearNavigationStack,
   setViewMode,
   pushNamePath,
   popNamePath
