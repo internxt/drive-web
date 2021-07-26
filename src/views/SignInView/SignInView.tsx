@@ -117,7 +117,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
       <div className='flex flex-col items-center justify-center w-full'>
         <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>
           <img src={iconService.getIcon('internxtLongLogo')} width='110' alt="" />
-          <span className='text-sm text-neutral-500 mt-1.5 mb-6'>Cloud Storage</span>
+          <span className='text-sm text-neutral-500 mt-1.5 mb-6'/>
 
           <AuthInput
             placeholder='Email'
