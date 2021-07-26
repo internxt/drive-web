@@ -1,12 +1,14 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { useState } from 'react';
-import Plan from './Plan';
-import './billing.scss';
+import Plan from './BillingPlanItem';
 import { useEffect } from 'react';
-import { loadAvailableProducts } from '../../../services/products.service';
-import { IStripeProduct } from '../../../models/interfaces';
-import { getIcon } from '../../../services/icon.service';
-import notify from '../../Notifications';
+
+import { loadAvailablePlans, loadAvailableProducts } from '../../../../services/products.service';
+import { IBillingPlan, IStripeProduct } from '../../../../models/interfaces';
+import { getIcon } from '../../../../services/icon.service';
+import notify from '../../../../components/Notifications';
+
+import './AccountBillingTab.scss';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -52,17 +54,28 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
   );
 };
 
-const Billing = (): JSX.Element => {
+const AccountBillingTab = (): JSX.Element => {
   const [currentOption, setCurrentOption] = useState<'individual' | 'business'>('individual');
   const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState<IStripeProduct[]>([]);
+  const [products, setProducts] = useState<IBillingPlan>({});
 
   useEffect(() => {
     const getProducts = async () => {
       try {
         const products = await loadAvailableProducts();
 
-        setProducts(products);
+        const productsWithPlans = products.map(async product => ({
+          [product.id]: {
+            product: product,
+            plans: await loadAvailablePlans(product)
+          }
+        }));
+
+        const finalProducts = await Promise.all(productsWithPlans);
+        const keyedProducts = finalProducts.reduce((acc, prod) => ({ ...acc, ...prod }), {});
+
+        console.log('plans =>', keyedProducts);
+        setProducts(keyedProducts);
       } catch (err) {
         notify(err.message, 'error');
       } finally {
@@ -91,17 +104,19 @@ const Billing = (): JSX.Element => {
 
       <div className='flex h-88'>
         {!isLoading ?
-          products.map((product, index) => (
+          Object.values(products).map((product, index) => (
             <Fragment>
               <Plan
-                name={product.name}
+                name={product.product.name}
                 description='of encrypted storage'
-                size={product.metadata.simple_name}
-                price={product.metadata.price_eur}
+                size={product.product.metadata.simple_name}
+                price={product.product.metadata.price_eur}
                 buttonText='Subscribe'
+                plans={product.plans}
                 characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+                key={product.product.id}
               />
-              {index < 2 && <div className='h-full border-r border-m-neutral-60' />}
+              {index < Object.keys(products).length && <div className='h-full border-r border-m-neutral-60' />}
             </Fragment>
           ))
           :
@@ -112,4 +127,4 @@ const Billing = (): JSX.Element => {
   );
 };
 
-export default Billing;
+export default AccountBillingTab;

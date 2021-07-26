@@ -3,11 +3,10 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import * as Unicons from '@iconscout/react-unicons';
 
 import { removeAccents } from '../../lib/utils';
-
 import { getHeaders } from '../../lib/auth';
-
 import localStorageService from '../../services/localStorage.service';
 
 import { UserSettings } from '../../models/interfaces';
@@ -22,9 +21,9 @@ import { AppDispatch, RootState } from '../../store';
 import Breadcrumbs, { BreadcrumbItemData } from '../../components/Breadcrumbs/Breadcrumbs';
 import iconService, { IconType } from '../../services/icon.service';
 import FileActivity from '../../components/FileActivity/FileActivity';
-import { FileViewMode } from '../../components/FileView/models/enums';
-import FileList from '../../components/FileView/FileList/FileList';
-import FileGrid from '../../components/FileView/FileGrid/FileGrid';
+import { FileViewMode } from '../../models/enums';
+import FilesList from '../../components/FilesView/FilesList/FilesList';
+import FilesGrid from '../../components/FilesView/FilesGrid/FilesGrid';
 import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFileExplorer';
 
 import './FilesView.scss';
@@ -117,6 +116,10 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     this.state.fileInputRef.current?.click();
   }
 
+  onDownloadButtonClicked = (): void => {
+    console.log('download button clicked!');
+  }
+
   onUploadInputChanged = (e) => {
     const { dispatch } = this.props;
 
@@ -141,10 +144,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     this.props.dispatch(
       uiActions.setIsCreateFolderDialogOpen(true)
     );
-  }
-
-  onBulkDownloadButtonClicked = () => {
-    console.log('on bulk download button clicked');
   }
 
   onBulkDeleteButtonClicked = () => {
@@ -381,7 +380,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     );
   }
 
-  onViewDragEnter = (e: DragEvent<HTMLDivElement>): void => {
+  onViewDragOver = (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -389,13 +388,15 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   onViewDragLeave = (e: DragEvent<HTMLDivElement>): void => {
-    console.log('OnViewDragLeave:', e);
+    console.log('onViewDragLeave: ', e);
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 
   onViewDrop = (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
+
+    console.log('onViewDrop');
 
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
@@ -408,8 +409,8 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
       [FileViewMode.Grid]: iconService.getIcon('listView')
     };
     const viewModes = {
-      [FileViewMode.List]: <FileList />,
-      [FileViewMode.Grid]: <FileGrid />
+      [FileViewMode.List]: <FilesList />,
+      [FileViewMode.Grid]: <FilesGrid />
     };
 
     return (
@@ -423,14 +424,16 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
               </div>
 
               <div className="flex">
-                <button className="primary mr-1 flex items-center" onClick={this.onUploadButtonClicked}>
-                  <img alt="" className="h-3 mr-2" src={iconService.getIcon('upload')} /><span>Upload</span>
-                </button>
+                {this.hasAnyItemSelected ?
+                  <button className="primary mr-1 flex items-center" onClick={this.onDownloadButtonClicked}>
+                    <Unicons.UilCloudDownload className="h-5 mr-2"/><span>Download</span>
+                  </button> :
+                  <button className="primary mr-1 flex items-center" onClick={this.onUploadButtonClicked}>
+                    <Unicons.UilCloudUpload className="h-5 mr-2"/><span>Upload</span>
+                  </button>
+                }
                 {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
                   <img alt="" src={iconService.getIcon('createFolder')} />
-                </button> : null}
-                {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDownloadButtonClicked}>
-                  <img alt="" src={iconService.getIcon('downloadItems')} />
                 </button> : null}
                 {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDeleteButtonClicked}>
                   <img alt="" src={iconService.getIcon('deleteItems')} />
@@ -443,35 +446,35 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
             <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden">
               <div
-                onDragEnter={this.onViewDragEnter}
+                onDragOver={this.onViewDragOver}
                 onDragLeave={this.onViewDragLeave}
                 onDrop={this.onViewDrop}
-                className="flex flex-col justify-between flex-grow overflow-y-auto"
+                className="flex flex-col justify-between flex-grow overflow-y-auto overflow-x-hidden"
               >
                 {isLoadingItems ?
                   <LoadingFileExplorer /> :
                   viewModes[viewMode]
                 }
-
-                {/* PAGINATION */}
-                {!isLoadingItems && (
-                  <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
-                    <span className="text-sm w-1/3">Showing 15 items of 450</span>
-                    <div className="flex justify-center w-1/3">
-                      <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                        <img alt="" src={iconService.getIcon('previousPage')} />
-                      </div>
-                      <div className="pagination-button">
-                        1
-                      </div>
-                      <div onClick={this.onNextPageButtonClicked} className="pagination-button">
-                        <img alt="" src={iconService.getIcon('nextPage')} />
-                      </div>
-                    </div>
-                    <div className="w-1/3"></div>
-                  </div>
-                )}
               </div>
+
+              {/* PAGINATION */}
+              {!isLoadingItems && (
+                <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
+                  <span className="text-sm w-1/3">Showing 15 items of 450</span>
+                  <div className="flex justify-center w-1/3">
+                    <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
+                      <img alt="" src={iconService.getIcon('previousPage')} />
+                    </div>
+                    <div className="pagination-button">
+                      1
+                    </div>
+                    <div onClick={this.onNextPageButtonClicked} className="pagination-button">
+                      <img alt="" src={iconService.getIcon('nextPage')} />
+                    </div>
+                  </div>
+                  <div className="w-1/3"></div>
+                </div>
+              )}
 
               {/* EMPTY FOLDER */
                 isCurrentFolderEmpty && !isLoadingItems ?
@@ -484,7 +487,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                             Drag and drop here
                           </span>
                           <span className="text-sm text-m-neutral-100 block">
-                            or click on upload button
+                            or use the upload button
                           </span>
                         </div>
                       </div>

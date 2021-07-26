@@ -81,6 +81,13 @@ export interface IFormValues {
   backupKey: string
 }
 
+export type IBillingPlan = {
+  [id: string]: {
+    product: IStripeProduct,
+    plans: IStripePlan[]
+  }
+}
+
 export type IStripeProduct = {
   id: string,
   metadata: StripeProductMetadata,
@@ -113,6 +120,26 @@ export type StripeProductNames = {
   'Drive 200GB': string,
   'Drive 2 TB': string
 }
+
+export type IStripePlan = {
+  id: string,
+  interval: StripePlanIntervals,
+  interval_count: number,
+  name: StripePlanNames,
+  price: number
+}
+
+type StripePlanIntervals = {
+  'month',
+  'year'
+}
+
+type StripePlanNames = {
+  'Montlhy',
+  'Semiannually',
+  'Annually'
+}
+
 export interface IActionUpdateFileLoggerEntry {
   filePath: string,
   action?: FileActionTypes,

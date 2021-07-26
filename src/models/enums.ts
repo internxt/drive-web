@@ -28,9 +28,12 @@ export enum FileActionTypes {
   Upload = 'upload'
 }
 
-export enum IconPosition {
-  Right = 'right',
-  Left = 'left'
+export enum ItemAction {
+  Rename,
+  Download,
+  Share,
+  Info,
+  Delete
 }
 
 export enum AnalyticsTrack {
@@ -58,4 +61,9 @@ export enum AnalyticsTrack {
 
 export enum DevicePlatform {
   Web = 'web'
+}
+
+export enum FileViewMode {
+  List = 'list',
+  Grid = 'grid'
 }
