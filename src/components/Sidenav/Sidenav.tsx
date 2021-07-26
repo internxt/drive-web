@@ -147,6 +147,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
                 label="Support"
                 icon={<Unicons.UilChatBubbleUser className="w-5" />}
                 isOpen={!collapsed}
+                onClick={() => window.open('https://help.internxt.com/')}
               />
               <SidenavItem
                 label='Log out'
