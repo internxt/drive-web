@@ -2,7 +2,11 @@
     .file-grid-item {
         border-radius: 8px;
 
-        @apply relative bg-white hover:bg-blue-20 hover:border hover:border-blue-40 p-4;
+        @apply relative box-content bg-white hover:bg-blue-20 p-4;
+
+        &:hover {
+            box-shadow: inset 0px 0px 0px 0.15rem var(--color-blue-40);
+        }
 
         .file-grid-item-icon-container {
             height: 105px;

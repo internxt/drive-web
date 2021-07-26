@@ -27,6 +27,10 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
       />);
   }
 
+  onSelectAllButtonClicked() {
+    console.log('onSelectAllButtonClicked');
+  }
+
   render(): JSX.Element {
     return (
       <div className="flex-grow bg-white">
@@ -34,7 +38,7 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
           <thead className="border-b border-l-neutral-30 bg-white text-neutral-500 py-2 px-3 text-sm">
             <tr>
               <th className="px-4 py-2 w-12 rounded-tl-4px">
-                <input type="checkbox" />
+                <input onClick={this.onSelectAllButtonClicked} type="checkbox" />
               </th>
               <th className="w-12">Type</th>
               <th className="w-48">Name</th>

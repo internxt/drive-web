@@ -1,7 +1,3 @@
-.file-list-item {
-    background-color: white;
-}
-
 td {
     padding: 14px 0;
 }
@@ -22,6 +18,12 @@ td {
 }
 
 @layer components {
+    .file-list-item {
+        background-color: white;
+    
+        @apply hover:bg-blue-10 border-b border-l-neutral-30 text-sm;
+    }
+    
     .hover-action {
         @apply transition opacity-0 group-hover:opacity-100 text-blue-60;
 

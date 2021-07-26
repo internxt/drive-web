@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react';
+import { connect } from 'react-redux';
 
 import FileGridItem from './FileGridItem/FileGridItem';
+import { RootState } from '../../../store';
 
 import './FilesGrid.scss';
-import { RootState } from '../../../store';
-import { connect } from 'react-redux';
 
 interface FilesGridProps {
   items: any[];
@@ -29,7 +29,7 @@ class FilesGrid extends React.Component<FilesGridProps, FilesGridState> {
 
   render(): ReactNode {
     return (
-      <div className="file-grid pointer-events-none grid flex-wrap justify-between gap-5 flex-grow">
+      <div className="files-grid pointer-events-none flex-grow">
         {this.itemsList}
       </div>
     );

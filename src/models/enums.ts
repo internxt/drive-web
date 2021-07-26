@@ -28,6 +28,14 @@ export enum FileActionTypes {
   Upload = 'upload'
 }
 
+export enum ItemAction {
+  Rename,
+  Download,
+  Share,
+  Info,
+  Delete
+}
+
 export enum AnalyticsTrack {
   SignOut = 'user-signout',
   SignIn = 'user-signin',

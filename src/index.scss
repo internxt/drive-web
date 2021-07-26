@@ -205,7 +205,11 @@ code {
   }
 
   /* EVENTS */
-  .pointer-events-none.descendants * {
+  .pointer-events-none.descendants {
+    * {
+      pointer-events: none;
+    }
+
     &.only {
       @apply pointer-events-auto;
     }
@@ -218,7 +222,9 @@ code {
 
   /* DRAG AND DROP */
   .drag-over-effect {
-    @apply bg-opacity-30 bg-blue-50 border-blue-60 border-2 rounded-6px;
+    box-shadow: inset 0px 0px 0px 0.15rem var(--color-blue-40);
+
+    @apply bg-opacity-30 bg-blue-50 rounded-6px;
   }
 }
 
