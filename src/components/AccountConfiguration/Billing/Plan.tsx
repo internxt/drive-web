@@ -1,5 +1,5 @@
 import React from 'react';
-import { StripeProductNames, StripeSimpleNames } from '../../../models/interfaces';
+import { IStripePlan, StripeProductNames, StripeSimpleNames } from '../../../models/interfaces';
 import { getIcon } from '../../../services/icon.service';
 import ButtonPrimary from '../../Buttons/ButtonPrimary';
 
@@ -9,6 +9,7 @@ interface PlanProps {
   size: StripeSimpleNames,
   price: string,
   buttonText: string,
+  plans: IStripePlan[],
   characteristics: string[]
 }
 
@@ -19,7 +20,7 @@ const ListItem = ({ text }: { text: string }): JSX.Element => (
   </div>
 );
 
-const Plan = ({ name, description, size, price, buttonText, characteristics }: PlanProps): JSX.Element => {
+const Plan = ({ name, description, size, price, buttonText, plans, characteristics }: PlanProps): JSX.Element => {
   return (
     <div className='w-full h-full flex flex-col justify-center text-neutral-700 p-7'>
       <h2 className='text-lg font-medium text-left'>{name}</h2>
@@ -35,7 +36,7 @@ const Plan = ({ name, description, size, price, buttonText, characteristics }: P
 
       <div className='mt-7' />
       {
-        characteristics.map(text => <ListItem text={text} />)
+        characteristics.map(text => <ListItem text={text} key={text} />)
       }
     </div>
   );
