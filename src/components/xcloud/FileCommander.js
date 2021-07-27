@@ -195,7 +195,7 @@ class FileCommander extends React.Component {
   };
 
   isAcceptableSize = (size) => {
-    return parseInt(size) <= 1024 * 1024 * 1000 ? true : false;
+    return parseInt(size) <= 1024 * 1024 * 1024 ? true : false;
   };
 
   handleDrop = (e, parentId = null) => {

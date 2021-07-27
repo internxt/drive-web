@@ -677,7 +677,7 @@ class XCloud extends React.Component {
       const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
       const fileBlob = await network.downloadFile(bucketId, fileId, {
-        progressCallback: (progress) => pcb.setState({ progress })
+        progressCallback: (progress) => pcb.setState({ progress: progress * 100 })
       });
 
       fileDownload(fileBlob, completeFilename);
@@ -802,7 +802,7 @@ class XCloud extends React.Component {
 
     const filesToUpload = [];
     const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
-    const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
+    const showSizeWarning = files.some(file => file.size > MAX_ALLOWED_UPLOAD_SIZE);
 
     console.log('File size trying to be uplodaded is %s bytes', files.reduce((accum, file) => accum + file.size, 0));
 

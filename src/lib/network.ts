@@ -22,28 +22,6 @@ interface EnvironmentConfig {
   bucketId: string
 }
 
-/**
- * TODO: Change typing in inxt-js and remove this interface
- */
-interface CreateEntryFromFrameResponse {
-  id: string;
-  index: string;
-  frame: string;
-  bucket: string;
-  mimetype: string;
-  name: string;
-  renewal: string;
-  created: string;
-  hmac: {
-    value: string;
-    type: string;
-  };
-  erasure: {
-    type: string;
-  };
-  size: number;
-}
-
 export class Network {
   private environment: Environment;
   private bridgeUrl = 'https://api.internxt.com';
@@ -77,26 +55,24 @@ export class Network {
 
     const hashName = createHash('ripemd160').update(params.filepath).digest('hex');
 
-    return new Promise((resolve: (entry: CreateEntryFromFrameResponse) => void, reject) => {
+    return new Promise((resolve: (fileId: string) => void, reject) => {
       this.environment.uploadFile(bucketId, {
         filename: hashName,
         fileSize: params.filesize,
         fileContent: params.filecontent,
         progressCallback: params.progressCallback,
-        finishedCallback: (err, response) => {
+        finishedCallback: (err, fileId) => {
           if (err) {
             return reject(err);
           }
 
-          if (!response) {
+          if (!fileId) {
             return reject(Error('File not created'));
           }
 
-          resolve(response);
+          resolve(fileId);
         }
       });
-    }).then((uploadRes) => {
-      return uploadRes.id;
     });
   }
 
