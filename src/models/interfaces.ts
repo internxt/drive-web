@@ -96,6 +96,7 @@ export interface ILoggerFile {
 
 export interface ILogger {
   [filePath: string]: ILoggerFile
+}
 export interface IFormValues {
   name: string,
   lastname: string,

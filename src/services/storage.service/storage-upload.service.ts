@@ -18,6 +18,7 @@ export interface UploadItemPayload {
 }
 
 export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, dispatch): Promise<any> {
+  dispatch(updateFileStatusLogger({ action: 'upload', status: 'encrypting', filePath: path, isFolder: false }));
 
   if (!file.parentFolderId) {
     throw new Error('No folder ID provided');
