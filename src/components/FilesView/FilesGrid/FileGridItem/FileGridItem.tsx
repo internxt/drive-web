@@ -9,7 +9,7 @@ import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { connect } from 'react-redux';
-import { DriveFileData, DriveFolderData, UserSettings } from '../../../../models/interfaces';
+import { DriveFileData, DriveFileMetadataPayload, DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
@@ -96,7 +96,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   confirmNameChange() {
     const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
-    const data = JSON.stringify({ metadata: { itemName: dirtyName } });
+    const data: DriveFileMetadataPayload | DriveFolderMetadataPayload = { itemName: dirtyName };
 
     try {
       if (item.name !== dirtyName) {
@@ -108,7 +108,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
               );
             });
         } else {
-          fileService.updateMetaData(item.fileId, data).then(() => {
+          fileService.updateMetaData(item.fileId, data as DriveFileMetadataPayload).then(() => {
             this.props.dispatch(
               storageThunks.fetchFolderContentThunk()
             );
