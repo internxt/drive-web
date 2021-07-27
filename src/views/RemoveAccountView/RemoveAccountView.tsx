@@ -38,9 +38,9 @@ const RemoveAccount = (): JSX.Element => {
     <div className='w-full h-full flex items-center justify-center'>
       <div className='flex flex-col w-96 items-center'>
         <div className='flex justify-around items-center w-2/3'>
-          <div className={`flex items-center justify-center w-9 h-9 rounded-full border ${step === 1 ? 'border-blue-60 text-blue-60' : 'border-m-neutral-60 text-m-neutral-60'}`}>1</div>
+          <div className='flex items-center justify-center w-9 h-9 rounded-full border border-blue-60 text-blue-60'>1</div>
 
-          <div className='h-px w-20 border-t border-m-neutral-60' />
+          <div className={`h-px w-20 border-t ${step === 2 ? 'border-blue-60' : 'border-m-neutral-60'}`} />
 
           <div className={`flex items-center justify-center w-9 h-9 rounded-full border ${step === 2 ? 'border-blue-60 text-blue-60' : 'border-m-neutral-60 text-m-neutral-60'}`}>2</div>
         </div>
@@ -82,6 +82,7 @@ const RemoveAccount = (): JSX.Element => {
             </p>
 
             <ButtonPrimary text='Re-send deactivation email' textWhenDisabled='Sending email...' disabled={isLoading} width='w-full' onClick={() => sendEmail(getValues().email)} />
+            <ButtonTextOnly text='Back to login' additionalStyling='mt-6' onClick={() => history.push('/login')} />
           </Fragment>
         }
       </div>
