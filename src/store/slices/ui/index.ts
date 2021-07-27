@@ -5,13 +5,15 @@ interface UISliceState {
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isFileLoggerOpen: boolean;
+  isReachedPlanLimitOpen: boolean
 }
 
 const initialState: UISliceState = {
   isSidenavCollapsed: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
-  isFileLoggerOpen: false
+  isFileLoggerOpen: false,
+  isReachedPlanLimitOpen: false
 };
 
 export const uiSlice = createSlice({
@@ -29,6 +31,9 @@ export const uiSlice = createSlice({
     },
     showFileLogger: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isFileLoggerOpen = action.payload;
+    },
+    showReachedPlanLimit: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isReachedPlanLimitOpen = action.payload;
     }
   }
 });
@@ -36,7 +41,8 @@ export const uiSlice = createSlice({
 export const {
   setIsCreateFolderDialogOpen,
   setIsDeleteItemsDialogOpen,
-  showFileLogger
+  showFileLogger,
+  showReachedPlanLimit
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

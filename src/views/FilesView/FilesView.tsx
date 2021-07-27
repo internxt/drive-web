@@ -28,6 +28,8 @@ import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFil
 
 import './FilesView.scss';
 import { checkFileNameExists, getNewFolderName } from '../../services/storage.service/storage-name.service';
+import usageService, { UsageResponse } from '../../services/usage.service';
+import SessionStorage from '../../lib/sessionStorage';
 
 interface FilesViewProps {
   user: UserSettings | any,
@@ -131,7 +133,24 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     dispatch(storageThunks.downloadItemsThunk(selectedItems));
   }
 
-  onUploadInputChanged = (e) => {
+  onUploadInputChanged = async (e) => {
+    const limitStorage = SessionStorage.get('limitStorage');
+
+    try {
+      const usage: UsageResponse = await usageService.fetchUsage();
+
+      if (limitStorage && usage.total >= parseInt(limitStorage)) {
+        this.props.dispatch(uiActions.showReachedPlanLimit(true));
+      } else {
+        this.dispatchUpload(e);
+      }
+
+    } catch (err) {
+      this.dispatchUpload(e);
+    }
+  }
+
+  dispatchUpload = (e) => {
     const { dispatch } = this.props;
 
     dispatch(
