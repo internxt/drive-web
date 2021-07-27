@@ -1,3 +1,4 @@
+import notify from '../components/Notifications';
 import { getHeaders } from '../lib/auth';
 import { UserSettings } from '../models/interfaces';
 import localStorageService from './localStorage.service';
@@ -39,9 +40,17 @@ export function isUserActivated(): Promise<any> {
     });
 }
 
+export const sendDeactivationEmail = async (email: string): Promise<void> => {
+  await fetch(`/api/reset/${email}`, {
+    method: 'GET',
+    headers: getHeaders(false, false)
+  });
+};
+
 const userService = {
   initializeUser,
-  isUserActivated
+  isUserActivated,
+  sendDeactivationEmail
 };
 
 export default userService;
