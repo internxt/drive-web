@@ -8,23 +8,27 @@ import sizeService from '../../../../services/size.service';
 import './FileListItem.scss';
 import dateService from '../../../../services/date.service';
 import { AppDispatch, RootState } from '../../../../store';
-import { storageActions, storageThunks } from '../../../../store/slices/storage';
+import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
 import downloadService from '../../../../services/download.service';
-import { UserSettings } from '../../../../models/interfaces';
+import { DriveFileData, DriveFolderData, UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 import { ItemAction } from '../../../../models/enums';
+import queueFileLogger from '../../../../services/queueFileLogger';
+import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileListItemProps {
   user: UserSettings;
   isDraggingAnItem: boolean;
-  draggingTargetItemData: any;
-  item: any;
-  selectedItems: number[];
+  draggingTargetItemData: DriveFileData | DriveFolderData;
+  item: DriveFileData | DriveFolderData;
+  selectedItems: (DriveFileData | DriveFolderData)[];
   currentFolderId: number | null;
-  dispatch: AppDispatch
+  isItemSelected: (item: DriveFileData | DriveFolderData) => boolean;
+  dispatch: AppDispatch;
+  namePath: any
 }
 
 interface FileListItemState {
@@ -64,12 +68,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     return this.props.item.isFolder ?
       iconService.getIcon('folderBlue') :
       iconService.getIcon('defaultFile');
-  }
-
-  get isSelected(): boolean {
-    const { item, selectedItems } = this.props;
-
-    return selectedItems.includes(item.name);
   }
 
   confirmNameChange() {
@@ -117,7 +115,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     this.setState({ isEditingName: false });
   }
 
-  onNameChanged = (e: any): void => {
+  onNameChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState({ dirtyName: e.target.value });
   }
 
@@ -127,12 +125,12 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onSelectCheckboxChanged = (e: any): void => {
+  onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { item, dispatch } = this.props;
 
     e.target.checked ?
-      dispatch(storageActions.selectItem(item.name)) :
-      dispatch(storageActions.deselectItem(item.name));
+      dispatch(storageActions.selectItem(item)) :
+      dispatch(storageActions.deselectItem(item));
   }
 
   onRenameButtonClicked = (): void => {
@@ -146,7 +144,14 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   onDownloadButtonClicked = (): void => {
-    downloadService.downloadFile(this.props.item);
+    const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+
+    console.log(this.props.item.type);
+
+    const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
+
+    this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
+    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
   }
 
   onShareButtonClicked = (): void => {
@@ -200,7 +205,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   render(): ReactNode {
-    const { isDraggingAnItem, draggingTargetItemData, item } = this.props;
+    const { isDraggingAnItem, draggingTargetItemData, item, isItemSelected } = this.props;
     const isDraggingOverThisItem: boolean = draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
     const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
@@ -216,7 +221,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       >
         <td className="px-4">
           {!item.isFolder ?
-            <input type="checkbox" checked={this.isSelected} onChange={this.onSelectCheckboxChanged} /> :
+            <input type="checkbox" checked={isItemSelected(item)} onChange={this.onSelectCheckboxChanged} /> :
             null
           }
         </td>
@@ -268,10 +273,15 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 }
 
 export default connect(
-  (state: RootState) => ({
-    user: state.user.user,
-    isDraggingAnItem: state.storage.isDraggingAnItem,
-    draggingTargetItemData: state.storage.draggingTargetItemData,
-    currentFolderId: state.storage.currentFolderId,
-    selectedItems: state.storage.selectedItems
-  }))(FileListItem);
+  (state: RootState) => {
+    const isItemSelected = storageSelectors.isItemSelected(state);
+
+    return {
+      isDraggingAnItem: state.storage.isDraggingAnItem,
+      selectedItems: state.storage.selectedItems,
+      draggingTargetItemData: state.storage.draggingTargetItemData,
+      currentFolderId: state.storage.currentFolderId,
+      isItemSelected,
+      namePath: state.storage.namePath
+    };
+  })(FileListItem);

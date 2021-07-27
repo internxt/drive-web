@@ -22,39 +22,33 @@ class FileGridItem extends React.Component<FileDropdownActionsProps, FileDropdow
     super(props);
 
     this.state = {};
-
-    this.onDownloadButtonClicked = this.onDownloadButtonClicked.bind(this);
-    this.onRenameButtonClicked = this.onRenameButtonClicked.bind(this);
-    this.onShareButtonClicked = this.onShareButtonClicked.bind(this);
-    this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
-    this.onDeleteButtonClicked = this.onDeleteButtonClicked.bind(this);
   }
 
-  onDownloadButtonClicked(): void {
+  onDownloadButtonClicked = (): void => {
     const { onDownloadButtonClicked } = this.props;
 
     onDownloadButtonClicked && onDownloadButtonClicked();
   }
 
-  onRenameButtonClicked(): void {
+  onRenameButtonClicked = (): void => {
     const { onRenameButtonClicked } = this.props;
 
     onRenameButtonClicked && onRenameButtonClicked();
   }
 
-  onShareButtonClicked(): void {
+  onShareButtonClicked = (): void => {
     const { onShareButtonClicked } = this.props;
 
     onShareButtonClicked && onShareButtonClicked();
   }
 
-  onInfoButtonClicked(): void {
+  onInfoButtonClicked = (): void => {
     const { onInfoButtonClicked } = this.props;
 
     onInfoButtonClicked && onInfoButtonClicked();
   }
 
-  onDeleteButtonClicked(): void {
+  onDeleteButtonClicked = (): void => {
     const { onDeleteButtonClicked } = this.props;
 
     onDeleteButtonClicked && onDeleteButtonClicked();

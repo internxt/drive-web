@@ -12,7 +12,19 @@ interface ShareViewProps {
   match?: any
 }
 
-class ShareView extends React.Component<ShareViewProps> {
+interface ShareViewState {
+  token: string;
+  fileName: string;
+  progress: number;
+  fileLength: number;
+  steps: {
+    downloadingFromNet: boolean;
+    sendingToBrowser: boolean;
+    finished: boolean;
+  }
+}
+
+class ShareView extends React.Component<ShareViewProps, ShareViewState> {
   toastOptions: ToastOptions = {
     position: 'bottom-right',
     autoClose: 5000,
@@ -34,13 +46,13 @@ class ShareView extends React.Component<ShareViewProps> {
     }
   }
 
-  IsValidToken = (token: string) => {
+  IsValidToken = (token: string): boolean => {
     return /^[a-z0-9]{10}$/.test(token);
   }
 
-  isBase64(str) {
+  isBase64(value: string): boolean {
     try {
-      return btoa(atob(str)) === str;
+      return btoa(atob(value)) === value;
     } catch (err) {
       return false;
     }
@@ -58,11 +70,11 @@ class ShareView extends React.Component<ShareViewProps> {
     }
   }
 
-  setFileLength(fileLength) {
+  setFileLength(fileLength): void {
     this.setState({ ...this.state, fileLength });
   }
 
-  setFileName(fileName) {
+  setFileName(fileName): void {
     this.setState({ ...this.state, fileName });
   }
 

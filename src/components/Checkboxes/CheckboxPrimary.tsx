@@ -7,7 +7,7 @@ interface CheckboxProps {
   register: UseFormRegister<IFormValues>,
   required: boolean,
   text: string,
-  additionalStyling: string
+  additionalStyling?: string
 }
 
 const CheckboxPrimary = ({ label, register, required, text, additionalStyling }: CheckboxProps): JSX.Element => {

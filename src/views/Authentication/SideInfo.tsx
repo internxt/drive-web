@@ -1,5 +1,3 @@
-interface SideInfoProps { }
-
 const texts = {
   label: 'INTERNXT',
   title: 'Privacy security and flexible',
@@ -8,7 +6,7 @@ const texts = {
   href: 'https://internxt.com'
 };
 
-const SideInfo = (props: SideInfoProps): JSX.Element => {
+const SideInfo = (): JSX.Element => {
   return (
     <div className='flex flex-col justify-center w-104 min-w-104 h-full background-login bg-gradient-to-b from-blue-60 to-blue-80 pl-20 text-white'>
       <span className='text-xl font-semibold tracking-0.3'>{texts.label}</span>

@@ -9,6 +9,7 @@ export interface AppViewConfig {
   layout: AppViewLayout;
   path: string;
   exact: boolean;
+  auth?: boolean;
 }
 
 export interface UserSettings {
@@ -37,7 +38,7 @@ export interface TeamsSettings {
   bridge_user: string
 }
 
-export interface FileData {
+export interface DriveFolderData {
   isFolder: boolean,
   isSelected:boolean,
   isLoading:boolean,
@@ -56,18 +57,46 @@ export interface FileData {
   iconId: number | null,
   parent_id: number | null,
   icon: string | null,
-  fileStatus: FileStatusTypes,
-  progress: string
-}
-export interface ILoggerFile {
-  action: FileActionTypes,
-  filePath: string,
-  status: FileStatusTypes,
-  progress?: number,
-  isFolder: boolean,
-  errorMessage?: string
 }
 
+export interface DriveFolderMetadataPayload {
+  itemName?: string;
+  color?: string;
+  icon?: string;
+}
+
+export interface DriveFileData {
+  created_at: string,
+  id: number,
+  fileId: string,
+  name: string,
+  type: string,
+  size: number,
+  bucket: string,
+  folder_id: number,
+  encrypt_version: string,
+  deleted: false,
+  deletedAt: null,
+  createdAt: string,
+  updatedAt: string,
+  folderId: number,
+}
+
+export interface DriveFileMetadataPayload {
+  itemName: string;
+}
+
+export interface ILoggerFile {
+  isFolder: boolean,
+  filePath: string,
+  action: keyof typeof FileActionTypes,
+  status: keyof typeof FileStatusTypes,
+  progress?: string
+}
+
+export interface ILogger {
+  [filePath: string]: ILoggerFile
+}
 export interface IFormValues {
   name: string,
   lastname: string,
@@ -84,7 +113,8 @@ export interface IFormValues {
 export type IBillingPlan = {
   [id: string]: {
     product: IStripeProduct,
-    plans: IStripePlan[]
+    plans: IStripePlan[],
+    selected: string
   }
 }
 
@@ -95,46 +125,53 @@ export type IStripeProduct = {
   test?: boolean
 }
 
+export type IStripeCustomer = {
+  product: string,
+  payment_frequency: StripePlanNames
+}
+
 export type StripeProductMetadata = {
   is_drive: string,
-  member_tier: StripeMemberTiers,
+  member_tier: keyof typeof StripeMemberTiers,
   price_eur: string,
-  simple_name: StripeSimpleNames,
+  simple_name: keyof typeof StripeSimpleNames,
   size_bytes: string
 }
 
-export type StripeMemberTiers = {
-  infinite: string, lifetime: string, premium: string
+export enum StripeMemberTiers {
+  'infinite',
+  'lifetime',
+  'premium'
 }
 
-export type StripeSimpleNames = {
-  'infinite': string,
-  '20TB': string,
-  '2TB': string,
-  '200GB': string,
-  '20GB': string
+export enum StripeSimpleNames {
+  'infinite',
+  '20TB',
+  '2TB',
+  '200GB',
+  '20GB'
 }
 
-export type StripeProductNames = {
-  'Drive 20GB': string,
-  'Drive 200GB': string,
-  'Drive 2 TB': string
+export enum StripeProductNames {
+  'Drive 20GB',
+  'Drive 200GB',
+  'Drive 2 TB'
 }
 
 export type IStripePlan = {
   id: string,
-  interval: StripePlanIntervals,
+  interval: keyof typeof StripePlanIntervals,
   interval_count: number,
-  name: StripePlanNames,
+  name: keyof typeof StripePlanNames,
   price: number
 }
 
-type StripePlanIntervals = {
+enum StripePlanIntervals {
   'month',
   'year'
 }
 
-type StripePlanNames = {
+enum StripePlanNames {
   'Montlhy',
   'Semiannually',
   'Annually'
@@ -146,4 +183,11 @@ export interface IActionUpdateFileLoggerEntry {
   status?: FileStatusTypes,
   progress?: number,
   errorMessage?: string
+}
+
+export interface FolderPath {
+  name: string,
+  id: number,
+  bucket: string,
+  id_team: number;
 }

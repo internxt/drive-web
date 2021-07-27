@@ -1,29 +1,23 @@
 @layer components {
   .breadcrumb > li + li:before {
-    content: ">";
-    padding: 0 10px;
+    content: "/";
 
-    @apply text-blue-60;
+    @apply text-blue-60 cursor-default px-2;
   }
 
   ol.breadcrumb {
     display: flex;
   
     li {
-      @apply text-sm text-neutral-500;
+      @apply text-lg text-neutral-500;
 
-      .label {
-        @apply ml-1;
+      .icon {
+        @apply mr-1;
       }
     }
 
     li.active {
-      @apply text-blue-60;
+      @apply text-blue-60 cursor-pointer;
     }
-  }
-
-  .breadcrumb-item-icon {
-    height: 12px;
-
   }
 }

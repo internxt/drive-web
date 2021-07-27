@@ -10,6 +10,8 @@ import Sidenav from '../../components/Sidenav/Sidenav';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
 import { setItemToShare } from '../../store/slices/storage';
+import { useState } from 'react';
+import FileLoggerModal from '../../components/FileLoggerModal';
 import { uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 
@@ -49,7 +51,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
         open={isDeleteItemsDialogOpen}
       />
 
-      <FileLogger />
+      <FileLoggerModal />
 
       <ReachedPlanLimitDialog
         open={isReachedPlanLimitOpen}
@@ -61,6 +63,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
         <div className="flex flex-col flex-grow bg-l-neutral-20 pl-8 pr-24px">
           <AppHeader />
           {children}
+          <FileLogger />
           <footer className="bg-l-neutral-20 h-footer"></footer>
         </div>
       </div>

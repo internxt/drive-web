@@ -2,6 +2,7 @@ import fileDownload from 'js-file-download';
 
 import { getHeaders } from '../lib/auth';
 import { DevicePlatform } from '../models/enums';
+import { DriveFileData, DriveFileMetadataPayload } from '../models/interfaces';
 import analyticsService from './analytics.service';
 import localStorageService from './localStorage.service';
 
@@ -37,7 +38,7 @@ export async function deleteWelcomeFile(isTeam: boolean): Promise<Response> {
   });
 }
 
-export function updateMetaData(itemId: string, data: any): Promise<void> {
+export function updateMetaData(itemId: string, data: DriveFileMetadataPayload): Promise<void> {
   const user = localStorageService.getUser();
   const isTeam = user?.teams;
 
@@ -57,7 +58,7 @@ export function updateMetaData(itemId: string, data: any): Promise<void> {
     });
 }
 
-export function deleteFile(fileData: any): Promise<void> {
+export function deleteFile(fileData: DriveFileData): Promise<void> {
   const user = localStorageService.getUser();
   const fetchOptions = {
     method: 'DELETE',

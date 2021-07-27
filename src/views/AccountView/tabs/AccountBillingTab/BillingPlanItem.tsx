@@ -1,15 +1,18 @@
-import { IStripePlan, StripeProductNames, StripeSimpleNames } from '../../../../models/interfaces';
+import React from 'react';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import ButtonPrimary from '../../../../components/Buttons/ButtonPrimary';
+import { IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { getIcon } from '../../../../services/icon.service';
-import BaseButton from '../../../../components/Buttons/BaseButton';
-
-interface BillingPlanItemProps {
-  name: StripeProductNames,
-  description: string,
-  size: StripeSimpleNames,
-  price: string,
-  buttonText: string,
+interface PlanProps {
+  product: IStripeProduct,
   plans: IStripePlan[],
-  characteristics: string[]
+  selectedPlan: string,
+  buttontext: string,
+  characteristics: string[],
+  handlePlanSelection: (planId: string, productId: string) => void,
+  handlePayment: (selectedPlan: string, productId: string) => void,
+  isPaying: boolean
 }
 
 const ListItem = ({ text }: { text: string }): JSX.Element => (
@@ -19,26 +22,58 @@ const ListItem = ({ text }: { text: string }): JSX.Element => (
   </div>
 );
 
-const BillingPlanItem = ({ name, description, size, price, buttonText, plans, characteristics }: BillingPlanItemProps): JSX.Element => {
+const Plan = ({ plan, onClick, selectedPlan }: { plan: IStripePlan, onClick: () => void, selectedPlan: string }) => {
+  return (
+    <div className={`flex justify-between items-center px-4 mb-2 w-full h-11 rounded-md text-neutral-500 cursor-pointer hover:border-blue-60 ${selectedPlan === plan.id ? 'border-2 border-blue-60' : 'border border-m-neutral-60'}`}
+      onClick={onClick}
+    >
+      <p>{plan.name}</p>
+
+      <div className='flex items-end'>
+        <p className='font-bold mr-2'>{((plan.price / 100) / plan.interval_count).toFixed(2)}€</p>
+        {plan.interval_count > 1 ?
+          <div className='flex'>
+            <p className='payment_interval'>/{plan.interval_count}&nbsp;</p>
+            <p className='payment_interval'>{plan.interval}s</p>
+          </div>
+          :
+          plan.interval === 'year' ?
+            <p className='payment_interval'>/annually</p>
+            :
+            <p className='payment_interval'>/month</p>
+        }
+      </div>
+    </div>
+  );
+};
+
+const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection, handlePayment, selectedPlan, isPaying }: PlanProps): JSX.Element => {
+  const [buttonText, setButtonText] = useState(selectedPlan ? 'Subscribe' : 'Choose your payment');
+
+  useEffect(() => {
+    setButtonText(selectedPlan ? 'Subscribe' : 'Choose your payment');
+  }, [selectedPlan]);
+
   return (
     <div className='w-full h-full flex flex-col justify-center text-neutral-700 p-7'>
-      <h2 className='text-lg font-medium text-left'>{name}</h2>
-      <p className='text-xs text-left'>{`${size} ${description}`}</p>
+      <h2 className='text-2xl font-bold text-left'>{product.metadata.simple_name}</h2>
 
-      <div className='flex justify-between items-end mt-3'>
-        <p className='text-3xl font-semibold'>{size}</p>
-        <p className='text-xl font-semibold'>{price}€</p>
-      </div>
-      <p className='text-right text-xs font-normal -mt-0.5 mb-2'>/month</p>
+      <p className='text-sm font-semibold text-neutral-700 mt-4 mb-2'>Choose subscription</p>
 
-      <BaseButton onClick={() => { }}>
-        {buttonText}
-      </BaseButton>
+      {plans &&
+        plans.map(plan => <Plan plan={plan} key={plan.id} selectedPlan={selectedPlan} onClick={() => {
+          console.log('isLoading', isPaying);
+          if (!isPaying) {
+            handlePlanSelection(plan.id, product.id);
+          }
+        }} />)}
 
-      <div className='mt-7' />
-      {
-        characteristics.map((text, index) => <ListItem key={index} text={text} />)
-      }
+      <p className='text-sm font-semibold text-neutral-700 my-3.5'>Everything in this plan</p>
+
+      {characteristics.map(text => <ListItem text={text} key={text} />)}
+
+      <div className='mt-4' />
+      <ButtonPrimary width='w-full' text={selectedPlan && isPaying ? 'Redirecting to Stripe...' : buttonText} disabled={isPaying || !selectedPlan} onClick={() => handlePayment(selectedPlan, product.id)} />
     </div>
   );
 };

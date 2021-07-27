@@ -11,7 +11,7 @@ interface SecurityProps {
   isAuthenticated: boolean
 }
 
-const Security = ({ isAuthenticated }: SecurityProps): JSX.Element => {
+const AccountSecurityTab = ({ isAuthenticated }: SecurityProps): JSX.Element => {
   const [currentStep, setCurrentStep] = useState(1);
   const [has2FA, setHas2FA] = useState(false);
   const [qr, setQr] = useState('');
@@ -96,4 +96,4 @@ const Security = ({ isAuthenticated }: SecurityProps): JSX.Element => {
   );
 };
 
-export default Security;
+export default AccountSecurityTab;

@@ -4,12 +4,17 @@ import async from 'async';
 
 import { storageActions, StorageState } from '.';
 import { getFilenameAndExt, renameFile } from '../../../lib/utils';
-import { UserSettings } from '../../../models/interfaces';
 import fileService from '../../../services/file.service';
 import folderService from '../../../services/folder.service';
 import storageService from '../../../services/storage.service';
 import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
 import { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
+import queueFileLogger from '../../../services/queueFileLogger';
+import { updateFileStatusLogger } from '../files';
+import downloadService from '../../../services/download.service';
+import { DriveFileData } from '../../../models/interfaces';
+import fileLogger from '../../../services/fileLogger';
+import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 
 interface UploadItemsPayload {
   files: File[];
@@ -69,50 +74,84 @@ export const uploadItemsThunk = createAsyncThunk(
           file.content = renameFile(file.content, file.name);
         }
       }
+      const type = file.type === undefined ? null : file.type;
+      const path = relativePath + '/' + file.name + '.' + type;
+
+      dispatch(updateFileStatusLogger({ action: 'upload', status: 'pending', filePath: path, isFolder: false }));
+
     }
 
     const uploadErrors: any[] = [];
 
-    await async.eachLimit(filesToUpload, 1, (file: UploadItemPayload, nextFile) => {
+    const uploadFile = async (file, path, rateLimited, items) => {
 
-      let rateLimited = false;
-
-      file.parentFolderId = parentFolderId;
-      file.isTeam = !!user.teams;
-      file.file = file;
-      file.folderPath = folderPath;
-
-      storageService.upload.uploadItem(user.email, file)
+      await storageService.upload.uploadItem(user.email, file, path, dispatch)
         .then(({ res, data }) => {
+          dispatch(updateFileStatusLogger({ action: 'upload', status: 'success', filePath: path, isFolder: false }));
 
-          if (parentFolderId === currentFolderId) {
-            const index = items.findIndex((obj) => obj.name === file.name);
+          // if (parentFolderId === currentFolderId) {
+          //const index = items.findIndex((obj) => obj.name === file.name);
 
-            items[index].fileId = data.fileId;
-            items[index].id = data.id;
-          }
+          //   items[index].fileId = data.fileId;
+          //   items[index].id = data.id;
+          // }
 
           if (res.status === 402) {
             rateLimited = true;
             throw new Error('Rate limited');
           }
         }).catch((err) => {
+          dispatch(updateFileStatusLogger({ action: 'upload', status: 'error', filePath: path, isFolder: false }));
+
           uploadErrors.push(err);
           console.log(err);
-          //DELETE ITEM FROM FILE EXPLORER
         }).finally(() => {
           if (rateLimited) {
-            return nextFile(Error('Rate limited'));
+            return new Error('Rate limited');
           }
-          nextFile(null);
         });
+      return uploadErrors;
+    };
+
+    for (const file of filesToUpload) {
+
+      const type = file.type === undefined ? null : file.type;
+      const path = relativePath + '/' + file.name + '.' + type;
+
+      const rateLimited = false;
+
+      file.parentFolderId = parentFolderId;
+      file.isTeam = !!user.teams;
+      file.file = file;
+      file.folderPath = folderPath;
+
+      await queueFileLogger.push(() => uploadFile(file, path, rateLimited, items));
 
       if (uploadErrors.length > 0) {
         throw new Error('There were some errors during upload');
       }
-    });
+    }
 
     return null;
+  });
+
+export const downloadItemsThunk = createAsyncThunk(
+  'storage/downloadItems',
+  async (items: DriveFileData[], { getState, dispatch }: any) => {
+    const { namePath } = getState().storage;
+
+    const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+
+    items.forEach((item) => {
+      const path = relativePath + '/' + item.name + '.' + item.type;
+
+      dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
+    });
+    for (const item of items) {
+      const path = relativePath + '/' + item.name + '.' + item.type;
+
+      await queueFileLogger.push(() => downloadService.downloadFile(item, path, dispatch));
+    }
   });
 
 export const fetchFolderContentThunk = createAsyncThunk(
@@ -152,20 +191,12 @@ export const fetchFolderContentThunk = createAsyncThunk(
       storageActions.setCurrentFolderBucket(content.contentFolders.bucket)
     );
 
-    if (updateNamePath) {
-      // Only push path if it is not the same as actual path
-      const folderName = this.updateNamesPaths(user, content.contentFolders, this.state.namePath);
-
-      this.setState({
-        namePath: this.pushNamePath({
-          name: folderName,
-          id: content.contentFolders.id,
-          bucket: content.contentFolders.bucket,
-          id_team: content.contentFolders.id_team
-        }),
-        isAuthorized: true
-      });
-    }
+    dispatch(storageActions.pushNamePath({
+      name: content.contentFolders.name,
+      id: content.contentFolders.id,
+      bucket: content.contentFolders.bucket,
+      id_team: content.contentFolders.id_team
+    }));
   }
 );
 
@@ -186,12 +217,32 @@ export const deleteItemsThunk = createAsyncThunk(
 export const goToFolderThunk = createAsyncThunk(
   'storage/goToFolder',
   async (folderId: number, { getState, dispatch }: any) => {
+    dispatch(storageActions.goToNamePath(folderId));
     dispatch(storageActions.setCurrentFolderId(folderId));
     await dispatch(fetchFolderContentThunk(folderId));
   }
 );
 
 export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
+  builder
+    .addCase(uploadItemsThunk.pending, (state, action) => { })
+    .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
+    .addCase(uploadItemsThunk.rejected, (state, action: any) => {
+      console.log('uploadItemsThunk rejected: ', action);
+      // if (action.error.message === 'There were some errors during upload') {
+      //   uploadErrors.forEach(uploadError => {
+      //     toast.warn(uploadError.message);
+      //   });
+      // }
+
+      toast.warn(action.error.message);
+    });
+
+  builder
+    .addCase(downloadItemsThunk.pending, (state, action) => { })
+    .addCase(downloadItemsThunk.fulfilled, (state, action) => { })
+    .addCase(downloadItemsThunk.rejected, (state, action) => { });
+
   builder
     .addCase(fetchFolderContentThunk.pending, (state, action) => {
       state.isLoading = true;
@@ -219,24 +270,11 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
     .addCase(goToFolderThunk.pending, (state, action) => { })
     .addCase(goToFolderThunk.fulfilled, (state, action) => { })
     .addCase(goToFolderThunk.rejected, (state, action) => { });
-
-  builder
-    .addCase(uploadItemsThunk.pending, (state, action) => { })
-    .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
-    .addCase(uploadItemsThunk.rejected, (state, action: any) => {
-      console.log('uploadItemsThunk rejected: ', action);
-      if (action.error.message === 'There were some errors during upload') {
-        uploadErrors.forEach(uploadError => {
-          toast.warn(uploadError.message);
-        });
-      }
-
-      toast.warn(action.error.message);
-    });
 };
 
 const thunks = {
   uploadItemsThunk,
+  downloadItemsThunk,
   fetchFolderContentThunk,
   deleteItemsThunk,
   goToFolderThunk

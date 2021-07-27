@@ -5,8 +5,11 @@ export function getAppConfig(): AppConfig {
   return APP_CONFIG;
 }
 
-export function getViewConfig(viewId: string): AppViewConfig | undefined {
-  return APP_CONFIG.views.find(v => v.id === viewId);
+export function getViewConfig(filter: any): AppViewConfig | undefined {
+  return APP_CONFIG.views.find(v => Object.keys(filter).reduce((t: boolean, key: string) => {
+    return v[key] === filter[key] && t;
+  }, true)
+  );
 }
 
 const configService = {
