@@ -43,12 +43,12 @@ class App extends Component<AppProps, AppState> {
 
     deviceService.redirectForMobile();
 
-    if (currentRouteConfig?.auth) {
-      try {
-        await this.props.dispatch(initializeUserThunk()).unwrap();
-      } catch (e) {
-        console.log(e);
-      }
+    try {
+      await this.props.dispatch(initializeUserThunk({
+        redirectToLogin: !!currentRouteConfig?.auth
+      })).unwrap();
+    } catch (e) {
+      console.log(e);
     }
   }
 

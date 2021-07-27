@@ -9,7 +9,7 @@ import { removeAccents } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
 import localStorageService from '../../services/localStorage.service';
 
-import { FolderPath, UserSettings } from '../../models/interfaces';
+import { DriveFileData, FolderPath, UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform } from '../../models/enums';
 
@@ -34,10 +34,9 @@ interface FilesViewProps {
   currentFolderId: number;
   isCurrentFolderEmpty: boolean;
   isDraggingAnItem: boolean;
-  selectedItems: number[];
+  selectedItems: DriveFileData[];
   isLoadingItems: boolean,
   currentItems: any[],
-  selectedItemsIds: number[]
   isAuthenticated: boolean;
   itemToShareId: number;
   itemsToDeleteIds: number[];
@@ -127,7 +126,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   onDownloadButtonClicked = (): void => {
-    console.log('download button clicked!');
+    const { dispatch, selectedItems } = this.props;
+
+    dispatch(storageThunks.downloadItemsThunk(selectedItems));
   }
 
   onUploadInputChanged = (e) => {
@@ -435,10 +436,10 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
               <div className="flex">
                 {this.hasAnyItemSelected ?
                   <button className="primary mr-1 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <Unicons.UilCloudDownload className="h-5 mr-2"/><span>Download</span>
+                    <Unicons.UilCloudDownload className="h-5 mr-2" /><span>Download</span>
                   </button> :
                   <button className="primary mr-1 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <Unicons.UilCloudUpload className="h-5 mr-2"/><span>Upload</span>
+                    <Unicons.UilCloudUpload className="h-5 mr-2" /><span>Upload</span>
                   </button>
                 }
                 {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
@@ -471,15 +472,15 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                 <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
                   <span className="text-sm w-1/3">Showing 15 items of 450</span>
                   <div className="flex justify-center w-1/3">
-                    <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                      <img alt="" src={iconService.getIcon('previousPage')} />
-                    </div>
-                    <div className="pagination-button">
+                    <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
+                      <Unicons.UilAngleDoubleLeft />
+                    </button>
+                    <button className="pagination-button">
                       1
-                    </div>
-                    <div onClick={this.onNextPageButtonClicked} className="pagination-button">
-                      <img alt="" src={iconService.getIcon('nextPage')} />
-                    </div>
+                    </button>
+                    <button onClick={this.onNextPageButtonClicked} className="pagination-button">
+                      <Unicons.UilAngleDoubleRight />
+                    </button>
                   </div>
                   <div className="w-1/3"></div>
                 </div>
@@ -547,7 +548,6 @@ export default connect(
       currentFolderBucket: state.storage.currentFolderBucket,
       isLoadingItems: state.storage.isLoading,
       currentItems: state.storage.items,
-      selectedItemsIds: state.storage.selectedItems,
       itemToShareId: state.storage.itemToShareId,
       itemsToDeleteIds: state.storage.itemsToDeleteIds,
       isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,

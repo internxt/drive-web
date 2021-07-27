@@ -24,7 +24,7 @@ const initialState: UserState = {
 
 export const initializeUserThunk = createAsyncThunk(
   'user/initialize',
-  async (payload: undefined, { dispatch, getState }: any) => {
+  async (payload: { redirectToLogin: boolean } = { redirectToLogin: true }, { dispatch, getState }: any) => {
     const { user, isAuthenticated } = getState().user;
 
     if (user && isAuthenticated) {
@@ -54,8 +54,7 @@ export const initializeUserThunk = createAsyncThunk(
           dispatch(setIsUserInitialized(true));
         }
       }
-    } else {
-      console.log('redirecting to login (initializeUserThunk)!');
+    } else if (payload.redirectToLogin) {
       history.push('/login');
     }
   }

@@ -47,14 +47,13 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
         open={isDeleteItemsDialogOpen}
       />
 
-      <FileLogger />
-
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />
 
         <div className="flex flex-col flex-grow bg-l-neutral-20 pl-8 pr-24px">
           <AppHeader />
           {children}
+          <FileLogger />
           <footer className="bg-l-neutral-20 h-footer"></footer>
         </div>
       </div>

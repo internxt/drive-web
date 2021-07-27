@@ -59,6 +59,5 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
 
 export default connect(
   (state: RootState) => ({
-    items: state.storage.items,
-    selectedItems: state.storage.selectedItems
+    items: state.storage.items
   }))(FilesList);
