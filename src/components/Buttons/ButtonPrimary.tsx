@@ -17,7 +17,7 @@ const ButtonPrimary = ({ text, textWhenDisabled, width, icon, iconPosition, onCl
       onClick={() => onClick && onClick()}
       disabled={disabled}
     >
-      <span className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>{textWhenDisabled ? textWhenDisabled : text}</span>
+      <span className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>{disabled && textWhenDisabled ? textWhenDisabled : text}</span>
       <img className={!icon ? 'hidden' : ''} src={icon && getIcon(icon)} alt="" />
     </button>
   );

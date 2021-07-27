@@ -14,10 +14,10 @@ import SecurityView from './SecurityView/SecurityView';
 import DeactivationTeamsView from './DeactivationTeamsView/DeactivationTeamsView';
 import TeamSuccessView from '../views/TeamSuccessView/TeamSuccessView';
 import CheckoutView from './CheckoutView/CheckoutView';
-import RemoveView from './RemoveView/RemoveView';
 import ShareView from './ShareView/ShareView';
 import SignInView from './SignInView/SignInView';
 import SignUpView from './SignUpView/SignUpView';
+import RemoveAccountView from './RemoveAccountView/RemoveAccountView';
 
 const views: Array<{ id: string, component: string | FunctionComponent<any> | ComponentClass<any>, componentProps?: any }> = [
   { id: 'signup', component: SignUpView, componentProps: { isNewUser: true } },
@@ -39,7 +39,7 @@ const views: Array<{ id: string, component: string | FunctionComponent<any> | Co
   { id: 'reset', component: ResetView },
   { id: 'reset-token', component: ResetView },
   { id: 'settings', component: ResetView },
-  { id: 'remove', component: RemoveView },
+  { id: 'remove', component: RemoveAccountView },
   { id: 'share-token', component: ShareView },
   { id: 'not-found', component: NotFoundView }
 ];
