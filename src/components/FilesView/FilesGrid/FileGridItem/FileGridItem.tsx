@@ -3,7 +3,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
 import iconService, { IconType } from '../../../../services/icon.service';
-import { storageActions, storageThunks } from '../../../../store/slices/storage';
+import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
 
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
@@ -19,9 +19,11 @@ import { ItemAction } from '../../../../models/enums';
 interface FileGridItemProps {
   user: UserSettings;
   item: DriveFileData | DriveFolderData;
+  selectedItems: (DriveFileData | DriveFolderData)[];
   isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveFileData | DriveFolderData;
+  draggingTargetItemData: DriveFileData | DriveFolderData | null;
   currentFolderId: number | null;
+  isItemSelected: (item: DriveFileData | DriveFolderData) => boolean;
   dispatch: AppDispatch;
 }
 
@@ -177,6 +179,16 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
+  onItemClicked = (): void => {
+    const { item, dispatch, isItemSelected } = this.props;
+
+    if (!item.isFolder) {
+      isItemSelected(item) ?
+        dispatch(storageActions.deselectItem(item)) :
+        dispatch(storageActions.selectItem(item));
+    }
+  }
+
   onItemDoubleClicked = (): void => {
     const { dispatch, item } = this.props;
 
@@ -209,17 +221,19 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
   render(): ReactNode {
     const { itemRef, height } = this.state;
-    const { isDraggingAnItem, draggingTargetItemData, item } = this.props;
-    const isDraggingOverThisItem: boolean = draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
+    const { isDraggingAnItem, draggingTargetItemData, item, isItemSelected } = this.props;
+    const isDraggingOverThisItem: boolean = !!draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
     const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
+    const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
 
     return (
       <div
         ref={itemRef}
         style={{ height }}
-        className={`${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-grid-item`}
+        className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-grid-item`}
+        onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
         onDragOver={this.onItemDragOver}
         onDragLeave={this.onItemDragLeave}
@@ -252,8 +266,14 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 }
 
 export default connect(
-  (state: RootState) => ({
-    isDraggingAnItem: state.storage.isDraggingAnItem,
-    draggingTargetItemData: state.storage.draggingTargetItemData,
-    currentFolderId: state.storage.currentFolderId
-  }))(FileGridItem);
+  (state: RootState) => {
+    const isItemSelected = storageSelectors.isItemSelected(state);
+
+    return {
+      isDraggingAnItem: state.storage.isDraggingAnItem,
+      selectedItems: state.storage.selectedItems,
+      draggingTargetItemData: state.storage.draggingTargetItemData,
+      currentFolderId: state.storage.currentFolderId,
+      isItemSelected
+    };
+  })(FileGridItem);
