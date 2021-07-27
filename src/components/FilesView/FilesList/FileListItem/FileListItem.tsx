@@ -10,7 +10,7 @@ import dateService from '../../../../services/date.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { storageActions, storageThunks } from '../../../../store/slices/storage';
 import downloadService from '../../../../services/download.service';
-import { UserSettings } from '../../../../models/interfaces';
+import { DriveFileData, DriveFolderData, UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
@@ -20,9 +20,9 @@ import { ItemAction } from '../../../../models/enums';
 interface FileListItemProps {
   user: UserSettings;
   isDraggingAnItem: boolean;
-  draggingTargetItemData: any;
-  item: any;
-  selectedItems: number[];
+  draggingTargetItemData: DriveFileData | DriveFolderData;
+  item: DriveFileData | DriveFolderData;
+  selectedItems: DriveFileData[];
   currentFolderId: number | null;
   dispatch: AppDispatch
 }
@@ -69,7 +69,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   get isSelected(): boolean {
     const { item, selectedItems } = this.props;
 
-    return selectedItems.includes(item.name);
+    return selectedItems.includes(item);
   }
 
   confirmNameChange() {
@@ -117,7 +117,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     this.setState({ isEditingName: false });
   }
 
-  onNameChanged = (e: any): void => {
+  onNameChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState({ dirtyName: e.target.value });
   }
 
@@ -127,12 +127,12 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onSelectCheckboxChanged = (e: any): void => {
+  onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { item, dispatch } = this.props;
 
     e.target.checked ?
-      dispatch(storageActions.selectItem(item.name)) :
-      dispatch(storageActions.deselectItem(item.name));
+      dispatch(storageActions.selectItem(item)) :
+      dispatch(storageActions.deselectItem(item));
   }
 
   onRenameButtonClicked = (): void => {

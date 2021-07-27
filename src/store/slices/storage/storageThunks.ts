@@ -4,12 +4,14 @@ import async from 'async';
 
 import { storageActions, StorageState } from '.';
 import { getFilenameAndExt, renameFile } from '../../../lib/utils';
-import { UserSettings } from '../../../models/interfaces';
 import fileService from '../../../services/file.service';
 import folderService from '../../../services/folder.service';
 import storageService from '../../../services/storage.service';
 import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
-import { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
+import downloadService from '../../../services/download.service';
+import { DriveFileData } from '../../../models/interfaces';
+import fileLogger from '../../../services/fileLogger';
+import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 
 interface UploadItemsPayload {
   files: File[];
@@ -115,6 +117,15 @@ export const uploadItemsThunk = createAsyncThunk(
     return null;
   });
 
+export const downloadItemsThunk = createAsyncThunk(
+  'storage/downloadItems',
+  async (items: DriveFileData[], { getState, dispatch }: any) => {
+    items.forEach(i => fileLogger.push({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: i.name }));
+    for (const item of items) {
+      await downloadService.downloadFile(item);
+    }
+  });
+
 export const fetchFolderContentThunk = createAsyncThunk(
   'storage/fetchFolderContent',
   async (folderId: number = -1, { getState, dispatch }: any) => {
@@ -186,6 +197,25 @@ export const goToFolderThunk = createAsyncThunk(
 
 export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
+    .addCase(uploadItemsThunk.pending, (state, action) => { })
+    .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
+    .addCase(uploadItemsThunk.rejected, (state, action: any) => {
+      console.log('uploadItemsThunk rejected: ', action);
+      if (action.error.message === 'There were some errors during upload') {
+        uploadErrors.forEach(uploadError => {
+          toast.warn(uploadError.message);
+        });
+      }
+
+      toast.warn(action.error.message);
+    });
+
+  builder
+    .addCase(downloadItemsThunk.pending, (state, action) => { })
+    .addCase(downloadItemsThunk.fulfilled, (state, action) => { })
+    .addCase(downloadItemsThunk.rejected, (state, action) => { });
+
+  builder
     .addCase(fetchFolderContentThunk.pending, (state, action) => {
       state.isLoading = true;
     })
@@ -212,24 +242,11 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
     .addCase(goToFolderThunk.pending, (state, action) => { })
     .addCase(goToFolderThunk.fulfilled, (state, action) => { })
     .addCase(goToFolderThunk.rejected, (state, action) => { });
-
-  builder
-    .addCase(uploadItemsThunk.pending, (state, action) => { })
-    .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
-    .addCase(uploadItemsThunk.rejected, (state, action: any) => {
-      console.log('uploadItemsThunk rejected: ', action);
-      if (action.error.message === 'There were some errors during upload') {
-        uploadErrors.forEach(uploadError => {
-          toast.warn(uploadError.message);
-        });
-      }
-
-      toast.warn(action.error.message);
-    });
 };
 
 const thunks = {
   uploadItemsThunk,
+  downloadItemsThunk,
   fetchFolderContentThunk,
   deleteItemsThunk,
   goToFolderThunk

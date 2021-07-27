@@ -103,10 +103,10 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
         {/* LOGO & ITEMS */}
         <div>
           <button
-            className="p-4 collapse-button cursor-pointer flex items-center z-40 absolute transform"
+            className="p-2 collapse-button cursor-pointer flex items-center z-40 absolute transform"
             onClick={onCollapseButtonClicked}
           >
-            <img src={getIcon('nextPage')} alt="" />
+            {collapsed ? <Unicons.UilAngleDoubleRight /> : <Unicons.UilAngleDoubleLeft />}
           </button>
 
           <div>

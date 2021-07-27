@@ -20,6 +20,6 @@
     }
 
     .file-grid-item-actions-button {
-        @apply top-0.5 right-0.5 rounded-1/2 w-4 h-4 bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
+        @apply top-2 right-2 rounded-1/2 w-4 h-4 bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
     }
 }

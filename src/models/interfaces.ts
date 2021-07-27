@@ -38,7 +38,7 @@ export interface TeamsSettings {
   bridge_user: string
 }
 
-export interface FileData {
+export interface DriveFolderData {
   isFolder: boolean,
   isSelected:boolean,
   isLoading:boolean,
@@ -57,9 +57,35 @@ export interface FileData {
   iconId: number | null,
   parent_id: number | null,
   icon: string | null,
-  fileStatus: FileStatusTypes,
-  progress: string
 }
+
+export interface DriveFolderMetadataPayload {
+  itemName?: string;
+  color?: string;
+  icon?: string;
+}
+
+export interface DriveFileData {
+  created_at: string,
+  id: number,
+  fileId: string,
+  name: string,
+  type: string,
+  size: number,
+  bucket: string,
+  folder_id: number,
+  encrypt_version: string,
+  deleted: false,
+  deletedAt: null,
+  createdAt: string,
+  updatedAt: string,
+  folderId: number,
+}
+
+export interface DriveFileMetadataPayload {
+  itemName: string;
+}
+
 export interface ILoggerFile {
   action: FileActionTypes,
   filePath: string,

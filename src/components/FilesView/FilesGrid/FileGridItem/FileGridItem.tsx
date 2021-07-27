@@ -9,7 +9,7 @@ import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { connect } from 'react-redux';
-import { UserSettings } from '../../../../models/interfaces';
+import { DriveFileData, DriveFolderData, UserSettings } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
@@ -18,10 +18,9 @@ import { ItemAction } from '../../../../models/enums';
 
 interface FileGridItemProps {
   user: UserSettings;
-  item: any;
+  item: DriveFileData | DriveFolderData;
   isDraggingAnItem: boolean;
-  draggingTargetItemData: any;
-  selectedItems: number[];
+  draggingTargetItemData: DriveFileData | DriveFolderData;
   currentFolderId: number | null;
   dispatch: AppDispatch;
 }
@@ -256,6 +255,5 @@ export default connect(
   (state: RootState) => ({
     isDraggingAnItem: state.storage.isDraggingAnItem,
     draggingTargetItemData: state.storage.draggingTargetItemData,
-    currentFolderId: state.storage.currentFolderId,
-    selectedItems: state.storage.selectedItems
+    currentFolderId: state.storage.currentFolderId
   }))(FileGridItem);

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileViewMode } from '../../../models/enums';
-import { FolderPath } from '../../../models/interfaces';
+import { DriveFileData, FolderPath } from '../../../models/interfaces';
 
 import selectors from './storageSelectors';
 import thunks, { extraReducers } from './storageThunks';
@@ -13,7 +13,7 @@ export interface StorageState {
   currentFolderId: number;
   currentFolderBucket: string | null;
   items: any[];
-  selectedItems: number[];
+  selectedItems: DriveFileData[];
   itemToShareId: number;
   itemsToDeleteIds: number[];
   infoItemId: number;
@@ -63,11 +63,11 @@ export const storageSlice = createSlice({
     setItems: (state: StorageState, action: PayloadAction<any[]>) => {
       state.items = action.payload;
     },
-    selectItem: (state: StorageState, action: PayloadAction<number>) => {
+    selectItem: (state: StorageState, action: PayloadAction<DriveFileData>) => {
       state.selectedItems.push(action.payload);
     },
-    deselectItem: (state: StorageState, action: PayloadAction<number>) => {
-      state.selectedItems = state.selectedItems.filter(id => id !== action.payload);
+    deselectItem: (state: StorageState, action: PayloadAction<DriveFileData>) => {
+      state.selectedItems = state.selectedItems.filter(item => item === action.payload);
     },
     resetSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
