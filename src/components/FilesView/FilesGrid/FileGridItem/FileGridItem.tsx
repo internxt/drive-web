@@ -51,11 +51,11 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   componentDidMount() {
     this.updateItemHeight();
 
-    window.addEventListener('resize', () => this.updateItemHeight());
+    window.addEventListener('resize', this.updateItemHeight);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', () => this.updateItemHeight());
+    window.removeEventListener('resize', this.updateItemHeight);
   }
 
   updateItemHeight = () => {
