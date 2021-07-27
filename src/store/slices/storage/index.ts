@@ -67,7 +67,9 @@ export const storageSlice = createSlice({
       state.selectedItems.push(action.payload);
     },
     deselectItem: (state: StorageState, action: PayloadAction<DriveFileData | DriveFolderData>) => {
-      state.selectedItems = state.selectedItems.filter(item => item.id !== action.payload.id && item.isFolder !== action.payload.isFolder);
+      const index: number = state.selectedItems.findIndex((item) => item.id === action.payload.id && item.isFolder === action.payload.isFolder);
+
+      state.selectedItems.splice(index, 1);
     },
     resetSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
