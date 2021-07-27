@@ -13,7 +13,7 @@
     @apply bg-white w-sidenav-1280-collapsed px-4;
 
     .collapse-button {
-      @apply left-2.5;
+      @apply left-2.5 transform rotate-180;
     }
   }
 }
