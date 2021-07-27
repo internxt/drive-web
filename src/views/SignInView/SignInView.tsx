@@ -16,6 +16,7 @@ import history from '../../lib/history';
 import iconService, { IconType } from '../../services/icon.service';
 import { useSelector } from 'react-redux';
 import { IFormValues, UserSettings } from '../../models/interfaces';
+import ButtonTextOnly from '../../components/Buttons/ButtonTextOnly';
 
 interface SignInProps {
   email?: string,
@@ -189,9 +190,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
 
           <div className='flex w-full justify-center text-sm mt-3'>
             <span>Don't have an account?</span>
-            <a className="ml-2" href="/new">
-              Get started
-            </a>
+            <ButtonTextOnly text='Get started' onClick={() => history.push('/new')} additionalStyling='ml-1.5' />
           </div>
         </div>
       </div>

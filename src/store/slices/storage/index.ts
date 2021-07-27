@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileViewMode } from '../../../models/enums';
+import { DriveFileData, DriveFolderData, FolderPath } from '../../../models/interfaces';
 
 import selectors from './storageSelectors';
 import thunks, { extraReducers } from './storageThunks';
@@ -8,16 +9,16 @@ export interface StorageState {
   isLoading: boolean;
   isDeletingItems: boolean;
   isDraggingAnItem: boolean;
-  draggingTargetItemData: any | null;
+  draggingTargetItemData: DriveFolderData | DriveFileData | null;
   currentFolderId: number;
   currentFolderBucket: string | null;
-  items: any[];
-  selectedItems: number[];
+  items: (DriveFileData | DriveFolderData)[];
+  selectedItems: (DriveFileData | DriveFolderData)[];
   itemToShareId: number;
   itemsToDeleteIds: number[];
   infoItemId: number;
   viewMode: FileViewMode;
-  namePath: any[];
+  namePath: FolderPath[];
   sortFunction: ((a: any, b: any) => number) | null;
   searchFunction: ((item: any) => boolean) | null;
 }
@@ -62,11 +63,13 @@ export const storageSlice = createSlice({
     setItems: (state: StorageState, action: PayloadAction<any[]>) => {
       state.items = action.payload;
     },
-    selectItem: (state: StorageState, action: PayloadAction<number>) => {
+    selectItem: (state: StorageState, action: PayloadAction<DriveFileData | DriveFolderData>) => {
       state.selectedItems.push(action.payload);
     },
-    deselectItem: (state: StorageState, action: PayloadAction<number>) => {
-      state.selectedItems = state.selectedItems.filter(id => id !== action.payload);
+    deselectItem: (state: StorageState, action: PayloadAction<DriveFileData | DriveFolderData>) => {
+      const index: number = state.selectedItems.findIndex((item) => item.id === action.payload.id && item.isFolder === action.payload.isFolder);
+
+      state.selectedItems.splice(index, 1);
     },
     resetSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
@@ -86,8 +89,15 @@ export const storageSlice = createSlice({
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
     },
-    pushNamePath: (state: StorageState, action: PayloadAction<any>) => {
-      state.namePath.push(action.payload);
+    goToNamePath: (state: StorageState, action: PayloadAction<number>) => {
+      const folderIndex: number = state.namePath.map(path => path.id).indexOf(action.payload);
+
+      state.namePath = state.namePath.slice(0, folderIndex + 1);
+    },
+    pushNamePath: (state: StorageState, action: PayloadAction<FolderPath>) => {
+      if (!state.namePath.map(path => path.id).includes(action.payload.id)) {
+        state.namePath.push(action.payload);
+      }
     },
     popNamePath: (state: StorageState) => {
       state.namePath.pop();

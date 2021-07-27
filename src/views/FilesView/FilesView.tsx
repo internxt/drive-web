@@ -9,7 +9,7 @@ import { removeAccents } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
 import localStorageService from '../../services/localStorage.service';
 
-import { UserSettings } from '../../models/interfaces';
+import { DriveFileData, FolderPath, UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform } from '../../models/enums';
 
@@ -28,16 +28,17 @@ import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFil
 
 import './FilesView.scss';
 import { checkFileNameExists, getNewFolderName } from '../../services/storage.service/storage-name.service';
+import usageService, { UsageResponse } from '../../services/usage.service';
+import SessionStorage from '../../lib/sessionStorage';
 
 interface FilesViewProps {
   user: UserSettings | any,
   currentFolderId: number;
   isCurrentFolderEmpty: boolean;
   isDraggingAnItem: boolean;
-  selectedItems: number[];
+  selectedItems: DriveFileData[];
   isLoadingItems: boolean,
   currentItems: any[],
-  selectedItemsIds: number[]
   isAuthenticated: boolean;
   itemToShareId: number;
   itemsToDeleteIds: number[];
@@ -45,7 +46,7 @@ interface FilesViewProps {
   isDeleteItemsDialogOpen: boolean;
   infoItemId: number;
   viewMode: FileViewMode;
-  namePath: any[];
+  namePath: FolderPath[];
   sortFunction: ((a: any, b: any) => number) | null;
   dispatch: AppDispatch;
 }
@@ -78,20 +79,30 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   moveEvent = {};
 
   get breadcrumbItems(): BreadcrumbItemData[] {
+    const { namePath, dispatch } = this.props;
     const items: BreadcrumbItemData[] = [];
 
-    items.push({
-      name: 'storage',
-      label: '',
-      icon: iconService.getIcon('breadcrumbsStorage'),
-      active: true
-    });
-    items.push({
-      name: 'folder-parent-name',
-      label: 'FolderParentName',
-      icon: iconService.getIcon('breadcrumbsFolder'),
-      active: false
-    });
+    if (namePath.length > 0) {
+      const firstPath: FolderPath = this.props.namePath[0];
+
+      items.push({
+        id: firstPath.id,
+        label: 'Drive',
+        icon: iconService.getIcon('breadcrumbsStorage'),
+        active: true,
+        onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath.id))
+      });
+
+      this.props.namePath.slice(1).forEach((path: FolderPath, i: number, namePath: any[]) => {
+        items.push({
+          id: path.id,
+          label: path.name,
+          icon: null,
+          active: i < namePath.length - 1,
+          onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath.id))
+        });
+      });
+    }
 
     return items;
   }
@@ -117,10 +128,29 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   onDownloadButtonClicked = (): void => {
-    console.log('download button clicked!');
+    const { dispatch, selectedItems } = this.props;
+
+    dispatch(storageThunks.downloadItemsThunk(selectedItems));
   }
 
-  onUploadInputChanged = (e) => {
+  onUploadInputChanged = async (e) => {
+    const limitStorage = SessionStorage.get('limitStorage');
+
+    try {
+      const usage: UsageResponse = await usageService.fetchUsage();
+
+      if (limitStorage && usage.total >= parseInt(limitStorage)) {
+        this.props.dispatch(uiActions.showReachedPlanLimit(true));
+      } else {
+        this.dispatchUpload(e);
+      }
+
+    } catch (err) {
+      this.dispatchUpload(e);
+    }
+  }
+
+  dispatchUpload = (e) => {
     const { dispatch } = this.props;
 
     dispatch(
@@ -419,17 +449,16 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
           <div className="flex-grow flex flex-col">
             <div className="flex justify-between pb-4">
               <div>
-                <span className="text-base font-semibold"> Drive </span>
                 <Breadcrumbs items={this.breadcrumbItems} />
               </div>
 
               <div className="flex">
                 {this.hasAnyItemSelected ?
                   <button className="primary mr-1 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <Unicons.UilCloudDownload className="h-5 mr-2"/><span>Download</span>
+                    <Unicons.UilCloudDownload className="h-5 mr-2" /><span>Download</span>
                   </button> :
                   <button className="primary mr-1 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <Unicons.UilCloudUpload className="h-5 mr-2"/><span>Upload</span>
+                    <Unicons.UilCloudUpload className="h-5 mr-2" /><span>Upload</span>
                   </button>
                 }
                 {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
@@ -462,15 +491,15 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                 <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
                   <span className="text-sm w-1/3"/>
                   <div className="flex justify-center w-1/3">
-                    <div onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                      <img alt="" src={iconService.getIcon('previousPage')} />
-                    </div>
-                    <div className="pagination-button">
+                    <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
+                      <Unicons.UilAngleDoubleLeft />
+                    </button>
+                    <button className="pagination-button">
                       1
-                    </div>
-                    <div onClick={this.onNextPageButtonClicked} className="pagination-button">
-                      <img alt="" src={iconService.getIcon('nextPage')} />
-                    </div>
+                    </button>
+                    <button onClick={this.onNextPageButtonClicked} className="pagination-button">
+                      <Unicons.UilAngleDoubleRight />
+                    </button>
                   </div>
                   <div className="w-1/3"></div>
                 </div>
@@ -538,7 +567,6 @@ export default connect(
       currentFolderBucket: state.storage.currentFolderBucket,
       isLoadingItems: state.storage.isLoading,
       currentItems: state.storage.items,
-      selectedItemsIds: state.storage.selectedItems,
       itemToShareId: state.storage.itemToShareId,
       itemsToDeleteIds: state.storage.itemsToDeleteIds,
       isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,

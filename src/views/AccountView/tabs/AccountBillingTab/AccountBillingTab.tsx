@@ -1,14 +1,14 @@
-import { Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { useState } from 'react';
-import Plan from './BillingPlanItem';
-import { useEffect } from 'react';
-
-import { loadAvailablePlans, loadAvailableProducts } from '../../../../services/products.service';
-import { IBillingPlan, IStripeProduct } from '../../../../models/interfaces';
-import { getIcon } from '../../../../services/icon.service';
-import notify from '../../../../components/Notifications';
-
 import './AccountBillingTab.scss';
+import { useEffect } from 'react';
+import { getIcon } from '../../../../services/icon.service';
+import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/interfaces';
+import { loadAvailablePlans, loadAvailableProducts, payStripePlan } from '../../../../services/products.service';
+import notify from '../../../../components/Notifications';
+import analyticsService from '../../../../services/analytics.service';
+import SessionStorage from '../../../../lib/sessionStorage';
+import BillingPlanItem from './BillingPlanItem';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -54,27 +54,28 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
   );
 };
 
+const objectMap = (obj: Record<any, any>, fn): Record<any, any> => Object.fromEntries(Object.entries(obj).map(([key, value], i) => [key, fn(value, key, i)]));
+
 const AccountBillingTab = (): JSX.Element => {
   const [currentOption, setCurrentOption] = useState<'individual' | 'business'>('individual');
   const [isLoading, setIsLoading] = useState(true);
+  const [isPaying, setIsPaying] = useState(false);
   const [products, setProducts] = useState<IBillingPlan>({});
 
   useEffect(() => {
     const getProducts = async () => {
       try {
+        //const customer = await loadAllStripeCustomers('');
         const products = await loadAvailableProducts();
-
         const productsWithPlans = products.map(async product => ({
-          [product.id]: {
-            product: product,
-            plans: await loadAvailablePlans(product)
-          }
+          product: product,
+          plans: await loadAvailablePlans(product),
+          selected: ''
         }));
 
-        const finalProducts = await Promise.all(productsWithPlans);
-        const keyedProducts = finalProducts.reduce((acc, prod) => ({ ...acc, ...prod }), {});
+        const finalProducts = (await Promise.all(productsWithPlans));
+        const keyedProducts: IBillingPlan = finalProducts.reduce((acc, prod) => ({ ...acc, [prod.product.id]: prod }), {});
 
-        console.log('plans =>', keyedProducts);
         setProducts(keyedProducts);
       } catch (err) {
         notify(err.message, 'error');
@@ -86,37 +87,70 @@ const AccountBillingTab = (): JSX.Element => {
     getProducts();
   }, []);
 
+  const handlePlanSelection = (planId: string, productId: string) => {
+    setProducts(prevState => objectMap({ ...prevState }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
+      return {
+        ...value,
+        selected: productId === value.product.id ? planId : ''
+      };
+    }));
+  };
+
+  const handlePayment = async (selectedPlan: string, productId: string) => {
+    setIsPaying(true);
+    const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+
+    const body: { plan: string, product: string, test?: boolean } = {
+      plan: selectedPlan,
+      product: productId
+    };
+
+    if (/^pk_test_/.exec(stripe._apiKey)) {
+      body.test = true;
+    }
+
+    try {
+      const session = await payStripePlan(body);
+
+      analyticsService.trackUserEnterPayments();
+      SessionStorage.del('limitStorage');
+
+      await stripe.redirectToCheckput({ sessionId: session.id });
+    } catch (err) {
+      notify('Failed to redirect to Stripe. Please contact us. Reason: ' + err.message, 'error');
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
   return (
     <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
       <div className='flex justify-evenly items-center h-11'>
         <Option text='Individuals' currentOption={currentOption} isBusiness={false} onClick={() => {
           setCurrentOption('individual');
         }} />
-        <div className='w-px h-4 border-r border-m-neutral-60' />
+        <div className='w-px h-1/2 border-r border-m-neutral-60' />
         <Option text='Business' currentOption={currentOption} isBusiness={true} onClick={() => {
           setCurrentOption('business');
         }} />
       </div>
 
-      <span className='text-sm text-m-neutral-100 text-center py-2 border-t border-b border-m-neutral-60'>
-        One plan for complete use of all Interxt's secure services. It's simple to upgrade in-app at any time.
-      </span>
-
-      <div className='flex h-88'>
+      <div className='flex h-88 border-t border-m-neutral-60'>
         {!isLoading ?
           Object.values(products).map((product, index) => (
             <Fragment>
-              <Plan
-                name={product.product.name}
-                description='of encrypted storage'
-                size={product.product.metadata.simple_name}
-                price={product.product.metadata.price_eur}
-                buttonText='Subscribe'
+              <BillingPlanItem
+                product={product.product}
                 plans={product.plans}
+                selectedPlan={product.selected}
+                buttontext='Subscribe'
                 characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
                 key={product.product.id}
+                handlePlanSelection={handlePlanSelection}
+                handlePayment={handlePayment}
+                isPaying={isPaying}
               />
-              {index < Object.keys(products).length && <div className='h-full border-r border-m-neutral-60' />}
+              {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
             </Fragment>
           ))
           :

@@ -2,9 +2,10 @@
     .file-grid-item {
         border-radius: 8px;
 
-        @apply relative bg-white hover:bg-blue-20 p-4 box-border;
+        @apply relative bg-white p-4 box-border;
 
-        &:hover {
+        &:hover, &.selected {
+            background-color: var(--color-blue-20);
             box-shadow: inset 0px 0px 0px 0.15rem var(--color-blue-40);
         }
 
@@ -20,6 +21,6 @@
     }
 
     .file-grid-item-actions-button {
-        @apply top-0.5 right-0.5 rounded-1/2 w-4 h-4 bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
+        @apply top-2 right-2 rounded-1/2 w-4 h-4 bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
     }
 }

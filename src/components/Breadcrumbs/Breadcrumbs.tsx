@@ -17,8 +17,8 @@ class Breadcrumbs extends React.Component<BreadcrumbsProps, BreadcrumbsState> {
 
   get itemsList(): JSX.Element[] {
     return this.props.items.map(item => (
-      <li className={`cursor-pointer flex items-center ${item.active ? 'active' : ''}`} key={item.name} onClick={item.onClick}>
-        <img alt="" className="breadcrumb-item-icon" src={item.icon} />
+      <li className={`flex items-center ${item.active ? 'active' : ''}`} key={item.id} onClick={item.onClick}>
+        { item.icon ? <img alt="" className="icon h-3" src={item.icon} /> : null }
         { item.label ? <span className="label">{item.label}</span> : null}
       </li>
     ));
@@ -31,16 +31,16 @@ class Breadcrumbs extends React.Component<BreadcrumbsProps, BreadcrumbsState> {
           <ol className="breadcrumb">
             {this.itemsList}
           </ol> :
-          'empty breadcrumbs'}
+          ''}
       </nav>
     );
   }
 }
 
 export interface BreadcrumbItemData {
-  name: string;
+  id: string | number;
   label: string;
-  icon: string;
+  icon: string | null | undefined;
   active: boolean;
   onClick?: () => void;
 }

@@ -103,10 +103,10 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
         {/* LOGO & ITEMS */}
         <div>
           <button
-            className="p-4 collapse-button cursor-pointer flex items-center z-40 absolute transform"
+            className="p-2 collapse-button cursor-pointer flex items-center z-40 absolute transform"
             onClick={onCollapseButtonClicked}
           >
-            <img src={getIcon('nextPage')} alt="" />
+            {collapsed ? <Unicons.UilAngleDoubleRight /> : <Unicons.UilAngleDoubleLeft />}
           </button>
 
           <div>
@@ -176,7 +176,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
                   <div className='h-full bg-blue-70' style={{ width: (this.state.usage / this.state.limit) * 100 }} />
                 </div>
 
-                <span className="flex-grow mt-1 text-supporting-2 text-m-neutral-100">{bytesToString(this.state.usage)} of {this.putLimitUser()}</span>
+                <span className="flex-grow mt-1 text-supporting-2 text-m-neutral-100">{this.state.usage === 0 ? '0' : bytesToString(this.state.usage)} of {this.putLimitUser()}</span>
                 <button className="secondary" onClick={this.onUpgradeButtonClicked}>Upgrade</button>
               </div>
             </div>

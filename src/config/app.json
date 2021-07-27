@@ -1,7 +1,7 @@
 {
   "views": [
     {
-      "id": "new",
+      "id": "signup",
       "layout": "empty",
       "path": "/new",
       "exact": true

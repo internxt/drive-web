@@ -8,11 +8,10 @@ import deviceService from './services/device.service';
 import { setHasConnection } from './store/slices/network';
 import { AppViewConfig, UserSettings } from './models/interfaces';
 import configService from './services/config.service';
-import history from './lib/history';
 import analyticsService, { PATH_NAMES } from './services/analytics.service';
 import layouts from './layouts';
 import views from './views';
-
+import history from './lib/history';
 import { AppDispatch, RootState } from './store';
 
 interface AppProps {
@@ -32,6 +31,7 @@ class App extends Component<AppProps, AppState> {
   }
 
   async componentDidMount(): Promise<void> {
+    const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({ path: history.location.pathname });
     const dispatch: AppDispatch = this.props.dispatch;
 
     window.addEventListener('offline', () => {
@@ -44,7 +44,9 @@ class App extends Component<AppProps, AppState> {
     deviceService.redirectForMobile();
 
     try {
-      await this.props.dispatch(initializeUserThunk()).unwrap();
+      await this.props.dispatch(initializeUserThunk({
+        redirectToLogin: !!currentRouteConfig?.auth
+      })).unwrap();
     } catch (e) {
       console.log(e);
     }
@@ -52,7 +54,7 @@ class App extends Component<AppProps, AppState> {
 
   get routes(): JSX.Element[] {
     const routes: JSX.Element[] = views.map(v => {
-      const viewConfig: AppViewConfig | undefined = configService.getViewConfig(v.id);
+      const viewConfig: AppViewConfig | undefined = configService.getViewConfig({ id: v.id });
       const layoutConfig = layouts.find(l => l.id === viewConfig?.layout) || layouts[0];
       const componentProps: {
         key: string, exact: boolean; path: string; render: any
