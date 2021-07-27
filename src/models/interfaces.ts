@@ -96,6 +96,11 @@ export type IStripeProduct = {
   test?: boolean
 }
 
+export type IStripeCustomer = {
+  product: string,
+  payment_frequency: StripePlanNames
+}
+
 export type StripeProductMetadata = {
   is_drive: string,
   member_tier: keyof typeof StripeMemberTiers,

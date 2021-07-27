@@ -12,13 +12,13 @@ interface ButtonProps {
   onClick?: () => any
 }
 
-const ButtonPrimary = ({ text, width, icon, iconPosition, onClick, disabled }: ButtonProps): JSX.Element => {
+const ButtonPrimary = ({ text, textWhenDisabled, width, icon, iconPosition, onClick, disabled }: ButtonProps): JSX.Element => {
   return (
-    <button className={`flex items-center justify-center bg-blue-60 py-2 rounded text-white text-sm ${width} ${iconPosition === 'Right' ? 'flex-row' : 'flex-row-reverse'} transition duration-200 easi-in-out hover:bg-blue-80`}
+    <button className={`flex items-center justify-center ${disabled ? 'bg-blue-30 cursor-default' : 'bg-blue-60 transition duration-200 easi-in-out hover:bg-blue-80'} py-2 rounded text-white text-sm ${width} ${iconPosition === 'Right' ? 'flex-row' : 'flex-row-reverse'}`}
       onClick={() => onClick && onClick()}
       disabled={disabled}
     >
-      <span className={iconPosition === 'Left' ? 'mr-2' : 'ml-2'}>{text}</span>
+      <span className={iconPosition === 'Left' ? 'mr-2' : 'ml-2'}>{textWhenDisabled ? textWhenDisabled : text}</span>
       <img className={!icon ? 'hidden' : ''} src={icon && getIcon(icon)} alt="" />
     </button>
   );

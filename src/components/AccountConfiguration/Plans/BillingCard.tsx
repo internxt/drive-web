@@ -1,15 +1,18 @@
 import React from 'react';
+import { useState } from 'react';
 import { IStripePlan, IStripeProduct } from '../../../models/interfaces';
 import { getIcon } from '../../../services/icon.service';
 import ButtonPrimary from '../../Buttons/ButtonPrimary';
-
+import { useEffect } from 'react';
 interface PlanProps {
   product: IStripeProduct,
   plans: IStripePlan[],
   selectedPlan: string,
-  buttonText: string,
+  buttontext: string,
   characteristics: string[],
-  handlePlanSelection: (planId: string, productId: string) => void
+  handlePlanSelection: (planId: string, productId: string) => void,
+  handlePayment: (selectedPlan: string, productId: string) => void,
+  isPaying: boolean
 }
 
 const ListItem = ({ text }: { text: string }): JSX.Element => (
@@ -44,22 +47,35 @@ const Plan = ({ plan, onClick, selectedPlan }: { plan: IStripePlan, onClick: () 
   );
 };
 
-const BillingCard = ({ product, plans, buttonText, characteristics, handlePlanSelection, selectedPlan }: PlanProps): JSX.Element => (
-  <div className='w-full h-full flex flex-col justify-center text-neutral-700 p-7'>
-    <h2 className='text-2xl font-bold text-left'>{product.metadata.simple_name}</h2>
+const BillingCard = ({ product, plans, buttontext, characteristics, handlePlanSelection, handlePayment, selectedPlan, isPaying }: PlanProps): JSX.Element => {
+  const [buttonText, setButtonText] = useState(selectedPlan ? 'Subscribe' : 'Choose your payment');
 
-    <p className='text-sm font-semibold text-neutral-700 mt-4 mb-2'>Choose subscription</p>
+  useEffect(() => {
+    setButtonText(selectedPlan ? 'Subscribe' : 'Choose your payment');
+  }, [selectedPlan]);
 
-    {plans &&
-      plans.map(plan => <Plan plan={plan} key={plan.id} onClick={() => handlePlanSelection(plan.id, product.id)} selectedPlan={selectedPlan} />)}
+  return (
+    <div className='w-full h-full flex flex-col justify-center text-neutral-700 p-7'>
+      <h2 className='text-2xl font-bold text-left'>{product.metadata.simple_name}</h2>
 
-    <p className='text-sm font-semibold text-neutral-700 my-3.5'>Everything in this plan</p>
+      <p className='text-sm font-semibold text-neutral-700 mt-4 mb-2'>Choose subscription</p>
 
-    {characteristics.map(text => <ListItem text={text} key={text} />)}
+      {plans &&
+        plans.map(plan => <Plan plan={plan} key={plan.id} selectedPlan={selectedPlan} onClick={() => {
+          console.log('isLoading', isPaying);
+          if (!isPaying) {
+            handlePlanSelection(plan.id, product.id);
+          }
+        }} />)}
 
-    <div className='mt-4' />
-    <ButtonPrimary width='w-full' text={buttonText} onClick={() => { }} />
-  </div>
-);
+      <p className='text-sm font-semibold text-neutral-700 my-3.5'>Everything in this plan</p>
+
+      {characteristics.map(text => <ListItem text={text} key={text} />)}
+
+      <div className='mt-4' />
+      <ButtonPrimary width='w-full' text={buttonText} disabled={isPaying || !selectedPlan} onClick={() => handlePayment(selectedPlan, product.id)} />
+    </div>
+  );
+};
 
 export default BillingCard;

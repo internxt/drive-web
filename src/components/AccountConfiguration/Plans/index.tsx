@@ -2,11 +2,13 @@ import React, { Fragment } from 'react';
 import { useState } from 'react';
 import './billing.scss';
 import { useEffect } from 'react';
-import { loadAvailablePlans, loadAvailableProducts } from '../../../services/products.service';
+import { loadAllStripeCustomers, loadAvailablePlans, loadAvailableProducts, payStripePlan } from '../../../services/products.service';
 import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../models/interfaces';
 import { getIcon } from '../../../services/icon.service';
 import notify from '../../Notifications';
 import BillingCard from './BillingCard';
+import SessionStorage from '../../../lib/sessionStorage';
+import analyticsService from '../../../services/analytics.service';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -57,11 +59,13 @@ const objectMap = (obj: Record<any, any>, fn): Record<any, any> => Object.fromEn
 const Plans = (): JSX.Element => {
   const [currentOption, setCurrentOption] = useState<'individual' | 'business'>('individual');
   const [isLoading, setIsLoading] = useState(true);
+  const [isPaying, setIsPaying] = useState(false);
   const [products, setProducts] = useState<IBillingPlan>({});
 
   useEffect(() => {
     const getProducts = async () => {
       try {
+        //const customer = await loadAllStripeCustomers('');
         const products = await loadAvailableProducts();
         const productsWithPlans = products.map(async product => ({
           product: product,
@@ -92,6 +96,33 @@ const Plans = (): JSX.Element => {
     }));
   };
 
+  const handlePayment = async (selectedPlan: string, productId: string) => {
+    setIsPaying(true);
+    const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+
+    const body: { plan: string, product: string, test?: boolean } = {
+      plan: selectedPlan,
+      product: productId
+    };
+
+    if (/^pk_test_/.exec(stripe._apiKey)) {
+      body.test = true;
+    }
+
+    try {
+      const session = await payStripePlan(body);
+
+      analyticsService.trackUserEnterPayments();
+      SessionStorage.del('limitStorage');
+
+      await stripe.redirectToCheckput({ sessionId: session.id });
+    } catch (err) {
+      notify('Failed to redirect to Stripe. Please contact us. Reason: ' + err.message, 'error');
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
   return (
     <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
       <div className='flex justify-evenly items-center h-11'>
@@ -112,10 +143,12 @@ const Plans = (): JSX.Element => {
                 product={product.product}
                 plans={product.plans}
                 selectedPlan={product.selected}
-                buttonText='Subscribe'
+                buttontext='Subscribe'
                 characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
                 key={product.product.id}
                 handlePlanSelection={handlePlanSelection}
+                handlePayment={handlePayment}
+                isPaying={isPaying}
               />
               {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
             </Fragment>
