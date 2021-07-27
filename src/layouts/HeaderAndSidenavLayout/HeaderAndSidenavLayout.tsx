@@ -10,6 +10,8 @@ import Sidenav from '../../components/Sidenav/Sidenav';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
 import { setItemToShare } from '../../store/slices/storage';
+import { useState } from 'react';
+import FileLoggerModal from '../../components/FileLoggerModal';
 import { uiActions } from '../../store/slices/ui';
 
 interface HeaderAndSidenavLayoutProps {
@@ -47,7 +49,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
         open={isDeleteItemsDialogOpen}
       />
 
-      <FileLogger />
+      <FileLoggerModal />
 
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />

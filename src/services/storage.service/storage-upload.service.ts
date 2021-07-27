@@ -7,6 +7,7 @@ import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';
 import { DevicePlatform } from '../../models/enums';
+import { updateFileStatusLogger } from '../../store/slices/files';
 
 export interface UploadItemPayload {
   file: any,
@@ -16,7 +17,8 @@ export interface UploadItemPayload {
   name: string
 }
 
-export async function uploadItem(userEmail: string, file: UploadItemPayload): Promise<any> {
+export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, dispatch): Promise<any> {
+
   if (!file.parentFolderId) {
     throw new Error('No folder ID provided');
   }
@@ -44,6 +46,9 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload): Pr
       filecontent: content,
       progressCallback: (progress: number) => {
         //STATUS: UPLOAD FILE PROGRESS AS % AND UPLOADING
+        if (progress > 0) {
+          dispatch(updateFileStatusLogger({ action: 'upload', status: 'uploading', filePath: path, progress: progress.toFixed(2), isFolder: false }));
+        }
       }
     });
 
