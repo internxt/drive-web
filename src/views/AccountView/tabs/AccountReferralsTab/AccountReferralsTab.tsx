@@ -10,7 +10,7 @@ import BaseButton from '../../../../components/Buttons/BaseButton';
 import AuthInput from '../../../../components/Inputs/AuthInput';
 import notify from '../../../../components/Notifications';
 
-const Referrals = (): JSX.Element => {
+const AccountReferralsTab = (): JSX.Element => {
   const { register, formState: { errors }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
 
   const email = useWatch({ control, name: 'email', defaultValue: '' });
@@ -125,4 +125,4 @@ const Referrals = (): JSX.Element => {
   );
 };
 
-export default Referrals;
+export default AccountReferralsTab;

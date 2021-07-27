@@ -1,5 +1,6 @@
 import { getHeaders } from '../lib/auth';
-import { IStripePlan, IStripeProduct } from '../models/interfaces';
+import { IStripeCustomer, IStripePlan, IStripeProduct } from '../models/interfaces';
+import analyticsService from './analytics.service';
 
 export const loadAvailableProducts = async (): Promise<IStripeProduct[]> => {
   const test = false;
@@ -24,6 +25,30 @@ export const loadAvailablePlans = async (product: IStripeProduct): Promise<IStri
     body: JSON.stringify(body)
   });
   const data = await response.json();
+
+  return data;
+};
+
+export const loadAllStripeCustomers = async (email: string): Promise<IStripeCustomer> => {
+  const response = await fetch(`/api/stripe/v1/customers/${email}`, {
+    headers: getHeaders(true, false)
+  });
+  const data = await response.json();
+
+  return data;
+};
+
+export const payStripePlan = async (body): Promise<any> => {
+  const response = await fetch('/api/stripe/session', {
+    method: 'POST',
+    headers: getHeaders(true, false),
+    body: JSON.stringify(body)
+  });
+  const data = await response.json();
+
+  if (data.error) {
+    throw new Error(data.error);
+  }
 
   return data;
 };

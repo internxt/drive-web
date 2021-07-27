@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { changePassword } from '../../../../services/auth.service';
 import notify from '../../../../components/Notifications';
 
-const ChangePassword = (): JSX.Element => {
+const AccountPasswordTab = (): JSX.Element => {
   const { register, formState: { errors }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -98,4 +98,4 @@ const ChangePassword = (): JSX.Element => {
   );
 };
 
-export default ChangePassword;
+export default AccountPasswordTab;

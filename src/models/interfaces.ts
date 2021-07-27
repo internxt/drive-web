@@ -111,7 +111,8 @@ export interface IFormValues {
 export type IBillingPlan = {
   [id: string]: {
     product: IStripeProduct,
-    plans: IStripePlan[]
+    plans: IStripePlan[],
+    selected: string
   }
 }
 
@@ -122,46 +123,53 @@ export type IStripeProduct = {
   test?: boolean
 }
 
+export type IStripeCustomer = {
+  product: string,
+  payment_frequency: StripePlanNames
+}
+
 export type StripeProductMetadata = {
   is_drive: string,
-  member_tier: StripeMemberTiers,
+  member_tier: keyof typeof StripeMemberTiers,
   price_eur: string,
-  simple_name: StripeSimpleNames,
+  simple_name: keyof typeof StripeSimpleNames,
   size_bytes: string
 }
 
-export type StripeMemberTiers = {
-  infinite: string, lifetime: string, premium: string
+export enum StripeMemberTiers {
+  'infinite',
+  'lifetime',
+  'premium'
 }
 
-export type StripeSimpleNames = {
-  'infinite': string,
-  '20TB': string,
-  '2TB': string,
-  '200GB': string,
-  '20GB': string
+export enum StripeSimpleNames {
+  'infinite',
+  '20TB',
+  '2TB',
+  '200GB',
+  '20GB'
 }
 
-export type StripeProductNames = {
-  'Drive 20GB': string,
-  'Drive 200GB': string,
-  'Drive 2 TB': string
+export enum StripeProductNames {
+  'Drive 20GB',
+  'Drive 200GB',
+  'Drive 2 TB'
 }
 
 export type IStripePlan = {
   id: string,
-  interval: StripePlanIntervals,
+  interval: keyof typeof StripePlanIntervals,
   interval_count: number,
-  name: StripePlanNames,
+  name: keyof typeof StripePlanNames,
   price: number
 }
 
-type StripePlanIntervals = {
+enum StripePlanIntervals {
   'month',
   'year'
 }
 
-type StripePlanNames = {
+enum StripePlanNames {
   'Montlhy',
   'Semiannually',
   'Annually'

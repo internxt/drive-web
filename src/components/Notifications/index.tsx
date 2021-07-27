@@ -37,7 +37,7 @@ const notify = (text: string, type: 'success' | 'error' | 'warning' | 'info', du
       autoClose: duration || 3000,
       position: 'bottom-right',
       type: 'success',
-      style: { width: '360px', height: '56px', background: '#42BE65' }
+      style: { width: '360px', height: 'auto', background: '#42BE65' }
     });
   }
 
@@ -47,7 +47,7 @@ const notify = (text: string, type: 'success' | 'error' | 'warning' | 'info', du
       autoClose: duration || 3000,
       position: 'bottom-right',
       type: 'error',
-      style: { width: '360px', height: '56px', background: '#DA1E28' }
+      style: { width: '360px', height: 'auto', background: '#DA1E28' }
     });
   }
 
@@ -57,7 +57,7 @@ const notify = (text: string, type: 'success' | 'error' | 'warning' | 'info', du
       autoClose: duration || 3000,
       position: 'bottom-right',
       type: 'warning',
-      style: { width: '360px', height: '56px', background: '#F1C21B' }
+      style: { width: '360px', height: 'auto', background: '#F1C21B' }
     });
   }
 
@@ -67,7 +67,7 @@ const notify = (text: string, type: 'success' | 'error' | 'warning' | 'info', du
       autoClose: duration || 3000,
       position: 'bottom-right',
       type: 'warning',
-      style: { width: '360px', height: '56px', background: '#091E42' }
+      style: { width: '360px', height: 'auto', background: '#091E42' }
     });
   }
 };

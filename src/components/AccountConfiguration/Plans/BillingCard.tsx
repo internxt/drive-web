@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
+import { IStripePlan, IStripeProduct } from '../../../models/interfaces';
+import { getIcon } from '../../../services/icon.service';
+import ButtonPrimary from '../../Buttons/ButtonPrimary';
 import { useEffect } from 'react';
-import ButtonPrimary from '../../../../components/Buttons/ButtonPrimary';
-import { IStripePlan, IStripeProduct } from '../../../../models/interfaces';
-import { getIcon } from '../../../../services/icon.service';
 interface PlanProps {
   product: IStripeProduct,
   plans: IStripePlan[],
@@ -47,7 +47,7 @@ const Plan = ({ plan, onClick, selectedPlan }: { plan: IStripePlan, onClick: () 
   );
 };
 
-const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection, handlePayment, selectedPlan, isPaying }: PlanProps): JSX.Element => {
+const BillingCard = ({ product, plans, characteristics, handlePlanSelection, handlePayment, selectedPlan, isPaying }: PlanProps): JSX.Element => {
   const [buttonText, setButtonText] = useState(selectedPlan ? 'Subscribe' : 'Choose your payment');
 
   useEffect(() => {
@@ -78,4 +78,4 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
   );
 };
 
-export default BillingPlanItem;
+export default BillingCard;
