@@ -1,10 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../..';
 import { ILogger, ILoggerFile } from '../../../models/interfaces';
-import { IActionUpdateFileLoggerEntry } from '../../../models/interfaces';
 
 interface FilesState {
-  fileHistory: ILogger
+  fileHistory: ILogger,
 }
 
 const initialState: FilesState = {
@@ -15,39 +14,44 @@ export const filesStateSlice = createSlice({
   name: 'filesState',
   initialState,
   reducers: {
-    addFileToHistory: (state, action: PayloadAction<ILoggerFile>) => {
-      const newEntry = {
-        [action.payload.filePath]: action.payload
-      };
-      const newState = Object.assign(newEntry, state.fileHistory);
+    updateFileStatusLogger: (state, action: PayloadAction<ILoggerFile>) => {
+      const { filePath, status, progress } = action.payload;
 
-      state.fileHistory= newState;
-    },
-    updateFileStatus: (state, action: PayloadAction<IActionUpdateFileLoggerEntry>) => {
-      const { filePath, status, progress, errorMessage } = action.payload;
-      const fileAction = action.payload.action;
-
+      console.log(action.payload);
       if (state.fileHistory[filePath]) {
-        if (status) {
+        if (status === 'success' || status === 'error' || status === 'pending') {
+          const existingEntry = {
+            [action.payload.filePath]: state.fileHistory[filePath]
+          };
+          const { [state.fileHistory[filePath].filePath]: filtered, ...rest } = state.fileHistory;
+
+          state.fileHistory = rest;
+
+          state.fileHistory = Object.assign(existingEntry, state.fileHistory);
           state.fileHistory[filePath].status = status;
-          if (errorMessage) {
-            state.fileHistory[filePath].errorMessage = errorMessage;
-          }
+        } else {
+          state.fileHistory[filePath].status = status;
         }
-        if (fileAction) {
-          state.fileHistory[filePath].action = fileAction;
-        }
-        if (progress) {
-          state.fileHistory[filePath].progress = progress;
-        }
+      } else {
+        const newEntry = {
+          [action.payload.filePath]: action.payload
+        };
+
+        state.fileHistory = Object.assign(newEntry, state.fileHistory);
       }
+      if (progress) {
+        state.fileHistory[filePath].progress = progress;
+      }
+    },
+    clearFileLoggerStatus: (state) => {
+      state.fileHistory = {};
     }
   }
 });
 
 export const {
-  addFileToHistory,
-  updateFileStatus
+  updateFileStatusLogger,
+  clearFileLoggerStatus
 } = filesStateSlice.actions;
 export const selectLoggerFiles = (state: RootState) => state.filesState.fileHistory;
 export default filesStateSlice.reducer;
