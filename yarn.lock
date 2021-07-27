@@ -6458,7 +6458,7 @@ invariant@^2.2.4:
 
 "inxt-js@git+ssh://git@github.com:internxt/inxt-js.git#inxt-js-web-integration-without-rs":
   version "1.0.0"
-  resolved "git+ssh://git@github.com:internxt/inxt-js.git#c9025b65057da9403793209b6f467e8186fb57c5"
+  resolved "git+ssh://git@github.com:internxt/inxt-js.git#54b8e92f4356410a2016c141f5fcd1ec36097dc0"
   dependencies:
     "@types/progress-stream" "^2.0.2"
     async "^3.2.0"
