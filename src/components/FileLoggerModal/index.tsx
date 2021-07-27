@@ -35,6 +35,13 @@ const FileLoggerModal = (): JSX.Element => {
   useEffect(() => {
     if (Object.values(fileHistory).length) {
       setIsOpen(true);
+      const processingItems = Object.values(fileHistory).findIndex(item => item.status !== 'success' && item.status !== 'error');
+
+      if (processingItems !== -1) {
+        setHasFinished(false);
+      } else {
+        setHasFinished(true);
+      }
     }
   }, [fileHistory]);
 
