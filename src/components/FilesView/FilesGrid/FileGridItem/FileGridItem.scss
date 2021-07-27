@@ -2,9 +2,10 @@
     .file-grid-item {
         border-radius: 8px;
 
-        @apply relative bg-white hover:bg-blue-20 p-4 box-border;
+        @apply relative bg-white p-4 box-border;
 
-        &:hover {
+        &:hover, &.selected {
+            background-color: var(--color-blue-20);
             box-shadow: inset 0px 0px 0px 0.15rem var(--color-blue-40);
         }
 
