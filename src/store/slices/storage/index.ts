@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileViewMode } from '../../../models/enums';
+import { FolderPath } from '../../../models/interfaces';
 
 import selectors from './storageSelectors';
 import thunks, { extraReducers } from './storageThunks';
@@ -17,7 +18,7 @@ export interface StorageState {
   itemsToDeleteIds: number[];
   infoItemId: number;
   viewMode: FileViewMode;
-  namePath: any[];
+  namePath: FolderPath[];
   sortFunction: ((a: any, b: any) => number) | null;
   searchFunction: ((item: any) => boolean) | null;
 }
@@ -86,8 +87,15 @@ export const storageSlice = createSlice({
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
     },
-    pushNamePath: (state: StorageState, action: PayloadAction<any>) => {
-      state.namePath.push(action.payload);
+    goToNamePath: (state: StorageState, action: PayloadAction<number>) => {
+      const folderIndex: number = state.namePath.map(path => path.id).indexOf(action.payload);
+
+      state.namePath = state.namePath.slice(0, folderIndex + 1);
+    },
+    pushNamePath: (state: StorageState, action: PayloadAction<FolderPath>) => {
+      if (!state.namePath.map(path => path.id).includes(action.payload.id)) {
+        state.namePath.push(action.payload);
+      }
     },
     popNamePath: (state: StorageState) => {
       state.namePath.pop();

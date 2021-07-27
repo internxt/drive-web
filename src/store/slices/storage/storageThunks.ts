@@ -152,20 +152,12 @@ export const fetchFolderContentThunk = createAsyncThunk(
       storageActions.setCurrentFolderBucket(content.contentFolders.bucket)
     );
 
-    if (updateNamePath) {
-      // Only push path if it is not the same as actual path
-      const folderName = this.updateNamesPaths(user, content.contentFolders, this.state.namePath);
-
-      this.setState({
-        namePath: this.pushNamePath({
-          name: folderName,
-          id: content.contentFolders.id,
-          bucket: content.contentFolders.bucket,
-          id_team: content.contentFolders.id_team
-        }),
-        isAuthorized: true
-      });
-    }
+    dispatch(storageActions.pushNamePath({
+      name: content.contentFolders.name,
+      id: content.contentFolders.id,
+      bucket: content.contentFolders.bucket,
+      id_team: content.contentFolders.id_team
+    }));
   }
 );
 
@@ -186,6 +178,7 @@ export const deleteItemsThunk = createAsyncThunk(
 export const goToFolderThunk = createAsyncThunk(
   'storage/goToFolder',
   async (folderId: number, { getState, dispatch }: any) => {
+    dispatch(storageActions.goToNamePath(folderId));
     dispatch(storageActions.setCurrentFolderId(folderId));
     await dispatch(fetchFolderContentThunk(folderId));
   }

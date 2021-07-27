@@ -8,11 +8,10 @@ import deviceService from './services/device.service';
 import { setHasConnection } from './store/slices/network';
 import { AppViewConfig, UserSettings } from './models/interfaces';
 import configService from './services/config.service';
-import history from './lib/history';
 import analyticsService, { PATH_NAMES } from './services/analytics.service';
 import layouts from './layouts';
 import views from './views';
-
+import history from './lib/history';
 import { AppDispatch, RootState } from './store';
 
 interface AppProps {
@@ -43,10 +42,13 @@ class App extends Component<AppProps, AppState> {
 
     deviceService.redirectForMobile();
 
-    try {
-      await this.props.dispatch(initializeUserThunk()).unwrap();
-    } catch (e) {
-      console.log(e);
+    if (history.location) {
+      console.log(history.location);
+      try {
+        await this.props.dispatch(initializeUserThunk()).unwrap();
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 

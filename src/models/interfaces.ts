@@ -147,3 +147,10 @@ export interface IActionUpdateFileLoggerEntry {
   progress?: number,
   errorMessage?: string
 }
+
+export interface FolderPath {
+  name: string,
+  id: number,
+  bucket: string,
+  id_team: number;
+}

@@ -20,7 +20,7 @@ import SignInView from './SignInView/SignInView';
 import SignUpView from './SignUpView/SignUpView';
 
 const views: Array<{ id: string, component: string | FunctionComponent<any> | ComponentClass<any>, componentProps?: any }> = [
-  { id: 'new', component: SignUpView, componentProps: { isNewUser: true } },
+  { id: 'signup', component: SignUpView, componentProps: { isNewUser: true } },
   { id: 'appsumo', component: NewView, componentProps: { isNewUser: false } },
   { id: 'login', component: SignInView },
   { id: 'invite', component: ReferredView },

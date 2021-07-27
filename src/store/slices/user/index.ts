@@ -55,6 +55,7 @@ export const initializeUserThunk = createAsyncThunk(
         }
       }
     } else {
+      console.log('redirecting to login (initializeUserThunk)!');
       history.push('/login');
     }
   }

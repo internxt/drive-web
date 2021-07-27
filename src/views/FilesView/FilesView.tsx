@@ -9,7 +9,7 @@ import { removeAccents } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
 import localStorageService from '../../services/localStorage.service';
 
-import { UserSettings } from '../../models/interfaces';
+import { FolderPath, UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform } from '../../models/enums';
 
@@ -45,7 +45,7 @@ interface FilesViewProps {
   isDeleteItemsDialogOpen: boolean;
   infoItemId: number;
   viewMode: FileViewMode;
-  namePath: any[];
+  namePath: FolderPath[];
   sortFunction: ((a: any, b: any) => number) | null;
   dispatch: AppDispatch;
 }
@@ -78,20 +78,30 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   moveEvent = {};
 
   get breadcrumbItems(): BreadcrumbItemData[] {
+    const { namePath, dispatch } = this.props;
     const items: BreadcrumbItemData[] = [];
 
-    items.push({
-      name: 'storage',
-      label: '',
-      icon: iconService.getIcon('breadcrumbsStorage'),
-      active: true
-    });
-    items.push({
-      name: 'folder-parent-name',
-      label: 'FolderParentName',
-      icon: iconService.getIcon('breadcrumbsFolder'),
-      active: false
-    });
+    if (namePath.length > 0) {
+      const firstPath: FolderPath = this.props.namePath[0];
+
+      items.push({
+        id: firstPath.id,
+        label: 'Drive',
+        icon: iconService.getIcon('breadcrumbsStorage'),
+        active: true,
+        onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath.id))
+      });
+
+      this.props.namePath.slice(1).forEach((path: FolderPath, i: number, namePath: any[]) => {
+        items.push({
+          id: path.id,
+          label: path.name,
+          icon: null,
+          active: i < namePath.length - 1,
+          onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath.id))
+        });
+      });
+    }
 
     return items;
   }
@@ -419,7 +429,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
           <div className="flex-grow flex flex-col">
             <div className="flex justify-between pb-4">
               <div>
-                <span className="text-base font-semibold"> Drive </span>
                 <Breadcrumbs items={this.breadcrumbItems} />
               </div>
 

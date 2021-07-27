@@ -30,7 +30,6 @@ interface SignUpProps {
 }
 
 const SignUp = (props: SignUpProps): JSX.Element => {
-  console.log(props);
   const { register, formState: { errors }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
   const dispatch = useAppDispatch();
 
@@ -47,6 +46,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const hasEmailParam = props.match.params.email && validateEmail(props.match.params.email);
   const hasTokenParam = qs.token;
   const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
+
+  console.log(props);
 
   if (hasTokenParam && typeof hasTokenParam === 'string') {
     localStorageService.clear();
