@@ -25,7 +25,7 @@ const ReachedPlanLimitDialog = ({ open }: ReachedPlanLimitDialogProps): JSX.Elem
 
   return (
     <BaseDialog
-      title="Delete items"
+      title="Run out of space"
       open={open}
       onClose={onCancel}
     >
