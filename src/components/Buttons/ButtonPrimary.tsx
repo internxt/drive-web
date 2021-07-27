@@ -6,6 +6,7 @@ interface ButtonProps {
   text: string
   width: string
   disabled?: boolean
+  textWhenDisabled?: string
   icon?: keyof typeof IconType
   iconPosition?: keyof typeof IconPosition
   onClick?: () => any
