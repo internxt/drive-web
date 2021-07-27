@@ -47,7 +47,7 @@ const Plan = ({ plan, onClick, selectedPlan }: { plan: IStripePlan, onClick: () 
   );
 };
 
-const BillingCard = ({ product, plans, buttontext, characteristics, handlePlanSelection, handlePayment, selectedPlan, isPaying }: PlanProps): JSX.Element => {
+const BillingCard = ({ product, plans, characteristics, handlePlanSelection, handlePayment, selectedPlan, isPaying }: PlanProps): JSX.Element => {
   const [buttonText, setButtonText] = useState(selectedPlan ? 'Subscribe' : 'Choose your payment');
 
   useEffect(() => {
@@ -73,7 +73,7 @@ const BillingCard = ({ product, plans, buttontext, characteristics, handlePlanSe
       {characteristics.map(text => <ListItem text={text} key={text} />)}
 
       <div className='mt-4' />
-      <ButtonPrimary width='w-full' text={buttonText} disabled={isPaying || !selectedPlan} onClick={() => handlePayment(selectedPlan, product.id)} />
+      <ButtonPrimary width='w-full' text={selectedPlan && isPaying ? 'Redirecting to Stripe...' : buttonText} disabled={isPaying || !selectedPlan} onClick={() => handlePayment(selectedPlan, product.id)} />
     </div>
   );
 };
