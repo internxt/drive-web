@@ -17,7 +17,6 @@ export const filesStateSlice = createSlice({
     updateFileStatusLogger: (state, action: PayloadAction<ILoggerFile>) => {
       const { filePath, status, progress } = action.payload;
 
-      console.log(action.payload);
       if (state.fileHistory[filePath]) {
         if (status === 'success' || status === 'error' || status === 'pending') {
           const existingEntry = {
