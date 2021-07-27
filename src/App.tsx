@@ -31,6 +31,7 @@ class App extends Component<AppProps, AppState> {
   }
 
   async componentDidMount(): Promise<void> {
+    const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({ path: history.location.pathname });
     const dispatch: AppDispatch = this.props.dispatch;
 
     window.addEventListener('offline', () => {
@@ -42,8 +43,7 @@ class App extends Component<AppProps, AppState> {
 
     deviceService.redirectForMobile();
 
-    if (history.location) {
-      console.log(history.location);
+    if (currentRouteConfig?.auth) {
       try {
         await this.props.dispatch(initializeUserThunk()).unwrap();
       } catch (e) {
@@ -54,7 +54,7 @@ class App extends Component<AppProps, AppState> {
 
   get routes(): JSX.Element[] {
     const routes: JSX.Element[] = views.map(v => {
-      const viewConfig: AppViewConfig | undefined = configService.getViewConfig(v.id);
+      const viewConfig: AppViewConfig | undefined = configService.getViewConfig({ id: v.id });
       const layoutConfig = layouts.find(l => l.id === viewConfig?.layout) || layouts[0];
       const componentProps: {
         key: string, exact: boolean; path: string; render: any

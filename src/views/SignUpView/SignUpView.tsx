@@ -47,8 +47,6 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const hasTokenParam = qs.token;
   const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
 
-  console.log(props);
-
   if (hasTokenParam && typeof hasTokenParam === 'string') {
     localStorageService.clear();
     localStorageService.set('xToken', hasTokenParam);
@@ -300,7 +298,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           </span>
 
           <CheckboxPrimary label='acceptTerms' text='Accept terms, conditions and privacy policy' required={true} register={register} additionalStyling='mt-2 -mb-0' />
-          <BaseButton onClick={() => window.open('https://internxt.com/en/legal')} className="self-start ml-6 text-xs">
+          <BaseButton onClick={() => window.open('https://internxt.com/en/legal')} classes="self-start ml-6 primary">
             More info
           </BaseButton>
           <div className='mt-3' />
@@ -309,7 +307,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
         <div className='flex justify-center items-center w-full mt-6'>
           <span className='text-sm text-neutral-500 ml-3 select-none'>Already registered?</span>
-          <BaseButton onClick={() => history.push('/login')} className="ml-1.5">
+          <BaseButton onClick={() => history.push('/login')} classes="ml-1.5 secondary">
             Log in
           </BaseButton>
         </div>

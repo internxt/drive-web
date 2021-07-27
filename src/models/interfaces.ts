@@ -9,6 +9,7 @@ export interface AppViewConfig {
   layout: AppViewLayout;
   path: string;
   exact: boolean;
+  auth?: boolean;
 }
 
 export interface UserSettings {
