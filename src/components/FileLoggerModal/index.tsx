@@ -45,6 +45,22 @@ const FileLoggerModal = (): JSX.Element => {
     }
   }, [fileHistory]);
 
+  const handleLeavePage = (e) => {
+    const confirmationMessage = '';
+
+    e.returnValue = confirmationMessage; //Trident, Chrome 34+
+    return confirmationMessage; // WebKit, Chrome <34
+
+  };
+
+  useEffect(() => {
+    if (!hasFinished) {
+      window.addEventListener('beforeunload', handleLeavePage);
+
+      return () => window.removeEventListener('beforeunload', handleLeavePage);
+    }
+  }, [hasFinished]);
+
   return (
     <div className={`fixed bottom-0 right-80 flex flex-col w-64 transform duration-300 ${isMinimized ? 'h-9' : 'h-64'} bg-white mr-8 mb-11 rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''} z-20`}>
       <div className='flex justify-between bg-neutral-900 px-4 py-2.5 rounded-md select-none'>
