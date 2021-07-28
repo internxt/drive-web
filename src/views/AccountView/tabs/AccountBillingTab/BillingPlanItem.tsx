@@ -22,7 +22,7 @@ const ListItem = ({ text }: { text: string }): JSX.Element => (
   </div>
 );
 
-const Plan = ({ plan, onClick, selectedPlan }: { plan: IStripePlan, onClick: () => void, selectedPlan: string }) => {
+export const Plan = ({ plan, onClick, selectedPlan }: { plan: IStripePlan, onClick: () => void, selectedPlan: string }): JSX.Element => {
   return (
     <div className={`flex justify-between items-center px-4 mb-2 w-full h-11 rounded-md text-neutral-500 cursor-pointer hover:border-blue-60 ${selectedPlan === plan.id ? 'border-2 border-blue-60' : 'border border-m-neutral-60'}`}
       onClick={onClick}

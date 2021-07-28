@@ -186,7 +186,7 @@ const AccountBillingTab = (): JSX.Element => {
                   handlePayment={handlePayment}
                   isPaying={isPaying}
                 />
-                {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
+                {index < Object.keys(teamsProducts).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
               </Fragment>
             ))
           :
