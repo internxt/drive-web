@@ -37,7 +37,6 @@ interface FilesViewProps {
   currentItems: (DriveFileData | DriveFolderData)[],
   isAuthenticated: boolean;
   itemToShareId: number;
-  itemsToDeleteIds: number[];
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   infoItemId: number;
@@ -156,7 +155,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   onBulkDeleteButtonClicked = () => {
-    console.log('on bulk delete button clicked!');
+    const { dispatch, selectedItems } = this.props;
+
+    dispatch(storageThunks.deleteItemsThunk(selectedItems));
   }
 
   onPreviousPageButtonClicked = (): void => {
@@ -497,7 +498,6 @@ export default connect(
       isLoadingItems: state.storage.isLoading,
       currentItems: state.storage.items,
       itemToShareId: state.storage.itemToShareId,
-      itemsToDeleteIds: state.storage.itemsToDeleteIds,
       isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
       isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
       infoItemId: state.storage.infoItemId,
