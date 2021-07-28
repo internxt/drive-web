@@ -4,13 +4,11 @@ import AppHeader from '../../components/AppHeader/AppHeader';
 import CreateFolderDialog from '../../components/dialogs/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../components/dialogs/DeleteItemsDialog/DeleteItemsDialog';
 
-import FileLogger from '../../components/FileLoggerModal';
 import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
 import Sidenav from '../../components/Sidenav/Sidenav';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
 import { setItemToShare } from '../../store/slices/storage';
-import { useState } from 'react';
 import FileLoggerModal from '../../components/FileLoggerModal';
 import { uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';

@@ -62,7 +62,7 @@ const FileLoggerModal = (): JSX.Element => {
   }, [hasFinished]);
 
   return (
-    <div className={`fixed bottom-0 right-80 flex flex-col w-64 transform duration-300 ${isMinimized ? 'h-9' : 'h-64'} bg-white mr-8 mb-11 rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''} z-20`}>
+    <div className={`z-50 absolute bottom-0 right-0 flex flex-col w-64 transform duration-300 ${isMinimized ? 'h-9' : 'h-64'} bg-white rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''}`}>
       <div className='flex justify-between bg-neutral-900 px-4 py-2.5 rounded-md select-none'>
         <div className='flex w-max'>
           <Button icon={IconType.doubleArrowUpWhite} style={`transform duration-500 ${!isMinimized ? 'rotate-180' : 'rotate-0'}`} />

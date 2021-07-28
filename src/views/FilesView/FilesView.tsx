@@ -458,7 +458,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                   <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
                     <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">
                       <div className="mb-28">
-                        <img alt="" src={iconService.getIcon(IconType.DragAndDrop)} className="w-36 m-auto" />
+                        <img alt="" src={iconService.getIcon(IconType.dragAndDrop)} className="w-36 m-auto" />
                         <div className="text-center">
                           <span className="font-semibold text-base text-m-neutral-100 block">
                             Drag and drop here
