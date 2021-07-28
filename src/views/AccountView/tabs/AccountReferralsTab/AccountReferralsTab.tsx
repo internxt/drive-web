@@ -9,6 +9,7 @@ import AuthButton from '../../../../components/Buttons/AuthButton';
 import BaseButton from '../../../../components/Buttons/BaseButton';
 import AuthInput from '../../../../components/Inputs/AuthInput';
 import notify from '../../../../components/Notifications';
+import ButtonPrimary from '../../../../components/Buttons/ButtonPrimary';
 
 const AccountReferralsTab = (): JSX.Element => {
   const { register, formState: { errors }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
@@ -117,9 +118,7 @@ const AccountReferralsTab = (): JSX.Element => {
           You have accumulated {credit}€
         </span>
 
-        <BaseButton disabled={isLoadingClaim} onClick={onClaim}>
-          Claim
-        </BaseButton>
+        <ButtonPrimary text='Claim' textWhenDisabled='Claiming bonus...' width='w-64' disabled={isLoadingClaim} onClick={onClaim} />
       </div>
     </div>
   );

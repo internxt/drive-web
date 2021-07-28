@@ -69,7 +69,7 @@ const AccountBillingTab = (): JSX.Element => {
         const products = await loadAvailableProducts();
         const productsWithPlans = products.map(async product => ({
           product: product,
-          plans: await loadAvailablePlans(product),
+          plans: await loadAvailablePlans(product) || [],
           selected: ''
         }));
 
