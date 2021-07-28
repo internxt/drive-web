@@ -11,7 +11,7 @@ import notify from '../../../../components/Notifications';
 import ButtonPrimary from '../../../../components/Buttons/ButtonPrimary';
 
 const AccountReferralsTab = (): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
 
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const [isLoadingInvite, setIsLoadingInvite] = useState(false);
@@ -99,7 +99,7 @@ const AccountReferralsTab = (): JSX.Element => {
           />
 
           <div className='w-28 ml-2.5'>
-            <AuthButton text='Invite' textWhenDisabled='Inviting' isDisabled={isLoadingInvite} />
+            <AuthButton text='Invite' textWhenDisabled={isValid ? 'Inviting...' : 'Invite'} isDisabled={isLoadingInvite || !isValid} />
           </div>
         </form>
 
