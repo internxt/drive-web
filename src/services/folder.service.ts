@@ -1,11 +1,11 @@
-import { getHeaders } from '../lib/auth';
 import _ from 'lodash';
 
+import { getHeaders } from '../lib/auth';
 import fileService from './file.service';
 import history from '../lib/history';
 import localStorageService from './localStorage.service';
 import analyticsService from './analytics.service';
-import { UserSettings } from '../models/interfaces';
+import { DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../models/interfaces';
 import { DevicePlatform } from '../models/enums';
 
 export interface IFolders {
@@ -152,13 +152,13 @@ export async function createFolder(isTeam: boolean, currentFolderId: number | nu
   return responseJSON;
 }
 
-export function updateMetaData(itemId: number, data: any): Promise<void> {
+export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload): Promise<void> {
   const user: UserSettings = localStorageService.getUser();
 
   return fetch(`/api/storage/folder/${itemId}/meta`, {
     method: 'post',
     headers: getHeaders(true, true, !!user.teams),
-    body: data
+    body: JSON.stringify(data)
   })
     .then(() => {
       analyticsService.trackFolderRename({
@@ -172,7 +172,7 @@ export function updateMetaData(itemId: number, data: any): Promise<void> {
     });
 }
 
-export function deleteFolder(folderData: any) {
+export function deleteFolder(folderData: DriveFolderData): Promise<void | Response> {
   const user = localStorageService.getUser();
   const fetchOptions = {
     method: 'DELETE',

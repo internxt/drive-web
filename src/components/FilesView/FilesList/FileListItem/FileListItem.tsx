@@ -10,7 +10,7 @@ import dateService from '../../../../services/date.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
 import downloadService from '../../../../services/download.service';
-import { DriveFileData, DriveFolderData, UserSettings } from '../../../../models/interfaces';
+import { DriveFileData, DriveFileMetadataPayload, DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
@@ -18,12 +18,12 @@ import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 import { ItemAction } from '../../../../models/enums';
 
 interface FileListItemProps {
-  user: UserSettings;
+  user: UserSettings | undefined;
   isDraggingAnItem: boolean;
   draggingTargetItemData: DriveFileData | DriveFolderData;
   item: DriveFileData | DriveFolderData;
   selectedItems: (DriveFileData | DriveFolderData)[];
-  currentFolderId: number | null;
+  currentFolderId: number;
   isItemSelected: (item: DriveFileData | DriveFolderData) => boolean;
   dispatch: AppDispatch
 }
@@ -54,7 +54,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       <Fragment>
         <input className={`${isEditingName ? 'block' : 'hidden'} dense`} ref={nameInputRef} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
         <span
-          className={`${spanDisplayClass} whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1`}
+          className={`${spanDisplayClass} w-min whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1`}
           onDoubleClick={this.onNameDoubleClicked}
         >{item.name}</span>
       </Fragment>
@@ -70,7 +70,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   confirmNameChange() {
     const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
-    const data = JSON.stringify({ metadata: { itemName: dirtyName } });
+    const data: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
 
     try {
       if (item.name !== dirtyName) {
@@ -165,8 +165,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const { dispatch, item } = this.props;
 
     if (item.isFolder) {
-      dispatch(storageActions.setCurrentFolderId(item.id));
-      dispatch(storageThunks.fetchFolderContentThunk());
+      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
     }
   }
 
@@ -265,12 +264,13 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 export default connect(
   (state: RootState) => {
     const isItemSelected = storageSelectors.isItemSelected(state);
+    const currentFolderId = storageSelectors.currentFolderId(state);
 
     return {
       isDraggingAnItem: state.storage.isDraggingAnItem,
       selectedItems: state.storage.selectedItems,
       draggingTargetItemData: state.storage.draggingTargetItemData,
-      currentFolderId: state.storage.currentFolderId,
+      currentFolderId,
       isItemSelected
     };
   })(FileListItem);

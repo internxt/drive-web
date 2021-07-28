@@ -22,7 +22,7 @@ interface FileGridItemProps {
   selectedItems: (DriveFileData | DriveFolderData)[];
   isDraggingAnItem: boolean;
   draggingTargetItemData: DriveFileData | DriveFolderData | null;
-  currentFolderId: number | null;
+  currentFolderId: number;
   isItemSelected: (item: DriveFileData | DriveFolderData) => boolean;
   dispatch: AppDispatch;
 }
@@ -96,7 +96,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   confirmNameChange() {
     const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
-    const data: DriveFileMetadataPayload | DriveFolderMetadataPayload = { itemName: dirtyName };
+    const data: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
 
     try {
       if (item.name !== dirtyName) {
@@ -138,7 +138,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     this.setState({ isEditingName: false });
   }
 
-  onNameChanged = (e: any): void => {
+  onNameChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState({ dirtyName: e.target.value });
   }
 
@@ -192,7 +192,9 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   onItemDoubleClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageThunks.goToFolderThunk(item.id));
+    if (item.isFolder) {
+      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+    }
   }
 
   onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
@@ -268,12 +270,13 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 export default connect(
   (state: RootState) => {
     const isItemSelected = storageSelectors.isItemSelected(state);
+    const currentFolderId = storageSelectors.currentFolderId(state);
 
     return {
       isDraggingAnItem: state.storage.isDraggingAnItem,
       selectedItems: state.storage.selectedItems,
       draggingTargetItemData: state.storage.draggingTargetItemData,
-      currentFolderId: state.storage.currentFolderId,
+      currentFolderId,
       isItemSelected
     };
   })(FileGridItem);

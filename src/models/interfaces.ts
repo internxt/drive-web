@@ -35,14 +35,15 @@ export interface TeamsSettings {
   bridge_mnemonic: string
   isAdmin: boolean
   bridge_password: string
-  bridge_user: string
+  bridge_user: string,
+  root_folder_id: number;
 }
 
 export interface DriveFolderData {
   isFolder: boolean,
-  isSelected:boolean,
-  isLoading:boolean,
-  isDowloading:boolean,
+  isSelected: boolean,
+  isLoading: boolean,
+  isDowloading: boolean,
   id: number,
   parentId: number,
   name: string,
@@ -60,9 +61,11 @@ export interface DriveFolderData {
 }
 
 export interface DriveFolderMetadataPayload {
-  itemName?: string;
-  color?: string;
-  icon?: string;
+  metadata: {
+    itemName?: string;
+    color?: string;
+    icon?: string;
+  }
 }
 
 export interface DriveFileData {
@@ -83,7 +86,7 @@ export interface DriveFileData {
 }
 
 export interface DriveFileMetadataPayload {
-  itemName: string;
+  metadata: { itemName: string; }
 }
 
 export interface ILoggerFile {
@@ -177,7 +180,5 @@ export interface IActionUpdateFileLoggerEntry {
 
 export interface FolderPath {
   name: string,
-  id: number,
-  bucket: string,
-  id_team: number;
+  id: number
 }

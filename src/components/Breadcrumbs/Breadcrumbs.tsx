@@ -17,11 +17,17 @@ class Breadcrumbs extends React.Component<BreadcrumbsProps, BreadcrumbsState> {
 
   get itemsList(): JSX.Element[] {
     return this.props.items.map(item => (
-      <li className={`flex items-center ${item.active ? 'active' : ''}`} key={item.id} onClick={item.onClick}>
-        { item.icon ? <img alt="" className="icon h-3" src={item.icon} /> : null }
+      <li className={`flex items-center ${item.active ? 'active' : ''}`} key={item.id} onClick={() => this.onItemClicked(item)}>
+        { item.icon ? <img alt="" className="icon h-3" src={item.icon} /> : null}
         { item.label ? <span className="label">{item.label}</span> : null}
       </li>
     ));
+  }
+
+  onItemClicked = (item: BreadcrumbItemData): void => {
+    if (item.active) {
+      item.onClick && item.onClick();
+    }
   }
 
   render(): ReactNode {

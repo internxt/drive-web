@@ -6,11 +6,15 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { store } from './store';
 import { userActions } from './store/slices/user';
+import { teamActions } from './store/slices/team';
 
 import './index.scss';
+import { storageThunks } from './store/slices/storage';
 
 // Initializes store
 store.dispatch(userActions.initialize());
+store.dispatch(teamActions.initialize());
+store.dispatch(storageThunks.initializeThunk());
 
 ReactDOM.render(
   <React.StrictMode>
