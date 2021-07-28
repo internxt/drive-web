@@ -9,6 +9,9 @@ import notify from '../../../../components/Notifications';
 import analyticsService from '../../../../services/analytics.service';
 import SessionStorage from '../../../../lib/sessionStorage';
 import BillingPlanItem from './BillingPlanItem';
+import { generateMnemonic } from 'bip39';
+import { encryptPGP } from '../../../../lib/utilspgp';
+import { getHeaders } from '../../../../lib/auth';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -62,6 +65,7 @@ const AccountBillingTab = (): JSX.Element => {
   const [isPaying, setIsPaying] = useState(false);
   const [products, setProducts] = useState<IBillingPlan>({});
   const [teamsProducts, setTeamsProducts] = useState<IBillingPlan>({});
+  const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
     const getProducts = async () => {
@@ -116,7 +120,7 @@ const AccountBillingTab = (): JSX.Element => {
     setTeamsProducts(newTeamsProds);
   };
 
-  const handlePayment = async (selectedPlan: string, productId: string) => {
+  const handlePaymentIndividual = async (selectedPlan: string, productId: string) => {
     setIsPaying(true);
     const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
 
@@ -143,6 +147,41 @@ const AccountBillingTab = (): JSX.Element => {
     }
   };
 
+  const handlePaymentTeams = async (selectedPlanToBuy, productId, totalTeamMembers) => {
+    setStatusMessage('Purchasing...');
+
+    const mnemonicTeam = generateMnemonic(256);
+    const encMnemonicTeam = await encryptPGP(mnemonicTeam);
+
+    const codMnemonicTeam = Buffer.from(encMnemonicTeam.data).toString('base64');
+    const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+    const body = {
+      plan: selectedPlanToBuy,
+      sessionType: 'team',
+      quantity: totalTeamMembers,
+      mnemonicTeam: codMnemonicTeam,
+      test: process.env.NODE_ENV !== 'production'
+    };
+
+    fetch('/api/stripe/teams/session', {
+      method: 'POST',
+      headers: getHeaders(true, false),
+      body: JSON.stringify(body)
+    }).then(result => result.json()).then(result => {
+      if (result.error) {
+        throw Error(result.error);
+      }
+
+      setStatusMessage('Redirecting to Stripe...');
+
+      stripe.redirectToCheckout({ sessionId: result.id }).catch(err => {
+      });
+    }).catch(err => {
+      console.error('Error starting Stripe session. Reason: %s', err);
+      setStatusMessage('Please contact us. Reason: ' + err.message);
+    });
+  };
+
   return (
     <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
       <div className='flex justify-evenly items-center h-11'>
@@ -167,8 +206,10 @@ const AccountBillingTab = (): JSX.Element => {
                   buttontext='Subscribe'
                   characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
                   handlePlanSelection={handlePlanSelection}
-                  handlePayment={handlePayment}
+                  handlePaymentIndividual={handlePaymentIndividual}
                   isPaying={isPaying}
+                  isBusiness={false}
+                  handlePaymentTeams = {handlePaymentTeams}
                 />
                 {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
               </Fragment>
@@ -183,8 +224,10 @@ const AccountBillingTab = (): JSX.Element => {
                   buttontext='Subscribe'
                   characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
                   handlePlanSelection={handlePlanSelection}
-                  handlePayment={handlePayment}
+                  handlePaymentIndividual={handlePaymentIndividual}
                   isPaying={isPaying}
+                  isBusiness={true}
+                  handlePaymentTeams={handlePaymentTeams}
                 />
                 {index < Object.keys(teamsProducts).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
               </Fragment>
