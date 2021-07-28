@@ -96,7 +96,6 @@ export default function SignInView(props: SignInProps): JSX.Element {
       }
       const error = err.message ? err.message : err;
 
-      console.log('push =>', error);
       setLoginError(error);
       setShowErrors(true);
     } finally {
@@ -190,8 +189,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
             </div>
           }
 
-          <div className='flex flex-col'>
-            <CheckboxPrimary label='remember' text='Remember me' required={false} register={register} />
+          <div className='mt-2'>
             <AuthButton isDisabled={isLoggingIn} text='Sign in' textWhenDisabled='Decrypting...' />
           </div>
         </form>
