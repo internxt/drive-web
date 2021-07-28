@@ -89,6 +89,8 @@ export interface DriveFileMetadataPayload {
   metadata: { itemName: string; }
 }
 
+export type DriveItemData = DriveFileData | DriveFolderData
+
 export interface ILoggerFile {
   isFolder: boolean,
   filePath: string,

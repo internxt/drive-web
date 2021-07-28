@@ -12,7 +12,7 @@ import { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
 import queueFileLogger from '../../../services/queueFileLogger';
 import { updateFileStatusLogger } from '../files';
 import downloadService from '../../../services/download.service';
-import { DriveFileData, DriveFolderData, FolderPath } from '../../../models/interfaces';
+import { DriveFileData, DriveFolderData, DriveItemData, FolderPath } from '../../../models/interfaces';
 import fileLogger from '../../../services/fileLogger';
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 
@@ -190,9 +190,7 @@ export const fetchFolderContentThunk = createAsyncThunk(
     await fileService.fetchWelcomeFile(isTeam);
     const content = await folderService.fetchFolderContent(folderId, isTeam);
 
-    dispatch(
-      storageActions.resetSelectedItems()
-    );
+    dispatch(storageActions.clearSelectedItems());
 
     // Apply search function if is set
     if (searchFunction) {
@@ -213,10 +211,8 @@ export const fetchFolderContentThunk = createAsyncThunk(
 
 export const deleteItemsThunk = createAsyncThunk(
   'storage/deleteItems',
-  async (payload: void, { getState, dispatch }: any) => {
-    const { items, itemsToDeleteIds } = getState().storage;
+  async (itemsToDelete: DriveItemData[], { getState, dispatch }: any) => {
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
-    const itemsToDelete: (DriveFileData | DriveFolderData)[] = items.filter(item => itemsToDeleteIds.includes(item.id));
 
     await storageService.deleteItems(itemsToDelete);
 

@@ -10,7 +10,7 @@ import dateService from '../../../../services/date.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
 import downloadService from '../../../../services/download.service';
-import { DriveFileData, DriveFileMetadataPayload, DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../../../../models/interfaces';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
@@ -22,13 +22,13 @@ import { updateFileStatusLogger } from '../../../../store/slices/files';
 interface FileListItemProps {
   user: UserSettings | undefined;
   isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveFileData | DriveFolderData;
-  item: DriveFileData | DriveFolderData;
-  selectedItems: (DriveFileData | DriveFolderData)[];
+  draggingTargetItemData: DriveItemData;
+  item: DriveItemData;
+  selectedItems: DriveItemData[];
   currentFolderId: number;
-  isItemSelected: (item: DriveFileData | DriveFolderData) => boolean;
-  dispatch: AppDispatch;
-  namePath: any
+  namePath: FolderPath[];
+  isItemSelected: (item: DriveItemData) => boolean;
+  dispatch: AppDispatch
 }
 
 interface FileListItemState {
@@ -167,7 +167,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageActions.setItemsToDelete([item.id]));
+    dispatch(storageActions.setItemToDelete(item));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 

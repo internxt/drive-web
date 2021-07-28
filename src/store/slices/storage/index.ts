@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileViewMode } from '../../../models/enums';
-import { DriveFileData, DriveFolderData, FolderPath } from '../../../models/interfaces';
+import { DriveFileData, DriveFolderData, DriveItemData, FolderPath } from '../../../models/interfaces';
 
 import selectors from './storageSelectors';
 import thunks, { extraReducers } from './storageThunks';
@@ -13,7 +13,7 @@ export interface StorageState {
   items: (DriveFileData | DriveFolderData)[];
   selectedItems: (DriveFileData | DriveFolderData)[];
   itemToShareId: number;
-  itemsToDeleteIds: number[];
+  itemToDelete: DriveFileData | DriveFolderData | null;
   infoItemId: number;
   viewMode: FileViewMode;
   namePath: FolderPath[];
@@ -29,7 +29,7 @@ const initialState: StorageState = {
   items: [],
   selectedItems: [],
   itemToShareId: 0,
-  itemsToDeleteIds: [],
+  itemToDelete: null,
   infoItemId: 0,
   viewMode: FileViewMode.List,
   namePath: [],
@@ -53,22 +53,22 @@ export const storageSlice = createSlice({
     setItems: (state: StorageState, action: PayloadAction<any[]>) => {
       state.items = action.payload;
     },
-    selectItem: (state: StorageState, action: PayloadAction<DriveFileData | DriveFolderData>) => {
+    selectItem: (state: StorageState, action: PayloadAction<DriveItemData>) => {
       state.selectedItems.push(action.payload);
     },
-    deselectItem: (state: StorageState, action: PayloadAction<DriveFileData | DriveFolderData>) => {
+    deselectItem: (state: StorageState, action: PayloadAction<DriveItemData>) => {
       const index: number = state.selectedItems.findIndex((item) => item.id === action.payload.id && item.isFolder === action.payload.isFolder);
 
       state.selectedItems.splice(index, 1);
     },
-    resetSelectedItems: (state: StorageState) => {
+    clearSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
     },
     setItemToShare: (state: StorageState, action: PayloadAction<number>) => {
       state.itemToShareId = action.payload;
     },
-    setItemsToDelete: (state: StorageState, action: PayloadAction<number[]>) => {
-      state.itemsToDeleteIds = action.payload;
+    setItemToDelete: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
+      state.itemToDelete = action.payload;
     },
     setInfoItem: (state: StorageState, action: PayloadAction<number>) => {
       state.infoItemId = action.payload;
@@ -103,9 +103,9 @@ export const {
   setItems,
   selectItem,
   deselectItem,
-  resetSelectedItems,
+  clearSelectedItems,
   setItemToShare,
-  setItemsToDelete,
+  setItemToDelete,
   setInfoItem,
   setSortFunction,
   setViewMode,

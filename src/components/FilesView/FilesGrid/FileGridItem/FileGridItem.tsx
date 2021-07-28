@@ -9,7 +9,7 @@ import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { connect } from 'react-redux';
-import { DriveFileData, DriveFileMetadataPayload, DriveFolderData, DriveFolderMetadataPayload, FolderPath, UserSettings } from '../../../../models/interfaces';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
@@ -20,13 +20,13 @@ import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileGridItemProps {
   user: UserSettings;
-  item: DriveFileData | DriveFolderData;
-  selectedItems: (DriveFileData | DriveFolderData)[];
+  item: DriveItemData;
+  selectedItems: DriveItemData[];
   isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveFileData | DriveFolderData | null;
+  draggingTargetItemData: DriveItemData | null;
   currentFolderId: number;
-  namePath: FolderPath[]
-  isItemSelected: (item: DriveFileData | DriveFolderData) => boolean;
+  namePath: FolderPath[];
+  isItemSelected: (item: DriveItemData) => boolean;
   dispatch: AppDispatch;
 }
 
@@ -183,7 +183,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageActions.setItemsToDelete([item.id]));
+    dispatch(storageActions.setItemToDelete(item));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
