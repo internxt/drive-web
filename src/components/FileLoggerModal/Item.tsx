@@ -63,16 +63,14 @@ const Item = ({ item }: ItemProps): JSX.Element => {
 
   return (
     <div className='flex items-center px-4 mb-2.5'>
-      <div className='flex items-center justify-center mr-2.5 w-4'>
-        <img src={getFileInfo().icon} alt="" />
-      </div>
+      <img className='flex items-center justify-center mr-2.5 w-6' src={getFileInfo().icon} alt="" />
 
       <div className='flex flex-col text-left w-40'>
-        <span className='text-xs text-neutral-900 truncate'>
+        <span className='text-sm text-neutral-900 truncate'>
           {getFileInfo().name}
         </span>
 
-        <span className='text-supporting-2 text-neutral-500'>
+        <span className='text-xs text-neutral-500'>
           {getFileInfo().status}
         </span>
       </div>

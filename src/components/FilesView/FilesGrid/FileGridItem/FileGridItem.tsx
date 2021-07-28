@@ -74,7 +74,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       <Fragment>
         <input
           ref={nameInputRef}
-          className={`${isEditingName ? 'block' : 'hidden'} dense w-full`}
+          className={`${isEditingName ? 'block' : 'hidden'} dense w-full border border-white`}
           type="text" value={dirtyName}
           placeholder="Change name folder"
           onChange={this.onNameChanged}
@@ -84,7 +84,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
         />
         <span
           onDoubleClick={this.onNameDoubleClicked}
-          className={`${ṣpanDisplayClass} whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1`}
+          className={`${ṣpanDisplayClass} file-grid-item-name-span`}
         >{item.name}</span>
       </Fragment>
     );
@@ -92,8 +92,8 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
   get itemIconSrc(): string {
     return this.props.item.isFolder ?
-      iconService.getIcon(IconType.FolderBlue) :
-      iconService.getIcon(IconType.DefaultFile);
+      iconService.getIcon(IconType.folderBlue) :
+      iconService.getIcon(IconType.defaultFile);
   }
 
   confirmNameChange() {

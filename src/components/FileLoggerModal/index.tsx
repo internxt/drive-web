@@ -1,10 +1,9 @@
-import React from 'react';
-
 import { useState } from 'react';
+import * as Unicons from '@iconscout/react-unicons';
+
 import Item from './Item';
 import './FileLogger.scss';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import iconService, { IconType } from '../../services/icon.service';
 import { clearFileLoggerStatus, selectLoggerFiles } from '../../store/slices/files';
 import { useEffect } from 'react';
 
@@ -15,12 +14,13 @@ const FileLoggerModal = (): JSX.Element => {
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinized] = useState(false);
 
-  const Button = ({ icon, onClick, style = '' }: { icon: IconType, onClick?: () => void, style?: string }) => {
+  const Button = ({ children, onClick, style = '' }: { children: JSX.Element | JSX.Element[], onClick?: () => void, style?: string }) => {
     return (
-      <div className={`flex items-center justify-center h-4 w-4 rounded-full bg-neutral-70 cursor-pointer ${style}`}
+      <div
         onClick={onClick}
+        className={`flex items-center justify-center rounded-full bg-neutral-70 cursor-pointer text-white ${style}`}
       >
-        <img src={iconService.getIcon(icon)} alt="" />
+        { children }
       </div>
     );
   };
@@ -62,16 +62,22 @@ const FileLoggerModal = (): JSX.Element => {
   }, [hasFinished]);
 
   return (
-    <div className={`z-50 absolute bottom-0 right-0 flex flex-col w-64 transform duration-300 ${isMinimized ? 'h-9' : 'h-64'} bg-white rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''}`}>
+    <div className={`file-logger-modal mr-6 mb-6 z-50 absolute bottom-0 right-0 flex flex-col transform duration-300 ${isMinimized ? 'h-10' : 'h-64'} bg-white rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''}`}>
       <div className='flex justify-between bg-neutral-900 px-4 py-2.5 rounded-md select-none'>
-        <div className='flex w-max'>
-          <Button icon={IconType.doubleArrowUpWhite} style={`transform duration-500 ${!isMinimized ? 'rotate-180' : 'rotate-0'}`} />
-          <span className='text-xs font-semibold text-white ml-2.5'>Activity</span>
+        <div className='flex items-center w-max'>
+          <Button>
+            <Unicons.UilSpinnerAlt className="h-5"/>
+          </Button>
+          <span className='text-sm font-semibold text-white ml-2.5'>Activity</span>
         </div>
 
-        <div className='flex'>
-          <Button icon={IconType.doubleArrowUpWhite} onClick={() => setIsMinized(!isMinimized)} style={`mr-1.5 transform duration-500 ${!isMinimized ? 'rotate-180' : 'rotate-0'}`} />
-          <Button icon={!hasFinished ? IconType.crossNeutralBlue : IconType.crossWhite} onClick={handleClose} />
+        <div className='flex items-center'>
+          <Button onClick={() => setIsMinized(!isMinimized)} style={`mr-4 transform duration-500 ${!isMinimized ? 'rotate-180' : 'rotate-0'}`}>
+            <Unicons.UilAngleDoubleDown className="h-5" />
+          </Button>
+          <Button onClick={handleClose}>
+            <Unicons.UilTimes className="h-5" />
+          </Button>
         </div>
       </div>
 
