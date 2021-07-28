@@ -38,7 +38,9 @@ const RemoveAccount = (): JSX.Element => {
     <div className='w-full h-full flex items-center justify-center'>
       <div className='flex flex-col w-96 items-center'>
         <div className='flex justify-around items-center w-2/3'>
-          <div className='flex items-center justify-center w-9 h-9 rounded-full border border-blue-60 text-blue-60'>1</div>
+          <div className={`flex items-center justify-center w-9 h-9 rounded-full border border-blue-60 text-blue-60 ${step === 2 && 'cursor-pointer'}`}
+            onClick={() => setStep(1)}
+          >1</div>
 
           <div className={`h-px w-20 border-t ${step === 2 ? 'border-blue-60' : 'border-m-neutral-60'}`} />
 

@@ -60,9 +60,8 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
 
       <p className='text-sm font-semibold text-neutral-700 mt-4 mb-2'>Choose subscription</p>
 
-      {plans &&
+      {plans.length &&
         plans.map(plan => <Plan plan={plan} key={plan.id} selectedPlan={selectedPlan} onClick={() => {
-          console.log('isLoading', isPaying);
           if (!isPaying) {
             handlePlanSelection(plan.id, product.id);
           }

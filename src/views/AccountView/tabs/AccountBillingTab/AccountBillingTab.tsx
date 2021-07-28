@@ -4,7 +4,7 @@ import './AccountBillingTab.scss';
 import { useEffect } from 'react';
 import { getIcon } from '../../../../services/icon.service';
 import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/interfaces';
-import { loadAvailablePlans, loadAvailableProducts, payStripePlan } from '../../../../services/products.service';
+import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts, payStripePlan } from '../../../../services/products.service';
 import notify from '../../../../components/Notifications';
 import analyticsService from '../../../../services/analytics.service';
 import SessionStorage from '../../../../lib/sessionStorage';
@@ -61,22 +61,33 @@ const AccountBillingTab = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true);
   const [isPaying, setIsPaying] = useState(false);
   const [products, setProducts] = useState<IBillingPlan>({});
+  const [teamsProducts, setTeamsProducts] = useState<IBillingPlan>({});
 
   useEffect(() => {
     const getProducts = async () => {
       try {
         //const customer = await loadAllStripeCustomers('');
         const products = await loadAvailableProducts();
+        const teamsProducts = await loadAvailableTeamsProducts();
+
         const productsWithPlans = products.map(async product => ({
           product: product,
           plans: await loadAvailablePlans(product) || [],
           selected: ''
         }));
+        const teamsProductsWithPlans = teamsProducts.map(async product => ({
+          product: product,
+          plans: await loadAvailableTeamsPlans(product) || []
+        }));
 
-        const finalProducts = (await Promise.all(productsWithPlans));
+        const finalProducts = await Promise.all(productsWithPlans);
         const keyedProducts: IBillingPlan = finalProducts.reduce((acc, prod) => ({ ...acc, [prod.product.id]: prod }), {});
 
+        const finalTeamsProducts = await Promise.all(teamsProductsWithPlans);
+        const keyedTeamsProducts: IBillingPlan = finalTeamsProducts.reduce((acc, prod) => ({ ...acc, [prod.product.id]: prod }), {});
+
         setProducts(keyedProducts);
+        setTeamsProducts(keyedTeamsProducts);
       } catch (err) {
         notify(err.message, 'error');
       } finally {
@@ -88,12 +99,21 @@ const AccountBillingTab = (): JSX.Element => {
   }, []);
 
   const handlePlanSelection = (planId: string, productId: string) => {
-    setProducts(prevState => objectMap({ ...prevState }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
+    const newProds = objectMap({ ...products }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
       return {
         ...value,
         selected: productId === value.product.id ? planId : ''
       };
-    }));
+    });
+    const newTeamsProds = objectMap({ ...teamsProducts }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
+      return {
+        ...value,
+        selected: productId === value.product.id ? planId : ''
+      };
+    });
+
+    setProducts(newProds);
+    setTeamsProducts(newTeamsProds);
   };
 
   const handlePayment = async (selectedPlan: string, productId: string) => {
@@ -115,7 +135,7 @@ const AccountBillingTab = (): JSX.Element => {
       analyticsService.trackUserEnterPayments();
       SessionStorage.del('limitStorage');
 
-      await stripe.redirectToCheckput({ sessionId: session.id });
+      await stripe.redirectToCheckout({ sessionId: session.id });
     } catch (err) {
       notify('Failed to redirect to Stripe. Please contact us. Reason: ' + err.message, 'error');
     } finally {
@@ -137,22 +157,38 @@ const AccountBillingTab = (): JSX.Element => {
 
       <div className='flex h-88 border-t border-m-neutral-60'>
         {!isLoading ?
-          Object.values(products).map((product, index) => (
-            <Fragment>
-              <BillingPlanItem
-                product={product.product}
-                plans={product.plans}
-                selectedPlan={product.selected}
-                buttontext='Subscribe'
-                characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-                key={product.product.id}
-                handlePlanSelection={handlePlanSelection}
-                handlePayment={handlePayment}
-                isPaying={isPaying}
-              />
-              {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
-            </Fragment>
-          ))
+          currentOption === 'individual' ?
+            Object.values(products).map((product, index) => (
+              <Fragment key={product.product.id}>
+                <BillingPlanItem
+                  product={product.product}
+                  plans={product.plans}
+                  selectedPlan={product.selected}
+                  buttontext='Subscribe'
+                  characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+                  handlePlanSelection={handlePlanSelection}
+                  handlePayment={handlePayment}
+                  isPaying={isPaying}
+                />
+                {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
+              </Fragment>
+            ))
+            :
+            Object.values(teamsProducts).map((product, index) => (
+              <Fragment key={product.product.id}>
+                <BillingPlanItem
+                  product={product.product}
+                  plans={product.plans}
+                  selectedPlan={product.selected}
+                  buttontext='Subscribe'
+                  characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+                  handlePlanSelection={handlePlanSelection}
+                  handlePayment={handlePayment}
+                  isPaying={isPaying}
+                />
+                {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
+              </Fragment>
+            ))
           :
           <span>loading haha</span>
         }
