@@ -1,29 +1,28 @@
 import { createRef, useEffect, useState } from 'react';
+import { connect, useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../../../store/hooks';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { setIsCreateFolderDialogOpen } from '../../../store/slices/ui';
-import { storageThunks } from '../../../store/slices/storage';
+import { storageSelectors, storageThunks } from '../../../store/slices/storage';
 import folderService, { ICreatedFolder } from '../../../services/folder.service';
 import { toast } from 'react-toastify';
 import { UserSettings } from '../../../models/interfaces';
-import { connect } from 'react-redux';
 import { RootState } from '../../../store';
 
 import './CreateFolderDialog.scss';
 
 interface CreateFolderDialogProps {
   open: boolean;
-  currentFolderId: number | null;
-  user: UserSettings;
+  user: UserSettings | undefined;
 }
 
 const CreateFolderDialog = ({
   open,
-  currentFolderId,
   user
 }: CreateFolderDialogProps
 ) => {
+  const currentFolderId: number = useSelector((state: RootState) => storageSelectors.currentFolderId(state));
   const [inputRef] = useState(createRef<HTMLInputElement>());
   const dispatch = useAppDispatch();
   const [inputValue, setInputValue] = useState('');
@@ -32,7 +31,7 @@ const CreateFolderDialog = ({
   };
   const onAccept = (): void => {
     if (inputValue && inputValue !== '') {
-      folderService.createFolder(!!user.teams, currentFolderId, inputValue)
+      folderService.createFolder(!!user?.teams, currentFolderId, inputValue)
         .then((response: ICreatedFolder[]) => {
           dispatch(storageThunks.fetchFolderContentThunk());
           dispatch(setIsCreateFolderDialogOpen(false));
@@ -80,6 +79,5 @@ const CreateFolderDialog = ({
 
 export default connect(
   (state: RootState) => ({
-    user: state.user.user,
-    currentFolderId: state.storage.currentFolderId
+    user: state.user.user
   }))(CreateFolderDialog);

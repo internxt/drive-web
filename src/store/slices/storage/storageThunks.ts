@@ -2,7 +2,7 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import async from 'async';
 
-import { storageActions, StorageState } from '.';
+import { storageActions, storageSelectors, StorageState } from '.';
 import { getFilenameAndExt, renameFile } from '../../../lib/utils';
 import fileService from '../../../services/file.service';
 import folderService from '../../../services/folder.service';
@@ -12,7 +12,7 @@ import { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
 import queueFileLogger from '../../../services/queueFileLogger';
 import { updateFileStatusLogger } from '../files';
 import downloadService from '../../../services/download.service';
-import { DriveFileData } from '../../../models/interfaces';
+import { DriveFileData, DriveFolderData, FolderPath } from '../../../models/interfaces';
 import fileLogger from '../../../services/fileLogger';
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 
@@ -22,11 +22,34 @@ interface UploadItemsPayload {
   folderPath?: string;
 }
 
+export const initializeThunk = createAsyncThunk(
+  'storage/initialize',
+  async (payload: void, { getState, dispatch }: any) => {
+    dispatch(resetNamePathThunk());
+  });
+
+export const resetNamePathThunk = createAsyncThunk(
+  'storage/resetNamePath',
+  async (payload: void, { getState, dispatch }: any) => {
+    const { user } = getState().user;
+    const rootFolderId: number = storageSelectors.rootFolderId(getState());
+
+    dispatch(storageActions.resetNamePath());
+
+    if (user) {
+      dispatch(storageActions.pushNamePath({
+        id: rootFolderId,
+        name: 'Drive'
+      }));
+    }
+  });
+
 export const uploadItemsThunk = createAsyncThunk(
   'storage/uploadItems',
   async ({ files, parentFolderId, folderPath }: UploadItemsPayload, { getState, dispatch }: any) => {
     const { user } = getState().user;
-    const { namePath, currentFolderId, items } = getState().storage;
+    const { namePath, items } = getState().storage;
+    const currentFolderId: number = storageSelectors.currentFolderId(getState());
     const filesToUpload: any[] = [];
     const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
     const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
@@ -158,7 +181,8 @@ export const fetchFolderContentThunk = createAsyncThunk(
   'storage/fetchFolderContent',
   async (folderId: number = -1, { getState, dispatch }: any) => {
     const { user } = getState().user;
-    const { currentFolderId, sortFunction, searchFunction } = getState().storage;
+    const { sortFunction, searchFunction } = getState().storage;
+    const currentFolderId: number = storageSelectors.currentFolderId(getState());
     const isTeam: boolean = !!user.teams;
 
     folderId = ~folderId ? folderId : currentFolderId;
@@ -182,32 +206,18 @@ export const fetchFolderContentThunk = createAsyncThunk(
     }
 
     dispatch(
-      storageActions.setCurrentFolderId(content.contentFolders.id)
-    );
-    dispatch(
       storageActions.setItems(_.concat(content.newCommanderFolders, content.newCommanderFiles))
     );
-    dispatch(
-      storageActions.setCurrentFolderBucket(content.contentFolders.bucket)
-    );
-
-    dispatch(storageActions.pushNamePath({
-      name: content.contentFolders.name,
-      id: content.contentFolders.id,
-      bucket: content.contentFolders.bucket,
-      id_team: content.contentFolders.id_team
-    }));
   }
 );
 
 export const deleteItemsThunk = createAsyncThunk(
   'storage/deleteItems',
-  async (undefined, { getState, dispatch }: any) => {
-    const { user } = getState().user;
-    const { items, itemsToDeleteIds, currentFolderId } = getState().storage;
-    const itemsToDelete: any[] = items.filter(item => itemsToDeleteIds.includes(item.id));
+  async (payload: void, { getState, dispatch }: any) => {
+    const { items, itemsToDeleteIds } = getState().storage;
+    const currentFolderId: number = storageSelectors.currentFolderId(getState());
+    const itemsToDelete: (DriveFileData | DriveFolderData)[] = items.filter(item => itemsToDeleteIds.includes(item.id));
 
-    console.log(itemsToDelete);
     await storageService.deleteItems(itemsToDelete);
 
     dispatch(fetchFolderContentThunk(currentFolderId));
@@ -216,10 +226,13 @@ export const deleteItemsThunk = createAsyncThunk(
 
 export const goToFolderThunk = createAsyncThunk(
   'storage/goToFolder',
-  async (folderId: number, { getState, dispatch }: any) => {
-    dispatch(storageActions.goToNamePath(folderId));
-    dispatch(storageActions.setCurrentFolderId(folderId));
-    await dispatch(fetchFolderContentThunk(folderId));
+  async (path: FolderPath, { getState, dispatch }: any) => {
+    const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
+
+    isInNamePath ?
+      dispatch(storageActions.popNamePathUpTo(path)) :
+      dispatch(storageActions.pushNamePath(path));
+    await dispatch(fetchFolderContentThunk(path.id));
   }
 );
 
@@ -273,6 +286,8 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
 };
 
 const thunks = {
+  initializeThunk,
+  resetNamePathThunk,
   uploadItemsThunk,
   downloadItemsThunk,
   fetchFolderContentThunk,
