@@ -19,7 +19,6 @@ import { getHeaders } from '../../lib/auth';
 import AesUtils from '../../lib/AesUtil';
 import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
-import BaseButton from '../../components/Buttons/BaseButton';
 import ButtonTextOnly from '../../components/Buttons/ButtonTextOnly';
 import { texts } from '../SignInView/SignInView';
 
@@ -32,7 +31,7 @@ interface SignUpProps {
 }
 
 const SignUp = (props: SignUpProps): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
   const dispatch = useAppDispatch();
 
   const password = useWatch({ control, name: 'password', defaultValue: '' });
@@ -302,7 +301,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           <CheckboxPrimary label='acceptTerms' text='Accept terms, conditions and privacy policy' required={true} register={register} additionalStyling='mt-2 -mb-0' />
           <ButtonTextOnly text='More info' onClick={() => window.open('https://internxt.com/en/legal')} additionalStyling='self-start ml-6 text-xs' />
           <div className='mt-3' />
-          <AuthButton isDisabled={isLoading} text='Create an account' textWhenDisabled='Encrypting...' />
+          <AuthButton isDisabled={isLoading || !isValid} text='Create an account' textWhenDisabled={isValid ? 'Encrypting...' : 'Create an account'} />
         </form>
 
         <div className='flex justify-center items-center w-full mt-6'>

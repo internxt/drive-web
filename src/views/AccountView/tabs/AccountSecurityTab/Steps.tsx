@@ -18,7 +18,7 @@ interface StepsProps {
 }
 
 const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, reset } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, reset } = useForm<IFormValues>({ mode: 'onChange' });
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -106,8 +106,8 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
 
         <AuthButton
           text='Enable Two-Factor Authentication'
-          textWhenDisabled='Configuring Two-Factor Authenticator...'
-          isDisabled={isLoading} />
+          textWhenDisabled={isValid ? 'Configuring Two-Factor Authenticator...' : 'Enable Two-Factor Authentication'}
+          isDisabled={isLoading || !isValid} />
       </form>
     );
   }
