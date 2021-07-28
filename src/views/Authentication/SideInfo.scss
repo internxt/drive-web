@@ -1,3 +1,30 @@
-.background-login {
-  background-image: url('../../assets//images/login/background-login.png');
+.BrainhubCarousel__dot::before {
+  background: white !important;
+  opacity: 1 !important;
+}
+.BrainhubCarousel__dot::before {
+  background: white !important;
+  opacity: 1 !important;
+}
+
+.BrainhubCarousel__dots .BrainhubCarousel__dot {
+  opacity: 1 !important;
+}
+
+.BrainhubCarousel__dot--selected::before {
+  background: #0F62FE !important;
+}
+
+.BrainhubCarouselItem {
+  justify-content: flex-start;
+}
+
+.BrainhubCarousel__dots {
+  justify-content: flex-start;
+}
+
+.sideinfo_background {
+  background: url('../../assets/images/sideinfo-background.jpg') no-repeat !important;
+  background-size: 100%;
+
 }

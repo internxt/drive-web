@@ -1,22 +1,41 @@
-const texts = {
-  label: 'INTERNXT',
-  title: 'Privacy security and flexible',
-  subtitle: 'Drive cloud storage is part of the ecosystem of solutions developed by Internxt to protect the security and privacy of companies and individuals',
-  link: 'internxt.com',
-  href: 'https://internxt.com'
-};
+import Carousel, { Dots } from '@brainhubeu/react-carousel';
+import '@brainhubeu/react-carousel/lib/style.css';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import './SideInfo.scss';
 
-const SideInfo = (): JSX.Element => {
+const SideInfo = ({ texts }: { texts: { label: string, sublabel: string, reviews: { name: string, review: string }[] } }): JSX.Element => {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setValue(prevState => prevState + 1 > texts.reviews.length ? 0 : prevState + 1);
+      console.log('uwu');
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className='flex flex-col justify-center w-104 min-w-104 h-full background-login bg-gradient-to-b from-blue-60 to-blue-80 pl-20 text-white'>
-      <span className='text-xl font-semibold tracking-0.3'>{texts.label}</span>
+    <div className='flex flex-col justify-between items-start w-104 min-w-104 h-full bg-gradient-to-b from-blue-60 to-blue-80 text-white p-12 sideinfo_background'>
+      <div className='flex flex-col'>
+        <span className='text-xl font-bold tracking-0.3'>{texts.label}</span>
+        <span className='text-supporting-2 tracking-0.3'>{texts.sublabel}</span>
+      </div>
 
-      <span className='w-40 text-3xl mt-7'>{texts.title}</span>
+      <div className='w-full'>
+        <Carousel value={value}>
+          {texts.reviews.map((review, index) => (
+            <div className='flex flex-col' key={index}>
+              <span className='text-xl'>{review.name}</span>
 
-      <span className='w-50 text-base mt-6'>{texts.subtitle}</span>
-
-      <a className='secondary text-base font-semibold mt-9' href={texts.href}>{texts.link}</a>
-    </div>
+              <span className='w-50 text-xs mt-2'>{review.review}</span>
+            </div>
+          ))}
+        </Carousel>
+        <Dots value={value} number={texts.reviews.length} />
+      </div>
+    </div >
   );
 };
 
