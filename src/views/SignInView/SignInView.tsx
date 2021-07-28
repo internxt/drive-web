@@ -190,8 +190,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
             </div>
           }
 
-          <div className='flex flex-col'>
-            <CheckboxPrimary label='remember' text='Remember me' required={false} register={register} />
+          <div className='mt-2'>
             <AuthButton isDisabled={isLoggingIn} text='Sign in' textWhenDisabled='Decrypting...' />
           </div>
         </form>
