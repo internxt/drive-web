@@ -79,6 +79,9 @@ export const storageSlice = createSlice({
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
     },
+    resetNamePath: (state: StorageState) => {
+      state.namePath = [];
+    },
     popNamePathUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
       const folderIndex: number = state.namePath.map(path => path.id).indexOf(action.payload.id);
 
@@ -88,9 +91,6 @@ export const storageSlice = createSlice({
       if (!state.namePath.map(path => path.id).includes(action.payload.id)) {
         state.namePath.push(action.payload);
       }
-    },
-    popNamePath: (state: StorageState) => {
-      state.namePath.pop();
     }
   },
   extraReducers
@@ -109,8 +109,9 @@ export const {
   setInfoItem,
   setSortFunction,
   setViewMode,
+  resetNamePath,
   pushNamePath,
-  popNamePath
+  popNamePathUpTo
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

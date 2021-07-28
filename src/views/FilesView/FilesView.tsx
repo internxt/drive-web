@@ -107,12 +107,10 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   componentDidMount = () => {
-    const { dispatch, namePath } = this.props;
+    const { dispatch } = this.props;
 
-    dispatch(storageActions.popNamePathUpTo(namePath[0]));
-    this.props.dispatch(
-      storageThunks.fetchFolderContentThunk(this.props.user.root_folder_id)
-    );
+    dispatch(storageThunks.resetNamePathThunk());
+    dispatch(storageThunks.fetchFolderContentThunk());
   }
 
   onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {

@@ -12,7 +12,6 @@ import downloadService from '../../../services/download.service';
 import { DriveFileData, DriveFolderData, FolderPath } from '../../../models/interfaces';
 import fileLogger from '../../../services/fileLogger';
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
-import { BaseThunkAPI } from '@reduxjs/toolkit/dist/createAsyncThunk';
 
 interface UploadItemsPayload {
   files: File[];
@@ -23,12 +22,23 @@ interface UploadItemsPayload {
 export const initializeThunk = createAsyncThunk(
   'storage/initialize',
   async (payload: void, { getState, dispatch }: any) => {
+    dispatch(resetNamePathThunk());
+  });
+
+export const resetNamePathThunk = createAsyncThunk(
+  'storage/resetNamePath',
+  async (payload: void, { getState, dispatch }: any) => {
+    const { user } = getState().user;
     const rootFolderId: number = storageSelectors.rootFolderId(getState());
 
-    dispatch(storageActions.pushNamePath({
-      id: rootFolderId,
-      name: 'Drive'
-    }));
+    dispatch(storageActions.resetNamePath());
+
+    if (user) {
+      dispatch(storageActions.pushNamePath({
+        id: rootFolderId,
+        name: 'Drive'
+      }));
+    }
   });
 
 export const uploadItemsThunk = createAsyncThunk(
@@ -200,11 +210,6 @@ export const goToFolderThunk = createAsyncThunk(
 
 export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(initializeThunk.pending, (state, action) => { })
-    .addCase(initializeThunk.fulfilled, (state, action) => { })
-    .addCase(initializeThunk.rejected, (state, action) => { });
-
-  builder
     .addCase(uploadItemsThunk.pending, (state, action) => { })
     .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
     .addCase(uploadItemsThunk.rejected, (state, action: any) => {
@@ -254,6 +259,7 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
 
 const thunks = {
   initializeThunk,
+  resetNamePathThunk,
   uploadItemsThunk,
   downloadItemsThunk,
   fetchFolderContentThunk,
