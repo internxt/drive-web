@@ -14,9 +14,15 @@ export async function isValid(key: string): Promise<boolean> {
 }
 
 export async function decryptPGP(message: string) {
+  const user = localStorageService.getUser();
+
+  if (!user) {
+    throw Error('User not found on local storage');
+  }
+
   // User settings
-  const privateKey = Buffer.from(localStorageService.getUser().privateKey, 'base64').toString();
-  const publicKey = Buffer.from(localStorageService.getUser().publicKey, 'base64').toString();
+  const privateKey = Buffer.from(user.privateKey, 'base64').toString();
+  const publicKey = Buffer.from(user.publicKey, 'base64').toString();
 
   // Prepare input
   const cipherText = await openpgp.message.readArmored(message);
@@ -32,8 +38,14 @@ export async function decryptPGP(message: string) {
 }
 
 export async function encryptPGP(message: string) {
+  const user = localStorageService.getUser();
+
+  if (!user) {
+    throw Error('User not found on local storage');
+  }
+
   // User settings
-  const publicKey = Buffer.from(localStorageService.getUser().publicKey, 'base64').toString();
+  const publicKey = Buffer.from(user.publicKey, 'base64').toString();
 
   // Prepare input
   const originalText = openpgp.message.fromText(message);

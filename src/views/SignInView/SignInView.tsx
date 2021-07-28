@@ -13,7 +13,7 @@ import { check2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from '../../services/localStorage.service';
 import analyticsService from '../../services/analytics.service';
 import history from '../../lib/history';
-import iconService, { IconType } from '../../services/icon.service';
+import iconService from '../../services/icon.service';
 import { useSelector } from 'react-redux';
 import { IFormValues, UserSettings } from '../../models/interfaces';
 import ButtonTextOnly from '../../components/Buttons/ButtonTextOnly';
@@ -22,6 +22,25 @@ interface SignInProps {
   email?: string,
   password?: string,
 }
+
+export const texts = {
+  label: 'INTERNXT',
+  sublabel: 'BE LIMITLESS',
+  reviews: [
+    {
+      name: 'Mike Pence',
+      review: '“As an architect I must manage and segment large amounts of private and sensitive documentation in each prohect, Internxt Drive allows me to protect said documentation and access it from any device.”'
+    },
+    {
+      name: 'Aldimir Aleksandrov',
+      review: '“This shit fire 🔥🔥🔥.”'
+    },
+    {
+      name: 'Solomeo Paredes',
+      review: '“Designed to protect your privacy, available in all your devices. Save your most valuable files with ease and have them secured for the rest of your life.”'
+    }
+  ]
+};
 
 export default function SignInView(props: SignInProps): JSX.Element {
   const dispatch = useAppDispatch();
@@ -113,12 +132,12 @@ export default function SignInView(props: SignInProps): JSX.Element {
 
   return (
     <div className='flex h-full w-full'>
-      <SideInfo />
+      <SideInfo texts={texts} />
 
       <div className='flex flex-col items-center justify-center w-full'>
         <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>
           <img src={iconService.getIcon('internxtLongLogo')} width='110' alt="" />
-          <span className='text-sm text-neutral-500 mt-1.5 mb-6'/>
+          <span className='text-sm text-neutral-500 mt-1.5 mb-6' />
 
           <AuthInput
             placeholder='Email'

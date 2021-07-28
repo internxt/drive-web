@@ -21,6 +21,7 @@ import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
 import BaseButton from '../../components/Buttons/BaseButton';
 import ButtonTextOnly from '../../components/Buttons/ButtonTextOnly';
+import { texts } from '../SignInView/SignInView';
 
 interface SignUpProps {
   match: any;
@@ -215,7 +216,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
   return (
     <div className='flex h-full w-full'>
-      <SideInfo />
+      <SideInfo texts={texts} />
 
       <div className='flex flex-col items-center justify-center w-full'>
         <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>
