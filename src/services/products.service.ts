@@ -3,23 +3,49 @@ import { IStripeCustomer, IStripePlan, IStripeProduct } from '../models/interfac
 import analyticsService from './analytics.service';
 
 export const loadAvailableProducts = async (): Promise<IStripeProduct[]> => {
-  const test = false;
-  const response = await fetch('/api/stripe/products' + (process.env.NODE_ENV !== 'production' ? '?test=true' : ''), {
+  const response = await fetch('/api/stripe/products' + (process.env.NODE_ENV === 'production' ? '' : '?test=true'), {
     headers: getHeaders(true, false)
   });
   const data = await response.json();
 
-  console.log('products =>', data);
   return data;
 };
 
 export const loadAvailablePlans = async (product: IStripeProduct): Promise<IStripePlan[]> => {
-  const body = { product: product.id, test: product.test };
+  const body = {
+    product: product.id,
+    test: process.env.NODE_ENV === 'production' ? false : true
+  };
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV === 'production') {
     body.test = false;
   }
   const response = await fetch('/api/stripe/plans', {
+    method: 'post',
+    headers: getHeaders(true, false),
+    body: JSON.stringify(body)
+  });
+  const data = await response.json();
+
+  return data;
+};
+
+export const loadAvailableTeamsProducts = async (): Promise<IStripeProduct[]> => {
+  const response = await fetch('/api/stripe/teams/products' + (process.env.NODE_ENV === 'production' ? '' : '?test=true'), {
+    headers: getHeaders(true, false)
+  });
+  const data = await response.json();
+
+  return data;
+};
+
+export const loadAvailableTeamsPlans = async (product: IStripeProduct): Promise<IStripePlan[]> => {
+  const body = {
+    product: product.id,
+    test: process.env.NODE_ENV === 'production' ? false : true
+  };
+
+  const response = await fetch('/api/stripe/teams/plans', {
     method: 'post',
     headers: getHeaders(true, false),
     body: JSON.stringify(body)

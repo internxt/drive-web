@@ -22,7 +22,6 @@ const AccountReferralsTab = (): JSX.Element => {
   const [linkToCopy, setLinkToCopy] = useState('');
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
-    console.log(formData);
     try {
       if (!formData.email) {
         throw new Error('Email can not be empty');

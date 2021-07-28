@@ -96,7 +96,6 @@ export default function SignInView(props: SignInProps): JSX.Element {
       }
       const error = err.message ? err.message : err;
 
-      console.log('push =>', error);
       setLoginError(error);
       setShowErrors(true);
     } finally {

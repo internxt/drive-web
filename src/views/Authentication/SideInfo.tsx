@@ -11,10 +11,7 @@ const SideInfo = ({ texts }: { texts: { label: string, sublabel: string, reviews
   const onChange = (newValue: number) => setValue(newValue);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setValue(prevState => prevState + 1 > texts.reviews.length ? 0 : prevState + 1);
-      console.log('uwu');
-    }, 10000);
+    const interval = setInterval(() => setValue(prevState => prevState + 1 > texts.reviews.length ? 0 : prevState + 1), 10000);
 
     return () => clearInterval(interval);
   }, []);
