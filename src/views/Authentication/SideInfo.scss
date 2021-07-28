@@ -24,7 +24,8 @@
 }
 
 .sideinfo_background {
-  background: url('../../assets/images/sideinfo-background.jpg') no-repeat !important;
-  background-size: 100%;
-
+  background-image: url('../../assets/images/sideinfo-background.jpg')!important;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  height: 100vh !important;
 }
