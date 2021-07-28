@@ -1920,13 +1920,6 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
-"@types/brainhubeu__react-carousel@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@types/brainhubeu__react-carousel/-/brainhubeu__react-carousel-2.0.3.tgz#656636fbd51c3723ee0486b9da2add9c36b7ca7f"
-  integrity sha512-RV2wNwo8CinatBcv9Ubaz5bgKbreiYOGmxU7vjKEig3JW0OxLRvlRb0DtiiimOtoMWtGNtQbjSEQz6G1jeir4g==
-  dependencies:
-    "@types/react" "*"
-
 "@types/component-emitter@^1.2.10":
   version "1.2.10"
   resolved "https://registry.yarnpkg.com/@types/component-emitter/-/component-emitter-1.2.10.tgz#ef5b1589b9f16544642e473db5ea5639107ef3ea"

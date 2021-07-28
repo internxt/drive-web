@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@brainhubeu/react-carousel": "^2.0.4",
     "@craco/craco": "^6.2.0",
     "@iconscout/react-unicons": "^1.1.6",
     "@mapbox/react-click-to-select": "^2.2.0",
