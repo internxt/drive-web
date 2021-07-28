@@ -6,6 +6,7 @@ import AccountBillingTab from './tabs/AccountBillingTab/AccountBillingTab';
 import AccountPasswordTab from './tabs/AccountPasswordTab/AccountPasswordTab';
 import AccountReferralsTab from './tabs/AccountReferralsTab/AccountReferralsTab';
 import AccountSecurityTab from './tabs/AccountSecurityTab/AccountSecurityTab';
+import AccountPlanInfoTab from './tabs/AccountPlanInfoTab/AccountPlanInfoTab';
 
 const AccountView = (): JSX.Element => {
   return (
@@ -27,7 +28,8 @@ const AccountView = (): JSX.Element => {
           <AccountSecurityTab />
         </Tab>
 
-        <Tab title='Business' eventKey='business'>
+        <Tab title='Billing' eventKey='billing'>
+          <AccountPlanInfoTab />
         </Tab>
 
         <Tab title='' className='w-full h-full' >

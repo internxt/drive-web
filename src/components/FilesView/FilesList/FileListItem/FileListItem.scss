@@ -21,7 +21,11 @@ td {
     .file-list-item {
         background-color: white;
     
-        @apply hover:bg-blue-10 border-b border-l-neutral-30 text-sm;
+        @apply border-b border-l-neutral-30 text-sm;
+
+        &:hover, &.selected {
+            @apply bg-blue-10;
+        }
     }
     
     .hover-action {
@@ -30,5 +34,9 @@ td {
         img {
             width: 14px;
         }
+    }
+
+    .file-list-item-name-span {
+        @apply w-min whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1 border border-dashed border-opacity-0 border-blue-40 hover:border-opacity-100;
     }
 }

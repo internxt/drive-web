@@ -1,18 +1,18 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+import { RootState } from '../..';
 
 import history from '../../../lib/history';
 import { UserSettings } from '../../../models/interfaces';
 import localStorageService from '../../../services/localStorage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
-import { setCurrentFolderId } from '../storage';
 
 interface UserState {
   isInitializing: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;
-  user?: UserSettings | any
+  user?: UserSettings
 }
 
 const initialState: UserState = {
@@ -29,30 +29,21 @@ export const initializeUserThunk = createAsyncThunk(
 
     if (user && isAuthenticated) {
       if (!user.root_folder_id) {
-        const rootFolderId: number = await userService.initializeUser();
+        await userService.initializeUser();
 
-        dispatch(setCurrentFolderId(rootFolderId));
         dispatch(setIsUserInitialized(true));
       } else {
         try {
           await storeTeamsInfo();
         } catch (e) {
           localStorageService.del('xTeam');
-        } finally {
-          if (localStorageService.exists('xTeam') && !user.teams && localStorageService.get('workspace') === 'teams') {
-            handleChangeWorkspace();
-          } else {
-            // TODO: load folder content this.getFolderContent(this.props.user.root_folder_id);
-            dispatch(setCurrentFolderId(user.root_folder_id));
-          }
-          const team: any = localStorageService.getTeams();
-
-          if (team && !team.root_folder_id) {
-            dispatch(setCurrentFolderId(user.root_folder_id));
-          }
-
-          dispatch(setIsUserInitialized(true));
         }
+
+        if (localStorageService.exists('xTeam') && !user.teams && localStorageService.get('workspace') === 'teams') {
+          handleChangeWorkspace();
+        }
+
+        dispatch(setIsUserInitialized(true));
       }
     } else if (payload.redirectToLogin) {
       history.push('/login');
@@ -61,26 +52,9 @@ export const initializeUserThunk = createAsyncThunk(
 );
 
 const handleChangeWorkspace = () => {
-  const xTeam: any = localStorageService.getTeams();
-  const user: UserSettings = localStorageService.getUser();
+  const user = localStorageService.getUser();
 
-  if (!localStorageService.exists('xTeam')) {
-    toast.warn('You cannot access the team');
-  }
-
-  if (user.teams) {
-    this.setState({ namePath: [{ name: 'All files', id: user.root_folder_id }] }, () => {
-      this.getFolderContent(user.root_folder_id, false, true, false);
-    });
-  } else {
-    this.setState({ namePath: [{ name: 'All files', id: xTeam.root_folder_id }] }, () => {
-      this.getFolderContent(xTeam.root_folder_id, false, true, true);
-    });
-  }
-
-  const isTeam = !user.teams;
-
-  localStorageService.set('workspace', isTeam ? 'teams' : 'individual');
+  localStorageService.set('workspace', !user?.teams ? 'teams' : 'individual');
 };
 
 export const userSlice = createSlice({
@@ -125,5 +99,5 @@ export const {
   setUser
 } = userSlice.actions;
 export const userActions = userSlice.actions;
-
+export const selectUser = (state: RootState): UserSettings | undefined => state.user.user;
 export default userSlice.reducer;

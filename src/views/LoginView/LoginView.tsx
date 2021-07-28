@@ -39,7 +39,6 @@ class LoginView extends React.Component<LoginViewProps> {
   }
 
   componentDidMount() {
-    // Check if recent login is passed and redirect user to Internxt Drive
     const mnemonic = localStorageService.get('xMnemonic');
     const user = localStorageService.getUser();
     // const xKeys = localStorage.getItem('xKeys');

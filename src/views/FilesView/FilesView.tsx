@@ -7,9 +7,8 @@ import * as Unicons from '@iconscout/react-unicons';
 
 import { removeAccents } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
-import localStorageService from '../../services/localStorage.service';
 
-import { DriveFileData, FolderPath, UserSettings } from '../../models/interfaces';
+import { DriveFileData, DriveFolderData, FolderPath, UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform } from '../../models/enums';
 
@@ -27,27 +26,25 @@ import FilesGrid from '../../components/FilesView/FilesGrid/FilesGrid';
 import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFileExplorer';
 
 import './FilesView.scss';
-import { checkFileNameExists, getNewFolderName } from '../../services/storage.service/storage-name.service';
 import usageService, { UsageResponse } from '../../services/usage.service';
 import SessionStorage from '../../lib/sessionStorage';
 
 interface FilesViewProps {
-  user: UserSettings | any,
+  user: UserSettings | any;
   currentFolderId: number;
   isCurrentFolderEmpty: boolean;
   isDraggingAnItem: boolean;
   selectedItems: DriveFileData[];
   isLoadingItems: boolean,
-  currentItems: any[],
+  currentItems: (DriveFileData | DriveFolderData)[],
   isAuthenticated: boolean;
   itemToShareId: number;
-  itemsToDeleteIds: number[];
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   infoItemId: number;
   viewMode: FileViewMode;
   namePath: FolderPath[];
-  sortFunction: ((a: any, b: any) => number) | null;
+  sortFunction: ((a: DriveFileData | DriveFolderData, b: DriveFileData | DriveFolderData) => number) | null;
   dispatch: AppDispatch;
 }
 
@@ -83,23 +80,22 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     const items: BreadcrumbItemData[] = [];
 
     if (namePath.length > 0) {
-      const firstPath: FolderPath = this.props.namePath[0];
+      const firstPath: FolderPath = namePath[0];
 
       items.push({
         id: firstPath.id,
         label: 'Drive',
         icon: iconService.getIcon('breadcrumbsStorage'),
         active: true,
-        onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath.id))
+        onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath))
       });
-
-      this.props.namePath.slice(1).forEach((path: FolderPath, i: number, namePath: any[]) => {
+      namePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         items.push({
           id: path.id,
           label: path.name,
           icon: null,
           active: i < namePath.length - 1,
-          onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath.id))
+          onClick: () => dispatch(storageThunks.goToFolderThunk(path))
         });
       });
     }
@@ -112,9 +108,10 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   componentDidMount = () => {
-    this.props.dispatch(
-      storageThunks.fetchFolderContentThunk(this.props.user.root_folder_id)
-    );
+    const { dispatch } = this.props;
+
+    dispatch(storageThunks.resetNamePathThunk());
+    dispatch(storageThunks.fetchFolderContentThunk());
   }
 
   onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {
@@ -177,7 +174,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   onBulkDeleteButtonClicked = () => {
-    console.log('on bulk delete button clicked!');
+    const { dispatch, selectedItems } = this.props;
+
+    dispatch(storageThunks.deleteItemsThunk(selectedItems));
   }
 
   onPreviousPageButtonClicked = (): void => {
@@ -189,9 +188,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   getTeamByUser = () => {
-    return new Promise((resolve, reject) => {
-      const user: UserSettings = localStorageService.getUser();
+    const { user } = this.props;
 
+    return new Promise((resolve, reject) => {
       fetch(`/api/teams-members/${user.email}`, {
         method: 'get',
         headers: getHeaders(true, false)
@@ -231,56 +230,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     this.props.dispatch(
       storageThunks.fetchFolderContentThunk(currentFolderId)
     );
-  };
-
-  createFolderByName = (folderName, parentFolderId) => {
-    const { currentItems, user, namePath } = this.props;
-
-    let newFolderName = folderName;
-
-    // No parent id implies is a directory created on the current folder, so let's show a spinner
-    if (!parentFolderId) {
-
-      if (checkFileNameExists(currentItems, newFolderName, undefined)) {
-        newFolderName = getNewFolderName(newFolderName, currentItems);
-      }
-
-      currentItems.push({
-        name: newFolderName,
-        isLoading: true,
-        isFolder: true
-      });
-
-      this.props.dispatch(
-        storageActions.setItems(currentItems)
-      );
-    } else {
-      newFolderName = getNewFolderName(newFolderName, currentItems);
-    }
-
-    parentFolderId = parentFolderId || this.props.currentFolderId;
-
-    return new Promise((resolve, reject) => {
-      fetch('/api/storage/folder', {
-        method: 'post',
-        headers: getHeaders(true, true, user.teams),
-        body: JSON.stringify({
-          parentFolderId,
-          folderName: newFolderName,
-          teamId: _.last(namePath) && _.last(namePath).hasOwnProperty('id_team') ? _.last(namePath).id_team : null
-        })
-      })
-        .then(async (res) => {
-          const data = await res.json();
-
-          if (res.status !== 201) {
-            throw data;
-          }
-          return data;
-        })
-        .then(resolve)
-        .catch(reject);
-    });
   };
 
   openFolder = (e): Promise<void> => {
@@ -510,7 +459,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                   <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
                     <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">
                       <div className="mb-28">
-                        <img alt="" src={iconService.getIcon(IconType.DragAndDrop)} className="w-36 m-auto" />
+                        <img alt="" src={iconService.getIcon(IconType.dragAndDrop)} className="w-36 m-auto" />
                         <div className="text-center">
                           <span className="font-semibold text-base text-m-neutral-100 block">
                             Drag and drop here
@@ -556,19 +505,18 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 export default connect(
   (state: RootState) => {
     const isCurrentFolderEmpty: boolean = storageSelectors.isCurrentFolderEmpty(state);
+    const currentFolderId: number = storageSelectors.currentFolderId(state);
 
     return {
       isAuthenticated: state.user.isAuthenticated,
       user: state.user.user,
+      currentFolderId,
       selectedItems: state.storage.selectedItems,
-      currentFolderId: state.storage.currentFolderId,
       isCurrentFolderEmpty,
       isDraggingAnItem: state.storage.isDraggingAnItem,
-      currentFolderBucket: state.storage.currentFolderBucket,
       isLoadingItems: state.storage.isLoading,
       currentItems: state.storage.items,
       itemToShareId: state.storage.itemToShareId,
-      itemsToDeleteIds: state.storage.itemsToDeleteIds,
       isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
       isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
       infoItemId: state.storage.infoItemId,

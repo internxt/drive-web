@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileViewMode } from '../../../models/enums';
-import { DriveFileData, DriveFolderData, FolderPath } from '../../../models/interfaces';
+import { DriveFileData, DriveFolderData, DriveItemData, FolderPath } from '../../../models/interfaces';
 
 import selectors from './storageSelectors';
 import thunks, { extraReducers } from './storageThunks';
@@ -10,17 +10,15 @@ export interface StorageState {
   isDeletingItems: boolean;
   isDraggingAnItem: boolean;
   draggingTargetItemData: DriveFolderData | DriveFileData | null;
-  currentFolderId: number;
-  currentFolderBucket: string | null;
   items: (DriveFileData | DriveFolderData)[];
   selectedItems: (DriveFileData | DriveFolderData)[];
   itemToShareId: number;
-  itemsToDeleteIds: number[];
+  itemToDelete: DriveFileData | DriveFolderData | null;
   infoItemId: number;
   viewMode: FileViewMode;
   namePath: FolderPath[];
-  sortFunction: ((a: any, b: any) => number) | null;
-  searchFunction: ((item: any) => boolean) | null;
+  sortFunction: ((a: DriveFileData | DriveFolderData, b: DriveFileData | DriveFolderData) => number) | null;
+  searchFunction: ((item: DriveFileData | DriveFolderData) => boolean) | null;
 }
 
 const initialState: StorageState = {
@@ -28,12 +26,10 @@ const initialState: StorageState = {
   isDeletingItems: false,
   isDraggingAnItem: false,
   draggingTargetItemData: null,
-  currentFolderId: 0,
-  currentFolderBucket: null,
   items: [],
   selectedItems: [],
   itemToShareId: 0,
-  itemsToDeleteIds: [],
+  itemToDelete: null,
   infoItemId: 0,
   viewMode: FileViewMode.List,
   namePath: [],
@@ -45,12 +41,6 @@ export const storageSlice = createSlice({
   name: 'storage',
   initialState,
   reducers: {
-    setCurrentFolderId: (state: StorageState, action: PayloadAction<number>) => {
-      state.currentFolderId = action.payload;
-    },
-    setCurrentFolderBucket: (state: StorageState, action: PayloadAction<string>) => {
-      state.currentFolderBucket = action.payload;
-    },
     setIsLoading: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
@@ -63,22 +53,22 @@ export const storageSlice = createSlice({
     setItems: (state: StorageState, action: PayloadAction<any[]>) => {
       state.items = action.payload;
     },
-    selectItem: (state: StorageState, action: PayloadAction<DriveFileData | DriveFolderData>) => {
+    selectItem: (state: StorageState, action: PayloadAction<DriveItemData>) => {
       state.selectedItems.push(action.payload);
     },
-    deselectItem: (state: StorageState, action: PayloadAction<DriveFileData | DriveFolderData>) => {
+    deselectItem: (state: StorageState, action: PayloadAction<DriveItemData>) => {
       const index: number = state.selectedItems.findIndex((item) => item.id === action.payload.id && item.isFolder === action.payload.isFolder);
 
       state.selectedItems.splice(index, 1);
     },
-    resetSelectedItems: (state: StorageState) => {
+    clearSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
     },
     setItemToShare: (state: StorageState, action: PayloadAction<number>) => {
       state.itemToShareId = action.payload;
     },
-    setItemsToDelete: (state: StorageState, action: PayloadAction<number[]>) => {
-      state.itemsToDeleteIds = action.payload;
+    setItemToDelete: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
+      state.itemToDelete = action.payload;
     },
     setInfoItem: (state: StorageState, action: PayloadAction<number>) => {
       state.infoItemId = action.payload;
@@ -89,8 +79,11 @@ export const storageSlice = createSlice({
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
     },
-    goToNamePath: (state: StorageState, action: PayloadAction<number>) => {
-      const folderIndex: number = state.namePath.map(path => path.id).indexOf(action.payload);
+    resetNamePath: (state: StorageState) => {
+      state.namePath = [];
+    },
+    popNamePathUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
+      const folderIndex: number = state.namePath.map(path => path.id).indexOf(action.payload.id);
 
       state.namePath = state.namePath.slice(0, folderIndex + 1);
     },
@@ -98,31 +91,27 @@ export const storageSlice = createSlice({
       if (!state.namePath.map(path => path.id).includes(action.payload.id)) {
         state.namePath.push(action.payload);
       }
-    },
-    popNamePath: (state: StorageState) => {
-      state.namePath.pop();
     }
   },
   extraReducers
 });
 
 export const {
-  setCurrentFolderId,
-  setCurrentFolderBucket,
   setIsLoading,
   setIsDraggingAnItem,
   setDraggingItemTargetData,
   setItems,
   selectItem,
   deselectItem,
-  resetSelectedItems,
+  clearSelectedItems,
   setItemToShare,
-  setItemsToDelete,
+  setItemToDelete,
   setInfoItem,
   setSortFunction,
   setViewMode,
+  resetNamePath,
   pushNamePath,
-  popNamePath
+  popNamePathUpTo
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

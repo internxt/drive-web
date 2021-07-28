@@ -45,7 +45,7 @@ export function updateMetaData(itemId: string, data: DriveFileMetadataPayload): 
   return fetch(`/api/storage/file/${itemId}/meta`, {
     method: 'post',
     headers: getHeaders(true, true, isTeam),
-    body: data
+    body: JSON.stringify(data)
   }).then(() => {
     analyticsService.trackFileRename({
       file_id: itemId,

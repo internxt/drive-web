@@ -23,4 +23,8 @@
     .file-grid-item-actions-button {
         @apply top-2 right-2 rounded-1/2 w-4 h-4 bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
     }
+
+    .file-grid-item-name-span {
+        @apply whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1 border border-dashed border-opacity-0 border-blue-40 hover:border-opacity-100;
+    }
 }

@@ -9,7 +9,7 @@ import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { connect } from 'react-redux';
-import { DriveFileData, DriveFolderData, UserSettings } from '../../../../models/interfaces';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
@@ -20,14 +20,14 @@ import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileGridItemProps {
   user: UserSettings;
-  item: DriveFileData | DriveFolderData;
-  selectedItems: (DriveFileData | DriveFolderData)[];
+  item: DriveItemData;
+  selectedItems: DriveItemData[];
   isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveFileData | DriveFolderData | null;
-  currentFolderId: number | null;
-  isItemSelected: (item: DriveFileData | DriveFolderData) => boolean;
+  draggingTargetItemData: DriveItemData | null;
+  currentFolderId: number;
+  namePath: FolderPath[];
+  isItemSelected: (item: DriveItemData) => boolean;
   dispatch: AppDispatch;
-  namePath: any
 }
 
 interface FileGridItemState {
@@ -74,7 +74,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       <Fragment>
         <input
           ref={nameInputRef}
-          className={`${isEditingName ? 'block' : 'hidden'} dense w-full`}
+          className={`${isEditingName ? 'block' : 'hidden'} dense w-full border border-white`}
           type="text" value={dirtyName}
           placeholder="Change name folder"
           onChange={this.onNameChanged}
@@ -84,7 +84,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
         />
         <span
           onDoubleClick={this.onNameDoubleClicked}
-          className={`${ṣpanDisplayClass} whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1`}
+          className={`${ṣpanDisplayClass} file-grid-item-name-span`}
         >{item.name}</span>
       </Fragment>
     );
@@ -92,14 +92,14 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
   get itemIconSrc(): string {
     return this.props.item.isFolder ?
-      iconService.getIcon(IconType.FolderBlue) :
-      iconService.getIcon(IconType.DefaultFile);
+      iconService.getIcon(IconType.folderBlue) :
+      iconService.getIcon(IconType.defaultFile);
   }
 
   confirmNameChange() {
     const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
-    const data = JSON.stringify({ metadata: { itemName: dirtyName } });
+    const data: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
 
     try {
       if (item.name !== dirtyName) {
@@ -111,7 +111,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
               );
             });
         } else {
-          fileService.updateMetaData(item.fileId, data).then(() => {
+          fileService.updateMetaData(item.fileId, data as DriveFileMetadataPayload).then(() => {
             this.props.dispatch(
               storageThunks.fetchFolderContentThunk()
             );
@@ -141,7 +141,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     this.setState({ isEditingName: false });
   }
 
-  onNameChanged = (e: any): void => {
+  onNameChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState({ dirtyName: e.target.value });
   }
 
@@ -183,7 +183,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageActions.setItemsToDelete([item.id]));
+    dispatch(storageActions.setItemToDelete(item));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
@@ -200,7 +200,9 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   onItemDoubleClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageThunks.goToFolderThunk(item.id));
+    if (item.isFolder) {
+      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+    }
   }
 
   onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
@@ -276,13 +278,14 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 export default connect(
   (state: RootState) => {
     const isItemSelected = storageSelectors.isItemSelected(state);
+    const currentFolderId = storageSelectors.currentFolderId(state);
 
     return {
       isDraggingAnItem: state.storage.isDraggingAnItem,
       selectedItems: state.storage.selectedItems,
       draggingTargetItemData: state.storage.draggingTargetItemData,
-      currentFolderId: state.storage.currentFolderId,
-      isItemSelected,
-      namePath: state.storage.namePath
+      namePath: state.storage.namePath,
+      currentFolderId,
+      isItemSelected
     };
   })(FileGridItem);

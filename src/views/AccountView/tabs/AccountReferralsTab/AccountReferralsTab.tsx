@@ -6,7 +6,6 @@ import localStorageService from '../../../../services/localStorage.service';
 import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../../services/referral.service';
 import { emailRegexPattern } from '../../../../services/validation.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
-import BaseButton from '../../../../components/Buttons/BaseButton';
 import AuthInput from '../../../../components/Inputs/AuthInput';
 import notify from '../../../../components/Notifications';
 import ButtonPrimary from '../../../../components/Buttons/ButtonPrimary';
@@ -79,9 +78,9 @@ const AccountReferralsTab = (): JSX.Element => {
   return (
     <div className='flex w-full justify-center'>
       <div className='flex w-96 mt-16 flex-col items-center justify-center text-center'>
-        <span className='text-neutral-900 font-semibold'>Earn money by referring friends</span>
+        <span className='account_config_title'>Earn money by referring friends</span>
 
-        <span className='text-neutral-700 text-xs mt-3'>
+        <span className='account_config_description'>
           Invite friends who aren't on Internxt yet. You'll both get €5 of Internxt credit as soon as they activate their account.
           You can redeem that credit for a premium Internxt membership, or exclusive Internxt merch. Start earning money today!
         </span>

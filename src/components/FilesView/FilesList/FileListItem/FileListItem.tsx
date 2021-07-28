@@ -10,7 +10,7 @@ import dateService from '../../../../services/date.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
 import downloadService from '../../../../services/download.service';
-import { DriveFileData, DriveFolderData, UserSettings } from '../../../../models/interfaces';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
@@ -20,15 +20,15 @@ import queueFileLogger from '../../../../services/queueFileLogger';
 import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileListItemProps {
-  user: UserSettings;
+  user: UserSettings | undefined;
   isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveFileData | DriveFolderData;
-  item: DriveFileData | DriveFolderData;
-  selectedItems: (DriveFileData | DriveFolderData)[];
-  currentFolderId: number | null;
-  isItemSelected: (item: DriveFileData | DriveFolderData) => boolean;
-  dispatch: AppDispatch;
-  namePath: any
+  draggingTargetItemData: DriveItemData;
+  item: DriveItemData;
+  selectedItems: DriveItemData[];
+  currentFolderId: number;
+  namePath: FolderPath[];
+  isItemSelected: (item: DriveItemData) => boolean;
+  dispatch: AppDispatch
 }
 
 interface FileListItemState {
@@ -55,9 +55,9 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     return (
       <Fragment>
-        <input className={`${isEditingName ? 'block' : 'hidden'} dense`} ref={nameInputRef} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
+        <input className={`${isEditingName ? 'block' : 'hidden'} dense border border-white`} ref={nameInputRef} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
         <span
-          className={`${spanDisplayClass} whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1`}
+          className={`${spanDisplayClass} file-list-item-name-span`}
           onDoubleClick={this.onNameDoubleClicked}
         >{item.name}</span>
       </Fragment>
@@ -73,7 +73,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   confirmNameChange() {
     const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
-    const data = JSON.stringify({ metadata: { itemName: dirtyName } });
+    const data: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
 
     try {
       if (item.name !== dirtyName) {
@@ -125,6 +125,16 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
+  onItemClicked = (): void => {
+    const { item, dispatch, isItemSelected } = this.props;
+
+    if (!item.isFolder) {
+      isItemSelected(item) ?
+        dispatch(storageActions.deselectItem(item)) :
+        dispatch(storageActions.selectItem(item));
+    }
+  }
+
   onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { item, dispatch } = this.props;
 
@@ -167,7 +177,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageActions.setItemsToDelete([item.id]));
+    dispatch(storageActions.setItemToDelete(item));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
@@ -175,8 +185,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const { dispatch, item } = this.props;
 
     if (item.isFolder) {
-      dispatch(storageActions.setCurrentFolderId(item.id));
-      dispatch(storageThunks.fetchFolderContentThunk());
+      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
     }
   }
 
@@ -210,10 +219,12 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
+    const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
 
     return (
       <tr
-        className={`${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
+        className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
+        onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
         onDragOver={this.onItemDragOver}
         onDragLeave={this.onItemDragLeave}
@@ -275,13 +286,14 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 export default connect(
   (state: RootState) => {
     const isItemSelected = storageSelectors.isItemSelected(state);
+    const currentFolderId = storageSelectors.currentFolderId(state);
 
     return {
       isDraggingAnItem: state.storage.isDraggingAnItem,
       selectedItems: state.storage.selectedItems,
       draggingTargetItemData: state.storage.draggingTargetItemData,
-      currentFolderId: state.storage.currentFolderId,
-      isItemSelected,
-      namePath: state.storage.namePath
+      namePath: state.storage.namePath,
+      currentFolderId,
+      isItemSelected
     };
   })(FileListItem);
