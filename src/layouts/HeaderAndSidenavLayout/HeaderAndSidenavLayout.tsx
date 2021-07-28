@@ -51,8 +51,6 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
         open={isDeleteItemsDialogOpen}
       />
 
-      <FileLoggerModal />
-
       <ReachedPlanLimitDialog
         open={isReachedPlanLimitOpen}
       />
@@ -63,7 +61,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
         <div className="flex flex-col flex-grow bg-l-neutral-20 pl-8 pr-24px">
           <AppHeader />
           {children}
-          <FileLogger />
+          <FileLoggerModal />
           <footer className="bg-l-neutral-20 h-footer"></footer>
         </div>
       </div>
