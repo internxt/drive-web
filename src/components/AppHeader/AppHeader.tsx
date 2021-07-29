@@ -78,7 +78,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
               <span>Support</span>
             </Dropdown.Item>
             {
-              user.teams ?
+              user?.teams ?
                 (<Dropdown.Item
                   id="business"
                   onClick={this.onBusinesButtonClicked}

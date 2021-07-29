@@ -10,6 +10,7 @@ import { ReactComponent as ReactLogo } from '../../assets/icons/internxt-long-lo
 import history from '../../lib/history';
 
 import './Sidenav.scss';
+import desktopService from '../../services/desktop.service';
 
 interface SidenavProps {
   user: UserSettings;
@@ -25,6 +26,10 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
     super(props);
 
     this.state = {};
+  }
+
+  onDownloadAppButtonClicked = (): void => {
+    window.open(desktopService.getDownloadAppUrl());
   }
 
   render(): JSX.Element {
@@ -72,7 +77,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
                 label='Download App'
                 icon={<Unicons.UilDesktop className="w-5" />}
                 isOpen={!collapsed}
-                onClick={() => alert('TODO: redirect to desktop APP')}
+                onClick={this.onDownloadAppButtonClicked}
               />
             </div>
           </div>
