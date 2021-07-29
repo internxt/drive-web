@@ -69,7 +69,7 @@ const CreateFolderDialog = ({
         />
 
         <div className='flex justify-center mt-3'>
-          <button onClick={onCancel} className='text-sm text-blue-60 w-full hover:bg-blue-20 mr-4 rounded'>
+          <button onClick={onCancel} className='secondary_dialog w-full mr-4'>
             Cancel
           </button>
           <AuthButton text='Create' textWhenDisabled={isValid ? 'Creating...' : 'Create'} isDisabled={isLoading || !isValid} />

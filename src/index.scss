@@ -208,7 +208,10 @@ code {
     @apply px-4 py-2 text-xs;
   }
   button.primary {
-    @apply bg-blue-60 text-white;
+    @apply flex items-center justify-center bg-blue-60 transition duration-200 ease-in-out hover:bg-blue-80 py-2 rounded text-white text-sm;
+    &:disabled {
+      @apply bg-blue-30 cursor-default;
+    }
   }
   button.secondary {
     @apply bg-white text-blue-60 hover:bg-l-neutral-10;
@@ -219,6 +222,9 @@ code {
     img {
       @apply h-4;
     }
+  }
+  button.secondary_dialog {
+    @apply text-sm text-blue-60 rounded transform duration-200 ease-in-out hover:bg-blue-20;
   }
 
   /* EVENTS */

@@ -42,10 +42,10 @@ const DeleteItemsDialog = ({ open }: DeleteItemsDialogProps): JSX.Element => {
       </span>
 
       <div className='mt-3 flex justify-center'>
-        <button onClick={onCancel} className='secondary'>
+        <button onClick={onCancel} className='secondary_dialog w-full mr-4'>
           Cancel
         </button>
-        <button onClick={onAccept} className='primary ml-2'>
+        <button onClick={onAccept} className='primary w-11/12'>
           Confirm
         </button>
       </div>
