@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+import { RootState } from '../..';
 
 import history from '../../../lib/history';
 import { UserSettings } from '../../../models/interfaces';
@@ -98,5 +99,5 @@ export const {
   setUser
 } = userSlice.actions;
 export const userActions = userSlice.actions;
-
+export const selectUser = (state: RootState): UserSettings | undefined => state.user.user;
 export default userSlice.reducer;

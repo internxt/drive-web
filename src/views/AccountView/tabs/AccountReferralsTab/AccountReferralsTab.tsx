@@ -11,7 +11,7 @@ import notify from '../../../../components/Notifications';
 import BaseButton from '../../../../components/Buttons/BaseButton';
 
 const AccountReferralsTab = (): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
 
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const [isLoadingInvite, setIsLoadingInvite] = useState(false);
@@ -78,9 +78,9 @@ const AccountReferralsTab = (): JSX.Element => {
   return (
     <div className='flex w-full justify-center'>
       <div className='flex w-96 mt-16 flex-col items-center justify-center text-center'>
-        <span className='text-neutral-900 font-semibold'>Earn money by referring friends</span>
+        <span className='account_config_title'>Earn money by referring friends</span>
 
-        <span className='text-neutral-700 text-xs mt-3'>
+        <span className='account_config_description'>
           Invite friends who aren't on Internxt yet. You'll both get €5 of Internxt credit as soon as they activate their account.
           You can redeem that credit for a premium Internxt membership, or exclusive Internxt merch. Start earning money today!
         </span>
@@ -99,7 +99,7 @@ const AccountReferralsTab = (): JSX.Element => {
           />
 
           <div className='w-28 ml-2.5'>
-            <AuthButton text='Invite' textWhenDisabled='Inviting' isDisabled={isLoadingInvite} />
+            <AuthButton text='Invite' textWhenDisabled={isValid ? 'Inviting...' : 'Invite'} isDisabled={isLoadingInvite || !isValid} />
           </div>
         </form>
 

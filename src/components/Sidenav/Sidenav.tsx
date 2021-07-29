@@ -30,7 +30,7 @@ interface SidenavState {
   usageTeams: number
 }
 
-const DEFAULT_LIMIT = 1024 * 1024 * 1024 * 10;
+const DEFAULT_LIMIT = 1024 * 1024 * 1024 * 2;
 
 class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, SidenavState> {
   constructor(props: SidenavProps) {
@@ -112,7 +112,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
             <div className="py-3 mb-2">
               {collapsed ?
                 <img className='opacity-0 w-6 long-logo' src={getIcon('internxtShortLogo')} alt="" /> :
-                <div className="w-28 h-auto flex items-center" onClick={() =>{
+                <div className="w-28 h-auto flex items-center" onClick={() => {
                   history.push('/');
                 }}>
                   <ReactLogo className="long-logo w-full" />
@@ -159,7 +159,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
                   <div className='h-full bg-blue-70' style={{ width: (this.state.usage / this.state.limit) * 100 }} />
                 </div>
 
-                <span className="flex-grow mt-1 text-supporting-2 text-m-neutral-100">{this.state.usage === 0 ? '0' : bytesToString(this.state.usage)} of {this.putLimitUser()}</span>
+                <span className="flex-grow mt-1 text-supporting-2 text-m-neutral-100">{this.state.usage === 0 ? '0 MB' : bytesToString(this.state.usage)} of {this.putLimitUser()}</span>
                 <button className="secondary" onClick={this.onUpgradeButtonClicked}>Upgrade</button>
               </div>
             </div>

@@ -31,7 +31,7 @@ interface SignUpProps {
 }
 
 const SignUp = (props: SignUpProps): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
   const dispatch = useAppDispatch();
 
   const password = useWatch({ control, name: 'password', defaultValue: '' });
@@ -303,7 +303,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             More info
           </BaseButton>
           <div className='mt-3' />
-          <AuthButton isDisabled={isLoading} text='Create an account' textWhenDisabled='Encrypting...' />
+          <AuthButton isDisabled={isLoading || !isValid} text='Create an account' textWhenDisabled={isValid ? 'Encrypting...' : 'Create an account'} />
         </form>
 
         <div className='flex justify-center items-center w-full mt-6'>

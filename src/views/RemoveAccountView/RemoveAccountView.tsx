@@ -11,7 +11,7 @@ import notify from '../../components/Notifications';
 import BaseButton from '../../components/Buttons/BaseButton';
 
 const RemoveAccount = (): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, getValues } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, getValues } = useForm<IFormValues>({ mode: 'onChange' });
 
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -69,7 +69,7 @@ const RemoveAccount = (): JSX.Element => {
                 error={errors.email}
               />
 
-              <AuthButton isDisabled={isLoading} text='Send email' textWhenDisabled='Sending email...' />
+              <AuthButton isDisabled={isLoading || !isValid} text='Send email' textWhenDisabled={isValid ? 'Sending email...' : 'Send email'} />
             </form>
 
             <BaseButton text='Back to login' additionalStyling='mt-6' onClick={() => history.push('/login')} />

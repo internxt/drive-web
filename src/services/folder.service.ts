@@ -141,7 +141,7 @@ export async function createFolder(isTeam: boolean, currentFolderId: number | nu
   const responseJSON = await response.json();
 
   if (response.status !== 201) {
-    throw `The folder cannot be created ${responseJSON.error}`;
+    throw `The folder cannot be created. ${responseJSON.error}`;
   }
 
   analyticsService.trackFolderCreated({

@@ -17,7 +17,7 @@ interface SettingMenuProp {
   isTeam: boolean
 }
 
-const DEFAULT_LIMIT = 1024 * 1024 * 1024 * 10;
+const DEFAULT_LIMIT = 1024 * 1024 * 1024 * 2;
 
 function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
 

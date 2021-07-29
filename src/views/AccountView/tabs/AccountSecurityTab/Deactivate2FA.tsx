@@ -14,7 +14,7 @@ interface Deactivate2FAProps {
 }
 
 const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -71,8 +71,8 @@ const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Ele
 
       <AuthButton
         text='Disable Two-Factor Authentication'
-        textWhenDisabled='Disabling...'
-        isDisabled={isLoading} />
+        textWhenDisabled={isValid ? 'Disabling...' : 'Disable Two-Factor Authentication'}
+        isDisabled={isLoading || !isValid} />
     </form>
   );
 };

@@ -43,7 +43,7 @@ export const texts = {
 
 export default function SignInView(props: SignInProps): JSX.Element {
   const dispatch = useAppDispatch();
-  const { register, formState: { errors }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const twoFactorCode = useWatch({ control, name: 'twoFactorCode', defaultValue: '' });
@@ -189,7 +189,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
           }
 
           <div className='mt-2'>
-            <AuthButton isDisabled={isLoggingIn} text='Sign in' textWhenDisabled='Decrypting...' />
+            <AuthButton isDisabled={isLoggingIn || !isValid} text='Sign in' textWhenDisabled={isValid ? 'Decrypting...': 'Sign in'} />
           </div>
         </form>
 
