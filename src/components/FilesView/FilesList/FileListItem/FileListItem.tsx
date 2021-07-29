@@ -161,9 +161,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   onDownloadButtonClicked = (): void => {
     const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-
-    console.log(this.props.item.type);
-
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
     this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));

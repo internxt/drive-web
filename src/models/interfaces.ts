@@ -110,7 +110,6 @@ export interface IFormValues {
   currentPassword: string,
   twoFactorCode: string,
   confirmPassword: string,
-  remember: boolean,
   acceptTerms: boolean,
   backupKey: string,
   createFolder: string
