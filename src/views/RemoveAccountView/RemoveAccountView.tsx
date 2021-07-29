@@ -72,7 +72,9 @@ const RemoveAccount = (): JSX.Element => {
               <AuthButton isDisabled={isLoading || !isValid} text='Send email' textWhenDisabled={isValid ? 'Sending email...' : 'Send email'} />
             </form>
 
-            <BaseButton text='Back to login' additionalStyling='mt-6' onClick={() => history.push('/login')} />
+            <BaseButton classes='button_link' onClick={() => history.push('/login')}>
+              Back to login
+            </BaseButton>
           </Fragment>
           :
           <Fragment>
@@ -82,10 +84,10 @@ const RemoveAccount = (): JSX.Element => {
               are the true owner of your files on the cloud. With great power there must also come great responsibility.
             </p>
 
-            <BaseButton disabled={isLoading} width='w-full' onClick={() => sendEmail(getValues().email)}>
+            <BaseButton classes='primary w-full' disabled={isLoading} onClick={() => sendEmail(getValues().email)}>
               Re-send deactivation email
             </BaseButton>
-            <BaseButton additionalStyling='mt-6' onClick={() => history.push('/login')}>
+            <BaseButton classes='button_link mt-2' onClick={() => history.push('/login')}>
               Back to login
             </BaseButton>
           </Fragment>

@@ -206,7 +206,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
 
           <div className='flex w-full justify-center text-sm mt-3'>
             <span>Don't have an account?</span>
-            <button className="link" onClick={() => history.push('/new')}>Get started</button>
+            <button className="button_link ml-2" onClick={() => history.push('/new')}>Get started</button>
           </div>
         </div>
       </div>
