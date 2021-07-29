@@ -10,9 +10,8 @@ import { getIcon } from '../../services/icon.service';
 import { ReactComponent as ReactLogo } from '../../assets/icons/internxt-long-logo.svg';
 import './Sidenav.scss';
 import { getLimit } from '../../services/limit.service';
-import usageService, { fetchUsage, UsageResponse } from '../../services/usage.service';
+import usageService, { UsageResponse } from '../../services/usage.service';
 import SessionStorage from '../../lib/sessionStorage';
-import { getHeaders } from '../../lib/auth';
 import { bytesToString } from '../../services/size.service';
 import localStorageService from '../../services/localStorage.service';
 import history from '../../lib/history';
@@ -135,27 +134,11 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
                 icon={<Unicons.UilClockEight className="w-5" />}
                 isOpen={!collapsed}
               />
-            </div>
-
-            <div>
-              <span className='h-3 text-xs text-m-neutral-100 font-semibold mb-4'>{!collapsed && 'Configuration'}</span>
               <SidenavItem
-                label='Account'
-                to="/account"
-                icon={<Unicons.UilUserCircle className="w-5" />}
+                label='Download App'
+                icon={<Unicons.UilDesktop className="w-5" />}
                 isOpen={!collapsed}
-              />
-              <SidenavItem
-                label="Support"
-                icon={<Unicons.UilChatBubbleUser className="w-5" />}
-                isOpen={!collapsed}
-                onClick={() => window.open('https://help.internxt.com/')}
-              />
-              <SidenavItem
-                label='Log out'
-                icon={<Unicons.UilSignout className="w-5" />}
-                isOpen={!collapsed}
-                onClick={authService.logOut}
+                onClick={() => alert('TODO: redirect to desktop APP')}
               />
             </div>
           </div>

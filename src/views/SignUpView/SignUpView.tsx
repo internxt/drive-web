@@ -20,7 +20,6 @@ import AesUtils from '../../lib/AesUtil';
 import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
 import BaseButton from '../../components/Buttons/BaseButton';
-import ButtonTextOnly from '../../components/Buttons/ButtonTextOnly';
 import { texts } from '../SignInView/SignInView';
 
 interface SignUpProps {
@@ -300,14 +299,18 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           </span>
 
           <CheckboxPrimary label='acceptTerms' text='Accept terms, conditions and privacy policy' required={true} register={register} additionalStyling='mt-2 -mb-0' />
-          <ButtonTextOnly text='More info' onClick={() => window.open('https://internxt.com/en/legal')} additionalStyling='self-start ml-6 text-xs' />
+          <BaseButton onClick={() => window.open('https://internxt.com/en/legal')} additionalStyling='self-start ml-6 text-xs'>
+            More info
+          </BaseButton>
           <div className='mt-3' />
           <AuthButton isDisabled={isLoading} text='Create an account' textWhenDisabled='Encrypting...' />
         </form>
 
         <div className='flex justify-center items-center w-full mt-6'>
           <span className='text-sm text-neutral-500 ml-3 select-none'>Already registered?</span>
-          <ButtonTextOnly text='Log in' onClick={() => history.push('/login')} additionalStyling='ml-1.5' />
+          <BaseButton onClick={() => history.push('/login')} additionalStyling='ml-1.5'>
+            Log in
+          </BaseButton>
         </div>
       </div>
     </div>

@@ -1,9 +1,8 @@
 import React, { ReactNode } from 'react';
+import * as Unicons from '@iconscout/react-unicons';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 import { ItemAction } from '../../../models/enums';
-
-import './FileDropdownActions.scss';
 
 interface FileDropdownActionsProps {
   title?: string;
@@ -17,7 +16,7 @@ interface FileDropdownActionsProps {
 
 interface FileDropdownActionsState { }
 
-class FileGridItem extends React.Component<FileDropdownActionsProps, FileDropdownActionsState> {
+class FileDropdownActions extends React.Component<FileDropdownActionsProps, FileDropdownActionsState> {
   constructor(props: FileDropdownActionsProps) {
     super(props);
 
@@ -70,7 +69,8 @@ class FileGridItem extends React.Component<FileDropdownActionsProps, FileDropdow
             className="file-dropdown-actions-button"
             onClick={this.onDownloadButtonClicked}
           >
-            Download
+            <Unicons.UilCloudDownload className="text-blue-60 h-5 mr-1" />
+            <span>Download</span>
           </Dropdown.Item> : null
         }
         { !hiddenActions.includes(ItemAction.Rename) ?
@@ -79,7 +79,8 @@ class FileGridItem extends React.Component<FileDropdownActionsProps, FileDropdow
             className="file-dropdown-actions-button"
             onClick={this.onRenameButtonClicked}
           >
-            Rename
+            <Unicons.UilEditAlt className="text-blue-60 h-5 mr-1" />
+            <span>Rename</span>
           </Dropdown.Item> : null
         }
         { !hiddenActions.includes(ItemAction.Share) ?
@@ -88,7 +89,8 @@ class FileGridItem extends React.Component<FileDropdownActionsProps, FileDropdow
             className="file-dropdown-actions-button"
             onClick={this.onShareButtonClicked}
           >
-            Share
+            <Unicons.UilShareAlt className="text-blue-60 h-5 mr-1" />
+            <span>Share</span>
           </Dropdown.Item> : null
         }
         { !hiddenActions.includes(ItemAction.Info) ?
@@ -97,16 +99,19 @@ class FileGridItem extends React.Component<FileDropdownActionsProps, FileDropdow
             className="file-dropdown-actions-button"
             onClick={this.onInfoButtonClicked}
           >
-            Info
+            <Unicons.UilFileInfoAlt className="text-blue-60 h-5 mr-1" />
+            <span>Info</span>
           </Dropdown.Item> : null
         }
+        <hr className="text-l-neutral-30 my-1.5"></hr>
         { !hiddenActions.includes(ItemAction.Delete) ?
           <Dropdown.Item
             id="delete"
-            className="file-dropdown-actions-button"
+            className="file-dropdown-actions-button text-red-60 hover:text-red-60"
             onClick={this.onDeleteButtonClicked}
           >
-            Delete
+            <Unicons.UilTrashAlt className="h-5 mr-1" />
+            <span>Delete</span>
           </Dropdown.Item> : null
         }
       </Dropdown.Menu>
@@ -114,4 +119,4 @@ class FileGridItem extends React.Component<FileDropdownActionsProps, FileDropdow
   }
 }
 
-export default FileGridItem;
+export default FileDropdownActions;
