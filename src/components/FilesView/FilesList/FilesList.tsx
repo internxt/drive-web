@@ -41,10 +41,10 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
                 <input onClick={this.onSelectAllButtonClicked} type="checkbox" />
               </th>
               <th className="w-12">Type</th>
-              <th className="w-48">Name</th>
+              <th className="w-40">Name</th>
+              <th className="w-36"></th>
               <th className="w-64">Modified</th>
               <th className="w-20">Size</th>
-              <th className="w-24"></th>
               <th className="w-12 rounded-tr-4px">Actions</th>
             </tr>
           </thead>

@@ -8,7 +8,7 @@ import { emailRegexPattern } from '../../../../services/validation.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import AuthInput from '../../../../components/Inputs/AuthInput';
 import notify from '../../../../components/Notifications';
-import ButtonPrimary from '../../../../components/Buttons/ButtonPrimary';
+import BaseButton from '../../../../components/Buttons/BaseButton';
 
 const AccountReferralsTab = (): JSX.Element => {
   const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
@@ -116,7 +116,8 @@ const AccountReferralsTab = (): JSX.Element => {
           You have accumulated {credit}€
         </span>
 
-        <ButtonPrimary text='Claim' textWhenDisabled='Claiming bonus...' width='w-64' disabled={isLoadingClaim} onClick={onClaim} />
+        <BaseButton textWhenDisabled='Claiming bonus...' width='w-64' disabled={isLoadingClaim} onClick={onClaim}>
+        </BaseButton>
       </div>
     </div>
   );

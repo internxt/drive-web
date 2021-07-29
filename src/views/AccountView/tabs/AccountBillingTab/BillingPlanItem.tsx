@@ -1,9 +1,9 @@
-import React from 'react';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import ButtonPrimary from '../../../../components/Buttons/ButtonPrimary';
+import { useEffect, useState } from 'react';
+
+import BaseButton from '../../../../components/Buttons/BaseButton';
 import { IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { getIcon } from '../../../../services/icon.service';
+
 interface PlanProps {
   product: IStripeProduct,
   plans: IStripePlan[],
@@ -72,7 +72,7 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
       {characteristics.map(text => <ListItem text={text} key={text} />)}
 
       <div className='mt-4' />
-      <ButtonPrimary width='w-full' text={selectedPlan && isPaying ? 'Redirecting to Stripe...' : buttonText} disabled={isPaying || !selectedPlan} onClick={() => handlePayment(selectedPlan, product.id)} />
+      <BaseButton width='w-full' text={selectedPlan && isPaying ? 'Redirecting to Stripe...' : buttonText} disabled={isPaying || !selectedPlan} onClick={() => handlePayment(selectedPlan, product.id)} />
     </div>
   );
 };

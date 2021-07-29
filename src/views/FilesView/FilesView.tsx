@@ -176,7 +176,8 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   onBulkDeleteButtonClicked = () => {
     const { dispatch, selectedItems } = this.props;
 
-    dispatch(storageThunks.deleteItemsThunk(selectedItems));
+    dispatch(storageActions.setItemsToDelete(selectedItems));
+    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   }
 
   onPreviousPageButtonClicked = (): void => {

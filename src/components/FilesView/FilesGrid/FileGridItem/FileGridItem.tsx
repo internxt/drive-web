@@ -1,7 +1,8 @@
 import React, { DragEvent, Fragment, ReactNode } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import * as Unicons from '@iconscout/react-unicons';
 
-import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
+import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
 import iconService, { IconType } from '../../../../services/icon.service';
 import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
 
@@ -183,7 +184,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageActions.setItemToDelete(item));
+    dispatch(storageActions.setItemsToDelete([item]));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
@@ -195,6 +196,11 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
         dispatch(storageActions.deselectItem(item)) :
         dispatch(storageActions.selectItem(item));
     }
+  }
+
+  onItemRightClicked = (e: MouseEvent): void => {
+    e.preventDefault();
+    alert('onItemRightClicked');
   }
 
   onItemDoubleClicked = (): void => {
@@ -243,6 +249,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
         ref={itemRef}
         style={{ height }}
         className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-grid-item`}
+        onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
         onDragOver={this.onItemDragOver}
@@ -251,7 +258,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       >
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
-            <img alt="" className="m-auto" src={iconService.getIcon(IconType.Actions)} />
+            <Unicons.UilEllipsisH className="w-full h-full" />
           </Dropdown.Toggle>
           <FileDropdownActions
             hiddenActions={item.isFolder ? [ItemAction.Download] : []}
