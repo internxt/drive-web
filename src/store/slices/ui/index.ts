@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../..';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -46,5 +47,6 @@ export const {
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
-
+export const selectIsOpenCreateFolder = (state: RootState): boolean => state.ui.isCreateFolderDialogOpen;
+export const selectIsOpenDeleteItem = (state: RootState): boolean => state.ui.isDeleteItemsDialogOpen;
 export default uiSlice.reducer;
