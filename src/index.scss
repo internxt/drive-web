@@ -137,13 +137,11 @@ code {
 
 @layer components {
   /* LINKS */
-  a,
-  .link {
+  a.link {
     @apply text-blue-60 underline;
-
-    &.secondary {
-      @apply text-white;
-    }
+  }
+  a.secondary {
+    @apply text-white;
   }
 
   /* DROPDOWNS */
@@ -225,6 +223,12 @@ code {
   }
   button.secondary_dialog {
     @apply text-sm text-blue-60 rounded transform duration-200 ease-in-out hover:bg-blue-20;
+  }
+  button.button_link {
+    @apply text-blue-60 transform duration-200 hover:text-blue-80;
+  }
+  button.text_underline {
+    @apply underline;
   }
 
   /* EVENTS */
