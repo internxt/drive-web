@@ -15,7 +15,7 @@ interface InputProps {
   maxLength?: ValidationRule<string | number> | undefined
   placeholder: string,
   pattern?: ValidationRule<RegExp> | undefined
-  icon: keyof typeof IconType,
+  icon?: keyof typeof IconType,
   error: FieldError | undefined
   onClick?: () => void
 }
@@ -35,7 +35,7 @@ const InputPrimary = ({ label, type, register, required, placeholder, pattern, i
     <div className={`absolute ${label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-5 cursor-pointer' : 'right-3 bottom-6'} flex items-center justify-center`}
       onClick={() => label === 'password' || label === 'confirmPassword' ? onClick && onClick() : null}
     >
-      <img src={iconService.getIcon(icon)} alt="" />
+      {icon && <img src={iconService.getIcon(icon)} alt="" />}
     </div>
   </div >
 );
