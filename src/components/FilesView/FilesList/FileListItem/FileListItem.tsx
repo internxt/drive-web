@@ -56,11 +56,23 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     return (
       <Fragment>
-        <input className={`${isEditingName ? 'block' : 'hidden'} dense border border-white`} ref={nameInputRef} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
+        <div className={isEditingName ? 'block' : 'hidden'}>
+          <input
+            className="dense border border-white`"
+            ref={nameInputRef}
+            type="text"
+            value={dirtyName}
+            placeholder="Name"
+            onChange={this.onNameChanged}
+            onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed}
+            autoFocus
+          />
+          <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
+        </div>
         <span
           className={`${spanDisplayClass} file-list-item-name-span`}
           onDoubleClick={this.onNameDoubleClicked}
-        >{item.name}</span>
+        >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
       </Fragment>
     );
   }
@@ -161,9 +173,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   onDownloadButtonClicked = (): void => {
     const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-
-    console.log(this.props.item.type);
-
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
     this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));

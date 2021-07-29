@@ -437,9 +437,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
               </div>
 
               {/* PAGINATION */}
-              {!isLoadingItems && (
+              {(false && !isLoadingItems) ? (
                 <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
-                  <span className="text-sm w-1/3"/>
+                  <span className="text-sm w-1/3" />
                   <div className="flex justify-center w-1/3">
                     <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
                       <Unicons.UilAngleDoubleLeft />
@@ -453,7 +453,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                   </div>
                   <div className="w-1/3"></div>
                 </div>
-              )}
+              ) : null}
 
               {/* EMPTY FOLDER */
                 isCurrentFolderEmpty && !isLoadingItems ?

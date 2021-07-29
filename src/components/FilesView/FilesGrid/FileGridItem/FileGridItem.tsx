@@ -73,20 +73,24 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     return (
       <Fragment>
-        <input
-          ref={nameInputRef}
-          className={`${isEditingName ? 'block' : 'hidden'} dense w-full border border-white`}
-          type="text" value={dirtyName}
-          placeholder="Change name folder"
-          onChange={this.onNameChanged}
-          onBlur={this.onNameBlurred}
-          onKeyPress={this.onEnterKeyPressed}
-          autoFocus
-        />
+        <div className={isEditingName ? 'block' : 'hidden'}>
+          <input
+            className="dense border border-white`"
+            ref={nameInputRef}
+            type="text"
+            value={dirtyName}
+            placeholder="Name"
+            onChange={this.onNameChanged}
+            onBlur={this.onNameBlurred}
+            onKeyPress={this.onEnterKeyPressed}
+            autoFocus
+          />
+          <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
+        </div>
         <span
-          onDoubleClick={this.onNameDoubleClicked}
           className={`${ṣpanDisplayClass} file-grid-item-name-span`}
-        >{item.name}</span>
+          onDoubleClick={this.onNameDoubleClicked}
+        >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
       </Fragment>
     );
   }

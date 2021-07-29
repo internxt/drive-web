@@ -77,13 +77,16 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
               <Unicons.UilChatBubbleUser className="text-blue-60 h-5 mr-1" />
               <span>Support</span>
             </Dropdown.Item>
-            <Dropdown.Item
-              id="business"
-              onClick={this.onBusinesButtonClicked}
-            >
-              <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
-              <span>Business</span>
-            </Dropdown.Item>
+            {
+              user?.teams ?
+                (<Dropdown.Item
+                  id="business"
+                  onClick={this.onBusinesButtonClicked}
+                >
+                  <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
+                  <span>Business</span>
+                </Dropdown.Item>) : null
+            }
             <hr className="text-l-neutral-30 my-1.5"></hr>
             <Dropdown.Item
               id="logout"
