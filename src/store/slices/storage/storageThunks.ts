@@ -1,20 +1,15 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import async from 'async';
 
 import { storageActions, storageSelectors, StorageState } from '.';
 import { getFilenameAndExt, renameFile } from '../../../lib/utils';
 import fileService from '../../../services/file.service';
 import folderService from '../../../services/folder.service';
 import storageService from '../../../services/storage.service';
-import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
-import { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
 import queueFileLogger from '../../../services/queueFileLogger';
 import { updateFileStatusLogger } from '../files';
 import downloadService from '../../../services/download.service';
-import { DriveFileData, DriveFolderData, DriveItemData, FolderPath } from '../../../models/interfaces';
-import fileLogger from '../../../services/fileLogger';
-import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
+import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interfaces';
 
 interface UploadItemsPayload {
   files: File[];

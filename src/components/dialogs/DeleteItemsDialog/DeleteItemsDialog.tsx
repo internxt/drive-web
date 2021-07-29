@@ -4,7 +4,7 @@ import { RootState } from '../../../store';
 import { useAppDispatch } from '../../../store/hooks';
 import { storageThunks } from '../../../store/slices/storage';
 import { setIsDeleteItemsDialogOpen } from '../../../store/slices/ui';
-import { setItemToDelete } from '../../../store/slices/storage';
+import { setItemsToDelete } from '../../../store/slices/storage';
 import BaseDialog from '../BaseDialog/BaseDialog';
 
 import './DeleteItemsDialog.scss';
@@ -14,16 +14,16 @@ interface DeleteItemsDialogProps {
 }
 
 const DeleteItemsDialog = ({ open }: DeleteItemsDialogProps): JSX.Element => {
-  const itemToDelete: DriveItemData | null = useSelector((state: RootState) => state.storage.itemToDelete);
+  const itemsToDelete: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToDelete);
   const dispatch = useAppDispatch();
   const onCancel = (): void => {
     dispatch(setIsDeleteItemsDialogOpen(false));
-    dispatch(setItemToDelete(null));
+    dispatch(setItemsToDelete([]));
   };
   const onAccept = async (): Promise<void> => {
     try {
-      if (itemToDelete) {
-        await dispatch(storageThunks.deleteItemsThunk([itemToDelete]));
+      if (itemsToDelete.length > 0) {
+        await dispatch(storageThunks.deleteItemsThunk(itemsToDelete));
       }
       onCancel();
     } catch (e) {

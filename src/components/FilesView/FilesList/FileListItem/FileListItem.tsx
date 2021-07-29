@@ -183,7 +183,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageActions.setItemToDelete(item));
+    dispatch(storageActions.setItemsToDelete([item]));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
