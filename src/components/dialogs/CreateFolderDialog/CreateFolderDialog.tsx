@@ -1,21 +1,18 @@
-import { createRef, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../../../store/hooks';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { setIsCreateFolderDialogOpen } from '../../../store/slices/ui';
 import { storageSelectors, storageThunks } from '../../../store/slices/storage';
-import folderService, { ICreatedFolder } from '../../../services/folder.service';
-import { toast } from 'react-toastify';
+import folderService from '../../../services/folder.service';
 import { IFormValues, UserSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
 import './CreateFolderDialog.scss';
 import AuthInput from '../../Inputs/AuthInput';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { illegalRe, invalidCharacters } from '../../../services/validation.service';
 import AuthButton from '../../Buttons/AuthButton';
-import ButtonTextOnly from '../../Buttons/ButtonTextOnly';
 import notify from '../../Notifications';
 
 interface CreateFolderDialogProps {
@@ -28,7 +25,7 @@ const CreateFolderDialog = ({
   user
 }: CreateFolderDialogProps
 ) => {
-  const { register, formState: { errors, isValid }, handleSubmit, reset, setFocus } = useForm<IFormValues>({ mode: 'onChange', defaultValues: { createFolder: '' } });
+  const { register, formState: { errors, isValid }, handleSubmit, reset } = useForm<IFormValues>({ mode: 'onChange', defaultValues: { createFolder: '' } });
   const [isLoading, setIsLoading] = useState(false);
   const currentFolderId: number = useSelector((state: RootState) => storageSelectors.currentFolderId(state));
   const dispatch = useAppDispatch();
@@ -57,10 +54,6 @@ const CreateFolderDialog = ({
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    setFocus('createFolder');
-  }, []);
 
   return (
     <BaseDialog title="Create folder" open={open} onClose={onCancel}>
