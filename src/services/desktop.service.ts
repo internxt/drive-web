@@ -1,21 +1,26 @@
+import { url } from 'inspector';
 import operatingSystemService from './operating-system.service';
 
 function getDownloadAppUrl(): string {
+  let url: string;
+
   switch (operatingSystemService.getOperatingSystem()) {
     case 'WindowsOS':
-      window.location.href = 'https://internxt.com/downloads/drive.exe';
+      url = 'https://internxt.com/downloads/drive.exe';
       break;
     case 'MacOS':
-      window.location.href = 'https://internxt.com/downloads/drive.dmg';
+      url = 'https://internxt.com/downloads/drive.dmg';
       break;
     case 'Linux':
     case 'UNIXOS':
-      window.location.href = 'https://internxt.com/downloads/drive.deb';
+      url = 'https://internxt.com/downloads/drive.deb';
       break;
     default:
-      window.location.href = 'https://github.com/internxt/drive-desktop/releases';
+      url = 'https://github.com/internxt/drive-desktop/releases';
       break;
   }
+
+  return url;
 }
 
 const desktopService = {

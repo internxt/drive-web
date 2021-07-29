@@ -182,7 +182,6 @@ export const fetchFolderContentThunk = createAsyncThunk(
 
     folderId = ~folderId ? folderId : currentFolderId;
 
-    await fileService.fetchWelcomeFile(isTeam);
     const content = await folderService.fetchFolderContent(folderId, isTeam);
 
     dispatch(storageActions.clearSelectedItems());

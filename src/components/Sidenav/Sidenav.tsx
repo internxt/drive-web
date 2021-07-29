@@ -29,7 +29,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
   }
 
   onDownloadAppButtonClicked = (): void => {
-    window.open(desktopService.getDownloadAppUrl());
+    window.open(desktopService.getDownloadAppUrl(), '_blank');
   }
 
   render(): JSX.Element {
