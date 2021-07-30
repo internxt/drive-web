@@ -58,11 +58,11 @@ export function updateMetaData(itemId: string, data: DriveFileMetadataPayload): 
     });
 }
 
-export function deleteFile(fileData: DriveFileData): Promise<void> {
+export function deleteFile(fileData: DriveFileData, isTeam: boolean): Promise<void> {
   const user = localStorageService.getUser();
   const fetchOptions = {
     method: 'DELETE',
-    headers: getHeaders(true, false, !!user.teams)
+    headers: getHeaders(true, false, isTeam)
   };
 
   return fetch(`/api/storage/folder/${fileData.folderId}/file/${fileData.id}`, fetchOptions).then(() => {

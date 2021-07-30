@@ -11,6 +11,7 @@ import { UserSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
 import './CreateFolderDialog.scss';
+import { selectorIsTeam } from '../../../store/slices/team';
 
 interface CreateFolderDialogProps {
   open: boolean;
@@ -23,6 +24,8 @@ const CreateFolderDialog = ({
 }: CreateFolderDialogProps
 ) => {
   const currentFolderId: number = useSelector((state: RootState) => storageSelectors.currentFolderId(state));
+  const isTeam: boolean = useSelector((state: RootState) => selectorIsTeam(state));
+
   const [inputRef] = useState(createRef<HTMLInputElement>());
   const dispatch = useAppDispatch();
   const [inputValue, setInputValue] = useState('');
@@ -31,7 +34,7 @@ const CreateFolderDialog = ({
   };
   const onAccept = (): void => {
     if (inputValue && inputValue !== '') {
-      folderService.createFolder(!!user?.teams, currentFolderId, inputValue)
+      folderService.createFolder(isTeam, currentFolderId, inputValue)
         .then((response: ICreatedFolder[]) => {
           dispatch(storageThunks.fetchFolderContentThunk());
           dispatch(setIsCreateFolderDialogOpen(false));

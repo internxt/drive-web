@@ -17,7 +17,7 @@ export interface UploadItemPayload {
   name: string
 }
 
-export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, dispatch): Promise<any> {
+export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, dispatch: any, isTeam: boolean): Promise<any> {
   dispatch(updateFileStatusLogger({ action: 'upload', status: 'encrypting', filePath: path, isFolder: false }));
 
   if (!file.parentFolderId) {
@@ -26,7 +26,7 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
 
   try {
     analyticsService.trackFileUploadStart({ file_size: file.size, file_type: file.type, folder_id: file.parentFolderId, userEmail, platform: DevicePlatform.Web });
-    const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(file.isTeam);
+    const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
     if (!bucketId) {
       analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
@@ -60,7 +60,7 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
     const encrypt_version = '03-aes';
     // TODO: fix mismatched fileId fields in server and remove file_id here
     const fileEntry = { fileId, file_id: fileId, type, bucket: bucketId, size, folder_id, name, encrypt_version };
-    const headers = getHeaders(true, true, file.isTeam);
+    const headers = getHeaders(true, true, isTeam);
 
     const createFileEntry = () => {
       const body = JSON.stringify({ file: fileEntry });
