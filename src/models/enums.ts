@@ -67,3 +67,7 @@ export enum FileViewMode {
   List = 'list',
   Grid = 'grid'
 }
+export enum Workspace {
+  Individual = 'individual',
+  Business = 'business'
+}

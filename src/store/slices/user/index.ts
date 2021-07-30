@@ -3,10 +3,12 @@ import { toast } from 'react-toastify';
 import { RootState } from '../..';
 
 import history from '../../../lib/history';
+import { Workspace } from '../../../models/enums';
 import { UserSettings } from '../../../models/interfaces';
 import localStorageService from '../../../services/localStorage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
+import { selectorIsTeam, setWorkspace } from '../team';
 
 interface UserState {
   isInitializing: boolean;
@@ -40,7 +42,7 @@ export const initializeUserThunk = createAsyncThunk(
         }
 
         if (localStorageService.exists('xTeam') && !user.teams && localStorageService.get('workspace') === 'teams') {
-          handleChangeWorkspace();
+          dispatch(handleChangeWorkspaceThunk());
         }
 
         dispatch(setIsUserInitialized(true));
@@ -51,11 +53,16 @@ export const initializeUserThunk = createAsyncThunk(
   }
 );
 
-const handleChangeWorkspace = () => {
-  const user = localStorageService.getUser();
+export const handleChangeWorkspaceThunk = createAsyncThunk(
+  'user/changeWorkspace',
+  async (payload: void, { dispatch, getState }: any) => {
+    const isTeam: boolean = selectorIsTeam(getState());
 
-  localStorageService.set('workspace', !user?.teams ? 'teams' : 'individual');
-};
+    isTeam ? dispatch(setWorkspace(Workspace.Individual)) : dispatch(setWorkspace(Workspace.Business));
+
+    localStorageService.set('workspace', isTeam ? Workspace.Business : Workspace.Individual);
+  }
+);
 
 export const userSlice = createSlice({
   name: 'user',
