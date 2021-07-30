@@ -10,6 +10,8 @@ const initialState: FilesState = {
   fileHistory: {}
 };
 
+const objectFilter = (obj: Record<any, any>, fn): Record<any, any> => Object.fromEntries(Object.entries(obj).filter(fn));
+
 export const filesStateSlice = createSlice({
   name: 'filesState',
   initialState,
@@ -52,5 +54,12 @@ export const {
   updateFileStatusLogger,
   clearFileLoggerStatus
 } = filesStateSlice.actions;
-export const selectLoggerFiles = (state: RootState): ILogger => state.filesState.fileHistory;
+
+export const selectLoggerFiles = (state: RootState) => state.filesState.fileHistory;
+export const selectFinishedFiles = (state: RootState) => {
+  const entries = state.filesState.fileHistory;
+  const finishedEntries = objectFilter(entries, ([key, value]) => value.status === 'error' || value.status === 'success');
+
+  return finishedEntries;
+};
 export default filesStateSlice.reducer;

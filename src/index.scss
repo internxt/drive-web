@@ -137,13 +137,11 @@ code {
 
 @layer components {
   /* LINKS */
-  a,
-  .link {
+  a.link {
     @apply text-blue-60 underline;
-
-    &.secondary {
-      @apply text-white;
-    }
+  }
+  a.secondary {
+    @apply text-white;
   }
 
   /* DROPDOWNS */
@@ -208,10 +206,13 @@ code {
     @apply px-4 py-2 text-sm;
   }
   button.primary {
-    @apply bg-blue-60 text-white;
+    @apply flex items-center justify-center bg-blue-60 transition duration-200 ease-in-out hover:bg-blue-80 py-2 rounded text-white text-sm;
+    &:disabled {
+      @apply bg-blue-30 cursor-default;
+    }
   }
   button.secondary {
-    @apply bg-white text-blue-60 hover:bg-l-neutral-10;
+    @apply bg-white text-blue-60 hover:bg-blue-20;
   }
   button.square {
     @apply p-0 flex justify-center items-center;
@@ -219,6 +220,15 @@ code {
     img {
       @apply h-4;
     }
+  }
+  button.secondary_dialog {
+    @apply text-sm text-red-60 rounded transform duration-200 ease-in-out hover:bg-blue-20;
+  }
+  button.button_link {
+    @apply text-blue-60 transform duration-200 hover:text-blue-80;
+  }
+  button.text_underline {
+    @apply underline;
   }
 
   /* EVENTS */

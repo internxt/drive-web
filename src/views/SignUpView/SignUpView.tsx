@@ -300,16 +300,14 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           </span>
 
           <CheckboxPrimary label='acceptTerms' text='Accept terms, conditions and privacy policy' required={true} register={register} additionalStyling='mt-2 -mb-0' />
-          <BaseButton onClick={() => window.open('https://internxt.com/en/legal')} additionalStyling='self-start ml-6 text-xs'>
-            More info
-          </BaseButton>
+
           <div className='mt-3' />
           <AuthButton isDisabled={isLoading || !isValid} text='Create an account' textWhenDisabled={isValid ? 'Encrypting...' : 'Create an account'} />
         </form>
 
-        <div className='flex justify-center items-center w-full mt-6'>
+        <div className='flex justify-center items-center w-full mt-2'>
           <span className='text-sm text-neutral-500 ml-3 select-none'>Already registered?</span>
-          <BaseButton onClick={() => history.push('/login')} additionalStyling='ml-1.5'>
+          <BaseButton classes='button_link ml-2' onClick={() => history.push('/login')}>
             Log in
           </BaseButton>
         </div>

@@ -73,9 +73,9 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     return (
       <Fragment>
-        <div className={isEditingName ? 'block' : 'hidden'}>
+        <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
-            className="dense border border-white`"
+            className="w-full dense border border-white`"
             ref={nameInputRef}
             type="text"
             value={dirtyName}
