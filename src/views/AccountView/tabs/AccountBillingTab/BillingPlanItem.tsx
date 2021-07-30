@@ -1,11 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import BaseButton from '../../../../components/Buttons/BaseButton';
 import { TextField } from '@material-ui/core';
-import React from 'react';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import ButtonPrimary from '../../../../components/Buttons/ButtonPrimary';
 import { IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { getIcon } from '../../../../services/icon.service';
 
