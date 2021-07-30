@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
+import * as Unicons from '@iconscout/react-unicons';
 
 import BaseButton from '../../../../components/Buttons/BaseButton';
 import { IStripePlan, IStripeProduct } from '../../../../models/interfaces';
-import { getIcon } from '../../../../services/icon.service';
 
 interface PlanProps {
   product: IStripeProduct,
@@ -17,7 +17,7 @@ interface PlanProps {
 
 const ListItem = ({ text }: { text: string }): JSX.Element => (
   <div className='flex justify-start items-center mb-2'>
-    <img src={getIcon('checkBlue')} alt="check" />
+    <Unicons.UilCheck className="text-blue-60" />
     <p className='text-xs ml-2.5'>{text}</p>
   </div>
 );

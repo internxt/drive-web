@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import * as bip39 from 'bip39';
 import queryString from 'query-string';
+import * as Unicons from '@iconscout/react-unicons';
 
 import SideInfo from '../Authentication/SideInfo';
 import { IFormValues, UserSettings } from '../../models/interfaces';
@@ -225,7 +226,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Name'
             label='name'
             type='text'
-            icon='userGray'
+            icon={<Unicons.UilUser />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Name must not be empty' }}
@@ -236,7 +237,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Lastname'
             label='lastname'
             type='text'
-            icon='userGray'
+            icon={<Unicons.UilUser />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Lastname must not be empty' }}
@@ -247,7 +248,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Email'
             label='email'
             type='email'
-            icon='mailGray'
+            icon={<Unicons.UilEnvelope />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -259,9 +260,9 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Password'
             label={'password'}
             type={showPassword ? 'text' : 'password'}
-            icon={password
-              ? showPassword ? 'eyeSlashGray' : 'eyeGray'
-              : 'lockGray'
+            icon={password ?
+              (showPassword ? <Unicons.UilEyeSlash /> : <Unicons.UilEye />) :
+              <Unicons.UilLock />
             }
             register={register}
             required={true}
@@ -274,9 +275,9 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Confirm password'
             label='confirmPassword'
             type={showPassword ? 'text' : 'password'}
-            icon={confirmPassword
-              ? showPassword ? 'eyeSlashGray' : 'eyeGray'
-              : 'lockGray'
+            icon={confirmPassword ?
+              (showPassword ? <Unicons.UilEyeSlash /> : <Unicons.UilEye />) :
+              <Unicons.UilLock />
             }
             register={register}
             required={true}

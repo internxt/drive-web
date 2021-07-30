@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { getIcon } from '../../../services/icon.service';
+import * as Unicons from '@iconscout/react-unicons';
 
 import './BaseDialog.scss';
 
@@ -28,7 +28,7 @@ const BaseDialog = ({
           <div className="w-1/6"></div>
           <span className='text-center w-4/6 flex-grow text-neutral-90 text-base'>{title}</span>
           <div className="w-1/6 cursor-pointer" onClick={onClose}>
-            <img src={getIcon('crossBlue')} alt="" className="ml-auto" />
+            <Unicons.UilTimes className="ml-auto text-blue-40" />
           </div>
         </div>
         {children}

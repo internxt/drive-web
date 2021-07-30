@@ -3,29 +3,20 @@ export enum AppViewLayout {
   HeaderAndSidenav = 'header-and-sidenav'
 }
 
-export enum FileStatusType {
+export enum FileStatusTypes {
   Error = 'error',
   Success = 'success',
   Encrypting = 'encrypting',
+  Decrypting = 'decrypting',
+  Pending = 'pending',
   Downloading = 'downloading',
   Uploading = 'uploading',
-  None = 'none'
-}
-
-export enum FileStatusTypes {
-  'error',
-  'success',
-  'encrypting',
-  'decrypting',
-  'pending',
-  'downloading',
-  'uploading',
-  'creating-directory-structure'
+  CreatingDirectoryStructure = 'creating-directory-structure'
 }
 
 export enum FileActionTypes {
-  'download',
-  'upload'
+  Download = 'download',
+  Upload = 'upload'
 }
 
 export enum ItemAction {

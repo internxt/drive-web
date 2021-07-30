@@ -3,13 +3,13 @@ import { toast } from 'react-toastify';
 
 import { storageActions, storageSelectors, StorageState } from '.';
 import { getFilenameAndExt, renameFile } from '../../../lib/utils';
-import fileService from '../../../services/file.service';
 import folderService from '../../../services/folder.service';
 import storageService from '../../../services/storage.service';
 import queueFileLogger from '../../../services/queueFileLogger';
 import { updateFileStatusLogger } from '../files';
 import downloadService from '../../../services/download.service';
 import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interfaces';
+import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 
 interface UploadItemsPayload {
   files: File[];
@@ -95,17 +95,18 @@ export const uploadItemsThunk = createAsyncThunk(
       const type = file.type === undefined ? null : file.type;
       const path = relativePath + '/' + file.name + '.' + type;
 
-      dispatch(updateFileStatusLogger({ action: 'upload', status: 'pending', filePath: path, isFolder: false }));
+      dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Pending, filePath: path, isFolder: false, type }));
 
     }
 
     const uploadErrors: any[] = [];
 
     const uploadFile = async (file, path, rateLimited, items) => {
+      const { filename, extension } = getFilenameAndExt(file.name);
 
       await storageService.upload.uploadItem(user.email, file, path, dispatch)
         .then(({ res, data }) => {
-          dispatch(updateFileStatusLogger({ action: 'upload', status: 'success', filePath: path, isFolder: false }));
+          dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Success, filePath: path, isFolder: false, type: extension }));
 
           // if (parentFolderId === currentFolderId) {
           //const index = items.findIndex((obj) => obj.name === file.name);
@@ -119,7 +120,7 @@ export const uploadItemsThunk = createAsyncThunk(
             throw new Error('Rate limited');
           }
         }).catch((err) => {
-          dispatch(updateFileStatusLogger({ action: 'upload', status: 'error', filePath: path, isFolder: false }));
+          dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Error, filePath: path, isFolder: false, type: extension }));
 
           uploadErrors.push(err);
           console.log(err);
@@ -157,14 +158,8 @@ export const downloadItemsThunk = createAsyncThunk(
   'storage/downloadItems',
   async (items: DriveFileData[], { getState, dispatch }: any) => {
     const { namePath } = getState().storage;
-
     const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
 
-    items.forEach((item) => {
-      const path = relativePath + '/' + item.name + '.' + item.type;
-
-      dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
-    });
     for (const item of items) {
       const path = relativePath + '/' + item.name + '.' + item.type;
 

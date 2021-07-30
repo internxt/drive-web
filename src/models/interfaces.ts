@@ -92,10 +92,11 @@ export interface DriveFileMetadataPayload {
 export type DriveItemData = DriveFileData | DriveFolderData
 
 export interface ILoggerFile {
-  isFolder: boolean,
+  isFolder: boolean;
+  type?: string;
   filePath: string,
-  action: keyof typeof FileActionTypes,
-  status: keyof typeof FileStatusTypes,
+  action: FileActionTypes,
+  status: FileStatusTypes,
   progress?: string
 }
 

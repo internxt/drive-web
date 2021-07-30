@@ -3,7 +3,6 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import * as Unicons from '@iconscout/react-unicons';
 
 import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
-import iconService, { IconType } from '../../../../services/icon.service';
 import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
 
 import folderService from '../../../../services/folder.service';
@@ -14,10 +13,11 @@ import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, Fo
 import downloadService from '../../../../services/download.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
-import './FileGridItem.scss';
 import { ItemAction } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
-import { updateFileStatusLogger } from '../../../../store/slices/files';
+
+import './FileGridItem.scss';
+import iconService from '../../../../services/icon.service';
 
 interface FileGridItemProps {
   user: UserSettings;
@@ -95,12 +95,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     );
   }
 
-  get itemIconSrc(): string {
-    return this.props.item.isFolder ?
-      iconService.getIcon(IconType.folderBlue) :
-      iconService.getIcon(IconType.defaultFile);
-  }
-
   confirmNameChange() {
     const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
@@ -171,7 +165,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
-    this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
     queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
   }
 
@@ -247,6 +240,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
+    const ItemIconComponent = iconService.getItemIcon(item.type);
 
     return (
       <div
@@ -264,17 +258,19 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
             <Unicons.UilEllipsisH className="w-full h-full" />
           </Dropdown.Toggle>
-          <FileDropdownActions
-            hiddenActions={item.isFolder ? [ItemAction.Download] : []}
-            onRenameButtonClicked={this.onRenameButtonClicked}
-            onDownloadButtonClicked={this.onDownloadButtonClicked}
-            onShareButtonClicked={this.onShareButtonClicked}
-            onInfoButtonClicked={this.onInfoButtonClicked}
-            onDeleteButtonClicked={this.onDeleteButtonClicked}
-          />
+          <Dropdown.Menu>
+            <FileDropdownActions
+              hiddenActions={item.isFolder ? [ItemAction.Download] : []}
+              onRenameButtonClicked={this.onRenameButtonClicked}
+              onDownloadButtonClicked={this.onDownloadButtonClicked}
+              onShareButtonClicked={this.onShareButtonClicked}
+              onInfoButtonClicked={this.onInfoButtonClicked}
+              onDeleteButtonClicked={this.onDeleteButtonClicked}
+            />
+          </Dropdown.Menu>
         </Dropdown>
         <div className="file-grid-item-icon-container">
-          <img alt="" className="file-icon m-auto" src={this.itemIconSrc} />
+          <ItemIconComponent className="file-icon m-auto" />
         </div>
         <div className="text-center mt-3">
           <div className="mb-1">

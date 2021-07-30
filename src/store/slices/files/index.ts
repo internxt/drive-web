@@ -52,5 +52,5 @@ export const {
   updateFileStatusLogger,
   clearFileLoggerStatus
 } = filesStateSlice.actions;
-export const selectLoggerFiles = (state: RootState) => state.filesState.fileHistory;
+export const selectLoggerFiles = (state: RootState): ILogger => state.filesState.fileHistory;
 export default filesStateSlice.reducer;

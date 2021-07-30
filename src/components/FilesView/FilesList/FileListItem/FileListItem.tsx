@@ -18,7 +18,6 @@ import iconService from '../../../../services/icon.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 import { ItemAction } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
-import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileListItemProps {
   user: UserSettings | undefined;
@@ -34,6 +33,7 @@ interface FileListItemProps {
 
 interface FileListItemState {
   isEditingName: boolean;
+  showContextMenu: boolean;
   dirtyName: string;
   nameInputRef: React.RefObject<HTMLInputElement>;
 }
@@ -44,6 +44,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     this.state = {
       isEditingName: false,
+      showContextMenu: false,
       dirtyName: '',
       nameInputRef: React.createRef()
     };
@@ -75,12 +76,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
       </Fragment>
     );
-  }
-
-  get itemIconSrc(): string {
-    return this.props.item.isFolder ?
-      iconService.getIcon('folderBlue') :
-      iconService.getIcon('defaultFile');
   }
 
   confirmNameChange() {
@@ -150,7 +145,16 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   onItemRightClicked = (e: MouseEvent): void => {
     e.preventDefault();
-    alert('onItemRightClicked');
+
+    document.removeEventListener('click', this.onOutsideContextMenuClicked);
+    document.addEventListener('click', this.onOutsideContextMenuClicked);
+
+    this.setState({ showContextMenu: true });
+  }
+
+  onOutsideContextMenuClicked = (e: MouseEvent): void => {
+    document.removeEventListener('click', this.onOutsideContextMenuClicked);
+    this.setState({ showContextMenu: false });
   }
 
   onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -175,7 +179,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
-    this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
     queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
   }
 
@@ -235,6 +238,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
+    const ItemIconComponent = iconService.getItemIcon(item.type);
 
     return (
       <tr
@@ -254,7 +258,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         </td>
         <td>
           <div className="h-8 w-8 flex justify-center">
-            <img alt="" src={this.itemIconSrc} />
+            <ItemIconComponent className="h-full" />
           </div>
         </td>
         <td>
@@ -268,14 +272,14 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
           <div className="flex">
             {!item.isFolder ?
               <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
-                <img alt="" src={iconService.getIcon('downloadItems')} />
+                <Unicons.UilCloudDownload className="h-5" />
               </button> : null
             }
             <button onClick={this.onShareButtonClicked} className="hover-action mr-4">
-              <img alt="" src={iconService.getIcon('shareItems')} />
+              <Unicons.UilShareAlt className="h-5" />
             </button>
             <button onClick={this.onDeleteButtonClicked} className="hover-action">
-              <img alt="" src={iconService.getIcon('deleteItems')} />
+              <Unicons.UilTrashAlt className="h-5" />
             </button>
           </div>
         </td>
@@ -286,14 +290,16 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold">
               <Unicons.UilEllipsisH className="w-full h-full" />
             </Dropdown.Toggle>
-            <FileDropdownActions
-              hiddenActions={item.isFolder ? [ItemAction.Download] : []}
-              onRenameButtonClicked={this.onRenameButtonClicked}
-              onDownloadButtonClicked={this.onDownloadButtonClicked}
-              onShareButtonClicked={this.onShareButtonClicked}
-              onInfoButtonClicked={this.onInfoButtonClicked}
-              onDeleteButtonClicked={this.onDeleteButtonClicked}
-            />
+            <Dropdown.Menu>
+              <FileDropdownActions
+                hiddenActions={item.isFolder ? [ItemAction.Download] : []}
+                onRenameButtonClicked={this.onRenameButtonClicked}
+                onDownloadButtonClicked={this.onDownloadButtonClicked}
+                onShareButtonClicked={this.onShareButtonClicked}
+                onInfoButtonClicked={this.onInfoButtonClicked}
+                onDeleteButtonClicked={this.onDeleteButtonClicked}
+              />
+            </Dropdown.Menu>
           </Dropdown>
         </td>
       </tr>
