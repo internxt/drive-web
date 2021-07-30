@@ -222,7 +222,7 @@ code {
     }
   }
   button.secondary_dialog {
-    @apply text-sm text-blue-60 rounded transform duration-200 ease-in-out hover:bg-blue-20;
+    @apply text-sm text-red-60 rounded transform duration-200 ease-in-out hover:bg-blue-20;
   }
   button.button_link {
     @apply text-blue-60 transform duration-200 hover:text-blue-80;

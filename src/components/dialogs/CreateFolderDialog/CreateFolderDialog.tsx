@@ -57,18 +57,20 @@ const CreateFolderDialog = ({
 
   return (
     <BaseDialog title="Create folder" open={open} onClose={onCancel}>
-      <form onSubmit={handleSubmit(onSubmit)} className="px-12">
-        <AuthInput
-          placeholder='Enter folder name'
-          label='createFolder'
-          type={'text'}
-          register={register}
-          required={true}
-          minLength={{ value: 1, message: 'Folder name must not be empty' }}
-          error={errors.createFolder}
-        />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className='px-8 mt-6'>
+          <AuthInput
+            placeholder='Enter folder name'
+            label='createFolder'
+            type={'text'}
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Folder name must not be empty' }}
+            error={errors.createFolder}
+          />
+        </div>
 
-        <div className='flex justify-center mt-3'>
+        <div className='mt-7 flex justify-center bg-l-neutral-20 pb-8 px-8 pt-4'>
           <button onClick={onCancel} className='secondary_dialog w-full mr-4'>
             Cancel
           </button>

@@ -44,11 +44,11 @@ const DeleteItemsDialog = ({ open }: DeleteItemsDialogProps): JSX.Element => {
       open={open}
       onClose={onCancel}
     >
-      <span className='text-center block w-full text-sm'>
-        Pleas confirm you want to delete these items. This action can't be undone.
+      <span className='text-center block w-full text-base px-8 text-neutral-900'>
+        Please confirm that you want to delete these items. This action can't be undone.
       </span>
 
-      <div className='mt-3 flex justify-center'>
+      <div className='mt-7 flex justify-center bg-l-neutral-20 pb-8 px-8 pt-4'>
         <button onClick={onCancel} className='secondary_dialog w-full mr-4'>
           Cancel
         </button>
