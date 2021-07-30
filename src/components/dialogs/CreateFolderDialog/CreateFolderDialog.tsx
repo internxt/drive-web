@@ -40,7 +40,7 @@ const CreateFolderDialog = ({
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
     try {
       setIsLoading(true);
-      await folderService.createFolder(!!user?.teams, currentFolderId, formData.createFolder);
+      await folderService.createFolder(isTeam, currentFolderId, formData.createFolder);
 
       dispatch(storageThunks.fetchFolderContentThunk());
       dispatch(setIsCreateFolderDialogOpen(false));

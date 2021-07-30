@@ -97,13 +97,15 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
       {characteristics.map(text => <ListItem text={text} key={text} />)}
 
       <div className='mt-4' />
-      <ButtonPrimary width='w-full' text={selectedPlan && isPaying ? 'Redirecting to Stripe...' : buttonText} disabled={isPaying || !selectedPlan} onClick={() => {
+      <BaseButton classes="w-full primary" disabled={isPaying || !selectedPlan} onClick={() => {
         if (isBusiness) {
           handlePaymentTeams(selectedPlan, product.id, totalTeamMembers);
         } else {
           handlePaymentIndividual(selectedPlan, product.id);
         }
-      }} />
+      }}>
+        {selectedPlan && isPaying ? 'Redirecting to Stripe...' : buttonText}
+      </BaseButton>
     </div>
   );
 };
