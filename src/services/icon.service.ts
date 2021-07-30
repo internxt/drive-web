@@ -54,6 +54,8 @@ import clipboardBlue from '../assets/icons/clipboard-blue.svg';
 import googleAuthenticator from '../assets/icons/google-authenticator.svg';
 import appStore from '../assets/icons/app-store.svg';
 import playStore from '../assets/icons/play-store.svg';
+import spinner from '../assets/icons/spinner.svg';
+import documentuwu from '../assets/icons/Document-no-identify.svg';
 
 export enum IconType {
   clockGray = 'clockGray',
@@ -100,7 +102,9 @@ export enum IconType {
   eyeSlashGray = 'eyeSlashGray',
   userGray = 'userGray',
   search = 'search',
-  dragAndDrop = 'dragAndDrop'
+  dragAndDrop = 'dragAndDrop',
+  spinner = 'spinner',
+  documentuwu = 'documentuwu'
 }
 
 const icons = {
@@ -159,7 +163,9 @@ const icons = {
   clipboardBlue,
   googleAuthenticator,
   playStore,
-  appStore
+  appStore,
+  spinner,
+  documentuwu
 };
 
 export const getIcon = (iconName: keyof typeof IconType): string => {
