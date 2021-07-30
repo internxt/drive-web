@@ -158,6 +158,7 @@ export const downloadItemsThunk = createAsyncThunk(
   'storage/downloadItems',
   async (items: DriveFileData[], { getState, dispatch }: any) => {
     const { namePath } = getState().storage;
+    const isTeam: boolean = selectorIsTeam(getState());
 
     const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
 
@@ -169,7 +170,7 @@ export const downloadItemsThunk = createAsyncThunk(
     for (const item of items) {
       const path = relativePath + '/' + item.name + '.' + item.type;
 
-      await queueFileLogger.push(() => downloadService.downloadFile(item, path, dispatch));
+      await queueFileLogger.push(() => downloadService.downloadFile(item, path, dispatch, isTeam));
     }
   });
 

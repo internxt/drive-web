@@ -8,8 +8,7 @@ import fileLogger from './fileLogger';
 import { toast } from 'react-toastify';
 import { updateFileStatusLogger } from '../store/slices/files';
 
-export async function downloadFile(itemData: any, totalPath, dispatch): Promise<void> {
-  const isTeam: boolean = !!localStorageService.getUser()?.teams;
+export async function downloadFile(itemData: any, totalPath: string, dispatch: any, isTeam: boolean): Promise<void> {
   const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId || itemData.id;
   const completeFilename = itemData.type ?

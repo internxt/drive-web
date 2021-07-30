@@ -14,7 +14,7 @@ import downloadService from '../../../../services/download.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
 import './FileGridItem.scss';
-import { ItemAction } from '../../../../models/enums';
+import { ItemAction, Workspace } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
 import { updateFileStatusLogger } from '../../../../store/slices/files';
 
@@ -28,6 +28,7 @@ interface FileGridItemProps {
   namePath: FolderPath[];
   isItemSelected: (item: DriveItemData) => boolean;
   dispatch: AppDispatch;
+  workspace: Workspace;
 }
 
 interface FileGridItemState {
@@ -167,7 +168,10 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
     this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
-    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
+
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
+
+    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));
   }
 
   onShareButtonClicked = (): void => {
@@ -286,6 +290,7 @@ export default connect(
       draggingTargetItemData: state.storage.draggingTargetItemData,
       namePath: state.storage.namePath,
       currentFolderId,
-      isItemSelected
+      isItemSelected,
+      workspace: state.team.workspace
     };
   })(FileGridItem);

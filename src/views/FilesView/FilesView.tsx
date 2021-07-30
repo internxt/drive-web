@@ -8,9 +8,9 @@ import * as Unicons from '@iconscout/react-unicons';
 import { removeAccents } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
 
-import { DriveFileData, DriveFolderData, FolderPath, UserSettings } from '../../models/interfaces';
+import { DriveFileData, DriveFolderData, FolderPath, TeamsSettings, UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
-import { DevicePlatform } from '../../models/enums';
+import { DevicePlatform, Workspace } from '../../models/enums';
 
 import { uiActions } from '../../store/slices/ui';
 import { storageThunks, storageActions, storageSelectors } from '../../store/slices/storage';
@@ -28,6 +28,8 @@ import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFil
 import './FilesView.scss';
 import usageService, { UsageResponse } from '../../services/usage.service';
 import SessionStorage from '../../lib/sessionStorage';
+import { handleChangeWorkspaceThunk } from '../../store/slices/user';
+import localStorageService from '../../services/localStorage.service';
 
 interface FilesViewProps {
   user: UserSettings | any;
@@ -46,6 +48,7 @@ interface FilesViewProps {
   namePath: FolderPath[];
   sortFunction: ((a: DriveFileData | DriveFolderData, b: DriveFileData | DriveFolderData) => number) | null;
   dispatch: AppDispatch;
+  workspace: Workspace
 }
 
 interface FilesViewState {
@@ -380,6 +383,41 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 
+  loadDataAtChangeWorkspace = () => {
+    const { dispatch } = this.props;
+    const user = localStorageService.getUser();
+    const team = localStorageService.getTeams();
+
+    if (this.props.workspace === Workspace.Individual) {
+      dispatch(storageThunks.fetchFolderContentThunk(user?.root_folder_id));
+      const pathIndividual = {
+        id: user.root_folder_id,
+        name: 'Drive'
+      };
+
+      dispatch(storageActions.pathChangeWorkSpace(pathIndividual));
+
+    } else {
+      const pathBusiness = {
+        id: team.root_folder_id,
+        name: 'Drive'
+      };
+
+      dispatch(storageThunks.fetchFolderContentThunk(team.root_folder_id));
+      dispatch(storageActions.pathChangeWorkSpace(pathBusiness));
+    }
+  }
+
+  onChangeWorskapce = async () => {
+    const { dispatch } = this.props;
+
+    dispatch(
+      handleChangeWorkspaceThunk()
+    ).then(() => {
+      this.loadDataAtChangeWorkspace();
+    });
+  }
+
   render(): ReactNode {
     const { isLoadingItems, infoItemId, viewMode, isCurrentFolderEmpty, isDraggingAnItem } = this.props;
     const { fileInputRef } = this.state;
@@ -410,6 +448,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                     <Unicons.UilCloudUpload className="h-5 mr-2" /><span>Upload</span>
                   </button>
                 }
+                <button className="primary mr-1 flex items-center" onClick={this.onChangeWorskapce}>
+                  <span>Workspace</span>
+                </button>
                 {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
                   <img alt="" src={iconService.getIcon('createFolder')} />
                 </button> : null}
@@ -522,6 +563,7 @@ export default connect(
       infoItemId: state.storage.infoItemId,
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
-      sortFunction: state.storage.sortFunction
+      sortFunction: state.storage.sortFunction,
+      workspace: state.team.workspace
     };
   })(FilesView);
