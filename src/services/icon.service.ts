@@ -6,7 +6,7 @@ import logOutGray from '../assets/icons/logout-gray.svg';
 import backArrows from '../assets/icons/double-back-arrows-gray.svg';
 import internxtShortLogo from '../assets/icons/internxt-short-logo.svg';
 import internxtLongLogo from '../assets/icons/internxt-long-logo.svg';
-import folderBlue from '../assets/icons/folder-blue.svg';
+import folderBlue from '../assets/icons/Folder.svg';
 import fileSuccessGreen from '../assets/icons/file-success-green.svg';
 import fileErrorRed from '../assets/icons/file-error-red.svg';
 import fileEncryptingGray from '../assets/icons/file-encrypting-gray.svg';
@@ -16,7 +16,7 @@ import crossGray from '../assets/icons/cross-gray.svg';
 import crossWhite from '../assets/icons/cross-white.svg';
 import crossNeutralBlue from '../assets/icons/cross-neutral-blue.svg';
 import crossBlue from '../assets/icons/cross-blue.svg';
-import defaultFile from '../assets/icons/default-file.svg';
+import defaultFile from '../assets/icons/Document-no-identify.svg';
 import breadcrumbsStorage from '../assets/icons/breadcrumbs/breadcrumbs-storage.svg';
 import breadcrumbsFolder from '../assets/icons/breadcrumbs/breadcrumbs-folder.svg';
 import defaultAvatar from '../assets/icons/default-avatar.svg';
@@ -54,6 +54,8 @@ import clipboardBlue from '../assets/icons/clipboard-blue.svg';
 import googleAuthenticator from '../assets/icons/google-authenticator.svg';
 import appStore from '../assets/icons/app-store.svg';
 import playStore from '../assets/icons/play-store.svg';
+import spinner from '../assets/icons/spinner.svg';
+import documentuwu from '../assets/icons/Document-no-identify.svg';
 
 export enum IconType {
   clockGray = 'clockGray',
@@ -100,7 +102,9 @@ export enum IconType {
   eyeSlashGray = 'eyeSlashGray',
   userGray = 'userGray',
   search = 'search',
-  dragAndDrop = 'dragAndDrop'
+  dragAndDrop = 'dragAndDrop',
+  spinner = 'spinner',
+  documentuwu = 'documentuwu'
 }
 
 const icons = {
@@ -159,7 +163,9 @@ const icons = {
   clipboardBlue,
   googleAuthenticator,
   playStore,
-  appStore
+  appStore,
+  spinner,
+  documentuwu
 };
 
 export const getIcon = (iconName: keyof typeof IconType): string => {

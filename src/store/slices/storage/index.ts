@@ -13,7 +13,7 @@ export interface StorageState {
   items: (DriveFileData | DriveFolderData)[];
   selectedItems: (DriveFileData | DriveFolderData)[];
   itemToShareId: number;
-  itemToDelete: DriveFileData | DriveFolderData | null;
+  itemsToDelete: DriveItemData[];
   infoItemId: number;
   viewMode: FileViewMode;
   namePath: FolderPath[];
@@ -29,7 +29,7 @@ const initialState: StorageState = {
   items: [],
   selectedItems: [],
   itemToShareId: 0,
-  itemToDelete: null,
+  itemsToDelete: [],
   infoItemId: 0,
   viewMode: FileViewMode.List,
   namePath: [],
@@ -67,13 +67,13 @@ export const storageSlice = createSlice({
     setItemToShare: (state: StorageState, action: PayloadAction<number>) => {
       state.itemToShareId = action.payload;
     },
-    setItemToDelete: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
-      state.itemToDelete = action.payload;
+    setItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      state.itemsToDelete = action.payload;
     },
     setInfoItem: (state: StorageState, action: PayloadAction<number>) => {
       state.infoItemId = action.payload;
     },
-    setSortFunction: (state: StorageState, action: PayloadAction<((a: any, b: any) => number) | null>) => {
+    setSortFunction: (state: StorageState, action: PayloadAction<((a: DriveItemData, b: DriveItemData) => number) | null>) => {
       state.sortFunction = action.payload;
     },
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
@@ -108,7 +108,7 @@ export const {
   deselectItem,
   clearSelectedItems,
   setItemToShare,
-  setItemToDelete,
+  setItemsToDelete,
   setInfoItem,
   setSortFunction,
   setViewMode,

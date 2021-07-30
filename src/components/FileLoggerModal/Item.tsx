@@ -1,5 +1,6 @@
 import { ILoggerFile } from '../../models/interfaces';
 import { getIcon, IconType } from '../../services/icon.service';
+import Documentasdas from '../../assets/icons/Document-no-identify.svg';
 
 interface ItemProps {
   item: ILoggerFile
@@ -62,7 +63,8 @@ const Item = ({ item }: ItemProps): JSX.Element => {
   };
 
   return (
-    <div className='flex items-center px-4 mb-2.5'>
+    <div className={`flex items-center px-4 mb-2.5 ${item.status === 'error' || item.status === 'success' ? '' : 'opacity-50'}`}>
+      {/* <img className='flex items-center justify-center mr-2.5 w-6' src={getIcon('documentuwu')} alt="" /> */}
       <img className='flex items-center justify-center mr-2.5 w-6' src={getFileInfo().icon} alt="" />
 
       <div className='flex flex-col text-left w-40'>

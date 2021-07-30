@@ -3,10 +3,6 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
-      backgroundImage: () => ({
-        /* eslint-disable-next-line */
-        'background-login': "url('/src/assets/images/login/background-login.png')",
-      }),
       letterSpacing: {
         '0.2': '0.2rem',
         '0.3': '0.3rem',

@@ -93,29 +93,9 @@ export async function fetchFolderContent(rootId: number, isTeam: boolean): Promi
     const contentFolders: IContentFolder = await response.json();
 
     if (contentFolders) {
-      const welcomeFile = await fileService.fetchWelcomeFile(isTeam);
       const newCommanderFolders = extendUIPropertiesOf(contentFolders).newCommanderFolders;
-      let newCommanderFiles = extendUIPropertiesOf(contentFolders).newCommanderFiles;
+      const newCommanderFiles = extendUIPropertiesOf(contentFolders).newCommanderFiles;
 
-      if (!contentFolders.parentId && welcomeFile) {
-        newCommanderFiles = _.concat([{
-          id: 0,
-          file_id: '0',
-          fileId: '0',
-          name: 'Welcome',
-          type: 'pdf',
-          size: 0,
-          isDraggable: false,
-          get onClick() {
-            return () => {
-              fileService.openWelcomeFile();
-            };
-          },
-          onDelete: async () => {
-            await fileService.deleteWelcomeFile(false);
-          }
-        }], newCommanderFiles);
-      }
       return { contentFolders, newCommanderFolders, newCommanderFiles };
     }
   } catch (err) {
@@ -141,7 +121,7 @@ export async function createFolder(isTeam: boolean, currentFolderId: number | nu
   const responseJSON = await response.json();
 
   if (response.status !== 201) {
-    throw `The folder cannot be created ${responseJSON.error}`;
+    throw `The folder cannot be created. ${responseJSON.error}`;
   }
 
   analyticsService.trackFolderCreated({

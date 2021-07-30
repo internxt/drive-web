@@ -1,8 +1,9 @@
 import React, { Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { Dropdown } from 'react-bootstrap';
+import * as Unicons from '@iconscout/react-unicons';
 
-import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
+import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
 import sizeService from '../../../../services/size.service';
 
 import './FileListItem.scss';
@@ -56,11 +57,23 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     return (
       <Fragment>
-        <input className={`${isEditingName ? 'block' : 'hidden'} dense border border-white`} ref={nameInputRef} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
+        <div className={isEditingName ? 'block' : 'hidden'}>
+          <input
+            className="dense border border-white`"
+            ref={nameInputRef}
+            type="text"
+            value={dirtyName}
+            placeholder="Name"
+            onChange={this.onNameChanged}
+            onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed}
+            autoFocus
+          />
+          <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
+        </div>
         <span
           className={`${spanDisplayClass} file-list-item-name-span`}
           onDoubleClick={this.onNameDoubleClicked}
-        >{item.name}</span>
+        >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
       </Fragment>
     );
   }
@@ -136,6 +149,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
+  onItemRightClicked = (e: MouseEvent): void => {
+    e.preventDefault();
+    alert('onItemRightClicked');
+  }
+
   onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { item, dispatch } = this.props;
 
@@ -156,7 +174,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   onDownloadButtonClicked = (): void => {
     const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
@@ -178,7 +195,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageActions.setItemToDelete(item));
+    dispatch(storageActions.setItemsToDelete([item]));
     dispatch(setIsDeleteItemsDialogOpen(true));
   }
 
@@ -225,6 +242,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     return (
       <tr
         className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
+        onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
         onDragOver={this.onItemDragOver}
@@ -238,7 +256,9 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
           }
         </td>
         <td>
-          <img alt="" className="type-icon" src={this.itemIconSrc} />
+          <div className="h-8 w-8 flex justify-center">
+            <img alt="" src={this.itemIconSrc} />
+          </div>
         </td>
         <td>
           <div>
@@ -247,10 +267,8 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             </div>
           </div>
         </td>
-        <td>{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
-        <td>{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
         <td>
-          <div className="flex justify-center">
+          <div className="flex">
             {!item.isFolder ?
               <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
                 <img alt="" src={iconService.getIcon('downloadItems')} />
@@ -264,10 +282,12 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             </button>
           </div>
         </td>
+        <td>{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
+        <td>{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
         <td>
           <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold rounded-2xl">
-              <img alt="" src={iconService.getIcon('actions')} />
+            <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold">
+              <Unicons.UilEllipsisH className="w-full h-full" />
             </Dropdown.Toggle>
             <FileDropdownActions
               hiddenActions={item.isFolder ? [ItemAction.Download] : []}

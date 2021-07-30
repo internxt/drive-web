@@ -110,9 +110,9 @@ export interface IFormValues {
   currentPassword: string,
   twoFactorCode: string,
   confirmPassword: string,
-  remember: boolean,
   acceptTerms: boolean,
-  backupKey: string
+  backupKey: string,
+  createFolder: string
 }
 
 export type IBillingPlan = {

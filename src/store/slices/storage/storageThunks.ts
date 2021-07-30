@@ -1,5 +1,6 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+
 import { storageActions, storageSelectors, StorageState } from '.';
 import { getFilenameAndExt, renameFile } from '../../../lib/utils';
 import folderService from '../../../services/folder.service';
@@ -7,9 +8,9 @@ import storageService from '../../../services/storage.service';
 import queueFileLogger from '../../../services/queueFileLogger';
 import { updateFileStatusLogger } from '../files';
 import downloadService from '../../../services/download.service';
-import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interfaces';
 import _ from 'lodash';
 import { selectorIsTeam } from '../team';
+import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interfaces';
 
 interface UploadItemsPayload {
   files: File[];

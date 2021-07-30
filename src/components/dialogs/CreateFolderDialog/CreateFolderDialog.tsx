@@ -1,16 +1,19 @@
-import { createRef, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../../../store/hooks';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { setIsCreateFolderDialogOpen } from '../../../store/slices/ui';
 import { storageSelectors, storageThunks } from '../../../store/slices/storage';
-import folderService, { ICreatedFolder } from '../../../services/folder.service';
-import { toast } from 'react-toastify';
-import { UserSettings } from '../../../models/interfaces';
+import folderService from '../../../services/folder.service';
+import { IFormValues, UserSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
 import './CreateFolderDialog.scss';
+import AuthInput from '../../Inputs/AuthInput';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import AuthButton from '../../Buttons/AuthButton';
+import notify from '../../Notifications';
 import { selectorIsTeam } from '../../../store/slices/team';
 
 interface CreateFolderDialogProps {
@@ -23,59 +26,59 @@ const CreateFolderDialog = ({
   user
 }: CreateFolderDialogProps
 ) => {
+  const { register, formState: { errors, isValid }, handleSubmit, reset } = useForm<IFormValues>({ mode: 'onChange', defaultValues: { createFolder: '' } });
+  const [isLoading, setIsLoading] = useState(false);
   const currentFolderId: number = useSelector((state: RootState) => storageSelectors.currentFolderId(state));
   const isTeam: boolean = useSelector((state: RootState) => selectorIsTeam(state));
-
-  const [inputRef] = useState(createRef<HTMLInputElement>());
   const dispatch = useAppDispatch();
-  const [inputValue, setInputValue] = useState('');
+
   const onCancel = (): void => {
+    reset();
     dispatch(setIsCreateFolderDialogOpen(false));
   };
-  const onAccept = (): void => {
-    if (inputValue && inputValue !== '') {
-      folderService.createFolder(isTeam, currentFolderId, inputValue)
-        .then((response: ICreatedFolder[]) => {
-          dispatch(storageThunks.fetchFolderContentThunk());
-          dispatch(setIsCreateFolderDialogOpen(false));
-        }).catch((e) => {
-          if (e.includes('already exists')) {
-            toast.warn('Folder with same name already exists');
-          } else {
-            toast.warn(`"${e}"`);
-          }
-        });
-    } else {
-      toast.warn('Invalid folder name');
+
+  const onSubmit: SubmitHandler<IFormValues> = async formData => {
+    try {
+      setIsLoading(true);
+      await folderService.createFolder(!!user?.teams, currentFolderId, formData.createFolder);
+
+      dispatch(storageThunks.fetchFolderContentThunk());
+      dispatch(setIsCreateFolderDialogOpen(false));
+      reset();
+
+    } catch (err) {
+      if (err.includes('already exists')) {
+        notify('Folder with the same name already exists', 'error');
+      } else {
+        notify(err.message || err, 'error');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    open && inputRef.current?.focus();
-  }, [open, inputRef]);
-
   return (
     <BaseDialog title="Create folder" open={open} onClose={onCancel}>
-      <div className="px-12">
-        <input
-          ref={inputRef}
-          className='w-full h-7 text-xs text-blue-60'
-          placeholder="Enter folder name"
-          value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-          type="text"
-          autoFocus
-        />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className='px-8 mt-6'>
+          <AuthInput
+            placeholder='Enter folder name'
+            label='createFolder'
+            type={'text'}
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Folder name must not be empty' }}
+            error={errors.createFolder}
+          />
+        </div>
 
-        <div className='flex justify-center mt-3'>
-          <button onClick={onCancel} className='secondary'>
+        <div className='mt-7 flex justify-center bg-l-neutral-20 pb-8 px-8 pt-4'>
+          <button onClick={onCancel} className='secondary_dialog w-full mr-4'>
             Cancel
           </button>
-          <button onClick={onAccept} className='primary ml-2'>
-              Create
-          </button>
+          <AuthButton text='Create' textWhenDisabled={isValid ? 'Creating...' : 'Create'} isDisabled={isLoading || !isValid} />
         </div>
-      </div>
+      </form>
     </BaseDialog>
   );
 };
