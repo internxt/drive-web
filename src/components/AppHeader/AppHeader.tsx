@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { TeamsSettings, UserSettings } from '../../models/interfaces';
 import { RootState } from '../../store';
@@ -57,7 +57,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   render(): ReactNode {
-    const { user, team } = this.props;
+    const { user, team, workspace } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
 
     return (
@@ -94,9 +94,21 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
                   id="business"
                   onClick={this.onBusinesButtonClicked}
                 >
-                  <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
-                  <span>Business</span>
+                  {workspace === Workspace.Personal ?
+                    <Fragment>
+                      <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
+                      <span>Business</span>
+                    </Fragment>
+
+                    :
+                    <Fragment>
+                      <Unicons.UilUser className="text-blue-60 h-5 mr-1" />
+                      <span>Personal</span>
+                    </Fragment>
+
+                  }
                 </Dropdown.Item>) : null
+
             }
             <hr className="text-l-neutral-30 my-1.5"></hr>
             <Dropdown.Item

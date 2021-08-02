@@ -11,7 +11,7 @@ interface TeamState {
 
 const initialState: TeamState = {
   team: undefined,
-  workspace: Workspace.Individual
+  workspace: Workspace.Personal
 };
 
 export const teamSlice = createSlice({
@@ -32,6 +32,6 @@ export const {
   setWorkspace
 } = teamSlice.actions;
 export const teamActions = teamSlice.actions;
-export const selectorIsTeam = (state: RootState): boolean => state.team.workspace !== Workspace.Individual;
+export const selectorIsTeam = (state: RootState): boolean => state.team.workspace !== Workspace.Personal;
 
 export default teamSlice.reducer;

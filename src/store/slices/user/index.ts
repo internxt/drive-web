@@ -59,9 +59,9 @@ export const handleChangeWorkspaceThunk = createAsyncThunk(
   async (payload: void, { dispatch, getState }: any) => {
     const isTeam: boolean = selectorIsTeam(getState());
 
-    isTeam ? dispatch(setWorkspace(Workspace.Individual)) : dispatch(setWorkspace(Workspace.Business));
+    isTeam ? dispatch(setWorkspace(Workspace.Personal)) : dispatch(setWorkspace(Workspace.Business));
 
-    localStorageService.set('workspace', isTeam ? Workspace.Business : Workspace.Individual);
+    localStorageService.set('workspace', isTeam ? Workspace.Business : Workspace.Personal);
   }
 );
 
