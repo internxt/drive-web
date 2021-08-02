@@ -11,6 +11,7 @@ import authService from '../../services/auth.service';
 import { Workspace } from '../../models/enums';
 import { handleChangeWorkspaceThunk } from '../../store/slices/user';
 import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
+import localStorageService from '../../services/localStorage.service';
 
 interface AppHeaderProps {
   user: UserSettings | undefined
@@ -57,8 +58,9 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   render(): ReactNode {
-    const { user, team, workspace } = this.props;
+    const { user, workspace } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
+    const team = localStorageService.exists('xTeam');
 
     return (
       <div className="flex justify-between w-full py-3 mb-2">
