@@ -136,7 +136,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
                 onClick={this.onInviteMemberClick}
               >
                 <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
-                <span>Invite a member</span>
+                <span>Invite members</span>
               </Dropdown.Item>
             </Fragment>
             }

@@ -11,6 +11,7 @@ import notify from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { selectShowInviteMemberModal, setShowInviteMemberModal } from '../../../store/slices/ui';
 import { sendEmailTeamsMember } from '../../../services/teamsSendEmail.service';
+import { setInvitation } from '../../../store/slices/team';
 
 interface InviteMemberCreateDialogProps {
   team: TeamsSettings | undefined
@@ -34,6 +35,7 @@ const InviteMemberCreateDialog = ({
       if (team && team.isAdmin) {
         await sendEmailTeamsMember(formData.email);
         notify(`Invitation email sent to ${formData.email}`, 'success');
+        dispatch(setInvitation(formData.email));
       }
     } catch (error) {
       notify(error.message || error, 'error');
@@ -50,7 +52,7 @@ const InviteMemberCreateDialog = ({
       <form className='flex flex-col mt-6' onSubmit={handleSubmit(onSubmit)}>
         <div className='w-64 self-center'>
           <AuthInput
-            placeholder='Enter email to invite a member'
+            placeholder='Manage your team'
             label='email'
             type='email'
             register={register}
