@@ -16,7 +16,7 @@ const AccountPlanInfoTab = () => {
 
   useEffect(() => {
     usageService.fetchUsage(isTeam).then(res => setUsage(res.total));
-  }, []);
+  }, [isTeam]);
 
   const limitUser = () => {
     let limit;
