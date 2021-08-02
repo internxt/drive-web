@@ -1,6 +1,5 @@
 import { getHeaders } from '../lib/auth';
 import { IStripeCustomer, IStripePlan, IStripeProduct } from '../models/interfaces';
-import analyticsService from './analytics.service';
 
 export const loadAvailableProducts = async (): Promise<IStripeProduct[]> => {
   const response = await fetch('/api/stripe/products' + (process.env.NODE_ENV === 'production' ? '' : '?test=true'), {

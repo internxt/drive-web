@@ -12,7 +12,7 @@ import { DriveFileData, DriveFolderData, FolderPath, UserSettings } from '../../
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform } from '../../models/enums';
 
-import { uiActions } from '../../store/slices/ui';
+import { selectShowReachedLimitModal, setShowCreateFolderModal, setShowDeleteModal, setShowReachedPlanLimit } from '../../store/slices/ui';
 import { storageThunks, storageActions, storageSelectors } from '../../store/slices/storage';
 import folderService, { ICreatedFolder } from '../../services/folder.service';
 import { AppDispatch, RootState } from '../../store';
@@ -40,8 +40,8 @@ interface FilesViewProps {
   currentItems: (DriveFileData | DriveFolderData)[],
   isAuthenticated: boolean;
   itemToShareId: number;
-  isCreateFolderDialogOpen: boolean;
-  isDeleteItemsDialogOpen: boolean;
+  showCreateFolderModal: boolean;
+  showDeleteModal: boolean;
   infoItemId: number;
   viewMode: FileViewMode;
   namePath: FolderPath[];
@@ -139,8 +139,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     try {
       const usage: UsageResponse = await usageService.fetchUsage();
 
+      console.log('usage =>', usage, 'limit =>', limitStorage);
       if (limitStorage && usage.total >= parseInt(limitStorage)) {
-        this.props.dispatch(uiActions.showReachedPlanLimit(true));
+        this.props.dispatch(setShowReachedPlanLimit(true));
       } else {
         this.dispatchUpload(e);
       }
@@ -172,7 +173,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   onCreateFolderButtonClicked = () => {
     this.props.dispatch(
-      uiActions.setIsCreateFolderDialogOpen(true)
+      setShowCreateFolderModal(true)
     );
   }
 
@@ -180,7 +181,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     const { dispatch, selectedItems } = this.props;
 
     dispatch(storageActions.setItemsToDelete(selectedItems));
-    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    dispatch(setShowDeleteModal(true));
   }
 
   onPreviousPageButtonClicked = (): void => {
@@ -521,8 +522,8 @@ export default connect(
       isLoadingItems: state.storage.isLoading,
       currentItems: state.storage.items,
       itemToShareId: state.storage.itemToShareId,
-      isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
-      isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
+      showCreateFolderModal: state.ui.showCreateFolderModal,
+      showDeleteModal: state.ui.showDeleteModal,
       infoItemId: state.storage.infoItemId,
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
