@@ -137,9 +137,6 @@ export const doAccess = async (email: string, password: string, encPass: string,
       revocationKey: revocateKey
     };
 
-    if (user.teams) {
-      await storeTeamsInfo();
-    }
     if (data.userTeam) {
       const mnemonicDecode = Buffer.from(data.userTeam.bridge_mnemonic, 'base64').toString();
       const mnemonicDecrypt = await decryptPGP(mnemonicDecode);
