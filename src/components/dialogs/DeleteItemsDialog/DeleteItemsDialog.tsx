@@ -1,25 +1,25 @@
 import { useSelector } from 'react-redux';
 import { DriveItemData } from '../../../models/interfaces';
 import { RootState } from '../../../store';
-import { useAppDispatch } from '../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageThunks } from '../../../store/slices/storage';
-import { setIsDeleteItemsDialogOpen } from '../../../store/slices/ui';
+import { selectIsOpenDeleteItem, setIsDeleteItemsDialogOpen } from '../../../store/slices/ui';
 import { setItemsToDelete } from '../../../store/slices/storage';
-import BaseDialog from '../BaseDialog/BaseDialog';
+import BaseDialog2 from '../BaseDialog2.0/BaseDialog2.0';
 
 import './DeleteItemsDialog.scss';
 import { useState } from 'react';
 
 interface DeleteItemsDialogProps {
-  open: boolean;
 }
 
-const DeleteItemsDialog = ({ open }: DeleteItemsDialogProps): JSX.Element => {
+const DeleteItemsDialog = ({ }: DeleteItemsDialogProps): JSX.Element => {
   const itemsToDelete: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToDelete);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
+  const isOpen = useAppSelector(selectIsOpenDeleteItem);
 
-  const onCancel = (): void => {
+  const onClose = (): void => {
     dispatch(setIsDeleteItemsDialogOpen(false));
     dispatch(setItemsToDelete([]));
   };
@@ -30,7 +30,7 @@ const DeleteItemsDialog = ({ open }: DeleteItemsDialogProps): JSX.Element => {
       if (itemsToDelete.length > 0) {
         await dispatch(storageThunks.deleteItemsThunk(itemsToDelete));
       }
-      onCancel();
+      onClose();
     } catch (e) {
       console.log(e);
     } finally {
@@ -39,24 +39,26 @@ const DeleteItemsDialog = ({ open }: DeleteItemsDialogProps): JSX.Element => {
   };
 
   return (
-    <BaseDialog
-      title="Delete items"
-      open={open}
-      onClose={onCancel}
+    <BaseDialog2
+      isOpen={isOpen}
+      title='Delete items'
+      onClose={onClose}
     >
-      <span className='text-center block w-full text-base px-8 text-neutral-900'>
+      <span className='text-center block w-full text-base px-8 text-neutral-900 mt-2'>
         Please confirm that you want to delete these items. This action can't be undone.
       </span>
 
-      <div className='mt-7 flex justify-center bg-l-neutral-20 pb-8 px-8 pt-4'>
-        <button onClick={onCancel} className='secondary_dialog w-full mr-4'>
-          Cancel
-        </button>
-        <button onClick={onAccept} disabled={isLoading} className='primary w-11/12'>
-          {isLoading ? 'Deleting...' : 'Confirm'}
-        </button>
+      <div className='flex justify-center items-center bg-l-neutral-20 py-6 mt-6'>
+        <div className='flex w-64'>
+          <button onClick={() => onClose()} className='secondary_dialog w-full mr-2'>
+            Cancel
+          </button>
+          <button className='primary w-11/12 ml-2' disabled={isLoading} onClick={() => onAccept()} >
+            {isLoading ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
       </div>
-    </BaseDialog>
+    </BaseDialog2>
   );
 };
 

@@ -4,7 +4,7 @@ import { UilTimes } from '@iconscout/react-unicons';
 interface BaseDialog {
   isOpen: boolean,
   title: string,
-  children: JSX.Element,
+  children: JSX.Element | JSX.Element[],
   onClose: () => void
 }
 
