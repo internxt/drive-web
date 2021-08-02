@@ -27,9 +27,16 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
   }
 
   get itemFullPath(): string {
-    const { item, currentFolderPath } = this.props;
+    const { currentFolderPath } = this.props;
 
-    return `${currentFolderPath}${item?.name}`;
+    return `${currentFolderPath}${this.itemFullName}`;
+  }
+
+  get itemFullName(): string {
+    const { item } = this.props;
+    const itemExtension: string = item?.type ? `.${item?.type}` : '';
+
+    return `${item?.name}${itemExtension}`;
   }
 
   onCloseButtonClicked(): void {
@@ -41,12 +48,16 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
     const ItemIconComponent = iconService.getItemIcon(item.type);
 
     return (
-      <div className="w-activity-1280 bg-white ml-24px rounded-4px p-24px">
+      <div className="w-activity-1280 min-w-activity-1280 bg-white ml-24px rounded-4px p-24px">
 
         {/* HEADER */}
         <div className="flex items-center mb-6">
-          <ItemIconComponent className="min-w-9" />
-          <span className="mx-2 overflow-hidden whitespace-nowrap overflow-ellipsis block font-semibold text-neutral-700 text-sm w-full max-w-full">{item.name}</span>
+          <div className="flex items-center min-w-9 w-9 h-9">
+            <ItemIconComponent className="h-full" />
+          </div>
+          <span
+            className="mx-2 overflow-hidden whitespace-nowrap overflow-ellipsis block font-semibold text-neutral-700 text-sm w-full max-w-full"
+          >{this.itemFullName}</span>
           <div className="w-6 cursor-pointer" onClick={this.onCloseButtonClicked}>
             <Unicons.UilTimes className="text-blue-40" />
           </div>

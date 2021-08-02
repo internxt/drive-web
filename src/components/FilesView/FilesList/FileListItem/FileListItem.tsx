@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode } from 'react';
+import React, { MouseEvent, Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { Dropdown } from 'react-bootstrap';
 import * as Unicons from '@iconscout/react-unicons';
@@ -154,7 +154,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     this.setState({ showContextMenu: true });
   }
 
-  onOutsideContextMenuClicked = (e: MouseEvent): void => {
+  onOutsideContextMenuClicked = (): void => {
     document.removeEventListener('click', this.onOutsideContextMenuClicked);
     this.setState({ showContextMenu: false });
   }
@@ -167,9 +167,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       dispatch(storageActions.deselectItem(item));
   }
 
-  onRenameButtonClicked = (): void => {
+  onRenameButtonClicked = (e: MouseEvent): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
+
+    e.stopPropagation();
 
     this.setState(
       { isEditingName: true, dirtyName: item.name },
@@ -177,25 +179,32 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     );
   }
 
-  onDownloadButtonClicked = (): void => {
+  onDownloadButtonClicked = (e: MouseEvent): void => {
     const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
+
+    e.stopPropagation();
 
     queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
   }
 
-  onShareButtonClicked = (): void => {
+  onShareButtonClicked = (e: MouseEvent): void => {
     const { dispatch, item } = this.props;
+
+    e.stopPropagation();
 
     dispatch(storageActions.setItemToShare(item.id));
   }
 
-  onInfoButtonClicked = (): void => {
+  onInfoButtonClicked = (e: MouseEvent): void => {
+    e.stopPropagation();
     this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
   }
 
-  onDeleteButtonClicked = (): void => {
+  onDeleteButtonClicked = (e: MouseEvent): void => {
     const { dispatch, item } = this.props;
+
+    e.stopPropagation();
 
     dispatch(storageActions.setItemsToDelete([item]));
     dispatch(setShowDeleteModal(true));
