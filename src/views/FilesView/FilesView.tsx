@@ -384,41 +384,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 
-  loadDataAtChangeWorkspace = () => {
-    const { dispatch } = this.props;
-    const user = localStorageService.getUser();
-    const team = localStorageService.getTeams();
-
-    if (this.props.workspace === Workspace.Individual) {
-      dispatch(storageThunks.fetchFolderContentThunk(user?.root_folder_id));
-      const pathIndividual = {
-        id: user.root_folder_id,
-        name: 'Drive'
-      };
-
-      dispatch(storageActions.pathChangeWorkSpace(pathIndividual));
-
-    } else {
-      const pathBusiness = {
-        id: team.root_folder_id,
-        name: 'Drive'
-      };
-
-      dispatch(storageThunks.fetchFolderContentThunk(team.root_folder_id));
-      dispatch(storageActions.pathChangeWorkSpace(pathBusiness));
-    }
-  }
-
-  onChangeWorskapce = async () => {
-    const { dispatch } = this.props;
-
-    dispatch(
-      handleChangeWorkspaceThunk()
-    ).then(() => {
-      this.loadDataAtChangeWorkspace();
-    });
-  }
-
   render(): ReactNode {
     const { isLoadingItems, infoItemId, viewMode, isCurrentFolderEmpty, isDraggingAnItem } = this.props;
     const { fileInputRef } = this.state;
@@ -449,9 +414,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                     <Unicons.UilCloudUpload className="h-5 mr-2" /><span>Upload</span>
                   </button>
                 }
-                <button className="primary mr-1 flex items-center" onClick={this.onChangeWorskapce}>
-                  <span>Workspace</span>
-                </button>
                 {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
                   <img alt="" src={iconService.getIcon('createFolder')} />
                 </button> : null}

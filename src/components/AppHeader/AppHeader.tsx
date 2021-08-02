@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { connect } from 'react-redux';
-import { UserSettings } from '../../models/interfaces';
+import { TeamsSettings, UserSettings } from '../../models/interfaces';
 import { RootState } from '../../store';
 import history from '../../lib/history';
 import * as Unicons from '@iconscout/react-unicons';
@@ -8,9 +8,14 @@ import * as Unicons from '@iconscout/react-unicons';
 import './AppHeader.scss';
 import { Dropdown } from 'react-bootstrap';
 import authService from '../../services/auth.service';
+import { Workspace } from '../../models/enums';
+import { handleChangeWorkspaceThunk } from '../../store/slices/user';
+import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
 
 interface AppHeaderProps {
   user: UserSettings | undefined
+  team: TeamsSettings | undefined
+  workspace: Workspace
 }
 
 interface AppHeaderState { }
@@ -38,7 +43,13 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   onBusinesButtonClicked = (): void => {
-    alert('TODO: toggle workspace');
+    const { dispatch } = this.props;
+
+    dispatch(
+      handleChangeWorkspaceThunk()
+    ).then(() => {
+      loadDataAtChangeWorkspace(dispatch, this.props.workspace);
+    });
   }
 
   onLogoutButtonClicked = (): void => {
@@ -46,7 +57,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   render(): ReactNode {
-    const { user } = this.props;
+    const { user, team } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
 
     return (
@@ -78,7 +89,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
               <span>Support</span>
             </Dropdown.Item>
             {
-              user?.teams ?
+              team ?
                 (<Dropdown.Item
                   id="business"
                   onClick={this.onBusinesButtonClicked}
@@ -104,5 +115,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
 }
 
 export default connect((state: RootState) => ({
-  user: state.user.user
+  user: state.user.user,
+  team: state.team.team,
+  workspace: state.team.workspace
 }))(AppHeader);
