@@ -15,9 +15,9 @@ import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, Fo
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
-import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 import { ItemAction } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
+import { setShowDeleteModal } from '../../../../store/slices/ui';
 
 interface FileListItemProps {
   user: UserSettings | undefined;
@@ -196,7 +196,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const { dispatch, item } = this.props;
 
     dispatch(storageActions.setItemsToDelete([item]));
-    dispatch(setIsDeleteItemsDialogOpen(true));
+    dispatch(setShowDeleteModal(true));
   }
 
   onItemDoubleClicked = (): void => {

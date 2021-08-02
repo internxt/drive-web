@@ -3,7 +3,7 @@ import { DriveItemData } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageThunks } from '../../../store/slices/storage';
-import { selectIsOpenDeleteItem, setIsDeleteItemsDialogOpen } from '../../../store/slices/ui';
+import { selectShowDeleteModal, setShowDeleteModal } from '../../../store/slices/ui';
 import { setItemsToDelete } from '../../../store/slices/storage';
 import BaseDialog2 from '../BaseDialog2.0/BaseDialog2.0';
 
@@ -17,10 +17,10 @@ const DeleteItemsDialog = ({ }: DeleteItemsDialogProps): JSX.Element => {
   const itemsToDelete: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToDelete);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const isOpen = useAppSelector(selectIsOpenDeleteItem);
+  const isOpen = useAppSelector(selectShowDeleteModal);
 
   const onClose = (): void => {
-    dispatch(setIsDeleteItemsDialogOpen(false));
+    dispatch(setShowDeleteModal(false));
     dispatch(setItemsToDelete([]));
   };
 
