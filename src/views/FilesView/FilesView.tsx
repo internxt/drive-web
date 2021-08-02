@@ -28,6 +28,7 @@ import dragAndDropImage from '../../assets/images/drag-and-drop.png';
 import './FilesView.scss';
 import usageService, { UsageResponse } from '../../services/usage.service';
 import SessionStorage from '../../lib/sessionStorage';
+import deviceService from '../../services/device.service';
 
 interface FilesViewProps {
   user: UserSettings | any;
@@ -112,6 +113,8 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageThunks.fetchFolderContentThunk());
+
+    deviceService.redirectForMobile();
   }
 
   onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {
