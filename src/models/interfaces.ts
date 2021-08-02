@@ -41,9 +41,6 @@ export interface TeamsSettings {
 
 export interface DriveFolderData {
   isFolder: boolean,
-  isSelected: boolean,
-  isLoading: boolean,
-  isDowloading: boolean,
   id: number,
   parentId: number,
   name: string,

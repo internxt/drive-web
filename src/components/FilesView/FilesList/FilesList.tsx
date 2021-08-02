@@ -33,22 +33,22 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
 
   render(): JSX.Element {
     return (
-      <div className="flex-grow bg-white">
-        <table className="table-auto w-full">
+      <div className="pointer-events-none flex-grow bg-white">
+        <table className="pointer-events-none table-auto w-full">
           <thead className="border-b border-l-neutral-30 bg-white text-neutral-500 py-2 px-3 text-sm">
             <tr>
               <th className="px-4 py-2 w-12 rounded-tl-4px">
                 <input onClick={this.onSelectAllButtonClicked} type="checkbox" />
               </th>
               <th className="w-12">Type</th>
-              <th className="w-40">Name</th>
+              <th className="w-1/5">Name</th>
               <th className="w-36"></th>
               <th className="w-64">Modified</th>
               <th className="w-20">Size</th>
               <th className="w-12 rounded-tr-4px">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="pointer-events-none">
             {this.itemsList}
           </tbody>
         </table>

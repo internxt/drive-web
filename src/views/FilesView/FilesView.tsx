@@ -28,6 +28,7 @@ import dragAndDropImage from '../../assets/images/drag-and-drop.png';
 import './FilesView.scss';
 import usageService, { UsageResponse } from '../../services/usage.service';
 import SessionStorage from '../../lib/sessionStorage';
+import deviceService from '../../services/device.service';
 import { handleChangeWorkspaceThunk } from '../../store/slices/user';
 import localStorageService from '../../services/localStorage.service';
 
@@ -115,6 +116,8 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageThunks.fetchFolderContentThunk());
+
+    deviceService.redirectForMobile();
   }
 
   onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {
@@ -368,13 +371,13 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   onViewDragOver = (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
-    e.stopPropagation();
+    // e.stopPropagation();
 
     this.props.dispatch(storageActions.setIsDraggingAnItem(true));
   }
 
   onViewDragLeave = (e: DragEvent<HTMLDivElement>): void => {
-    console.log('onViewDragLeave: ', e);
+    // console.log('onViewDragLeave: ', e);
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 

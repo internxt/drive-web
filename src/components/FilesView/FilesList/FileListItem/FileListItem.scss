@@ -22,6 +22,7 @@ td {
     }
 
     .file-list-item-name-span {
+        max-width: 400px;
         @apply w-min whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1 border border-dashed border-opacity-0 border-blue-40 hover:border-opacity-100;
     }
 
