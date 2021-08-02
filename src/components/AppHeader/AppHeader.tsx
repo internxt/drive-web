@@ -128,7 +128,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
             {this.props.team?.isAdmin && workspace === Workspace.Business &&
               <Dropdown.Item>
                 <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
-                <span>Invite a memeber</span>
+                <span>Invite a member</span>
               </Dropdown.Item>
             }
             <Dropdown.Item
