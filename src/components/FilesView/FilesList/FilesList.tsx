@@ -34,7 +34,7 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
   render(): JSX.Element {
     return (
       <div className="flex-grow bg-white">
-        <table className="table-auto w-full">
+        <table className="pointer-events-none table-auto w-full">
           <thead className="border-b border-l-neutral-30 bg-white text-neutral-500 py-2 px-3 text-sm">
             <tr>
               <th className="px-4 py-2 w-12 rounded-tl-4px">

@@ -24,7 +24,7 @@ const BaseDialog = ({
 
       {/* PANEL */}
       <div className={`base-dialog-panel ${open ? 'block' : 'hidden'} relative z-50 rounded-lg pt-8 bg-white text-xs overflow-hidden`}>
-        <div className='flex items-center justify-center w-full mb-4'>
+        <div className='flex items-center justify-center w-full mb-4 px-4'>
           <div className="w-1/6"></div>
           <span className='text-center w-4/6 flex-grow text-neutral-900 text-xl'>{title}</span>
           <div className="w-1/6 cursor-pointer" onClick={onClose}>
