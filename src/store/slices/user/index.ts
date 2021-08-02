@@ -8,7 +8,7 @@ import { UserSettings } from '../../../models/interfaces';
 import localStorageService from '../../../services/localStorage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
-import { selectorIsTeam, setWorkspace } from '../team';
+import { selectorIsTeam, setWorkspace, teamActions } from '../team';
 
 interface UserState {
   isInitializing: boolean;
@@ -38,6 +38,7 @@ export const initializeUserThunk = createAsyncThunk(
       } else {
         try {
           await storeTeamsInfo();
+          dispatch(teamActions.initialize());
         } catch (e) {
           localStorageService.del('xTeam');
         }
