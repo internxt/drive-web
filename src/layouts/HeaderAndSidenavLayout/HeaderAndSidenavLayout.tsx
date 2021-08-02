@@ -31,9 +31,10 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isReachedPlanLimitOpen: boolean = useSelector((state: RootState) => state.ui.isReachedPlanLimitOpen);
 
   return isAuthenticated ? (
-    <div className="h-auto min-h-full flex flex-col">
+    <div className='h-auto min-h-full flex flex-col'>
+      <div className={`${isCreateFolderDialogOpen || isDeleteItemsDialogOpen ? 'flex' : 'hidden'} absolute w-full h-full bg-m-neutral-100 opacity-80 z-10`} />
 
-      { !!itemToShare &&
+      {!!itemToShare &&
         <ShareItemDialog
           open={!!itemToShareId}
           item={itemToShare}
@@ -41,13 +42,9 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
         />
       }
 
-      <CreateFolderDialog
-        open={isCreateFolderDialogOpen}
-      />
+      <CreateFolderDialog />
 
-      <DeleteItemsDialog
-        open={isDeleteItemsDialogOpen}
-      />
+      <DeleteItemsDialog />
 
       <ReachedPlanLimitDialog
         open={isReachedPlanLimitOpen}
