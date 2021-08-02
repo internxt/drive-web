@@ -19,7 +19,6 @@ export interface UploadItemPayload {
 }
 
 export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, dispatch: AppDispatch, isTeam: boolean): Promise<any> {
-  dispatch(updateFileStatusLogger({ action: 'upload', status: 'encrypting', filePath: path, isFolder: false }));
   const fileType: string = file.name.split('.').pop() || '';
 
   dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Encrypting, filePath: path, isFolder: false, type: fileType }));

@@ -13,12 +13,13 @@ import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, Fo
 import downloadService from '../../../../services/download.service';
 
 import './FileGridItem.scss';
-import { ItemAction, Workspace } from '../../../../models/enums';
+import { FileActionTypes, FileStatusTypes, ItemAction, Workspace } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
 
 import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
 import { setShowDeleteModal } from '../../../../store/slices/ui';
+import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileGridItemProps {
   user: UserSettings;
@@ -168,9 +169,10 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
-    this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
+    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, isFolder: false }));
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
-    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
+
+    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));
   }
 
   onShareButtonClicked = (): void => {

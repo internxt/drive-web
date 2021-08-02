@@ -16,9 +16,10 @@ import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
-import { ItemAction, Workspace } from '../../../../models/enums';
+import { FileActionTypes, FileStatusTypes, ItemAction, Workspace } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
 import { setShowDeleteModal } from '../../../../store/slices/ui';
+import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileListItemProps {
   user: UserSettings | undefined;
@@ -183,8 +184,9 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
-    this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
-    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
+
+    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, isFolder: false }));
+    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));
   }
 
   onShareButtonClicked = (): void => {
