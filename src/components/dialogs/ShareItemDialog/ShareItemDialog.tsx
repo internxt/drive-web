@@ -139,10 +139,8 @@ class ShareItemDialog extends React.Component<ShareItemDialogProps, ShareItemDia
 
   render(): JSX.Element {
     const { item, open } = this.props;
-    const fileType = item.isFolder ? '' : item.type.toUpperCase();
-    const fileName = item.isFolder ? item.name : `${item.name}.${item.type}`;
 
-    return (<BaseDialog title={this.itemFullName} open={open} onClose={this.props.onClose}>
+    return (<BaseDialog title={this.itemFullName} isOpen={open} onClose={this.props.onClose}>
       <div>
         <div className="text-sm text-center">
           <div>

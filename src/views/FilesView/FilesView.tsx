@@ -366,13 +366,13 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   onViewDragOver = (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
-    e.stopPropagation();
+    // e.stopPropagation();
 
     this.props.dispatch(storageActions.setIsDraggingAnItem(true));
   }
 
   onViewDragLeave = (e: DragEvent<HTMLDivElement>): void => {
-    console.log('onViewDragLeave: ', e);
+    // console.log('onViewDragLeave: ', e);
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 

@@ -197,7 +197,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
   onItemRightClicked = (e: MouseEvent): void => {
     e.preventDefault();
-    alert('onItemRightClicked');
   }
 
   onItemDoubleClicked = (): void => {
@@ -209,13 +208,13 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
-    const { item } = this.props;
+    const { item, isDraggingAnItem, draggingTargetItemData } = this.props;
 
     if (item.isFolder) {
       e.preventDefault();
       e.stopPropagation();
 
-      this.props.dispatch(storageActions.setDraggingItemTargetData(this.props.item));
+      this.props.dispatch(storageActions.setDraggingItemTargetData(item));
     }
   }
 
@@ -242,6 +241,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
     const ItemIconComponent = iconService.getItemIcon(item.type);
 
+    console.log('FileGridItem render - isDraggingAnItem, draggingTargetItemData: ', isDraggingAnItem, draggingTargetItemData);
     return (
       <div
         ref={itemRef}

@@ -22,7 +22,7 @@ import { setShowDeleteModal } from '../../../../store/slices/ui';
 interface FileListItemProps {
   user: UserSettings | undefined;
   isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveItemData;
+  draggingTargetItemData: DriveItemData | null;
   item: DriveItemData;
   selectedItems: DriveItemData[];
   currentFolderId: number;
@@ -65,13 +65,15 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             value={dirtyName}
             placeholder="Name"
             onChange={this.onNameChanged}
-            onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed}
+            onBlur={this.onNameBlurred}
+            onKeyPress={this.onEnterKeyPressed}
             autoFocus
           />
           <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
         </div>
         <span
           className={`${spanDisplayClass} file-list-item-name-span`}
+          onClick={(e) => e.stopPropagation() }
           onDoubleClick={this.onNameDoubleClicked}
         >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
       </Fragment>
@@ -207,22 +209,24 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
-    const { item } = this.props;
+  onItemDragOver = (e: React.DragEvent<HTMLTableRowElement>): void => {
+    const { item, isDraggingAnItem, draggingTargetItemData } = this.props;
+
+    console.log('e: ', e);
 
     if (item.isFolder) {
       e.preventDefault();
       e.stopPropagation();
 
-      this.props.dispatch(storageActions.setDraggingItemTargetData(this.props.item));
+      this.props.dispatch(storageActions.setDraggingItemTargetData(item));
     }
   }
 
-  onItemDragLeave = (e: DragEvent<HTMLDivElement>): void => {
+  onItemDragLeave = (e: React.DragEvent<HTMLTableRowElement>): void => {
     this.props.dispatch(storageActions.setDraggingItemTargetData(null));
   }
 
-  onItemDrop = (e: DragEvent<HTMLDivElement>): void => {
+  onItemDrop = (e: React.DragEvent<HTMLTableRowElement>): void => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -233,7 +237,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   render(): ReactNode {
     const { isDraggingAnItem, draggingTargetItemData, item, isItemSelected } = this.props;
-    const isDraggingOverThisItem: boolean = draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
+    const isDraggingOverThisItem: boolean = !!draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
     const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
@@ -283,8 +287,8 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             </button>
           </div>
         </td>
-        <td>{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
-        <td>{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
+        <td className="whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
+        <td className="whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
         <td>
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold">
