@@ -3,18 +3,18 @@ import { RootState } from '../..';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
-  isCreateFolderDialogOpen: boolean;
-  isDeleteItemsDialogOpen: boolean;
-  isFileLoggerOpen: boolean;
-  isReachedPlanLimitOpen: boolean
+  showCreateFolderModal: boolean;
+  showDeleteModal: boolean;
+  showFileLogger: boolean;
+  showReachedLimitModal: boolean
 }
 
 const initialState: UISliceState = {
   isSidenavCollapsed: false,
-  isCreateFolderDialogOpen: false,
-  isDeleteItemsDialogOpen: false,
-  isFileLoggerOpen: false,
-  isReachedPlanLimitOpen: false
+  showCreateFolderModal: false,
+  showDeleteModal: false,
+  showFileLogger: false,
+  showReachedLimitModal: false
 };
 
 export const uiSlice = createSlice({
@@ -24,29 +24,30 @@ export const uiSlice = createSlice({
     setIsSidenavCollapsed: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isSidenavCollapsed = action.payload;
     },
-    setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isCreateFolderDialogOpen = action.payload;
+    setShowCreateFolderModal: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.showCreateFolderModal = action.payload;
     },
-    setIsDeleteItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isDeleteItemsDialogOpen = action.payload;
+    setShowDeleteModal: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.showDeleteModal = action.payload;
     },
-    showFileLogger: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isFileLoggerOpen = action.payload;
+    setShowFileLogger: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.showFileLogger = action.payload;
     },
-    showReachedPlanLimit: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isReachedPlanLimitOpen = action.payload;
+    setShowReachedPlanLimit: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.showReachedLimitModal = action.payload;
     }
   }
 });
 
 export const {
-  setIsCreateFolderDialogOpen,
-  setIsDeleteItemsDialogOpen,
-  showFileLogger,
-  showReachedPlanLimit
+  setShowCreateFolderModal,
+  setShowDeleteModal,
+  setShowFileLogger,
+  setShowReachedPlanLimit
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
-export const selectIsOpenCreateFolder = (state: RootState): boolean => state.ui.isCreateFolderDialogOpen;
-export const selectIsOpenDeleteItem = (state: RootState): boolean => state.ui.isDeleteItemsDialogOpen;
+export const selectShowCreateFolderModal = (state: RootState): boolean => state.ui.showCreateFolderModal;
+export const selectShowDeleteModal = (state: RootState): boolean => state.ui.showDeleteModal;
+export const selectShowReachedLimitModal = (state: RootState): boolean => state.ui.showReachedLimitModal;
 export default uiSlice.reducer;

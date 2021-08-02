@@ -11,13 +11,13 @@ import { AppDispatch, RootState } from '../../../../store';
 import { connect } from 'react-redux';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
-import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
 import { ItemAction } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
 
 import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
+import { setShowDeleteModal } from '../../../../store/slices/ui';
 
 interface FileGridItemProps {
   user: UserSettings;
@@ -182,7 +182,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const { dispatch, item } = this.props;
 
     dispatch(storageActions.setItemsToDelete([item]));
-    dispatch(setIsDeleteItemsDialogOpen(true));
+    dispatch(setShowDeleteModal(true));
   }
 
   onItemClicked = (): void => {

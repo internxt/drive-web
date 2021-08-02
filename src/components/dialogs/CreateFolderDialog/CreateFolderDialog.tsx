@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
-import { useAppDispatch } from '../../../store/hooks';
-import BaseDialog from '../BaseDialog/BaseDialog';
-import { setIsCreateFolderDialogOpen } from '../../../store/slices/ui';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageSelectors, storageThunks } from '../../../store/slices/storage';
 import folderService from '../../../services/folder.service';
 import { IFormValues, UserSettings } from '../../../models/interfaces';
@@ -14,14 +12,14 @@ import AuthInput from '../../Inputs/AuthInput';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../Buttons/AuthButton';
 import notify from '../../Notifications';
+import BaseDialog from '../BaseDialog/BaseDialog';
+import { selectShowCreateFolderModal, setShowCreateFolderModal } from '../../../store/slices/ui';
 
 interface CreateFolderDialogProps {
-  open: boolean;
   user: UserSettings | undefined;
 }
 
 const CreateFolderDialog = ({
-  open,
   user
 }: CreateFolderDialogProps
 ) => {
@@ -29,10 +27,11 @@ const CreateFolderDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   const currentFolderId: number = useSelector((state: RootState) => storageSelectors.currentFolderId(state));
   const dispatch = useAppDispatch();
+  const isOpen = useAppSelector(selectShowCreateFolderModal);
 
-  const onCancel = (): void => {
+  const onClose = (): void => {
     reset();
-    dispatch(setIsCreateFolderDialogOpen(false));
+    dispatch(setShowCreateFolderModal(false));
   };
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
@@ -41,7 +40,7 @@ const CreateFolderDialog = ({
       await folderService.createFolder(!!user?.teams, currentFolderId, formData.createFolder);
 
       dispatch(storageThunks.fetchFolderContentThunk());
-      dispatch(setIsCreateFolderDialogOpen(false));
+      dispatch(setShowCreateFolderModal(false));
       reset();
 
     } catch (err) {
@@ -56,9 +55,13 @@ const CreateFolderDialog = ({
   };
 
   return (
-    <BaseDialog title="Create folder" open={open} onClose={onCancel}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className='px-8 mt-6'>
+    <BaseDialog
+      isOpen={isOpen}
+      title='Create folder'
+      onClose={onClose}
+    >
+      <form className='flex flex-col mt-6' onSubmit={handleSubmit(onSubmit)}>
+        <div className='w-64 self-center'>
           <AuthInput
             placeholder='Enter folder name'
             label='createFolder'
@@ -70,11 +73,13 @@ const CreateFolderDialog = ({
           />
         </div>
 
-        <div className='mt-7 flex justify-center bg-l-neutral-20 pb-8 px-8 pt-4'>
-          <button onClick={onCancel} className='secondary_dialog w-full mr-4'>
-            Cancel
-          </button>
-          <AuthButton text='Create' textWhenDisabled={isValid ? 'Creating...' : 'Create'} isDisabled={isLoading || !isValid} />
+        <div className='flex justify-center items-center bg-l-neutral-20 py-6 mt-6'>
+          <div className='flex w-64'>
+            <button onClick={() => onClose()} className='secondary_dialog w-full mr-4'>
+              Cancel
+            </button>
+            <AuthButton text='Create' textWhenDisabled={isValid ? 'Creating...' : 'Create'} isDisabled={isLoading || !isValid} />
+          </div>
         </div>
       </form>
     </BaseDialog>
