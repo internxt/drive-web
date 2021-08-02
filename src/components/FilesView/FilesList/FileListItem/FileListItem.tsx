@@ -212,8 +212,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   onItemDragOver = (e: React.DragEvent<HTMLTableRowElement>): void => {
     const { item, isDraggingAnItem, draggingTargetItemData } = this.props;
 
-    console.log('e: ', e);
-
     if (item.isFolder) {
       e.preventDefault();
       e.stopPropagation();

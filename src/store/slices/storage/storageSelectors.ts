@@ -22,6 +22,10 @@ const storageSelectors = {
       (rootFolderId);
   },
 
+  currentFolderPath(state: RootState): string {
+    return state.storage.namePath.reduce((t, path) => `${t}${path.name}/`, '');
+  },
+
   bucket(state: RootState): string {
     return state.user.user?.bucket || '';
   },

@@ -7,9 +7,11 @@ import { setInfoItem, storageSelectors } from '../../store/slices/storage';
 
 import './FileActivity.scss';
 import { connect } from 'react-redux';
+import { DriveItemData } from '../../models/interfaces';
 
 interface FileListProps {
-  item: any | undefined;
+  item: DriveItemData | undefined;
+  currentFolderPath: string;
   dispatch: AppDispatch;
 }
 
@@ -22,6 +24,12 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
     this.state = {};
 
     this.onCloseButtonClicked = this.onCloseButtonClicked.bind(this);
+  }
+
+  get itemFullPath(): string {
+    const { item, currentFolderPath } = this.props;
+
+    return `${currentFolderPath}${item?.name}`;
   }
 
   onCloseButtonClicked(): void {
@@ -37,11 +45,9 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
 
         {/* HEADER */}
         <div className="flex items-center mb-6">
-          <ItemIconComponent className="file-activity-icon" />
-          <div className="flex-grow">
-            <span className="block font-semibold text-neutral-700 text-sm">{item.name}</span>
-          </div>
-          <div className="w-3 cursor-pointer" onClick={this.onCloseButtonClicked}>
+          <ItemIconComponent className="min-w-9" />
+          <span className="mx-2 overflow-hidden whitespace-nowrap overflow-ellipsis block font-semibold text-neutral-700 text-sm w-full max-w-full">{item.name}</span>
+          <div className="w-6 cursor-pointer" onClick={this.onCloseButtonClicked}>
             <Unicons.UilTimes className="text-blue-40" />
           </div>
         </div>
@@ -62,7 +68,7 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
           </div>
           <div className="file-activity-info-item">
             <span className="label">Folder path</span>
-            <span className="value">Desktop/Backups/FilePending</span>
+            <span className="value whitespace-nowrap overflow-ellipsis overflow-hidden">{this.itemFullPath}</span>
           </div>
 
           {
@@ -91,9 +97,11 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
 }
 
 export default connect((state: RootState) => {
-  const item: any | undefined = storageSelectors.getInfoItem(state);
+  const item: DriveItemData | undefined = storageSelectors.getInfoItem(state);
+  const currentFolderPath: string = storageSelectors.currentFolderPath(state);
 
   return {
-    item
+    item,
+    currentFolderPath
   };
 })(FileActivity);
