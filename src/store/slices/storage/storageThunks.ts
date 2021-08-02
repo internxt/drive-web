@@ -141,7 +141,6 @@ export const uploadItemsThunk = createAsyncThunk(
       const rateLimited = false;
 
       file.parentFolderId = parentFolderId;
-      file.isTeam = !!user.teams;
       file.file = file;
       file.folderPath = folderPath;
 

@@ -119,8 +119,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {
     const { user, currentFolderId } = this.props;
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
-    return folderService.createFolder(!!user.teams, currentFolderId, folderName);
+    return folderService.createFolder(isTeam, currentFolderId, folderName);
   }
 
   onUploadButtonClicked = (): void => {
@@ -263,7 +264,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   };
 
   move = (items, destination, moveOpId) => {
-    const { user } = this.props;
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     // Don't want to request this...
     if (
@@ -299,7 +300,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
       data[keyOp.toLowerCase() + 'Id'] = item.fileId || item.id;
       fetch(`/api/storage/move${keyOp}`, {
         method: 'post',
-        headers: getHeaders(true, true, user.teams),
+        headers: getHeaders(true, true, isTeam),
         body: JSON.stringify(data)
       }).then(async (res) => {
         const response = await res.json();

@@ -28,6 +28,7 @@ export const initializeUserThunk = createAsyncThunk(
   'user/initialize',
   async (payload: { redirectToLogin: boolean } = { redirectToLogin: true }, { dispatch, getState }: any) => {
     const { user, isAuthenticated } = getState().user;
+    const isTeam = selectorIsTeam(getState());
 
     if (user && isAuthenticated) {
       if (!user.root_folder_id) {
@@ -41,7 +42,7 @@ export const initializeUserThunk = createAsyncThunk(
           localStorageService.del('xTeam');
         }
 
-        if (localStorageService.exists('xTeam') && !user.teams && localStorageService.get('workspace') === 'teams') {
+        if (localStorageService.exists('xTeam') && isTeam && localStorageService.get('workspace') === 'business') {
           dispatch(handleChangeWorkspaceThunk());
         }
 
