@@ -7,8 +7,9 @@ import { getEnvironmentConfig, Network } from '../lib/network';
 import fileLogger from './fileLogger';
 import { toast } from 'react-toastify';
 import { updateFileStatusLogger } from '../store/slices/files';
+import { AppDispatch } from '../store';
 
-export async function downloadFile(itemData: any, totalPath: string, dispatch: any, isTeam: boolean): Promise<void> {
+export async function downloadFile(itemData: any, totalPath: string, dispatch: AppDispatch, isTeam: boolean): Promise<void> {
   const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId || itemData.id;
   const completeFilename = itemData.type ?

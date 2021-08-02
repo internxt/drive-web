@@ -118,7 +118,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {
-    const { user, currentFolderId } = this.props;
+    const { currentFolderId } = this.props;
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     return folderService.createFolder(isTeam, currentFolderId, folderName);

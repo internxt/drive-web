@@ -8,6 +8,7 @@ import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';
 import { DevicePlatform } from '../../models/enums';
 import { updateFileStatusLogger } from '../../store/slices/files';
+import { AppDispatch } from '../../store';
 
 export interface UploadItemPayload {
   file: any,
@@ -17,7 +18,7 @@ export interface UploadItemPayload {
   name: string
 }
 
-export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, dispatch: any, isTeam: boolean): Promise<any> {
+export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, dispatch: AppDispatch, isTeam: boolean): Promise<any> {
   dispatch(updateFileStatusLogger({ action: 'upload', status: 'encrypting', filePath: path, isFolder: false }));
 
   if (!file.parentFolderId) {
