@@ -4,15 +4,17 @@ import SessionStorage from '../../../../lib/sessionStorage';
 import { bytesToString } from '../../../../services/size.service';
 import usageService, { putLimitUser } from '../../../../services/usage.service';
 import { useAppSelector } from '../../../../store/hooks';
+import { selectorIsTeam } from '../../../../store/slices/team';
 import { selectUser } from '../../../../store/slices/user';
 
 const AccountPlanInfoTab = () => {
   const [usage, setUsage] = useState(0);
   const limit = parseInt(SessionStorage.get('limitStorage') || (1024 * 1024 * 1024 * 2).toString());
   const user = useAppSelector(selectUser);
+  const isTeam = useAppSelector(selectorIsTeam);
 
   useEffect(() => {
-    usageService.fetchUsage().then(res => setUsage(res.total));
+    usageService.fetchUsage(isTeam).then(res => setUsage(res.total));
   }, []);
 
   return (

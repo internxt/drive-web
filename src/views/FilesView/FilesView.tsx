@@ -135,9 +135,10 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   onUploadInputChanged = async (e) => {
     const limitStorage = SessionStorage.get('limitStorage');
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     try {
-      const usage: UsageResponse = await usageService.fetchUsage();
+      const usage: UsageResponse = await usageService.fetchUsage(isTeam);
 
       if (limitStorage && usage.total >= parseInt(limitStorage)) {
         this.props.dispatch(uiActions.showReachedPlanLimit(true));
