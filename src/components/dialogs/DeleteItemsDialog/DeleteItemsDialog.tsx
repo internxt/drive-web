@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageThunks } from '../../../store/slices/storage';
 import { selectShowDeleteModal, setShowDeleteModal } from '../../../store/slices/ui';
 import { setItemsToDelete } from '../../../store/slices/storage';
-import BaseDialog2 from '../BaseDialog2.0/BaseDialog2.0';
+import BaseDialog from '../BaseDialog/BaseDialog';
 
 import './DeleteItemsDialog.scss';
 import { useState } from 'react';
@@ -39,7 +39,7 @@ const DeleteItemsDialog = ({ }: DeleteItemsDialogProps): JSX.Element => {
   };
 
   return (
-    <BaseDialog2
+    <BaseDialog
       isOpen={isOpen}
       title='Delete items'
       onClose={onClose}
@@ -58,7 +58,7 @@ const DeleteItemsDialog = ({ }: DeleteItemsDialogProps): JSX.Element => {
           </button>
         </div>
       </div>
-    </BaseDialog2>
+    </BaseDialog>
   );
 };
 

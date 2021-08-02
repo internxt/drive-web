@@ -12,7 +12,7 @@ import AuthInput from '../../Inputs/AuthInput';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../Buttons/AuthButton';
 import notify from '../../Notifications';
-import BaseDialog2 from '../BaseDialog2.0/BaseDialog2.0';
+import BaseDialog from '../BaseDialog/BaseDialog';
 import { selectShowCreateFolderModal, setShowCreateFolderModal } from '../../../store/slices/ui';
 
 interface CreateFolderDialogProps {
@@ -55,7 +55,7 @@ const CreateFolderDialog = ({
   };
 
   return (
-    <BaseDialog2
+    <BaseDialog
       isOpen={isOpen}
       title='Create folder'
       onClose={onClose}
@@ -82,7 +82,7 @@ const CreateFolderDialog = ({
           </div>
         </div>
       </form>
-    </BaseDialog2>
+    </BaseDialog>
   );
 };
 

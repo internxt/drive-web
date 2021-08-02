@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { selectShowReachedLimitModal, setShowReachedPlanLimit } from '../../../store/slices/ui';
-import BaseDialog2 from '../BaseDialog2.0/BaseDialog2.0';
+import BaseDialog from '../BaseDialog/BaseDialog';
 import history from '../../../lib/history';
 
 import './ReachedPlanLimitDialog.scss';
@@ -23,12 +23,12 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
   };
 
   return (
-    <BaseDialog2
+    <BaseDialog
       title="Run out of space"
       isOpen={isOpen}
       onClose={onClose}
     >
-      <span className='self-center text-center text-sm w-64 my-6'>
+      <span className='text-center block w-full text-base px-8 text-neutral-900 my-6'>
         Your Internxt Drive is full. Get more space upgrading your account.
       </span>
 
@@ -42,7 +42,7 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
           </button>
         </div>
       </div>
-    </BaseDialog2>
+    </BaseDialog>
   );
 };
 
