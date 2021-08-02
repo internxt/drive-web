@@ -33,8 +33,8 @@ const InviteMemberCreateDialog = ({
     try {
       if (team && team.isAdmin) {
         await sendEmailTeamsMember(formData.email);
+        notify(`Invitation email sent to ${formData.email}`, 'success');
       }
-      notify(`Invitation email sent to ${formData.email}`, 'success');
     } catch (error) {
       notify(error.message || error, 'error');
     }
