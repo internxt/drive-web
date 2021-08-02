@@ -1,31 +1,32 @@
+import * as Unicons from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
-import { getIcon } from '../../services/icon.service';
+
 import './toastify.scss';
 
 const SuccessToast = ({ text }: { text: string }): JSX.Element => (
   <div className='flex items-center justify-start'>
-    <img src={getIcon('roundedTickNeutral')} alt="tick" />
+    <Unicons.UilCheckCircle />
     <span className='text-neutral-900 ml-2.5'>{text}</span>
   </div>
 );
 
 const ErrorToast = ({ text }: { text: string }): JSX.Element => (
   <div className='flex items-center justify-start'>
-    <img src={getIcon('roundedTickWhite')} alt="tick" />
+    <Unicons.UilCheckCircle className="text-white"/>
     <span className='text-white ml-2.5'>{text}</span>
   </div>
 );
 
 const InfoToast = ({ text }: { text: string }): JSX.Element => (
   <div className='flex items-center justify-start'>
-    <img src={getIcon('roundedTickWhite')} alt="tick" />
+    <Unicons.UilCheckCircle className="text-white"/>
     <span className='text-white ml-2.5'>{text}</span>
   </div>
 );
 
 const WarningToast = ({ text }: { text: string }): JSX.Element => (
   <div className='flex items-center justify-start'>
-    <img src={getIcon('roundedTickNeutral')} alt="tick" />
+    <Unicons.UilCheckCircle />
     <span className='text-neutral-900 ml-2.5'>{text}</span>
   </div>
 );

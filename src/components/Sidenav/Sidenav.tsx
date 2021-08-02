@@ -1,16 +1,16 @@
 import React from 'react';
 import * as Unicons from '@iconscout/react-unicons';
-import SidenavItem from './SidenavItem/SidenavItem';
 import { connect } from 'react-redux';
+
 import { RootState } from '../../store';
 import { UserSettings } from '../../models/interfaces';
-import { getIcon } from '../../services/icon.service';
-
-import { ReactComponent as ReactLogo } from '../../assets/icons/internxt-long-logo.svg';
+import smallLogo from '../../assets/icons/small-logo.svg';
+import { ReactComponent as ReactLogo } from '../../assets/icons/big-logo.svg';
 import history from '../../lib/history';
+import SidenavItem from './SidenavItem/SidenavItem';
+import desktopService from '../../services/desktop.service';
 
 import './Sidenav.scss';
-import desktopService from '../../services/desktop.service';
 
 interface SidenavProps {
   user: UserSettings;
@@ -50,7 +50,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
           <div>
             <div className="py-3 mb-2">
               {collapsed ?
-                <img className='opacity-0 w-6 long-logo' src={getIcon('internxtShortLogo')} alt="" /> :
+                <img className='opacity-0 w-6 long-logo' src={smallLogo} alt="" /> :
                 <div className="w-28 h-auto flex items-center" onClick={() => {
                   history.push('/');
                 }}>

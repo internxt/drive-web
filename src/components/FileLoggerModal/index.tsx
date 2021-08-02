@@ -6,7 +6,7 @@ import './FileLogger.scss';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { clearFileLoggerStatus, selectFinishedFiles, selectLoggerFiles } from '../../store/slices/files';
 import { useEffect } from 'react';
-import { getIcon } from '../../services/icon.service';
+import spinnerIcon from '../../assets/icons/spinner.svg';
 
 const FileLoggerModal = (): JSX.Element => {
   const fileHistory = useAppSelector(selectLoggerFiles);
@@ -71,7 +71,7 @@ const FileLoggerModal = (): JSX.Element => {
         <div className='flex items-center w-max text-sm text-white font-semibold'>
           {!hasFinished ?
             <Fragment>
-              <img className='animate-spin mr-2' src={getIcon('spinner')} alt="" />
+              <img className='animate-spin mr-2' src={spinnerIcon} alt="" />
 
               {isDownloading && isUploading ?
                 'Multiple processes running'

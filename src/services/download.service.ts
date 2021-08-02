@@ -1,12 +1,12 @@
 import fileDownload from 'js-file-download';
+import { toast } from 'react-toastify';
 
 import localStorageService from './localStorage.service';
 import analyticsService from './analytics.service';
-import { DevicePlatform } from '../models/enums';
+import { DevicePlatform, FileActionTypes, FileStatusTypes } from '../models/enums';
 import { getEnvironmentConfig, Network } from '../lib/network';
-import fileLogger from './fileLogger';
-import { toast } from 'react-toastify';
 import { updateFileStatusLogger } from '../store/slices/files';
+import { DriveItemData } from '../models/interfaces';
 import { AppDispatch } from '../store';
 
 export async function downloadFile(itemData: any, totalPath: string, dispatch: AppDispatch, isTeam: boolean): Promise<void> {
@@ -16,8 +16,7 @@ export async function downloadFile(itemData: any, totalPath: string, dispatch: A
     `${itemData.name}.${itemData.type}` :
     `${itemData.name}`;
 
-  //fileLogger.push({ action: 'download', status: FileStatusTypes.Decrypting, filePath: itemData.name });
-  dispatch(updateFileStatusLogger({ action: 'download', status: 'decrypting', filePath: totalPath, isFolder: false }));
+  dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Decrypting, filePath: totalPath, type: itemData.type, isFolder: itemData.isFolder }));
 
   try {
     trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
@@ -27,19 +26,16 @@ export async function downloadFile(itemData: any, totalPath: string, dispatch: A
 
     const fileBlob = await network.downloadFile(bucketId, fileId, {
       progressCallback: (progress) => {
-        dispatch(updateFileStatusLogger({ action: 'download', status: 'downloading', filePath: totalPath, progress: progress.toFixed(2), isFolder: false }));
-
-      } /* pcb.setState({ progress }) */
+        dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Downloading, filePath: totalPath, progress: progress.toFixed(2), type: itemData.type, isFolder: itemData.isFolder }));
+      }
     });
 
     fileDownload(fileBlob, completeFilename);
-    dispatch(updateFileStatusLogger({ action: 'download', status: 'success', filePath: totalPath, isFolder: false }));
+    dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Success, filePath: totalPath, type: itemData.type, isFolder: itemData.isFolder }));
 
-    //fileLogger.push({ tion: 'download', status: FileStatusTypes.Success, filePath: itemData.name });
     trackFileDownloadFinished(userEmail, fileId, itemData.size);
   } catch (err) {
-    //fileLogger.push({ action: 'download', status: FileStatusTypes.Error, filePath: itemData.name, message: err.message });
-    dispatch(updateFileStatusLogger({ action: 'download', status: 'error', filePath: totalPath, isFolder: false }));
+    dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Error, filePath: totalPath, type: itemData.type, isFolder: itemData.isFolder }));
 
     trackFileDownloadError(userEmail, fileId, err.message);
     toast.warn(`Error downloading file: \n Reason is ${err.message} \n File id: ${fileId}`);

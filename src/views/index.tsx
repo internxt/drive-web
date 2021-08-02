@@ -10,7 +10,6 @@ import TeamsView from './TeamsView/TeamsView';
 import JoinTeamView from './JoinTeamView/JoinTeamView';
 import ResetView from './ResetView/ResetView';
 import DeactivationView from './DeactivationView/DeactivationView';
-import SecurityView from './SecurityView/SecurityView';
 import DeactivationTeamsView from './DeactivationTeamsView/DeactivationTeamsView';
 import TeamSuccessView from '../views/TeamSuccessView/TeamSuccessView';
 import CheckoutView from './CheckoutView/CheckoutView';
@@ -33,7 +32,6 @@ const views: Array<{ id: string, component: string | FunctionComponent<any> | Co
   { id: 'teams-join', component: JoinTeamView },
   { id: 'deactivation', component: DeactivationView },
   { id: 'teams-deactivation', component: DeactivationTeamsView },
-  { id: 'security', component: SecurityView },
   { id: 'team-success', component: TeamSuccessView },
   { id: 'checkout', component: CheckoutView },
   { id: 'reset', component: ResetView },

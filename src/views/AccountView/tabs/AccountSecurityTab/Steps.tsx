@@ -1,6 +1,7 @@
 import React, { SetStateAction } from 'react';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import * as Unicons from '@iconscout/react-unicons';
 
 import { IFormValues } from '../../../../models/interfaces';
 import { store2FA } from '../../../../services/auth.service';
@@ -8,7 +9,9 @@ import AuthButton from '../../../../components/Buttons/AuthButton';
 import AuthInput from '../../../../components/Inputs/AuthInput';
 import { twoFactorRegexPattern } from '../../../../services/validation.service';
 import notify from '../../../../components/Notifications';
-import { getIcon } from '../../../../services/icon.service';
+import googleAuthenticatorIcon from '../../../../assets/icons/google-authenticator.svg';
+import appStoreIcon from '../../../../assets/icons/app-store.svg';
+import playStoreIcon from '../../../../assets/icons/play-store.svg';
 
 interface StepsProps {
   currentStep: number,
@@ -79,7 +82,7 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
             error={errors.backupKey}
             register={register}
             required={true}
-            icon='lockGray'
+            icon={<Unicons.UilLock />}
             minLength={1} />
 
           <div className='mx-2' />
@@ -91,7 +94,7 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
             error={errors.twoFactorCode}
             register={register}
             required={true}
-            icon='lockGray'
+            icon={<Unicons.UilLock />}
             minLength={1}
             pattern={twoFactorRegexPattern} />
         </div>
@@ -116,9 +119,9 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
     <div className="box-step-1">
       <div className='text-sm text-neutral-700'>Download Authy, Google Authenticator or a similar app on your device.</div>
       <div className='flex items-center mt-4'>
-        <img src={getIcon('googleAuthenticator')} className='mr-8' height={48} width={48} alt="Google Authenticator" />
-        <img src={getIcon('appStore')} className='mr-2' height={48} width={150} alt="App Store" />
-        <img src={getIcon('playStore')} height={48} width={150} alt="Google Play" />
+        <img src={googleAuthenticatorIcon} className='mr-8' height={48} width={48} alt="Google Authenticator" />
+        <img src={appStoreIcon} className='mr-2' height={48} width={150} alt="App Store" />
+        <img src={playStoreIcon} height={48} width={150} alt="Google Play" />
       </div>
     </div>
   );

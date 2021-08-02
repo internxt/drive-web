@@ -57,7 +57,7 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps, File
     const { title, hiddenActions } = this.props;
 
     return (
-      <Dropdown.Menu className="file-dropdown-actions">
+      <div>
         { title ?
           <span className="text-supporting-2 mb-1">{title}</span> :
           null
@@ -66,7 +66,6 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps, File
         { !hiddenActions.includes(ItemAction.Download) ?
           <Dropdown.Item
             id="download"
-            className="file-dropdown-actions-button"
             onClick={this.onDownloadButtonClicked}
           >
             <Unicons.UilCloudDownload className="text-blue-60 h-5 mr-1" />
@@ -76,7 +75,6 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps, File
         { !hiddenActions.includes(ItemAction.Rename) ?
           <Dropdown.Item
             id="rename"
-            className="file-dropdown-actions-button"
             onClick={this.onRenameButtonClicked}
           >
             <Unicons.UilEditAlt className="text-blue-60 h-5 mr-1" />
@@ -86,7 +84,6 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps, File
         { !hiddenActions.includes(ItemAction.Share) ?
           <Dropdown.Item
             id="share"
-            className="file-dropdown-actions-button"
             onClick={this.onShareButtonClicked}
           >
             <Unicons.UilShareAlt className="text-blue-60 h-5 mr-1" />
@@ -96,7 +93,6 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps, File
         { !hiddenActions.includes(ItemAction.Info) ?
           <Dropdown.Item
             id="info"
-            className="file-dropdown-actions-button"
             onClick={this.onInfoButtonClicked}
           >
             <Unicons.UilFileInfoAlt className="text-blue-60 h-5 mr-1" />
@@ -107,14 +103,14 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps, File
         { !hiddenActions.includes(ItemAction.Delete) ?
           <Dropdown.Item
             id="delete"
-            className="file-dropdown-actions-button text-red-60 hover:text-red-60"
+            className="text-red-60 hover:text-red-60"
             onClick={this.onDeleteButtonClicked}
           >
             <Unicons.UilTrashAlt className="h-5 mr-1" />
             <span>Delete</span>
           </Dropdown.Item> : null
         }
-      </Dropdown.Menu>
+      </div>
     );
   }
 }

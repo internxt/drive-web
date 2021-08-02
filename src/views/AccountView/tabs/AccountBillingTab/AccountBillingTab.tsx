@@ -1,8 +1,6 @@
-import React, { Fragment } from 'react';
-import { useState } from 'react';
-import './AccountBillingTab.scss';
-import { useEffect } from 'react';
-import { getIcon } from '../../../../services/icon.service';
+import { useState, useEffect, Fragment } from 'react';
+import * as Unicons from '@iconscout/react-unicons';
+
 import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts, payStripePlan } from '../../../../services/products.service';
 import notify from '../../../../components/Notifications';
@@ -12,6 +10,7 @@ import BillingPlanItem from './BillingPlanItem';
 import { generateMnemonic } from 'bip39';
 import { encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
+import './AccountBillingTab.scss';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -19,7 +18,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case isBusiness && currentOption === 'business':
         return (
           <div className='option border-b-2 border-blue-60' onClick={onClick}>
-            <img src={getIcon('buildingBlue')} alt="house" className='active' />
+            <Unicons.UilBuilding className='text-blue-60 active' />
             <span>{text}</span>
           </div>
         );
@@ -27,7 +26,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case isBusiness && currentOption === 'individual':
         return (
           <div className='option' onClick={onClick}>
-            <img src={getIcon('buildingGray')} alt="house" />
+            <Unicons.UilBuilding />
             <span>{text}</span>
           </div>
         );
@@ -35,7 +34,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case !isBusiness && currentOption === 'individual':
         return (
           <div className='option border-b-2 border-blue-60' onClick={onClick}>
-            <img src={getIcon('houseBlue')} alt="house" className='active' />
+            <Unicons.UilHome className='text-blue-60 active' />
             <span>{text}</span>
           </div>
         );
@@ -43,7 +42,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case !isBusiness && currentOption === 'business':
         return (
           <div className='option' onClick={onClick}>
-            <img src={getIcon('houseGray')} alt="house" />
+            <Unicons.UilHome />
             <span>{text}</span>
           </div>
         );

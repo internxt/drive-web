@@ -203,7 +203,7 @@ code {
   button.secondary {
     height: 32px;
     border-radius: 4px;
-    @apply px-4 py-2 text-xs;
+    @apply px-4 py-2 text-sm;
   }
   button.primary {
     @apply flex items-center justify-center bg-blue-60 transition duration-200 ease-in-out hover:bg-blue-80 py-2 rounded text-white text-sm;

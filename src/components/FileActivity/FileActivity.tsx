@@ -1,11 +1,12 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import * as Unicons from '@iconscout/react-unicons';
 
-import iconService, { IconType } from '../../services/icon.service';
+import iconService from '../../services/icon.service';
 import { AppDispatch, RootState } from '../../store';
 import { setInfoItem, storageSelectors } from '../../store/slices/storage';
 
 import './FileActivity.scss';
+import { connect } from 'react-redux';
 
 interface FileListProps {
   item: any | undefined;
@@ -29,18 +30,19 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
 
   render(): JSX.Element {
     const item = this.props.item || {};
+    const ItemIconComponent = iconService.getItemIcon(item.type);
 
     return (
       <div className="w-activity-1280 bg-white ml-24px rounded-4px p-24px">
 
         {/* HEADER */}
         <div className="flex items-center mb-6">
-          <img className="file-activity-icon" src={iconService.getIcon('folderBlue')} alt="" />
+          <ItemIconComponent className="file-activity-icon" />
           <div className="flex-grow">
             <span className="block font-semibold text-neutral-700 text-sm">{item.name}</span>
           </div>
           <div className="w-3 cursor-pointer" onClick={this.onCloseButtonClicked}>
-            <img className="w-full" src={iconService.getIcon('crossBlue')} alt="" />
+            <Unicons.UilTimes className="text-blue-40" />
           </div>
         </div>
 
@@ -56,7 +58,7 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
         {/* INFO TAB CONTENT */}
         <div className="relative border-l border-dashed border-l-neutral-50 pl-4">
           <div className="w-3 absolute bg-white -left-1.5">
-            <img className="w-full" src={iconService.getIcon('itemInfo')} alt="" />
+            <Unicons.UilFolderNetwork className="w-full" />
           </div>
           <div className="file-activity-info-item">
             <span className="label">Folder path</span>

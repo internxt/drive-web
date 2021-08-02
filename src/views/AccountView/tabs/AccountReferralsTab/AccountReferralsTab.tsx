@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { IFormValues } from '../../../../models/interfaces';
-import { getIcon } from '../../../../services/icon.service';
+import * as Unicons from '@iconscout/react-unicons';
+
 import localStorageService from '../../../../services/localStorage.service';
+import { IFormValues } from '../../../../models/interfaces';
 import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../../services/referral.service';
 import { emailRegexPattern } from '../../../../services/validation.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
@@ -90,7 +91,7 @@ const AccountReferralsTab = (): JSX.Element => {
             placeholder='example@example.com'
             label='email'
             type='email'
-            icon='mailGray'
+            icon={<Unicons.UilEnvelope />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -109,7 +110,7 @@ const AccountReferralsTab = (): JSX.Element => {
             notify('Link copied!', 'info', 2500);
           }}>
           <span className='text-neutral-700 text-sm truncate mr-3'>{linkToCopy}</span>
-          <img src={getIcon('clipboardBlue')} alt="clip" />
+          <Unicons.UilPaperclip className="text-blue-60" />
         </div>
 
         <span className='my-5 text-neutral-900 font-semibold'>
