@@ -19,7 +19,7 @@ export async function getTeamsInfo(): Promise<any> {
     method: 'get',
     headers: getHeaders(true, false, false)
   }).then(res => {
-    res.json();
+    return res.json();
   }).catch(() => {
     throw new Error ('Can not get info team');
   });
