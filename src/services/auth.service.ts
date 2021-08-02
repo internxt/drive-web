@@ -6,7 +6,6 @@ import { generateNewKeys, updateKeys } from './pgp.service';
 import AesUtils from '../lib/AesUtil';
 import { decryptText, decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../lib/utils';
 import { validateFormat } from './keys.service';
-import { storeTeamsInfo } from './teams.service';
 import { decryptPGP } from '../lib/utilspgp';
 import * as bip39 from 'bip39';
 
