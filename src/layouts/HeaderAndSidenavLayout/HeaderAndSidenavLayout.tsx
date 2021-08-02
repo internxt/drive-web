@@ -16,6 +16,7 @@ import { useEffect } from 'react';
 import SessionStorage from '../../lib/sessionStorage';
 import { getLimit } from '../../services/limit.service';
 import localStorageService from '../../services/localStorage.service';
+import InviteMemberDialog from '../../components/dialogs/InviteMemberDialog/InviteMemberDialog';
 
 interface HeaderAndSidenavLayoutProps {
   children: JSX.Element
@@ -26,13 +27,10 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const { children } = props;
   const isAuthenticated: boolean = useSelector((state: RootState) => state.user.isAuthenticated);
   const isSidenavCollapsed: boolean = useSelector((state: RootState) => state.ui.isSidenavCollapsed);
-  const showCreateFolderModal: boolean = useSelector((state: RootState) => state.ui.showCreateFolderModal);
-  const showDeleteModal: boolean = useSelector((state: RootState) => state.ui.showDeleteModal);
   const currentItems: any[] = useSelector((state: RootState) => state.storage.items);
   const itemToShareId: number = useSelector((state: RootState) => state.storage.itemToShareId);
   const itemToShare: any = currentItems.find(item => item.id === itemToShareId);
   const toggleIsSidenavCollapsed: () => void = () => dispatch(uiActions.setIsSidenavCollapsed(!isSidenavCollapsed));
-  const showReachedLimitModal: boolean = useSelector((state: RootState) => state.ui.showReachedLimitModal);
 
   useEffect(() => {
     const limitStorage = SessionStorage.get('limitStorage');
@@ -73,6 +71,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
       <DeleteItemsDialog />
 
       <ReachedPlanLimitDialog />
+      <InviteMemberDialog />
 
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />

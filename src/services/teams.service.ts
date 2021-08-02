@@ -25,7 +25,7 @@ export async function getTeamsInfo(): Promise<any> {
   });
 }
 
-export async function getKeys(mail: string): Promise<Response> {
+export async function getKeys(mail: string): Promise<any> {
   return fetch(`/api/user/keys/${mail}`, {
     method: 'GET',
     headers: getHeaders(true, false)

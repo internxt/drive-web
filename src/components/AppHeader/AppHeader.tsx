@@ -14,6 +14,7 @@ import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
 import localStorageService from '../../services/localStorage.service';
 import { filesStateSlice } from '../../store/slices/files';
 import { setWorkspace } from '../../store/slices/team';
+import { setShowInviteMemberModal } from '../../store/slices/ui';
 
 interface AppHeaderProps {
   user: UserSettings | undefined
@@ -59,6 +60,10 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
     this.props.dispatch(filesStateSlice.actions.clearFileLoggerStatus());
     this.props.dispatch(setWorkspace(Workspace.Personal));
     authService.logOut();
+  }
+
+  onInviteMemberClick = (): void => {
+    this.props.dispatch(setShowInviteMemberModal(true));
   }
 
   render(): ReactNode {
@@ -126,7 +131,9 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
             }
             <hr className="text-l-neutral-30 my-1.5"></hr>
             {this.props.team?.isAdmin && workspace === Workspace.Business &&
-              <Dropdown.Item>
+              <Dropdown.Item
+                onClick={this.onInviteMemberClick}
+              >
                 <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
                 <span>Invite a member</span>
               </Dropdown.Item>
