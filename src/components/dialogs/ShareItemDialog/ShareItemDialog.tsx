@@ -51,7 +51,7 @@ class ShareItemDialog extends React.Component<ShareItemDialogProps, ShareItemDia
   }
 
   generateShortLink = (url: string) => {
-    const isTeam: boolean = !!this.props.user.teams;
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     return new Promise((resolve, reject) => {
       fetch('/api/storage/shortLink', {
