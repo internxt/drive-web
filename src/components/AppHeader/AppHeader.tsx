@@ -12,6 +12,7 @@ import { Workspace } from '../../models/enums';
 import { handleChangeWorkspaceThunk } from '../../store/slices/user';
 import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
 import localStorageService from '../../services/localStorage.service';
+import { filesStateSlice } from '../../store/slices/files';
 
 interface AppHeaderProps {
   user: UserSettings | undefined
@@ -55,6 +56,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
 
   onLogoutButtonClicked = (): void => {
     authService.logOut();
+    this.props.dispatch(filesStateSlice.actions.clearFileLoggerStatus());
   }
 
   render(): ReactNode {
