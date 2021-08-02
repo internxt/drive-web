@@ -106,18 +106,19 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
     const data: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     try {
       if (item.name !== dirtyName) {
         if (item.isFolder) {
-          folderService.updateMetaData(item.id, data)
+          folderService.updateMetaData(item.id, data, isTeam)
             .then(() => {
               this.props.dispatch(
                 storageThunks.fetchFolderContentThunk()
               );
             });
         } else {
-          fileService.updateMetaData(item.fileId, data as DriveFileMetadataPayload).then(() => {
+          fileService.updateMetaData(item.fileId, data as DriveFileMetadataPayload, isTeam).then(() => {
             this.props.dispatch(
               storageThunks.fetchFolderContentThunk()
             );

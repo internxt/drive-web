@@ -6,9 +6,8 @@ import { DriveFileData, DriveFileMetadataPayload } from '../models/interfaces';
 import analyticsService from './analytics.service';
 import localStorageService from './localStorage.service';
 
-export function updateMetaData(itemId: string, data: DriveFileMetadataPayload): Promise<void> {
+export function updateMetaData(itemId: string, data: DriveFileMetadataPayload, isTeam: boolean): Promise<void> {
   const user = localStorageService.getUser();
-  const isTeam = user?.teams;
 
   return fetch(`/api/storage/file/${itemId}/meta`, {
     method: 'post',
