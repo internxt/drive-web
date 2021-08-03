@@ -1,6 +1,6 @@
 import notify from '../components/Notifications';
 import { getHeaders } from '../lib/auth';
-import { UserSettings } from '../models/interfaces';
+import { IUserPlan, UserSettings } from '../models/interfaces';
 import localStorageService from './localStorage.service';
 
 export function initializeUser(): Promise<number> {
@@ -47,17 +47,22 @@ export const sendDeactivationEmail = async (email: string): Promise<void> => {
   });
 };
 
-export const fetchUserPlan = async (isTest: boolean) => {
-  const response = await fetch(`api/storage/user/info/stripe${isTest}`, {
+export const fetchUserPlan = async (): Promise<IUserPlan> => {
+  const isTest = process.env.NODE_ENV !== 'production' ? true : false;
+  const response = await fetch(`/api/storage/user/info/stripe/${isTest}`, {
     method: 'GET',
     headers: getHeaders(true, false)
   });
 
   if (response.status !== 200) {
     if (response.status === 404) {
-      throw new Error('');
+      throw new Error('Product not found.');
     }
+    throw new Error('Could not get user info');
   }
+  const data = await response.json();
+
+  return data;
 };
 
 const userService = {

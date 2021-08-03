@@ -8,6 +8,10 @@ import analyticsService from '../../../../services/analytics.service';
 import SessionStorage from '../../../../lib/sessionStorage';
 import BillingPlanItem from './BillingPlanItem';
 import './AccountBillingTab.scss';
+import { useAppDispatch } from '../../../../store/hooks';
+import { setUserPlan } from '../../../../store/slices/user';
+import { fetchUserPlan } from '../../../../services/user.service';
+import { useCallback } from 'react';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -61,18 +65,21 @@ const AccountBillingTab = (): JSX.Element => {
   const [isPaying, setIsPaying] = useState(false);
   const [products, setProducts] = useState<IBillingPlan>({});
   const [teamsProducts, setTeamsProducts] = useState<IBillingPlan>({});
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const getProducts = async () => {
       try {
-        //const customer = await loadAllStripeCustomers('');
+        const userPlan = await fetchUserPlan();
         const products = await loadAvailableProducts();
         const teamsProducts = await loadAvailableTeamsProducts();
 
+        dispatch(setUserPlan(userPlan));
         const productsWithPlans = products.map(async product => ({
           product: product,
           plans: await loadAvailablePlans(product) || [],
-          selected: ''
+          selected: '',
+          currentPlan: userPlan.planId || null
         }));
         const teamsProductsWithPlans = teamsProducts.map(async product => ({
           product: product,
@@ -142,6 +149,22 @@ const AccountBillingTab = (): JSX.Element => {
     }
   };
 
+  // useCallBack for needed optimization of component, do not remove
+  const renderItem = useCallback((product, index) => <Fragment key={product.product.id}>
+    <BillingPlanItem
+      product={product.product}
+      plans={product.plans}
+      selectedPlan={product.selected}
+      currentPlan={product.currentPlan}
+      buttontext='Subscribe'
+      characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+      handlePlanSelection={handlePlanSelection}
+      handlePayment={handlePayment}
+      isPaying={isPaying}
+    />
+    {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
+  </Fragment>, []);
+
   return (
     <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
       <div className='flex justify-evenly items-center h-11'>
@@ -157,37 +180,9 @@ const AccountBillingTab = (): JSX.Element => {
       <div className='flex h-88 border-t border-m-neutral-60'>
         {!isLoading ?
           currentOption === 'individual' ?
-            Object.values(products).map((product, index) => (
-              <Fragment key={product.product.id}>
-                <BillingPlanItem
-                  product={product.product}
-                  plans={product.plans}
-                  selectedPlan={product.selected}
-                  buttontext='Subscribe'
-                  characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-                  handlePlanSelection={handlePlanSelection}
-                  handlePayment={handlePayment}
-                  isPaying={isPaying}
-                />
-                {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
-              </Fragment>
-            ))
+            Object.values(products).map(renderItem)
             :
-            Object.values(teamsProducts).map((product, index) => (
-              <Fragment key={product.product.id}>
-                <BillingPlanItem
-                  product={product.product}
-                  plans={product.plans}
-                  selectedPlan={product.selected}
-                  buttontext='Subscribe'
-                  characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-                  handlePlanSelection={handlePlanSelection}
-                  handlePayment={handlePayment}
-                  isPaying={isPaying}
-                />
-                {index < Object.keys(teamsProducts).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
-              </Fragment>
-            ))
+            Object.values(teamsProducts).map(renderItem)
           :
           <span>loading haha</span>
         }

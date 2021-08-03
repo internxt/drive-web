@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { RootState } from '../..';
 
 import history from '../../../lib/history';
-import { UserSettings } from '../../../models/interfaces';
+import { IUserPlan, UserSettings } from '../../../models/interfaces';
 import localStorageService from '../../../services/localStorage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
@@ -12,14 +12,16 @@ interface UserState {
   isInitializing: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;
-  user?: UserSettings
+  user?: UserSettings,
+  currentPlan: null | IUserPlan
 }
 
 const initialState: UserState = {
   isInitializing: false,
   isAuthenticated: false,
   isInitialized: false,
-  user: undefined
+  user: undefined,
+  currentPlan: null
 };
 
 export const initializeUserThunk = createAsyncThunk(
@@ -72,6 +74,9 @@ export const userSlice = createSlice({
       state.isAuthenticated = !!action.payload;
       state.user = action.payload;
       localStorageService.set('xUser', JSON.stringify(action.payload));
+    },
+    setUserPlan: (state: UserState, action: PayloadAction<IUserPlan>) => {
+      state.currentPlan = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -96,8 +101,10 @@ export const userSlice = createSlice({
 export const {
   initialize,
   setIsUserInitialized,
-  setUser
+  setUser,
+  setUserPlan
 } = userSlice.actions;
 export const userActions = userSlice.actions;
 export const selectUser = (state: RootState): UserSettings | undefined => state.user.user;
+export const selectUserPlan = (state: RootState): IUserPlan | null => state.user.currentPlan;
 export default userSlice.reducer;
