@@ -2,21 +2,6 @@ td {
     padding: 14px 0;
 }
 
-.type-icon {
-    height: 22px;
-}
-
-.file-list-item-actions-button {
-    $size: 18px;
-    height: $size;
-    width: $size;
-
-    img {
-        width: 12px;
-        margin: auto;
-    }
-}
-
 @layer components {
     .file-list-item {
         background-color: white;
@@ -37,6 +22,15 @@ td {
     }
 
     .file-list-item-name-span {
+        max-width: 400px;
         @apply w-min whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1 border border-dashed border-opacity-0 border-blue-40 hover:border-opacity-100;
+    }
+
+    .file-list-item-actions-button {
+        @apply rounded-1/2 w-5 h-5;
+        img {
+            width: 12px;
+            margin: auto;
+        }
     }
 }

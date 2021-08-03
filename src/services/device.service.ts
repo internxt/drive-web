@@ -1,6 +1,6 @@
 import { isMobile, isAndroid, isIOS } from 'react-device-detect';
 
-export function redirectForMobile() {
+export function redirectForMobile(): void {
   if (isMobile) {
     if (isAndroid) {
       window.location.href = 'https://play.google.com/store/apps/details?id=com.internxt.cloud';

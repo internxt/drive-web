@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../components/Buttons/AuthButton';
-import ButtonTextOnly from '../../components/Buttons/ButtonTextOnly';
 import AuthInput from '../../components/Inputs/AuthInput';
 import { IFormValues } from '../../models/interfaces';
 import { emailRegexPattern } from '../../services/validation.service';
@@ -9,10 +8,10 @@ import history from '../../lib/history';
 import { useState } from 'react';
 import { sendDeactivationEmail } from '../../services/user.service';
 import notify from '../../components/Notifications';
-import ButtonPrimary from '../../components/Buttons/ButtonPrimary';
+import BaseButton from '../../components/Buttons/BaseButton';
 
 const RemoveAccount = (): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, getValues } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, getValues } = useForm<IFormValues>({ mode: 'onChange' });
 
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,10 +69,12 @@ const RemoveAccount = (): JSX.Element => {
                 error={errors.email}
               />
 
-              <AuthButton isDisabled={isLoading} text='Send email' textWhenDisabled='Sending email...' />
+              <AuthButton isDisabled={isLoading || !isValid} text='Send email' textWhenDisabled={isValid ? 'Sending email...' : 'Send email'} />
             </form>
 
-            <ButtonTextOnly text='Back to login' additionalStyling='mt-6' onClick={() => history.push('/login')} />
+            <BaseButton classes='button_link' onClick={() => history.push('/login')}>
+              Back to login
+            </BaseButton>
           </Fragment>
           :
           <Fragment>
@@ -83,8 +84,12 @@ const RemoveAccount = (): JSX.Element => {
               are the true owner of your files on the cloud. With great power there must also come great responsibility.
             </p>
 
-            <ButtonPrimary text='Re-send deactivation email' textWhenDisabled='Sending email...' disabled={isLoading} width='w-full' onClick={() => sendEmail(getValues().email)} />
-            <ButtonTextOnly text='Back to login' additionalStyling='mt-6' onClick={() => history.push('/login')} />
+            <BaseButton classes='primary w-full' disabled={isLoading} onClick={() => sendEmail(getValues().email)}>
+              Re-send deactivation email
+            </BaseButton>
+            <BaseButton classes='button_link mt-2' onClick={() => history.push('/login')}>
+              Back to login
+            </BaseButton>
           </Fragment>
         }
       </div>

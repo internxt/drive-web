@@ -1,8 +1,8 @@
 import React, { DragEvent, Fragment, ReactNode } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import * as Unicons from '@iconscout/react-unicons';
 
-import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
-import iconService, { IconType } from '../../../../services/icon.service';
+import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
 import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
 
 import folderService from '../../../../services/folder.service';
@@ -11,12 +11,13 @@ import { AppDispatch, RootState } from '../../../../store';
 import { connect } from 'react-redux';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
-import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 
-import './FileGridItem.scss';
 import { ItemAction } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
-import { updateFileStatusLogger } from '../../../../store/slices/files';
+
+import './FileGridItem.scss';
+import iconService from '../../../../services/icon.service';
+import { setShowDeleteModal } from '../../../../store/slices/ui';
 
 interface FileGridItemProps {
   user: UserSettings;
@@ -72,28 +73,26 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     return (
       <Fragment>
-        <input
-          ref={nameInputRef}
-          className={`${isEditingName ? 'block' : 'hidden'} dense w-full border border-white`}
-          type="text" value={dirtyName}
-          placeholder="Change name folder"
-          onChange={this.onNameChanged}
-          onBlur={this.onNameBlurred}
-          onKeyPress={this.onEnterKeyPressed}
-          autoFocus
-        />
+        <div className={isEditingName ? 'flex' : 'hidden'}>
+          <input
+            className="w-full dense border border-white`"
+            ref={nameInputRef}
+            type="text"
+            value={dirtyName}
+            placeholder="Name"
+            onChange={this.onNameChanged}
+            onBlur={this.onNameBlurred}
+            onKeyPress={this.onEnterKeyPressed}
+            autoFocus
+          />
+          <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
+        </div>
         <span
-          onDoubleClick={this.onNameDoubleClicked}
           className={`${ṣpanDisplayClass} file-grid-item-name-span`}
-        >{item.name}</span>
+          onDoubleClick={this.onNameDoubleClicked}
+        >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
       </Fragment>
     );
-  }
-
-  get itemIconSrc(): string {
-    return this.props.item.isFolder ?
-      iconService.getIcon(IconType.folderBlue) :
-      iconService.getIcon(IconType.defaultFile);
   }
 
   confirmNameChange() {
@@ -166,7 +165,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
-    this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
     queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
   }
 
@@ -174,6 +172,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const { dispatch, item } = this.props;
 
     dispatch(storageActions.setItemToShare(item.id));
+    dispatch(setShowShareModal(true));
   }
 
   onInfoButtonClicked = (): void => {
@@ -183,8 +182,8 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   onDeleteButtonClicked = (): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageActions.setItemToDelete(item));
-    dispatch(setIsDeleteItemsDialogOpen(true));
+    dispatch(storageActions.setItemsToDelete([item]));
+    dispatch(setShowDeleteModal(true));
   }
 
   onItemClicked = (): void => {
@@ -197,6 +196,10 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     }
   }
 
+  onItemRightClicked = (e: MouseEvent): void => {
+    e.preventDefault();
+  }
+
   onItemDoubleClicked = (): void => {
     const { dispatch, item } = this.props;
 
@@ -206,13 +209,13 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
-    const { item } = this.props;
+    const { item, isDraggingAnItem, draggingTargetItemData } = this.props;
 
     if (item.isFolder) {
       e.preventDefault();
       e.stopPropagation();
 
-      this.props.dispatch(storageActions.setDraggingItemTargetData(this.props.item));
+      this.props.dispatch(storageActions.setDraggingItemTargetData(item));
     }
   }
 
@@ -237,12 +240,15 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
+    const ItemIconComponent = iconService.getItemIcon(item.type);
 
+    console.log('FileGridItem render - isDraggingAnItem, draggingTargetItemData: ', isDraggingAnItem, draggingTargetItemData);
     return (
       <div
         ref={itemRef}
         style={{ height }}
         className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-grid-item`}
+        onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
         onDragOver={this.onItemDragOver}
@@ -251,19 +257,21 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       >
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
-            <img alt="" className="m-auto" src={iconService.getIcon(IconType.Actions)} />
+            <Unicons.UilEllipsisH className="w-full h-full" />
           </Dropdown.Toggle>
-          <FileDropdownActions
-            hiddenActions={item.isFolder ? [ItemAction.Download] : []}
-            onRenameButtonClicked={this.onRenameButtonClicked}
-            onDownloadButtonClicked={this.onDownloadButtonClicked}
-            onShareButtonClicked={this.onShareButtonClicked}
-            onInfoButtonClicked={this.onInfoButtonClicked}
-            onDeleteButtonClicked={this.onDeleteButtonClicked}
-          />
+          <Dropdown.Menu>
+            <FileDropdownActions
+              hiddenActions={item.isFolder ? [ItemAction.Download] : []}
+              onRenameButtonClicked={this.onRenameButtonClicked}
+              onDownloadButtonClicked={this.onDownloadButtonClicked}
+              onShareButtonClicked={this.onShareButtonClicked}
+              onInfoButtonClicked={this.onInfoButtonClicked}
+              onDeleteButtonClicked={this.onDeleteButtonClicked}
+            />
+          </Dropdown.Menu>
         </Dropdown>
         <div className="file-grid-item-icon-container">
-          <img alt="" className="file-icon m-auto" src={this.itemIconSrc} />
+          <ItemIconComponent className="file-icon m-auto" />
         </div>
         <div className="text-center mt-3">
           <div className="mb-1">

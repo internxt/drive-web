@@ -4,7 +4,6 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { initializeUserThunk, setUser } from '../../store/slices/user';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
-import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
 import AuthInput from '../../components/Inputs/AuthInput';
 import SideInfo from '../Authentication/SideInfo';
 import AuthButton from '../../components/Buttons/AuthButton';
@@ -13,10 +12,10 @@ import { check2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from '../../services/localStorage.service';
 import analyticsService from '../../services/analytics.service';
 import history from '../../lib/history';
-import iconService from '../../services/icon.service';
+import bigLogo from '../../assets/icons/big-logo.svg';
 import { useSelector } from 'react-redux';
 import { IFormValues, UserSettings } from '../../models/interfaces';
-import ButtonTextOnly from '../../components/Buttons/ButtonTextOnly';
+import * as Unicons from '@iconscout/react-unicons';
 
 interface SignInProps {
   email?: string,
@@ -44,7 +43,7 @@ export const texts = {
 
 export default function SignInView(props: SignInProps): JSX.Element {
   const dispatch = useAppDispatch();
-  const { register, formState: { errors }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const twoFactorCode = useWatch({ control, name: 'twoFactorCode', defaultValue: '' });
@@ -135,14 +134,14 @@ export default function SignInView(props: SignInProps): JSX.Element {
 
       <div className='flex flex-col items-center justify-center w-full'>
         <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>
-          <img src={iconService.getIcon('internxtLongLogo')} width='110' alt="" />
+          <img src={bigLogo} width='110' alt="" />
           <span className='text-sm text-neutral-500 mt-1.5 mb-6' />
 
           <AuthInput
             placeholder='Email'
             label='email'
             type='email'
-            icon='mailGray'
+            icon={<Unicons.UilEnvelope />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -154,9 +153,9 @@ export default function SignInView(props: SignInProps): JSX.Element {
             placeholder='Password'
             label={'password'}
             type={showPassword ? 'text' : 'password'}
-            icon={password
-              ? showPassword ? 'eyeSlashGray' : 'eyeGray'
-              : 'lockGray'
+            icon={password ?
+              (showPassword ? <Unicons.UilEyeSlash /> : <Unicons.UilEye />) :
+              <Unicons.UilLock />
             }
             register={register}
             required={true}
@@ -171,7 +170,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
                 placeholder='Two factor authentication code'
                 label={'twoFactorCode'}
                 type={'text'}
-                icon='lockGray'
+                icon={<Unicons.UilLock />}
                 register={register}
                 pattern={/^\d{3}(\s+)?\d{3}$/}
                 required={true}
@@ -190,7 +189,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
           }
 
           <div className='mt-2'>
-            <AuthButton isDisabled={isLoggingIn} text='Sign in' textWhenDisabled='Decrypting...' />
+            <AuthButton isDisabled={isLoggingIn || !isValid} text='Sign in' textWhenDisabled={isValid ? 'Decrypting...' : 'Sign in'} />
           </div>
         </form>
 
@@ -207,7 +206,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
 
           <div className='flex w-full justify-center text-sm mt-3'>
             <span>Don't have an account?</span>
-            <ButtonTextOnly text='Get started' onClick={() => history.push('/new')} additionalStyling='ml-1.5' />
+            <button className="button_link ml-2" onClick={() => history.push('/new')}>Get started</button>
           </div>
         </div>
       </div>

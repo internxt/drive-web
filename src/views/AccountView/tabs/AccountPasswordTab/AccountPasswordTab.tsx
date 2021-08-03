@@ -8,7 +8,7 @@ import { changePassword } from '../../../../services/auth.service';
 import notify from '../../../../components/Notifications';
 
 const AccountPasswordTab = (): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -92,7 +92,7 @@ const AccountPasswordTab = (): JSX.Element => {
           </div>
         }
 
-        <AuthButton text='Change password' textWhenDisabled='Changing password...' isDisabled={isLoading} />
+        <AuthButton text='Change password' textWhenDisabled={isValid ? 'Changing password...' : 'Change password'} isDisabled={isLoading || !isValid} />
       </form>
     </div>
   );

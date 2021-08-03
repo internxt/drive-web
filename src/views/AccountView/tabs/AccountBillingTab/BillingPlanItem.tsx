@@ -1,9 +1,9 @@
-import React from 'react';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import ButtonPrimary from '../../../../components/Buttons/ButtonPrimary';
+import { useEffect, useState } from 'react';
+import * as Unicons from '@iconscout/react-unicons';
+
+import BaseButton from '../../../../components/Buttons/BaseButton';
 import { IStripePlan, IStripeProduct } from '../../../../models/interfaces';
-import { getIcon } from '../../../../services/icon.service';
+
 interface PlanProps {
   product: IStripeProduct,
   plans: IStripePlan[],
@@ -17,7 +17,7 @@ interface PlanProps {
 
 const ListItem = ({ text }: { text: string }): JSX.Element => (
   <div className='flex justify-start items-center mb-2'>
-    <img src={getIcon('checkBlue')} alt="check" />
+    <Unicons.UilCheck className="text-blue-60" />
     <p className='text-xs ml-2.5'>{text}</p>
   </div>
 );
@@ -72,7 +72,10 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
       {characteristics.map(text => <ListItem text={text} key={text} />)}
 
       <div className='mt-4' />
-      <ButtonPrimary width='w-full' text={selectedPlan && isPaying ? 'Redirecting to Stripe...' : buttonText} disabled={isPaying || !selectedPlan} onClick={() => handlePayment(selectedPlan, product.id)} />
+      <BaseButton classes="w-full primary" disabled={isPaying || !selectedPlan} onClick={() => handlePayment(selectedPlan, product.id)}>
+        {selectedPlan && isPaying ? 'Redirecting to Stripe...' : buttonText}
+      </BaseButton>
+
     </div>
   );
 };

@@ -3,10 +3,6 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
-      backgroundImage: () => ({
-        /* eslint-disable-next-line */
-        'background-login': "url('/src/assets/images/login/background-login.png')",
-      }),
       letterSpacing: {
         '0.2': '0.2rem',
         '0.3': '0.3rem',
@@ -27,7 +23,10 @@ module.exports = {
         '24px': '24px'
       },
       minWidth: {
-        '104': '26rem'
+        '104': '26rem',
+        'sidenav-1280': '180px',
+        'sidenav-1280-collapsed': '64px',
+        'activity-1280': '296px'
       },
       padding: {
         '42px': '42px',

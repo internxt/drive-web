@@ -1,8 +1,9 @@
-import React, { Fragment, ReactNode } from 'react';
+import React, { MouseEvent, Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { Dropdown } from 'react-bootstrap';
+import * as Unicons from '@iconscout/react-unicons';
 
-import FileDropdownActions from '../../FileDropdownActions/FileDropdownActions';
+import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
 import sizeService from '../../../../services/size.service';
 
 import './FileListItem.scss';
@@ -14,15 +15,14 @@ import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, Fo
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
-import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 import { ItemAction } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
-import { updateFileStatusLogger } from '../../../../store/slices/files';
+import { setShowDeleteModal, setShowShareModal } from '../../../../store/slices/ui';
 
 interface FileListItemProps {
   user: UserSettings | undefined;
   isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveItemData;
+  draggingTargetItemData: DriveItemData | null;
   item: DriveItemData;
   selectedItems: DriveItemData[];
   currentFolderId: number;
@@ -33,6 +33,7 @@ interface FileListItemProps {
 
 interface FileListItemState {
   isEditingName: boolean;
+  showContextMenu: boolean;
   dirtyName: string;
   nameInputRef: React.RefObject<HTMLInputElement>;
 }
@@ -43,6 +44,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     this.state = {
       isEditingName: false,
+      showContextMenu: false,
       dirtyName: '',
       nameInputRef: React.createRef()
     };
@@ -55,19 +57,27 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     return (
       <Fragment>
-        <input className={`${isEditingName ? 'block' : 'hidden'} dense border border-white`} ref={nameInputRef} type="text" value={dirtyName} placeholder="Change name folder" onChange={this.onNameChanged} onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed} autoFocus />
+        <div className={isEditingName ? 'block' : 'hidden'}>
+          <input
+            className="dense border border-white`"
+            ref={nameInputRef}
+            type="text"
+            value={dirtyName}
+            placeholder="Name"
+            onChange={this.onNameChanged}
+            onBlur={this.onNameBlurred}
+            onKeyPress={this.onEnterKeyPressed}
+            autoFocus
+          />
+          <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
+        </div>
         <span
           className={`${spanDisplayClass} file-list-item-name-span`}
+          onClick={(e) => e.stopPropagation() }
           onDoubleClick={this.onNameDoubleClicked}
-        >{item.name}</span>
+        >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
       </Fragment>
     );
-  }
-
-  get itemIconSrc(): string {
-    return this.props.item.isFolder ?
-      iconService.getIcon('folderBlue') :
-      iconService.getIcon('defaultFile');
   }
 
   confirmNameChange() {
@@ -135,6 +145,20 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
+  onItemRightClicked = (e: MouseEvent): void => {
+    e.preventDefault();
+
+    document.removeEventListener('click', this.onOutsideContextMenuClicked);
+    document.addEventListener('click', this.onOutsideContextMenuClicked);
+
+    this.setState({ showContextMenu: true });
+  }
+
+  onOutsideContextMenuClicked = (): void => {
+    document.removeEventListener('click', this.onOutsideContextMenuClicked);
+    this.setState({ showContextMenu: false });
+  }
+
   onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { item, dispatch } = this.props;
 
@@ -143,9 +167,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       dispatch(storageActions.deselectItem(item));
   }
 
-  onRenameButtonClicked = (): void => {
+  onRenameButtonClicked = (e: MouseEvent): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
+
+    e.stopPropagation();
 
     this.setState(
       { isEditingName: true, dirtyName: item.name },
@@ -153,32 +179,36 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     );
   }
 
-  onDownloadButtonClicked = (): void => {
+  onDownloadButtonClicked = (e: MouseEvent): void => {
     const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-
-    console.log(this.props.item.type);
-
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
-    this.props.dispatch(updateFileStatusLogger({ action: 'download', status: 'pending', filePath: path, isFolder: false }));
+    e.stopPropagation();
+
     queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
   }
 
-  onShareButtonClicked = (): void => {
+  onShareButtonClicked = (e: MouseEvent): void => {
     const { dispatch, item } = this.props;
 
+    e.stopPropagation();
+
     dispatch(storageActions.setItemToShare(item.id));
+    dispatch(setShowShareModal(true));
   }
 
-  onInfoButtonClicked = (): void => {
+  onInfoButtonClicked = (e: MouseEvent): void => {
+    e.stopPropagation();
     this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
   }
 
-  onDeleteButtonClicked = (): void => {
+  onDeleteButtonClicked = (e: MouseEvent): void => {
     const { dispatch, item } = this.props;
 
-    dispatch(storageActions.setItemToDelete(item));
-    dispatch(setIsDeleteItemsDialogOpen(true));
+    e.stopPropagation();
+
+    dispatch(storageActions.setItemsToDelete([item]));
+    dispatch(setShowDeleteModal(true));
   }
 
   onItemDoubleClicked = (): void => {
@@ -189,22 +219,22 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
-    const { item } = this.props;
+  onItemDragOver = (e: React.DragEvent<HTMLTableRowElement>): void => {
+    const { item, isDraggingAnItem, draggingTargetItemData } = this.props;
 
     if (item.isFolder) {
       e.preventDefault();
       e.stopPropagation();
 
-      this.props.dispatch(storageActions.setDraggingItemTargetData(this.props.item));
+      this.props.dispatch(storageActions.setDraggingItemTargetData(item));
     }
   }
 
-  onItemDragLeave = (e: DragEvent<HTMLDivElement>): void => {
+  onItemDragLeave = (e: React.DragEvent<HTMLTableRowElement>): void => {
     this.props.dispatch(storageActions.setDraggingItemTargetData(null));
   }
 
-  onItemDrop = (e: DragEvent<HTMLDivElement>): void => {
+  onItemDrop = (e: React.DragEvent<HTMLTableRowElement>): void => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -215,15 +245,17 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   render(): ReactNode {
     const { isDraggingAnItem, draggingTargetItemData, item, isItemSelected } = this.props;
-    const isDraggingOverThisItem: boolean = draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
+    const isDraggingOverThisItem: boolean = !!draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
     const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
+    const ItemIconComponent = iconService.getItemIcon(item.type);
 
     return (
       <tr
         className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
+        onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
         onDragOver={this.onItemDragOver}
@@ -237,7 +269,9 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
           }
         </td>
         <td>
-          <img alt="" className="type-icon" src={this.itemIconSrc} />
+          <div className="h-8 w-8 flex justify-center">
+            <ItemIconComponent className="h-full" />
+          </div>
         </td>
         <td>
           <div>
@@ -246,36 +280,38 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             </div>
           </div>
         </td>
-        <td>{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
-        <td>{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
         <td>
-          <div className="flex justify-center">
+          <div className="flex">
             {!item.isFolder ?
               <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
-                <img alt="" src={iconService.getIcon('downloadItems')} />
+                <Unicons.UilCloudDownload className="h-5" />
               </button> : null
             }
             <button onClick={this.onShareButtonClicked} className="hover-action mr-4">
-              <img alt="" src={iconService.getIcon('shareItems')} />
+              <Unicons.UilShareAlt className="h-5" />
             </button>
             <button onClick={this.onDeleteButtonClicked} className="hover-action">
-              <img alt="" src={iconService.getIcon('deleteItems')} />
+              <Unicons.UilTrashAlt className="h-5" />
             </button>
           </div>
         </td>
+        <td className="whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
+        <td className="whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
         <td>
           <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold rounded-2xl">
-              <img alt="" src={iconService.getIcon('actions')} />
+            <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold">
+              <Unicons.UilEllipsisH className="w-full h-full" />
             </Dropdown.Toggle>
-            <FileDropdownActions
-              hiddenActions={item.isFolder ? [ItemAction.Download] : []}
-              onRenameButtonClicked={this.onRenameButtonClicked}
-              onDownloadButtonClicked={this.onDownloadButtonClicked}
-              onShareButtonClicked={this.onShareButtonClicked}
-              onInfoButtonClicked={this.onInfoButtonClicked}
-              onDeleteButtonClicked={this.onDeleteButtonClicked}
-            />
+            <Dropdown.Menu>
+              <FileDropdownActions
+                hiddenActions={item.isFolder ? [ItemAction.Download] : []}
+                onRenameButtonClicked={this.onRenameButtonClicked}
+                onDownloadButtonClicked={this.onDownloadButtonClicked}
+                onShareButtonClicked={this.onShareButtonClicked}
+                onInfoButtonClicked={this.onInfoButtonClicked}
+                onDeleteButtonClicked={this.onDeleteButtonClicked}
+              />
+            </Dropdown.Menu>
           </Dropdown>
         </td>
       </tr>

@@ -12,22 +12,23 @@ import { DriveFileData, DriveFolderData, FolderPath, UserSettings } from '../../
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform } from '../../models/enums';
 
-import { uiActions } from '../../store/slices/ui';
+import { selectShowReachedLimitModal, setShowCreateFolderModal, setShowDeleteModal, setShowReachedPlanLimit } from '../../store/slices/ui';
 import { storageThunks, storageActions, storageSelectors } from '../../store/slices/storage';
 import folderService, { ICreatedFolder } from '../../services/folder.service';
 import { AppDispatch, RootState } from '../../store';
 
 import Breadcrumbs, { BreadcrumbItemData } from '../../components/Breadcrumbs/Breadcrumbs';
-import iconService, { IconType } from '../../services/icon.service';
 import FileActivity from '../../components/FileActivity/FileActivity';
 import { FileViewMode } from '../../models/enums';
 import FilesList from '../../components/FilesView/FilesList/FilesList';
 import FilesGrid from '../../components/FilesView/FilesGrid/FilesGrid';
 import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFileExplorer';
+import dragAndDropImage from '../../assets/images/drag-and-drop.png';
 
 import './FilesView.scss';
 import usageService, { UsageResponse } from '../../services/usage.service';
 import SessionStorage from '../../lib/sessionStorage';
+import deviceService from '../../services/device.service';
 
 interface FilesViewProps {
   user: UserSettings | any;
@@ -39,8 +40,8 @@ interface FilesViewProps {
   currentItems: (DriveFileData | DriveFolderData)[],
   isAuthenticated: boolean;
   itemToShareId: number;
-  isCreateFolderDialogOpen: boolean;
-  isDeleteItemsDialogOpen: boolean;
+  showCreateFolderModal: boolean;
+  showDeleteModal: boolean;
   infoItemId: number;
   viewMode: FileViewMode;
   namePath: FolderPath[];
@@ -85,7 +86,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
       items.push({
         id: firstPath.id,
         label: 'Drive',
-        icon: iconService.getIcon('breadcrumbsStorage'),
+        icon: <Unicons.UilHdd className="h-4" />,
         active: true,
         onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath))
       });
@@ -112,6 +113,8 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageThunks.fetchFolderContentThunk());
+
+    deviceService.redirectForMobile();
   }
 
   onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {
@@ -136,8 +139,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     try {
       const usage: UsageResponse = await usageService.fetchUsage();
 
+      console.log('usage =>', usage, 'limit =>', limitStorage);
       if (limitStorage && usage.total >= parseInt(limitStorage)) {
-        this.props.dispatch(uiActions.showReachedPlanLimit(true));
+        this.props.dispatch(setShowReachedPlanLimit(true));
       } else {
         this.dispatchUpload(e);
       }
@@ -169,14 +173,15 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   onCreateFolderButtonClicked = () => {
     this.props.dispatch(
-      uiActions.setIsCreateFolderDialogOpen(true)
+      setShowCreateFolderModal(true)
     );
   }
 
   onBulkDeleteButtonClicked = () => {
     const { dispatch, selectedItems } = this.props;
 
-    dispatch(storageThunks.deleteItemsThunk(selectedItems));
+    dispatch(storageActions.setItemsToDelete(selectedItems));
+    dispatch(setShowDeleteModal(true));
   }
 
   onPreviousPageButtonClicked = (): void => {
@@ -361,13 +366,13 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   onViewDragOver = (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
-    e.stopPropagation();
+    // e.stopPropagation();
 
     this.props.dispatch(storageActions.setIsDraggingAnItem(true));
   }
 
   onViewDragLeave = (e: DragEvent<HTMLDivElement>): void => {
-    console.log('onViewDragLeave: ', e);
+    // console.log('onViewDragLeave: ', e);
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 
@@ -384,8 +389,8 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     const { isLoadingItems, infoItemId, viewMode, isCurrentFolderEmpty, isDraggingAnItem } = this.props;
     const { fileInputRef } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: iconService.getIcon('mosaicView'),
-      [FileViewMode.Grid]: iconService.getIcon('listView')
+      [FileViewMode.List]: <Unicons.UilGrid />,
+      [FileViewMode.Grid]: <Unicons.UilListUiAlt />
     };
     const viewModes = {
       [FileViewMode.List]: <FilesList />,
@@ -403,21 +408,21 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
               <div className="flex">
                 {this.hasAnyItemSelected ?
-                  <button className="primary mr-1 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <Unicons.UilCloudDownload className="h-5 mr-2" /><span>Download</span>
+                  <button className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
+                    <Unicons.UilCloudDownload className="h-5 mr-1.5" /><span>Download</span>
                   </button> :
-                  <button className="primary mr-1 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <Unicons.UilCloudUpload className="h-5 mr-2" /><span>Upload</span>
+                  <button className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
+                    <Unicons.UilCloudUpload className="h-5 mr-1.5" /><span>Upload</span>
                   </button>
                 }
-                {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onCreateFolderButtonClicked}>
-                  <img alt="" src={iconService.getIcon('createFolder')} />
+                {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-2" onClick={this.onCreateFolderButtonClicked}>
+                  <Unicons.UilFolderPlus />
                 </button> : null}
-                {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-1" onClick={this.onBulkDeleteButtonClicked}>
-                  <img alt="" src={iconService.getIcon('deleteItems')} />
+                {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-2" onClick={this.onBulkDeleteButtonClicked}>
+                  <Unicons.UilTrashAlt />
                 </button> : null}
                 <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
-                  <img alt="" src={viewModesIcons[viewMode]} />
+                  {viewModesIcons[viewMode]}
                 </button>
               </div>
             </div>
@@ -436,9 +441,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
               </div>
 
               {/* PAGINATION */}
-              {!isLoadingItems && (
+              {(false && !isLoadingItems) ? (
                 <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
-                  <span className="text-sm w-1/3"/>
+                  <span className="text-sm w-1/3" />
                   <div className="flex justify-center w-1/3">
                     <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
                       <Unicons.UilAngleDoubleLeft />
@@ -452,14 +457,14 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                   </div>
                   <div className="w-1/3"></div>
                 </div>
-              )}
+              ) : null}
 
               {/* EMPTY FOLDER */
                 isCurrentFolderEmpty && !isLoadingItems ?
                   <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
                     <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">
                       <div className="mb-28">
-                        <img alt="" src={iconService.getIcon(IconType.dragAndDrop)} className="w-36 m-auto" />
+                        <img alt="" src={dragAndDropImage} className="w-36 m-auto" />
                         <div className="text-center">
                           <span className="font-semibold text-base text-m-neutral-100 block">
                             Drag and drop here
@@ -517,8 +522,8 @@ export default connect(
       isLoadingItems: state.storage.isLoading,
       currentItems: state.storage.items,
       itemToShareId: state.storage.itemToShareId,
-      isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
-      isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
+      showCreateFolderModal: state.ui.showCreateFolderModal,
+      showDeleteModal: state.ui.showDeleteModal,
       infoItemId: state.storage.infoItemId,
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,

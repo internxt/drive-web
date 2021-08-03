@@ -1,36 +1,22 @@
-import { ReactNode } from 'react';
-import { getIcon } from '../../../services/icon.service';
-
-import './BaseDialog.scss';
+import React from 'react';
+import * as Unicons from '@iconscout/react-unicons';
 
 interface BaseDialogProps {
-  title: string;
-  open: boolean;
-  onClose: () => void;
-  children: ReactNode;
+  isOpen: boolean,
+  title: string,
+  children: JSX.Element | JSX.Element[],
+  onClose: () => void
 }
 
-const BaseDialog = ({
-  open,
-  title,
-  onClose,
-  children
-}: BaseDialogProps
-): JSX.Element => {
+const BaseDialog = ({ isOpen, title, children, onClose }: BaseDialogProps): JSX.Element => {
   return (
-    <div className={`${open ? 'flex' : 'hidden'} fixed z-50 flex align-middle justify-center w-full h-full`}>
-      {/* BACKGROUND */}
-      <div className={`${open ? 'block' : 'hidden'} z-40 absolute opacity-80 bg-m-neutral-100 w-full h-full`}></div>
+    <div className={`${isOpen ? 'flex' : 'hidden'} absolute w-full h-full bg-m-neutral-100 bg-opacity-80 z-10`}>
+      <div className='flex flex-col absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 w-104 pt-8 rounded-lg overflow-hidden bg-white'>
 
-      {/* PANEL */}
-      <div className={`base-dialog-panel ${open ? 'block' : 'hidden'} relative z-50 rounded-lg p-8 bg-white text-xs`}>
-        <div className='flex items-center justify-center w-full mb-4'>
-          <div className="w-1/6"></div>
-          <span className='text-center w-4/6 flex-grow text-neutral-90 text-base'>{title}</span>
-          <div className="w-1/6 cursor-pointer" onClick={onClose}>
-            <img src={getIcon('crossBlue')} alt="" className="ml-auto" />
-          </div>
-        </div>
+        <Unicons.UilTimes className='absolute right-8 cursor-pointer transition duration-200 ease-in-out text-blue-60 hover:text-blue-70' onClick={onClose} />
+
+        <span className='text-neutral-900 text-xl text-center'>{title}</span>
+
         {children}
       </div>
     </div>

@@ -7,11 +7,16 @@ import DeleteItemsDialog from '../../components/dialogs/DeleteItemsDialog/Delete
 import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
 import Sidenav from '../../components/Sidenav/Sidenav';
 import { RootState } from '../../store';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setItemToShare } from '../../store/slices/storage';
 import FileLoggerModal from '../../components/FileLoggerModal';
-import { uiActions } from '../../store/slices/ui';
+import { selectIsAnyModalOpen, selectShowCreateFolderModal, selectShowDeleteModal, selectShowReachedLimitModal, selectShowShareModal, uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
+import { useEffect } from 'react';
+import SessionStorage from '../../lib/sessionStorage';
+import { getLimit } from '../../services/limit.service';
+import localStorageService from '../../services/localStorage.service';
+import ShareDialog from '../../components/dialogs/ShareDialog/ShareDialog';
 
 interface HeaderAndSidenavLayoutProps {
   children: JSX.Element
@@ -22,36 +27,44 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const { children } = props;
   const isAuthenticated: boolean = useSelector((state: RootState) => state.user.isAuthenticated);
   const isSidenavCollapsed: boolean = useSelector((state: RootState) => state.ui.isSidenavCollapsed);
-  const isCreateFolderDialogOpen: boolean = useSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
-  const isDeleteItemsDialogOpen: boolean = useSelector((state: RootState) => state.ui.isDeleteItemsDialogOpen);
   const currentItems: any[] = useSelector((state: RootState) => state.storage.items);
   const itemToShareId: number = useSelector((state: RootState) => state.storage.itemToShareId);
   const itemToShare: any = currentItems.find(item => item.id === itemToShareId);
   const toggleIsSidenavCollapsed: () => void = () => dispatch(uiActions.setIsSidenavCollapsed(!isSidenavCollapsed));
-  const isReachedPlanLimitOpen: boolean = useSelector((state: RootState) => state.ui.isReachedPlanLimitOpen);
+  const showDeleteModal = useAppSelector(selectShowDeleteModal);
+  const showCreateFolderModal = useAppSelector(selectShowCreateFolderModal);
+  const showReachedLimitModal = useAppSelector(selectShowReachedLimitModal);
+
+  useEffect(() => {
+    const limitStorage = SessionStorage.get('limitStorage');
+    const teamsStorage = SessionStorage.get('teamsStorage');
+
+    if (!limitStorage) {
+      getLimit(false).then((limitStorage) => {
+        if (limitStorage) {
+          SessionStorage.set('limitStorage', limitStorage);
+        }
+      });
+    }
+
+    if (!teamsStorage) {
+      if (localStorageService.get('xTeam')) {
+        getLimit(true).then((teamsStorage) => {
+          if (teamsStorage) {
+            SessionStorage.set('teamsStorage', teamsStorage);
+          }
+        });
+      }
+    }
+
+  }, []);
 
   return isAuthenticated ? (
-    <div className="h-auto min-h-full flex flex-col">
-
-      { !!itemToShare &&
-        <ShareItemDialog
-          open={!!itemToShareId}
-          item={itemToShare}
-          onClose={() => dispatch(setItemToShare(0))}
-        />
-      }
-
-      <CreateFolderDialog
-        open={isCreateFolderDialogOpen}
-      />
-
-      <DeleteItemsDialog
-        open={isDeleteItemsDialogOpen}
-      />
-
-      <ReachedPlanLimitDialog
-        open={isReachedPlanLimitOpen}
-      />
+    <div className='h-auto min-h-full flex flex-col'>
+      {itemToShare && <ShareDialog item={itemToShare} />}
+      {showCreateFolderModal && <CreateFolderDialog />}
+      {showDeleteModal && <DeleteItemsDialog />}
+      {showReachedLimitModal && <ReachedPlanLimitDialog />}
 
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />

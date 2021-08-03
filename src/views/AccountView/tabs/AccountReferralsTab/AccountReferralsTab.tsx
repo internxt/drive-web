@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { IFormValues } from '../../../../models/interfaces';
-import { getIcon } from '../../../../services/icon.service';
+import * as Unicons from '@iconscout/react-unicons';
+
 import localStorageService from '../../../../services/localStorage.service';
+import { IFormValues } from '../../../../models/interfaces';
 import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../../services/referral.service';
 import { emailRegexPattern } from '../../../../services/validation.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import AuthInput from '../../../../components/Inputs/AuthInput';
 import notify from '../../../../components/Notifications';
-import ButtonPrimary from '../../../../components/Buttons/ButtonPrimary';
+import BaseButton from '../../../../components/Buttons/BaseButton';
 
 const AccountReferralsTab = (): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
 
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const [isLoadingInvite, setIsLoadingInvite] = useState(false);
@@ -90,7 +91,7 @@ const AccountReferralsTab = (): JSX.Element => {
             placeholder='example@example.com'
             label='email'
             type='email'
-            icon='mailGray'
+            icon={<Unicons.UilEnvelope />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -99,7 +100,7 @@ const AccountReferralsTab = (): JSX.Element => {
           />
 
           <div className='w-28 ml-2.5'>
-            <AuthButton text='Invite' textWhenDisabled='Inviting' isDisabled={isLoadingInvite} />
+            <AuthButton text='Invite' textWhenDisabled={isValid ? 'Inviting...' : 'Invite'} isDisabled={isLoadingInvite || !isValid} />
           </div>
         </form>
 
@@ -109,14 +110,16 @@ const AccountReferralsTab = (): JSX.Element => {
             notify('Link copied!', 'info', 2500);
           }}>
           <span className='text-neutral-700 text-sm truncate mr-3'>{linkToCopy}</span>
-          <img src={getIcon('clipboardBlue')} alt="clip" />
+          <Unicons.UilPaperclip className="text-blue-60" />
         </div>
 
         <span className='my-5 text-neutral-900 font-semibold'>
           You have accumulated {credit}€
         </span>
 
-        <ButtonPrimary text='Claim' textWhenDisabled='Claiming bonus...' width='w-64' disabled={isLoadingClaim} onClick={onClaim} />
+        <BaseButton disabled={isLoadingClaim} onClick={onClaim} classes='primary w-1/2'>
+          {isLoadingClaim ? 'Claiming bonus...' : 'Claim'}
+        </BaseButton>
       </div>
     </div>
   );

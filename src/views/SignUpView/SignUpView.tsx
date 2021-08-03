@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import * as bip39 from 'bip39';
 import queryString from 'query-string';
+import * as Unicons from '@iconscout/react-unicons';
 
 import SideInfo from '../Authentication/SideInfo';
 import { IFormValues, UserSettings } from '../../models/interfaces';
@@ -20,7 +21,6 @@ import AesUtils from '../../lib/AesUtil';
 import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
 import BaseButton from '../../components/Buttons/BaseButton';
-import ButtonTextOnly from '../../components/Buttons/ButtonTextOnly';
 import { texts } from '../SignInView/SignInView';
 
 interface SignUpProps {
@@ -32,7 +32,7 @@ interface SignUpProps {
 }
 
 const SignUp = (props: SignUpProps): JSX.Element => {
-  const { register, formState: { errors }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
   const dispatch = useAppDispatch();
 
   const password = useWatch({ control, name: 'password', defaultValue: '' });
@@ -226,7 +226,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Name'
             label='name'
             type='text'
-            icon='userGray'
+            icon={<Unicons.UilUser />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Name must not be empty' }}
@@ -237,7 +237,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Lastname'
             label='lastname'
             type='text'
-            icon='userGray'
+            icon={<Unicons.UilUser />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Lastname must not be empty' }}
@@ -248,7 +248,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Email'
             label='email'
             type='email'
-            icon='mailGray'
+            icon={<Unicons.UilEnvelope />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -260,9 +260,9 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Password'
             label={'password'}
             type={showPassword ? 'text' : 'password'}
-            icon={password
-              ? showPassword ? 'eyeSlashGray' : 'eyeGray'
-              : 'lockGray'
+            icon={password ?
+              (showPassword ? <Unicons.UilEyeSlash /> : <Unicons.UilEye />) :
+              <Unicons.UilLock />
             }
             register={register}
             required={true}
@@ -275,9 +275,9 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Confirm password'
             label='confirmPassword'
             type={showPassword ? 'text' : 'password'}
-            icon={confirmPassword
-              ? showPassword ? 'eyeSlashGray' : 'eyeGray'
-              : 'lockGray'
+            icon={confirmPassword ?
+              (showPassword ? <Unicons.UilEyeSlash /> : <Unicons.UilEye />) :
+              <Unicons.UilLock />
             }
             register={register}
             required={true}
@@ -300,14 +300,16 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           </span>
 
           <CheckboxPrimary label='acceptTerms' text='Accept terms, conditions and privacy policy' required={true} register={register} additionalStyling='mt-2 -mb-0' />
-          <ButtonTextOnly text='More info' onClick={() => window.open('https://internxt.com/en/legal')} additionalStyling='self-start ml-6 text-xs' />
+
           <div className='mt-3' />
-          <AuthButton isDisabled={isLoading} text='Create an account' textWhenDisabled='Encrypting...' />
+          <AuthButton isDisabled={isLoading || !isValid} text='Create an account' textWhenDisabled={isValid ? 'Encrypting...' : 'Create an account'} />
         </form>
 
-        <div className='flex justify-center items-center w-full mt-6'>
+        <div className='flex justify-center items-center w-full mt-2'>
           <span className='text-sm text-neutral-500 ml-3 select-none'>Already registered?</span>
-          <ButtonTextOnly text='Log in' onClick={() => history.push('/login')} additionalStyling='ml-1.5' />
+          <BaseButton classes='button_link ml-2' onClick={() => history.push('/login')}>
+            Log in
+          </BaseButton>
         </div>
       </div>
     </div>

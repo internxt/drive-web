@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 
 import { initializeUserThunk } from './store/slices/user';
-import deviceService from './services/device.service';
 import { setHasConnection } from './store/slices/network';
 import { AppViewConfig, UserSettings } from './models/interfaces';
 import configService from './services/config.service';
@@ -40,8 +39,6 @@ class App extends Component<AppProps, AppState> {
     window.addEventListener('online', () => {
       dispatch(setHasConnection(true));
     });
-
-    deviceService.redirectForMobile();
 
     try {
       await this.props.dispatch(initializeUserThunk({

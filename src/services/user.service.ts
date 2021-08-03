@@ -47,10 +47,24 @@ export const sendDeactivationEmail = async (email: string): Promise<void> => {
   });
 };
 
+export const fetchUserPlan = async (isTest: boolean) => {
+  const response = await fetch(`api/storage/user/info/stripe${isTest}`, {
+    method: 'GET',
+    headers: getHeaders(true, false)
+  });
+
+  if (response.status !== 200) {
+    if (response.status === 404) {
+      throw new Error('');
+    }
+  }
+};
+
 const userService = {
   initializeUser,
   isUserActivated,
-  sendDeactivationEmail
+  sendDeactivationEmail,
+  fetchUserPlan
 };
 
 export default userService;

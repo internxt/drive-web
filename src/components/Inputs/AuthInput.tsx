@@ -2,8 +2,6 @@ import React from 'react';
 import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-form';
 import { IFormValues } from '../../models/interfaces';
 
-import iconService, { IconType } from '../../services/icon.service';
-
 import './AuthInput.scss';
 
 interface InputProps {
@@ -15,14 +13,14 @@ interface InputProps {
   maxLength?: ValidationRule<string | number> | undefined
   placeholder: string,
   pattern?: ValidationRule<RegExp> | undefined
-  icon: keyof typeof IconType,
+  icon?: JSX.Element,
   error: FieldError | undefined
   onClick?: () => void
 }
 
 const InputPrimary = ({ label, type, register, required, placeholder, pattern, icon, minLength, maxLength, error, onClick }: InputProps): JSX.Element => (
   <div className='relative flex-1'>
-    <input type={type} placeholder={placeholder}
+    <input type={type} placeholder={placeholder} autoComplete={label !== 'email' ? 'off' : 'on'}
       {...register(label, {
         required,
         minLength,
@@ -32,10 +30,10 @@ const InputPrimary = ({ label, type, register, required, placeholder, pattern, i
       className={`auth-input w-full transform duration-200 mb-2.5 ${error ? 'error' : ''}`}
     />
 
-    <div className={`absolute ${label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-5 cursor-pointer' : 'right-3 bottom-6'} flex items-center justify-center`}
+    <div className={`text-m-neutral-100 absolute ${label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-4 cursor-pointer' : 'right-3 bottom-4'} flex items-center justify-center`}
       onClick={() => label === 'password' || label === 'confirmPassword' ? onClick && onClick() : null}
     >
-      <img src={iconService.getIcon(icon)} alt="" />
+      {icon || null}
     </div>
   </div >
 );

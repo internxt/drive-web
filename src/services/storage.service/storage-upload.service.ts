@@ -6,7 +6,7 @@ import localStorageService from '../localStorage.service';
 import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';
-import { DevicePlatform } from '../../models/enums';
+import { DevicePlatform, FileActionTypes, FileStatusTypes } from '../../models/enums';
 import { updateFileStatusLogger } from '../../store/slices/files';
 
 export interface UploadItemPayload {
@@ -18,7 +18,9 @@ export interface UploadItemPayload {
 }
 
 export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, dispatch): Promise<any> {
-  dispatch(updateFileStatusLogger({ action: 'upload', status: 'encrypting', filePath: path, isFolder: false }));
+  const fileType: string = file.name.split('.').pop() || '';
+
+  dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Encrypting, filePath: path, isFolder: false, type: fileType }));
 
   if (!file.parentFolderId) {
     throw new Error('No folder ID provided');
@@ -48,7 +50,7 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
       progressCallback: (progress: number) => {
         //STATUS: UPLOAD FILE PROGRESS AS % AND UPLOADING
         if (progress > 0) {
-          dispatch(updateFileStatusLogger({ action: 'upload', status: 'uploading', filePath: path, progress: progress.toFixed(2), isFolder: false }));
+          dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Uploading, filePath: path, progress: progress.toFixed(2), isFolder: false, type: fileType }));
         }
       }
     });
