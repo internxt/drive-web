@@ -195,7 +195,12 @@ code {
     }
   }
   input[type="number"] {
-    @apply appearance-none p-2 bg-l-neutral-30 text-center text-neutral-700;
+    @apply appearance-none flex items-center justify-center bg-l-neutral-10 border border-m-neutral-60 text-center text-blue-60 outline-none;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 
   /* BUTTONS */

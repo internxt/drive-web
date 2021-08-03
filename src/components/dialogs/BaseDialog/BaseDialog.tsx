@@ -15,17 +15,7 @@ const BaseDialog = ({ isOpen, title, children, onClose }: BaseDialogProps): JSX.
 
       <span className='text-neutral-900 text-xl text-center'>{title}</span>
 
-      {/* PANEL */}
-      <div className={`base-dialog-panel ${isOpen ? 'block' : 'hidden'} relative z-50 rounded-lg pt-8 bg-white text-xs overflow-hidden`}>
-        <div className='flex items-center justify-center w-full mb-4 px-4'>
-          <div className="w-1/6"></div>
-          <span className='text-center w-4/6 flex-grow text-neutral-900 text-xl'>{title}</span>
-          <div className="w-1/6 cursor-pointer" onClick={onClose}>
-            <Unicons.UilTimes className="ml-auto text-blue-40" />
-          </div>
-        </div>
-        {children}
-      </div>
+      {children}
     </div>
   );
 };

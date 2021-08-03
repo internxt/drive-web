@@ -40,24 +40,24 @@ export interface TeamsSettings {
 }
 
 export interface DriveFolderData {
-  isFolder: boolean,
-  isSelected: boolean,
-  isLoading: boolean,
-  isDowloading: boolean,
-  id: number,
-  parentId: number,
-  name: string,
   bucket: string | null,
-  user_id: number,
-  icon_id: number | null,
   color: string | null,
-  encrypt_version: string | null,
   createdAt: string,
+  encrypt_version: string | null,
+  icon: string | null,
+  iconId: number | null,
+  icon_id: number | null,
+  id: number,
+  isDowloading: boolean,
+  isFolder: boolean,
+  isLoading: boolean,
+  isSelected: boolean,
+  name: string,
+  parentId: number,
+  parent_id: number | null,
   updatedAt: string,
   userId: number,
-  iconId: number | null,
-  parent_id: number | null,
-  icon: string | null,
+  user_id: number,
 }
 
 export interface DriveFolderMetadataPayload {
@@ -69,20 +69,20 @@ export interface DriveFolderMetadataPayload {
 }
 
 export interface DriveFileData {
-  created_at: string,
-  id: number,
-  fileId: string,
-  name: string,
-  type: string,
-  size: number,
   bucket: string,
-  folder_id: number,
-  encrypt_version: string,
+  createdAt: string,
+  created_at: string,
   deleted: false,
   deletedAt: null,
-  createdAt: string,
-  updatedAt: string,
+  encrypt_version: string,
+  fileId: string,
   folderId: number,
+  folder_id: number,
+  id: number,
+  name: string,
+  size: number,
+  type: string,
+  updatedAt: string,
 }
 
 export interface DriveFileMetadataPayload {
