@@ -179,6 +179,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const { dispatch, item } = this.props;
 
     dispatch(storageActions.setItemToShare(item.id));
+    dispatch(setShowShareModal(true));
   }
 
   onInfoButtonClicked = (): void => {

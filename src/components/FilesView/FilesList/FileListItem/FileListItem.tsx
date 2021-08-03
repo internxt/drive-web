@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode } from 'react';
+import React, { MouseEvent, Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { Dropdown } from 'react-bootstrap';
 import * as Unicons from '@iconscout/react-unicons';
@@ -18,7 +18,7 @@ import iconService from '../../../../services/icon.service';
 import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 import { FileActionTypes, FileStatusTypes, ItemAction, Workspace } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
-import { setShowDeleteModal } from '../../../../store/slices/ui';
+import { setShowDeleteModal, setShowShareModal } from '../../../../store/slices/ui';
 import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileListItemProps {
@@ -158,7 +158,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     this.setState({ showContextMenu: true });
   }
 
-  onOutsideContextMenuClicked = (e: MouseEvent): void => {
+  onOutsideContextMenuClicked = (): void => {
     document.removeEventListener('click', this.onOutsideContextMenuClicked);
     this.setState({ showContextMenu: false });
   }
@@ -171,9 +171,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       dispatch(storageActions.deselectItem(item));
   }
 
-  onRenameButtonClicked = (): void => {
+  onRenameButtonClicked = (e: MouseEvent): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
+
+    e.stopPropagation();
 
     this.setState(
       { isEditingName: true, dirtyName: item.name },
@@ -181,28 +183,34 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     );
   }
 
-  onDownloadButtonClicked = (): void => {
+  onDownloadButtonClicked = (e: MouseEvent): void => {
     const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
+    e.stopPropagation();
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
-
     this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, isFolder: false }));
     queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));
   }
 
-  onShareButtonClicked = (): void => {
+  onShareButtonClicked = (e: MouseEvent): void => {
     const { dispatch, item } = this.props;
 
+    e.stopPropagation();
+
     dispatch(storageActions.setItemToShare(item.id));
+    dispatch(setShowShareModal(true));
   }
 
-  onInfoButtonClicked = (): void => {
+  onInfoButtonClicked = (e: MouseEvent): void => {
+    e.stopPropagation();
     this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
   }
 
-  onDeleteButtonClicked = (): void => {
+  onDeleteButtonClicked = (e: MouseEvent): void => {
     const { dispatch, item } = this.props;
+
+    e.stopPropagation();
 
     dispatch(storageActions.setItemsToDelete([item]));
     dispatch(setShowDeleteModal(true));
@@ -218,8 +226,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   onItemDragOver = (e: React.DragEvent<HTMLTableRowElement>): void => {
     const { item, isDraggingAnItem, draggingTargetItemData } = this.props;
-
-    console.log('e: ', e);
 
     if (item.isFolder) {
       e.preventDefault();

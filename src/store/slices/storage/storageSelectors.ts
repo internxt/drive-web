@@ -25,6 +25,10 @@ const storageSelectors = {
       (rootFolderId);
   },
 
+  currentFolderPath(state: RootState): string {
+    return state.storage.namePath.reduce((t, path) => `${t}${path.name}/`, '');
+  },
+
   bucket(state: RootState): string {
     return state.user.user?.bucket || '';
   },
@@ -39,6 +43,10 @@ const storageSelectors = {
 
   isItemSelected(state: RootState): (item: DriveFileData | DriveFolderData) => boolean {
     return (item) => state.storage.selectedItems.includes(item);
+  },
+
+  isAllSelected(state: RootState): boolean {
+    return state.storage.selectedItems.length === state.storage.items.filter(item => !item.isFolder).length;
   },
 
   isFolderInNamePath(state: RootState): (folderId: number) => boolean {

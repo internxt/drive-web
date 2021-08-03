@@ -7,15 +7,16 @@ import DeleteItemsDialog from '../../components/dialogs/DeleteItemsDialog/Delete
 import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
 import Sidenav from '../../components/Sidenav/Sidenav';
 import { RootState } from '../../store';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setItemToShare } from '../../store/slices/storage';
 import FileLoggerModal from '../../components/FileLoggerModal';
-import { uiActions } from '../../store/slices/ui';
+import { selectIsAnyModalOpen, selectShowCreateFolderModal, selectShowDeleteModal, selectShowReachedLimitModal, selectShowShareModal, uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import { useEffect } from 'react';
 import SessionStorage from '../../lib/sessionStorage';
 import { getLimit } from '../../services/limit.service';
 import localStorageService from '../../services/localStorage.service';
+import ShareDialog from '../../components/dialogs/ShareDialog/ShareDialog';
 import InviteMemberDialog from '../../components/dialogs/InviteMemberDialog/InviteMemberDialog';
 
 interface HeaderAndSidenavLayoutProps {
@@ -31,6 +32,9 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const itemToShareId: number = useSelector((state: RootState) => state.storage.itemToShareId);
   const itemToShare: any = currentItems.find(item => item.id === itemToShareId);
   const toggleIsSidenavCollapsed: () => void = () => dispatch(uiActions.setIsSidenavCollapsed(!isSidenavCollapsed));
+  const showDeleteModal = useAppSelector(selectShowDeleteModal);
+  const showCreateFolderModal = useAppSelector(selectShowCreateFolderModal);
+  const showReachedLimitModal = useAppSelector(selectShowReachedLimitModal);
 
   useEffect(() => {
     const limitStorage = SessionStorage.get('limitStorage');
@@ -58,21 +62,12 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
   return isAuthenticated ? (
     <div className='h-auto min-h-full flex flex-col'>
-      {!!itemToShare &&
-        <ShareItemDialog
-          open={!!itemToShareId}
-          item={itemToShare}
-          onClose={() => dispatch(setItemToShare(0))}
-        />
-      }
+      {itemToShare && <ShareDialog item={itemToShare} />}
+      {showCreateFolderModal && <CreateFolderDialog />}
+      {showDeleteModal && <DeleteItemsDialog />}
+      {showReachedLimitModal && <ReachedPlanLimitDialog />}
 
-      <CreateFolderDialog />
-
-      <DeleteItemsDialog />
-
-      <ReachedPlanLimitDialog />
       <InviteMemberDialog />
-
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />
 

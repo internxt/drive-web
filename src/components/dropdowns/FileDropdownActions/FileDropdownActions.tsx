@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { MouseEvent, ReactNode } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -7,11 +7,11 @@ import { ItemAction } from '../../../models/enums';
 interface FileDropdownActionsProps {
   title?: string;
   hiddenActions: ItemAction[];
-  onRenameButtonClicked: () => void;
-  onDownloadButtonClicked: () => void;
-  onShareButtonClicked: () => void;
-  onInfoButtonClicked: () => void;
-  onDeleteButtonClicked: () => void;
+  onRenameButtonClicked: (e: MouseEvent) => void;
+  onDownloadButtonClicked: (e: MouseEvent) => void;
+  onShareButtonClicked: (e: MouseEvent) => void;
+  onInfoButtonClicked: (e: MouseEvent) => void;
+  onDeleteButtonClicked: (e: MouseEvent) => void;
 }
 
 interface FileDropdownActionsState { }
@@ -23,34 +23,34 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps, File
     this.state = {};
   }
 
-  onDownloadButtonClicked = (): void => {
+  onDownloadButtonClicked = (e: MouseEvent): void => {
     const { onDownloadButtonClicked } = this.props;
 
-    onDownloadButtonClicked && onDownloadButtonClicked();
+    onDownloadButtonClicked && onDownloadButtonClicked(e);
   }
 
-  onRenameButtonClicked = (): void => {
+  onRenameButtonClicked = (e: MouseEvent): void => {
     const { onRenameButtonClicked } = this.props;
 
-    onRenameButtonClicked && onRenameButtonClicked();
+    onRenameButtonClicked && onRenameButtonClicked(e);
   }
 
-  onShareButtonClicked = (): void => {
+  onShareButtonClicked = (e: MouseEvent): void => {
     const { onShareButtonClicked } = this.props;
 
-    onShareButtonClicked && onShareButtonClicked();
+    onShareButtonClicked && onShareButtonClicked(e);
   }
 
-  onInfoButtonClicked = (): void => {
+  onInfoButtonClicked = (e: MouseEvent): void => {
     const { onInfoButtonClicked } = this.props;
 
-    onInfoButtonClicked && onInfoButtonClicked();
+    onInfoButtonClicked && onInfoButtonClicked(e);
   }
 
-  onDeleteButtonClicked = (): void => {
+  onDeleteButtonClicked = (e: MouseEvent): void => {
     const { onDeleteButtonClicked } = this.props;
 
-    onDeleteButtonClicked && onDeleteButtonClicked();
+    onDeleteButtonClicked && onDeleteButtonClicked(e);
   }
 
   render(): ReactNode {
