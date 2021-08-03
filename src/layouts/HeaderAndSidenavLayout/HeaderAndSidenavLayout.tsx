@@ -10,7 +10,7 @@ import { RootState } from '../../store';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setItemToShare } from '../../store/slices/storage';
 import FileLoggerModal from '../../components/FileLoggerModal';
-import { selectIsAnyModalOpen, selectShowShareModal, uiActions } from '../../store/slices/ui';
+import { selectIsAnyModalOpen, selectShowCreateFolderModal, selectShowDeleteModal, selectShowReachedLimitModal, selectShowShareModal, uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import { useEffect } from 'react';
 import SessionStorage from '../../lib/sessionStorage';
@@ -31,8 +31,9 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const itemToShareId: number = useSelector((state: RootState) => state.storage.itemToShareId);
   const itemToShare: any = currentItems.find(item => item.id === itemToShareId);
   const toggleIsSidenavCollapsed: () => void = () => dispatch(uiActions.setIsSidenavCollapsed(!isSidenavCollapsed));
-  const isAnyModalOpen = useAppSelector(selectIsAnyModalOpen);
-  const showShareModal = useAppSelector(selectShowShareModal);
+  const showDeleteModal = useAppSelector(selectShowDeleteModal);
+  const showCreateFolderModal = useAppSelector(selectShowCreateFolderModal);
+  const showReachedLimitModal = useAppSelector(selectShowReachedLimitModal);
 
   useEffect(() => {
     const limitStorage = SessionStorage.get('limitStorage');
@@ -61,10 +62,9 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   return isAuthenticated ? (
     <div className='h-auto min-h-full flex flex-col'>
       {itemToShare && <ShareDialog item={itemToShare} />}
-      <div className={`${isAnyModalOpen ? 'flex' : 'hidden'} absolute w-full h-full bg-m-neutral-100 opacity-80 z-10`} />
-      <CreateFolderDialog />
-      <DeleteItemsDialog />
-      <ReachedPlanLimitDialog />
+      {showCreateFolderModal && <CreateFolderDialog />}
+      {showDeleteModal && <DeleteItemsDialog />}
+      {showReachedLimitModal && <ReachedPlanLimitDialog />}
 
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />

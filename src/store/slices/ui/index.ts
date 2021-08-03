@@ -57,12 +57,4 @@ export const selectShowCreateFolderModal = (state: RootState): boolean => state.
 export const selectShowDeleteModal = (state: RootState): boolean => state.ui.showDeleteModal;
 export const selectShowReachedLimitModal = (state: RootState): boolean => state.ui.showReachedLimitModal;
 export const selectShowShareModal = (state: RootState): boolean => state.ui.showShareModal;
-export const selectIsAnyModalOpen = (state: RootState): boolean => {
-  let areOpen = false;
-
-  if (state.ui.showCreateFolderModal || state.ui.showDeleteModal || state.ui.showShareModal || state.ui.showReachedLimitModal) {
-    areOpen = true;
-  }
-  return areOpen;
-};
 export default uiSlice.reducer;

@@ -71,40 +71,42 @@ const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
   }, [numberOfIntents]);
 
   return (
-    <div className={`${isOpen ? 'flex' : 'hidden'} flex-col absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 w-104 py-8 rounded-lg overflow-hidden z-10 bg-white`}>
-      <span className='self-center text-center text-m-neutral-100'>{item.name}{!item.isFolder && `.${item.type}` }{}</span>
-      <UilTimes className='absolute right-8 cursor-pointer transition duration-200 ease-in-out text-blue-60 hover:text-blue-70' onClick={onClose} />
+    <div className={`${isOpen ? 'flex' : 'hidden'} absolute w-full h-full bg-m-neutral-100 bg-opacity-80 z-10`}>
+      <div className='flex flex-col absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 w-104 py-8 rounded-lg overflow-hidden z-20 bg-white'>
+        <span className='self-center text-center text-m-neutral-100'>{item.name}{!item.isFolder && `.${item.type}`}{ }</span>
+        <UilTimes className='absolute right-8 cursor-pointer transition duration-200 ease-in-out text-blue-60 hover:text-blue-70' onClick={onClose} />
 
-      <div className='w-full border-t border-m-neutral-60 my-6' />
+        <div className='w-full border-t border-m-neutral-60 my-6' />
 
-      <div className='flex flex-col px-8'>
-        <span className='text-neutral-500 self-center'>Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link</span>
+        <div className='flex flex-col px-8'>
+          <span className='text-neutral-500 self-center'>Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link</span>
 
-        <div className='flex mt-3'>
-          <span className='text-blue-60 mr-4'>1.</span>
-          <div className='flex w-72 items-center rounded-md bg-l-neutral-20 px-4 py-3'>
-            <span className='text-neutral-500 text-sm'>Enter the number of times you'd like the link to be valid:</span>
-            <input
-              type="number"
-              value={numberOfIntents}
-              min={1}
-              className='w-12 content-center text-blue-60'
-              onChange={e => setNumberOfIntents(parseInt(e.target.value))} />
+          <div className='flex mt-3'>
+            <span className='text-blue-60 mr-4'>1.</span>
+            <div className='flex w-72 items-center rounded-md bg-l-neutral-20 px-4 py-3'>
+              <span className='text-neutral-500 text-sm'>Enter the number of times you'd like the link to be valid:</span>
+              <input
+                type="number"
+                value={numberOfIntents}
+                min={1}
+                className='w-12 content-center text-blue-60'
+                onChange={e => setNumberOfIntents(parseInt(e.target.value))} />
+            </div>
           </div>
-        </div>
 
-        <div className='self-start mt-4'>
-          <span className='text-blue-60 mr-4'>2.</span>
-          <span className='text-neutral-500'>Get link to share</span>
-        </div>
+          <div className='self-start mt-4'>
+            <span className='text-blue-60 mr-4'>2.</span>
+            <span className='text-neutral-500'>Get link to share</span>
+          </div>
 
-        <div className='flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer'
-          onClick={() => {
-            navigator.clipboard.writeText(linkToCopy);
-            notify('Link copied!', 'info', 2500);
-          }}>
-          <span className='text-neutral-900 text-xs'>{isLoading ? 'Loading link...' : linkToCopy}</span>
-          <UilClipboardAlt className='text-blue-60' />
+          <div className='flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer'
+            onClick={() => {
+              navigator.clipboard.writeText(linkToCopy);
+              notify('Link copied!', 'info', 2500);
+            }}>
+            <span className='text-neutral-900 text-xs'>{isLoading ? 'Loading link...' : linkToCopy}</span>
+            <UilClipboardAlt className='text-blue-60' />
+          </div>
         </div>
       </div>
     </div>
