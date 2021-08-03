@@ -4,7 +4,7 @@ import { useAppDispatch } from '../../../store/hooks';
 import { IFormValues, InfoInvitationsMembers, TeamsSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
-import AuthInput from '../../Inputs/AuthInput';
+import BaseInput from '../../Inputs/BaseInput';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../Buttons/AuthButton';
 import notify from '../../Notifications';
@@ -92,7 +92,7 @@ const InviteMemberCreateDialog = ({
       <div className='flex flex-col self-center mt-6 items-start w-96'>
         <form className='flex w-full' onSubmit={handleSubmit(onSubmit)}>
           <div className='flex-1'>
-            <AuthInput
+            <BaseInput
               placeholder='Type email: jhondoe@internxt.com'
               label='email'
               type='email'

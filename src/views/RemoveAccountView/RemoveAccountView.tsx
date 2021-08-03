@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../components/Buttons/AuthButton';
-import AuthInput from '../../components/Inputs/AuthInput';
+import BaseInput from '../../components/Inputs/BaseInput';
 import { IFormValues } from '../../models/interfaces';
 import { emailRegexPattern } from '../../services/validation.service';
 import history from '../../lib/history';
@@ -57,7 +57,7 @@ const RemoveAccount = (): JSX.Element => {
             </p>
 
             <form className='w-full' onSubmit={handleSubmit(onSubmit)}>
-              <AuthInput
+              <BaseInput
                 placeholder='Email'
                 label='email'
                 type='email'

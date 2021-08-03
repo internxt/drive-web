@@ -7,7 +7,7 @@ import { IFormValues } from '../../../../models/interfaces';
 import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../../services/referral.service';
 import { emailRegexPattern } from '../../../../services/validation.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
-import AuthInput from '../../../../components/Inputs/AuthInput';
+import BaseInput from '../../../../components/Inputs/BaseInput';
 import notify from '../../../../components/Notifications';
 import BaseButton from '../../../../components/Buttons/BaseButton';
 
@@ -87,7 +87,7 @@ const AccountReferralsTab = (): JSX.Element => {
         </span>
 
         <form className='w-full mt-4 flex justify-between' onSubmit={handleSubmit(onSubmit)}>
-          <AuthInput
+          <BaseInput
             placeholder='example@example.com'
             label='email'
             type='email'

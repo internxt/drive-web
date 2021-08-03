@@ -4,7 +4,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { initializeUserThunk, setUser } from '../../store/slices/user';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
-import AuthInput from '../../components/Inputs/AuthInput';
+import BaseInput from '../../components/Inputs/BaseInput';
 import SideInfo from '../Authentication/SideInfo';
 import AuthButton from '../../components/Buttons/AuthButton';
 import { emailRegexPattern, validateEmail } from '../../services/validation.service';
@@ -31,11 +31,11 @@ export const texts = {
       review: '“As an architect I must manage and segment large amounts of private and sensitive documentation in each prohect, Internxt Drive allows me to protect said documentation and access it from any device.”'
     },
     {
-      name: 'Aldimir Aleksandrov',
-      review: '“This shit fire 🔥🔥🔥.”'
+      name: '500 Startups',
+      review: '“500 Startups is one of the most active venture capital firms in the world and has commited over $454M in investment globally.500 Startups have chosen Internxt as one of the top SAAS startups worldwide.”'
     },
     {
-      name: 'Solomeo Paredes',
+      name: 'Ashley Smith',
       review: '“Designed to protect your privacy, available in all your devices. Save your most valuable files with ease and have them secured for the rest of your life.”'
     }
   ]
@@ -137,7 +137,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
           <img src={bigLogo} width='110' alt="" />
           <span className='text-sm text-neutral-500 mt-1.5 mb-6' />
 
-          <AuthInput
+          <BaseInput
             placeholder='Email'
             label='email'
             type='email'
@@ -149,7 +149,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
             error={errors.email}
           />
 
-          <AuthInput
+          <BaseInput
             placeholder='Password'
             label={'password'}
             type={showPassword ? 'text' : 'password'}
@@ -166,7 +166,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
 
           {
             showTwoFactor && (
-              <AuthInput
+              <BaseInput
                 placeholder='Two factor authentication code'
                 label={'twoFactorCode'}
                 type={'text'}

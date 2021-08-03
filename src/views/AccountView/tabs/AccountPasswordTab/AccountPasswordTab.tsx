@@ -1,7 +1,7 @@
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 
 import { IFormValues } from '../../../../models/interfaces';
-import AuthInput from '../../../../components/Inputs/AuthInput';
+import BaseInput from '../../../../components/Inputs/BaseInput';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import { useState } from 'react';
 import { changePassword } from '../../../../services/auth.service';
@@ -45,7 +45,7 @@ const AccountPasswordTab = (): JSX.Element => {
       <p className='account_config_description'>Remember that if you change your password, you will he signed out in all your devices. You will need these credentials for logging in again.</p>
 
       <form className='w-64 mt-5' onSubmit={handleSubmit(onSubmit)}>
-        <AuthInput
+        <BaseInput
           placeholder='Current password'
           label='currentPassword'
           type={showCurrentPassword ? 'text' : 'password'}
@@ -61,7 +61,7 @@ const AccountPasswordTab = (): JSX.Element => {
           minLength={1}
           error={errors.currentPassword}
         />
-        <AuthInput
+        <BaseInput
           placeholder='New password'
           label='password'
           type={showNewPassword ? 'text' : 'password'}
@@ -77,7 +77,7 @@ const AccountPasswordTab = (): JSX.Element => {
           minLength={1}
           error={errors.password}
         />
-        <AuthInput
+        <BaseInput
           placeholder='Confirm new password'
           label='confirmPassword'
           type={showConfirmPassword ? 'text' : 'password'}

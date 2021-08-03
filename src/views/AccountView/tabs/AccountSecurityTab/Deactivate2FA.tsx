@@ -5,7 +5,7 @@ import { IFormValues } from '../../../../models/interfaces';
 import { deactivate2FA } from '../../../../services/auth.service';
 import { twoFactorRegexPattern } from '../../../../services/validation.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
-import AuthInput from '../../../../components/Inputs/AuthInput';
+import BaseInput from '../../../../components/Inputs/BaseInput';
 import notify from '../../../../components/Notifications';
 
 interface Deactivate2FAProps {
@@ -41,7 +41,7 @@ const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Ele
       <span className='security-info_texts mb-4 text-center'>You already have Two-Factor Authentication enabled. If you want to disable it, fill the fields below.</span>
 
       <div className='flex justify-between'>
-        <AuthInput
+        <BaseInput
           label='password'
           placeholder='Password'
           type={showPassword ? 'text' :'password'}
@@ -57,7 +57,7 @@ const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Ele
 
         <div className='mx-2' />
 
-        <AuthInput
+        <BaseInput
           label='twoFactorCode'
           placeholder='Two-Factor code'
           type='text'

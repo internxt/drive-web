@@ -10,7 +10,7 @@ import localStorageService from '../../services/localStorage.service';
 import { emailRegexPattern, validateEmail } from '../../services/validation.service';
 import analyticsService from '../../services/analytics.service';
 import { initializeUser, readReferalCookie } from '../../services/auth.service';
-import AuthInput from '../../components/Inputs/AuthInput';
+import BaseInput from '../../components/Inputs/BaseInput';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
 import AuthButton from '../../components/Buttons/AuthButton';
 import { useAppDispatch } from '../../store/hooks';
@@ -222,7 +222,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>
           <span className='text-base font-semibold text-neutral-900 mt-1.5 mb-6'>Create an Internxt account</span>
 
-          <AuthInput
+          <BaseInput
             placeholder='Name'
             label='name'
             type='text'
@@ -233,7 +233,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             error={errors.name}
           />
 
-          <AuthInput
+          <BaseInput
             placeholder='Lastname'
             label='lastname'
             type='text'
@@ -244,7 +244,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             error={errors.lastname}
           />
 
-          <AuthInput
+          <BaseInput
             placeholder='Email'
             label='email'
             type='email'
@@ -256,7 +256,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             error={errors.email}
           />
 
-          <AuthInput
+          <BaseInput
             placeholder='Password'
             label={'password'}
             type={showPassword ? 'text' : 'password'}
@@ -271,7 +271,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             onClick={() => setShowPassword(!showPassword)}
           />
 
-          <AuthInput
+          <BaseInput
             placeholder='Confirm password'
             label='confirmPassword'
             type={showPassword ? 'text' : 'password'}

@@ -6,7 +6,7 @@ import * as Unicons from '@iconscout/react-unicons';
 import { IFormValues } from '../../../../models/interfaces';
 import { store2FA } from '../../../../services/auth.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
-import AuthInput from '../../../../components/Inputs/AuthInput';
+import BaseInput from '../../../../components/Inputs/BaseInput';
 import { twoFactorRegexPattern } from '../../../../services/validation.service';
 import notify from '../../../../components/Notifications';
 import googleAuthenticatorIcon from '../../../../assets/icons/google-authenticator.svg';
@@ -75,7 +75,7 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
         <span className='security-info_texts mb-4'>Finally, to enable Two-Factor Authentication, fill the fields below.</span>
 
         <div className='flex justify-between'>
-          <AuthInput
+          <BaseInput
             label='backupKey'
             placeholder='Backup key'
             type='text'
@@ -87,7 +87,7 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
 
           <div className='mx-2' />
 
-          <AuthInput
+          <BaseInput
             label='twoFactorCode'
             placeholder='Two-Factor code'
             type='text'
