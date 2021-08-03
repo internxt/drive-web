@@ -150,20 +150,25 @@ const AccountBillingTab = (): JSX.Element => {
   };
 
   // useCallBack for needed optimization of component, do not remove
-  const renderItem = useCallback((product, index) => <Fragment key={product.product.id}>
-    <BillingPlanItem
-      product={product.product}
-      plans={product.plans}
-      selectedPlan={product.selected}
-      currentPlan={product.currentPlan}
-      buttontext='Subscribe'
-      characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-      handlePlanSelection={handlePlanSelection}
-      handlePayment={handlePayment}
-      isPaying={isPaying}
-    />
-    {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
-  </Fragment>, []);
+  const renderItem = useCallback((product, index) => {
+    console.log('product =>', product, index);
+    return (
+      <Fragment key={product.product.id}>
+        <BillingPlanItem
+          product={product.product}
+          plans={product.plans}
+          selectedPlan={product.selected}
+          currentPlan={product.currentPlan}
+          buttontext='Subscribe'
+          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+          handlePlanSelection={handlePlanSelection}
+          handlePayment={handlePayment}
+          isPaying={isPaying}
+        />
+        {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
+      </Fragment>
+    );
+  }, []);
 
   return (
     <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
