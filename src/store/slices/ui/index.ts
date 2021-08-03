@@ -7,7 +7,7 @@ interface UISliceState {
   showDeleteModal: boolean;
   showFileLogger: boolean;
   showReachedLimitModal: boolean;
-  showShareModal: boolean
+  showShareModal: boolean;
   showInviteMemberModal: boolean;
 }
 
@@ -17,7 +17,7 @@ const initialState: UISliceState = {
   showDeleteModal: false,
   showFileLogger: false,
   showReachedLimitModal: false,
-  showShareModal: false
+  showShareModal: false,
   showInviteMemberModal: false
 };
 
@@ -54,7 +54,7 @@ export const {
   setShowDeleteModal,
   setShowFileLogger,
   setShowReachedPlanLimit,
-  setShowShareModal
+  setShowShareModal,
   setShowInviteMemberModal
 } = uiSlice.actions;
 
