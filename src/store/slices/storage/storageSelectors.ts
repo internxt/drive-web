@@ -42,6 +42,10 @@ const storageSelectors = {
     return (item) => state.storage.selectedItems.includes(item);
   },
 
+  isAllSelected(state: RootState): boolean {
+    return state.storage.selectedItems.length === state.storage.items.filter(item => !item.isFolder).length;
+  },
+
   isFolderInNamePath(state: RootState): (folderId: number) => boolean {
     return (folderId) => state.storage.namePath.map(p => p.id).includes(folderId);
   }
