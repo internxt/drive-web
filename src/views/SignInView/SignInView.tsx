@@ -27,8 +27,8 @@ export const texts = {
   sublabel: 'BE LIMITLESS',
   reviews: [
     {
-      name: 'Mike Pence',
-      review: '“As an architect I must manage and segment large amounts of private and sensitive documentation in each prohect, Internxt Drive allows me to protect said documentation and access it from any device.”'
+      name: 'Y Combinator Program',
+      review: '“Startups are most productive when they can spend most of their time building.Y Combinators goal is to create an environment where we can focus exclusively on building products and talking to users on how to improve..”'
     },
     {
       name: '500 Startups',
