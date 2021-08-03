@@ -195,3 +195,9 @@ export interface FolderPath {
   name: string,
   id: number
 }
+
+export interface InfoInvitationsMembers {
+  isMember: boolean;
+  isInvitation: boolean;
+  user: string;
+}

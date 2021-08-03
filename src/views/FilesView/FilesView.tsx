@@ -144,7 +144,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     try {
       const usage: UsageResponse = await usageService.fetchUsage(isTeam);
 
-      console.log('usage =>', usage, 'limit =>', limitStorage);
       if (limitStorage && usage.total >= parseInt(limitStorage)) {
         this.props.dispatch(setShowReachedPlanLimit(true));
       } else {

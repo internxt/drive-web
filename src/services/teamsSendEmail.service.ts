@@ -1,4 +1,3 @@
-import notify from '../components/Notifications';
 import { getHeaders } from '../lib/auth';
 import { encryptPGPInvitations } from '../lib/utilspgp';
 import localStorageService from './localStorage.service';
