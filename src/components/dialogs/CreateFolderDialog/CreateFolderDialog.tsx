@@ -8,7 +8,7 @@ import { IFormValues, UserSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
 import './CreateFolderDialog.scss';
-import AuthInput from '../../Inputs/AuthInput';
+import BaseInput from '../../Inputs/BaseInput';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../Buttons/AuthButton';
 import notify from '../../Notifications';
@@ -64,7 +64,7 @@ const CreateFolderDialog = ({
     >
       <form className='flex flex-col mt-6' onSubmit={handleSubmit(onSubmit)}>
         <div className='w-64 self-center'>
-          <AuthInput
+          <BaseInput
             placeholder='Enter folder name'
             label='createFolder'
             type={'text'}

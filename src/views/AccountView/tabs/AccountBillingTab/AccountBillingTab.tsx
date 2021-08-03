@@ -11,6 +11,7 @@ import { generateMnemonic } from 'bip39';
 import { encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
 import './AccountBillingTab.scss';
+import LoadingFileExplorer from '../../../../components/LoadingFileExplorer/LoadingFileExplorer';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -232,7 +233,7 @@ const AccountBillingTab = (): JSX.Element => {
               </Fragment>
             ))
           :
-          <span>loading haha</span>
+          <LoadingFileExplorer/>
         }
       </div>
     </div>

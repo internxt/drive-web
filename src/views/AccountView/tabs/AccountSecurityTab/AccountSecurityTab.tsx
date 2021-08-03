@@ -6,6 +6,7 @@ import Steps from './Steps';
 import notify from '../../../../components/Notifications';
 
 import './AccountSecurityTab.scss';
+import LoadingFileExplorer from '../../../../components/LoadingFileExplorer/LoadingFileExplorer';
 
 interface SecurityProps {
   isAuthenticated: boolean
@@ -90,7 +91,7 @@ const AccountSecurityTab = ({ isAuthenticated }: SecurityProps): JSX.Element => 
           }
         </Fragment>
         :
-        <span>is loading haha</span>
+        <LoadingFileExplorer/>
       }
     </div>
   );

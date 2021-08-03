@@ -72,7 +72,7 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
         }} />)}
 
       {
-        isBusiness ?
+        isBusiness &&
           <TextField
             type="number" label="Team members"
             style={{ width: 154 }}
@@ -84,8 +84,7 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
               }
             }}
             value={totalTeamMembers} onChange={e => setTotalMembers(e.target.value)} />
-          :
-          ''
+
       }
 
       <p className='text-sm font-semibold text-neutral-700 my-3.5'>Everything in this plan</p>
