@@ -6,7 +6,8 @@ interface UISliceState {
   showCreateFolderModal: boolean;
   showDeleteModal: boolean;
   showFileLogger: boolean;
-  showReachedLimitModal: boolean
+  showReachedLimitModal: boolean;
+  showShareModal: boolean
 }
 
 const initialState: UISliceState = {
@@ -14,7 +15,8 @@ const initialState: UISliceState = {
   showCreateFolderModal: false,
   showDeleteModal: false,
   showFileLogger: false,
-  showReachedLimitModal: false
+  showReachedLimitModal: false,
+  showShareModal: false
 };
 
 export const uiSlice = createSlice({
@@ -35,6 +37,9 @@ export const uiSlice = createSlice({
     },
     setShowReachedPlanLimit: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.showReachedLimitModal = action.payload;
+    },
+    setShowShareModal: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.showShareModal = action.payload;
     }
   }
 });
@@ -43,11 +48,13 @@ export const {
   setShowCreateFolderModal,
   setShowDeleteModal,
   setShowFileLogger,
-  setShowReachedPlanLimit
+  setShowReachedPlanLimit,
+  setShowShareModal
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
 export const selectShowCreateFolderModal = (state: RootState): boolean => state.ui.showCreateFolderModal;
 export const selectShowDeleteModal = (state: RootState): boolean => state.ui.showDeleteModal;
 export const selectShowReachedLimitModal = (state: RootState): boolean => state.ui.showReachedLimitModal;
+export const selectShowShareModal = (state: RootState): boolean => state.ui.showShareModal;
 export default uiSlice.reducer;

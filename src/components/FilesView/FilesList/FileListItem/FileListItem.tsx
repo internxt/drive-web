@@ -17,7 +17,7 @@ import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
 import { ItemAction } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
-import { setShowDeleteModal } from '../../../../store/slices/ui';
+import { setShowDeleteModal, setShowShareModal } from '../../../../store/slices/ui';
 
 interface FileListItemProps {
   user: UserSettings | undefined;
@@ -194,6 +194,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     e.stopPropagation();
 
     dispatch(storageActions.setItemToShare(item.id));
+    dispatch(setShowShareModal(true));
   }
 
   onInfoButtonClicked = (e: MouseEvent): void => {

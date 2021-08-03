@@ -7,13 +7,13 @@ interface ItemProps {
 }
 
 const Item = ({ item }: ItemProps): JSX.Element => {
-  const statusClassName = item.status === 'success' ? '' : 'opacity-50';
+  const statusClassName = item.status === 'success' || item.status === 'error' ? '' : 'opacity-50';
   const IconComponent = iconService.getItemIcon(item.type || '');
   const fileMessagesByStatus = {
     [FileStatusTypes.Pending]: item.action === FileActionTypes.Download ? 'Pending to download' : 'Pending to upload',
     [FileStatusTypes.Uploading]: item.progress + '% Uploading file...',
     [FileStatusTypes.Downloading]: item.progress + '% Downloading file...',
-    [FileStatusTypes.Success]: item.action === FileActionTypes.Download ? 'Successful download' : 'Successful upload',
+    [FileStatusTypes.Success]: item.action === FileActionTypes.Download ? 'File downloaded' : 'File uploaded',
     [FileStatusTypes.Error]: item.action === FileActionTypes.Download ? 'Error during download' : 'Error during upload',
     [FileStatusTypes.Encrypting]: 'Encrypting file',
     [FileStatusTypes.Decrypting]: 'Decrypting file',
@@ -23,7 +23,7 @@ const Item = ({ item }: ItemProps): JSX.Element => {
     [FileStatusTypes.Pending]: item.action === FileActionTypes.Download ? 'Pending to download' : 'Pending to upload',
     [FileStatusTypes.Uploading]: 'Uploading...',
     [FileStatusTypes.Downloading]: 'Downloading files in folder...',
-    [FileStatusTypes.Success]: item.action === FileActionTypes.Download ? 'Successful download' : 'Successful upload',
+    [FileStatusTypes.Success]: item.action === FileActionTypes.Download ? 'Folder downloaded' : 'Folder uploaded',
     [FileStatusTypes.Error]: item.action === FileActionTypes.Download ? 'Error during download' : 'Error during upload',
     [FileStatusTypes.Encrypting]: 'Encrypting files',
     [FileStatusTypes.Decrypting]: 'Decrypting files',
