@@ -3,6 +3,10 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      rotate: {
+        '20': '20deg',
+        '30': '30deg'
+      },
       letterSpacing: {
         '0.2': '0.2rem',
         '0.3': '0.3rem',

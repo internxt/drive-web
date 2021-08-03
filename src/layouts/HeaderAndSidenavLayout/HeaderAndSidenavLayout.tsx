@@ -3,14 +3,11 @@ import { Link } from 'react-router-dom';
 import AppHeader from '../../components/AppHeader/AppHeader';
 import CreateFolderDialog from '../../components/dialogs/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../components/dialogs/DeleteItemsDialog/DeleteItemsDialog';
-
-import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
 import Sidenav from '../../components/Sidenav/Sidenav';
 import { RootState } from '../../store';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { setItemToShare } from '../../store/slices/storage';
 import FileLoggerModal from '../../components/FileLoggerModal';
-import { selectIsAnyModalOpen, selectShowCreateFolderModal, selectShowDeleteModal, selectShowReachedLimitModal, selectShowShareModal, uiActions } from '../../store/slices/ui';
+import { selectShowCreateFolderModal, selectShowDeleteModal, selectShowReachedLimitModal, selectShowShareModal, uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import { useEffect } from 'react';
 import SessionStorage from '../../lib/sessionStorage';
