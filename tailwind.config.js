@@ -23,7 +23,10 @@ module.exports = {
         '24px': '24px'
       },
       minWidth: {
-        '104': '26rem'
+        '104': '26rem',
+        'sidenav-1280': '180px',
+        'sidenav-1280-collapsed': '64px',
+        'activity-1280': '296px'
       },
       padding: {
         '42px': '42px',

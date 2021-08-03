@@ -60,10 +60,8 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
   return isAuthenticated ? (
     <div className='h-auto min-h-full flex flex-col'>
-      <div className={`${isAnyModalOpen ? 'flex' : 'hidden'} absolute w-full h-full bg-m-neutral-100 opacity-80 z-10`} />
-
-      {/* <ShareItemDialog item={itemToShare} /> */}
       {itemToShare && <ShareDialog item={itemToShare} />}
+      <div className={`${isAnyModalOpen ? 'flex' : 'hidden'} absolute w-full h-full bg-m-neutral-100 opacity-80 z-10`} />
       <CreateFolderDialog />
       <DeleteItemsDialog />
       <ReachedPlanLimitDialog />

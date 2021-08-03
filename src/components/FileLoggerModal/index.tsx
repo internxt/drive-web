@@ -95,7 +95,7 @@ const FileLoggerModal = (): JSX.Element => {
             <Unicons.UilAngleDoubleDown className="h-5" />
           </div>
 
-          <div onClick={() => handleClose()}>
+          <div className="cursor-pointer" onClick={handleClose}>
             <Unicons.UilTimes className={`h-5 ${hasFinished ? 'text-white' : 'text-m-neutral-100'}`} />
           </div>
         </div>

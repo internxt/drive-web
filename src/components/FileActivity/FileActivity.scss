@@ -1,13 +1,4 @@
 @layer components {
-  .file-activity-icon {
-    $size: 36px;
-    
-    width: $size;
-    height: $size;
-
-    @apply mr-3;
-  }
-
   .file-activity-tabs-inner-container {
     top: 1px;
 

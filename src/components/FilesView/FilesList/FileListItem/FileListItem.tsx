@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode } from 'react';
+import React, { MouseEvent, Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { Dropdown } from 'react-bootstrap';
 import * as Unicons from '@iconscout/react-unicons';
@@ -22,7 +22,7 @@ import { setShowDeleteModal, setShowShareModal } from '../../../../store/slices/
 interface FileListItemProps {
   user: UserSettings | undefined;
   isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveItemData;
+  draggingTargetItemData: DriveItemData | null;
   item: DriveItemData;
   selectedItems: DriveItemData[];
   currentFolderId: number;
@@ -65,13 +65,15 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             value={dirtyName}
             placeholder="Name"
             onChange={this.onNameChanged}
-            onBlur={this.onNameBlurred} onKeyPress={this.onEnterKeyPressed}
+            onBlur={this.onNameBlurred}
+            onKeyPress={this.onEnterKeyPressed}
             autoFocus
           />
           <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
         </div>
         <span
           className={`${spanDisplayClass} file-list-item-name-span`}
+          onClick={(e) => e.stopPropagation() }
           onDoubleClick={this.onNameDoubleClicked}
         >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
       </Fragment>
@@ -152,7 +154,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     this.setState({ showContextMenu: true });
   }
 
-  onOutsideContextMenuClicked = (e: MouseEvent): void => {
+  onOutsideContextMenuClicked = (): void => {
     document.removeEventListener('click', this.onOutsideContextMenuClicked);
     this.setState({ showContextMenu: false });
   }
@@ -165,9 +167,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       dispatch(storageActions.deselectItem(item));
   }
 
-  onRenameButtonClicked = (): void => {
+  onRenameButtonClicked = (e: MouseEvent): void => {
     const { item } = this.props;
     const { nameInputRef } = this.state;
+
+    e.stopPropagation();
 
     this.setState(
       { isEditingName: true, dirtyName: item.name },
@@ -175,26 +179,33 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     );
   }
 
-  onDownloadButtonClicked = (): void => {
+  onDownloadButtonClicked = (e: MouseEvent): void => {
     const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
+
+    e.stopPropagation();
 
     queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
   }
 
-  onShareButtonClicked = (): void => {
+  onShareButtonClicked = (e: MouseEvent): void => {
     const { dispatch, item } = this.props;
+
+    e.stopPropagation();
 
     dispatch(storageActions.setItemToShare(item.id));
     dispatch(setShowShareModal(true));
   }
 
-  onInfoButtonClicked = (): void => {
+  onInfoButtonClicked = (e: MouseEvent): void => {
+    e.stopPropagation();
     this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
   }
 
-  onDeleteButtonClicked = (): void => {
+  onDeleteButtonClicked = (e: MouseEvent): void => {
     const { dispatch, item } = this.props;
+
+    e.stopPropagation();
 
     dispatch(storageActions.setItemsToDelete([item]));
     dispatch(setShowDeleteModal(true));
@@ -208,22 +219,22 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
-    const { item } = this.props;
+  onItemDragOver = (e: React.DragEvent<HTMLTableRowElement>): void => {
+    const { item, isDraggingAnItem, draggingTargetItemData } = this.props;
 
     if (item.isFolder) {
       e.preventDefault();
       e.stopPropagation();
 
-      this.props.dispatch(storageActions.setDraggingItemTargetData(this.props.item));
+      this.props.dispatch(storageActions.setDraggingItemTargetData(item));
     }
   }
 
-  onItemDragLeave = (e: DragEvent<HTMLDivElement>): void => {
+  onItemDragLeave = (e: React.DragEvent<HTMLTableRowElement>): void => {
     this.props.dispatch(storageActions.setDraggingItemTargetData(null));
   }
 
-  onItemDrop = (e: DragEvent<HTMLDivElement>): void => {
+  onItemDrop = (e: React.DragEvent<HTMLTableRowElement>): void => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -234,7 +245,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   render(): ReactNode {
     const { isDraggingAnItem, draggingTargetItemData, item, isItemSelected } = this.props;
-    const isDraggingOverThisItem: boolean = draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
+    const isDraggingOverThisItem: boolean = !!draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
     const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
@@ -284,8 +295,8 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             </button>
           </div>
         </td>
-        <td>{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
-        <td>{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
+        <td className="whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
+        <td className="whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
         <td>
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold">

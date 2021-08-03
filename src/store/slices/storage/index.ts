@@ -9,9 +9,9 @@ export interface StorageState {
   isLoading: boolean;
   isDeletingItems: boolean;
   isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveFolderData | DriveFileData | null;
-  items: (DriveFileData | DriveFolderData)[];
-  selectedItems: (DriveFileData | DriveFolderData)[];
+  draggingTargetItemData: DriveItemData | null;
+  items: DriveItemData[];
+  selectedItems: DriveItemData[];
   itemToShareId: number;
   itemsToDelete: DriveItemData[];
   infoItemId: number;
