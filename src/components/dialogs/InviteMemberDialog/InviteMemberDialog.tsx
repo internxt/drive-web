@@ -11,7 +11,6 @@ import notify from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { selectShowInviteMemberModal, setShowInviteMemberModal } from '../../../store/slices/ui';
 import { sendEmailTeamsMember } from '../../../services/teamsSendEmail.service';
-import { setInvitation } from '../../../store/slices/team';
 
 interface InviteMemberCreateDialogProps {
   team: TeamsSettings | undefined

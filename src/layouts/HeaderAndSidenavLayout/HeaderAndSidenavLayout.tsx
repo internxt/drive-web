@@ -4,13 +4,11 @@ import AppHeader from '../../components/AppHeader/AppHeader';
 import CreateFolderDialog from '../../components/dialogs/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../components/dialogs/DeleteItemsDialog/DeleteItemsDialog';
 
-import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
 import Sidenav from '../../components/Sidenav/Sidenav';
 import { RootState } from '../../store';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { setItemToShare } from '../../store/slices/storage';
 import FileLoggerModal from '../../components/FileLoggerModal';
-import { selectIsAnyModalOpen, selectShowCreateFolderModal, selectShowDeleteModal, selectShowReachedLimitModal, selectShowShareModal, uiActions } from '../../store/slices/ui';
+import { selectShowCreateFolderModal, selectShowDeleteModal, selectShowInviteMemberModal, selectShowReachedLimitModal, uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import { useEffect } from 'react';
 import SessionStorage from '../../lib/sessionStorage';
@@ -35,6 +33,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const showDeleteModal = useAppSelector(selectShowDeleteModal);
   const showCreateFolderModal = useAppSelector(selectShowCreateFolderModal);
   const showReachedLimitModal = useAppSelector(selectShowReachedLimitModal);
+  const showInviteMemberModal = useAppSelector(selectShowInviteMemberModal);
 
   useEffect(() => {
     const limitStorage = SessionStorage.get('limitStorage');
@@ -66,8 +65,8 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
       {showCreateFolderModal && <CreateFolderDialog />}
       {showDeleteModal && <DeleteItemsDialog />}
       {showReachedLimitModal && <ReachedPlanLimitDialog />}
+      {showInviteMemberModal && <InviteMemberDialog/>}
 
-      <InviteMemberDialog />
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />
 
