@@ -1,6 +1,6 @@
 import React, { SetStateAction } from 'react';
 import { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import * as Unicons from '@iconscout/react-unicons';
 
 import { IFormValues } from '../../../../models/interfaces';
@@ -12,6 +12,7 @@ import notify from '../../../../components/Notifications';
 import googleAuthenticatorIcon from '../../../../assets/icons/google-authenticator.svg';
 import appStoreIcon from '../../../../assets/icons/app-store.svg';
 import playStoreIcon from '../../../../assets/icons/play-store.svg';
+import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
 
 interface StepsProps {
   currentStep: number,
@@ -21,10 +22,12 @@ interface StepsProps {
 }
 
 const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Element => {
-  const { register, formState: { errors, isValid }, handleSubmit, reset } = useForm<IFormValues>({ mode: 'onChange' });
+  const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showTwoFactorCode, setShowTwoFactorCode] = useState(false);
+  const twoFactorCode = useWatch({ control, name: 'twoFactorCode', defaultValue: '' });
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
     try {
@@ -82,19 +85,24 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
             error={errors.backupKey}
             register={register}
             required={true}
-            icon={<Unicons.UilLock />}
             minLength={1} />
 
           <div className='mx-2' />
 
           <BaseInput
             label='twoFactorCode'
-            placeholder='Two-Factor code'
-            type='text'
+            placeholder='Two-Factor authentication code'
+            type={showTwoFactorCode ? 'text' :'password'}
             error={errors.twoFactorCode}
             register={register}
             required={true}
-            icon={<Unicons.UilLock />}
+            icon={twoFactorCode ?
+              (showTwoFactorCode ?
+                <UilEyeSlash className='w-4' onClick={() => setShowTwoFactorCode(false)}/>
+                :
+                <UilEye className='w-4' onClick={() => setShowTwoFactorCode(true)}/>) :
+              <UilLock className='w-4'/>
+            }
             minLength={1}
             pattern={twoFactorRegexPattern} />
         </div>

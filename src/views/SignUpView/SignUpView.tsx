@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import * as bip39 from 'bip39';
 import queryString from 'query-string';
-import * as Unicons from '@iconscout/react-unicons';
 
 import SideInfo from '../Authentication/SideInfo';
 import { IFormValues, UserSettings } from '../../models/interfaces';
@@ -22,6 +21,7 @@ import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
 import BaseButton from '../../components/Buttons/BaseButton';
 import { texts } from '../SignInView/SignInView';
+import { UilLock, UilEyeSlash, UilEye, UilEnvelope, UilUser } from '@iconscout/react-unicons';
 
 interface SignUpProps {
   match: any;
@@ -43,6 +43,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const qs = queryString.parse(history.location.search);
   const hasEmailParam = props.match.params.email && validateEmail(props.match.params.email);
@@ -226,7 +227,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Name'
             label='name'
             type='text'
-            icon={<Unicons.UilUser />}
+            icon={<UilUser className='w-4'/>}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Name must not be empty' }}
@@ -237,7 +238,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Lastname'
             label='lastname'
             type='text'
-            icon={<Unicons.UilUser />}
+            icon={<UilUser className='w-4'/>}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Lastname must not be empty' }}
@@ -248,7 +249,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Email'
             label='email'
             type='email'
-            icon={<Unicons.UilEnvelope />}
+            icon={<UilEnvelope className='w-4'/>}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -258,32 +259,35 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
           <BaseInput
             placeholder='Password'
-            label={'password'}
+            label='password'
             type={showPassword ? 'text' : 'password'}
             icon={password ?
-              (showPassword ? <Unicons.UilEyeSlash /> : <Unicons.UilEye />) :
-              <Unicons.UilLock />
+              (showPassword ?
+                <UilEyeSlash className='w-4' onClick={() => setShowPassword(false)}/>
+                :
+                <UilEye className='w-4' onClick={() => setShowPassword(true)}/>) :
+              <UilLock className='w-4'/>
             }
             register={register}
             required={true}
-            minLength={{ value: 1, message: 'Password must not be empty' }}
+            minLength={1}
             error={errors.password}
-            onClick={() => setShowPassword(!showPassword)}
           />
 
           <BaseInput
-            placeholder='Confirm password'
+            placeholder='Confirm new password'
             label='confirmPassword'
-            type={showPassword ? 'text' : 'password'}
+            type={showConfirmPassword ? 'text' : 'password'}
             icon={confirmPassword ?
-              (showPassword ? <Unicons.UilEyeSlash /> : <Unicons.UilEye />) :
-              <Unicons.UilLock />
+              (showConfirmPassword ?
+                <UilEyeSlash className='w-4' onClick={() => setShowConfirmPassword(false)} />
+                : <UilEye className='w-4' onClick={() => setShowConfirmPassword(true)}/>) :
+              <UilLock className='w-4'/>
             }
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Password must not be empty' }}
             error={errors.confirmPassword}
-            onClick={() => setShowPassword(!showPassword)}
           />
 
           {

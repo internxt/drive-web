@@ -10,6 +10,7 @@ import AuthButton from '../../../../components/Buttons/AuthButton';
 import BaseInput from '../../../../components/Inputs/BaseInput';
 import notify from '../../../../components/Notifications';
 import BaseButton from '../../../../components/Buttons/BaseButton';
+import { UilEnvelope, UilPaperclip } from '@iconscout/react-unicons';
 
 const AccountReferralsTab = (): JSX.Element => {
   const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
@@ -91,7 +92,7 @@ const AccountReferralsTab = (): JSX.Element => {
             placeholder='example@example.com'
             label='email'
             type='email'
-            icon={<Unicons.UilEnvelope />}
+            icon={<UilEnvelope className='w-4'/>}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -110,7 +111,7 @@ const AccountReferralsTab = (): JSX.Element => {
             notify('Link copied!', 'info', 2500);
           }}>
           <span className='text-neutral-700 text-sm truncate mr-3'>{linkToCopy}</span>
-          <Unicons.UilPaperclip className="text-blue-60" />
+          <UilPaperclip className="text-blue-60 w-4" />
         </div>
 
         <span className='my-5 text-neutral-900 font-semibold'>

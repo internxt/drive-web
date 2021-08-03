@@ -7,6 +7,7 @@ import { twoFactorRegexPattern } from '../../../../services/validation.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import BaseInput from '../../../../components/Inputs/BaseInput';
 import notify from '../../../../components/Notifications';
+import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
 
 interface Deactivate2FAProps {
   passwordSalt: string,
@@ -16,9 +17,11 @@ interface Deactivate2FAProps {
 const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Element => {
   const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
+  const twoFactorCode = useWatch({ control, name: 'twoFactorCode', defaultValue: '' });
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showTwoFactorCode, setShowTwoFactorCode] = useState(false);
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
     try {
@@ -48,23 +51,32 @@ const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Ele
           error={errors.password}
           register={register}
           required={true}
-          icon={password
-            ? showPassword ? 'eyeSlashGray' : 'eyeGray'
-            : 'lockGray'
+          icon={password ?
+            (showPassword ?
+              <UilEyeSlash className='w-4' onClick={() => setShowPassword(false)}/>
+              :
+              <UilEye className='w-4' onClick={() => setShowPassword(true)}/>) :
+            <UilLock className='w-4'/>
           }
           minLength={1}
-          onClick={() => setShowPassword(!showPassword)} />
+        />
 
         <div className='mx-2' />
 
         <BaseInput
           label='twoFactorCode'
-          placeholder='Two-Factor code'
-          type='text'
+          placeholder='Two-Factor authentication code'
+          type={showTwoFactorCode ? 'text' :'password'}
           error={errors.twoFactorCode}
           register={register}
           required={true}
-          icon='lockGray'
+          icon={twoFactorCode ?
+            (showTwoFactorCode ?
+              <UilEyeSlash className='w-4' onClick={() => setShowTwoFactorCode(false)}/>
+              :
+              <UilEye className='w-4' onClick={() => setShowTwoFactorCode(true)}/>) :
+            <UilLock className='w-4'/>
+          }
           minLength={1}
           pattern={twoFactorRegexPattern} />
       </div>
