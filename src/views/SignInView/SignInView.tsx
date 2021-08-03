@@ -33,10 +33,6 @@ export const texts = {
     {
       name: '500 Startups',
       review: '“500 Startups is one of the most active venture capital firms in the world and has commited over $454M in investment globally.500 Startups have chosen Internxt as one of the top SAAS startups worldwide.”'
-    },
-    {
-      name: 'Ashley Smith',
-      review: '“Designed to protect your privacy, available in all your devices. Save your most valuable files with ease and have them secured for the rest of your life.”'
     }
   ]
 };

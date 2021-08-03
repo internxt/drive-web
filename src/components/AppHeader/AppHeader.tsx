@@ -83,12 +83,12 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
               {workspace === Workspace.Personal ?
                 <Fragment>
                   <Unicons.UilUser className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5 text-blue-60" />
-                  <span className="text-neutral-500 text-sm">{userFullName}</span>
+                  <span className="text-neutral-500 text-base">{userFullName}</span>
                 </Fragment>
                 :
                 <Fragment>
                   <Unicons.UilBuilding className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5 text-blue-60" />
-                  <span className="text-neutral-500 text-sm">Business</span>
+                  <span className="text-neutral-500 text-base">Business</span>
                 </Fragment>
               }
             </div>
