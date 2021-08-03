@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import BaseButton from '../../../../components/Buttons/BaseButton';
+import { TextField } from '@material-ui/core';
 import { IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 
 interface PlanProps {
@@ -11,8 +12,10 @@ interface PlanProps {
   buttontext: string,
   characteristics: string[],
   handlePlanSelection: (planId: string, productId: string) => void,
-  handlePayment: (selectedPlan: string, productId: string) => void,
+  handlePaymentIndividual: (selectedPlan: string, productId: string) => void,
   isPaying: boolean
+  isBusiness: boolean
+  handlePaymentTeams: any
 }
 
 const ListItem = ({ text }: { text: string }): JSX.Element => (
@@ -47,8 +50,9 @@ export const Plan = ({ plan, onClick, selectedPlan }: { plan: IStripePlan, onCli
   );
 };
 
-const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection, handlePayment, selectedPlan, isPaying }: PlanProps): JSX.Element => {
+const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection, handlePaymentIndividual, selectedPlan, isPaying, isBusiness, handlePaymentTeams }: PlanProps): JSX.Element => {
   const [buttonText, setButtonText] = useState(selectedPlan ? 'Subscribe' : 'Choose your payment');
+  const [totalTeamMembers, setTotalMembers] = useState('');
 
   useEffect(() => {
     setButtonText(selectedPlan ? 'Subscribe' : 'Choose your payment');
@@ -67,15 +71,37 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
           }
         }} />)}
 
+      {
+        isBusiness ?
+          <TextField
+            type="number" label="Team members"
+            style={{ width: 154 }}
+            InputProps={{
+              required: true,
+              inputProps: {
+                min: 2,
+                max: 10
+              }
+            }}
+            value={totalTeamMembers} onChange={e => setTotalMembers(e.target.value)} />
+          :
+          ''
+      }
+
       <p className='text-sm font-semibold text-neutral-700 my-3.5'>Everything in this plan</p>
 
       {characteristics.map(text => <ListItem text={text} key={text} />)}
 
       <div className='mt-4' />
-      <BaseButton classes="w-full primary" disabled={isPaying || !selectedPlan} onClick={() => handlePayment(selectedPlan, product.id)}>
+      <BaseButton classes="w-full primary" disabled={isPaying || !selectedPlan} onClick={() => {
+        if (isBusiness) {
+          handlePaymentTeams(selectedPlan, product.id, totalTeamMembers);
+        } else {
+          handlePaymentIndividual(selectedPlan, product.id);
+        }
+      }}>
         {selectedPlan && isPaying ? 'Redirecting to Stripe...' : buttonText}
       </BaseButton>
-
     </div>
   );
 };

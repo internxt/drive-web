@@ -8,9 +8,9 @@ import * as Unicons from '@iconscout/react-unicons';
 import { removeAccents } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
 
-import { DriveFileData, DriveFolderData, FolderPath, UserSettings } from '../../models/interfaces';
+import { DriveFileData, DriveFolderData, FolderPath, TeamsSettings, UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
-import { DevicePlatform } from '../../models/enums';
+import { DevicePlatform, Workspace } from '../../models/enums';
 
 import { selectShowReachedLimitModal, setShowCreateFolderModal, setShowDeleteModal, setShowReachedPlanLimit } from '../../store/slices/ui';
 import { storageThunks, storageActions, storageSelectors } from '../../store/slices/storage';
@@ -29,6 +29,8 @@ import './FilesView.scss';
 import usageService, { UsageResponse } from '../../services/usage.service';
 import SessionStorage from '../../lib/sessionStorage';
 import deviceService from '../../services/device.service';
+import { handleChangeWorkspaceThunk } from '../../store/slices/user';
+import localStorageService from '../../services/localStorage.service';
 
 interface FilesViewProps {
   user: UserSettings | any;
@@ -47,6 +49,7 @@ interface FilesViewProps {
   namePath: FolderPath[];
   sortFunction: ((a: DriveFileData | DriveFolderData, b: DriveFileData | DriveFolderData) => number) | null;
   dispatch: AppDispatch;
+  workspace: Workspace
 }
 
 interface FilesViewState {
@@ -118,9 +121,10 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {
-    const { user, currentFolderId } = this.props;
+    const { currentFolderId } = this.props;
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
-    return folderService.createFolder(!!user.teams, currentFolderId, folderName);
+    return folderService.createFolder(isTeam, currentFolderId, folderName);
   }
 
   onUploadButtonClicked = (): void => {
@@ -135,11 +139,11 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   onUploadInputChanged = async (e) => {
     const limitStorage = SessionStorage.get('limitStorage');
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     try {
-      const usage: UsageResponse = await usageService.fetchUsage();
+      const usage: UsageResponse = await usageService.fetchUsage(isTeam);
 
-      console.log('usage =>', usage, 'limit =>', limitStorage);
       if (limitStorage && usage.total >= parseInt(limitStorage)) {
         this.props.dispatch(setShowReachedPlanLimit(true));
       } else {
@@ -263,7 +267,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   };
 
   move = (items, destination, moveOpId) => {
-    const { user } = this.props;
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     // Don't want to request this...
     if (
@@ -299,7 +303,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
       data[keyOp.toLowerCase() + 'Id'] = item.fileId || item.id;
       fetch(`/api/storage/move${keyOp}`, {
         method: 'post',
-        headers: getHeaders(true, true, user.teams),
+        headers: getHeaders(true, true, isTeam),
         body: JSON.stringify(data)
       }).then(async (res) => {
         const response = await res.json();
@@ -527,6 +531,7 @@ export default connect(
       infoItemId: state.storage.infoItemId,
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
-      sortFunction: state.storage.sortFunction
+      sortFunction: state.storage.sortFunction,
+      workspace: state.team.workspace
     };
   })(FilesView);

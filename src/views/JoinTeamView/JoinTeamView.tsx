@@ -6,6 +6,7 @@ import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 
 import './JoinTeamView.scss';
+import notify from '../../components/Notifications';
 
 interface JoinTeamProps {
   match: any
@@ -49,12 +50,12 @@ class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
       if (response.status === 200) {
         this.setState({ isTeamActivated: true });
         localStorage.setItem('teamActivation', 'true');
-        toast.info('You have successfully joined to the team, please login');
+        notify('You have successfully joined to the team', 'success');
         history.push('/');
       } else {
         // Wrong activation
         this.setState({ isTeamActivated: false });
-        toast.warn('Your activation code is invalid. Maybe you have used this link before and your account is already activated.');
+        notify('Your activation code is invalid. Maybe you have used this link before and your account is already activated.', 'error');
       }
 
     }).catch(error => {

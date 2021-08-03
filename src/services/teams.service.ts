@@ -18,10 +18,14 @@ export async function getTeamsInfo(): Promise<any> {
   return fetch('/api/teams/info', {
     method: 'get',
     headers: getHeaders(true, false, false)
-  }).then(res => res.json());
+  }).then(res => {
+    return res.json();
+  }).catch(() => {
+    throw new Error ('Can not get info team');
+  });
 }
 
-export async function getKeys(mail: string): Promise<Response> {
+export async function getKeys(mail: string): Promise<any> {
   return fetch(`/api/user/keys/${mail}`, {
     method: 'GET',
     headers: getHeaders(true, false)
@@ -40,18 +44,22 @@ export async function getKeys(mail: string): Promise<Response> {
 }
 
 export async function storeTeamsInfo(): Promise<void> {
-  const { userTeam, tokenTeams } = await getTeamsInfo();
+  try {
+    const { userTeam, tokenTeams } = await getTeamsInfo();
 
-  if (userTeam && tokenTeams) {
-    const mnemonic = await decryptPGP(Buffer.from(userTeam.bridge_mnemonic, 'base64').toString());
+    if (userTeam && tokenTeams) {
+      const mnemonic = await decryptPGP(Buffer.from(userTeam.bridge_mnemonic, 'base64').toString());
 
-    userTeam.bridge_mnemonic = mnemonic.data;
+      userTeam.bridge_mnemonic = mnemonic.data;
 
-    localStorageService.set('xTeam', JSON.stringify(userTeam));
-    localStorageService.set('xTokenTeam', tokenTeams);
-  } else {
-    localStorageService.del('xTeam');
-    localStorageService.del('xTokenTeam');
+      localStorageService.set('xTeam', JSON.stringify(userTeam));
+      localStorageService.set('xTokenTeam', tokenTeams);
+    } else {
+      localStorageService.del('xTeam');
+      localStorageService.del('xTokenTeam');
+    }
+  } catch (error) {
+    throw new Error ('Can not get info team');
   }
 }
 

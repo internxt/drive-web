@@ -94,6 +94,9 @@ export const storageSlice = createSlice({
       if (!state.namePath.map(path => path.id).includes(action.payload.id)) {
         state.namePath.push(action.payload);
       }
+    },
+    pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
+      state.namePath = [action.payload];
     }
   },
   extraReducers
@@ -115,7 +118,8 @@ export const {
   setViewMode,
   resetNamePath,
   pushNamePath,
-  popNamePathUpTo
+  popNamePathUpTo,
+  pathChangeWorkSpace
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;
