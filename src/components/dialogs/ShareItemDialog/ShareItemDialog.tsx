@@ -3,7 +3,11 @@ import * as Unicons from '@iconscout/react-unicons';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
+<<<<<<< HEAD
 import { setItemToShare } from '../../../store/slices/storage';
+=======
+import { setItemsToDelete, setItemToShare } from '../../../store/slices/storage';
+>>>>>>> 5d8189aad75a6da9f1b21cdef5a8b0df0ba1c061
 import { DriveItemData } from '../../../models/interfaces';
 import notify from '../../Notifications';
 import { selectUser } from '../../../store/slices/user';
