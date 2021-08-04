@@ -186,9 +186,8 @@ export default function SignInView(props: SignInProps): JSX.Element {
 
           {
             loginError && showErrors &&
-            <div className='flex ml-3 my-1'>
-              <div className='w-1.5 h-1.5 bg-neutral-600 rounded-full mt-1.5 mr-2' />
-              <span className='text-neutral-600 text-sm'>{loginError}</span>
+            <div className='flex my-1'>
+              <span className='text-red-60 text-sm w-56 font-medium'>{loginError}</span>
             </div>
           }
 

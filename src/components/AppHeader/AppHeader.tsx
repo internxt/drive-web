@@ -9,7 +9,7 @@ import './AppHeader.scss';
 import { Dropdown } from 'react-bootstrap';
 import authService from '../../services/auth.service';
 import { Workspace } from '../../models/enums';
-import { handleChangeWorkspaceThunk } from '../../store/slices/user';
+import { handleChangeWorkspaceThunk, userActions } from '../../store/slices/user';
 import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
 import localStorageService from '../../services/localStorage.service';
 import { filesStateSlice } from '../../store/slices/files';
@@ -62,6 +62,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   onLogoutButtonClicked = (): void => {
     this.props.dispatch(filesStateSlice.actions.clearFileLoggerStatus());
     this.props.dispatch(setWorkspace(Workspace.Personal));
+    this.props.dispatch(userActions.clearUserPlan());
     authService.logOut();
   }
 
