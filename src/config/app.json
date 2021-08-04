@@ -129,7 +129,7 @@
     {
       "id": "share-token",
       "layout": "empty",
-      "path": "/:token([a-z0-9]{10})",
+      "path": "/:token([a-z0-9]{20})",
       "exact": true
     },
     {
