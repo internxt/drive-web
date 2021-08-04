@@ -1,23 +1,17 @@
 import { getHeaders } from '../lib/auth';
 
-export const generateShareLink = async (fileId: string, views: number, isFolder: boolean, isTeams = false): Promise<string> => {
-  const isTeam: boolean = isTeams;
+interface GenerateShareLinkResponse {
+  token: string
+}
 
-  const response = await fetch(`/api/storage/share/file/${fileId}`, {
+export function generateShareLink(fileId: string, views: number, isFolder: boolean, encryptionKey: string, isTeam = false): Promise<string> {
+  return fetch(`/api/storage/share/file/${fileId}`, {
     method: 'POST',
     headers: getHeaders(true, true, isTeam),
-    body: JSON.stringify({
-      'isFolder': isFolder ? 'true' : 'false',
-      'views': views
-    })
+    body: JSON.stringify({ isFolder, views, encryptionKey })
+  }).then((res) => {
+    return res.json();
+  }).then((res: GenerateShareLinkResponse) => {
+    return `${window.location.origin}/${res.token}`;
   });
-
-  if (response.status !== 200) {
-    throw response;
-  }
-  const data = await response.json();
-  const link = `${window.location.origin}/${data.token}`;
-
-  console.log('newlink', link);
-  return link;
-};
+}
