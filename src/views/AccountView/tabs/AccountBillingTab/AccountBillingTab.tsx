@@ -98,7 +98,6 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
 
         setProducts(keyedProducts);
         setTeamsProducts(keyedTeamsProducts);
-        console.log('first =>', keyedTeamsProducts);
       } catch (err) {
         notify(err.message, 'error');
       } finally {
@@ -110,7 +109,6 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
   }, []);
 
   const handlePlanSelection = (planId: string, productId: string) => {
-    console.log('before before =>', teamsProducts);
     const newProds = objectMap({ ...products }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
       return {
         ...value,
@@ -118,7 +116,6 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
       };
     });
 
-    console.log('before =>', teamsProducts);
     const newTeamsProds = objectMap({ ...teamsProducts }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
       return {
         ...value,
@@ -126,7 +123,6 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
       };
     });
 
-    console.log('after =>', newTeamsProds);
     setProducts(newProds);
     setTeamsProducts(newTeamsProds);
   };
