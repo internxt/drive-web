@@ -12,6 +12,8 @@ interface IUploadParams {
 }
 
 interface IDownloadParams {
+  fileToken?: string;
+  fileEncryptionKey?: Buffer;
   progressCallback: ProgressCallback;
 }
 
@@ -94,7 +96,7 @@ export class Network {
 
     return new Promise((resolve, reject) => {
       this.environment.downloadFile(bucketId, fileId, {
-        progressCallback: params.progressCallback,
+        ...params,
         finishedCallback: (err: Error | null, filecontent: Blob | null) => {
           if (err) {
             //STATUS: ERROR DOWNLOAD FILE
@@ -113,6 +115,10 @@ export class Network {
 
   getFileInfo(bucketId: string, fileId: string) {
     return this.environment.getFileInfo(bucketId, fileId);
+  }
+
+  createFileToken(bucketId: string, fileId: string, operation: 'PULL' | 'PUSH'): Promise<string> {
+    return this.environment.createFileToken(bucketId, fileId, operation);
   }
 }
 
@@ -144,4 +150,3 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
 }
 
 export const generateFileKey = Environment.utils.generateFileKey;
-
