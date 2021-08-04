@@ -15,7 +15,7 @@ const BaseDialog = ({ isOpen, title, children, onClose, additionalStyling }: Bas
 
         <Unicons.UilTimes className='absolute right-8 cursor-pointer transition duration-200 ease-in-out text-blue-60 hover:text-blue-70' onClick={onClose} />
 
-        <span className='text-neutral-900 text-xl text-center'>{title}</span>
+        <span className='text-neutral-900 text-xl text-center px-14 overflow-hidden overflow-ellipsis'>{title}</span>
 
         {children}
       </div>

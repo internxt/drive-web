@@ -78,10 +78,10 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       onClose={onClose}
     >
       <div className='share-dialog flex flex-col mb-8'>
-        <hr className="border-t-1 border-l-neutral-50 my-4" />
+        <hr className="border-t-1 border-l-neutral-50 mt-7 mb-6" />
 
         <div className="px-8">
-          <span className='text-neutral-500 self-center'>Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link</span>
+          <p className='w-full text-neutral-500 text-center'>Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link</p>
 
           <div className='flex mt-3'>
             <span className='text-blue-60 mr-4'>1.</span>
@@ -101,7 +101,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
             <span className='text-neutral-500'>Get link to share</span>
           </div>
 
-          <div className='flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer'
+          <div className='flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text'
             onClick={() => {
               navigator.clipboard.writeText(linkToCopy);
               notify('Link copied!', 'info', 2500);

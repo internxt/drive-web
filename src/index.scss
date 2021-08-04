@@ -6,6 +6,13 @@
   --footer-height: 115px;
 
   height: 100%;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 body {
@@ -198,7 +205,8 @@ code {
     @apply appearance-none flex items-center justify-center bg-l-neutral-10 border border-m-neutral-60 text-center text-blue-60 outline-none;
     -moz-appearance: textfield;
   }
-  input[type="number"]::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+  input[type="number"]::-webkit-inner-spin-button,
+  ::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
