@@ -21,7 +21,8 @@ import { FileViewMode } from '../../models/enums';
 import FilesList from './FilesList/FilesList';
 import FilesGrid from './FilesGrid/FilesGrid';
 import LoadingFileExplorer from '../LoadingFileExplorer/LoadingFileExplorer';
-import dragAndDropImage from '../../assets/images/drag-and-drop.png';
+import folderEmptyImage from '../../assets/images/folder-empty.png';
+import noResultsSearchImage from '../../assets/images/no-results-search.png';
 import { uiActions } from '../../store/slices/ui';
 
 import './FileExplorer.scss';
@@ -29,6 +30,7 @@ import usageService, { UsageResponse } from '../../services/usage.service';
 import SessionStorage from '../../lib/sessionStorage';
 import deviceService from '../../services/device.service';
 import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
+import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
 
 interface FileExplorerProps {
   title: JSX.Element | string;
@@ -378,13 +380,13 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       [FileViewMode.Grid]: <Unicons.UilListUiAlt />
     };
     const viewModes = {
-      [FileViewMode.List]: <FilesList items={items}/>,
-      [FileViewMode.Grid]: <FilesGrid items={items}/>
+      [FileViewMode.List]: <FilesList items={items} />,
+      [FileViewMode.Grid]: <FilesGrid items={items} />
     };
 
     return (
       <Fragment>
-        {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated}/>}
+        {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
         <div className="flex flex-grow h-1 ">
           <div className="flex-grow flex flex-col">
@@ -448,21 +450,23 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 
               {/* EMPTY FOLDER */
                 !this.hasFilters && !this.hasItems && !isLoading ?
-                  <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
-                    <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">
-                      <div className="mb-28">
-                        <img alt="" src={dragAndDropImage} className="w-36 m-auto" />
-                        <div className="text-center">
-                          <span className="font-semibold text-base text-m-neutral-100 block">
-                            Drag and drop here
-                          </span>
-                          <span className="text-sm text-m-neutral-100 block">
-                            or use the upload button
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div> :
+                  <FileExplorerOverlay
+                    icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
+                    title="This folder is empty"
+                    subtitle="Drag and drop here or click on upload button"
+                  />
+                  :
+                  null
+              }
+
+              {/* NO SEARCH RESULTS */
+                this.hasFilters && !this.hasItems && !isLoading ?
+                  <FileExplorerOverlay
+                    icon={<img alt="" src={noResultsSearchImage} className="w-full m-auto" />}
+                    title="There are no results for this search"
+                    subtitle="Drag and drop here or click on upload button"
+                  />
+                  :
                   null
               }
 

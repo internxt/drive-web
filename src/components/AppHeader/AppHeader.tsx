@@ -38,7 +38,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   onSearchButtonClicked(): void {
-    console.log('search submitted!');
+    // TODO: do search
   }
 
   onAccountButtonClicked = (): void => {
