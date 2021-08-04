@@ -31,6 +31,7 @@ import SessionStorage from '../../lib/sessionStorage';
 import deviceService from '../../services/device.service';
 import { handleChangeWorkspaceThunk } from '../../store/slices/user';
 import localStorageService from '../../services/localStorage.service';
+import { getAllItems } from '../../services/dragAndDrop.service';
 
 interface FilesViewProps {
   user: UserSettings | any;
@@ -189,11 +190,9 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   onPreviousPageButtonClicked = (): void => {
-    console.log('previous page button clicked!');
   }
 
   onNextPageButtonClicked = (): void => {
-    console.log('next page button clicked!');
   }
 
   getTeamByUser = () => {
@@ -380,11 +379,14 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 
-  onViewDrop = (e: DragEvent<HTMLDivElement>): void => {
+  onViewDrop = async (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log('onViewDrop');
+    const itemsDragged = await getAllItems(e.dataTransfer);
+    const { numberOfItems, root } = itemsDragged;
+
+    await this.props.dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
 
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
