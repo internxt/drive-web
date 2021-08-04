@@ -12,7 +12,7 @@ import { DriveFileData, DriveItemData, FolderPath, UserSettings } from '../../mo
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform, Workspace } from '../../models/enums';
 
-import { storageThunks, storageActions, storageSelectors } from '../../store/slices/storage';
+import { storageThunks, storageActions, storageSelectors, StorageFilters } from '../../store/slices/storage';
 import folderService, { ICreatedFolder } from '../../services/folder.service';
 import { AppDispatch, RootState } from '../../store';
 
@@ -40,6 +40,7 @@ interface FileExplorerProps {
   currentFolderId: number;
   isDraggingAnItem: boolean;
   selectedItems: DriveFileData[];
+  storageFilters: StorageFilters;
   isAuthenticated: boolean;
   itemToShareId: number;
   isCreateFolderDialogOpen: boolean;
@@ -85,6 +86,10 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 
   get hasItems(): boolean {
     return this.props.items.length > 0;
+  }
+
+  get hasFilters(): boolean {
+    return this.props.storageFilters.text.length > 0;
   }
 
   componentDidMount = () => {
@@ -442,7 +447,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
               ) : null}
 
               {/* EMPTY FOLDER */
-                !this.hasItems && !isLoading ?
+                !this.hasFilters && !this.hasItems && !isLoading ?
                   <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
                     <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">
                       <div className="mb-28">
@@ -498,6 +503,7 @@ export default connect(
       user: state.user.user,
       currentFolderId,
       selectedItems: state.storage.selectedItems,
+      storageFilters: state.storage.filters,
       isDraggingAnItem: state.storage.isDraggingAnItem,
       itemToShareId: state.storage.itemToShareId,
       isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,

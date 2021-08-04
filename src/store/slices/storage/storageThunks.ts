@@ -47,6 +47,7 @@ export const fetchRecentsThunk = createAsyncThunk(
   async (payload: { limit: number }, { getState, dispatch }: any) => {
     const recents: DriveFileData[] = await fileService.fetchRecents(payload.limit);
 
+    dispatch(storageActions.clearSelectedItems());
     dispatch(storageActions.setRecents(recents));
   });
 

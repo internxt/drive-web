@@ -1,5 +1,5 @@
 import { RootState } from '../..';
-import { DriveFileData, DriveFolderData } from '../../../models/interfaces';
+import { DriveFileData, DriveFolderData, DriveItemData } from '../../../models/interfaces';
 import { selectorIsTeam } from '../team';
 
 const storageSelectors = {
@@ -47,6 +47,15 @@ const storageSelectors = {
 
   isFolderInNamePath(state: RootState): (folderId: number) => boolean {
     return (folderId) => state.storage.namePath.map(p => p.id).includes(folderId);
+  },
+
+  filteredItems(state: RootState): (items: DriveItemData[]) => DriveItemData[] {
+    return (items) => items.filter(item => {
+      const filters = state.storage.filters;
+      const fullName = item.isFolder ? item.name : item.name + `.${item.type}`;
+
+      return fullName.toLowerCase().match(filters.text.toLowerCase());
+    });
   }
 };
 

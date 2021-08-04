@@ -5,7 +5,7 @@ import FileExplorer from '../../components/FileExplorer/FileExplorer';
 import { AppFileExplorerConfig, DriveItemData } from '../../models/interfaces';
 import configService from '../../services/config.service';
 import { AppDispatch, RootState } from '../../store';
-import { storageThunks } from '../../store/slices/storage';
+import { storageSelectors, storageThunks } from '../../store/slices/storage';
 import history from '../../lib/history';
 
 interface RecentsViewProps {
@@ -45,7 +45,11 @@ class RecentsView extends Component<RecentsViewProps, {}> {
   }
 }
 
-export default connect((state: RootState) => ({
-  isLoadingRecents: state.storage.isLoadingRecents,
-  items: state.storage.recents
-}))(RecentsView);
+export default connect((state: RootState) => {
+  const filteredItems = storageSelectors.filteredItems(state)(state.storage.recents);
+
+  return {
+    isLoading: state.storage.isLoadingRecents,
+    items: filteredItems
+  };
+})(RecentsView);
