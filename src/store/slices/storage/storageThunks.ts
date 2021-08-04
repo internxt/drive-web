@@ -66,7 +66,6 @@ export const createFolderTreeStructureThunk = createAsyncThunk(
   async ({ root, currentFolderId }: CreateFolderTreeStructurePayload, { getState, dispatch }: any) => {
     const isTeam: boolean = selectorIsTeam(getState());
 
-    console.log('createFolderTreeStructure!');
     // Uploads the root folder
     folderService.createFolder(isTeam, currentFolderId, root.name).then((folderUploaded) => {
       // Once the root folder is uploaded it uploads the file children
@@ -290,9 +289,7 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
   builder
     .addCase(createFolderTreeStructureThunk.pending, (state, action) => { })
     .addCase(createFolderTreeStructureThunk.fulfilled, (state, action) => { })
-    .addCase(createFolderTreeStructureThunk.rejected, (state, action) => {
-      console.log('createFolderTreeStructureThunk rejected: ', action.error);
-    });
+    .addCase(createFolderTreeStructureThunk.rejected, (state, action) => { });
 
   builder
     .addCase(fetchFolderContentThunk.pending, (state, action) => {

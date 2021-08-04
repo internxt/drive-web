@@ -200,6 +200,10 @@ code {
     &.no-ring {
       @apply ring-0 focus:ring-1 focus:ring-blue-60;
     }
+
+    &.rect {
+      @apply rounded-none;
+    }
   }
   input[type="number"] {
     @apply appearance-none flex items-center justify-center bg-l-neutral-10 border border-m-neutral-60 text-center text-blue-60 outline-none;
@@ -226,7 +230,7 @@ code {
     }
   }
   button.secondary {
-    @apply bg-white text-blue-60 hover:bg-blue-20 hover:text-white;
+    @apply bg-white text-blue-60 hover:bg-blue-60 hover:text-white;
   }
   button.cancel {
     @apply bg-opacity-0 text-red-60;

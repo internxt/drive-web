@@ -59,7 +59,6 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   return isAuthenticated ? (
     <div className='h-auto min-h-full flex flex-col'>
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog item={itemToShare} />}
-      {isDeleteItemsDialogOpen && <DeleteItemsDialog />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
       {isInviteMemberDialogOpen && <InviteMemberDialog/>}
 

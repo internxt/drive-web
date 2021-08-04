@@ -8,7 +8,7 @@ import * as Unicons from '@iconscout/react-unicons';
 import { removeAccents } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
 
-import { DriveFileData, DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
+import { DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform, Workspace } from '../../models/enums';
 
@@ -33,11 +33,13 @@ import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog
 import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
 
 import { getAllItems } from '../../services/dragAndDrop.service';
+import DeleteItemsDialog from '../dialogs/DeleteItemsDialog/DeleteItemsDialog';
 
 interface FileExplorerProps {
   title: JSX.Element | string;
   isLoading: boolean;
   items: DriveItemData[];
+  onItemsDeleted: () => void;
   onFileUploaded: () => void;
   onFolderCreated: () => void;
   user: UserSettings | any;
@@ -354,7 +356,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 
-  onViewDrop = async (e: DragEvent<HTMLDivElement>): void => {
+  onViewDrop = async (e: DragEvent<HTMLDivElement>): Promise<void> => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -374,7 +376,9 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       isDraggingAnItem,
       title,
       items,
+      isDeleteItemsDialogOpen,
       isCreateFolderDialogOpen,
+      onItemsDeleted,
       onFolderCreated
     } = this.props;
     const { fileInputRef } = this.state;
@@ -389,6 +393,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 
     return (
       <Fragment>
+        {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
         <div className="flex flex-grow h-1 max-w-full w-full">

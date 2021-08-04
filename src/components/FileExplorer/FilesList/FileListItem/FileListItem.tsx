@@ -61,7 +61,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       <Fragment>
         <div className={isEditingName ? 'block' : 'hidden'}>
           <input
-            className="dense border border-white`"
+            className="dense border border-white no-ring rect"
             ref={nameInputRef}
             type="text"
             value={dirtyName}

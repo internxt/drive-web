@@ -10,7 +10,6 @@ import { RootState } from '../../../store';
 import './CreateFolderDialog.scss';
 import BaseInput from '../../Inputs/BaseInput';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import AuthButton from '../../Buttons/AuthButton';
 import notify from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
@@ -47,9 +46,10 @@ const CreateFolderDialog = ({
       setIsLoading(true);
       await folderService.createFolder(isTeam, currentFolderId, formData.createFolder);
 
-      dispatch(storageThunks.fetchFolderContentThunk());
       dispatch(uiActions.setIsCreateFolderDialogOpen(false));
       reset();
+
+      onFolderCreated && onFolderCreated();
 
     } catch (err) {
       if (err.includes('already exists')) {
@@ -58,7 +58,6 @@ const CreateFolderDialog = ({
         notify(err.message || err, 'error');
       }
     } finally {
-      onFolderCreated && onFolderCreated();
       setIsLoading(false);
     }
   };

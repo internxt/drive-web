@@ -4,7 +4,11 @@
 
         @apply relative bg-white p-4 box-border;
 
-        &:hover, &.selected {
+        &:hover, {
+            background-color: var(--color-blue-20);
+        }
+
+        &.selected {
             background-color: var(--color-blue-20);
             box-shadow: inset 0px 0px 0px 0.15rem var(--color-blue-40);
         }

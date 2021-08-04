@@ -3,8 +3,8 @@
     @apply select-none py-1 hover:text-blue-60 cursor-pointer;
   }
 
-  .collapsed.side-navigator-item {
-    @apply mb-4;
+  .side-navigator-item {
+    @apply mb-3;
   }
 
   a.nav-link {
