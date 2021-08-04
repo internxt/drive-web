@@ -170,7 +170,9 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
-    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, isFolder: false }));
+    const isFolder = this.props.item.fileId ? false : true;
+
+    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, type: this.props.item.type, isFolder }));
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));

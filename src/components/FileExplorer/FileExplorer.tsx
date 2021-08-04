@@ -32,12 +32,17 @@ import deviceService from '../../services/device.service';
 import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
 import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
 
+import { getAllItems } from '../../services/dragAndDrop.service';
+
 interface FileExplorerProps {
   title: JSX.Element | string;
   isLoading: boolean;
   items: DriveItemData[];
   onFileUploaded: () => void;
   onFolderCreated: () => void;
+}
+
+interface FilesViewProps {
   user: UserSettings | any;
   currentFolderId: number;
   isDraggingAnItem: boolean;
@@ -163,11 +168,9 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   }
 
   onPreviousPageButtonClicked = (): void => {
-    console.log('previous page button clicked!');
   }
 
   onNextPageButtonClicked = (): void => {
-    console.log('next page button clicked!');
   }
 
   getTeamByUser = () => {
@@ -354,11 +357,14 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 
-  onViewDrop = (e: DragEvent<HTMLDivElement>): void => {
+  onViewDrop = async (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log('onViewDrop');
+    const itemsDragged = await getAllItems(e.dataTransfer);
+    const { numberOfItems, root } = itemsDragged;
+
+    await this.props.dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
 
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }

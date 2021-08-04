@@ -12,6 +12,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@types/filesystem": "^0.0.32",
     "axios": "^0.21.1",
     "bip39": "^3.0.3",
     "bootstrap": "^4.5.3",

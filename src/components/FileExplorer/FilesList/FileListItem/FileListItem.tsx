@@ -189,7 +189,9 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     e.stopPropagation();
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
-    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, isFolder: false }));
+    const isFolder = this.props.item.fileId ? false : true;
+
+    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, type: this.props.item.type, isFolder }));
     queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));
   }
 
