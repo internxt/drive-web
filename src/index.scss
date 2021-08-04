@@ -144,8 +144,8 @@ code {
 
 @layer components {
   /* LINKS */
-  a.link {
-    @apply text-blue-60 underline;
+  a,.link {
+    @apply text-blue-60 hover:text-blue-80 underline;
   }
   a.secondary {
     @apply text-white;
@@ -213,35 +213,26 @@ code {
 
   /* BUTTONS */
   button.primary,
-  button.secondary {
+  button.secondary,
+  button.cancel {
     height: 32px;
     border-radius: 4px;
-    @apply px-4 py-2 text-sm;
+    @apply px-4 py-2 transition duration-200 ease-in-out;
   }
   button.primary {
-    @apply flex items-center justify-center bg-blue-60 transition duration-200 ease-in-out hover:bg-blue-80 py-2 rounded text-white text-sm;
+    @apply bg-blue-60 hover:bg-blue-80 py-2 text-white;
     &:disabled {
-      @apply bg-blue-30 cursor-default;
+      @apply bg-blue-30;
     }
   }
   button.secondary {
-    @apply bg-white text-blue-60 hover:bg-blue-20;
+    @apply bg-white text-blue-60 hover:bg-blue-20 hover:text-white;
+  }
+  button.cancel {
+    @apply bg-opacity-0 text-red-60;
   }
   button.square {
-    @apply p-0 flex justify-center items-center;
-
-    img {
-      @apply h-4;
-    }
-  }
-  button.secondary_dialog {
-    @apply text-sm text-red-60 rounded transform duration-200 ease-in-out hover:bg-blue-20;
-  }
-  button.button_link {
-    @apply text-blue-60 transform duration-200 hover:text-blue-80;
-  }
-  button.text_underline {
-    @apply underline;
+    @apply px-2 py-0 flex justify-center items-center box-content;
   }
 
   /* EVENTS */

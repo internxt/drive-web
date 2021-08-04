@@ -8,10 +8,6 @@
         &:hover, &.selected {
             @apply bg-blue-10;
         }
-
-        .column {
-            @apply flex items-center;
-        }
     }
     
     .hover-action {

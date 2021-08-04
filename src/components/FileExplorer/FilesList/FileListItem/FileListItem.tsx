@@ -272,7 +272,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       >
 
         {/* SELECTION */}
-        <div className="px-4 w-12 column justify-center">
+        <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
           {!item.isFolder ?
             <input
               onClick={(e) => e.stopPropagation()}
@@ -285,19 +285,19 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         </div>
 
         {/* ICON */}
-        <div className="w-12 column">
+        <div className="w-0.5/12 flex items-center px-3 box-content">
           <div className="h-8 w-8 flex justify-center">
             <ItemIconComponent className="h-full" />
           </div>
         </div>
 
         {/* NAME */}
-        <div className="w-1/3 column">
+        <div className="flex-grow flex items-center w-1">
           {this.nameNode}
         </div>
 
         {/* HOVER ACTIONS */}
-        <div className="w-1/6 column">
+        <div className="w-2/12 items-center hidden xl:flex">
           <div className="flex">
             {!item.isFolder ?
               <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
@@ -314,13 +314,13 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         </div>
 
         {/* DATE */}
-        <div className="column flex-grow whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>
+        <div className="hidden lg:flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>
 
         {/* SIZE */}
-        <div className="column w-32 whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</div>
+        <div className="flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</div>
 
         {/* ACTIONS BUTTON */}
-        <div className="column w-16">
+        <div className="flex items-center w-1/12">
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold">
               <Unicons.UilEllipsisH className="w-full h-full" />

@@ -22,6 +22,7 @@ import history from '../../lib/history';
 import BaseButton from '../../components/Buttons/BaseButton';
 import { texts } from '../SignInView/SignInView';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope, UilUser } from '@iconscout/react-unicons';
+import { Link } from 'react-router-dom';
 
 interface SignUpProps {
   match: any;
@@ -227,7 +228,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Name'
             label='name'
             type='text'
-            icon={<UilUser className='w-4'/>}
+            icon={<UilUser className='w-4' />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Name must not be empty' }}
@@ -238,7 +239,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Lastname'
             label='lastname'
             type='text'
-            icon={<UilUser className='w-4'/>}
+            icon={<UilUser className='w-4' />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Lastname must not be empty' }}
@@ -249,7 +250,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Email'
             label='email'
             type='email'
-            icon={<UilEnvelope className='w-4'/>}
+            icon={<UilEnvelope className='w-4' />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -263,10 +264,10 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             type={showPassword ? 'text' : 'password'}
             icon={password ?
               (showPassword ?
-                <UilEyeSlash className='w-4' onClick={() => setShowPassword(false)}/>
+                <UilEyeSlash className='w-4' onClick={() => setShowPassword(false)} />
                 :
-                <UilEye className='w-4' onClick={() => setShowPassword(true)}/>) :
-              <UilLock className='w-4'/>
+                <UilEye className='w-4' onClick={() => setShowPassword(true)} />) :
+              <UilLock className='w-4' />
             }
             register={register}
             required={true}
@@ -281,8 +282,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             icon={confirmPassword ?
               (showConfirmPassword ?
                 <UilEyeSlash className='w-4' onClick={() => setShowConfirmPassword(false)} />
-                : <UilEye className='w-4' onClick={() => setShowConfirmPassword(true)}/>) :
-              <UilLock className='w-4'/>
+                : <UilEye className='w-4' onClick={() => setShowConfirmPassword(true)} />) :
+              <UilLock className='w-4' />
             }
             register={register}
             required={true}
@@ -309,10 +310,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         </form>
 
         <div className='flex justify-center items-center w-full mt-2'>
-          <span className='text-sm text-neutral-500 ml-3 select-none'>Already registered?</span>
-          <BaseButton classes='button_link ml-2' onClick={() => history.push('/login')}>
-            Log in
-          </BaseButton>
+          <span className='text-sm text-neutral-500 ml-3 select-none mr-2'>Already registered?</span>
+          <Link to="/login">Log in </Link>
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ import notify from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
 import { selectorIsTeam } from '../../../store/slices/team';
+import BaseButton from '../../Buttons/BaseButton';
 
 interface CreateFolderDialogProps {
   onFolderCreated: () => void;
@@ -32,6 +33,9 @@ const CreateFolderDialog = ({
   const isTeam: boolean = useAppSelector((state) => selectorIsTeam(state));
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
+  const createButtonLabel = isValid ?
+    isLoading ? 'Creating...' : 'Create' :
+    'Create';
 
   const onClose = (): void => {
     reset();
@@ -80,10 +84,12 @@ const CreateFolderDialog = ({
 
         <div className='flex justify-center items-center bg-l-neutral-20 py-6 mt-6'>
           <div className='flex w-64'>
-            <button onClick={() => onClose()} className='secondary_dialog w-full mr-4'>
+            <BaseButton classes='cancel w-full mr-4' onClick={() => onClose()}>
               Cancel
-            </button>
-            <AuthButton text='Create' textWhenDisabled={isValid ? 'Creating...' : 'Create'} isDisabled={isLoading || !isValid} />
+            </BaseButton>
+            <BaseButton classes="w-full primary border" disabled={isLoading || !isValid}>
+              {createButtonLabel}
+            </BaseButton>
           </div>
         </div>
       </form>

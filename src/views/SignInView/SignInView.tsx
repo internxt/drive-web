@@ -16,6 +16,7 @@ import bigLogo from '../../assets/icons/big-logo.svg';
 import { useSelector } from 'react-redux';
 import { IFormValues, UserSettings } from '../../models/interfaces';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope } from '@iconscout/react-unicons';
+import { Link } from 'react-router-dom';
 
 interface SignInProps {
   email?: string,
@@ -198,8 +199,8 @@ export default function SignInView(props: SignInProps): JSX.Element {
           </span>
 
           <div className='flex w-full justify-center text-sm mt-3'>
-            <span>Don't have an account?</span>
-            <button className="button_link ml-2" onClick={() => history.push('/new')}>Get started</button>
+            <span className="mr-2">Don't have an account?</span>
+            <Link to="/new">Get started</Link>
           </div>
         </div>
       </div>

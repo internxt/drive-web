@@ -391,8 +391,8 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       <Fragment>
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
-        <div className="flex flex-grow h-1 ">
-          <div className="flex-grow flex flex-col">
+        <div className="flex flex-grow h-1 max-w-full w-full">
+          <div className="flex-grow flex flex-col w-1">
             <div className="flex justify-between pb-4">
               <div className="text-lg">
                 {title}
@@ -493,7 +493,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
           </div>
 
           {
-            infoItemId ? <DriveItemInfoMenu/> : null
+            infoItemId ? <DriveItemInfoMenu /> : null
           }
         </div>
       </Fragment>
