@@ -22,28 +22,6 @@ interface EnvironmentConfig {
   bucketId: string
 }
 
-/**
- * TODO: Change typing in inxt-js and remove this interface
- */
-interface CreateEntryFromFrameResponse {
-  id: string;
-  index: string;
-  frame: string;
-  bucket: string;
-  mimetype: string;
-  name: string;
-  renewal: string;
-  created: string;
-  hmac: {
-    value: string;
-    type: string;
-  };
-  erasure: {
-    type: string;
-  };
-  size: number;
-}
-
 export class Network {
   private environment: Environment;
   private bridgeUrl = 'https://api.internxt.com';
