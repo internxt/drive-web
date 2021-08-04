@@ -50,11 +50,11 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
           <div>
             <div className="py-3 mb-2">
               {collapsed ?
-                <img className='opacity-0 w-6 long-logo' src={smallLogo} alt="" /> :
+                <img className='opacity-0 w-6 sidenav-logo' src={smallLogo} alt="" /> :
                 <div className="w-28 h-auto flex items-center" onClick={() => {
                   history.push('/');
                 }}>
-                  <ReactLogo className="long-logo w-full" />
+                  <ReactLogo className="sidenav-logo w-full" />
                 </div>
               }
             </div>

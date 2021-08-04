@@ -72,12 +72,12 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
     const team = localStorageService.exists('xTeam');
 
     return (
-      <div className="flex justify-between w-full py-3 mb-2">
+      <div className="flex justify-between w-full py-3 mb-3">
         <div className='relative flex-1'>
           <div className={'text-m-neutral-100 absolute flex items-center justify-center'}
           >
-            <input type="text" placeholder="Search files" className="auth-input w-72 transform duration-200 mb-2.5 search-input" />
-            <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-6 relative w-4 mb-2" />
+            <input type="text" placeholder="Search files" className="w-72 transform duration-200 no-ring" />
+            <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-7 relative w-5" />
           </div>
         </div>
         <Dropdown>
@@ -113,35 +113,35 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
             </Dropdown.Item>
             {
               team &&
-                (<Dropdown.Item
-                  id="business"
-                  onClick={this.onBusinesButtonClicked}
-                >
-                  {workspace === Workspace.Personal ?
-                    <Fragment>
-                      <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
-                      <span>Business</span>
-                    </Fragment>
+              (<Dropdown.Item
+                id="business"
+                onClick={this.onBusinesButtonClicked}
+              >
+                {workspace === Workspace.Personal ?
+                  <Fragment>
+                    <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
+                    <span>Business</span>
+                  </Fragment>
 
-                    :
-                    <Fragment>
-                      <Unicons.UilUser className="text-blue-60 h-5 mr-1" />
-                      <span>Personal</span>
-                    </Fragment>
+                  :
+                  <Fragment>
+                    <Unicons.UilUser className="text-blue-60 h-5 mr-1" />
+                    <span>Personal</span>
+                  </Fragment>
 
-                  }
-                </Dropdown.Item>)
+                }
+              </Dropdown.Item>)
             }
             {this.props.team?.isAdmin && workspace === Workspace.Business &&
-            <Fragment>
-              <hr className="text-l-neutral-30 my-1.5"></hr>
-              <Dropdown.Item
-                onClick={this.onInviteMemberClick}
-              >
-                <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
-                <span>Invite members</span>
-              </Dropdown.Item>
-            </Fragment>
+              <Fragment>
+                <hr className="text-l-neutral-30 my-1.5"></hr>
+                <Dropdown.Item
+                  onClick={this.onInviteMemberClick}
+                >
+                  <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
+                  <span>Invite members</span>
+                </Dropdown.Item>
+              </Fragment>
             }
             <hr className="text-l-neutral-30 my-1.5"></hr>
             <Dropdown.Item
