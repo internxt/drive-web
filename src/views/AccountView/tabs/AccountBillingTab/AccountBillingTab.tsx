@@ -15,6 +15,7 @@ import { fetchUserPlan } from '../../../../services/user.service';
 import { useCallback } from 'react';
 import LoadingFileExplorer from '../../../../components/LoadingFileExplorer/LoadingFileExplorer';
 import { UilBuilding, UilHome } from '@iconscout/react-unicons';
+import BillingCardSkeletton from '../../../../components/skinSkeleton/BillingCardSkeletton';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -243,14 +244,14 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
         }} />
       </div>
 
-      <div className='flex h-88 border-t border-m-neutral-60'>
+      <div className='flex h-88 border-t border-m-neutral-60 justify-evenly'>
         {!isLoading ?
           currentOption === 'individual' ?
             Object.values(products).map(renderItemIndividual)
             :
             Object.values(teamsProducts).map(renderItemTeams)
           :
-          <LoadingFileExplorer />
+          Array(3).fill(1).map(_ => <BillingCardSkeletton />)
         }
       </div>
     </div>
