@@ -16,7 +16,7 @@ interface PlanProps {
   isPaying: boolean
 }
 
-const ListItem = ({ text }: { text: string }): JSX.Element => (
+export const ListItem = ({ text }: { text: string }): JSX.Element => (
   <div className='flex justify-start items-center mb-2'>
     <UilCheck className="text-blue-60" />
     <p className='text-xs ml-2.5'>{text}</p>

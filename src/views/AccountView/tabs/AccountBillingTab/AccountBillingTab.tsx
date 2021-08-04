@@ -59,7 +59,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
 
 const objectMap = (obj: Record<any, any>, fn): Record<any, any> => Object.fromEntries(Object.entries(obj).map(([key, value], i) => [key, fn(value, key, i)]));
 
-const AccountBillingTab = (): JSX.Element => {
+const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
   const [currentOption, setCurrentOption] = useState<'individual' | 'business'>('individual');
   const [isLoading, setIsLoading] = useState(true);
   const [isPaying, setIsPaying] = useState(false);
@@ -160,7 +160,7 @@ const AccountBillingTab = (): JSX.Element => {
           selectedPlan={product.selected}
           currentPlan={product.currentPlan}
           buttontext='Subscribe'
-          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+          characteristics={plansCharacteristics}
           handlePlanSelection={handlePlanSelection}
           handlePayment={handlePayment}
           isPaying={isPaying}
@@ -168,7 +168,7 @@ const AccountBillingTab = (): JSX.Element => {
         {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
       </Fragment>
     );
-  }, []);
+  }, [products, teamsProducts]);
 
   return (
     <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
