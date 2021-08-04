@@ -361,14 +361,17 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     e.stopPropagation();
 
     const itemsDragged = await getAllItems(e.dataTransfer);
-    const { numberOfItems, root, files } = itemsDragged;
+    const { numberOfItems, rootList, files } = itemsDragged;
     const { dispatch } = this.props;
 
-    if (!root) {
-      // Only files where dragged
-      await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: this.props.currentFolderId, folderPath: undefined }));
-    } else {
-      await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
+    if (files) {
+      // files where dragged directly
+      await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: this.props.currentFolderId, folderPath: '' }));
+    }
+    if (rootList) {
+      for (const root of rootList) {
+        await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
+      }
     }
 
     dispatch(storageActions.setIsDraggingAnItem(false));
