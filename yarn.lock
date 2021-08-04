@@ -2085,9 +2085,9 @@
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
 
 "@types/node@*":
-  version "16.4.10"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.4.10.tgz#e57e2a54fc6da58da94b3571b1cb456d39f88597"
-  integrity sha512-TmVHsm43br64js9BqHWqiDZA+xMtbUpI1MBIA0EyiBmoV9pcEYFOSdj5fr6enZNfh4fChh+AGOLIzGwJnkshyQ==
+  version "16.4.11"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.4.11.tgz#245030af802c776c31f00eb0cdde40ee615db462"
+  integrity sha512-nWSFUbuNiPKJEe1IViuodSI+9cM+vpM8SWF/O6dJK7wmGRNq55U7XavJHrlRrPkSMuUZUFzg1xaZ1B+ZZCrRWw==
 
 "@types/node@11.11.6":
   version "11.11.6"
@@ -6758,7 +6758,7 @@ invariant@^2.2.4:
 
 "inxt-js@git+ssh://git@github.com:internxt/inxt-js.git#beta":
   version "1.0.0"
-  resolved "git+ssh://git@github.com:internxt/inxt-js.git#eec06dd69e21eec4b06d055ec3e758b4d5a1d544"
+  resolved "git+ssh://git@github.com:internxt/inxt-js.git#fda0cf0d3f0d7cd5fa957c94a0cc163225a8678c"
   dependencies:
     "@types/progress-stream" "^2.0.2"
     async "^3.2.0"

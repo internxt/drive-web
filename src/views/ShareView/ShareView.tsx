@@ -4,9 +4,11 @@ import { toast, ToastOptions } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 import { isMobile } from 'react-device-detect';
-import { socket } from '../../lib/socket';
 
 import './ShareView.scss';
+import { getShareInfo } from '../../services/share.service';
+import { Network } from '../../lib/network';
+import AesUtils from '../../lib/AesUtil';
 
 interface ShareViewProps {
   match?: any
@@ -14,14 +16,7 @@ interface ShareViewProps {
 
 interface ShareViewState {
   token: string;
-  fileName: string;
   progress: number;
-  fileLength: number;
-  steps: {
-    downloadingFromNet: boolean;
-    sendingToBrowser: boolean;
-    finished: boolean;
-  }
 }
 
 class ShareView extends React.Component<ShareViewProps, ShareViewState> {
@@ -36,26 +31,11 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
 
   state = {
     token: this.props.match.params.token,
-    fileName: '',
-    progress: 0,
-    fileLength: 0,
-    steps: {
-      downloadingFromNet: true,
-      sendingToBrowser: false,
-      finished: false
-    }
+    progress: 0
   }
 
   IsValidToken = (token: string): boolean => {
-    return /^[a-z0-9]{10}$/.test(token);
-  }
-
-  isBase64(value: string): boolean {
-    try {
-      return btoa(atob(value)) === value;
-    } catch (err) {
-      return false;
-    }
+    return /^[a-z0-9]{20}$/.test(token);
   }
 
   componentDidMount() {
@@ -70,50 +50,9 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
     }
   }
 
-  setFileLength(fileLength): void {
-    this.setState({ ...this.state, fileLength });
-  }
-
-  setFileName(fileName): void {
-    this.setState({ ...this.state, fileName });
-  }
-
-  increaseProgress(increase) {
-    const progress = this.state.progress + increase;
-
-    this.setState({ ...this.state, progress });
-  }
-
-  IsSendingToBrowser() {
-    toast.info('Downloading file!', {
-      position: 'bottom-right',
-      autoClose: false,
-      draggable: false
-    });
-    this.setState({
-      ...this.state,
-      steps: { ...this.state.steps, sendingToBrowser: true }
-    });
-  }
-
-  downloadIsFinished(): void {
-    this.setState({
-      ...this.state,
-      steps: { ...this.state.steps, finished: true }
-    });
-  }
-
-  handleSocketError(err): void {
-    toast.warn(err, {
-      position: 'bottom-right',
-      autoClose: false,
-      draggable: false
-    });
-  }
-
-  download(): void {
-    const slices: ArrayBuffer[] = [];
-    // let progress: number;
+  async download(): Promise<void> {
+    const token = this.state.token;
+    const shareInfo = await getShareInfo(token);
 
     toast.info('Securely retrieving file ...', {
       position: 'bottom-right',
@@ -121,35 +60,28 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
       draggable: false
     });
 
-    const token = this.state.token;
+    const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${shareInfo.fileMeta.folderId.toString()}`;
+    const decryptedFilename = AesUtils.decrypt(shareInfo.fileMeta.name, salt);
+    const type = shareInfo.fileMeta.type;
+    const filename = `${decryptedFilename}${type ? `.${type}` : ''}`;
 
-    socket.emit('get-file-share', { token });
+    const network = new Network('NONE', 'NONE', 'NONE');
 
-    socket.on(`get-file-share-${token}-length`, (fileLength) => this.setFileLength(fileLength));
-    socket.on(`get-file-share-${token}-fileName`, (fileName) => this.setFileName(fileName));
-    socket.on(`get-file-share-${token}-error`, (err) => this.handleSocketError(err));
-
-    socket.on(`get-file-share-${token}-stream`, (chunk: ArrayBuffer) => {
-      this.increaseProgress(((chunk.byteLength / this.state.fileLength) * 100));
-
-      if (!this.state.steps.sendingToBrowser) {
-        // prevent event to fire twice before react changes state.steps.sendingToBrowser to true.
-        this.IsSendingToBrowser();
-      }
-
-      slices.push(chunk);
+    toast.info(`Downloading file ${filename} ...`, {
+      position: 'bottom-right',
+      autoClose: false,
+      draggable: false
     });
 
-    socket.on(`get-file-share-${token}-finished`, () => {
-      const fileBlob = new Blob(slices);
-
-      console.log('finished');
-      if (!this.state.steps.finished) {
-        this.downloadIsFinished();
-        fileDownload(fileBlob, this.state.fileName);
+    const file = await network.downloadFile(shareInfo.bucket, shareInfo.file, {
+      fileEncryptionKey: Buffer.from(shareInfo.encryptionKey, 'hex'),
+      fileToken: shareInfo.fileToken,
+      progressCallback: (progress) => {
+        this.setState({ ...this.state, progress: progress * 100 });
       }
-      socket.close();
     });
+
+    fileDownload(file, filename);
   }
 
   render(): JSX.Element {

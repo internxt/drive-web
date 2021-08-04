@@ -30,6 +30,7 @@ interface FileGridItemProps {
   currentFolderId: number;
   namePath: FolderPath[];
   isItemSelected: (item: DriveItemData) => boolean;
+  isDriveItemInfoMenuOpen: boolean;
   dispatch: AppDispatch;
   workspace: Workspace;
 }
@@ -39,7 +40,7 @@ interface FileGridItemState {
   dirtyName: string;
   itemRef: React.RefObject<HTMLDivElement>;
   nameInputRef: React.RefObject<HTMLInputElement>;
-  height: string;
+  oldValueIsDriveItemInfoMenuOpen: boolean;
 }
 
 class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState> {
@@ -51,22 +52,22 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       dirtyName: '',
       itemRef: React.createRef(),
       nameInputRef: React.createRef(),
-      height: 'auto'
+      oldValueIsDriveItemInfoMenuOpen: props.isDriveItemInfoMenuOpen
     };
   }
 
   componentDidMount() {
-    this.updateItemHeight();
+    this.updateHeight();
 
-    window.addEventListener('resize', this.updateItemHeight);
+    window.addEventListener('resize', this.updateHeight);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.updateItemHeight);
+    window.removeEventListener('resize', this.updateHeight);
   }
 
-  updateItemHeight = () => {
-    this.setState({ height: this.state.itemRef.current?.clientWidth + 'px' });
+  updateHeight = () => {
+    this.forceUpdate();
   }
 
   get nameNode(): JSX.Element {
@@ -184,6 +185,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
   onInfoButtonClicked = (): void => {
     this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
+    this.props.dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
   }
 
   onDeleteButtonClicked = (): void => {
@@ -240,7 +242,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   render(): ReactNode {
-    const { itemRef, height } = this.state;
+    const { itemRef } = this.state;
     const { isDraggingAnItem, draggingTargetItemData, item, isItemSelected } = this.props;
     const isDraggingOverThisItem: boolean = !!draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
     const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
@@ -248,6 +250,9 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       'pointer-events-auto';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
     const ItemIconComponent = iconService.getItemIcon(item.type);
+    const height = this.state.itemRef.current ?
+      this.state.itemRef.current?.clientWidth + 'px' :
+      'auto';
 
     return (
       <div
@@ -295,6 +300,7 @@ export default connect(
     const currentFolderId = storageSelectors.currentFolderId(state);
 
     return {
+      isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen,
       isDraggingAnItem: state.storage.isDraggingAnItem,
       selectedItems: state.storage.selectedItems,
       draggingTargetItemData: state.storage.draggingTargetItemData,

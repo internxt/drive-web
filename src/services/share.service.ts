@@ -1,43 +1,47 @@
 import { getHeaders } from '../lib/auth';
 
-function generateShortLink(url: string): Promise<string> {
-  const isTeam: boolean = !!this.props.user.teams;
+interface GenerateShareLinkResponse {
+  token: string
+}
 
-  return new Promise((resolve, reject) => {
-    fetch('/api/storage/shortLink', {
-      method: 'POST',
-      headers: getHeaders(true, true, isTeam),
-      body: JSON.stringify({ 'url': url })
-    }).then(res => res.json()).then(res => {
-      resolve(res.shortUrl);
-    }).catch(reject);
+interface GenerateShareLinkRequestBody {
+  isFolder: boolean,
+  views: number,
+  encryptionKey: string,
+  fileToken: string,
+  bucket: string
+}
+
+interface GetShareInfoResponse {
+  user: string;
+  token: string;
+  file: string;
+  encryptionKey: string;
+  mnemonic: string;
+  isFolder: boolean;
+  views: number;
+  bucket: string;
+  fileToken: string;
+  fileMeta: {
+    folderId: string;
+    name: string;
+    type: string;
+    size: number;
+  }
+}
+
+export function generateShareLink(fileId: string, params: GenerateShareLinkRequestBody): Promise<string> {
+  return fetch(`/api/storage/share/file/${fileId}`, {
+    method: 'POST',
+    headers: getHeaders(true, true),
+    body: JSON.stringify(params)
+  }).then((res) => {
+    return res.json();
+  }).then((res: GenerateShareLinkResponse) => {
+    return `${window.location.origin}/${res.token}`;
   });
 }
 
-const generateShareLink = async (fileId: string, views: number, isFolder: boolean, isTeams = false): Promise<string> => {
-  const isTeam: boolean = isTeams;
-
-  const response = await fetch(`/api/storage/share/file/${fileId}`, {
-    method: 'POST',
-    headers: getHeaders(true, true, isTeam),
-    body: JSON.stringify({
-      'isFolder': isFolder ? 'true' : 'false',
-      'views': views
-    })
-  });
-
-  if (response.status !== 200) {
-    throw response;
-  }
-  const data = await response.json();
-  const link = `${window.location.origin}/${data.token}`;
-
-  return link;
-};
-
-const shareService = {
-  generateShortLink,
-  generateShareLink
-};
-
-export default shareService;
+export function getShareInfo(token: string): Promise<GetShareInfoResponse> {
+  return fetch(`/api/storage/share/${token}`).then<GetShareInfoResponse>((res) => res.json());
+}
