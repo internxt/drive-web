@@ -8,12 +8,13 @@ import { IFormValues, UserSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
 import './CreateFolderDialog.scss';
-import AuthInput from '../../Inputs/AuthInput';
+import BaseInput from '../../Inputs/BaseInput';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../Buttons/AuthButton';
 import notify from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
+import { selectorIsTeam } from '../../../store/slices/team';
 
 interface CreateFolderDialogProps {
   onFolderCreated: () => void;
@@ -27,7 +28,8 @@ const CreateFolderDialog = ({
 ) => {
   const { register, formState: { errors, isValid }, handleSubmit, reset } = useForm<IFormValues>({ mode: 'onChange', defaultValues: { createFolder: '' } });
   const [isLoading, setIsLoading] = useState(false);
-  const currentFolderId: number = useAppSelector((state: RootState) => storageSelectors.currentFolderId(state));
+  const currentFolderId: number = useAppSelector((state) => storageSelectors.currentFolderId(state));
+  const isTeam: boolean = useAppSelector((state) => selectorIsTeam(state));
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
 
@@ -39,7 +41,7 @@ const CreateFolderDialog = ({
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
     try {
       setIsLoading(true);
-      await folderService.createFolder(!!user?.teams, currentFolderId, formData.createFolder);
+      await folderService.createFolder(isTeam, currentFolderId, formData.createFolder);
 
       dispatch(storageThunks.fetchFolderContentThunk());
       dispatch(uiActions.setIsCreateFolderDialogOpen(false));
@@ -65,7 +67,7 @@ const CreateFolderDialog = ({
     >
       <form className='flex flex-col mt-6' onSubmit={handleSubmit(onSubmit)}>
         <div className='w-64 self-center'>
-          <AuthInput
+          <BaseInput
             placeholder='Enter folder name'
             label='createFolder'
             type={'text'}

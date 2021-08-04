@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../components/Buttons/AuthButton';
-import AuthInput from '../../components/Inputs/AuthInput';
+import BaseInput from '../../components/Inputs/BaseInput';
 import { IFormValues } from '../../models/interfaces';
 import { emailRegexPattern } from '../../services/validation.service';
 import history from '../../lib/history';
@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { sendDeactivationEmail } from '../../services/user.service';
 import notify from '../../components/Notifications';
 import BaseButton from '../../components/Buttons/BaseButton';
+import { UilEnvelope } from '@iconscout/react-unicons';
 
 const RemoveAccount = (): JSX.Element => {
   const { register, formState: { errors, isValid }, handleSubmit, getValues } = useForm<IFormValues>({ mode: 'onChange' });
@@ -50,18 +51,18 @@ const RemoveAccount = (): JSX.Element => {
 
         {step === 1 ?
           <Fragment>
-            <p className='text-neutral-500 text-xs my-6 text-center'>
+            <p className='text-neutral-500 text-base my-6 text-center'>
               As specified during the sign up process, Internxt Drive encrypts your files, and only you have access to those. We never know your password, and thus, that
               way, only you can decrypt your account. For that reason, if you forget your password, we can't restore your account. What we can do, however, is to delete your account and erase
               all its files, so that you can sign up again. Please enter your email below so that we can process the account removal.
             </p>
 
             <form className='w-full' onSubmit={handleSubmit(onSubmit)}>
-              <AuthInput
+              <BaseInput
                 placeholder='Email'
                 label='email'
                 type='email'
-                icon='mailGray'
+                icon={<UilEnvelope className='w-4'/>}
                 register={register}
                 required={true}
                 minLength={{ value: 1, message: 'Email must not be empty' }}

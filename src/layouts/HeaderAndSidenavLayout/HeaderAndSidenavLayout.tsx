@@ -13,6 +13,7 @@ import { getLimit } from '../../services/limit.service';
 import localStorageService from '../../services/localStorage.service';
 import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
 import { DriveItemData } from '../../models/interfaces';
+import InviteMemberDialog from '../../components/dialogs/InviteMemberDialog/InviteMemberDialog';
 
 interface HeaderAndSidenavLayoutProps {
   children: JSX.Element
@@ -30,6 +31,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const isDeleteItemsDialogOpen = useAppSelector((state) => state.ui.isDeleteItemsDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
+  const isInviteMemberDialogOpen = useAppSelector((state) => state.ui.isInviteMemberDialogOpen);
 
   useEffect(() => {
     const limitStorage = SessionStorage.get('limitStorage');
@@ -60,6 +62,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog item={itemToShare} />}
       {isDeleteItemsDialogOpen && <DeleteItemsDialog />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
+      {isInviteMemberDialogOpen && <InviteMemberDialog/>}
 
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />

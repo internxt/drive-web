@@ -132,12 +132,12 @@ export async function createFolder(isTeam: boolean, currentFolderId: number | nu
   return responseJSON;
 }
 
-export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload): Promise<void> {
+export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload, isTeam): Promise<void> {
   const user: UserSettings = localStorageService.getUser();
 
   return fetch(`/api/storage/folder/${itemId}/meta`, {
     method: 'post',
-    headers: getHeaders(true, true, !!user.teams),
+    headers: getHeaders(true, true, isTeam),
     body: JSON.stringify(data)
   })
     .then(() => {
@@ -152,11 +152,11 @@ export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload)
     });
 }
 
-export function deleteFolder(folderData: DriveFolderData): Promise<void | Response> {
+export function deleteFolder(folderData: DriveFolderData, isTeam: boolean): Promise<void | Response> {
   const user = localStorageService.getUser();
   const fetchOptions = {
     method: 'DELETE',
-    headers: getHeaders(true, false, !!user.teams)
+    headers: getHeaders(true, false, isTeam)
   };
 
   return fetch(`/api/storage/folder/${folderData.id}`, fetchOptions).then(() => {

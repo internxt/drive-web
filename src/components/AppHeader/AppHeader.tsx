@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
+import React, { Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
-import { UserSettings } from '../../models/interfaces';
+import { TeamsSettings, UserSettings } from '../../models/interfaces';
 import { RootState } from '../../store';
 import history from '../../lib/history';
 import * as Unicons from '@iconscout/react-unicons';
@@ -8,9 +8,18 @@ import * as Unicons from '@iconscout/react-unicons';
 import './AppHeader.scss';
 import { Dropdown } from 'react-bootstrap';
 import authService from '../../services/auth.service';
+import { Workspace } from '../../models/enums';
+import { handleChangeWorkspaceThunk } from '../../store/slices/user';
+import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
+import localStorageService from '../../services/localStorage.service';
+import { filesStateSlice } from '../../store/slices/files';
+import { setWorkspace } from '../../store/slices/team';
+import { uiActions } from '../../store/slices/ui';
 
 interface AppHeaderProps {
   user: UserSettings | undefined
+  team: TeamsSettings | undefined
+  workspace: Workspace
 }
 
 interface AppHeaderState { }
@@ -38,28 +47,53 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   onBusinesButtonClicked = (): void => {
-    alert('TODO: toggle workspace');
+    const { dispatch } = this.props;
+
+    dispatch(
+      handleChangeWorkspaceThunk()
+    ).then(() => {
+      loadDataAtChangeWorkspace(dispatch, this.props.workspace);
+    });
   }
 
   onLogoutButtonClicked = (): void => {
+    this.props.dispatch(filesStateSlice.actions.clearFileLoggerStatus());
+    this.props.dispatch(setWorkspace(Workspace.Personal));
     authService.logOut();
   }
 
+  onInviteMemberClick = (): void => {
+    this.props.dispatch(uiActions.setIsInviteMemberDialogOpen(true));
+  }
+
   render(): ReactNode {
-    const { user } = this.props;
+    const { user, workspace } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
+    const team = localStorageService.exists('xTeam');
 
     return (
       <div className="flex justify-between w-full py-3 mb-2">
-        <div className="flex">
-          <input type="text" placeholder="Search files" className="no-ring right-icon" />
-          <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-6 relative w-4 h-full" />
+        <div className='relative flex-1'>
+          <div className={'text-m-neutral-100 absolute flex items-center justify-center'}
+          >
+            <input type="text" placeholder="Search files" className="auth-input w-72 transform duration-200 mb-2.5 search-input" />
+            <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-6 relative w-4 mb-2" />
+          </div>
         </div>
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">
             <div className="flex items-center cursor-pointer">
-              <Unicons.UilUser className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5 text-blue-60" />
-              <span className="text-neutral-500 text-sm">{userFullName}</span>
+              {workspace === Workspace.Personal ?
+                <Fragment>
+                  <Unicons.UilUser className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5 text-blue-60" />
+                  <span className="text-neutral-500 text-base">{userFullName}</span>
+                </Fragment>
+                :
+                <Fragment>
+                  <Unicons.UilBuilding className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5 text-blue-60" />
+                  <span className="text-neutral-500 text-base">Business</span>
+                </Fragment>
+              }
             </div>
           </Dropdown.Toggle>
           <Dropdown.Menu>
@@ -78,14 +112,36 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
               <span>Support</span>
             </Dropdown.Item>
             {
-              user?.teams ?
+              team &&
                 (<Dropdown.Item
                   id="business"
                   onClick={this.onBusinesButtonClicked}
                 >
-                  <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
-                  <span>Business</span>
-                </Dropdown.Item>) : null
+                  {workspace === Workspace.Personal ?
+                    <Fragment>
+                      <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
+                      <span>Business</span>
+                    </Fragment>
+
+                    :
+                    <Fragment>
+                      <Unicons.UilUser className="text-blue-60 h-5 mr-1" />
+                      <span>Personal</span>
+                    </Fragment>
+
+                  }
+                </Dropdown.Item>)
+            }
+            {this.props.team?.isAdmin && workspace === Workspace.Business &&
+            <Fragment>
+              <hr className="text-l-neutral-30 my-1.5"></hr>
+              <Dropdown.Item
+                onClick={this.onInviteMemberClick}
+              >
+                <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
+                <span>Invite members</span>
+              </Dropdown.Item>
+            </Fragment>
             }
             <hr className="text-l-neutral-30 my-1.5"></hr>
             <Dropdown.Item
@@ -104,5 +160,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
 }
 
 export default connect((state: RootState) => ({
-  user: state.user.user
+  user: state.user.user,
+  team: state.team.team,
+  workspace: state.team.workspace
 }))(AppHeader);

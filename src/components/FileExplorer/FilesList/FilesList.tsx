@@ -52,7 +52,7 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
     return (
       <div className="pointer-events-none flex-grow bg-white">
         <table className="pointer-events-none table-auto w-full">
-          <thead className="border-b border-l-neutral-30 bg-white text-neutral-500 py-2 px-3 text-sm">
+          <thead className="border-b border-l-neutral-30 bg-white text-neutral-500 py-2 px-3 text-base">
             <tr>
               <th className="px-4 py-2 w-12 rounded-tl-4px">
                 <input readOnly checked={this.isAllSelected} onClick={this.onSelectAllButtonClicked} type="checkbox" className="pointer-events-auto" />

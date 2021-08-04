@@ -10,7 +10,7 @@ import { getHeaders } from '../../lib/auth';
 
 import { DriveFileData, DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
-import { DevicePlatform } from '../../models/enums';
+import { DevicePlatform, Workspace } from '../../models/enums';
 
 import { storageThunks, storageActions, storageSelectors } from '../../store/slices/storage';
 import folderService, { ICreatedFolder } from '../../services/folder.service';
@@ -49,6 +49,7 @@ interface FileExplorerProps {
   namePath: FolderPath[];
   sortFunction: ((a: DriveItemData, b: DriveItemData) => number) | null;
   dispatch: AppDispatch;
+  workspace: Workspace
 }
 
 interface FileExplorerState {
@@ -91,9 +92,10 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   }
 
   onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {
-    const { user, currentFolderId } = this.props;
+    const { currentFolderId } = this.props;
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
-    return folderService.createFolder(!!user.teams, currentFolderId, folderName);
+    return folderService.createFolder(isTeam, currentFolderId, folderName);
   }
 
   onUploadButtonClicked = (): void => {
@@ -108,9 +110,10 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 
   onUploadInputChanged = async (e) => {
     const limitStorage = SessionStorage.get('limitStorage');
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     try {
-      const usage: UsageResponse = await usageService.fetchUsage();
+      const usage: UsageResponse = await usageService.fetchUsage(isTeam);
 
       if (limitStorage && usage.total >= parseInt(limitStorage)) {
         this.props.dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
@@ -231,7 +234,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   };
 
   move = (items, destination, moveOpId) => {
-    const { user } = this.props;
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     // Don't want to request this...
     if (
@@ -267,7 +270,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       data[keyOp.toLowerCase() + 'Id'] = item.fileId || item.id;
       fetch(`/api/storage/move${keyOp}`, {
         method: 'post',
-        headers: getHeaders(true, true, user.teams),
+        headers: getHeaders(true, true, isTeam),
         body: JSON.stringify(data)
       }).then(async (res) => {
         const response = await res.json();
@@ -502,6 +505,7 @@ export default connect(
       infoItemId: state.storage.infoItemId,
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
-      sortFunction: state.storage.sortFunction
+      sortFunction: state.storage.sortFunction,
+      workspace: state.team.workspace
     };
   })(FileExplorer);

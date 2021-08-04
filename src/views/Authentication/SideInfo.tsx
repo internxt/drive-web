@@ -31,7 +31,7 @@ const SideInfo = ({ texts }: { texts: { label: string, sublabel: string, reviews
             <div className='flex flex-col' key={index}>
               <span className='text-xl'>{review.name}</span>
 
-              <span className='w-50 text-xs mt-2'>{review.review}</span>
+              <span className='w-62 text-base mt-2'>{review.review}</span>
             </div>
           ))}
         </Carousel>

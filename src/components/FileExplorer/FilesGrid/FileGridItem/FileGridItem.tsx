@@ -12,12 +12,14 @@ import { connect } from 'react-redux';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 
-import { ItemAction } from '../../../../models/enums';
+import './FileGridItem.scss';
+import { FileActionTypes, FileStatusTypes, ItemAction, Workspace } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
 
 import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
 import { uiActions } from '../../../../store/slices/ui';
+import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileGridItemProps {
   user: UserSettings;
@@ -29,6 +31,7 @@ interface FileGridItemProps {
   namePath: FolderPath[];
   isItemSelected: (item: DriveItemData) => boolean;
   dispatch: AppDispatch;
+  workspace: Workspace;
 }
 
 interface FileGridItemState {
@@ -99,18 +102,19 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
     const data: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     try {
       if (item.name !== dirtyName) {
         if (item.isFolder) {
-          folderService.updateMetaData(item.id, data)
+          folderService.updateMetaData(item.id, data, isTeam)
             .then(() => {
               this.props.dispatch(
                 storageThunks.fetchFolderContentThunk()
               );
             });
         } else {
-          fileService.updateMetaData(item.fileId, data as DriveFileMetadataPayload).then(() => {
+          fileService.updateMetaData(item.fileId, data as DriveFileMetadataPayload, isTeam).then(() => {
             this.props.dispatch(
               storageThunks.fetchFolderContentThunk()
             );
@@ -165,7 +169,10 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
-    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
+    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, isFolder: false }));
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
+
+    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));
   }
 
   onShareButtonClicked = (): void => {
@@ -293,6 +300,7 @@ export default connect(
       draggingTargetItemData: state.storage.draggingTargetItemData,
       namePath: state.storage.namePath,
       currentFolderId,
-      isItemSelected
+      isItemSelected,
+      workspace: state.team.workspace
     };
   })(FileGridItem);

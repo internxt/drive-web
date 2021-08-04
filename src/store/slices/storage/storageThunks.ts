@@ -8,6 +8,8 @@ import storageService from '../../../services/storage.service';
 import queueFileLogger from '../../../services/queueFileLogger';
 import { updateFileStatusLogger } from '../files';
 import downloadService from '../../../services/download.service';
+import _ from 'lodash';
+import { selectorIsTeam } from '../team';
 import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interfaces';
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 import fileService from '../../../services/file.service';
@@ -57,6 +59,7 @@ export const uploadItemsThunk = createAsyncThunk(
     const filesToUpload: any[] = [];
     const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
     const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
+    const isTeam: boolean = selectorIsTeam(getState());
 
     if (showSizeWarning) {
       toast.warn('File too large.\nYou can only upload or download files of up to 1GB through the web app');
@@ -113,7 +116,7 @@ export const uploadItemsThunk = createAsyncThunk(
     const uploadFile = async (file, path, rateLimited, items) => {
       const { filename, extension } = getFilenameAndExt(file.name);
 
-      await storageService.upload.uploadItem(user.email, file, path, dispatch)
+      await storageService.upload.uploadItem(user.email, file, path, dispatch, isTeam)
         .then(({ res, data }) => {
           dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Success, filePath: path, isFolder: false, type: extension }));
 
@@ -149,7 +152,6 @@ export const uploadItemsThunk = createAsyncThunk(
       const rateLimited = false;
 
       file.parentFolderId = parentFolderId;
-      file.isTeam = !!user.teams;
       file.file = file;
       file.folderPath = folderPath;
 
@@ -167,12 +169,13 @@ export const downloadItemsThunk = createAsyncThunk(
   'storage/downloadItems',
   async (items: DriveFileData[], { getState, dispatch }: any) => {
     const { namePath } = getState().storage;
+    const isTeam: boolean = selectorIsTeam(getState());
     const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
 
     for (const item of items) {
       const path = relativePath + '/' + item.name + '.' + item.type;
 
-      await queueFileLogger.push(() => downloadService.downloadFile(item, path, dispatch));
+      await queueFileLogger.push(() => downloadService.downloadFile(item, path, dispatch, isTeam));
     }
   });
 
@@ -182,7 +185,7 @@ export const fetchFolderContentThunk = createAsyncThunk(
     const { user } = getState().user;
     const { sortFunction, searchFunction } = getState().storage;
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
-    const isTeam: boolean = !!user.teams;
+    const isTeam: boolean = selectorIsTeam(getState());
 
     folderId = ~folderId ? folderId : currentFolderId;
 
@@ -211,8 +214,9 @@ export const deleteItemsThunk = createAsyncThunk(
   'storage/deleteItems',
   async (itemsToDelete: DriveItemData[], { getState, dispatch }: any) => {
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
+    const isTeam: boolean = selectorIsTeam(getState());
 
-    await storageService.deleteItems(itemsToDelete);
+    await storageService.deleteItems(itemsToDelete, isTeam);
 
     dispatch(fetchFolderContentThunk(currentFolderId));
   }

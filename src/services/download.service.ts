@@ -7,9 +7,9 @@ import { DevicePlatform, FileActionTypes, FileStatusTypes } from '../models/enum
 import { getEnvironmentConfig, Network } from '../lib/network';
 import { updateFileStatusLogger } from '../store/slices/files';
 import { DriveItemData } from '../models/interfaces';
+import { AppDispatch } from '../store';
 
-export async function downloadFile(itemData: DriveItemData, totalPath: string, dispatch): Promise<void> {
-  const isTeam: boolean = !!localStorageService.getUser()?.teams;
+export async function downloadFile(itemData: any, totalPath: string, dispatch: AppDispatch, isTeam: boolean): Promise<void> {
   const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId || itemData.id;
   const completeFilename = itemData.type ?

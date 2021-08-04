@@ -78,7 +78,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       onClose={onClose}
     >
       <div className='share-dialog flex flex-col mb-8'>
-        <hr className="border-t-1 border-l-neutral-50 my-6" />
+        <hr className="border-t-1 border-l-neutral-50 my-4" />
 
         <div className="px-8">
           <span className='text-neutral-500 self-center'>Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link</span>

@@ -6,7 +6,6 @@ import { generateNewKeys, updateKeys } from './pgp.service';
 import AesUtils from '../lib/AesUtil';
 import { decryptText, decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../lib/utils';
 import { validateFormat } from './keys.service';
-import { storeTeamsInfo } from './teams.service';
 import { decryptPGP } from '../lib/utilspgp';
 import * as bip39 from 'bip39';
 
@@ -137,9 +136,6 @@ export const doAccess = async (email: string, password: string, encPass: string,
       revocationKey: revocateKey
     };
 
-    if (user.teams) {
-      await storeTeamsInfo();
-    }
     if (data.userTeam) {
       const mnemonicDecode = Buffer.from(data.userTeam.bridge_mnemonic, 'base64').toString();
       const mnemonicDecrypt = await decryptPGP(mnemonicDecode);
