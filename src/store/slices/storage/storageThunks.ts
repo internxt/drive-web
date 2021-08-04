@@ -10,6 +10,7 @@ import { updateFileStatusLogger } from '../files';
 import downloadService from '../../../services/download.service';
 import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interfaces';
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
+import fileService from '../../../services/file.service';
 
 interface UploadItemsPayload {
   files: File[];
@@ -37,6 +38,14 @@ export const resetNamePathThunk = createAsyncThunk(
         name: 'Drive'
       }));
     }
+  });
+
+export const fetchRecentsThunk = createAsyncThunk(
+  'storage/fetchRecents',
+  async (payload: { limit: number }, { getState, dispatch }: any) => {
+    const recents: DriveFileData[] = await fileService.fetchRecents(payload.limit);
+
+    dispatch(storageActions.setRecents(recents));
   });
 
 export const uploadItemsThunk = createAsyncThunk(
@@ -254,6 +263,17 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
     });
 
   builder
+    .addCase(fetchRecentsThunk.pending, (state, action) => {
+      state.isLoadingRecents = true;
+    })
+    .addCase(fetchRecentsThunk.fulfilled, (state, action) => {
+      state.isLoadingRecents = false;
+    })
+    .addCase(fetchRecentsThunk.rejected, (state, action) => {
+      state.isLoadingRecents = false;
+    });
+
+  builder
     .addCase(deleteItemsThunk.pending, (state, action) => {
       state.isDeletingItems = true;
     })
@@ -276,6 +296,7 @@ const thunks = {
   uploadItemsThunk,
   downloadItemsThunk,
   fetchFolderContentThunk,
+  fetchRecentsThunk,
   deleteItemsThunk,
   goToFolderThunk
 };

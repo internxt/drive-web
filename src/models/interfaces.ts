@@ -1,7 +1,12 @@
 import { AppViewLayout, FileActionTypes, FileStatusTypes } from './enums';
 
 export interface AppConfig {
+  fileExplorer: AppFileExplorerConfig;
   views: AppViewConfig;
+}
+
+export interface AppFileExplorerConfig {
+  recentsLimit: number;
 }
 
 export interface AppViewConfig {

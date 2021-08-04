@@ -1,22 +1,18 @@
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import AppHeader from '../../components/AppHeader/AppHeader';
-import CreateFolderDialog from '../../components/dialogs/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../components/dialogs/DeleteItemsDialog/DeleteItemsDialog';
 
-import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
 import Sidenav from '../../components/Sidenav/Sidenav';
-import { RootState } from '../../store';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { setItemToShare } from '../../store/slices/storage';
 import FileLoggerModal from '../../components/FileLoggerModal';
-import { selectIsAnyModalOpen, selectShowCreateFolderModal, selectShowDeleteModal, selectShowReachedLimitModal, selectShowShareModal, uiActions } from '../../store/slices/ui';
+import { uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import { useEffect } from 'react';
 import SessionStorage from '../../lib/sessionStorage';
 import { getLimit } from '../../services/limit.service';
 import localStorageService from '../../services/localStorage.service';
-import ShareDialog from '../../components/dialogs/ShareDialog/ShareDialog';
+import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
+import { DriveItemData } from '../../models/interfaces';
 
 interface HeaderAndSidenavLayoutProps {
   children: JSX.Element
@@ -25,15 +21,15 @@ interface HeaderAndSidenavLayoutProps {
 export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProps): JSX.Element {
   const dispatch = useAppDispatch();
   const { children } = props;
-  const isAuthenticated: boolean = useSelector((state: RootState) => state.user.isAuthenticated);
-  const isSidenavCollapsed: boolean = useSelector((state: RootState) => state.ui.isSidenavCollapsed);
-  const currentItems: any[] = useSelector((state: RootState) => state.storage.items);
-  const itemToShareId: number = useSelector((state: RootState) => state.storage.itemToShareId);
-  const itemToShare: any = currentItems.find(item => item.id === itemToShareId);
+  const isAuthenticated: boolean = useAppSelector((state) => state.user.isAuthenticated);
+  const isSidenavCollapsed: boolean = useAppSelector((state) => state.ui.isSidenavCollapsed);
+  const currentItems: DriveItemData[] = useAppSelector((state) => state.storage.items);
+  const itemToShareId: number = useAppSelector((state) => state.storage.itemToShareId);
+  const itemToShare: DriveItemData | undefined = currentItems.find(item => item.id === itemToShareId);
   const toggleIsSidenavCollapsed: () => void = () => dispatch(uiActions.setIsSidenavCollapsed(!isSidenavCollapsed));
-  const showDeleteModal = useAppSelector(selectShowDeleteModal);
-  const showCreateFolderModal = useAppSelector(selectShowCreateFolderModal);
-  const showReachedLimitModal = useAppSelector(selectShowReachedLimitModal);
+  const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
+  const isDeleteItemsDialogOpen = useAppSelector((state) => state.ui.isDeleteItemsDialogOpen);
+  const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
 
   useEffect(() => {
     const limitStorage = SessionStorage.get('limitStorage');
@@ -61,10 +57,9 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
   return isAuthenticated ? (
     <div className='h-auto min-h-full flex flex-col'>
-      {itemToShare && <ShareDialog item={itemToShare} />}
-      {showCreateFolderModal && <CreateFolderDialog />}
-      {showDeleteModal && <DeleteItemsDialog />}
-      {showReachedLimitModal && <ReachedPlanLimitDialog />}
+      {isShareItemDialogOpen && itemToShare && <ShareItemDialog item={itemToShare} />}
+      {isDeleteItemsDialogOpen && <DeleteItemsDialog />}
+      {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
 
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />

@@ -1,4 +1,7 @@
 {
+  "fileExplorer": {
+    "recentsLimit": 10
+  },
   "views": [
     {
       "id": "signup",

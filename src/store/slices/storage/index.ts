@@ -8,9 +8,11 @@ import thunks, { extraReducers } from './storageThunks';
 export interface StorageState {
   isLoading: boolean;
   isDeletingItems: boolean;
+  items: DriveItemData[];
+  isLoadingRecents: boolean;
+  recents: DriveItemData[];
   isDraggingAnItem: boolean;
   draggingTargetItemData: DriveItemData | null;
-  items: DriveItemData[];
   selectedItems: DriveItemData[];
   itemToShareId: number;
   itemsToDelete: DriveItemData[];
@@ -24,9 +26,11 @@ export interface StorageState {
 const initialState: StorageState = {
   isLoading: false,
   isDeletingItems: false,
+  items: [],
+  isLoadingRecents: false,
+  recents: [],
   isDraggingAnItem: false,
   draggingTargetItemData: null,
-  items: [],
   selectedItems: [],
   itemToShareId: 0,
   itemsToDelete: [],
@@ -44,25 +48,35 @@ export const storageSlice = createSlice({
     setIsLoading: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
+    setIsLoadingRecents: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
     setIsDraggingAnItem: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isDraggingAnItem = action.payload;
     },
-    setDraggingItemTargetData: (state: StorageState, action: PayloadAction<DriveItemData>) => {
+    setDraggingItemTargetData: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
       state.draggingTargetItemData = action.payload;
     },
     setItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.items = action.payload;
     },
-    selectItem: (state: StorageState, action: PayloadAction<DriveItemData>) => {
-      state.selectedItems.push(action.payload);
+    setRecents: (state: StorageState, action: PayloadAction<DriveFileData[]>) => {
+      state.recents = action.payload;
     },
-    deselectItem: (state: StorageState, action: PayloadAction<DriveItemData>) => {
-      const index: number = state.selectedItems.findIndex((item) => item.id === action.payload.id && item.isFolder === action.payload.isFolder);
+    selectItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      const itemsToSelect = action.payload
+        .filter(item => {
+          return !state.selectedItems.some(i => item.id === i.id && item.isFolder === i.isFolder);
+        });
 
-      state.selectedItems.splice(index, 1);
+      state.selectedItems.push(...itemsToSelect);
     },
-    selectAllItems: (state: StorageState) => {
-      state.selectedItems = state.items.filter(item => !item.isFolder);
+    deselectItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      action.payload.forEach(itemToDeselect => {
+        const index: number = state.selectedItems.findIndex((item) => item.id === itemToDeselect.id && item.isFolder === itemToDeselect.isFolder);
+
+        state.selectedItems.splice(index, 1);
+      });
     },
     clearSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
@@ -101,13 +115,14 @@ export const storageSlice = createSlice({
 
 export const {
   setIsLoading,
+  setIsLoadingRecents,
   setIsDraggingAnItem,
   setDraggingItemTargetData,
   setItems,
-  selectItem,
-  deselectItem,
+  setRecents,
+  selectItems,
+  deselectItems,
   clearSelectedItems,
-  selectAllItems,
   setItemToShare,
   setItemsToDelete,
   setInfoItem,

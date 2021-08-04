@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageSelectors, storageThunks } from '../../../store/slices/storage';
@@ -13,25 +13,27 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../Buttons/AuthButton';
 import notify from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
-import { selectShowCreateFolderModal, setShowCreateFolderModal } from '../../../store/slices/ui';
+import { uiActions } from '../../../store/slices/ui';
 
 interface CreateFolderDialogProps {
+  onFolderCreated: () => void;
   user: UserSettings | undefined;
 }
 
 const CreateFolderDialog = ({
+  onFolderCreated,
   user
 }: CreateFolderDialogProps
 ) => {
   const { register, formState: { errors, isValid }, handleSubmit, reset } = useForm<IFormValues>({ mode: 'onChange', defaultValues: { createFolder: '' } });
   const [isLoading, setIsLoading] = useState(false);
-  const currentFolderId: number = useSelector((state: RootState) => storageSelectors.currentFolderId(state));
+  const currentFolderId: number = useAppSelector((state: RootState) => storageSelectors.currentFolderId(state));
   const dispatch = useAppDispatch();
-  const isOpen = useAppSelector(selectShowCreateFolderModal);
+  const isOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
 
   const onClose = (): void => {
     reset();
-    dispatch(setShowCreateFolderModal(false));
+    dispatch(uiActions.setIsCreateFolderDialogOpen(false));
   };
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
@@ -40,7 +42,7 @@ const CreateFolderDialog = ({
       await folderService.createFolder(!!user?.teams, currentFolderId, formData.createFolder);
 
       dispatch(storageThunks.fetchFolderContentThunk());
-      dispatch(setShowCreateFolderModal(false));
+      dispatch(uiActions.setIsCreateFolderDialogOpen(false));
       reset();
 
     } catch (err) {
@@ -50,6 +52,7 @@ const CreateFolderDialog = ({
         notify(err.message || err, 'error');
       }
     } finally {
+      onFolderCreated && onFolderCreated();
       setIsLoading(false);
     }
   };

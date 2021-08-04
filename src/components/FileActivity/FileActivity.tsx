@@ -8,6 +8,8 @@ import { setInfoItem, storageSelectors } from '../../store/slices/storage';
 import './FileActivity.scss';
 import { connect } from 'react-redux';
 import { DriveItemData } from '../../models/interfaces';
+import sizeService from '../../services/size.service';
+import dateService from '../../services/date.service';
 
 interface FileListProps {
   item: DriveItemData | undefined;
@@ -91,15 +93,15 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
 
           <div className="file-activity-info-item">
             <span className="label">Size</span>
-            <span className="value">55.7 MB</span>
+            <span className="value">{sizeService.bytesToString(item.size, false).toUpperCase()}</span>
           </div>
           <div className="file-activity-info-item">
             <span className="label">Modified</span>
-            <span className="value">24 Jun 2021</span>
+            <span className="value">{dateService.format(item.updatedAt, 'DD MMMM YYYY')}</span>
           </div>
           <div className="file-activity-info-item">
             <span className="label">Created</span>
-            <span className="value">24 Jun 2021</span>
+            <span className="value">{dateService.format(item.createdAt, 'DD MMMM YYYY')}</span>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import fileDownload from 'js-file-download';
 
 import { getHeaders } from '../lib/auth';
 import { DevicePlatform } from '../models/enums';
-import { DriveFileData, DriveFileMetadataPayload } from '../models/interfaces';
+import { DriveFileData, DriveFileMetadataPayload, UserSettings } from '../models/interfaces';
 import analyticsService from './analytics.service';
 import localStorageService from './localStorage.service';
 
@@ -41,9 +41,21 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
   });
 }
 
+async function fetchRecents(limit: number): Promise<DriveFileData[]> {
+  const user: UserSettings | null = localStorageService.getUser();
+  const fetchOptions = {
+    method: 'GET',
+    headers: getHeaders(true, false, !!user?.teams)
+  };
+  const response = await fetch(`/api/storage/recents?limit=${limit}`, fetchOptions);
+
+  return response.json();
+}
+
 const fileService = {
   updateMetaData,
-  deleteFile
+  deleteFile,
+  fetchRecents
 };
 
 export default fileService;

@@ -1,65 +1,81 @@
-import React, { MouseEvent, Fragment, ReactNode } from 'react';
-import { connect } from 'react-redux';
-import { Dropdown } from 'react-bootstrap';
+import React, { DragEvent, Fragment, ReactNode } from 'react';
+import Dropdown from 'react-bootstrap/Dropdown';
 import * as Unicons from '@iconscout/react-unicons';
 
 import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
-import sizeService from '../../../../services/size.service';
-
-import './FileListItem.scss';
-import dateService from '../../../../services/date.service';
-import { AppDispatch, RootState } from '../../../../store';
 import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
-import downloadService from '../../../../services/download.service';
-import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
+
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
-import iconService from '../../../../services/icon.service';
+import { AppDispatch, RootState } from '../../../../store';
+import { connect } from 'react-redux';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
+import downloadService from '../../../../services/download.service';
+
 import { ItemAction } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
-import { setShowDeleteModal, setShowShareModal } from '../../../../store/slices/ui';
 
-interface FileListItemProps {
-  user: UserSettings | undefined;
-  isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveItemData | null;
+import './FileGridItem.scss';
+import iconService from '../../../../services/icon.service';
+import { uiActions } from '../../../../store/slices/ui';
+
+interface FileGridItemProps {
+  user: UserSettings;
   item: DriveItemData;
   selectedItems: DriveItemData[];
+  isDraggingAnItem: boolean;
+  draggingTargetItemData: DriveItemData | null;
   currentFolderId: number;
   namePath: FolderPath[];
   isItemSelected: (item: DriveItemData) => boolean;
-  dispatch: AppDispatch
+  dispatch: AppDispatch;
 }
 
-interface FileListItemState {
+interface FileGridItemState {
   isEditingName: boolean;
-  showContextMenu: boolean;
   dirtyName: string;
+  itemRef: React.RefObject<HTMLDivElement>;
   nameInputRef: React.RefObject<HTMLInputElement>;
+  height: string;
 }
 
-class FileListItem extends React.Component<FileListItemProps, FileListItemState> {
-  constructor(props: FileListItemProps) {
+class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState> {
+  constructor(props: FileGridItemProps) {
     super(props);
 
     this.state = {
       isEditingName: false,
-      showContextMenu: false,
       dirtyName: '',
-      nameInputRef: React.createRef()
+      itemRef: React.createRef(),
+      nameInputRef: React.createRef(),
+      height: 'auto'
     };
+  }
+
+  componentDidMount() {
+    this.updateItemHeight();
+
+    window.addEventListener('resize', this.updateItemHeight);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateItemHeight);
+  }
+
+  updateItemHeight = () => {
+    this.setState({ height: this.state.itemRef.current?.clientWidth + 'px' });
   }
 
   get nameNode(): JSX.Element {
     const { item } = this.props;
     const { isEditingName, dirtyName, nameInputRef } = this.state;
-    const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
+    const ṣpanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
 
     return (
       <Fragment>
-        <div className={isEditingName ? 'block' : 'hidden'}>
+        <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
-            className="dense border border-white`"
+            className="w-full dense border border-white`"
             ref={nameInputRef}
             type="text"
             value={dirtyName}
@@ -72,8 +88,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
           <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
         </div>
         <span
-          className={`${spanDisplayClass} file-list-item-name-span`}
-          onClick={(e) => e.stopPropagation() }
+          className={`${ṣpanDisplayClass} file-grid-item-name-span`}
           onDoubleClick={this.onNameDoubleClicked}
         >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
       </Fragment>
@@ -95,7 +110,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
               );
             });
         } else {
-          fileService.updateMetaData(item.fileId, data).then(() => {
+          fileService.updateMetaData(item.fileId, data as DriveFileMetadataPayload).then(() => {
             this.props.dispatch(
               storageThunks.fetchFolderContentThunk()
             );
@@ -135,80 +150,54 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
+  onRenameButtonClicked = (): void => {
+    const { item } = this.props;
+    const { nameInputRef } = this.state;
+
+    this.setState(
+      { isEditingName: true, dirtyName: item.name },
+      () => setTimeout(() => nameInputRef.current && nameInputRef.current.focus(), 0)
+    );
+  }
+
+  onDownloadButtonClicked = (): void => {
+    const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+
+    const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
+
+    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
+  }
+
+  onShareButtonClicked = (): void => {
+    const { dispatch, item } = this.props;
+
+    dispatch(storageActions.setItemToShare(item.id));
+    dispatch(uiActions.setIsShareItemDialogOpen(true));
+  }
+
+  onInfoButtonClicked = (): void => {
+    this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
+  }
+
+  onDeleteButtonClicked = (): void => {
+    const { dispatch, item } = this.props;
+
+    dispatch(storageActions.setItemsToDelete([item]));
+    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+  }
+
   onItemClicked = (): void => {
     const { item, dispatch, isItemSelected } = this.props;
 
     if (!item.isFolder) {
       isItemSelected(item) ?
-        dispatch(storageActions.deselectItem(item)) :
-        dispatch(storageActions.selectItem(item));
+        dispatch(storageActions.deselectItems([item])) :
+        dispatch(storageActions.selectItems([item]));
     }
   }
 
   onItemRightClicked = (e: MouseEvent): void => {
     e.preventDefault();
-
-    document.removeEventListener('click', this.onOutsideContextMenuClicked);
-    document.addEventListener('click', this.onOutsideContextMenuClicked);
-
-    this.setState({ showContextMenu: true });
-  }
-
-  onOutsideContextMenuClicked = (): void => {
-    document.removeEventListener('click', this.onOutsideContextMenuClicked);
-    this.setState({ showContextMenu: false });
-  }
-
-  onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { item, dispatch } = this.props;
-
-    e.target.checked ?
-      dispatch(storageActions.selectItem(item)) :
-      dispatch(storageActions.deselectItem(item));
-  }
-
-  onRenameButtonClicked = (e: MouseEvent): void => {
-    const { item } = this.props;
-    const { nameInputRef } = this.state;
-
-    e.stopPropagation();
-
-    this.setState(
-      { isEditingName: true, dirtyName: item.name },
-      () => setTimeout(() => nameInputRef.current?.focus(), 0)
-    );
-  }
-
-  onDownloadButtonClicked = (e: MouseEvent): void => {
-    const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-    const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
-
-    e.stopPropagation();
-
-    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
-  }
-
-  onShareButtonClicked = (e: MouseEvent): void => {
-    const { dispatch, item } = this.props;
-
-    e.stopPropagation();
-
-    dispatch(storageActions.setItemToShare(item.id));
-    dispatch(setShowShareModal(true));
-  }
-
-  onInfoButtonClicked = (e: MouseEvent): void => {
-    e.stopPropagation();
-    this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
-  }
-
-  onDeleteButtonClicked = (e: MouseEvent): void => {
-    const { dispatch, item } = this.props;
-
-    e.stopPropagation();
-
-    dispatch(storageActions.setItemsToDelete([item]));
-    dispatch(setShowDeleteModal(true));
   }
 
   onItemDoubleClicked = (): void => {
@@ -219,7 +208,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onItemDragOver = (e: React.DragEvent<HTMLTableRowElement>): void => {
+  onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
     const { item, isDraggingAnItem, draggingTargetItemData } = this.props;
 
     if (item.isFolder) {
@@ -230,11 +219,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onItemDragLeave = (e: React.DragEvent<HTMLTableRowElement>): void => {
+  onItemDragLeave = (e: DragEvent<HTMLDivElement>): void => {
     this.props.dispatch(storageActions.setDraggingItemTargetData(null));
   }
 
-  onItemDrop = (e: React.DragEvent<HTMLTableRowElement>): void => {
+  onItemDrop = (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -244,6 +233,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   render(): ReactNode {
+    const { itemRef, height } = this.state;
     const { isDraggingAnItem, draggingTargetItemData, item, isItemSelected } = this.props;
     const isDraggingOverThisItem: boolean = !!draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
     const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
@@ -253,8 +243,10 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const ItemIconComponent = iconService.getItemIcon(item.type);
 
     return (
-      <tr
-        className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
+      <div
+        ref={itemRef}
+        style={{ height }}
+        className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-grid-item`}
         onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
@@ -262,59 +254,30 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         onDragLeave={this.onItemDragLeave}
         onDrop={this.onItemDrop}
       >
-        <td className="px-4">
-          {!item.isFolder ?
-            <input type="checkbox" checked={isItemSelected(item)} onChange={this.onSelectCheckboxChanged} /> :
-            null
-          }
-        </td>
-        <td>
-          <div className="h-8 w-8 flex justify-center">
-            <ItemIconComponent className="h-full" />
+        <Dropdown>
+          <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
+            <Unicons.UilEllipsisH className="w-full h-full" />
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <FileDropdownActions
+              hiddenActions={item.isFolder ? [ItemAction.Download] : []}
+              onRenameButtonClicked={this.onRenameButtonClicked}
+              onDownloadButtonClicked={this.onDownloadButtonClicked}
+              onShareButtonClicked={this.onShareButtonClicked}
+              onInfoButtonClicked={this.onInfoButtonClicked}
+              onDeleteButtonClicked={this.onDeleteButtonClicked}
+            />
+          </Dropdown.Menu>
+        </Dropdown>
+        <div className="file-grid-item-icon-container">
+          <ItemIconComponent className="file-icon m-auto" />
+        </div>
+        <div className="text-center mt-3">
+          <div className="mb-1">
+            {this.nameNode}
           </div>
-        </td>
-        <td>
-          <div>
-            <div className="mb-1">
-              {this.nameNode}
-            </div>
-          </div>
-        </td>
-        <td>
-          <div className="flex">
-            {!item.isFolder ?
-              <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
-                <Unicons.UilCloudDownload className="h-5" />
-              </button> : null
-            }
-            <button onClick={this.onShareButtonClicked} className="hover-action mr-4">
-              <Unicons.UilShareAlt className="h-5" />
-            </button>
-            <button onClick={this.onDeleteButtonClicked} className="hover-action">
-              <Unicons.UilTrashAlt className="h-5" />
-            </button>
-          </div>
-        </td>
-        <td className="whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
-        <td className="whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
-        <td>
-          <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold">
-              <Unicons.UilEllipsisH className="w-full h-full" />
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <FileDropdownActions
-                hiddenActions={item.isFolder ? [ItemAction.Download] : []}
-                onRenameButtonClicked={this.onRenameButtonClicked}
-                onDownloadButtonClicked={this.onDownloadButtonClicked}
-                onShareButtonClicked={this.onShareButtonClicked}
-                onInfoButtonClicked={this.onInfoButtonClicked}
-                onDeleteButtonClicked={this.onDeleteButtonClicked}
-              />
-            </Dropdown.Menu>
-          </Dropdown>
-        </td>
-      </tr>
+        </div>
+      </div>
     );
   }
 }
@@ -332,4 +295,4 @@ export default connect(
       currentFolderId,
       isItemSelected
     };
-  })(FileListItem);
+  })(FileGridItem);

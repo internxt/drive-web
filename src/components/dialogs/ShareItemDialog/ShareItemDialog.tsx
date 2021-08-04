@@ -1,183 +1,118 @@
-import React from 'react';
-import ClickToSelect from '@mapbox/react-click-to-select';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import copy from 'copy-to-clipboard';
-import { clearTimeout, setTimeout } from 'timers';
-import { connect } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import * as Unicons from '@iconscout/react-unicons';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
-import { getHeaders } from '../../../lib/auth';
-
-import { RootState } from '../../../store';
-import { UserSettings } from '../../../models/interfaces';
+import { setItemsToDelete, setItemToShare } from '../../../store/slices/storage';
+import { DriveItemData } from '../../../models/interfaces';
+import notify from '../../Notifications';
+import { selectUser } from '../../../store/slices/user';
+import shareService from '../../../services/share.service';
 import history from '../../../lib/history';
-
-import './ShareItemDialog.scss';
+import { uiActions } from '../../../store/slices/ui';
 import BaseDialog from '../BaseDialog/BaseDialog';
 
+import './ShareItemDialog.scss';
+
 interface ShareItemDialogProps {
-  item: any;
-  open: boolean;
-  user: UserSettings;
-  onClose: () => void;
+  item: DriveItemData
 }
 
-interface ShareItemDialogState {
-  link: string | null;
-  views: number;
-  animationCss: string;
-}
+const DEFAULT_VIEWS = 10;
 
-class ShareItemDialog extends React.Component<ShareItemDialogProps, ShareItemDialogState> {
-  state = {
-    link: null,
-    views: 10,
-    animationCss: ''
-  }
+const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
+  const [linkToCopy, setLinkToCopy] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [numberOfIntents, setNumberOfIntents] = useState(DEFAULT_VIEWS);
+  const isOpen = useAppSelector(state => state.ui.isShareItemDialogOpen);
+  const onClose = (): void => {
+    dispatch(uiActions.setIsShareItemDialogOpen(false));
+    dispatch(setItemToShare(0));
+  };
+  const itemFullName = item.isFolder ? item.name : `${item.name}.${item.type}`;
 
-  timeout: NodeJS.Timeout = setTimeout(() => { }, 0);
+  const handleShareLink = async (views: number) => {
+    try {
+      const fileId = item.isFolder ? item.id : item.fileId;
 
-  get itemFullName(): string {
-    const { item } = this.props;
-    const itemExtension: string = item.type ? `.${item.type}` : '';
-
-    return `${item.name}${itemExtension}`;
-  }
-
-  componentDidMount() {
-    this.handleShareLink(this.state.views);
-  }
-
-  generateShortLink = (url: string) => {
-    const isTeam: boolean = !!this.props.user.teams;
-
-    return new Promise((resolve, reject) => {
-      fetch('/api/storage/shortLink', {
-        method: 'POST',
-        headers: getHeaders(true, true, isTeam),
-        body: JSON.stringify({ 'url': url })
-      }).then(res => res.json()).then(res => {
-        resolve(res.shortUrl);
-      }).catch(reject);
-    });
-  }
-
-  generateShareLink = (fileId: string, views: number) => {
-    const isTeam: boolean = !!this.props.user.teams;
-
-    return new Promise((resolve, reject) => {
-      fetch(`/api/storage/share/file/${fileId}`, {
-        method: 'POST',
-        headers: getHeaders(true, true, isTeam),
-        body: JSON.stringify({
-          'isFolder': this.props.item.isFolder ? 'true' : 'false',
-          'views': views
-        })
-      }).then((res: Response) => {
-        if (res.status !== 200) {
-          throw res;
-        }
-        return res.json();
-      }).then((res: any) => {
-        const link = `${window.location.origin}/${res.token}`;
-
-        resolve(link);
-      }).catch((err: Response) => {
-        if (err.status === 401) {
-          history.push('/login');
-        }
-        reject(err);
-      });
-    });
-  }
-
-  handleChange(e) {
-    if (this.state.link) {
-      this.setState({ link: null });
-    }
-    const views = e.currentTarget.value;
-
-    clearTimeout(this.timeout);
-    this.timeout = setTimeout(() => {
-      this.handleShareLink(parseInt(views));
-    }, 750);
-  }
-
-  handleShareLink(views: number) {
-    const fileId = this.props.item.isFolder ? this.props.item.id : this.props.item.fileId;
-
-    if (!this.props.item.isFolder && this.props.item.isDraggable === false) {
-      return this.setState({
-        link: 'https://internxt.com/Internxt.pdf'
-      });
-    }
-
-    this.generateShareLink(fileId, views).then(link => {
-      window.analytics.track('file-share');
-      this.setState({ link: link });
-    }).catch((err) => {
-      if (err.status === 402) {
-        const itemType = this.props.item.isFolder ? 'older' : 'ile';
-
-        this.setState({ link: 'Unavailable link' });
-        toast.warn(`F${itemType} too large.\nYou can only share f${itemType}s of up to 200 MB through the web app`);
+      if (!item.isFolder && item.isDraggable === false) {
+        setLinkToCopy('https://internxt.com/Internxt.pdf');
+        return;
       }
-    });
-  }
 
-  onCopyButtonClicked = (): void => {
-    this.setState({ animationCss: 'copy-effect' }, () => {
-      setTimeout(() => {
-        this.setState({ animationCss: '' });
-      }, 1000);
-    });
+      const link = await shareService.generateShareLink(fileId, views, item.isFolder, user?.teams);
 
-    if (this.state.link) {
-      copy('Hello,\nHow are things going? I’m using Internxt Drive, a secure, simple, private and eco-friendly cloud storage service https://internxt.com/drive\nI wanted to share a file with you through this direct secure link: ' + this.state.link + '');
+      window.analytics.track('file-share');
+      setLinkToCopy(link);
+    } catch (err) {
+      if (err.status === 401) {
+        history.push('/login');
+      }
+      if (err.status === 402) {
+        const itemType = item.isFolder ? 'older' : 'ile';
+
+        return notify(`F${itemType} too large. You can only share f${itemType}s of up to 200 MB.`, 'error');
+      }
+      notify(err.message, 'error');
+      setLinkToCopy('Unavailable link');
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
-  render(): JSX.Element {
-    const { item, open } = this.props;
+  useEffect(() => {
+    setIsLoading(true);
+    const delay = setTimeout(() => {
+      handleShareLink(numberOfIntents);
+    }, 750);
 
-    return (<BaseDialog title={this.itemFullName} isOpen={open} onClose={this.props.onClose}>
-      <div>
-        <div className="text-sm text-center">
-          <div>
-            Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link. Or enter
-            the number of times you'd like the link to be valid:&nbsp;&nbsp;
+    return () => clearTimeout(delay);
+  }, [numberOfIntents]);
+
+  return (
+    <BaseDialog
+      isOpen={isOpen}
+      title={itemFullName}
+      onClose={onClose}
+    >
+      <div className='share-dialog flex flex-col mb-8'>
+        <hr className="border-t-1 border-l-neutral-50 my-6" />
+
+        <div className="px-8">
+          <span className='text-neutral-500 self-center'>Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link</span>
+
+          <div className='flex mt-3'>
+            <span className='text-blue-60 mr-4'>1.</span>
+            <div className='flex w-72 items-center rounded-md bg-l-neutral-20 px-4 py-3'>
+              <span className='text-neutral-500 text-sm'>Enter the number of times you'd like the link to be valid:</span>
+              <input
+                type="number"
+                value={numberOfIntents}
+                min={1}
+                className='w-12 content-center text-blue-60'
+                onChange={e => setNumberOfIntents(parseInt(e.target.value))} />
+            </div>
           </div>
-        </div>
 
-        <div className="flex justify-center p-5">
-          <input
-            onChange={this.handleChange.bind(this)}
-            type="number"
-            defaultValue={this.state.views} size={3}
-            step="1"
-            min="1"
-            className="w-14"
-          />
-        </div>
+          <div className='self-start mt-4'>
+            <span className='text-blue-60 mr-4'>2.</span>
+            <span className='text-neutral-500'>Get link to share</span>
+          </div>
 
-        <div className="flex justify-center items-center">
-          <ClickToSelect containerElement="div">
-            <p>{this.state.link == null ? 'Loading...' : this.state.link}</p>
-          </ClickToSelect>
-          <div>
-            <button className="secondary" onClick={this.onCopyButtonClicked}>Copy</button>
-            <a href="# "
-              className={`pointer-events-none relative opacity-0 -left-11 ${this.state.animationCss}`}
-            >Copy</a>
+          <div className='flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer'
+            onClick={() => {
+              navigator.clipboard.writeText(linkToCopy);
+              notify('Link copied!', 'info', 2500);
+            }}>
+            <span className='text-neutral-900 text-xs'>{isLoading ? 'Loading link...' : linkToCopy}</span>
+            <Unicons.UilClipboardAlt className='text-blue-60' />
           </div>
         </div>
       </div>
     </BaseDialog>
-    );
-  }
-}
+  );
+};
 
-export default connect(
-  (state: RootState) => ({
-    user: state.user.user
-  }))(ShareItemDialog);
+export default ShareItemDialog;
