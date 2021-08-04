@@ -33,7 +33,7 @@ const iconsByFileExtensionGroup = {
 };
 const extensionsList = fileExtensionService.computeExtensionsLists();
 
-export const getItemIcon = (itemExtension: string): FunctionComponent<SVGProps<SVGSVGElement>> => {
+export const getItemIcon = (isFolder: boolean, itemExtension: string): FunctionComponent<SVGProps<SVGSVGElement>> => {
   let groupId: FileExtensionGroup = FileExtensionGroup.Default;
 
   Object.entries(extensionsList).every(([key, list]) => {
@@ -46,7 +46,7 @@ export const getItemIcon = (itemExtension: string): FunctionComponent<SVGProps<S
     return !matched;
   });
 
-  return itemExtension ?
+  return !isFolder ?
     iconsByFileExtensionGroup[groupId] :
     LightFolder;
 };

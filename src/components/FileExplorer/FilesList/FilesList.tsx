@@ -58,7 +58,7 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
             <div className="w-0.5/12 px-3 flex items-center box-content">Type</div>
             <div className="flex-grow flex items-center">Name</div>
             <div className="w-2/12 hidden items-center xl:flex"></div>
-            <div className="w-2/12 hidden items-center lg:flex">Modified</div>
+            <div className="w-3/12 hidden items-center lg:flex">Modified</div>
             <div className="w-2/12 flex items-center">Size</div>
             <div className="w-1/12 flex items-center rounded-tr-4px">Actions</div>
           </div>

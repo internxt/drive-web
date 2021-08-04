@@ -123,7 +123,6 @@ export const {
   clearUserPlan
 } = userSlice.actions;
 export const userActions = userSlice.actions;
-export const selectUser = (state: RootState): UserSettings | undefined => state.user.user;
 export const selectUserPlan = (state: RootState): IUserPlan | null => state.user.currentPlan;
 export const setIsLoadingStripePlan = (state: RootState): boolean => state.user.isLoadingStripe;
 

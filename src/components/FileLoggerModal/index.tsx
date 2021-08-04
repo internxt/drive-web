@@ -66,7 +66,7 @@ const FileLoggerModal = (): JSX.Element => {
   }, [hasFinished]);
 
   return (
-    <div className={`file-logger-modal mr-6 mb-6 z-50 absolute bottom-0 right-0 flex flex-col transform delay-300 duration-300 ${isMinimized ? 'h-10' : 'h-64'} bg-white rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''}`}>
+    <div className={`file-logger-modal mr-6 mb-6 z-50 absolute bottom-0 right-0 flex flex-col transform duration-300 ${isMinimized ? 'h-10' : 'h-64'} bg-white rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''}`}>
       <div className='flex justify-between bg-neutral-900 px-4 py-2.5 rounded-t-md select-none'>
         <div className='flex items-center w-max text-sm text-white font-semibold'>
           {!hasFinished ?

@@ -19,6 +19,7 @@ import { FileActionTypes, FileStatusTypes, ItemAction, Workspace } from '../../.
 import queueFileLogger from '../../../../services/queueFileLogger';
 import { uiActions } from '../../../../store/slices/ui';
 import { updateFileStatusLogger } from '../../../../store/slices/files';
+import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
 
 interface FileListItemProps {
   user: UserSettings | undefined;
@@ -71,13 +72,13 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             onKeyPress={this.onEnterKeyPressed}
             autoFocus
           />
-          <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
+          <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
         </div>
         <span
           className={`${spanDisplayClass} file-list-item-name-span`}
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={this.onNameDoubleClicked}
-        >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
+        >{getItemFullName(item.name, item.type)}</span>
       </Fragment>
     );
   }
@@ -183,16 +184,17 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   onDownloadButtonClicked = (e: MouseEvent): void => {
-    const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-    const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
+    const { item, namePath } = this.props;
+    const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+    const path = relativePath + '/' + item.name;
 
     e.stopPropagation();
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
-    const isFolder = this.props.item.fileId ? false : true;
+    const isFolder = item.fileId ? false : true;
 
-    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, type: this.props.item.type, isFolder }));
-    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));
+    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, type: item.type, isFolder }));
+    queueFileLogger.push(() => downloadService.downloadFile(item, path, this.props.dispatch, isTeam));
   }
 
   onShareButtonClicked = (e: MouseEvent): void => {
@@ -258,7 +260,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
-    const ItemIconComponent = iconService.getItemIcon(item.type);
+    const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
     return (
       <div
@@ -314,7 +316,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         </div>
 
         {/* DATE */}
-        <div className="hidden lg:flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>
+        <div className="hidden lg:flex items-center w-3/12 whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>
 
         {/* SIZE */}
         <div className="flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</div>

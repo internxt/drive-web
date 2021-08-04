@@ -4,7 +4,7 @@ import SessionStorage from '../../../../lib/sessionStorage';
 import { bytesToString } from '../../../../services/size.service';
 import usageService, { putLimitUser } from '../../../../services/usage.service';
 import { useAppSelector } from '../../../../store/hooks';
-import { selectUser, selectUserPlan, setIsLoadingStripePlan } from '../../../../store/slices/user';
+import { selectUserPlan, setIsLoadingStripePlan } from '../../../../store/slices/user';
 import { UilUserCircle, UilEnvelope } from '@iconscout/react-unicons';
 import './AccountPlanInfoTab.scss';
 import { ListItem } from '../AccountBillingTab/BillingPlanItem';
@@ -14,7 +14,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
   const [usage, setUsage] = useState(0);
   const limitPersonal = parseInt(SessionStorage.get('limitStorage') || (1024 * 1024 * 1024 * 2).toString());
   const limitBusiness = parseInt(SessionStorage.get('teamsStorage') || (1024 * 1024 * 1024 * 2).toString());
-  const user = useAppSelector(selectUser);
+  const user = useAppSelector((state) => state.user.user);
   const userPlan = useAppSelector(selectUserPlan);
   const isTeam = useAppSelector(selectorIsTeam);
   const [isLoading, setIsLoading] = useState(false);
