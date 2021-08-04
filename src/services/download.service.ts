@@ -6,7 +6,6 @@ import analyticsService from './analytics.service';
 import { DevicePlatform, FileActionTypes, FileStatusTypes } from '../models/enums';
 import { getEnvironmentConfig, Network } from '../lib/network';
 import { updateFileStatusLogger } from '../store/slices/files';
-import { DriveItemData } from '../models/interfaces';
 import { AppDispatch } from '../store';
 
 export async function downloadFile(itemData: any, totalPath: string, dispatch: AppDispatch, isTeam: boolean): Promise<void> {

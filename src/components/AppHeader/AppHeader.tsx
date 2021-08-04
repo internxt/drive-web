@@ -82,19 +82,16 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
     const team = localStorageService.exists('xTeam');
 
     return (
-      <div className="flex justify-between w-full py-3 mb-3">
-        <div className='relative flex-1'>
-          <div className={'text-m-neutral-100 absolute flex items-center justify-center'}
-          >
-            <input
-              value={storageFilters.text}
-              onChange={this.onSearchInputChange}
-              type="text"
-              placeholder="Search files"
-              className="w-72 transform duration-200 no-ring"
-            />
-            <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-7 relative w-5" />
-          </div>
+      <div className="flex items-center justify-between w-full py-3 mb-2">
+        <div className="flex">
+          <input
+            value={storageFilters.text}
+            onChange={this.onSearchInputChange}
+            type="text"
+            placeholder="Search files"
+            className="w-72 transform duration-200 no-ring"
+          />
+          <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-7 relative w-5 top-1" />
         </div>
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">

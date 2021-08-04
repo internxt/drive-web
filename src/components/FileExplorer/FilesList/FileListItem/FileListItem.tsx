@@ -75,7 +75,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         </div>
         <span
           className={`${spanDisplayClass} file-list-item-name-span`}
-          onClick={(e) => e.stopPropagation() }
+          onClick={(e) => e.stopPropagation()}
           onDoubleClick={this.onNameDoubleClicked}
         >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
       </Fragment>
@@ -259,7 +259,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const ItemIconComponent = iconService.getItemIcon(item.type);
 
     return (
-      <tr
+      <div
         className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
         onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
@@ -268,7 +268,9 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         onDragLeave={this.onItemDragLeave}
         onDrop={this.onItemDrop}
       >
-        <td className="px-4">
+
+        {/* SELECTION */}
+        <div className="px-4 w-12 column justify-center">
           {!item.isFolder ?
             <input
               onClick={(e) => e.stopPropagation()}
@@ -278,20 +280,22 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             /> :
             null
           }
-        </td>
-        <td>
+        </div>
+
+        {/* ICON */}
+        <div className="w-12 column">
           <div className="h-8 w-8 flex justify-center">
             <ItemIconComponent className="h-full" />
           </div>
-        </td>
-        <td>
-          <div>
-            <div className="mb-1">
-              {this.nameNode}
-            </div>
-          </div>
-        </td>
-        <td>
+        </div>
+
+        {/* NAME */}
+        <div className="w-1/3 column">
+          {this.nameNode}
+        </div>
+
+        {/* HOVER ACTIONS */}
+        <div className="w-1/6 column">
           <div className="flex">
             {!item.isFolder ?
               <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
@@ -305,10 +309,16 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
               <Unicons.UilTrashAlt className="h-5" />
             </button>
           </div>
-        </td>
-        <td className="whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
-        <td className="whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
-        <td>
+        </div>
+
+        {/* DATE */}
+        <div className="column flex-grow whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>
+
+        {/* SIZE */}
+        <div className="column w-32 whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</div>
+
+        {/* ACTIONS BUTTON */}
+        <div className="column w-16">
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold">
               <Unicons.UilEllipsisH className="w-full h-full" />
@@ -324,8 +334,8 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
               />
             </Dropdown.Menu>
           </Dropdown>
-        </td>
-      </tr>
+        </div>
+      </div>
     );
   }
 }

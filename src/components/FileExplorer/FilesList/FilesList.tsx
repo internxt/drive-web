@@ -6,7 +6,7 @@ import './FilesList.scss';
 import { AppDispatch, RootState } from '../../../store';
 import { connect } from 'react-redux';
 import { storageActions } from '../../../store/slices/storage';
-import { DriveFileData, DriveItemData } from '../../../models/interfaces';
+import { DriveItemData } from '../../../models/interfaces';
 
 interface FilesListProps {
   items: DriveItemData[];
@@ -40,36 +40,30 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
 
   onSelectAllButtonClicked = () => {
     const { dispatch, items } = this.props;
-    const files: DriveFileData[] = items.filter(item => !item.isFolder) as DriveFileData[];
+    const files: DriveItemData[] = items.filter(item => !item.isFolder);
 
     this.isAllSelected ?
       dispatch(storageActions.clearSelectedItems()) :
-      dispatch(storageActions.selectItems(files))
-    ;
+      dispatch(storageActions.selectItems(files));
   }
 
   render(): ReactNode {
     return (
       <div className="pointer-events-none flex-grow bg-white">
-        <table className="pointer-events-none table-auto w-full">
-          <thead className="border-b border-l-neutral-30 bg-white text-neutral-500 py-2 px-3 text-base">
-            <tr>
-              <th className="px-4 py-2 w-12 rounded-tl-4px">
-                <input readOnly checked={this.isAllSelected} onClick={this.onSelectAllButtonClicked} type="checkbox" className="pointer-events-auto" />
-              </th>
-              <th className="w-12">Type</th>
-              <th className="w-1/5">Name</th>
-              <th className="w-36"></th>
-              <th className="w-64    const { isAllSelected } = this.props;
-">Modified</th>
-              <th className="w-20">Size</th>
-              <th className="w-12 rounded-tr-4px">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="pointer-events-none">
-            {this.itemsList}
-          </tbody>
-        </table>
+        <div className="pointer-events-none w-full">
+          <div className="files-list flex border-b border-l-neutral-30 bg-white text-neutral-500 py-2 text-sm">
+            <div className="px-4 py-2 w-12 rounded-tl-4px flex items-center justify-center">
+              <input readOnly checked={this.isAllSelected} onClick={this.onSelectAllButtonClicked} type="checkbox" className="pointer-events-auto" />
+            </div>
+            <div className="w-12 column">Type</div>
+            <div className="w-1/3 column">Name</div>
+            <div className="w-1/6 column"></div>
+            <div className="flex-grow column">Modified</div>
+            <div className="w-32 column">Size</div>
+            <div className="w-16 column rounded-tr-4px">Actions</div>
+          </div>
+          {this.itemsList}
+        </div>
       </div>
     );
   }
