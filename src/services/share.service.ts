@@ -45,3 +45,10 @@ export function generateShareLink(fileId: string, params: GenerateShareLinkReque
 export function getShareInfo(token: string): Promise<GetShareInfoResponse> {
   return fetch(`/api/storage/share/${token}`).then<GetShareInfoResponse>((res) => res.json());
 }
+
+const shareService = {
+  generateShareLink,
+  getShareInfo
+};
+
+export default shareService;
