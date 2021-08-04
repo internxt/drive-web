@@ -7,7 +7,6 @@ import { AppDispatch, RootState } from '../../../store';
 import { connect } from 'react-redux';
 import { storageActions } from '../../../store/slices/storage';
 import { DriveFileData, DriveItemData } from '../../../models/interfaces';
-import storageSelectors from '../../../store/slices/storage/storageSelectors';
 
 interface FilesListProps {
   items: DriveItemData[];
@@ -34,8 +33,9 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
 
   get isAllSelected(): boolean {
     const { selectedItems, items } = this.props;
+    const files = items.filter(item => !item.isFolder);
 
-    return selectedItems.length === items.filter(item => !item.isFolder).length;
+    return selectedItems.length === files.length && files.length > 0;
   }
 
   onSelectAllButtonClicked = () => {

@@ -5,22 +5,23 @@ import iconService from '../../services/icon.service';
 import { AppDispatch, RootState } from '../../store';
 import { setInfoItem, storageSelectors } from '../../store/slices/storage';
 
-import './FileActivity.scss';
+import './DriveItemInfoMenu.scss';
 import { connect } from 'react-redux';
 import { DriveItemData } from '../../models/interfaces';
 import sizeService from '../../services/size.service';
 import dateService from '../../services/date.service';
+import { uiActions } from '../../store/slices/ui';
 
-interface FileListProps {
+interface DriveItemInfoMenuProps {
   item: DriveItemData | undefined;
   currentFolderPath: string;
   dispatch: AppDispatch;
 }
 
-interface FileListState { }
+interface DriveItemInfoMenuState { }
 
-class FileActivity extends React.Component<FileListProps, FileListState> {
-  constructor(props: FileListProps) {
+class DriveItemInfoMenu extends React.Component<DriveItemInfoMenuProps, DriveItemInfoMenuState> {
+  constructor(props: DriveItemInfoMenuProps) {
     super(props);
 
     this.state = {};
@@ -43,6 +44,7 @@ class FileActivity extends React.Component<FileListProps, FileListState> {
 
   onCloseButtonClicked(): void {
     this.props.dispatch(setInfoItem(0));
+    this.props.dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
   }
 
   render(): JSX.Element {
@@ -117,4 +119,4 @@ export default connect((state: RootState) => {
     item,
     currentFolderPath
   };
-})(FileActivity);
+})(DriveItemInfoMenu);

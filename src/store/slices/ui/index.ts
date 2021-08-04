@@ -8,6 +8,7 @@ interface UISliceState {
   isReachedPlanLimitDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
+  isDriveItemInfoMenuOpen: boolean;
 }
 
 const initialState: UISliceState = {
@@ -17,7 +18,8 @@ const initialState: UISliceState = {
   showFileLogger: false,
   isReachedPlanLimitDialogOpen: false,
   isShareItemDialogOpen: false,
-  isInviteMemberDialogOpen: false
+  isInviteMemberDialogOpen: false,
+  isDriveItemInfoMenuOpen: false
 };
 
 export const uiSlice = createSlice({
@@ -44,6 +46,9 @@ export const uiSlice = createSlice({
     },
     setIsInviteMemberDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isInviteMemberDialogOpen = action.payload;
+    },
+    setIsDriveItemInfoMenuOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isDriveItemInfoMenuOpen = action.payload;
     }
   }
 });
@@ -54,7 +59,8 @@ export const {
   setShowFileLogger,
   setIsReachedPlanLimitDialogOpen,
   setIsShareItemDialogOpen,
-  setIsInviteMemberDialogOpen
+  setIsInviteMemberDialogOpen,
+  setIsDriveItemInfoMenuOpen
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

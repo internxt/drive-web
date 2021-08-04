@@ -205,6 +205,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   onInfoButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
     this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
+    this.props.dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
   }
 
   onDeleteButtonClicked = (e: MouseEvent): void => {

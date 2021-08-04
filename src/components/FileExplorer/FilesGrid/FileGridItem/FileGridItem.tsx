@@ -184,6 +184,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
   onInfoButtonClicked = (): void => {
     this.props.dispatch(storageActions.setInfoItem(this.props.item.id));
+    this.props.dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
   }
 
   onDeleteButtonClicked = (): void => {
