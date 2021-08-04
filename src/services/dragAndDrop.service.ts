@@ -25,8 +25,15 @@ export async function getAllItems(dataTransfer) {
   // console.log(entries);
 
   entries.levels = levels;
-  console.log(entries);
-  return entries; // entries;
+  // console.log(entries);
+  const root = entries.directoryEntryList[0];
+  const items = {
+    numberOfItems: entries.entryList.length,
+    root
+  };
+
+  console.log(items);
+  return items;// entries;
 }
 
 function getParentName(fullPath) {
@@ -82,7 +89,7 @@ async function getEntries(dataTransferItemList: DataTransferItemList) {
       });
       entryList.push(entry);
     } else if (entry.isDirectory) {
-      entry.children = [];
+      // entry.children = [];
       entryList.push(entry);
       directoryEntryList.push(entry);
       const reader = entry.createReader();
