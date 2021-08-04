@@ -65,6 +65,23 @@ export const createFolderTreeStructureThunk = createAsyncThunk(
   'storage/createFolderStructure',
   async ({ root, currentFolderId }: CreateFolderTreeStructurePayload, { getState, dispatch }: any) => {
     const isTeam: boolean = selectorIsTeam(getState());
+
+    // Uploads the root folder
+    folderService.createFolder(isTeam, currentFolderId, root.name).then((folderUploaded) => {
+      // Once the root folder is uploaded it uploads the file children
+      dispatch(uploadItemsThunk({ files: root.childrenFiles, parentFolderId: folderUploaded.id, folderPath: root.fullPath }));
+      // Once the root folder is uploaded upload folder children
+      for (const subTreeRoot of root.childrenFolders) {
+        dispatch(createFolderTreeStructureThunk({ root: subTreeRoot, currentFolderId: folderUploaded.id }));
+      }
+    });
+  }
+);
+
+export const createFolderTreeStructureThunk2 = createAsyncThunk(
+  'storage/createFolderStructure',
+  async ({ root, currentFolderId }: CreateFolderTreeStructurePayload, { getState, dispatch }: any) => {
+    const isTeam: boolean = selectorIsTeam(getState());
     const promiseArray = [];
 
     root.folderId = currentFolderId;
