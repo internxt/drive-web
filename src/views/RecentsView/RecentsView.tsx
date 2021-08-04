@@ -49,7 +49,7 @@ export default connect((state: RootState) => {
   const filteredItems = storageSelectors.filteredItems(state)(state.storage.recents);
 
   return {
-    isLoading: state.storage.isLoadingRecents,
+    isLoadingRecents: state.storage.isLoadingRecents,
     items: filteredItems
   };
 })(RecentsView);

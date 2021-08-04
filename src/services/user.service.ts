@@ -47,20 +47,18 @@ export const sendDeactivationEmail = async (email: string): Promise<void> => {
   });
 };
 
-export const fetchUserPlan = async (): Promise<IUserPlan> => {
+export const fetchUserPlan = async (): Promise<IUserPlan | null> => {
   const isTest = process.env.NODE_ENV !== 'production' ? true : false;
   const response = await fetch(`/api/storage/user/info/stripe/${isTest}`, {
     method: 'GET',
     headers: getHeaders(true, false)
   });
 
-  if (response.status !== 200) {
-    if (response.status === 404) {
-      throw new Error('Product not found.');
-    }
-    throw new Error('Could not get user info');
-  }
   const data = await response.json();
+
+  if (response.status !== 200) {
+    return null;
+  }
 
   return data;
 };

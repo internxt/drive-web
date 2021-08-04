@@ -15,7 +15,8 @@ interface UserState {
   isAuthenticated: boolean;
   isInitialized: boolean;
   user?: UserSettings,
-  currentPlan: null | IUserPlan
+  currentPlan: null | IUserPlan,
+  isLoadingStripe: boolean
 }
 
 const initialState: UserState = {
@@ -23,7 +24,8 @@ const initialState: UserState = {
   isAuthenticated: false,
   isInitialized: false,
   user: undefined,
-  currentPlan: null
+  currentPlan: null,
+  isLoadingStripe: true
 };
 
 export const initializeUserThunk = createAsyncThunk(
@@ -86,6 +88,12 @@ export const userSlice = createSlice({
     },
     setUserPlan: (state: UserState, action: PayloadAction<IUserPlan>) => {
       state.currentPlan = action.payload;
+    },
+    setIsLoadingStripePlan: (state: UserState, action: PayloadAction<boolean>) => {
+      state.isLoadingStripe = action.payload;
+    },
+    clearUserPlan: (state: UserState) => {
+      state.currentPlan = null;
     }
   },
   extraReducers: (builder) => {
@@ -111,9 +119,12 @@ export const {
   initialize,
   setIsUserInitialized,
   setUser,
-  setUserPlan
+  setUserPlan,
+  clearUserPlan
 } = userSlice.actions;
 export const userActions = userSlice.actions;
 export const selectUser = (state: RootState): UserSettings | undefined => state.user.user;
 export const selectUserPlan = (state: RootState): IUserPlan | null => state.user.currentPlan;
+export const setIsLoadingStripePlan = (state: RootState): boolean => state.user.isLoadingStripe;
+
 export default userSlice.reducer;
