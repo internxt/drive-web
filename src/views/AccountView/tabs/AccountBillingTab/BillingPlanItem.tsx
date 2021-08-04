@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
-
+import { UilCheck } from '@iconscout/react-unicons';
 import BaseButton from '../../../../components/Buttons/BaseButton';
 import { TextField } from '@material-ui/core';
 import { IStripePlan, IStripeProduct } from '../../../../models/interfaces';
@@ -9,6 +8,7 @@ interface PlanProps {
   product: IStripeProduct,
   plans: IStripePlan[],
   selectedPlan: string,
+  currentPlan: string,
   buttontext: string,
   characteristics: string[],
   handlePlanSelection: (planId: string, productId: string) => void,
@@ -18,18 +18,24 @@ interface PlanProps {
   handlePaymentTeams: any
 }
 
-const ListItem = ({ text }: { text: string }): JSX.Element => (
+export const ListItem = ({ text }: { text: string }): JSX.Element => (
   <div className='flex justify-start items-center mb-2'>
-    <Unicons.UilCheck className="text-blue-60" />
+    <UilCheck className="text-blue-60" />
     <p className='text-xs ml-2.5'>{text}</p>
   </div>
 );
 
-export const Plan = ({ plan, onClick, selectedPlan }: { plan: IStripePlan, onClick: () => void, selectedPlan: string }): JSX.Element => {
+export const Plan = ({ plan, onClick, selectedPlan, currentPlan }: { plan: IStripePlan, onClick: () => void, selectedPlan: string, currentPlan }): JSX.Element => {
+  const classCurrentPlan = 'border-3 border-blue-60 cursor-default';
+  const classSelectedPlan = selectedPlan === plan.id ? 'border-blue-60 bg-blue-10' : 'border-m-neutral-60';
+
   return (
-    <div className={`flex justify-between items-center px-4 mb-2 w-full h-11 rounded-md text-neutral-500 cursor-pointer hover:border-blue-60 ${selectedPlan === plan.id ? 'border-2 border-blue-60' : 'border border-m-neutral-60'}`}
-      onClick={onClick}
+    <div className={`relative flex justify-between items-center px-4 mb-2 w-full h-11 rounded-md text-neutral-500 overflow-hidden ${currentPlan === plan.id ? classCurrentPlan : `border ${classSelectedPlan} cursor-pointer hover:border-blue-60`}`}
+      onClick={() => currentPlan !== plan.id ? onClick() : null}
     >
+      {currentPlan === plan.id && <div className='absolute w-12 h-8 bg-blue-60 -top-5 -right-3 transform rotate-30' />}
+      {currentPlan === plan.id && <UilCheck className='absolute w-5 h-5 -top-1 right-0 text-white' />}
+
       <p>{plan.name}</p>
 
       <div className='flex items-end'>
@@ -50,7 +56,7 @@ export const Plan = ({ plan, onClick, selectedPlan }: { plan: IStripePlan, onCli
   );
 };
 
-const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection, handlePaymentIndividual, selectedPlan, isPaying, isBusiness, handlePaymentTeams }: PlanProps): JSX.Element => {
+const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection, handlePaymentIndividual, selectedPlan, currentPlan, isPaying, isBusiness, handlePaymentTeams }: PlanProps): JSX.Element => {
   const [buttonText, setButtonText] = useState(selectedPlan ? 'Subscribe' : 'Choose your payment');
   const [totalTeamMembers, setTotalMembers] = useState('');
 
@@ -65,7 +71,7 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
       <p className='text-sm font-semibold text-neutral-700 mt-4 mb-2'>Choose subscription</p>
 
       {plans.length &&
-        plans.map(plan => <Plan plan={plan} key={plan.id} selectedPlan={selectedPlan} onClick={() => {
+        plans.map(plan => <Plan plan={plan} key={plan.id} selectedPlan={selectedPlan} currentPlan={currentPlan} onClick={() => {
           if (!isPaying) {
             handlePlanSelection(plan.id, product.id);
           }
@@ -73,17 +79,17 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
 
       {
         isBusiness &&
-          <TextField
-            type="number" label="Team members"
-            style={{ width: 154 }}
-            InputProps={{
-              required: true,
-              inputProps: {
-                min: 2,
-                max: 10
-              }
-            }}
-            value={totalTeamMembers} onChange={e => setTotalMembers(e.target.value)} />
+        <TextField
+          type="number" label="Team members"
+          style={{ width: 154 }}
+          InputProps={{
+            required: true,
+            inputProps: {
+              min: 2,
+              max: 10
+            }
+          }}
+          value={totalTeamMembers} onChange={e => setTotalMembers(e.target.value)} />
 
       }
 
