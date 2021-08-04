@@ -12,7 +12,7 @@ const AccountView = (): JSX.Element => {
   const plansCharacteristics = ['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing'];
 
   return (
-    <div className='h-full rounded-md bg-white test pb-16'>
+    <div className='h-full rounded-md bg-white test pb-16 mt-2'>
       <Tabs defaultActiveKey="plans" className='relative flex px-8 pt-3.5' >
         <Tab title='Plans' eventKey='plans'>
           <AccountBillingTab plansCharacteristics={plansCharacteristics} />
@@ -22,9 +22,9 @@ const AccountView = (): JSX.Element => {
           <AccountPasswordTab />
         </Tab>
 
-        <Tab title='Referrals' eventKey='referrals'>
+        {/* <Tab title='Referrals' eventKey='referrals'>
           <AccountReferralsTab />
-        </Tab>
+        </Tab> */}
 
         <Tab title='Security' eventKey='security'>
           <AccountSecurityTab />
