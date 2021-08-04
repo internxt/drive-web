@@ -98,6 +98,7 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
 
         setProducts(keyedProducts);
         setTeamsProducts(keyedTeamsProducts);
+        console.log('first =>', keyedTeamsProducts);
       } catch (err) {
         notify(err.message, 'error');
       } finally {
@@ -109,12 +110,15 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
   }, []);
 
   const handlePlanSelection = (planId: string, productId: string) => {
+    console.log('before before =>', teamsProducts);
     const newProds = objectMap({ ...products }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
       return {
         ...value,
         selected: productId === value.product.id ? planId : ''
       };
     });
+
+    console.log('before =>', teamsProducts);
     const newTeamsProds = objectMap({ ...teamsProducts }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
       return {
         ...value,
@@ -122,6 +126,7 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
       };
     });
 
+    console.log('after =>', newTeamsProds);
     setProducts(newProds);
     setTeamsProducts(newTeamsProds);
   };
@@ -152,49 +157,6 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
       setIsPaying(false);
     }
   };
-
-  // useCallBack for needed optimization of component, do not remove
-  const renderItemIndividual = useCallback((product, index) => {
-    return (
-      <Fragment key={product.product.id}>
-        <BillingPlanItem
-          product={product.product}
-          plans={product.plans}
-          selectedPlan={product.selected}
-          currentPlan={product.currentPlan}
-          buttontext='Subscribe'
-          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-          handlePlanSelection={handlePlanSelection}
-          handlePaymentIndividual={handlePaymentIndividual}
-          isPaying={isPaying}
-          isBusiness={false}
-          handlePaymentTeams={handlePaymentTeams}
-        />
-        {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
-      </Fragment>
-    );
-  }, [products]);
-
-  const renderItemTeams = useCallback((product, index) => {
-    return (
-      <Fragment key={product.product.id}>
-        <BillingPlanItem
-          product={product.product}
-          plans={product.plans}
-          selectedPlan={product.selected}
-          currentPlan={product.currentPlan}
-          buttontext='Subscribe'
-          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-          handlePlanSelection={handlePlanSelection}
-          handlePaymentIndividual={handlePaymentIndividual}
-          isPaying={isPaying}
-          isBusiness={true}
-          handlePaymentTeams={handlePaymentTeams}
-        />
-        {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
-      </Fragment>
-    );
-  }, [teamsProducts]);
 
   const handlePaymentTeams = async (selectedPlanToBuy, productId, totalTeamMembers) => {
     setStatusMessage('Purchasing...');
@@ -229,6 +191,48 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
       console.error('Error starting Stripe session. Reason: %s', err);
       setStatusMessage('Please contact us. Reason: ' + err.message);
     });
+  };
+
+  const renderItemIndividual = (product, index) => {
+    return (
+      <Fragment key={product.product.id}>
+        <BillingPlanItem
+          product={product.product}
+          plans={product.plans}
+          selectedPlan={product.selected}
+          currentPlan={product.currentPlan}
+          buttontext='Subscribe'
+          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+          handlePlanSelection={handlePlanSelection}
+          handlePaymentIndividual={handlePaymentIndividual}
+          isPaying={isPaying}
+          isBusiness={false}
+          handlePaymentTeams={handlePaymentTeams}
+        />
+        {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
+      </Fragment>
+    );
+  };
+
+  const renderItemTeams = (product, index) => {
+    return (
+      <Fragment key={product.product.id}>
+        <BillingPlanItem
+          product={product.product}
+          plans={product.plans}
+          selectedPlan={product.selected}
+          currentPlan={product.currentPlan}
+          buttontext='Subscribe'
+          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+          handlePlanSelection={handlePlanSelection}
+          handlePaymentIndividual={handlePaymentIndividual}
+          isPaying={isPaying}
+          isBusiness={true}
+          handlePaymentTeams={handlePaymentTeams}
+        />
+        {index < Object.keys(teamsProducts).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
+      </Fragment>
+    );
   };
 
   return (

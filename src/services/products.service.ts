@@ -35,6 +35,7 @@ export const loadAvailableTeamsProducts = async (): Promise<IStripeProduct[]> =>
   });
   const data = await response.json();
 
+  console.log('teams data =>', data);
   return data;
 };
 
