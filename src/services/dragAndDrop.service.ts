@@ -1,5 +1,6 @@
 /* eslint-disable no-loop-func */
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../lib/constants';
+import { v4 as uuid } from 'uuid';
 
 export async function getAllItems(dataTransfer) {
   const entries = await getEntries(dataTransfer.items);
@@ -73,6 +74,8 @@ async function getEntries(dataTransferItemList: DataTransferItemList) {
   }
   while (queue.length > 0) {
     const entry = queue.shift();
+
+    entry.uuid = uuid();
 
     if (entry.isFile) {
       // eslint-disable-next-line no-loop-func
