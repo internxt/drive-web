@@ -95,9 +95,8 @@ const AccountPasswordTab = (): JSX.Element => {
 
         {
           error &&
-          <div className='flex mt-1 mb-4 pl-2'>
-            <div className='w-1.5 h-1.5 bg-neutral-600 rounded-full mt-2' />
-            <span className='text-neutral-600 text-sm w-56 ml-2.5'>{error}</span>
+          <div className='flex mt-1 mb-4'>
+            <span className='text-red-60 text-sm w-56 font-medium'>{error}</span>
           </div>
         }
 
