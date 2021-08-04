@@ -16,7 +16,9 @@ export async function downloadFile(itemData: any, totalPath: string, dispatch: A
     `${itemData.name}.${itemData.type}` :
     `${itemData.name}`;
 
-  dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Decrypting, filePath: totalPath, type: itemData.type, isFolder: itemData.isFolder }));
+  const isFolder = itemData.fileId ? false : true;
+
+  dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Decrypting, filePath: totalPath, type: itemData.type, isFolder }));
 
   try {
     trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
@@ -26,16 +28,16 @@ export async function downloadFile(itemData: any, totalPath: string, dispatch: A
 
     const fileBlob = await network.downloadFile(bucketId, fileId, {
       progressCallback: (progress) => {
-        dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Downloading, filePath: totalPath, progress: progress.toFixed(2), type: itemData.type, isFolder: itemData.isFolder }));
+        dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Downloading, filePath: totalPath, progress: progress.toFixed(2), type: itemData.type, isFolder: isFolder }));
       }
     });
 
     fileDownload(fileBlob, completeFilename);
-    dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Success, filePath: totalPath, type: itemData.type, isFolder: itemData.isFolder }));
+    dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Success, filePath: totalPath, type: itemData.type, isFolder: isFolder }));
 
     trackFileDownloadFinished(userEmail, fileId, itemData.size);
   } catch (err) {
-    dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Error, filePath: totalPath, type: itemData.type, isFolder: itemData.isFolder }));
+    dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Error, filePath: totalPath, type: itemData.type, isFolder: isFolder }));
 
     trackFileDownloadError(userEmail, fileId, err.message);
     toast.warn(`Error downloading file: \n Reason is ${err.message} \n File id: ${fileId}`);
