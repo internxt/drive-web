@@ -297,7 +297,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         </div>
 
         {/* HOVER ACTIONS */}
-        <div className="w-2/12 items-center hidden xl:flex">
+        <div className="pl-3 w-2/12 items-center hidden xl:flex">
           <div className="flex">
             {!item.isFolder ?
               <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">

@@ -14,6 +14,7 @@ import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interf
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 import fileService from '../../../services/file.service';
 import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
+import { uiActions } from '../ui';
 
 interface UploadItemsPayload {
   files: File[];
@@ -258,6 +259,10 @@ export const goToFolderThunk = createAsyncThunk(
     isInNamePath ?
       dispatch(storageActions.popNamePathUpTo(path)) :
       dispatch(storageActions.pushNamePath(path));
+
+    dispatch(storageActions.setInfoItem(0));
+    dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
+
     await dispatch(fetchFolderContentThunk(path.id));
   }
 );
