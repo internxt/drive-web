@@ -25,11 +25,11 @@ export async function getAllItems(dataTransfer) {
   // console.log(entries);
 
   entries.levels = levels;
-  // console.log(entries);
   const root = entries.directoryEntryList[0];
   const items = {
     numberOfItems: entries.entryList.length,
-    root
+    root,
+    files: entries.fileEntryList
   };
 
   // console.log(items);

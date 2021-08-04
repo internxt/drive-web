@@ -65,18 +65,33 @@ export const createFolderTreeStructureThunk = createAsyncThunk(
   'storage/createFolderStructure',
   async ({ root, currentFolderId }: CreateFolderTreeStructurePayload, { getState, dispatch }: any) => {
     const isTeam: boolean = selectorIsTeam(getState());
+    const promiseArray = [];
 
-    // Uploads the root folder
-    folderService.createFolder(isTeam, currentFolderId, root.name).then((folderUploaded) => {
+    root.folderId = currentFolderId;
+    const rootArray = [root];
+
+    while (rootArray.length > 0) {
+      root = rootArray.shift();
+      // Uploads the root folder
+      const folderUploaded = await folderService.createFolder(isTeam, root.folderId, root.name);
+
       // Once the root folder is uploaded it uploads the file children
-      dispatch(uploadItemsThunk({ files: root.childrenFiles, parentFolderId: folderUploaded.id, folderPath: root.fullPath }));
+      await dispatch(uploadItemsThunk({ files: root.childrenFiles, parentFolderId: folderUploaded.id, folderPath: root.fullPath }));
       // Once the root folder is uploaded upload folder children
+
+      // Anti recursive
+      for (const child of root.childrenFolders) {
+        child.folderId = folderUploaded.id;
+      }
+      rootArray.push(...root.childrenFolders);
+
+      /*
       for (const subTreeRoot of root.childrenFolders) {
         dispatch(createFolderTreeStructureThunk({ root: subTreeRoot, currentFolderId: folderUploaded.id }));
       }
-    });
-  }
-);
+      */
+    }
+  });
 
 export const uploadItemsThunk = createAsyncThunk(
   'storage/uploadItems',
