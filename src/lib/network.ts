@@ -77,7 +77,7 @@ export class Network {
 
     const hashName = createHash('ripemd160').update(params.filepath).digest('hex');
 
-    return new Promise((resolve: (entry: CreateEntryFromFrameResponse) => void, reject) => {
+    return new Promise((resolve: (fileId: string) => void, reject) => {
       this.environment.uploadFile(bucketId, {
         filename: hashName,
         fileSize: params.filesize,
@@ -95,8 +95,6 @@ export class Network {
           resolve(response);
         }
       });
-    }).then((uploadRes) => {
-      return uploadRes.id;
     });
   }
 
