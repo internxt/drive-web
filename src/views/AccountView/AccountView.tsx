@@ -20,9 +20,9 @@ const AccountView = (): JSX.Element => {
           <AccountPasswordTab />
         </Tab>
 
-        <Tab title='Referrals' eventKey='referrals'>
+        {/* <Tab title='Referrals' eventKey='referrals'>
           <AccountReferralsTab />
-        </Tab>
+        </Tab> */}
 
         <Tab title='Security' eventKey='security'>
           <AccountSecurityTab />
