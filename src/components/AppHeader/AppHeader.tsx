@@ -91,7 +91,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
             placeholder="Search files"
             className="w-72 transform duration-200 no-ring"
           />
-          <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-7 relative w-5 top-1" />
+          <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-7 relative w-5 top-1.5" />
         </div>
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">

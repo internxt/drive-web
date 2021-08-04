@@ -40,13 +40,10 @@ interface FileExplorerProps {
   items: DriveItemData[];
   onFileUploaded: () => void;
   onFolderCreated: () => void;
-}
-
-interface FilesViewProps {
   user: UserSettings | any;
   currentFolderId: number;
   isDraggingAnItem: boolean;
-  selectedItems: DriveFileData[];
+  selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
   itemToShareId: number;
