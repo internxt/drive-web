@@ -3,11 +3,6 @@ import * as Unicons from '@iconscout/react-unicons';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-<<<<<<< HEAD
-import { setItemToShare } from '../../../store/slices/storage';
-=======
-import { setItemsToDelete, setItemToShare } from '../../../store/slices/storage';
->>>>>>> 5d8189aad75a6da9f1b21cdef5a8b0df0ba1c061
 import { DriveItemData } from '../../../models/interfaces';
 import notify from '../../Notifications';
 import { selectUser } from '../../../store/slices/user';
@@ -17,6 +12,7 @@ import { uiActions } from '../../../store/slices/ui';
 import BaseDialog from '../BaseDialog/BaseDialog';
 
 import './ShareItemDialog.scss';
+import { storageActions } from '../../../store/slices/storage';
 
 interface ShareItemDialogProps {
   item: DriveItemData
@@ -33,7 +29,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   const isOpen = useAppSelector(state => state.ui.isShareItemDialogOpen);
   const onClose = (): void => {
     dispatch(uiActions.setIsShareItemDialogOpen(false));
-    dispatch(setItemToShare(0));
+    dispatch(storageActions.setItemToShare(0));
   };
   const itemFullName = item.isFolder ? item.name : `${item.name}.${item.type}`;
 

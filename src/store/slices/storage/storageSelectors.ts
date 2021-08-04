@@ -37,11 +37,11 @@ const storageSelectors = {
     return state.storage.items.length === 0;
   },
 
-  getInfoItem(state: RootState): DriveFileData | DriveFolderData | undefined {
+  getInfoItem(state: RootState): DriveItemData | undefined {
     return state.storage.items.find(item => item.id === state.storage.infoItemId);
   },
 
-  isItemSelected(state: RootState): (item: DriveFileData | DriveFolderData) => boolean {
+  isItemSelected(state: RootState): (item: DriveItemData) => boolean {
     return (item) => state.storage.selectedItems.includes(item);
   },
 

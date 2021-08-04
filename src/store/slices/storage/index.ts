@@ -34,8 +34,8 @@ export interface StorageState {
   infoItemId: number;
   viewMode: FileViewMode;
   namePath: FolderPath[];
-  sortFunction: ((a: DriveFileData | DriveFolderData, b: DriveFileData | DriveFolderData) => number) | null;
-  searchFunction: ((item: DriveFileData | DriveFolderData) => boolean) | null;
+  sortFunction: ((a: DriveItemData, b: DriveItemData) => number) | null;
+  searchFunction: ((item: DriveItemData) => boolean) | null;
 }
 
 const initialState: StorageState = {
