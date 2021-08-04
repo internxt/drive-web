@@ -17,10 +17,14 @@ interface RecentsViewProps {
 class RecentsView extends Component<RecentsViewProps, {}> {
 
   componentDidMount(): void {
+    this.props.dispatch(storageThunks.resetNamePathThunk());
+    this.refreshRecents();
+  }
+
+  refreshRecents = () => {
     const { dispatch } = this.props;
     const fileExplorerConfig: AppFileExplorerConfig = configService.getAppConfig().fileExplorer;
 
-    dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageThunks.fetchRecentsThunk({
       limit: fileExplorerConfig.recentsLimit
     }));
@@ -38,6 +42,7 @@ class RecentsView extends Component<RecentsViewProps, {}> {
         title="Recents"
         isLoading={isLoadingRecents}
         items={items}
+        onItemsDeleted={this.refreshRecents}
         onFileUploaded={this.redirectToDrive}
         onFolderCreated={this.redirectToDrive}
       />

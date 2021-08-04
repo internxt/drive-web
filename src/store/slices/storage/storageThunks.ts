@@ -14,6 +14,7 @@ import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interf
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 import fileService from '../../../services/file.service';
 import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
+import { uiActions } from '../ui';
 
 interface UploadItemsPayload {
   files: File[];
@@ -272,6 +273,10 @@ export const goToFolderThunk = createAsyncThunk(
     isInNamePath ?
       dispatch(storageActions.popNamePathUpTo(path)) :
       dispatch(storageActions.pushNamePath(path));
+
+    dispatch(storageActions.setInfoItem(0));
+    dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
+
     await dispatch(fetchFolderContentThunk(path.id));
   }
 );
@@ -299,9 +304,7 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
   builder
     .addCase(createFolderTreeStructureThunk.pending, (state, action) => { })
     .addCase(createFolderTreeStructureThunk.fulfilled, (state, action) => { })
-    .addCase(createFolderTreeStructureThunk.rejected, (state, action) => {
-      console.log('TREE STRUCTURE REJECTED: ', action);
-    });
+    .addCase(createFolderTreeStructureThunk.rejected, (state, action) => { });
 
   builder
     .addCase(fetchFolderContentThunk.pending, (state, action) => {

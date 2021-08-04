@@ -79,7 +79,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       <Fragment>
         <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
-            className="w-full dense border border-white`"
+            className="w-full dense border border-white no-ring rect"
             ref={nameInputRef}
             type="text"
             value={dirtyName}

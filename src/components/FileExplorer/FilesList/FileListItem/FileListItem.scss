@@ -6,11 +6,7 @@
         @apply py-3.5 border-b border-l-neutral-30 text-sm w-full flex;
 
         &:hover, &.selected {
-            @apply bg-blue-10;
-        }
-
-        .column {
-            @apply flex items-center;
+            @apply bg-blue-20;
         }
     }
     

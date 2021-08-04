@@ -21,7 +21,8 @@ module.exports = {
       width: {
         'sidenav-1280': '180px',
         'sidenav-1280-collapsed': '64px',
-        'activity-1280': '296px'
+        'activity-1280': '296px',
+        '0.5/12': '4.166667%'
       },
       margin: {
         '24px': '24px'

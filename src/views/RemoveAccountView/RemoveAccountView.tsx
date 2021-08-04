@@ -10,6 +10,7 @@ import { sendDeactivationEmail } from '../../services/user.service';
 import notify from '../../components/Notifications';
 import BaseButton from '../../components/Buttons/BaseButton';
 import { UilEnvelope } from '@iconscout/react-unicons';
+import { Link } from 'react-router-dom';
 
 const RemoveAccount = (): JSX.Element => {
   const { register, formState: { errors, isValid }, handleSubmit, getValues } = useForm<IFormValues>({ mode: 'onChange' });
@@ -62,7 +63,7 @@ const RemoveAccount = (): JSX.Element => {
                 placeholder='Email'
                 label='email'
                 type='email'
-                icon={<UilEnvelope className='w-4'/>}
+                icon={<UilEnvelope className='w-4' />}
                 register={register}
                 required={true}
                 minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -73,11 +74,8 @@ const RemoveAccount = (): JSX.Element => {
               <AuthButton isDisabled={isLoading || !isValid} text='Send email' textWhenDisabled={isValid ? 'Sending email...' : 'Send email'} />
             </form>
 
-            <BaseButton classes='button_link' onClick={() => history.push('/login')}>
-              Back to login
-            </BaseButton>
-          </Fragment>
-          :
+            <Link className="mt-4" to='/login'>Back to login</Link>
+          </Fragment> :
           <Fragment>
             <p className='text-neutral-500 text-xs my-6 text-center'>
               Please check your email and follow the instructions to deactivate your account so you can start using Internxt Drive again. Once you deactivate your account,
@@ -88,9 +86,7 @@ const RemoveAccount = (): JSX.Element => {
             <BaseButton classes='primary w-full' disabled={isLoading} onClick={() => sendEmail(getValues().email)}>
               Re-send deactivation email
             </BaseButton>
-            <BaseButton classes='button_link mt-2' onClick={() => history.push('/login')}>
-              Back to login
-            </BaseButton>
+            <Link className='mt-4' to='/login'>Back to login</Link>
           </Fragment>
         }
       </div>

@@ -52,15 +52,15 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
       <div className="pointer-events-none flex-grow bg-white">
         <div className="pointer-events-none w-full">
           <div className="files-list flex border-b border-l-neutral-30 bg-white text-neutral-500 py-2 text-sm">
-            <div className="px-4 py-2 w-12 rounded-tl-4px flex items-center justify-center">
+            <div className="w-0.5/12 px-3 rounded-tl-4px flex items-center justify-center box-content">
               <input readOnly checked={this.isAllSelected} onClick={this.onSelectAllButtonClicked} type="checkbox" className="pointer-events-auto" />
             </div>
-            <div className="w-12 column">Type</div>
-            <div className="w-1/3 column">Name</div>
-            <div className="w-1/6 column"></div>
-            <div className="flex-grow column">Modified</div>
-            <div className="w-32 column">Size</div>
-            <div className="w-16 column rounded-tr-4px">Actions</div>
+            <div className="w-0.5/12 px-3 flex items-center box-content">Type</div>
+            <div className="flex-grow flex items-center">Name</div>
+            <div className="w-2/12 hidden items-center xl:flex"></div>
+            <div className="w-2/12 hidden items-center lg:flex">Modified</div>
+            <div className="w-2/12 flex items-center">Size</div>
+            <div className="w-1/12 flex items-center rounded-tr-4px">Actions</div>
           </div>
           {this.itemsList}
         </div>

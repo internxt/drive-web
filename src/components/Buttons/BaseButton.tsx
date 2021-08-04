@@ -6,7 +6,7 @@ interface ButtonProps {
 }
 
 const BaseButton = ({ classes, children, disabled, onClick }: ButtonProps): JSX.Element => {
-  const className: string = `flex items-center justify-center py-2 rounded text-sm ${classes || ''}`;
+  const className: string = `flex items-center justify-center py-3 rounded text-base ${classes || ''}`;
 
   return (
     <button
