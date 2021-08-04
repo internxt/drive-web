@@ -74,6 +74,7 @@ async function getEntries(dataTransferItemList: DataTransferItemList) {
   }
   while (queue.length > 0) {
     const entry = queue.shift();
+    entry.uuid = uuid();
 
     entry.uuid = uuid();
 
