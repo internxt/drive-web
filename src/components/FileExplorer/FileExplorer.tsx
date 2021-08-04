@@ -16,7 +16,7 @@ import { storageThunks, storageActions, storageSelectors, StorageFilters } from 
 import folderService, { ICreatedFolder } from '../../services/folder.service';
 import { AppDispatch, RootState } from '../../store';
 
-import FileActivity from '../FileActivity/FileActivity';
+import DriveItemInfoMenu from '../DriveItemInfoMenu/DriveItemInfoMenu';
 import { FileViewMode } from '../../models/enums';
 import FilesList from './FilesList/FilesList';
 import FilesGrid from './FilesGrid/FilesGrid';
@@ -490,7 +490,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
           </div>
 
           {
-            infoItemId ? <FileActivity /> : null
+            infoItemId ? <DriveItemInfoMenu/> : null
           }
         </div>
       </Fragment>

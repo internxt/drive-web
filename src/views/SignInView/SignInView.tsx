@@ -24,17 +24,7 @@ interface SignInProps {
 
 export const texts = {
   label: 'INTERNXT',
-  sublabel: 'BE LIMITLESS',
-  reviews: [
-    {
-      name: 'Y Combinator Program',
-      review: '“Startups are most productive when they can spend most of their time building.Y Combinators goal is to create an environment where we can focus exclusively on building products and talking to users on how to improve..”'
-    },
-    {
-      name: '500 Startups',
-      review: '“500 Startups is one of the most active venture capital firms in the world and has commited over $454M in investment globally.500 Startups have chosen Internxt as one of the top SAAS startups worldwide.”'
-    }
-  ]
+  sublabel: 'BE LIMITLESS'
 };
 
 export default function SignInView(props: SignInProps): JSX.Element {
