@@ -406,7 +406,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
         <div className="flex flex-grow h-1 ">
           <div className="flex-grow flex flex-col">
             <div className="flex justify-between pb-4">
-              <div>
+              <div className='mt-1'>
                 <Breadcrumbs items={this.breadcrumbItems} />
               </div>
 

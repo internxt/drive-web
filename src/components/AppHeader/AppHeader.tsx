@@ -73,9 +73,12 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
 
     return (
       <div className="flex justify-between w-full py-3 mb-2">
-        <div className="flex">
-          <input type="text" placeholder="Search files" className="no-ring right-icon" />
-          <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-6 relative w-4 h-full" />
+        <div className='relative flex-1'>
+          <div className={'text-m-neutral-100 absolute flex items-center justify-center'}
+          >
+            <input type="text" placeholder="Search files" className="auth-input w-60 transform duration-200 mb-2.5 search-input" />
+            <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-6 relative w-4 mb-2" />
+          </div>
         </div>
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">
