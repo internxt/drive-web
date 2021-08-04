@@ -14,6 +14,7 @@ import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interf
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 import fileService from '../../../services/file.service';
 import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
+import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../lib/constants';
 import { uiActions } from '../ui';
 
 interface UploadItemsPayload {
