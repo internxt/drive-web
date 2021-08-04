@@ -15,9 +15,11 @@ import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, Fo
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
-import { ItemAction } from '../../../../models/enums';
+import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
+import { FileActionTypes, FileStatusTypes, ItemAction, Workspace } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
 import { setShowDeleteModal, setShowShareModal } from '../../../../store/slices/ui';
+import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileListItemProps {
   user: UserSettings | undefined;
@@ -29,6 +31,7 @@ interface FileListItemProps {
   namePath: FolderPath[];
   isItemSelected: (item: DriveItemData) => boolean;
   dispatch: AppDispatch
+  workspace: Workspace
 }
 
 interface FileListItemState {
@@ -84,18 +87,19 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const { item } = this.props;
     const { dirtyName, nameInputRef } = this.state;
     const data: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     try {
       if (item.name !== dirtyName) {
         if (item.isFolder) {
-          folderService.updateMetaData(item.id, data)
+          folderService.updateMetaData(item.id, data, isTeam)
             .then(() => {
               this.props.dispatch(
                 storageThunks.fetchFolderContentThunk()
               );
             });
         } else {
-          fileService.updateMetaData(item.fileId, data).then(() => {
+          fileService.updateMetaData(item.fileId, data, isTeam).then(() => {
             this.props.dispatch(
               storageThunks.fetchFolderContentThunk()
             );
@@ -184,8 +188,10 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
 
     e.stopPropagation();
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
-    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch));
+    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, isFolder: false }));
+    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));
   }
 
   onShareButtonClicked = (e: MouseEvent): void => {
@@ -330,6 +336,7 @@ export default connect(
       draggingTargetItemData: state.storage.draggingTargetItemData,
       namePath: state.storage.namePath,
       currentFolderId,
-      isItemSelected
+      isItemSelected,
+      workspace: state.team.workspace
     };
   })(FileListItem);

@@ -1,12 +1,15 @@
 import { RootState } from '../..';
 import { DriveFileData, DriveFolderData } from '../../../models/interfaces';
+import { selectorIsTeam } from '../team';
 
 const storageSelectors = {
   rootFolderId(state: RootState): number {
     const { team } = state.team;
     const { user } = state.user;
 
-    return (!!user?.teams ?
+    const isTeam: boolean = selectorIsTeam(state);
+
+    return (isTeam ?
       team?.root_folder_id :
       user?.root_folder_id) || 0;
   },
@@ -40,6 +43,10 @@ const storageSelectors = {
 
   isItemSelected(state: RootState): (item: DriveFileData | DriveFolderData) => boolean {
     return (item) => state.storage.selectedItems.includes(item);
+  },
+
+  isAllSelected(state: RootState): boolean {
+    return state.storage.selectedItems.length === state.storage.items.filter(item => !item.isFolder).length;
   },
 
   isFolderInNamePath(state: RootState): (folderId: number) => boolean {

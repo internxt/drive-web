@@ -8,9 +8,8 @@ export interface UsageResponse {
   total: number;
 }
 
-export async function fetchUsage(): Promise<UsageResponse> {
-  const user: UserSettings = localStorageService.getUser();
-  const response: Response = await fetch('/api/usage', { headers: getHeaders(true, false, user.teams) });
+export async function fetchUsage(isTeam: boolean): Promise<UsageResponse> {
+  const response: Response = await fetch('/api/usage', { headers: getHeaders(true, false, isTeam) });
 
   return response.json();
 }

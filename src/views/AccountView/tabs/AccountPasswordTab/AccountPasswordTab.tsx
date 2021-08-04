@@ -1,17 +1,21 @@
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 
 import { IFormValues } from '../../../../models/interfaces';
-import AuthInput from '../../../../components/Inputs/AuthInput';
+import BaseInput from '../../../../components/Inputs/BaseInput';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import { useState } from 'react';
 import { changePassword } from '../../../../services/auth.service';
 import notify from '../../../../components/Notifications';
+import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
 
 const AccountPasswordTab = (): JSX.Element => {
   const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const confirmPassword = useWatch({ control, name: 'confirmPassword', defaultValue: '' });
   const currentPassword = useWatch({ control, name: 'currentPassword', defaultValue: '' });
@@ -41,47 +45,52 @@ const AccountPasswordTab = (): JSX.Element => {
       <p className='account_config_description'>Remember that if you change your password, you will he signed out in all your devices. You will need these credentials for logging in again.</p>
 
       <form className='w-64 mt-5' onSubmit={handleSubmit(onSubmit)}>
-        <AuthInput
+        <BaseInput
           placeholder='Current password'
           label='currentPassword'
-          type={showPassword ? 'text' : 'password'}
-          icon={currentPassword
-            ? showPassword ? 'eyeSlashGray' : 'eyeGray'
-            : 'lockGray'
+          type={showCurrentPassword ? 'text' : 'password'}
+          icon={currentPassword ?
+            (showCurrentPassword ?
+              <UilEyeSlash className='w-4' onClick={() => setShowCurrentPassword(false)}/>
+              :
+              <UilEye className='w-4' onClick={() => setShowCurrentPassword(true)} />) :
+            <UilLock className='w-4'/>
           }
           register={register}
           required={true}
           minLength={1}
           error={errors.currentPassword}
-          onClick={() => setShowPassword(!showPassword)}
         />
-        <AuthInput
+        <BaseInput
           placeholder='New password'
           label='password'
-          type={showPassword ? 'text' : 'password'}
-          icon={password
-            ? showPassword ? 'eyeSlashGray' : 'eyeGray'
-            : 'lockGray'
+          type={showNewPassword ? 'text' : 'password'}
+          icon={password ?
+            (showNewPassword ?
+              <UilEyeSlash className='w-4' onClick={() => setShowNewPassword(false)}/>
+              :
+              <UilEye className='w-4' onClick={() => setShowNewPassword(true)}/>) :
+            <UilLock className='w-4'/>
           }
           register={register}
           required={true}
           minLength={1}
           error={errors.password}
-          onClick={() => setShowPassword(!showPassword)}
         />
-        <AuthInput
+        <BaseInput
           placeholder='Confirm new password'
           label='confirmPassword'
-          type={showPassword ? 'text' : 'password'}
-          icon={confirmPassword
-            ? showPassword ? 'eyeSlashGray' : 'eyeGray'
-            : 'lockGray'
+          type={showConfirmPassword ? 'text' : 'password'}
+          icon={confirmPassword ?
+            (showConfirmPassword ?
+              <UilEyeSlash className='w-4' onClick={() => setShowConfirmPassword(false)} />
+              : <UilEye className='w-4' onClick={() => setShowConfirmPassword(true)}/>) :
+            <UilLock className='w-4'/>
           }
           register={register}
           required={true}
           minLength={{ value: 1, message: 'Password must not be empty' }}
           error={errors.confirmPassword}
-          onClick={() => setShowPassword(!showPassword)}
         />
 
         {

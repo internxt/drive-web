@@ -14,12 +14,14 @@ import history from '../../../lib/history';
 
 import './ShareItemDialog.scss';
 import BaseDialog from '../BaseDialog/BaseDialog';
+import { Workspace } from '../../../models/enums';
 
 interface ShareItemDialogProps {
   item: any;
   open: boolean;
   user: UserSettings;
   onClose: () => void;
+  workspace: Workspace
 }
 
 interface ShareItemDialogState {
@@ -49,7 +51,7 @@ class ShareItemDialog extends React.Component<ShareItemDialogProps, ShareItemDia
   }
 
   generateShortLink = (url: string) => {
-    const isTeam: boolean = !!this.props.user.teams;
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     return new Promise((resolve, reject) => {
       fetch('/api/storage/shortLink', {
@@ -63,7 +65,7 @@ class ShareItemDialog extends React.Component<ShareItemDialogProps, ShareItemDia
   }
 
   generateShareLink = (fileId: string, views: number) => {
-    const isTeam: boolean = !!this.props.user.teams;
+    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     return new Promise((resolve, reject) => {
       fetch(`/api/storage/share/file/${fileId}`, {
@@ -179,5 +181,6 @@ class ShareItemDialog extends React.Component<ShareItemDialogProps, ShareItemDia
 
 export default connect(
   (state: RootState) => ({
-    user: state.user.user
+    user: state.user.user,
+    workspace: state.team.workspace
   }))(ShareItemDialog);

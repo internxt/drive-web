@@ -47,10 +47,10 @@ export const storageSlice = createSlice({
     setIsDraggingAnItem: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isDraggingAnItem = action.payload;
     },
-    setDraggingItemTargetData: (state: StorageState, action: PayloadAction<any>) => {
+    setDraggingItemTargetData: (state: StorageState, action: PayloadAction<DriveItemData>) => {
       state.draggingTargetItemData = action.payload;
     },
-    setItems: (state: StorageState, action: PayloadAction<any[]>) => {
+    setItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.items = action.payload;
     },
     selectItem: (state: StorageState, action: PayloadAction<DriveItemData>) => {
@@ -60,6 +60,9 @@ export const storageSlice = createSlice({
       const index: number = state.selectedItems.findIndex((item) => item.id === action.payload.id && item.isFolder === action.payload.isFolder);
 
       state.selectedItems.splice(index, 1);
+    },
+    selectAllItems: (state: StorageState) => {
+      state.selectedItems = state.items.filter(item => !item.isFolder);
     },
     clearSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
@@ -91,6 +94,9 @@ export const storageSlice = createSlice({
       if (!state.namePath.map(path => path.id).includes(action.payload.id)) {
         state.namePath.push(action.payload);
       }
+    },
+    pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
+      state.namePath = [action.payload];
     }
   },
   extraReducers
@@ -104,6 +110,7 @@ export const {
   selectItem,
   deselectItem,
   clearSelectedItems,
+  selectAllItems,
   setItemToShare,
   setItemsToDelete,
   setInfoItem,
@@ -111,7 +118,8 @@ export const {
   setViewMode,
   resetNamePath,
   pushNamePath,
-  popNamePathUpTo
+  popNamePathUpTo,
+  pathChangeWorkSpace
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

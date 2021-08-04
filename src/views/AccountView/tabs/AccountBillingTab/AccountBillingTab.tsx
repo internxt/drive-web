@@ -1,17 +1,20 @@
 import { useState, useEffect, Fragment } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
-
 import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts, payStripePlan } from '../../../../services/products.service';
 import notify from '../../../../components/Notifications';
 import analyticsService from '../../../../services/analytics.service';
 import SessionStorage from '../../../../lib/sessionStorage';
 import BillingPlanItem from './BillingPlanItem';
+import { generateMnemonic } from 'bip39';
+import { encryptPGP } from '../../../../lib/utilspgp';
+import { getHeaders } from '../../../../lib/auth';
 import './AccountBillingTab.scss';
 import { useAppDispatch } from '../../../../store/hooks';
 import { setUserPlan } from '../../../../store/slices/user';
 import { fetchUserPlan } from '../../../../services/user.service';
 import { useCallback } from 'react';
+import LoadingFileExplorer from '../../../../components/LoadingFileExplorer/LoadingFileExplorer';
+import { UilBuilding, UilHome } from '@iconscout/react-unicons';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -19,7 +22,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case isBusiness && currentOption === 'business':
         return (
           <div className='option border-b-2 border-blue-60' onClick={onClick}>
-            <Unicons.UilBuilding className='text-blue-60 active' />
+            <UilBuilding className='text-blue-60 active' />
             <span>{text}</span>
           </div>
         );
@@ -27,7 +30,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case isBusiness && currentOption === 'individual':
         return (
           <div className='option' onClick={onClick}>
-            <Unicons.UilBuilding />
+            <UilBuilding />
             <span>{text}</span>
           </div>
         );
@@ -35,7 +38,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case !isBusiness && currentOption === 'individual':
         return (
           <div className='option border-b-2 border-blue-60' onClick={onClick}>
-            <Unicons.UilHome className='text-blue-60 active' />
+            <UilHome className='text-blue-60 active' />
             <span>{text}</span>
           </div>
         );
@@ -43,7 +46,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case !isBusiness && currentOption === 'business':
         return (
           <div className='option' onClick={onClick}>
-            <Unicons.UilHome />
+            <UilHome />
             <span>{text}</span>
           </div>
         );
@@ -66,6 +69,7 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
   const [products, setProducts] = useState<IBillingPlan>({});
   const [teamsProducts, setTeamsProducts] = useState<IBillingPlan>({});
   const dispatch = useAppDispatch();
+  const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
     const getProducts = async () => {
@@ -122,7 +126,7 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
     setTeamsProducts(newTeamsProds);
   };
 
-  const handlePayment = async (selectedPlan: string, productId: string) => {
+  const handlePaymentIndividual = async (selectedPlan: string, productId: string) => {
     setIsPaying(true);
     const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
 
@@ -150,8 +154,7 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
   };
 
   // useCallBack for needed optimization of component, do not remove
-  const renderItem = useCallback((product, index) => {
-    console.log('product =>', product, index);
+  const renderItemIndividual = useCallback((product, index) => {
     return (
       <Fragment key={product.product.id}>
         <BillingPlanItem
@@ -160,15 +163,73 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
           selectedPlan={product.selected}
           currentPlan={product.currentPlan}
           buttontext='Subscribe'
-          characteristics={plansCharacteristics}
+          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
           handlePlanSelection={handlePlanSelection}
-          handlePayment={handlePayment}
+          handlePaymentIndividual={handlePaymentIndividual}
           isPaying={isPaying}
+          isBusiness={false}
+          handlePaymentTeams={handlePaymentTeams}
         />
         {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
       </Fragment>
     );
-  }, [products, teamsProducts]);
+  }, [products]);
+
+  const renderItemTeams = useCallback((product, index) => {
+    return (
+      <Fragment key={product.product.id}>
+        <BillingPlanItem
+          product={product.product}
+          plans={product.plans}
+          selectedPlan={product.selected}
+          currentPlan={product.currentPlan}
+          buttontext='Subscribe'
+          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+          handlePlanSelection={handlePlanSelection}
+          handlePaymentIndividual={handlePaymentIndividual}
+          isPaying={isPaying}
+          isBusiness={true}
+          handlePaymentTeams={handlePaymentTeams}
+        />
+        {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
+      </Fragment>
+    );
+  }, [teamsProducts]);
+
+  const handlePaymentTeams = async (selectedPlanToBuy, productId, totalTeamMembers) => {
+    setStatusMessage('Purchasing...');
+
+    const mnemonicTeam = generateMnemonic(256);
+    const encMnemonicTeam = await encryptPGP(mnemonicTeam);
+
+    const codMnemonicTeam = Buffer.from(encMnemonicTeam.data).toString('base64');
+    const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+    const body = {
+      plan: selectedPlanToBuy,
+      sessionType: 'team',
+      quantity: totalTeamMembers,
+      mnemonicTeam: codMnemonicTeam,
+      test: process.env.NODE_ENV !== 'production'
+    };
+
+    fetch('/api/stripe/teams/session', {
+      method: 'POST',
+      headers: getHeaders(true, false),
+      body: JSON.stringify(body)
+    }).then(result => result.json()).then(result => {
+      if (result.error) {
+        throw Error(result.error);
+      }
+
+      setStatusMessage('Redirecting to Stripe...');
+
+      stripe.redirectToCheckout({ sessionId: result.id }).catch(err => {
+      });
+    }).catch(err => {
+      console.error('Error starting Stripe session. Reason: %s', err);
+      setStatusMessage('Please contact us. Reason: ' + err.message);
+    });
+  };
 
   return (
     <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
@@ -185,11 +246,11 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
       <div className='flex h-88 border-t border-m-neutral-60'>
         {!isLoading ?
           currentOption === 'individual' ?
-            Object.values(products).map(renderItem)
+            Object.values(products).map(renderItemIndividual)
             :
-            Object.values(teamsProducts).map(renderItem)
+            Object.values(teamsProducts).map(renderItemTeams)
           :
-          <span>loading haha</span>
+          <LoadingFileExplorer />
         }
       </div>
     </div>

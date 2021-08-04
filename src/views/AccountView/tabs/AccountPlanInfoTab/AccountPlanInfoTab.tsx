@@ -8,18 +8,22 @@ import { selectUser, selectUserPlan } from '../../../../store/slices/user';
 import { UilUserCircle, UilEnvelope } from '@iconscout/react-unicons';
 import './AccountPlanInfoTab.scss';
 import { ListItem } from '../AccountBillingTab/BillingPlanItem';
+import { selectorIsTeam } from '../../../../store/slices/team';
 
 const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
   const [usage, setUsage] = useState(0);
-  const limit = parseInt(SessionStorage.get('limitStorage') || (1024 * 1024 * 1024 * 2).toString());
+  const limitPersonal = parseInt(SessionStorage.get('limitStorage') || (1024 * 1024 * 1024 * 2).toString());
+  const limitBusiness = parseInt(SessionStorage.get('teamsStorage') || (1024 * 1024 * 1024 * 2).toString());
   const user = useAppSelector(selectUser);
   const userPlan = useAppSelector(selectUserPlan);
-  const [isLoading, setIsLoading] = useState(true);
+  const isTeam = useAppSelector(selectorIsTeam);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getUsage = async () => {
+      setIsLoading(true);
       try {
-        const usage = await usageService.fetchUsage();
+        const usage = await usageService.fetchUsage(isTeam);
 
         setUsage(usage.total);
       } catch (err) {
@@ -31,7 +35,19 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
     };
 
     getUsage();
-  }, []);
+  }, [isTeam]);
+
+  const limitUser = () => {
+    let limit;
+
+    if (isTeam) {
+      limit = putLimitUser(limitBusiness);
+    } else {
+      limit = putLimitUser(limitPersonal);
+    }
+
+    return limit;
+  };
 
   return (
     <div className='flex justify-around w-full pt-8'>
@@ -61,39 +77,44 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
             <span className='label_small'>Email</span>
           </div>
           <span className='subtitle'>{user?.email}</span>
-
-          <h2 className='account_config_title mt-0.5 mb-1'>Usage</h2>
-
-          <div className='flex flex-col items-center justify-center w-56 h-14 bg-l-neutral-20 rounded-md px-6'>
-            {isLoading ?
-              <span>Loading usage...</span>
+          {
+            isTeam ?
+              <span className='account_config_description mt-4'>Business</span>
               :
-              <span className='account_config_description m-0'>{bytesToString(usage)} of {putLimitUser(limit)}</span>
-            }
-
-            <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-1'>
-              <div className='h-full bg-blue-70' style={{ width: (usage / limit) * 100 }} />
-            </div>
-          </div>
+              <span className='account_config_description mt-4'>{user?.name} {user?.lastname}</span>
+          }
         </div>
 
-        <div className='flex flex-col w-56 items-start justify-between'>
-          <h2 className='account_config_title'>Current plan</h2>
+        <h2 className='account_config_title mt-0.5 mb-1'>Usage</h2>
+        <div className='flex flex-col items-center justify-center w-56 h-14 bg-l-neutral-20 rounded-md px-6'>
+          {isLoading ?
+            <span>Loading usage...</span>
+            :
+            <span className='account_config_description m-0'>{bytesToString(usage)} of {putLimitUser(limitUser())}</span>
+          }
 
-          <div className='flex flex-col w-full'>
-            <span className='text-neutral-700 font-semibold text-sm'>{userPlan?.name}</span>
-
-            <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
-              <span className='font-bold'>{userPlan?.price}€</span>
-              <span className='text-xs mb-1 ml-2'>/{userPlan?.paymentInterval}</span>
-            </div>
-
-            {plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
-
-            <button className='primary w-full' onClick={() => console.log('clicked')}>
-              Change plan
-            </button>
+          <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-1'>
+            <div className='h-full bg-blue-70' style={{ width: (usage / limitUser()) * 100 }} />
           </div>
+        </div>
+      </div>
+
+      <div className='flex flex-col w-56 items-start justify-between'>
+        <h2 className='account_config_title'>Current plan</h2>
+
+        <div className='flex flex-col w-full'>
+          <span className='text-neutral-700 font-semibold text-sm'>{userPlan?.name}</span>
+
+          <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
+            <span className='font-bold'>{userPlan?.price}€</span>
+            <span className='text-xs mb-1 ml-2'>/{userPlan?.paymentInterval}</span>
+          </div>
+
+          {plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
+
+          <button className='primary w-full' onClick={() => console.log('clicked')}>
+            Change plan
+          </button>
         </div>
       </div>
     </div>

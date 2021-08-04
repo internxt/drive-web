@@ -4,10 +4,10 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { initializeUserThunk, setUser } from '../../store/slices/user';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
-import AuthInput from '../../components/Inputs/AuthInput';
+import BaseInput from '../../components/Inputs/BaseInput';
 import SideInfo from '../Authentication/SideInfo';
 import AuthButton from '../../components/Buttons/AuthButton';
-import { emailRegexPattern, validateEmail } from '../../services/validation.service';
+import { emailRegexPattern, twoFactorRegexPattern, validateEmail } from '../../services/validation.service';
 import { check2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from '../../services/localStorage.service';
 import analyticsService from '../../services/analytics.service';
@@ -15,7 +15,7 @@ import history from '../../lib/history';
 import bigLogo from '../../assets/icons/big-logo.svg';
 import { useSelector } from 'react-redux';
 import { IFormValues, UserSettings } from '../../models/interfaces';
-import * as Unicons from '@iconscout/react-unicons';
+import { UilLock, UilEyeSlash, UilEye, UilEnvelope } from '@iconscout/react-unicons';
 
 interface SignInProps {
   email?: string,
@@ -27,16 +27,12 @@ export const texts = {
   sublabel: 'BE LIMITLESS',
   reviews: [
     {
-      name: 'Mike Pence',
-      review: '“As an architect I must manage and segment large amounts of private and sensitive documentation in each prohect, Internxt Drive allows me to protect said documentation and access it from any device.”'
+      name: 'Y Combinator Program',
+      review: '“Startups are most productive when they can spend most of their time building.Y Combinators goal is to create an environment where we can focus exclusively on building products and talking to users on how to improve..”'
     },
     {
-      name: 'Aldimir Aleksandrov',
-      review: '“This shit fire 🔥🔥🔥.”'
-    },
-    {
-      name: 'Solomeo Paredes',
-      review: '“Designed to protect your privacy, available in all your devices. Save your most valuable files with ease and have them secured for the rest of your life.”'
+      name: '500 Startups',
+      review: '“500 Startups is one of the most active venture capital firms in the world and has commited over $454M in investment globally.500 Startups have chosen Internxt as one of the top SAAS startups worldwide.”'
     }
   ]
 };
@@ -56,6 +52,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
   const [loginError, setLoginError] = useState<string[]>([]);
   const [showErrors, setShowErrors] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showTwoFactorCode, setShowTwoFactorCode] = useState(false);
   const user: UserSettings = useSelector((state: RootState) => state.user.user);
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
@@ -137,11 +134,11 @@ export default function SignInView(props: SignInProps): JSX.Element {
           <img src={bigLogo} width='110' alt="" />
           <span className='text-sm text-neutral-500 mt-1.5 mb-6' />
 
-          <AuthInput
+          <BaseInput
             placeholder='Email'
             label='email'
             type='email'
-            icon={<Unicons.UilEnvelope />}
+            icon={<UilEnvelope className='w-4'/>}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -149,34 +146,41 @@ export default function SignInView(props: SignInProps): JSX.Element {
             error={errors.email}
           />
 
-          <AuthInput
+          <BaseInput
             placeholder='Password'
             label={'password'}
             type={showPassword ? 'text' : 'password'}
             icon={password ?
-              (showPassword ? <Unicons.UilEyeSlash /> : <Unicons.UilEye />) :
-              <Unicons.UilLock />
+              (showPassword ?
+                <UilEyeSlash className='w-4' onClick={() => setShowPassword(false)}/>
+                : <UilEye className='w-4' onClick={() => setShowPassword(true)}/>) :
+              <UilLock className='w-4'/>
             }
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Password must not be empty' }}
             error={errors.password}
-            onClick={handlePasswordInputClick}
           />
 
           {
             showTwoFactor && (
-              <AuthInput
+              <BaseInput
+                label='twoFactorCode'
                 placeholder='Two factor authentication code'
-                label={'twoFactorCode'}
-                type={'text'}
-                icon={<Unicons.UilLock />}
-                register={register}
-                pattern={/^\d{3}(\s+)?\d{3}$/}
-                required={true}
-                minLength={{ value: 1, message: 'Two factor code must not be empty' }}
+                type={showTwoFactorCode ? 'text' :'password'}
                 error={errors.twoFactorCode}
-              />
+                register={register}
+                required={true}
+                icon={twoFactorCode ?
+                  (showTwoFactorCode ?
+                    <UilEyeSlash className='w-4' onClick={() => setShowTwoFactorCode(false)}/>
+                    :
+                    <UilEye className='w-4' onClick={() => setShowTwoFactorCode(true)}/>) :
+                  <UilLock className='w-4'/>
+                }
+                minLength={1}
+                pattern={twoFactorRegexPattern} />
+
             )
           }
 

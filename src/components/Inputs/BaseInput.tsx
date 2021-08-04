@@ -2,7 +2,7 @@ import React from 'react';
 import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-form';
 import { IFormValues } from '../../models/interfaces';
 
-import './AuthInput.scss';
+import './BaseInput.scss';
 
 interface InputProps {
   label: Path<IFormValues>,
@@ -27,11 +27,11 @@ const InputPrimary = ({ label, type, register, required, placeholder, pattern, i
         maxLength,
         pattern
       })}
-      className={`auth-input w-full transform duration-200 mb-2.5 ${error ? 'error' : ''}`}
+      className={`auth-input w-full transform duration-200 mb-2.5 ${error}`}
     />
 
     <div className={`text-m-neutral-100 absolute ${label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-4 cursor-pointer' : 'right-3 bottom-4'} flex items-center justify-center`}
-      onClick={() => label === 'password' || label === 'confirmPassword' ? onClick && onClick() : null}
+      onClick={() => label === 'password' || label === 'confirmPassword' || label === 'currentPassword' ? onClick && onClick() && onClick() : null}
     >
       {icon || null}
     </div>

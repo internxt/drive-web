@@ -56,7 +56,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
   }, []);
 
   const fetchUsage = () => {
-    return usageService.fetchUsage()
+    return usageService.fetchUsage(isTeam)
       .then((res: UsageResponse) => {
         setBarUsage(res.total);
       }).catch(() => null);
