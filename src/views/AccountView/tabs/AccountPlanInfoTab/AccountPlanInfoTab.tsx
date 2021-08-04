@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { useState } from 'react';
 import SessionStorage from '../../../../lib/sessionStorage';
 import { bytesToString } from '../../../../services/size.service';
@@ -102,8 +102,14 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
             <span className='text-neutral-700 font-semibold text-sm'>{userPlan?.name}</span>
 
             <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
-              <span className='font-bold'>{userPlan?.price}€</span>
-              <span className='text-xs mb-1 ml-2'>/{userPlan?.paymentInterval}</span>
+              {userPlan ?
+                <Fragment>
+                  <span className='font-bold'>{userPlan?.price}€</span>
+                  <span className='text-xs mb-1 ml-2'>/{userPlan?.paymentInterval}</span>
+                </Fragment>
+                :
+                <span className='font-bold'>Loading plan...</span>
+              }
             </div>
 
             {plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
