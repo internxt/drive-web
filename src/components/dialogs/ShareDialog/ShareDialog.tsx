@@ -49,9 +49,18 @@ const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
       }
 
       const { bucket, mnemonic, userId, email } = xUser;
-      const { index } = await new Network(email, userId, mnemonic).getFileInfo(bucket, fileId);
+      const network = new Network(email, userId, mnemonic);
+      const { index } = await network.getFileInfo(bucket, fileId);
+      const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
       const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
-      const link = await generateShareLink(fileId, views, false, fileEncryptionKey.toString('hex'), user?.teams);
+
+      const link = await generateShareLink(fileId, {
+        bucket,
+        fileToken,
+        isFolder: false,
+        views,
+        encryptionKey: fileEncryptionKey.toString('hex')
+      });
 
       window.analytics.track('file-share');
       setLinkToCopy(link);
