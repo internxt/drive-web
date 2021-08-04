@@ -32,7 +32,7 @@ export async function getAllItems(dataTransfer) {
     root
   };
 
-  console.log(items);
+  // console.log(items);
   return items;// entries;
 }
 

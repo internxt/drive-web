@@ -14,7 +14,6 @@ import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interf
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 import fileService from '../../../services/file.service';
 import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
-import { getAllItems } from '../../../services/dragAndDrop.service';
 
 interface UploadItemsPayload {
   files: File[];

@@ -32,6 +32,8 @@ import deviceService from '../../services/device.service';
 import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
 import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
 
+import { getAllItems } from '../../services/dragAndDrop.service';
+
 interface FileExplorerProps {
   title: JSX.Element | string;
   isLoading: boolean;
