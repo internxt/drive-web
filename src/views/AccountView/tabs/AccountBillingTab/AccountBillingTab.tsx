@@ -1,6 +1,4 @@
 import { useState, useEffect, Fragment } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
-
 import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts, payStripePlan } from '../../../../services/products.service';
 import notify from '../../../../components/Notifications';
@@ -11,7 +9,12 @@ import { generateMnemonic } from 'bip39';
 import { encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
 import './AccountBillingTab.scss';
+import { useAppDispatch } from '../../../../store/hooks';
+import { setUserPlan } from '../../../../store/slices/user';
+import { fetchUserPlan } from '../../../../services/user.service';
+import { useCallback } from 'react';
 import LoadingFileExplorer from '../../../../components/LoadingFileExplorer/LoadingFileExplorer';
+import { UilBuilding, UilHome } from '@iconscout/react-unicons';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -19,7 +22,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case isBusiness && currentOption === 'business':
         return (
           <div className='option border-b-2 border-blue-60' onClick={onClick}>
-            <Unicons.UilBuilding className='text-blue-60 active' />
+            <UilBuilding className='text-blue-60 active' />
             <span>{text}</span>
           </div>
         );
@@ -27,7 +30,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case isBusiness && currentOption === 'individual':
         return (
           <div className='option' onClick={onClick}>
-            <Unicons.UilBuilding />
+            <UilBuilding />
             <span>{text}</span>
           </div>
         );
@@ -35,7 +38,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case !isBusiness && currentOption === 'individual':
         return (
           <div className='option border-b-2 border-blue-60' onClick={onClick}>
-            <Unicons.UilHome className='text-blue-60 active' />
+            <UilHome className='text-blue-60 active' />
             <span>{text}</span>
           </div>
         );
@@ -43,7 +46,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
       case !isBusiness && currentOption === 'business':
         return (
           <div className='option' onClick={onClick}>
-            <Unicons.UilHome />
+            <UilHome />
             <span>{text}</span>
           </div>
         );
@@ -59,25 +62,28 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
 
 const objectMap = (obj: Record<any, any>, fn): Record<any, any> => Object.fromEntries(Object.entries(obj).map(([key, value], i) => [key, fn(value, key, i)]));
 
-const AccountBillingTab = (): JSX.Element => {
+const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
   const [currentOption, setCurrentOption] = useState<'individual' | 'business'>('individual');
   const [isLoading, setIsLoading] = useState(true);
   const [isPaying, setIsPaying] = useState(false);
   const [products, setProducts] = useState<IBillingPlan>({});
   const [teamsProducts, setTeamsProducts] = useState<IBillingPlan>({});
+  const dispatch = useAppDispatch();
   const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
     const getProducts = async () => {
       try {
-        //const customer = await loadAllStripeCustomers('');
+        const userPlan = await fetchUserPlan();
         const products = await loadAvailableProducts();
         const teamsProducts = await loadAvailableTeamsProducts();
 
+        dispatch(setUserPlan(userPlan));
         const productsWithPlans = products.map(async product => ({
           product: product,
           plans: await loadAvailablePlans(product) || [],
-          selected: ''
+          selected: '',
+          currentPlan: userPlan.planId || null
         }));
         const teamsProductsWithPlans = teamsProducts.map(async product => ({
           product: product,
@@ -92,6 +98,7 @@ const AccountBillingTab = (): JSX.Element => {
 
         setProducts(keyedProducts);
         setTeamsProducts(keyedTeamsProducts);
+        console.log('first =>', keyedTeamsProducts);
       } catch (err) {
         notify(err.message, 'error');
       } finally {
@@ -103,12 +110,15 @@ const AccountBillingTab = (): JSX.Element => {
   }, []);
 
   const handlePlanSelection = (planId: string, productId: string) => {
+    console.log('before before =>', teamsProducts);
     const newProds = objectMap({ ...products }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
       return {
         ...value,
         selected: productId === value.product.id ? planId : ''
       };
     });
+
+    console.log('before =>', teamsProducts);
     const newTeamsProds = objectMap({ ...teamsProducts }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
       return {
         ...value,
@@ -116,6 +126,7 @@ const AccountBillingTab = (): JSX.Element => {
       };
     });
 
+    console.log('after =>', newTeamsProds);
     setProducts(newProds);
     setTeamsProducts(newTeamsProds);
   };
@@ -182,6 +193,48 @@ const AccountBillingTab = (): JSX.Element => {
     });
   };
 
+  const renderItemIndividual = (product, index) => {
+    return (
+      <Fragment key={product.product.id}>
+        <BillingPlanItem
+          product={product.product}
+          plans={product.plans}
+          selectedPlan={product.selected}
+          currentPlan={product.currentPlan}
+          buttontext='Subscribe'
+          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+          handlePlanSelection={handlePlanSelection}
+          handlePaymentIndividual={handlePaymentIndividual}
+          isPaying={isPaying}
+          isBusiness={false}
+          handlePaymentTeams={handlePaymentTeams}
+        />
+        {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
+      </Fragment>
+    );
+  };
+
+  const renderItemTeams = (product, index) => {
+    return (
+      <Fragment key={product.product.id}>
+        <BillingPlanItem
+          product={product.product}
+          plans={product.plans}
+          selectedPlan={product.selected}
+          currentPlan={product.currentPlan}
+          buttontext='Subscribe'
+          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+          handlePlanSelection={handlePlanSelection}
+          handlePaymentIndividual={handlePaymentIndividual}
+          isPaying={isPaying}
+          isBusiness={true}
+          handlePaymentTeams={handlePaymentTeams}
+        />
+        {index < Object.keys(teamsProducts).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
+      </Fragment>
+    );
+  };
+
   return (
     <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
       <div className='flex justify-evenly items-center h-11'>
@@ -197,43 +250,11 @@ const AccountBillingTab = (): JSX.Element => {
       <div className='flex h-88 border-t border-m-neutral-60'>
         {!isLoading ?
           currentOption === 'individual' ?
-            Object.values(products).map((product, index) => (
-              <Fragment key={product.product.id}>
-                <BillingPlanItem
-                  product={product.product}
-                  plans={product.plans}
-                  selectedPlan={product.selected}
-                  buttontext='Subscribe'
-                  characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-                  handlePlanSelection={handlePlanSelection}
-                  handlePaymentIndividual={handlePaymentIndividual}
-                  isPaying={isPaying}
-                  isBusiness={false}
-                  handlePaymentTeams = {handlePaymentTeams}
-                />
-                {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
-              </Fragment>
-            ))
+            Object.values(products).map(renderItemIndividual)
             :
-            Object.values(teamsProducts).map((product, index) => (
-              <Fragment key={product.product.id}>
-                <BillingPlanItem
-                  product={product.product}
-                  plans={product.plans}
-                  selectedPlan={product.selected}
-                  buttontext='Subscribe'
-                  characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-                  handlePlanSelection={handlePlanSelection}
-                  handlePaymentIndividual={handlePaymentIndividual}
-                  isPaying={isPaying}
-                  isBusiness={true}
-                  handlePaymentTeams={handlePaymentTeams}
-                />
-                {index < Object.keys(teamsProducts).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
-              </Fragment>
-            ))
+            Object.values(teamsProducts).map(renderItemTeams)
           :
-          <LoadingFileExplorer/>
+          <LoadingFileExplorer />
         }
       </div>
     </div>

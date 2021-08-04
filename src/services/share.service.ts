@@ -18,6 +18,5 @@ export const generateShareLink = async (fileId: string, views: number, isFolder:
   const data = await response.json();
   const link = `${window.location.origin}/${data.token}`;
 
-  console.log('newlink', link);
   return link;
 };

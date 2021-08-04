@@ -120,7 +120,8 @@ export type IBillingPlan = {
   [id: string]: {
     product: IStripeProduct,
     plans: IStripePlan[],
-    selected: string
+    selected: string,
+    currentPlan: string
   }
 }
 
@@ -181,6 +182,14 @@ enum StripePlanNames {
   'Montlhy',
   'Semiannually',
   'Annually'
+}
+
+export type IUserPlan = {
+  name: StripeProductNames,
+  paymentInterval: StripePlanNames,
+  planId: string,
+  price: string,
+  productId: string
 }
 
 export interface IActionUpdateFileLoggerEntry {
