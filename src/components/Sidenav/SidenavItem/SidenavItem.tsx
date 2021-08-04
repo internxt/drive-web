@@ -27,7 +27,7 @@ const SidenavItem = ({ label, tooltipLabel, to, icon, isOpen, onClick }: Sidenav
   onClick = onClick || (() => { });
 
   return (
-    <div className={`transform duration-300 ${isOpen ? '' : 'collapsed'} side-navigator-item`}
+    <div className={`transform duration-200 ${isOpen ? '' : 'collapsed'} side-navigator-item`}
       onClick={onClick}
     >
       {

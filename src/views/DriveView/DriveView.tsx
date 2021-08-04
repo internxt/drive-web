@@ -6,7 +6,7 @@ import Breadcrumbs, { BreadcrumbItemData } from '../../components/Breadcrumbs/Br
 import FileExplorer from '../../components/FileExplorer/FileExplorer';
 import { DriveItemData, FolderPath } from '../../models/interfaces';
 import { AppDispatch, RootState } from '../../store';
-import { storageThunks } from '../../store/slices/storage';
+import { storageSelectors, storageThunks } from '../../store/slices/storage';
 
 interface DriveViewProps {
   namePath: FolderPath[];
@@ -73,8 +73,12 @@ class DriveView extends Component<DriveViewProps, {}> {
   }
 }
 
-export default connect((state: RootState) => ({
-  namePath: state.storage.namePath,
-  isLoading: state.storage.isLoading,
-  items: state.storage.items
-}))(DriveView);
+export default connect((state: RootState) => {
+  const filteredItems = storageSelectors.filteredItems(state)(state.storage.items);
+
+  return {
+    namePath: state.storage.namePath,
+    isLoading: state.storage.isLoading,
+    items: filteredItems
+  };
+})(DriveView);

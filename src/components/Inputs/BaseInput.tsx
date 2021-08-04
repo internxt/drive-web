@@ -27,7 +27,7 @@ const InputPrimary = ({ label, type, register, required, placeholder, pattern, i
         maxLength,
         pattern
       })}
-      className={`auth-input w-full transform duration-200 mb-2.5 ${error}`}
+      className={`py-2 w-full transform duration-200 mb-2.5 ${error}`}
     />
 
     <div className={`text-m-neutral-100 absolute ${label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-4 cursor-pointer' : 'right-3 bottom-4'} flex items-center justify-center`}

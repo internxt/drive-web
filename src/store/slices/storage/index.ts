@@ -5,12 +5,27 @@ import { DriveFileData, DriveFolderData, DriveItemData, FolderPath } from '../..
 import selectors from './storageSelectors';
 import thunks, { extraReducers } from './storageThunks';
 
+export interface StorageFilters {
+  text: string;
+}
+
+export interface StorageSetFiltersPayload {
+  text?: string;
+}
+
+function filtersFactory(): StorageFilters {
+  return {
+    text: ''
+  };
+}
+
 export interface StorageState {
   isLoading: boolean;
   isDeletingItems: boolean;
   items: DriveItemData[];
   isLoadingRecents: boolean;
   recents: DriveItemData[];
+  filters: StorageFilters;
   isDraggingAnItem: boolean;
   draggingTargetItemData: DriveItemData | null;
   selectedItems: DriveItemData[];
@@ -19,8 +34,8 @@ export interface StorageState {
   infoItemId: number;
   viewMode: FileViewMode;
   namePath: FolderPath[];
-  sortFunction: ((a: DriveFileData | DriveFolderData, b: DriveFileData | DriveFolderData) => number) | null;
-  searchFunction: ((item: DriveFileData | DriveFolderData) => boolean) | null;
+  sortFunction: ((a: DriveItemData, b: DriveItemData) => number) | null;
+  searchFunction: ((item: DriveItemData) => boolean) | null;
 }
 
 const initialState: StorageState = {
@@ -29,6 +44,7 @@ const initialState: StorageState = {
   items: [],
   isLoadingRecents: false,
   recents: [],
+  filters: filtersFactory(),
   isDraggingAnItem: false,
   draggingTargetItemData: null,
   selectedItems: [],
@@ -62,6 +78,12 @@ export const storageSlice = createSlice({
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveFileData[]>) => {
       state.recents = action.payload;
+    },
+    setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
+      Object.assign(state.filters, action.payload);
+    },
+    resetFilters: (state: StorageState) => {
+      state.filters = filtersFactory();
     },
     selectItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       const itemsToSelect = action.payload
@@ -123,6 +145,8 @@ export const {
   setDraggingItemTargetData,
   setItems,
   setRecents,
+  setFilters,
+  resetFilters,
   selectItems,
   deselectItems,
   clearSelectedItems,

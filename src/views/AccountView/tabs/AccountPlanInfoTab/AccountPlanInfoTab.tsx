@@ -58,7 +58,11 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
 
           <div className='flex flex-col justify-center items-center h-20 border-t border-white'>
             <span className='label_small'>Name</span>
-            <span className='subtitle m-0'>{user?.name} {user?.lastname}</span>
+            {isTeam ?
+              <span className='subtitle m-0'>Business</span>
+              :
+              <span className='subtitle m-0'>{user?.name} {user?.lastname}</span>
+            }
           </div>
         </div>
 
