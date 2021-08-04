@@ -21,6 +21,9 @@
     "jsx": "react-jsx",
     "noImplicitAny": false
   },
+  "types": [
+    "filesystem"
+  ],
   "include": [
     "src"
   ]

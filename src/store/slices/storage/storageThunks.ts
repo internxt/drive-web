@@ -13,6 +13,8 @@ import { selectorIsTeam } from '../team';
 import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interfaces';
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 import fileService from '../../../services/file.service';
+import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
+import { getAllItems } from '../../../services/dragAndDrop.service';
 
 interface UploadItemsPayload {
   files: File[];
@@ -50,6 +52,31 @@ export const fetchRecentsThunk = createAsyncThunk(
     dispatch(storageActions.clearSelectedItems());
     dispatch(storageActions.setRecents(recents));
   });
+  interface CreateFolderTreeStructurePayload {
+    root: IRoot,
+    currentFolderId: number
+  }
+interface IRoot extends DirectoryEntry {
+  childrenFiles: File[],
+  childrenFolders: IRoot[]
+}
+
+export const createFolderTreeStructureThunk = createAsyncThunk(
+  'storage/createFolderStructure',
+  async ({ root, currentFolderId }: CreateFolderTreeStructurePayload, { getState, dispatch }: any) => {
+    const isTeam: boolean = selectorIsTeam(getState());
+
+    // Uploads the root folder
+    folderService.createFolder(isTeam, currentFolderId, root.name).then((folderUploaded) => {
+      // Once the root folder is uploaded it uploads the file children
+      dispatch(uploadItemsThunk({ files: root.childrenFiles, parentFolderId: folderUploaded.id, folderPath: root.fullPath }));
+      // Once the root folder is uploaded upload folder children
+      for (const subTreeRoot of root.childrenFolders) {
+        dispatch(createFolderTreeStructureThunk({ root: subTreeRoot, currentFolderId: folderUploaded.id }));
+      }
+    });
+  }
+);
 
 export const uploadItemsThunk = createAsyncThunk(
   'storage/uploadItems',
@@ -240,7 +267,7 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
     .addCase(uploadItemsThunk.pending, (state, action) => { })
     .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
     .addCase(uploadItemsThunk.rejected, (state, action: any) => {
-      console.log('uploadItemsThunk rejected: ', action);
+      // console.log('uploadItemsThunk rejected: ', action);
       // if (action.error.message === 'There were some errors during upload') {
       //   uploadErrors.forEach(uploadError => {
       //     toast.warn(uploadError.message);
@@ -254,6 +281,13 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
     .addCase(downloadItemsThunk.pending, (state, action) => { })
     .addCase(downloadItemsThunk.fulfilled, (state, action) => { })
     .addCase(downloadItemsThunk.rejected, (state, action) => { });
+
+  builder
+    .addCase(createFolderTreeStructureThunk.pending, (state, action) => { })
+    .addCase(createFolderTreeStructureThunk.fulfilled, (state, action) => { })
+    .addCase(createFolderTreeStructureThunk.rejected, (state, action) => {
+      // console.log('TREE STRUCTURE REJECTED: ', action);
+    });
 
   builder
     .addCase(fetchFolderContentThunk.pending, (state, action) => {
@@ -303,7 +337,8 @@ const thunks = {
   fetchFolderContentThunk,
   fetchRecentsThunk,
   deleteItemsThunk,
-  goToFolderThunk
+  goToFolderThunk,
+  createFolderTreeStructureThunk
 };
 
 export default thunks;
