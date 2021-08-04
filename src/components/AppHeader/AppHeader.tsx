@@ -1,7 +1,7 @@
 import React, { Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { TeamsSettings, UserSettings } from '../../models/interfaces';
-import { RootState } from '../../store';
+import { AppDispatch, RootState } from '../../store';
 import history from '../../lib/history';
 import * as Unicons from '@iconscout/react-unicons';
 
@@ -9,17 +9,20 @@ import './AppHeader.scss';
 import { Dropdown } from 'react-bootstrap';
 import authService from '../../services/auth.service';
 import { Workspace } from '../../models/enums';
-import { handleChangeWorkspaceThunk } from '../../store/slices/user';
+import { handleChangeWorkspaceThunk, userActions } from '../../store/slices/user';
 import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
 import localStorageService from '../../services/localStorage.service';
 import { filesStateSlice } from '../../store/slices/files';
 import { setWorkspace } from '../../store/slices/team';
-import { setShowInviteMemberModal } from '../../store/slices/ui';
+import { uiActions } from '../../store/slices/ui';
+import { storageActions, StorageFilters } from '../../store/slices/storage';
 
 interface AppHeaderProps {
-  user: UserSettings | undefined
-  team: TeamsSettings | undefined
-  workspace: Workspace
+  user: UserSettings | undefined;
+  team: TeamsSettings | undefined;
+  workspace: Workspace;
+  storageFilters: StorageFilters;
+  dispatch: AppDispatch;
 }
 
 interface AppHeaderState { }
@@ -35,7 +38,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   onSearchButtonClicked(): void {
-    console.log('search submitted!');
+    // TODO: do search
   }
 
   onAccountButtonClicked = (): void => {
@@ -59,25 +62,38 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   onLogoutButtonClicked = (): void => {
     this.props.dispatch(filesStateSlice.actions.clearFileLoggerStatus());
     this.props.dispatch(setWorkspace(Workspace.Personal));
+    this.props.dispatch(userActions.clearUserPlan());
     authService.logOut();
   }
 
   onInviteMemberClick = (): void => {
-    this.props.dispatch(setShowInviteMemberModal(true));
+    this.props.dispatch(uiActions.setIsInviteMemberDialogOpen(true));
+  }
+
+  onSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    this.props.dispatch(storageActions.setFilters({
+      text: e.target.value
+    }));
   }
 
   render(): ReactNode {
-    const { user, workspace } = this.props;
+    const { user, workspace, storageFilters } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
     const team = localStorageService.exists('xTeam');
 
     return (
-      <div className="flex justify-between w-full py-3 mb-2">
+      <div className="flex justify-between w-full py-3 mb-3">
         <div className='relative flex-1'>
           <div className={'text-m-neutral-100 absolute flex items-center justify-center'}
           >
-            <input type="text" placeholder="Search files" className="auth-input w-72 transform duration-200 mb-2.5 search-input" />
-            <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-6 relative w-4 mb-2" />
+            <input
+              value={storageFilters.text}
+              onChange={this.onSearchInputChange}
+              type="text"
+              placeholder="Search files"
+              className="w-72 transform duration-200 no-ring"
+            />
+            <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-7 relative w-5" />
           </div>
         </div>
         <Dropdown>
@@ -113,35 +129,35 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
             </Dropdown.Item>
             {
               team &&
-                (<Dropdown.Item
-                  id="business"
-                  onClick={this.onBusinesButtonClicked}
-                >
-                  {workspace === Workspace.Personal ?
-                    <Fragment>
-                      <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
-                      <span>Business</span>
-                    </Fragment>
+              (<Dropdown.Item
+                id="business"
+                onClick={this.onBusinesButtonClicked}
+              >
+                {workspace === Workspace.Personal ?
+                  <Fragment>
+                    <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
+                    <span>Business</span>
+                  </Fragment>
 
-                    :
-                    <Fragment>
-                      <Unicons.UilUser className="text-blue-60 h-5 mr-1" />
-                      <span>Personal</span>
-                    </Fragment>
+                  :
+                  <Fragment>
+                    <Unicons.UilUser className="text-blue-60 h-5 mr-1" />
+                    <span>Personal</span>
+                  </Fragment>
 
-                  }
-                </Dropdown.Item>)
+                }
+              </Dropdown.Item>)
             }
             {this.props.team?.isAdmin && workspace === Workspace.Business &&
-            <Fragment>
-              <hr className="text-l-neutral-30 my-1.5"></hr>
-              <Dropdown.Item
-                onClick={this.onInviteMemberClick}
-              >
-                <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
-                <span>Invite members</span>
-              </Dropdown.Item>
-            </Fragment>
+              <Fragment>
+                <hr className="text-l-neutral-30 my-1.5"></hr>
+                <Dropdown.Item
+                  onClick={this.onInviteMemberClick}
+                >
+                  <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
+                  <span>Invite members</span>
+                </Dropdown.Item>
+              </Fragment>
             }
             <hr className="text-l-neutral-30 my-1.5"></hr>
             <Dropdown.Item
@@ -162,5 +178,6 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
 export default connect((state: RootState) => ({
   user: state.user.user,
   team: state.team.team,
-  workspace: state.team.workspace
+  workspace: state.team.workspace,
+  storageFilters: state.storage.filters
 }))(AppHeader);

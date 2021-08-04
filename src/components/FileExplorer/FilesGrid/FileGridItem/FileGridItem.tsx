@@ -18,7 +18,7 @@ import queueFileLogger from '../../../../services/queueFileLogger';
 
 import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
-import { setShowDeleteModal } from '../../../../store/slices/ui';
+import { uiActions } from '../../../../store/slices/ui';
 import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileGridItemProps {
@@ -179,7 +179,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const { dispatch, item } = this.props;
 
     dispatch(storageActions.setItemToShare(item.id));
-    dispatch(setShowShareModal(true));
+    dispatch(uiActions.setIsShareItemDialogOpen(true));
   }
 
   onInfoButtonClicked = (): void => {
@@ -190,7 +190,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const { dispatch, item } = this.props;
 
     dispatch(storageActions.setItemsToDelete([item]));
-    dispatch(setShowDeleteModal(true));
+    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   }
 
   onItemClicked = (): void => {
@@ -198,8 +198,8 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     if (!item.isFolder) {
       isItemSelected(item) ?
-        dispatch(storageActions.deselectItem(item)) :
-        dispatch(storageActions.selectItem(item));
+        dispatch(storageActions.deselectItems([item])) :
+        dispatch(storageActions.selectItems([item]));
     }
   }
 
@@ -249,7 +249,6 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
     const ItemIconComponent = iconService.getItemIcon(item.type);
 
-    console.log('FileGridItem render - isDraggingAnItem, draggingTargetItemData: ', isDraggingAnItem, draggingTargetItemData);
     return (
       <div
         ref={itemRef}

@@ -10,11 +10,11 @@ import { encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
 import './AccountBillingTab.scss';
 import { useAppDispatch } from '../../../../store/hooks';
-import { setUserPlan } from '../../../../store/slices/user';
+import { setUserPlan, userActions } from '../../../../store/slices/user';
 import { fetchUserPlan } from '../../../../services/user.service';
-import { useCallback } from 'react';
 import LoadingFileExplorer from '../../../../components/LoadingFileExplorer/LoadingFileExplorer';
 import { UilBuilding, UilHome } from '@iconscout/react-unicons';
+import BillingCardSkeletton from '../../../../components/skinSkeleton/BillingCardSkeletton';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -74,16 +74,23 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
   useEffect(() => {
     const getProducts = async () => {
       try {
-        const userPlan = await fetchUserPlan();
+        const userInfo = await fetchUserPlan();
+
+        const userPlan = userInfo === null ? null : userInfo;
+
         const products = await loadAvailableProducts();
         const teamsProducts = await loadAvailableTeamsProducts();
 
-        dispatch(setUserPlan(userPlan));
+        if (userPlan) {
+          dispatch(setUserPlan(userPlan));
+        }
+        dispatch(userActions.setIsLoadingStripePlan(false));
+
         const productsWithPlans = products.map(async product => ({
           product: product,
           plans: await loadAvailablePlans(product) || [],
           selected: '',
-          currentPlan: userPlan.planId || null
+          currentPlan: userPlan ? userPlan.planId : null
         }));
         const teamsProductsWithPlans = teamsProducts.map(async product => ({
           product: product,
@@ -98,9 +105,8 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
 
         setProducts(keyedProducts);
         setTeamsProducts(keyedTeamsProducts);
-        console.log('first =>', keyedTeamsProducts);
       } catch (err) {
-        notify(err.message, 'error');
+        //notify(err.message, 'error');
       } finally {
         setIsLoading(false);
       }
@@ -110,7 +116,6 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
   }, []);
 
   const handlePlanSelection = (planId: string, productId: string) => {
-    console.log('before before =>', teamsProducts);
     const newProds = objectMap({ ...products }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
       return {
         ...value,
@@ -118,7 +123,6 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
       };
     });
 
-    console.log('before =>', teamsProducts);
     const newTeamsProds = objectMap({ ...teamsProducts }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
       return {
         ...value,
@@ -126,7 +130,6 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
       };
     });
 
-    console.log('after =>', newTeamsProds);
     setProducts(newProds);
     setTeamsProducts(newTeamsProds);
   };
@@ -247,14 +250,14 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
         }} />
       </div>
 
-      <div className='flex h-88 border-t border-m-neutral-60'>
+      <div className='flex h-88 border-t border-m-neutral-60 justify-evenly'>
         {!isLoading ?
           currentOption === 'individual' ?
             Object.values(products).map(renderItemIndividual)
             :
             Object.values(teamsProducts).map(renderItemTeams)
           :
-          <LoadingFileExplorer />
+          Array(3).fill(1).map(_ => <BillingCardSkeletton />)
         }
       </div>
     </div>

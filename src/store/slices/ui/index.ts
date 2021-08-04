@@ -1,24 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../..';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
-  showCreateFolderModal: boolean;
-  showDeleteModal: boolean;
+  isCreateFolderDialogOpen: boolean;
+  isDeleteItemsDialogOpen: boolean;
   showFileLogger: boolean;
-  showReachedLimitModal: boolean;
-  showShareModal: boolean;
-  showInviteMemberModal: boolean;
+  isReachedPlanLimitDialogOpen: boolean;
+  isShareItemDialogOpen: boolean;
+  isInviteMemberDialogOpen: boolean;
 }
 
 const initialState: UISliceState = {
   isSidenavCollapsed: false,
-  showCreateFolderModal: false,
-  showDeleteModal: false,
+  isCreateFolderDialogOpen: false,
+  isDeleteItemsDialogOpen: false,
   showFileLogger: false,
-  showReachedLimitModal: false,
-  showShareModal: false,
-  showInviteMemberModal: false
+  isReachedPlanLimitDialogOpen: false,
+  isShareItemDialogOpen: false,
+  isInviteMemberDialogOpen: false
 };
 
 export const uiSlice = createSlice({
@@ -28,40 +27,36 @@ export const uiSlice = createSlice({
     setIsSidenavCollapsed: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isSidenavCollapsed = action.payload;
     },
-    setShowCreateFolderModal: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.showCreateFolderModal = action.payload;
+    setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isCreateFolderDialogOpen = action.payload;
     },
-    setShowDeleteModal: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.showDeleteModal = action.payload;
+    setIsDeleteItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isDeleteItemsDialogOpen = action.payload;
     },
     setShowFileLogger: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.showFileLogger = action.payload;
     },
-    setShowReachedPlanLimit: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.showReachedLimitModal = action.payload;
+    setIsReachedPlanLimitDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isReachedPlanLimitDialogOpen = action.payload;
     },
-    setShowShareModal: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.showShareModal = action.payload;
+    setIsShareItemDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isShareItemDialogOpen = action.payload;
     },
-    setShowInviteMemberModal: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.showInviteMemberModal = action.payload;
+    setIsInviteMemberDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isInviteMemberDialogOpen = action.payload;
     }
   }
 });
 
 export const {
-  setShowCreateFolderModal,
-  setShowDeleteModal,
+  setIsCreateFolderDialogOpen,
+  setIsDeleteItemsDialogOpen,
   setShowFileLogger,
-  setShowReachedPlanLimit,
-  setShowShareModal,
-  setShowInviteMemberModal
+  setIsReachedPlanLimitDialogOpen,
+  setIsShareItemDialogOpen,
+  setIsInviteMemberDialogOpen
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
-export const selectShowCreateFolderModal = (state: RootState): boolean => state.ui.showCreateFolderModal;
-export const selectShowDeleteModal = (state: RootState): boolean => state.ui.showDeleteModal;
-export const selectShowReachedLimitModal = (state: RootState): boolean => state.ui.showReachedLimitModal;
-export const selectShowShareModal = (state: RootState): boolean => state.ui.showShareModal;
-export const selectShowInviteMemberModal = (state: RootState): boolean => state.ui.showInviteMemberModal;
+
 export default uiSlice.reducer;

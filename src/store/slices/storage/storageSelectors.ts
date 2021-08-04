@@ -1,5 +1,5 @@
 import { RootState } from '../..';
-import { DriveFileData, DriveFolderData } from '../../../models/interfaces';
+import { DriveFileData, DriveFolderData, DriveItemData } from '../../../models/interfaces';
 import { selectorIsTeam } from '../team';
 
 const storageSelectors = {
@@ -37,20 +37,25 @@ const storageSelectors = {
     return state.storage.items.length === 0;
   },
 
-  getInfoItem(state: RootState): DriveFileData | DriveFolderData | undefined {
+  getInfoItem(state: RootState): DriveItemData | undefined {
     return state.storage.items.find(item => item.id === state.storage.infoItemId);
   },
 
-  isItemSelected(state: RootState): (item: DriveFileData | DriveFolderData) => boolean {
+  isItemSelected(state: RootState): (item: DriveItemData) => boolean {
     return (item) => state.storage.selectedItems.includes(item);
-  },
-
-  isAllSelected(state: RootState): boolean {
-    return state.storage.selectedItems.length === state.storage.items.filter(item => !item.isFolder).length;
   },
 
   isFolderInNamePath(state: RootState): (folderId: number) => boolean {
     return (folderId) => state.storage.namePath.map(p => p.id).includes(folderId);
+  },
+
+  filteredItems(state: RootState): (items: DriveItemData[]) => DriveItemData[] {
+    return (items) => items.filter(item => {
+      const filters = state.storage.filters;
+      const fullName = item.isFolder ? item.name : item.name + `.${item.type}`;
+
+      return fullName.toLowerCase().match(filters.text.toLowerCase());
+    });
   }
 };
 

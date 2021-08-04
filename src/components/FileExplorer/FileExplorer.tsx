@@ -8,51 +8,54 @@ import * as Unicons from '@iconscout/react-unicons';
 import { removeAccents } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
 
-import { DriveFileData, DriveFolderData, FolderPath, TeamsSettings, UserSettings } from '../../models/interfaces';
+import { DriveFileData, DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform, Workspace } from '../../models/enums';
 
-import { selectShowReachedLimitModal, setShowCreateFolderModal, setShowDeleteModal, setShowReachedPlanLimit } from '../../store/slices/ui';
-import { storageThunks, storageActions, storageSelectors } from '../../store/slices/storage';
+import { storageThunks, storageActions, storageSelectors, StorageFilters } from '../../store/slices/storage';
 import folderService, { ICreatedFolder } from '../../services/folder.service';
 import { AppDispatch, RootState } from '../../store';
 
-import Breadcrumbs, { BreadcrumbItemData } from '../../components/Breadcrumbs/Breadcrumbs';
-import FileActivity from '../../components/FileActivity/FileActivity';
+import FileActivity from '../FileActivity/FileActivity';
 import { FileViewMode } from '../../models/enums';
-import FilesList from '../../components/FilesView/FilesList/FilesList';
-import FilesGrid from '../../components/FilesView/FilesGrid/FilesGrid';
-import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFileExplorer';
-import dragAndDropImage from '../../assets/images/drag-and-drop.png';
+import FilesList from './FilesList/FilesList';
+import FilesGrid from './FilesGrid/FilesGrid';
+import LoadingFileExplorer from '../LoadingFileExplorer/LoadingFileExplorer';
+import folderEmptyImage from '../../assets/images/folder-empty.png';
+import noResultsSearchImage from '../../assets/images/no-results-search.png';
+import { uiActions } from '../../store/slices/ui';
 
-import './FilesView.scss';
+import './FileExplorer.scss';
 import usageService, { UsageResponse } from '../../services/usage.service';
 import SessionStorage from '../../lib/sessionStorage';
 import deviceService from '../../services/device.service';
-import { handleChangeWorkspaceThunk } from '../../store/slices/user';
-import localStorageService from '../../services/localStorage.service';
+import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
+import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
 
-interface FilesViewProps {
+interface FileExplorerProps {
+  title: JSX.Element | string;
+  isLoading: boolean;
+  items: DriveItemData[];
+  onFileUploaded: () => void;
+  onFolderCreated: () => void;
   user: UserSettings | any;
   currentFolderId: number;
-  isCurrentFolderEmpty: boolean;
   isDraggingAnItem: boolean;
   selectedItems: DriveFileData[];
-  isLoadingItems: boolean,
-  currentItems: (DriveFileData | DriveFolderData)[],
+  storageFilters: StorageFilters;
   isAuthenticated: boolean;
   itemToShareId: number;
-  showCreateFolderModal: boolean;
-  showDeleteModal: boolean;
+  isCreateFolderDialogOpen: boolean;
+  isDeleteItemsDialogOpen: boolean;
   infoItemId: number;
   viewMode: FileViewMode;
   namePath: FolderPath[];
-  sortFunction: ((a: DriveFileData | DriveFolderData, b: DriveFileData | DriveFolderData) => number) | null;
+  sortFunction: ((a: DriveItemData, b: DriveItemData) => number) | null;
   dispatch: AppDispatch;
   workspace: Workspace
 }
 
-interface FilesViewState {
+interface FileExplorerState {
   fileInputRef: React.RefObject<HTMLInputElement>;
   email: string;
   token: string;
@@ -62,8 +65,8 @@ interface FilesViewState {
   isMember: boolean;
 }
 
-class FilesView extends Component<FilesViewProps, FilesViewState> {
-  constructor(props: FilesViewProps) {
+class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
+  constructor(props: FileExplorerProps) {
     super(props);
 
     this.state = {
@@ -79,44 +82,19 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   moveEvent = {};
 
-  get breadcrumbItems(): BreadcrumbItemData[] {
-    const { namePath, dispatch } = this.props;
-    const items: BreadcrumbItemData[] = [];
-
-    if (namePath.length > 0) {
-      const firstPath: FolderPath = namePath[0];
-
-      items.push({
-        id: firstPath.id,
-        label: 'Drive',
-        icon: <Unicons.UilHdd className="h-4" />,
-        active: true,
-        onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath))
-      });
-      namePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
-        items.push({
-          id: path.id,
-          label: path.name,
-          icon: null,
-          active: i < namePath.length - 1,
-          onClick: () => dispatch(storageThunks.goToFolderThunk(path))
-        });
-      });
-    }
-
-    return items;
-  }
-
   get hasAnyItemSelected(): boolean {
     return this.props.selectedItems.length > 0;
   }
 
+  get hasItems(): boolean {
+    return this.props.items.length > 0;
+  }
+
+  get hasFilters(): boolean {
+    return this.props.storageFilters.text.length > 0;
+  }
+
   componentDidMount = () => {
-    const { dispatch } = this.props;
-
-    dispatch(storageThunks.resetNamePathThunk());
-    dispatch(storageThunks.fetchFolderContentThunk());
-
     deviceService.redirectForMobile();
   }
 
@@ -145,7 +123,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
       const usage: UsageResponse = await usageService.fetchUsage(isTeam);
 
       if (limitStorage && usage.total >= parseInt(limitStorage)) {
-        this.props.dispatch(setShowReachedPlanLimit(true));
+        this.props.dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
       } else {
         this.dispatchUpload(e);
       }
@@ -156,15 +134,11 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   dispatchUpload = (e) => {
-    const { dispatch } = this.props;
+    const { dispatch, onFileUploaded } = this.props;
 
     dispatch(
       storageThunks.uploadItemsThunk({ files: Array.from(e.target.files) })
-    ).then(() => {
-      dispatch(
-        storageThunks.fetchFolderContentThunk()
-      );
-    });
+    ).then(() => onFileUploaded());
   }
 
   onViewModeButtonClicked = (): void => {
@@ -177,7 +151,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
   onCreateFolderButtonClicked = () => {
     this.props.dispatch(
-      setShowCreateFolderModal(true)
+      uiActions.setIsCreateFolderDialogOpen(true)
     );
   }
 
@@ -185,7 +159,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     const { dispatch, selectedItems } = this.props;
 
     dispatch(storageActions.setItemsToDelete(selectedItems));
-    dispatch(setShowDeleteModal(true));
+    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   }
 
   onPreviousPageButtonClicked = (): void => {
@@ -322,7 +296,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
             platform: DevicePlatform.Web
           });
           // Remove myself
-          const items = this.props.currentItems.filter((commanderItem: any) =>
+          const items = this.props.items.filter((commanderItem: any) =>
             item.isFolder
               ? !commanderItem.isFolder ||
               (commanderItem.isFolder && !(commanderItem.id === item.id))
@@ -337,7 +311,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
         if (moveEvent.total === 0) {
           this.clearMoveOpEvent(moveOpId);
           // If empty folder list move back
-          if (!this.props.currentItems.length) {
+          if (!this.props.items.length) {
             this.folderTraverseUp();
           }
         }
@@ -346,7 +320,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   };
 
   removeFileFromFileExplorer = (filename) => {
-    const index = this.props.currentItems.findIndex((obj: any) => obj.name === filename);
+    const index = this.props.items.findIndex((item: DriveItemData) => item.name === filename);
 
     if (!~index) {
       // prevent undesired removals
@@ -354,7 +328,7 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
     }
 
     this.props.dispatch(
-      storageActions.setItems(Array.from(this.props.currentItems).splice(index, 1))
+      storageActions.setItems(Array.from(this.props.items).splice(index, 1))
     );
   }
 
@@ -390,24 +364,35 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
   }
 
   render(): ReactNode {
-    const { isLoadingItems, infoItemId, viewMode, isCurrentFolderEmpty, isDraggingAnItem } = this.props;
+    const {
+      isLoading,
+      infoItemId,
+      viewMode,
+      isDraggingAnItem,
+      title,
+      items,
+      isCreateFolderDialogOpen,
+      onFolderCreated
+    } = this.props;
     const { fileInputRef } = this.state;
     const viewModesIcons = {
       [FileViewMode.List]: <Unicons.UilGrid />,
       [FileViewMode.Grid]: <Unicons.UilListUiAlt />
     };
     const viewModes = {
-      [FileViewMode.List]: <FilesList />,
-      [FileViewMode.Grid]: <FilesGrid />
+      [FileViewMode.List]: <FilesList items={items} />,
+      [FileViewMode.Grid]: <FilesGrid items={items} />
     };
 
     return (
       <Fragment>
+        {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
+
         <div className="flex flex-grow h-1 ">
           <div className="flex-grow flex flex-col">
             <div className="flex justify-between pb-4">
-              <div className='mt-1'>
-                <Breadcrumbs items={this.breadcrumbItems} />
+              <div className="text-lg">
+                {title}
               </div>
 
               <div className="flex">
@@ -438,14 +423,14 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
                 onDrop={this.onViewDrop}
                 className="flex flex-col justify-between flex-grow overflow-y-auto overflow-x-hidden"
               >
-                {isLoadingItems ?
+                {isLoading ?
                   <LoadingFileExplorer /> :
                   viewModes[viewMode]
                 }
               </div>
 
               {/* PAGINATION */}
-              {(false && !isLoadingItems) ? (
+              {(false && !isLoading) ? (
                 <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
                   <span className="text-sm w-1/3" />
                   <div className="flex justify-center w-1/3">
@@ -464,22 +449,24 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
               ) : null}
 
               {/* EMPTY FOLDER */
-                isCurrentFolderEmpty && !isLoadingItems ?
-                  <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
-                    <div className="h-full flex items-center justify-center rounded-12px border-3 border-blue-40 border-dashed">
-                      <div className="mb-28">
-                        <img alt="" src={dragAndDropImage} className="w-36 m-auto" />
-                        <div className="text-center">
-                          <span className="font-semibold text-base text-m-neutral-100 block">
-                            Drag and drop here
-                          </span>
-                          <span className="text-sm text-m-neutral-100 block">
-                            or use the upload button
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div> :
+                !this.hasFilters && !this.hasItems && !isLoading ?
+                  <FileExplorerOverlay
+                    icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
+                    title="This folder is empty"
+                    subtitle="Drag and drop here or click on upload button"
+                  />
+                  :
+                  null
+              }
+
+              {/* NO SEARCH RESULTS */
+                this.hasFilters && !this.hasItems && !isLoading ?
+                  <FileExplorerOverlay
+                    icon={<img alt="" src={noResultsSearchImage} className="w-full m-auto" />}
+                    title="There are no results for this search"
+                    subtitle="Drag and drop here or click on upload button"
+                  />
+                  :
                   null
               }
 
@@ -513,7 +500,6 @@ class FilesView extends Component<FilesViewProps, FilesViewState> {
 
 export default connect(
   (state: RootState) => {
-    const isCurrentFolderEmpty: boolean = storageSelectors.isCurrentFolderEmpty(state);
     const currentFolderId: number = storageSelectors.currentFolderId(state);
 
     return {
@@ -521,17 +507,15 @@ export default connect(
       user: state.user.user,
       currentFolderId,
       selectedItems: state.storage.selectedItems,
-      isCurrentFolderEmpty,
+      storageFilters: state.storage.filters,
       isDraggingAnItem: state.storage.isDraggingAnItem,
-      isLoadingItems: state.storage.isLoading,
-      currentItems: state.storage.items,
       itemToShareId: state.storage.itemToShareId,
-      showCreateFolderModal: state.ui.showCreateFolderModal,
-      showDeleteModal: state.ui.showDeleteModal,
+      isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
+      isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
       infoItemId: state.storage.infoItemId,
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
       sortFunction: state.storage.sortFunction,
       workspace: state.team.workspace
     };
-  })(FilesView);
+  })(FileExplorer);

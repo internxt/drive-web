@@ -36,7 +36,4 @@ class FilesGrid extends React.Component<FilesGridProps, FilesGridState> {
   }
 }
 
-export default connect(
-  (state: RootState) => ({
-    items: state.storage.items
-  }))(FilesGrid);
+export default connect((state: RootState) => ({ }))(FilesGrid);

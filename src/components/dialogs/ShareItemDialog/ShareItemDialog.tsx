@@ -1,36 +1,37 @@
-import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { selectShowShareModal, setShowShareModal } from '../../../store/slices/ui';
-import { UilTimes } from '@iconscout/react-unicons';
-import { setItemsToDelete, setItemToShare } from '../../../store/slices/storage';
-import { DriveItemData } from '../../../models/interfaces';
-import { UilClipboardAlt } from '@iconscout/react-unicons';
-import notify from '../../Notifications';
+import * as Unicons from '@iconscout/react-unicons';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { selectUser } from '../../../store/slices/user';
-import { generateShareLink } from '../../../services/share.service';
-import history from '../../../lib/history';
 
-interface ShareDialogProps {
+import { DriveItemData } from '../../../models/interfaces';
+import notify from '../../Notifications';
+import { selectUser } from '../../../store/slices/user';
+import shareService from '../../../services/share.service';
+import history from '../../../lib/history';
+import { uiActions } from '../../../store/slices/ui';
+import BaseDialog from '../BaseDialog/BaseDialog';
+
+import './ShareItemDialog.scss';
+import { storageActions } from '../../../store/slices/storage';
+
+interface ShareItemDialogProps {
   item: DriveItemData
 }
 
 const DEFAULT_VIEWS = 10;
 
-const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
+const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const isOpen = useAppSelector(selectShowShareModal);
   const user = useAppSelector(selectUser);
   const [linkToCopy, setLinkToCopy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [numberOfIntents, setNumberOfIntents] = useState(DEFAULT_VIEWS);
-
+  const isOpen = useAppSelector(state => state.ui.isShareItemDialogOpen);
   const onClose = (): void => {
-    dispatch(setShowShareModal(false));
-    dispatch(setItemsToDelete([]));
-    dispatch(setItemToShare(0));
+    dispatch(uiActions.setIsShareItemDialogOpen(false));
+    dispatch(storageActions.setItemToShare(0));
   };
+  const itemFullName = item.isFolder ? item.name : `${item.name}.${item.type}`;
 
   const handleShareLink = async (views: number) => {
     try {
@@ -41,7 +42,7 @@ const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
         return;
       }
 
-      const link = await generateShareLink(fileId, views, item.isFolder, user?.teams);
+      const link = await shareService.generateShareLink(fileId, views, item.isFolder, user?.teams);
 
       window.analytics.track('file-share');
       setLinkToCopy(link);
@@ -71,15 +72,16 @@ const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
   }, [numberOfIntents]);
 
   return (
-    <div className={`${isOpen ? 'flex' : 'hidden'} absolute w-full h-full bg-m-neutral-100 bg-opacity-80 z-10`}>
-      <div className='flex flex-col absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 w-104 py-8 rounded-lg overflow-hidden z-20 bg-white'>
-        <span className='self-center text-center text-m-neutral-100'>{item.name}{!item.isFolder && `.${item.type}`}{ }</span>
-        <UilTimes className='absolute right-8 cursor-pointer transition duration-200 ease-in-out text-blue-60 hover:text-blue-70' onClick={onClose} />
+    <BaseDialog
+      isOpen={isOpen}
+      title={itemFullName}
+      onClose={onClose}
+    >
+      <div className='share-dialog flex flex-col mb-8'>
+        <hr className="border-t-1 border-l-neutral-50 mt-7 mb-6" />
 
-        <div className='w-full border-t border-m-neutral-60 my-6' />
-
-        <div className='flex flex-col px-8'>
-          <span className='text-neutral-500 self-center'>Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link</span>
+        <div className="px-8">
+          <p className='w-full text-neutral-500 text-center'>Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link</p>
 
           <div className='flex mt-3'>
             <span className='text-blue-60 mr-4'>1.</span>
@@ -99,18 +101,18 @@ const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
             <span className='text-neutral-500'>Get link to share</span>
           </div>
 
-          <div className='flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer'
+          <div className='flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text'
             onClick={() => {
               navigator.clipboard.writeText(linkToCopy);
               notify('Link copied!', 'info', 2500);
             }}>
             <span className='text-neutral-900 text-xs'>{isLoading ? 'Loading link...' : linkToCopy}</span>
-            <UilClipboardAlt className='text-blue-60' />
+            <Unicons.UilClipboardAlt className='text-blue-60' />
           </div>
         </div>
       </div>
-    </div>
+    </BaseDialog>
   );
 };
 
-export default ShareDialog;
+export default ShareItemDialog;

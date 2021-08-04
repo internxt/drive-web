@@ -15,10 +15,9 @@ import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, Fo
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
-import { setIsDeleteItemsDialogOpen } from '../../../../store/slices/ui';
 import { FileActionTypes, FileStatusTypes, ItemAction, Workspace } from '../../../../models/enums';
 import queueFileLogger from '../../../../services/queueFileLogger';
-import { setShowDeleteModal, setShowShareModal } from '../../../../store/slices/ui';
+import { uiActions } from '../../../../store/slices/ui';
 import { updateFileStatusLogger } from '../../../../store/slices/files';
 
 interface FileListItemProps {
@@ -144,8 +143,8 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     if (!item.isFolder) {
       isItemSelected(item) ?
-        dispatch(storageActions.deselectItem(item)) :
-        dispatch(storageActions.selectItem(item));
+        dispatch(storageActions.deselectItems([item])) :
+        dispatch(storageActions.selectItems([item]));
     }
   }
 
@@ -167,8 +166,8 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const { item, dispatch } = this.props;
 
     e.target.checked ?
-      dispatch(storageActions.selectItem(item)) :
-      dispatch(storageActions.deselectItem(item));
+      dispatch(storageActions.selectItems([item])) :
+      dispatch(storageActions.deselectItems([item]));
   }
 
   onRenameButtonClicked = (e: MouseEvent): void => {
@@ -200,7 +199,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     e.stopPropagation();
 
     dispatch(storageActions.setItemToShare(item.id));
-    dispatch(setShowShareModal(true));
+    dispatch(uiActions.setIsShareItemDialogOpen(true));
   }
 
   onInfoButtonClicked = (e: MouseEvent): void => {
@@ -214,7 +213,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     e.stopPropagation();
 
     dispatch(storageActions.setItemsToDelete([item]));
-    dispatch(setShowDeleteModal(true));
+    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   }
 
   onItemDoubleClicked = (): void => {
@@ -270,7 +269,12 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       >
         <td className="px-4">
           {!item.isFolder ?
-            <input type="checkbox" checked={isItemSelected(item)} onChange={this.onSelectCheckboxChanged} /> :
+            <input
+              onClick={(e) => e.stopPropagation()}
+              type="checkbox"
+              checked={isItemSelected(item)}
+              onChange={this.onSelectCheckboxChanged}
+            /> :
             null
           }
         </td>

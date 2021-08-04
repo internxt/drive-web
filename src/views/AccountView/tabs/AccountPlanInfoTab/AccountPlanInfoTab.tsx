@@ -4,7 +4,7 @@ import SessionStorage from '../../../../lib/sessionStorage';
 import { bytesToString } from '../../../../services/size.service';
 import usageService, { putLimitUser } from '../../../../services/usage.service';
 import { useAppSelector } from '../../../../store/hooks';
-import { selectUser, selectUserPlan } from '../../../../store/slices/user';
+import { selectUser, selectUserPlan, setIsLoadingStripePlan } from '../../../../store/slices/user';
 import { UilUserCircle, UilEnvelope } from '@iconscout/react-unicons';
 import './AccountPlanInfoTab.scss';
 import { ListItem } from '../AccountBillingTab/BillingPlanItem';
@@ -18,6 +18,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
   const userPlan = useAppSelector(selectUserPlan);
   const isTeam = useAppSelector(selectorIsTeam);
   const [isLoading, setIsLoading] = useState(false);
+  const isLoadingStripe = useAppSelector(setIsLoadingStripePlan);
 
   useEffect(() => {
     const getUsage = async () => {
@@ -48,6 +49,19 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
     return limit;
   };
 
+  const putNameProduct = () => {
+    let name;
+
+    if (!isLoadingStripe) {
+      if (userPlan) {
+        name = userPlan.name;
+      } else {
+        name = limitUser();
+      }
+    }
+    return name;
+  };
+
   return (
     <div className='flex justify-around w-full pt-8'>
       <div className='flex w-full h-60 justify-around'>
@@ -58,7 +72,11 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
 
           <div className='flex flex-col justify-center items-center h-20 border-t border-white'>
             <span className='label_small'>Name</span>
-            <span className='subtitle m-0'>{user?.name} {user?.lastname}</span>
+            {isTeam ?
+              <span className='subtitle m-0'>Business</span>
+              :
+              <span className='subtitle m-0'>{user?.name} {user?.lastname}</span>
+            }
           </div>
         </div>
 
@@ -99,13 +117,20 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
           <h2 className='account_config_title'>Current plan</h2>
 
           <div className='flex flex-col w-full'>
-            <span className='text-neutral-700 font-semibold text-sm'>{userPlan?.name}</span>
+            <span className='text-neutral-700 font-semibold text-sm'>{putNameProduct()}</span>
 
             <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
-              {userPlan ?
+              { !isLoadingStripe ?
                 <Fragment>
-                  <span className='font-bold'>{userPlan?.price}€</span>
-                  <span className='text-xs mb-1 ml-2'>/{userPlan?.paymentInterval}</span>
+                  {
+                    userPlan ?
+                      <Fragment>
+                        <span className='font-bold'>{userPlan?.price}€</span>
+                        <span className='text-xs mb-1 ml-2'>/{userPlan?.paymentInterval}</span>
+                      </Fragment>
+                      :
+                      <span className='font-bold'>Free plan</span>
+                  }
                 </Fragment>
                 :
                 <span className='font-bold'>Loading plan...</span>
@@ -115,7 +140,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
             {plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
 
             <button className='primary w-full' onClick={() => console.log('clicked')}>
-              Change plan
+              Upgrade
             </button>
           </div>
         </div>

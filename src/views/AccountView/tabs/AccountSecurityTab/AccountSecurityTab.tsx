@@ -4,9 +4,8 @@ import React, { Fragment } from 'react';
 import Deactivate2FA from './Deactivate2FA';
 import Steps from './Steps';
 import notify from '../../../../components/Notifications';
-
 import './AccountSecurityTab.scss';
-import LoadingFileExplorer from '../../../../components/LoadingFileExplorer/LoadingFileExplorer';
+import Skeleton from 'react-loading-skeleton';
 
 interface SecurityProps {
   isAuthenticated: boolean
@@ -91,7 +90,7 @@ const AccountSecurityTab = ({ isAuthenticated }: SecurityProps): JSX.Element => 
           }
         </Fragment>
         :
-        <LoadingFileExplorer/>
+        <Skeleton width={400} height={50} />
       }
     </div>
   );

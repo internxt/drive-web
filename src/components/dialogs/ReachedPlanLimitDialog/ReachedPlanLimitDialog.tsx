@@ -1,22 +1,22 @@
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { selectShowReachedLimitModal, setShowReachedPlanLimit } from '../../../store/slices/ui';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import history from '../../../lib/history';
 
 import './ReachedPlanLimitDialog.scss';
+import { uiActions } from '../../../store/slices/ui';
 
 const ReachedPlanLimitDialog = (): JSX.Element => {
-  const isOpen = useAppSelector(selectShowReachedLimitModal);
+  const isOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const dispatch = useAppDispatch();
 
   const onClose = (): void => {
-    dispatch(setShowReachedPlanLimit(false));
+    dispatch(uiActions.setIsReachedPlanLimitDialogOpen(false));
   };
 
   const onAccept = async (): Promise<void> => {
     try {
       history.push('/account');
-      dispatch(setShowReachedPlanLimit(false));
+      dispatch(uiActions.setIsReachedPlanLimitDialogOpen(false));
     } catch (e) {
       console.log(e);
     }

@@ -6,12 +6,12 @@ import './FilesList.scss';
 import { AppDispatch, RootState } from '../../../store';
 import { connect } from 'react-redux';
 import { storageActions } from '../../../store/slices/storage';
-import { DriveItemData } from '../../../models/interfaces';
+import { DriveFileData, DriveItemData } from '../../../models/interfaces';
 import storageSelectors from '../../../store/slices/storage/storageSelectors';
 
 interface FilesListProps {
   items: DriveItemData[];
-  isAllSelected: boolean;
+  selectedItems: DriveItemData[];
   dispatch: AppDispatch;
 }
 
@@ -32,30 +32,36 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
       />);
   }
 
-  onSelectAllButtonClicked = () => {
-    const { dispatch, isAllSelected } = this.props;
+  get isAllSelected(): boolean {
+    const { selectedItems, items } = this.props;
 
-    isAllSelected ?
+    return selectedItems.length === items.filter(item => !item.isFolder).length;
+  }
+
+  onSelectAllButtonClicked = () => {
+    const { dispatch, items } = this.props;
+    const files: DriveFileData[] = items.filter(item => !item.isFolder) as DriveFileData[];
+
+    this.isAllSelected ?
       dispatch(storageActions.clearSelectedItems()) :
-      dispatch(storageActions.selectAllItems())
+      dispatch(storageActions.selectItems(files))
     ;
   }
 
   render(): ReactNode {
-    const { isAllSelected } = this.props;
-
     return (
       <div className="pointer-events-none flex-grow bg-white">
         <table className="pointer-events-none table-auto w-full">
           <thead className="border-b border-l-neutral-30 bg-white text-neutral-500 py-2 px-3 text-base">
             <tr>
               <th className="px-4 py-2 w-12 rounded-tl-4px">
-                <input checked={isAllSelected} onClick={this.onSelectAllButtonClicked} type="checkbox" className="pointer-events-auto" />
+                <input readOnly checked={this.isAllSelected} onClick={this.onSelectAllButtonClicked} type="checkbox" className="pointer-events-auto" />
               </th>
               <th className="w-12">Type</th>
               <th className="w-1/5">Name</th>
               <th className="w-36"></th>
-              <th className="w-64">Modified</th>
+              <th className="w-64    const { isAllSelected } = this.props;
+">Modified</th>
               <th className="w-20">Size</th>
               <th className="w-12 rounded-tr-4px">Actions</th>
             </tr>
@@ -70,11 +76,6 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
 }
 
 export default connect(
-  (state: RootState) => {
-    const isAllSelected = storageSelectors.isAllSelected(state);
-
-    return {
-      items: state.storage.items,
-      isAllSelected
-    };
-  })(FilesList);
+  (state: RootState) => ({
+    selectedItems: state.storage.selectedItems
+  }))(FilesList);

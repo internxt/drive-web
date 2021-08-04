@@ -1,7 +1,12 @@
 import { AppViewLayout, FileActionTypes, FileStatusTypes } from './enums';
 
 export interface AppConfig {
+  fileExplorer: AppFileExplorerConfig;
   views: AppViewConfig;
+}
+
+export interface AppFileExplorerConfig {
+  recentsLimit: number;
 }
 
 export interface AppViewConfig {
@@ -89,7 +94,7 @@ export interface DriveFileMetadataPayload {
   metadata: { itemName: string; }
 }
 
-export type DriveItemData = DriveFileData | DriveFolderData
+export type DriveItemData = DriveFileData & DriveFolderData
 
 export interface ILoggerFile {
   isFolder: boolean;

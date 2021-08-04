@@ -292,9 +292,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
           {
             signupError && showError &&
-            <div className='flex ml-3 mt-1 mb-2'>
-              <div className='w-1.5 h-1.5 bg-neutral-600 rounded-full mt-1.5 mr-2' />
-              <span className='text-neutral-600 text-sm'>{signupError}</span>
+            <div className='flex mt-1 mb-2'>
+              <span className='text-red-60 text-sm font-medium'>{signupError}</span>
             </div>
           }
 

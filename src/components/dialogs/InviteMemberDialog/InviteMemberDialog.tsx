@@ -1,6 +1,6 @@
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 
-import { useAppDispatch } from '../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { IFormValues, InfoInvitationsMembers, TeamsSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
@@ -9,12 +9,12 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../Buttons/AuthButton';
 import notify from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
-import { selectShowInviteMemberModal, setShowInviteMemberModal } from '../../../store/slices/ui';
 import { sendEmailTeamsMember } from '../../../services/teamsSendEmail.service';
 import { useEffect } from 'react';
 import { getMembers, removeMember } from '../../../services/teamsMembers.service';
 import { useState } from 'react';
 import { UilTrashAlt, UilUserPlus } from '@iconscout/react-unicons';
+import { uiActions } from '../../../store/slices/ui';
 
 interface InviteMemberCreateDialogProps {
   team: TeamsSettings | undefined
@@ -26,7 +26,7 @@ const InviteMemberCreateDialog = ({
 ) => {
   const { register, formState: { errors, isValid }, handleSubmit, reset } = useForm<IFormValues>({ mode: 'onChange' });
   const dispatch = useAppDispatch();
-  const isOpen = useSelector((state: RootState) => selectShowInviteMemberModal(state));
+  const isOpen = useAppSelector((state) => state.ui.isInviteMemberDialogOpen);
   const [members, setMembers] = useState<InfoInvitationsMembers[]>([]);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const InviteMemberCreateDialog = ({
 
   const onClose = (): void => {
     reset();
-    dispatch(setShowInviteMemberModal(false));
+    dispatch(uiActions.setIsInviteMemberDialogOpen(false));
   };
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {

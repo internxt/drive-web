@@ -24,17 +24,7 @@ interface SignInProps {
 
 export const texts = {
   label: 'INTERNXT',
-  sublabel: 'BE LIMITLESS',
-  reviews: [
-    {
-      name: 'Y Combinator Program',
-      review: '“Startups are most productive when they can spend most of their time building.Y Combinators goal is to create an environment where we can focus exclusively on building products and talking to users on how to improve..”'
-    },
-    {
-      name: '500 Startups',
-      review: '“500 Startups is one of the most active venture capital firms in the world and has commited over $454M in investment globally.500 Startups have chosen Internxt as one of the top SAAS startups worldwide.”'
-    }
-  ]
+  sublabel: 'BE LIMITLESS'
 };
 
 export default function SignInView(props: SignInProps): JSX.Element {
@@ -186,9 +176,8 @@ export default function SignInView(props: SignInProps): JSX.Element {
 
           {
             loginError && showErrors &&
-            <div className='flex ml-3 my-1'>
-              <div className='w-1.5 h-1.5 bg-neutral-600 rounded-full mt-1.5 mr-2' />
-              <span className='text-neutral-600 text-sm'>{loginError}</span>
+            <div className='flex my-1'>
+              <span className='text-red-60 text-sm w-56 font-medium'>{loginError}</span>
             </div>
           }
 

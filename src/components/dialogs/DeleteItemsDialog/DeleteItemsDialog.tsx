@@ -3,24 +3,23 @@ import { DriveItemData } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageThunks } from '../../../store/slices/storage';
-import { selectShowDeleteModal, setShowDeleteModal } from '../../../store/slices/ui';
 import { setItemsToDelete } from '../../../store/slices/storage';
 import BaseDialog from '../BaseDialog/BaseDialog';
 
 import './DeleteItemsDialog.scss';
 import { useState } from 'react';
+import { uiActions } from '../../../store/slices/ui';
 
-interface DeleteItemsDialogProps {
-}
+interface DeleteItemsDialogProps { }
 
-const DeleteItemsDialog = ({ }: DeleteItemsDialogProps): JSX.Element => {
+const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
   const itemsToDelete: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToDelete);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const isOpen = useAppSelector(selectShowDeleteModal);
+  const isOpen = useAppSelector((state: RootState) => state.ui.isDeleteItemsDialogOpen);
 
   const onClose = (): void => {
-    dispatch(setShowDeleteModal(false));
+    dispatch(uiActions.setIsDeleteItemsDialogOpen(false));
     dispatch(setItemsToDelete([]));
   };
 
