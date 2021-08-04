@@ -76,7 +76,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
         <div className='relative flex-1'>
           <div className={'text-m-neutral-100 absolute flex items-center justify-center'}
           >
-            <input type="text" placeholder="Search files" className="auth-input w-60 transform duration-200 mb-2.5 search-input" />
+            <input type="text" placeholder="Search files" className="auth-input w-72 transform duration-200 mb-2.5 search-input" />
             <Unicons.UilSearch onClick={this.onSearchButtonClicked} className="text-blue-60 cursor-pointer right-6 relative w-4 mb-2" />
           </div>
         </div>
