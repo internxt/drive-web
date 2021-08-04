@@ -10,7 +10,7 @@ import AccountPlanInfoTab from './tabs/AccountPlanInfoTab/AccountPlanInfoTab';
 
 const AccountView = (): JSX.Element => {
   return (
-    <div className='h-full rounded-md bg-white test pb-16'>
+    <div className='h-full rounded-md bg-white test pb-16 mt-2'>
       <Tabs defaultActiveKey="plans" className='relative flex px-8 pt-3.5' >
         <Tab title='Plans' eventKey='plans'>
           <AccountBillingTab />
