@@ -42,7 +42,7 @@ const AccountPasswordTab = (): JSX.Element => {
   return (
     <div className='w-full h-full flex flex-col items-center justify-center'>
       <h1 className='account_config_title mt-16'>Change password</h1>
-      <p className='account_config_description'>Remember that if you change your password, you will he signed out in all your devices. You will need these credentials for logging in again.</p>
+      <p className='account_config_description'>Changing your password will sign you out from all your devices. The password introduced will be needed for logging in again.</p>
 
       <form className='w-64 mt-5' onSubmit={handleSubmit(onSubmit)}>
         <BaseInput

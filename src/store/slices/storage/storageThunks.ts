@@ -12,6 +12,8 @@ import { selectorIsTeam } from '../team';
 import { DriveFileData, DriveItemData, FolderPath, NotificationData } from '../../../models/interfaces';
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 import fileService from '../../../services/file.service';
+import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
+import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../lib/constants';
 import { uiActions } from '../ui';
 import { tasksActions } from '../tasks';
 
@@ -64,6 +66,23 @@ export const createFolderTreeStructureThunk = createAsyncThunk(
   'storage/createFolderStructure',
   async ({ root, currentFolderId }: CreateFolderTreeStructurePayload, { getState, dispatch }: any) => {
     const isTeam: boolean = selectorIsTeam(getState());
+
+    // Uploads the root folder
+    folderService.createFolder(isTeam, currentFolderId, root.name).then((folderUploaded) => {
+      // Once the root folder is uploaded it uploads the file children
+      dispatch(uploadItemsThunk({ files: root.childrenFiles, parentFolderId: folderUploaded.id, folderPath: root.fullPath }));
+      // Once the root folder is uploaded upload folder children
+      for (const subTreeRoot of root.childrenFolders) {
+        dispatch(createFolderTreeStructureThunk({ root: subTreeRoot, currentFolderId: folderUploaded.id }));
+      }
+    });
+  }
+);
+
+export const createFolderTreeStructureThunk2 = createAsyncThunk(
+  'storage/createFolderStructure',
+  async ({ root, currentFolderId }: CreateFolderTreeStructurePayload, { getState, dispatch }: any) => {
+    const isTeam: boolean = selectorIsTeam(getState());
     const promiseArray = [];
 
     root.folderId = currentFolderId;
@@ -99,9 +118,9 @@ export const uploadItemsThunk = createAsyncThunk(
     const { namePath, items } = getState().storage;
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
     const filesToUpload: any[] = [];
-    const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
     const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = selectorIsTeam(getState());
+    const notificationsUuids: string[] = [];
 
     if (showSizeWarning) {
       toast.warn('File too large.\nYou can only upload or download files of up to 1GB through the web app');
@@ -156,6 +175,8 @@ export const uploadItemsThunk = createAsyncThunk(
         type
       };
 
+      notificationsUuids.push(notification.uuid);
+
       dispatch(
         tasksActions.addNotification(notification)
       );
@@ -163,23 +184,28 @@ export const uploadItemsThunk = createAsyncThunk(
 
     const uploadErrors: any[] = [];
 
-    const uploadFile = async (file, path, rateLimited, items) => {
-      const { filename, extension } = getFilenameAndExt(file.name);
-      const notification: NotificationData = {
-        uuid: Date.now().toString(),
-        action: FileActionTypes.Upload,
-        status: FileStatusTypes.Encrypting,
-        name: filename,
-        isFolder: false,
-        type: extension
+    const uploadFile = async (notificationUuid, file, path, rateLimited, items) => {
+      const updateProgressCallback = (progress) => {
+        dispatch(tasksActions.updateNotification({
+          uuid: notificationUuid,
+          merge: {
+            status: FileStatusTypes.Uploading,
+            progress
+          }
+        }));
       };
 
-      dispatch(tasksActions.addNotification(notification));
+      dispatch(tasksActions.updateNotification({
+        uuid: notificationUuid,
+        merge: {
+          status: FileStatusTypes.Encrypting
+        }
+      }));
 
-      await storageService.upload.uploadItem(user.email, file, path, isTeam)
+      await storageService.upload.uploadItem(user.email, file, path, isTeam, updateProgressCallback)
         .then(({ res, data }) => {
           dispatch(tasksActions.updateNotification({
-            uuid: notification.uuid,
+            uuid: notificationUuid,
             merge: { status: FileStatusTypes.Success }
           }));
 
@@ -189,7 +215,7 @@ export const uploadItemsThunk = createAsyncThunk(
           }
         }).catch((err) => {
           dispatch(tasksActions.updateNotification({
-            uuid: notification.uuid,
+            uuid: notificationUuid,
             merge: { status: FileStatusTypes.Error }
           }));
 
@@ -204,7 +230,7 @@ export const uploadItemsThunk = createAsyncThunk(
       return uploadErrors;
     };
 
-    for (const file of filesToUpload) {
+    for (const [index, file] of filesToUpload.entries()) {
 
       const type = file.type === undefined ? null : file.type;
       const path = relativePath + '/' + file.name + '.' + type;
@@ -215,7 +241,7 @@ export const uploadItemsThunk = createAsyncThunk(
       file.file = file;
       file.folderPath = folderPath;
 
-      await tasksService.push(() => uploadFile(file, path, rateLimited, items));
+      await tasksService.push(() => uploadFile(notificationsUuids[index], file, path, rateLimited, items));
 
       if (uploadErrors.length > 0) {
         throw new Error('There were some errors during upload');

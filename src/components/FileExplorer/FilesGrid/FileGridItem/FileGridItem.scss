@@ -1,8 +1,6 @@
 @layer components {
     .file-grid-item {
-        border-radius: 8px;
-
-        @apply relative bg-white p-4 box-border;
+        @apply relative bg-white p-4 box-border rounded-lg;
 
         &:hover, {
             background-color: var(--color-blue-20);

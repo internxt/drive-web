@@ -1,12 +1,16 @@
 /* eslint-disable no-loop-func */
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../lib/constants';
+import { v4 as uuid } from 'uuid';
 
 export async function getAllItems(dataTransfer) {
   const entries = await getEntries(dataTransfer.items);
+
+  console.log(entries);
   const levels: Array<[]> = [];
 
   //There is always a root ?
   // levels.push();
+
   entries.directoryEntryList.map(directory => {
     const level = directory.fullPath.split('/').length - 2;
 
@@ -22,14 +26,14 @@ export async function getAllItems(dataTransfer) {
       levels.push([directory]);
     }
   });
-  // console.log(entries);
+  console.log(levels);
 
-  entries.levels = levels;
-  const root = entries.directoryEntryList[0];
+  // entries.levels = levels;
+
   const items = {
     numberOfItems: entries.entryList.length,
-    root,
-    files: entries.fileEntryList
+    rootList: levels[0],
+    files: entries.childrenIndex['']
   };
 
   // console.log(items);
@@ -71,6 +75,8 @@ async function getEntries(dataTransferItemList: DataTransferItemList) {
   while (queue.length > 0) {
     const entry = queue.shift();
 
+    entry.uuid = uuid();
+
     if (entry.isFile) {
       // eslint-disable-next-line no-loop-func
       const indexKey = parentFullPath(entry.fullPath);
@@ -79,7 +85,7 @@ async function getEntries(dataTransferItemList: DataTransferItemList) {
         childrenIndex[indexKey] = [];
       }
 
-      getFile(entry).then(fileEntry => {
+      await getFile(entry).then(fileEntry => {
         fileEntryList.push(fileEntry);
         totalSize += fileEntry.size;
         childrenIndex[indexKey].push(fileEntry);

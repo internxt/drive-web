@@ -9,7 +9,7 @@ import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { connect } from 'react-redux';
-import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, NotificationData, UserSettings } from '../../../../models/interfaces';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
 
 import './FileGridItem.scss';
 import { ItemAction, Workspace } from '../../../../models/enums';
@@ -19,7 +19,7 @@ import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
 import { uiActions } from '../../../../store/slices/ui';
 import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
-
+import { getAllItems } from '../../../../services/dragAndDrop.service';
 interface FileGridItemProps {
   user: UserSettings;
   item: DriveItemData;
@@ -236,11 +236,31 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     this.props.dispatch(storageActions.setDraggingItemTargetData(null));
   }
 
-  onItemDrop = (e: DragEvent<HTMLDivElement>): void => {
+  onItemDrop = async (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log('onItemDrop!');
+    const { draggingTargetItemData, dispatch } = this.props;
+
+    if (draggingTargetItemData && draggingTargetItemData.isFolder) {
+      const namePathDestinationArray = this.props.namePath.map(level => level.name);
+
+      namePathDestinationArray[0] = '';
+      const folderPath = namePathDestinationArray.join('/') + '/' + draggingTargetItemData.name;
+
+      const itemsDragged = await getAllItems(e.dataTransfer);
+      const { numberOfItems, rootList, files } = itemsDragged;
+
+      if (files) {
+        // files where dragged directly
+        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: draggingTargetItemData.id, folderPath: folderPath }));
+      }
+      if (rootList) {
+        for (const root of rootList) {
+          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
+        }
+      }
+    }
 
     this.props.dispatch(storageActions.setDraggingItemTargetData(null));
   }

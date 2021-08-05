@@ -16,7 +16,7 @@ export interface UploadItemPayload {
   name: string
 }
 
-export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, isTeam: boolean): Promise<any> {
+export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, isTeam: boolean, updateProgressCallback: (progress: number) => void): Promise<any> {
   if (!file.parentFolderId) {
     throw new Error('No folder ID provided');
   }
@@ -42,12 +42,7 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
       filepath: relativePath,
       filesize: file.file.size,
       filecontent: content,
-      progressCallback: (progress: number) => {
-        //STATUS: UPLOAD FILE PROGRESS AS % AND UPLOADING
-        if (progress > 0) {
-          dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Uploading, filePath: path, progress: progress.toFixed(2), isFolder: false, type: fileType }));
-        }
-      }
+      progressCallback: updateProgressCallback
     });
 
     const name = encryptFilename(file.file.name, file.file.parentFolderId);
