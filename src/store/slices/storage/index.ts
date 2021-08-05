@@ -19,6 +19,12 @@ function filtersFactory(): StorageFilters {
   };
 }
 
+interface itemRenamePayload {
+  id: number,
+  isFolder: boolean,
+  name
+}
+
 export interface StorageState {
   isLoading: boolean;
   isDeletingItems: boolean;
@@ -133,6 +139,14 @@ export const storageSlice = createSlice({
     },
     pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
       state.namePath = [action.payload];
+    },
+    resetItemName: (state: StorageState, action: PayloadAction<itemRenamePayload>) => {
+      for (let i=0; i < state.items.length; i++) {
+        if (!!state.items[i].isFolder === action.payload.isFolder && state.items[i].id === action.payload.id) {
+          state.items[i].name = action.payload.name;
+          break;
+        }
+      }
     }
   },
   extraReducers
@@ -158,7 +172,8 @@ export const {
   resetNamePath,
   pushNamePath,
   popNamePathUpTo,
-  pathChangeWorkSpace
+  pathChangeWorkSpace,
+  resetItemName
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

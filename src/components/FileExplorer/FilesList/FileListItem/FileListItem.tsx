@@ -87,19 +87,31 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     try {
+      const oldName = item.name;
+
       if (item.name !== dirtyName) {
+        this.props.dispatch(storageActions.resetItemName({ name: dirtyName, id: item.id, isFolder: !!item.isFolder }));
         if (item.isFolder) {
           folderService.updateMetaData(item.id, data, isTeam)
-            .then(() => {
+            .then((res) => {
+              if (!res.id) {
+                this.props.dispatch(storageActions.resetItemName({ name: oldName, id: item.id, isFolder: !!item.isFolder }));
+              }
+              // this.props.dispatch(storageActions.resetItemName({ name: dirtyName, id: item.id, isFolder: item.isFolder }));
+              /*
               this.props.dispatch(
                 storageThunks.fetchFolderContentThunk()
-              );
+              );*/
             });
         } else {
-          fileService.updateMetaData(item.fileId, data, isTeam).then(() => {
+          fileService.updateMetaData(item.fileId, data, isTeam).then((res) => {
+            if (!res.id) {
+              this.props.dispatch(storageActions.resetItemName({ name: oldName, id: item.id, isFolder: !!item.isFolder }));
+            }
+            /*
             this.props.dispatch(
               storageThunks.fetchFolderContentThunk()
-            );
+            );*/
           });
         }
       }
