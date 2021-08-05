@@ -137,10 +137,14 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   }
 
   dispatchUpload = (e) => {
-    const { dispatch, onFileUploaded } = this.props;
+    const { dispatch, onFileUploaded, currentFolderId, namePath } = this.props;
 
     dispatch(
-      storageThunks.uploadItemsThunk({ files: Array.from(e.target.files) })
+      storageThunks.uploadItemsThunk({
+        files: Array.from(e.target.files),
+        parentFolderId: currentFolderId,
+        folderPath: namePath.slice(1).reduce((t, path) => `${t}${path.name}/`, '')
+      })
     ).then(() => onFileUploaded());
   }
 

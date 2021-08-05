@@ -19,8 +19,8 @@ import { tasksActions } from '../tasks';
 
 interface UploadItemsPayload {
   files: File[];
-  parentFolderId?: number;
-  folderPath?: string;
+  parentFolderId: number;
+  folderPath: string;
   options?: { withNotifications?: boolean }
 }
 
@@ -329,11 +329,7 @@ export const downloadItemsThunk = createAsyncThunk(
         }));
     }
 
-    await Promise.all(promises)
-      .catch((e) => {
-        console.log(e);
-        throw e;
-      });
+    await Promise.all(promises);
   });
 
 export const fetchFolderContentThunk = createAsyncThunk(

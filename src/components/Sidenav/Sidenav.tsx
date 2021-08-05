@@ -32,6 +32,10 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
     window.open(desktopService.getDownloadAppUrl(), '_blank');
   }
 
+  onLogoClicked = (): void => {
+    history.push('/app');
+  }
+
   render(): JSX.Element {
     const { collapsed, onCollapseButtonClicked } = this.props;
 
@@ -48,7 +52,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
           </button>
 
           <div>
-            <div className="py-3 mb-2">
+            <div className="py-3 mb-2 cursor-pointer" onClick={this.onLogoClicked}>
               {collapsed ?
                 <img className='opacity-0 w-6 sidenav-logo' src={smallLogo} alt="" /> :
                 <div className="w-28 h-auto flex items-center" onClick={() => {

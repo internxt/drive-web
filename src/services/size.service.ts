@@ -4,7 +4,7 @@ export function bytesToString(size: number, removeSpace: boolean = true, useSing
   if (size > 0) {
     return PrettySize(size, removeSpace, useSingleChar, decimals, hideSizeString);
   } else {
-    return '...';
+    return '';
   }
 }
 
