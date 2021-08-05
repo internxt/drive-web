@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 export async function getAllItems(dataTransfer) {
   const entries = await getEntries(dataTransfer.items);
 
-  console.log(entries);
+  // console.log(entries);
   const levels: Array<[]> = [];
 
   //There is always a root ?
@@ -26,10 +26,9 @@ export async function getAllItems(dataTransfer) {
       levels.push([directory]);
     }
   });
-  console.log(levels);
+  // console.log(levels);
 
   // entries.levels = levels;
-
   const items = {
     numberOfItems: entries.entryList.length,
     rootList: levels[0],
