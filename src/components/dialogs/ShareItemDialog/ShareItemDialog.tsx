@@ -8,10 +8,10 @@ import { uiActions } from '../../../store/slices/ui';
 
 import { DriveItemData } from '../../../models/interfaces';
 import notify from '../../Notifications';
-import { generateShareLink } from '../../../services/share.service';
 import history from '../../../lib/history';
 import { generateFileKey, Network } from '../../../lib/network';
 import localStorageService from '../../../services/localStorage.service';
+import { generateShareLink } from '../../../services/share.service';
 
 interface ShareDialogProps {
   item: DriveItemData
@@ -117,7 +117,7 @@ const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
               navigator.clipboard.writeText(linkToCopy);
               notify('Link copied!', 'info', 2500);
             }}>
-            <span className='text-neutral-900 text-xs'>{isLoading ? 'Loading link...' : linkToCopy}</span>
+            <span className='text-neutral-900 text-xs w-56 truncate overflow-hidden'>{isLoading ? 'Loading link...' : linkToCopy}</span>
             <UilClipboardAlt className='text-blue-60' />
           </div>
         </div>

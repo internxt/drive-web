@@ -94,7 +94,9 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
         }));
         const teamsProductsWithPlans = teamsProducts.map(async product => ({
           product: product,
-          plans: await loadAvailableTeamsPlans(product) || []
+          plans: await loadAvailableTeamsPlans(product) || [],
+          selected: '',
+          currentPlan: userPlan.planId || null
         }));
 
         const finalProducts = await Promise.all(productsWithPlans);

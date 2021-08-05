@@ -202,7 +202,7 @@ code {
     }
   }
   input[type="number"] {
-    @apply appearance-none flex items-center justify-center bg-l-neutral-10 border border-m-neutral-60 text-center text-blue-60 outline-none;
+    @apply appearance-none flex items-center justify-center border-m-neutral-60 text-center text-blue-60 outline-none;
     -moz-appearance: textfield;
   }
   input[type="number"]::-webkit-inner-spin-button,
