@@ -21,6 +21,7 @@ interface UploadItemsPayload {
   files: File[];
   parentFolderId?: number;
   folderPath?: string;
+  options?: { withNotifications?: boolean }
 }
 
 export const initializeThunk = createAsyncThunk(
@@ -55,8 +56,10 @@ export const fetchRecentsThunk = createAsyncThunk(
   });
 interface CreateFolderTreeStructurePayload {
   root: IRoot,
-  currentFolderId: number
+  currentFolderId: number,
+  options?: { withNotification: boolean; }
 }
+
 interface IRoot extends DirectoryEntry {
   childrenFiles: File[],
   childrenFolders: IRoot[],
@@ -65,22 +68,70 @@ interface IRoot extends DirectoryEntry {
 
 export const createFolderTreeStructureThunk = createAsyncThunk(
   'storage/createFolderStructure',
-  async ({ root, currentFolderId }: CreateFolderTreeStructurePayload, { getState, dispatch }: any) => {
+  async ({ root, currentFolderId, options }: CreateFolderTreeStructurePayload, { getState, dispatch }: any) => {
     const isTeam: boolean = selectorIsTeam(getState());
+    const promises: Promise<void>[] = [];
+    const notification: NotificationData = {
+      uuid: Date.now().toString(),
+      action: FileActionTypes.UploadFolder,
+      status: FileStatusTypes.Pending,
+      name: root.name,
+      isFolder: true
+    };
+
+    options = Object.assign({ withNotification: true }, options || {});
+
+    if (options?.withNotification) {
+      dispatch(tasksActions.addNotification(notification));
+    }
 
     // Uploads the root folder
-    folderService.createFolder(isTeam, currentFolderId, root.name).then((folderUploaded) => {
-      // Once the root folder is uploaded it uploads the file children
-      dispatch(uploadItemsThunk({ files: root.childrenFiles, parentFolderId: folderUploaded.id, folderPath: root.fullPathEdited }));
+    await folderService.createFolder(isTeam, currentFolderId, root.name).then(async (folderUploaded) => {
+      promises.push(
+        dispatch(uploadItemsThunk({
+          files: root.childrenFiles || [],
+          parentFolderId: folderUploaded.id,
+          folderPath: root.fullPathEdited,
+          options: { withNotifications: false }
+        }))
+      );
       // Once the root folder is uploaded upload folder children
       for (const subTreeRoot of root.childrenFolders) {
-        dispatch(createFolderTreeStructureThunk({ root: subTreeRoot, currentFolderId: folderUploaded.id }));
+        promises.push(dispatch(createFolderTreeStructureThunk({
+          root: subTreeRoot,
+          currentFolderId: folderUploaded.id,
+          options: { withNotification: false }
+        })));
       }
+
+      await Promise.all(promises)
+        .then(() => {
+          if (options?.withNotification) {
+            dispatch(tasksActions.updateNotification({
+              uuid: notification.uuid,
+              merge: {
+                status: FileStatusTypes.Success
+              }
+            }));
+          }
+        })
+        .catch((e) => {
+          if (options?.withNotification) {
+            dispatch(tasksActions.updateNotification({
+              uuid: notification.uuid,
+              merge: {
+                status: FileStatusTypes.Error
+              }
+            }));
+          }
+
+          console.error('error creating folder structure: ', e);
+        });
     });
   }
 );
 
-export const createFolderTreeStructureThunk2 = createAsyncThunk(
+export const createFolderTreeStructureThunkNonRecursive = createAsyncThunk(
   'storage/createFolderStructure',
   async ({ root, currentFolderId }: CreateFolderTreeStructurePayload, { getState, dispatch }: any) => {
     const isTeam: boolean = selectorIsTeam(getState());
@@ -112,150 +163,121 @@ export const createFolderTreeStructureThunk2 = createAsyncThunk(
     }
   });
 
+/**
+ * @description
+ *  1. Prepare files to upload
+ *  2. Schedule tasks
+ */
 export const uploadItemsThunk = createAsyncThunk(
   'storage/uploadItems',
-  async ({ files, parentFolderId, folderPath }: UploadItemsPayload, { getState, dispatch }: any) => {
+  async ({ files, parentFolderId, folderPath, options }: UploadItemsPayload, { getState, dispatch }: any) => {
     const { user } = getState().user;
     const { namePath, items } = getState().storage;
-    const currentFolderId: number = storageSelectors.currentFolderId(getState());
-    const filesToUpload: any[] = [];
+
     const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = selectorIsTeam(getState());
+    const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+    const filesToUpload: any[] = [];
+    const uploadErrors: any[] = [];
     const notificationsUuids: string[] = [];
+    const promises: Promise<void>[] = [];
+
+    options = Object.assign({ withNotifications: true }, options || {});
 
     if (showSizeWarning) {
       toast.warn('File too large.\nYou can only upload or download files of up to 1GB through the web app');
       return;
     }
 
-    parentFolderId = parentFolderId || currentFolderId;
-
-    const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-
-    // when a folder and its subdirectory is uploaded by drop, this.state.namePath keeps its value at the first level of the parent folder
-    // so we need to add the relative folderPath (the path from parent folder uploaded to the level of the file being uploaded)
-    // when uploading deeper files than the current level
-    // TODO:
-    /*
-    if (files.folderPath) {
-      if (relativePath !== '') {
-        relativePath += '/' + files.folderPath;
-      } else {
-        // if is the first path level, DO NOT ADD a '/'
-        relativePath += files.folderPath;
-      }
-    }
-    */
-
     files.forEach(file => {
       const { filename, extension } = getFilenameAndExt(file.name);
-
-      filesToUpload.push({ name: filename, size: file.size, type: extension, isLoading: true, content: file });
-    });
-
-    for (const file of filesToUpload) {
-      const fileNameExists = storageService.name.checkFileNameExists(items, file.name, file.type);
-
-      if (parentFolderId === currentFolderId) {
-        //ADD THE FILE FOR UPLOADING TO THE CURRENTCOMMANDERITEMS
-        if (fileNameExists) {
-          const name: string = file.isFolder ?
-            storageService.name.getNewFolderName(file.name, items) :
-            storageService.name.getNewFileName(file.name, file.type, items);
-
-          file.name = name;
-          // File browser object don't allow to rename, so you have to create a new File object with the old one.
-          file.content = renameFile(file.content, file.name);
-        }
-      }
-      const type = file.type === undefined ? null : file.type;
       const notification: NotificationData = {
         uuid: Date.now().toString(),
         action: FileActionTypes.Upload,
         status: FileStatusTypes.Pending,
-        name: file.name,
+        name: filename,
         isFolder: false,
-        type
+        type: extension
       };
+      const nameExists = storageService.name.checkFileNameExists(items, filename, file.type);
+      const finalFilename = filename;
+      const fileContent = file;
 
+      // TODO: rename file if already exists
+
+      filesToUpload.push({ name: finalFilename, size: file.size, type: extension, isLoading: true, content: fileContent });
+
+      if (options?.withNotifications) {
+        dispatch(tasksActions.addNotification(notification));
+      }
       notificationsUuids.push(notification.uuid);
+    });
 
-      dispatch(
-        tasksActions.addNotification(notification)
-      );
-    }
-
-    const uploadErrors: any[] = [];
-
-    const uploadFile = async (notificationUuid, file, path, rateLimited, items) => {
-      const updateProgressCallback = (progress) => {
-        dispatch(tasksActions.updateNotification({
-          uuid: notificationUuid,
-          merge: {
-            status: FileStatusTypes.Uploading,
-            progress
-          }
-        }));
-      };
-
-      dispatch(tasksActions.updateNotification({
-        uuid: notificationUuid,
-        merge: {
-          status: FileStatusTypes.Encrypting
-        }
-      }));
-
-      await storageService.upload.uploadItem(user.email, file, path, isTeam, updateProgressCallback)
-        .then(({ res, data }) => {
-          dispatch(tasksActions.updateNotification({
-            uuid: notificationUuid,
-            merge: { status: FileStatusTypes.Success }
-          }));
-          data.name = file.name;
-          if (currentFolderId === parentFolderId) {
-            dispatch(storageActions.addItems(data));
-          }
-
-          if (res.status === 402) {
-            rateLimited = true;
-            throw new Error('Rate limited');
-          }
-        }).catch((err) => {
-          dispatch(tasksActions.updateNotification({
-            uuid: notificationUuid,
-            merge: { status: FileStatusTypes.Error }
-          }));
-
-          uploadErrors.push(err);
-          console.log(err);
-        }).finally(() => {
-          if (rateLimited) {
-            return new Error('Rate limited');
-          }
-        });
-
-      return uploadErrors;
-    };
-
+    // 2.
     for (const [index, file] of filesToUpload.entries()) {
-
       const type = file.type === undefined ? null : file.type;
       const path = relativePath + '/' + file.name + '.' + type;
+      const notificationUuid = notificationsUuids[index];
+      const updateProgressCallback = (progress) => {
+        if (options?.withNotifications) {
+          dispatch(tasksActions.updateNotification({
+            uuid: notificationUuid,
+            merge: {
+              status: FileStatusTypes.Uploading,
+              progress
+            }
+          }));
+        }
+      };
+      const task = async () => {
+        if (options?.withNotifications) {
+          dispatch(tasksActions.updateNotification({
+            uuid: notificationUuid,
+            merge: {
+              status: FileStatusTypes.Encrypting
+            }
+          }));
+        }
 
-      const rateLimited = false;
+        const { res, data } = await storageService.upload.uploadItem(user.email, file, path, isTeam, updateProgressCallback);
+
+        if (res.status === 402) {
+          throw new Error('Rate limited');
+        }
+      };
 
       file.parentFolderId = parentFolderId;
       file.file = file;
       file.folderPath = folderPath;
 
-      await tasksService.push(() => uploadFile(notificationsUuids[index], file, path, rateLimited, items));
+      promises.push(
+        tasksService.push(task)
+          .then(() => {
+            if (options?.withNotifications) {
+              dispatch(tasksActions.updateNotification({
+                uuid: notificationUuid,
+                merge: { status: FileStatusTypes.Success }
+              }));
+            }
+          })
+          .catch(error => {
+            if (options?.withNotifications) {
+              dispatch(tasksActions.updateNotification({
+                uuid: notificationUuid,
+                merge: { status: FileStatusTypes.Error }
+              }));
+            }
 
-      if (uploadErrors.length > 0) {
-        throw new Error('There were some errors during upload');
-      }
+            uploadErrors.push(error);
+            console.error(error);
+          }));
     }
 
-    return null;
+    await Promise.all(promises);
+
+    if (uploadErrors.length > 0) {
+      throw new Error('There were some errors during upload');
+    }
   });
 
 export const downloadItemsThunk = createAsyncThunk(
@@ -263,6 +285,7 @@ export const downloadItemsThunk = createAsyncThunk(
   async (items: DriveItemData[], { getState, dispatch }: any) => {
     const isTeam: boolean = selectorIsTeam(getState());
     const notificationsUuids: string[] = [];
+    const promises: Promise<void>[] = [];
 
     items.forEach(item => {
       const uuid: string = Date.now().toString();
@@ -288,20 +311,29 @@ export const downloadItemsThunk = createAsyncThunk(
         }
       }));
 
-      dispatch(tasksActions.updateNotification({
-        uuid: notificationsUuids[index],
-        merge: { status: FileStatusTypes.Decrypting }
-      }));
+      promises.push(
+        tasksService.push<void>(() => {
+          dispatch(tasksActions.updateNotification({
+            uuid: notificationsUuids[index],
+            merge: { status: FileStatusTypes.Decrypting }
+          }));
 
-      await downloadService.downloadFile(item, isTeam, updateProgressCallback);
-
-      dispatch(tasksActions.updateNotification({
-        uuid: notificationsUuids[index],
-        merge: {
-          status: FileStatusTypes.Success
-        }
-      }));
+          return downloadService.downloadFile(item, isTeam, updateProgressCallback);
+        }).then(() => {
+          dispatch(tasksActions.updateNotification({
+            uuid: notificationsUuids[index],
+            merge: {
+              status: FileStatusTypes.Success
+            }
+          }));
+        }));
     }
+
+    await Promise.all(promises)
+      .catch((e) => {
+        console.log(e);
+        throw e;
+      });
   });
 
 export const fetchFolderContentThunk = createAsyncThunk(
@@ -370,27 +402,26 @@ export const goToFolderThunk = createAsyncThunk(
 export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
     .addCase(uploadItemsThunk.pending, (state, action) => { })
-    .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
+    .addCase(uploadItemsThunk.fulfilled, (state, action) => {
+      console.log('uploadItemsThunk fulfilled!');
+    })
     .addCase(uploadItemsThunk.rejected, (state, action: any) => {
-      // console.log('uploadItemsThunk rejected: ', action);
-      // if (action.error.message === 'There were some errors during upload') {
-      //   uploadErrors.forEach(uploadError => {
-      //     toast.warn(uploadError.message);
-      //   });
-      // }
-
       toast.warn(action.error.message);
     });
 
   builder
     .addCase(downloadItemsThunk.pending, (state, action) => { })
     .addCase(downloadItemsThunk.fulfilled, (state, action) => { })
-    .addCase(downloadItemsThunk.rejected, (state, action) => { });
+    .addCase(downloadItemsThunk.rejected, (state, action) => {
+      toast.warn(`Error downloading file: \n Reason is ${action.error.message} \n`);
+    });
 
   builder
     .addCase(createFolderTreeStructureThunk.pending, (state, action) => { })
     .addCase(createFolderTreeStructureThunk.fulfilled, (state, action) => { })
-    .addCase(createFolderTreeStructureThunk.rejected, (state, action) => { });
+    .addCase(createFolderTreeStructureThunk.rejected, (state, action) => {
+      console.log('createFolderTreeStructureThunk rejected: ', action.error);
+    });
 
   builder
     .addCase(fetchFolderContentThunk.pending, (state, action) => {

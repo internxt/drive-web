@@ -69,6 +69,7 @@ class DriveView extends Component<DriveViewProps, {}> {
         onItemsDeleted={this.fetchItems}
         onFileUploaded={this.fetchItems}
         onFolderCreated={this.fetchItems}
+        onDragAndDropEnd={this.fetchItems}
       />
     );
   }

@@ -13,7 +13,6 @@ import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, Fo
 
 import './FileGridItem.scss';
 import { ItemAction, Workspace } from '../../../../models/enums';
-import tasksService from '../../../../services/tasks.service';
 
 import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
@@ -182,7 +181,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
     e.stopPropagation();
 
-    tasksService.push(() => dispatch(storageThunks.downloadItemsThunk([item])));
+    dispatch(storageThunks.downloadItemsThunk([item]));
   }
 
   onShareButtonClicked = (): void => {

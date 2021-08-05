@@ -41,6 +41,7 @@ interface FileExplorerProps {
   onItemsDeleted: () => void;
   onFileUploaded: () => void;
   onFolderCreated: () => void;
+  onDragAndDropEnd: () => void;
   user: UserSettings | any;
   currentFolderId: number;
   isDraggingAnItem: boolean;
@@ -130,9 +131,8 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       } else {
         this.dispatchUpload(e);
       }
-
-    } catch (err) {
-      this.dispatchUpload(e);
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -371,11 +371,13 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 
     if (files) {
       // files where dragged directly
-      await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: this.props.currentFolderId, folderPath: folderPath }));
+      await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: this.props.currentFolderId, folderPath: folderPath }))
+        .then(() => this.props.onDragAndDropEnd());
     }
     if (rootList) {
       for (const root of rootList) {
-        await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
+        await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }))
+          .then(() => this.props.onDragAndDropEnd());
       }
     }
 

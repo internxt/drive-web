@@ -29,7 +29,6 @@ export async function downloadFile(itemData: DriveItemData, isTeam: boolean, upd
     trackFileDownloadFinished(userEmail, fileId, itemData.size);
   } catch (err) {
     trackFileDownloadError(userEmail, fileId, err.message);
-    toast.warn(`Error downloading file: \n Reason is ${err.message} \n File id: ${fileId}`);
 
     throw err;
   }
