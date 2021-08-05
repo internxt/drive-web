@@ -281,13 +281,10 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     return (
       <div
         className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
-        draggable={true}
+        draggable={false}
         onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
-        onDragOver={this.onItemDragOver}
-        onDragLeave={this.onItemDragLeave}
-        onDrop={this.onItemDrop}
       >
 
         {/* SELECTION */}

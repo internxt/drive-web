@@ -250,30 +250,27 @@ export const uploadItemsThunk = createAsyncThunk(
       file.file = file;
       file.folderPath = folderPath;
 
-      promises.push(
-        tasksService.push(task)
-          .then(() => {
-            if (options?.withNotifications) {
-              dispatch(tasksActions.updateNotification({
-                uuid: notificationUuid,
-                merge: { status: FileStatusTypes.Success }
-              }));
-            }
-          })
-          .catch(error => {
-            if (options?.withNotifications) {
-              dispatch(tasksActions.updateNotification({
-                uuid: notificationUuid,
-                merge: { status: FileStatusTypes.Error }
-              }));
-            }
+      await task()
+        .then(() => {
+          if (options?.withNotifications) {
+            dispatch(tasksActions.updateNotification({
+              uuid: notificationUuid,
+              merge: { status: FileStatusTypes.Success }
+            }));
+          }
+        })
+        .catch(error => {
+          if (options?.withNotifications) {
+            dispatch(tasksActions.updateNotification({
+              uuid: notificationUuid,
+              merge: { status: FileStatusTypes.Error }
+            }));
+          }
 
-            uploadErrors.push(error);
-            console.error(error);
-          }));
+          uploadErrors.push(error);
+          console.error(error);
+        });
     }
-
-    await Promise.all(promises);
 
     if (uploadErrors.length > 0) {
       throw new Error('There were some errors during upload');
