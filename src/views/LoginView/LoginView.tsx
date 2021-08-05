@@ -104,11 +104,6 @@ class LoginView extends React.Component<LoginViewProps> {
       const data = await res.json();
 
       if (res.status !== 200) {
-        window.analytics.track('user-signin-attempted', {
-          status: 'error',
-          msg: data.error ? data.error : 'Login error',
-          email: this.state.email
-        });
         throw new Error(data.error ? data.error : 'Login error');
       }
 
@@ -124,7 +119,7 @@ class LoginView extends React.Component<LoginViewProps> {
         history.push(`/activate/${this.state.email}`);
       } else {
         this.setState({ isLogingIn: false });
-        window.analytics.track('user-signin-attempted', {
+        window.analytics.track('user-signin-error', {
           status: 'error',
           msg: err.message,
           email: this.state.email
@@ -185,11 +180,13 @@ class LoginView extends React.Component<LoginViewProps> {
         return { res, data: await res.json() };
       }).then(res => {
         if (res.res.status !== 200) {
+          /*
           window.analytics.track('user-signin-attempted', {
             status: 'error',
             msg: res.data.error ? res.data.error : 'Login error',
             email: this.state.email
           });
+          */
           throw new Error(res.data.error ? res.data.error : res.data);
         }
         return res.data;

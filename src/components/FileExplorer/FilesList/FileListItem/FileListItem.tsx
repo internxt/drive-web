@@ -229,28 +229,33 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     e.preventDefault();
     e.stopPropagation();
 
-    const { draggingTargetItemData, dispatch } = this.props;
+    const { draggingTargetItemData, dispatch, namePath } = this.props;
 
     if (draggingTargetItemData && draggingTargetItemData.isFolder) {
-      const namePathDestinationArray = this.props.namePath.map(level => level.name);
+      const namePathDestinationArray = namePath.map(level => level.name);
 
       namePathDestinationArray[0] = '';
-      const folderPath = namePathDestinationArray.join('/') + '/' + draggingTargetItemData.name;
 
+      let folderPath = namePathDestinationArray.join('/');
+
+      folderPath = !draggingTargetItemData.isFolder ? folderPath : folderPath + '/' + draggingTargetItemData.name;
+      const parentFolderId = draggingTargetItemData.isFolder ? draggingTargetItemData.id : this.props.currentFolderId;
       const itemsDragged = await getAllItems(e.dataTransfer);
       const { numberOfItems, rootList, files } = itemsDragged;
 
       if (files) {
         // files where dragged directly
-        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: draggingTargetItemData.id, folderPath: folderPath }));
+        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId, folderPath }));
       }
       if (rootList) {
         for (const root of rootList) {
-          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: draggingTargetItemData.id }));
+          const currentFolderId = parentFolderId;
+
+          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId }));
         }
       }
     }
-    this.props.dispatch(storageActions.setDraggingItemTargetData(null));
+    dispatch(storageActions.setDraggingItemTargetData(null));
   }
 
   render(): ReactNode {
