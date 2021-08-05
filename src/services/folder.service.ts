@@ -7,6 +7,7 @@ import localStorageService from './localStorage.service';
 import analyticsService from './analytics.service';
 import { DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../models/interfaces';
 import { DevicePlatform } from '../models/enums';
+import notify from '../components/Notifications';
 
 export interface IFolders {
   bucket: string
@@ -121,7 +122,12 @@ export async function createFolder(isTeam: boolean, currentFolderId: number | nu
   const responseJSON = await response.json();
 
   if (response.status !== 201) {
-    throw `The folder cannot be created. ${responseJSON.error}`;
+    if (responseJSON.error.includes('already exists')) {
+      notify('Folder with the same name already exists', 'error');
+    } else {
+      notify(responseJSON.error.message || responseJSON.error, 'error');
+    }
+    throw responseJSON.error;
   }
 
   analyticsService.trackFolderCreated({
