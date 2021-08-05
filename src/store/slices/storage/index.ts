@@ -150,6 +150,9 @@ export const storageSlice = createSlice({
     },
     addItems(state: StorageState, action: PayloadAction<DriveItemData>) {
       state.items.push(action.payload);
+    },
+    deleteItem: (state: StorageState, action: PayloadAction<DriveItemData>) => {
+      state.items.filter(item => !item.isFolder && item.id !== action.payload.id);
     }
   },
   extraReducers
@@ -176,7 +179,9 @@ export const {
   pushNamePath,
   popNamePathUpTo,
   pathChangeWorkSpace,
-  resetItemName
+  resetItemName,
+  deleteItem,
+  addItems
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

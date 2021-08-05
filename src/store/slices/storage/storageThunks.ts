@@ -343,7 +343,11 @@ export const deleteItemsThunk = createAsyncThunk(
 
     await storageService.deleteItems(itemsToDelete, isTeam);
 
-    dispatch(fetchFolderContentThunk(currentFolderId));
+    for (const item of itemsToDelete) {
+      dispatch(storageActions.deleteItem(item));
+    }
+
+    //dispatch(fetchFolderContentThunk(currentFolderId));
   }
 );
 
