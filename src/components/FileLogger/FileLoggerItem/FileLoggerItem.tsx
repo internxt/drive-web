@@ -17,18 +17,16 @@ const FileLoggerItem = ({ item }: ItemProps): JSX.Element => {
     [FileStatusTypes.Success]: item.action === FileActionTypes.Download ? 'File downloaded' : 'File uploaded',
     [FileStatusTypes.Error]: item.action === FileActionTypes.Download ? 'Error during download' : 'Error during upload',
     [FileStatusTypes.Encrypting]: 'Encrypting file',
-    [FileStatusTypes.Decrypting]: 'Decrypting file',
-    [FileStatusTypes.CreatingDirectoryStructure]: 'Creating directory structure'
+    [FileStatusTypes.Decrypting]: 'Decrypting file'
   };
   const folderMessagesByStatus = {
-    [FileStatusTypes.Pending]: item.action === FileActionTypes.Download ? 'Pending to download' : 'Pending to upload',
+    [FileStatusTypes.Pending]: item.action === FileActionTypes.Download ? 'Pending to download folder' : 'Pending to upload folder',
     [FileStatusTypes.Uploading]: 'Uploading...',
     [FileStatusTypes.Downloading]: 'Downloading files in folder...',
     [FileStatusTypes.Success]: item.action === FileActionTypes.Download ? 'Folder downloaded' : 'Folder uploaded',
     [FileStatusTypes.Error]: item.action === FileActionTypes.Download ? 'Error during download' : 'Error during upload',
     [FileStatusTypes.Encrypting]: 'Encrypting files',
-    [FileStatusTypes.Decrypting]: 'Decrypting files',
-    [FileStatusTypes.CreatingDirectoryStructure]: 'Creating directory structure'
+    [FileStatusTypes.Decrypting]: 'Decrypting files'
   };
   const fullName = getItemFullName(item.name, item.type);
   const icon: JSX.Element = <IconComponent className='flex items-center justify-center mr-2.5 w-6' />;

@@ -21,7 +21,7 @@ interface UploadItemsPayload {
   files: File[];
   parentFolderId?: number;
   folderPath?: string;
-  options: { withNotifications: boolean }
+  options?: { withNotifications?: boolean }
 }
 
 export const initializeThunk = createAsyncThunk(
@@ -75,7 +75,7 @@ export const createFolderTreeStructureThunk = createAsyncThunk(
       action: FileActionTypes.UploadFolder,
       status: FileStatusTypes.Pending,
       name: root.name,
-      isFolder: false
+      isFolder: true
     };
 
     options = Object.assign({ withNotification: true }, options || {});
@@ -86,8 +86,14 @@ export const createFolderTreeStructureThunk = createAsyncThunk(
 
     // Uploads the root folder
     await folderService.createFolder(isTeam, currentFolderId, root.name).then(async (folderUploaded) => {
-      // Once the root folder is uploaded it uploads the file children
-      dispatch(uploadItemsThunk({ files: root.childrenFiles, parentFolderId: folderUploaded.id, folderPath: root.fullPath }));
+      promises.push(
+        dispatch(uploadItemsThunk({
+          files: root.childrenFiles || [],
+          parentFolderId: folderUploaded.id,
+          folderPath: root.fullPath,
+          options: { withNotifications: false }
+        }))
+      );
       // Once the root folder is uploaded upload folder children
       for (const subTreeRoot of root.childrenFolders) {
         promises.push(dispatch(createFolderTreeStructureThunk({
@@ -166,7 +172,7 @@ export const uploadItemsThunk = createAsyncThunk(
   async ({ files, parentFolderId, folderPath, options }: UploadItemsPayload, { getState, dispatch }: any) => {
     const { user } = getState().user;
     const { namePath, items } = getState().storage;
-    const currentFolderId: number = storageSelectors.currentFolderId(getState());
+
     const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = selectorIsTeam(getState());
     const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
@@ -176,7 +182,6 @@ export const uploadItemsThunk = createAsyncThunk(
     const promises: Promise<void>[] = [];
 
     options = Object.assign({ withNotifications: true }, options || {});
-    parentFolderId = parentFolderId || currentFolderId;
 
     if (showSizeWarning) {
       toast.warn('File too large.\nYou can only upload or download files of up to 1GB through the web app');
@@ -195,19 +200,14 @@ export const uploadItemsThunk = createAsyncThunk(
         type: extension
       };
       const nameExists = storageService.name.checkFileNameExists(items, filename, file.type);
-      let finalFilename = filename;
-      let fileContent = file;
+      const finalFilename = filename;
+      const fileContent = file;
 
-      if (parentFolderId === currentFolderId) {
-        if (nameExists) {
-          finalFilename = storageService.name.getNewFileName(filename, file.type, items);
-          fileContent = renameFile(file, finalFilename);
-        }
-      }
+      // TODO: rename file if already exists
 
       filesToUpload.push({ name: finalFilename, size: file.size, type: extension, isLoading: true, content: fileContent });
 
-      if (options.withNotifications) {
+      if (options?.withNotifications) {
         dispatch(tasksActions.addNotification(notification));
       }
       notificationsUuids.push(notification.uuid);
@@ -219,7 +219,7 @@ export const uploadItemsThunk = createAsyncThunk(
       const path = relativePath + '/' + file.name + '.' + type;
       const notificationUuid = notificationsUuids[index];
       const updateProgressCallback = (progress) => {
-        if (options.withNotifications) {
+        if (options?.withNotifications) {
           dispatch(tasksActions.updateNotification({
             uuid: notificationUuid,
             merge: {
@@ -230,7 +230,7 @@ export const uploadItemsThunk = createAsyncThunk(
         }
       };
       const task = async () => {
-        if (options.withNotifications) {
+        if (options?.withNotifications) {
           dispatch(tasksActions.updateNotification({
             uuid: notificationUuid,
             merge: {
@@ -250,10 +250,10 @@ export const uploadItemsThunk = createAsyncThunk(
       file.file = file;
       file.folderPath = folderPath;
 
-      promises.push(new Promise((resolve) => {
+      promises.push(
         tasksService.push(task)
           .then(() => {
-            if (options.withNotifications) {
+            if (options?.withNotifications) {
               dispatch(tasksActions.updateNotification({
                 uuid: notificationUuid,
                 merge: { status: FileStatusTypes.Success }
@@ -261,7 +261,7 @@ export const uploadItemsThunk = createAsyncThunk(
             }
           })
           .catch(error => {
-            if (options.withNotifications) {
+            if (options?.withNotifications) {
               dispatch(tasksActions.updateNotification({
                 uuid: notificationUuid,
                 merge: { status: FileStatusTypes.Error }
@@ -270,9 +270,7 @@ export const uploadItemsThunk = createAsyncThunk(
 
             uploadErrors.push(error);
             console.error(error);
-          })
-          .finally(() => resolve());
-      }));
+          }));
     }
 
     await Promise.all(promises);
@@ -313,28 +311,29 @@ export const downloadItemsThunk = createAsyncThunk(
         }
       }));
 
-      promises.push(new Promise((resolve) => {
-        tasksService.push(() => {
+      promises.push(
+        tasksService.push<void>(() => {
           dispatch(tasksActions.updateNotification({
             uuid: notificationsUuids[index],
             merge: { status: FileStatusTypes.Decrypting }
           }));
 
           return downloadService.downloadFile(item, isTeam, updateProgressCallback);
-        }, () => {
+        }).then(() => {
           dispatch(tasksActions.updateNotification({
             uuid: notificationsUuids[index],
             merge: {
               status: FileStatusTypes.Success
             }
           }));
-
-          resolve();
-        });
-      }));
+        }));
     }
 
-    await Promise.all(promises);
+    await Promise.all(promises)
+      .catch((e) => {
+        console.log(e);
+        throw e;
+      });
   });
 
 export const fetchFolderContentThunk = createAsyncThunk(
@@ -409,12 +408,16 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
   builder
     .addCase(downloadItemsThunk.pending, (state, action) => { })
     .addCase(downloadItemsThunk.fulfilled, (state, action) => { })
-    .addCase(downloadItemsThunk.rejected, (state, action) => { });
+    .addCase(downloadItemsThunk.rejected, (state, action) => {
+      toast.warn(`Error downloading file: \n Reason is ${action.error.message} \n`);
+    });
 
   builder
     .addCase(createFolderTreeStructureThunk.pending, (state, action) => { })
     .addCase(createFolderTreeStructureThunk.fulfilled, (state, action) => { })
-    .addCase(createFolderTreeStructureThunk.rejected, (state, action) => { });
+    .addCase(createFolderTreeStructureThunk.rejected, (state, action) => {
+      console.log('createFolderTreeStructureThunk rejected: ', action.error);
+    });
 
   builder
     .addCase(fetchFolderContentThunk.pending, (state, action) => {

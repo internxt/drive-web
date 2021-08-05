@@ -10,7 +10,6 @@ import './FileListItem.scss';
 import dateService from '../../../../services/date.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
-import tasksService from '../../../../services/tasks.service';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
@@ -175,7 +174,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     e.stopPropagation();
 
-    tasksService.push(() => dispatch(storageThunks.downloadItemsThunk([item])));
+    dispatch(storageThunks.downloadItemsThunk([item]));
   }
 
   onShareButtonClicked = (e: MouseEvent): void => {

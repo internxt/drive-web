@@ -45,6 +45,7 @@ class RecentsView extends Component<RecentsViewProps, {}> {
         onItemsDeleted={this.refreshRecents}
         onFileUploaded={this.redirectToDrive}
         onFolderCreated={this.redirectToDrive}
+        onDragAndDropEnd={this.redirectToDrive}
       />
     );
   }
