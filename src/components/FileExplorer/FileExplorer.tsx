@@ -364,9 +364,14 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     const { numberOfItems, rootList, files } = itemsDragged;
     const { dispatch } = this.props;
 
+    const namePathDestinationArray = this.props.namePath.map(level => level.name);
+
+    namePathDestinationArray[0] = '';
+    const folderPath = namePathDestinationArray.join('/');
+
     if (files) {
       // files where dragged directly
-      await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: this.props.currentFolderId, folderPath: '' }));
+      await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: this.props.currentFolderId, folderPath: folderPath }));
     }
     if (rootList) {
       for (const root of rootList) {
