@@ -16,7 +16,8 @@ export enum FileStatusTypes {
 
 export enum FileActionTypes {
   Download = 'download',
-  Upload = 'upload'
+  Upload = 'upload',
+  UploadFolder = 'upload-folder'
 }
 
 export enum ItemAction {

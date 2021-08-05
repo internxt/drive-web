@@ -1,8 +1,8 @@
-import { queue } from 'async';
+import { queue, QueueObject } from 'async';
 
-const tasksService: queue = queue(async (task: () => Promise<void>, callBack) => {
+const tasksService: QueueObject<any> = queue(async (task: () => Promise<void>, callback) => {
   await task();
-  callBack();
+  callback();
 }, 1);
 
 export default tasksService;
