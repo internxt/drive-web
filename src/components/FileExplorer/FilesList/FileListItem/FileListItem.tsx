@@ -312,9 +312,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
                 <Unicons.UilCloudDownload className="h-5" />
               </button> : null
             }
-            <button onClick={this.onShareButtonClicked} className="hover-action mr-4">
-              <Unicons.UilShareAlt className="h-5" />
-            </button>
+            {!item.isFolder ?
+              <button onClick={this.onShareButtonClicked} className="hover-action mr-4">
+                <Unicons.UilShareAlt className="h-5" />
+              </button> : null
+            }
             <button onClick={this.onDeleteButtonClicked} className="hover-action">
               <Unicons.UilTrashAlt className="h-5" />
             </button>
@@ -335,7 +337,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <FileDropdownActions
-                hiddenActions={item.isFolder ? [ItemAction.Download] : []}
+                hiddenActions={item.isFolder ? [ItemAction.Download, ItemAction.Share] : []}
                 onRenameButtonClicked={this.onRenameButtonClicked}
                 onDownloadButtonClicked={this.onDownloadButtonClicked}
                 onShareButtonClicked={this.onShareButtonClicked}
