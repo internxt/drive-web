@@ -32,7 +32,8 @@ const CreateFolderDialog = ({
   const isTeam: boolean = useAppSelector((state) => selectorIsTeam(state));
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
-  const createButtonLabel = isValid ? 'Create' : 'Create';
+  const createButtonLabel = isValid ?
+    isLoading ? 'Creating...' : 'Create' : 'Create';
 
   const onClose = (): void => {
     reset();
@@ -41,12 +42,12 @@ const CreateFolderDialog = ({
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
     try {
+      setIsLoading(true);
       const data = await folderService.createFolder(isTeam, currentFolderId, formData.createFolder);
 
-      dispatch(storageActions.addItems(data));
-
       dispatch(uiActions.setIsCreateFolderDialogOpen(false));
-      reset();
+
+      dispatch(storageActions.addItems(data));
 
       onFolderCreated && onFolderCreated();
 
@@ -83,7 +84,8 @@ const CreateFolderDialog = ({
             <BaseButton classes='cancel w-full mr-4' onClick={() => onClose()}>
               Cancel
             </BaseButton>
-            <BaseButton classes="w-full primary border" disabled={isLoading || !isValid}>
+            <BaseButton classes="w-full primary border" disabled={isLoading || !isValid}
+            >
               {createButtonLabel}
             </BaseButton>
           </div>
