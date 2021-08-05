@@ -9,6 +9,7 @@ interface UISliceState {
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
+  currentAccountTab: string
 }
 
 const initialState: UISliceState = {
@@ -19,7 +20,8 @@ const initialState: UISliceState = {
   isReachedPlanLimitDialogOpen: false,
   isShareItemDialogOpen: false,
   isInviteMemberDialogOpen: false,
-  isDriveItemInfoMenuOpen: false
+  isDriveItemInfoMenuOpen: false,
+  currentAccountTab: 'billing'
 };
 
 export const uiSlice = createSlice({
@@ -49,6 +51,9 @@ export const uiSlice = createSlice({
     },
     setIsDriveItemInfoMenuOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDriveItemInfoMenuOpen = action.payload;
+    },
+    setCurrentAccountTab: (state: UISliceState, action: PayloadAction<string>) => {
+      state.currentAccountTab = action.payload;
     }
   }
 });
@@ -60,7 +65,8 @@ export const {
   setIsReachedPlanLimitDialogOpen,
   setIsShareItemDialogOpen,
   setIsInviteMemberDialogOpen,
-  setIsDriveItemInfoMenuOpen
+  setIsDriveItemInfoMenuOpen,
+  setCurrentAccountTab
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

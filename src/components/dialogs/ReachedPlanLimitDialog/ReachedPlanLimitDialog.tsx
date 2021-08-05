@@ -3,7 +3,7 @@ import BaseDialog from '../BaseDialog/BaseDialog';
 import history from '../../../lib/history';
 
 import './ReachedPlanLimitDialog.scss';
-import { uiActions } from '../../../store/slices/ui';
+import { setCurrentAccountTab, uiActions } from '../../../store/slices/ui';
 
 const ReachedPlanLimitDialog = (): JSX.Element => {
   const isOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
@@ -15,8 +15,9 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
 
   const onAccept = async (): Promise<void> => {
     try {
-      history.push('/account');
+      dispatch(setCurrentAccountTab('plans'));
       dispatch(uiActions.setIsReachedPlanLimitDialogOpen(false));
+      history.push('/account');
     } catch (e) {
       console.log(e);
     }
