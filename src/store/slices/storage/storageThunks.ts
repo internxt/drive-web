@@ -311,25 +311,20 @@ export const downloadItemsThunk = createAsyncThunk(
         }
       }));
 
-      promises.push(
-        tasksService.push<void>(() => {
-          dispatch(tasksActions.updateNotification({
-            uuid: notificationsUuids[index],
-            merge: { status: FileStatusTypes.Decrypting }
-          }));
+      dispatch(tasksActions.updateNotification({
+        uuid: notificationsUuids[index],
+        merge: { status: FileStatusTypes.Decrypting }
+      }));
 
-          return downloadService.downloadFile(item, isTeam, updateProgressCallback);
-        }).then(() => {
-          dispatch(tasksActions.updateNotification({
-            uuid: notificationsUuids[index],
-            merge: {
-              status: FileStatusTypes.Success
-            }
-          }));
+      await downloadService.downloadFile(item, isTeam, updateProgressCallback).then(() => {
+        dispatch(tasksActions.updateNotification({
+          uuid: notificationsUuids[index],
+          merge: {
+            status: FileStatusTypes.Success
+          }
         }));
+      });
     }
-
-    await Promise.all(promises);
   });
 
 export const fetchFolderContentThunk = createAsyncThunk(
