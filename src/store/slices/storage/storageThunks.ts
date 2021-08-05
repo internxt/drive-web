@@ -5,17 +5,17 @@ import { storageActions, storageSelectors, StorageState } from '.';
 import { getFilenameAndExt, renameFile } from '../../../lib/utils';
 import folderService from '../../../services/folder.service';
 import storageService from '../../../services/storage.service';
-import queueFileLogger from '../../../services/queueFileLogger';
-import { updateFileStatusLogger } from '../files';
+import tasksService from '../../../services/tasks.service';
 import downloadService from '../../../services/download.service';
 import _ from 'lodash';
 import { selectorIsTeam } from '../team';
-import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interfaces';
+import { DriveFileData, DriveItemData, FolderPath, NotificationData } from '../../../models/interfaces';
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 import fileService from '../../../services/file.service';
 import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../lib/constants';
 import { uiActions } from '../ui';
+import { tasksActions } from '../tasks';
 
 interface UploadItemsPayload {
   files: File[];
@@ -53,10 +53,10 @@ export const fetchRecentsThunk = createAsyncThunk(
     dispatch(storageActions.clearSelectedItems());
     dispatch(storageActions.setRecents(recents));
   });
-  interface CreateFolderTreeStructurePayload {
-    root: IRoot,
-    currentFolderId: number
-  }
+interface CreateFolderTreeStructurePayload {
+  root: IRoot,
+  currentFolderId: number
+}
 interface IRoot extends DirectoryEntry {
   childrenFiles: File[],
   childrenFolders: IRoot[]
@@ -118,9 +118,9 @@ export const uploadItemsThunk = createAsyncThunk(
     const { namePath, items } = getState().storage;
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
     const filesToUpload: any[] = [];
-    const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
     const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = selectorIsTeam(getState());
+    const notificationsUuids: string[] = [];
 
     if (showSizeWarning) {
       toast.warn('File too large.\nYou can only upload or download files of up to 1GB through the web app');
@@ -166,34 +166,58 @@ export const uploadItemsThunk = createAsyncThunk(
         }
       }
       const type = file.type === undefined ? null : file.type;
-      const path = relativePath + '/' + file.name + '.' + type;
+      const notification: NotificationData = {
+        uuid: Date.now().toString(),
+        action: FileActionTypes.Upload,
+        status: FileStatusTypes.Pending,
+        name: file.name,
+        isFolder: false,
+        type
+      };
 
-      dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Pending, filePath: path, isFolder: false, type }));
+      notificationsUuids.push(notification.uuid);
 
+      dispatch(
+        tasksActions.addNotification(notification)
+      );
     }
 
     const uploadErrors: any[] = [];
 
-    const uploadFile = async (file, path, rateLimited, items) => {
-      const { filename, extension } = getFilenameAndExt(file.name);
+    const uploadFile = async (notificationUuid, file, path, rateLimited, items) => {
+      const updateProgressCallback = (progress) => {
+        dispatch(tasksActions.updateNotification({
+          uuid: notificationUuid,
+          merge: {
+            status: FileStatusTypes.Uploading,
+            progress
+          }
+        }));
+      };
 
-      await storageService.upload.uploadItem(user.email, file, path, dispatch, isTeam)
+      dispatch(tasksActions.updateNotification({
+        uuid: notificationUuid,
+        merge: {
+          status: FileStatusTypes.Encrypting
+        }
+      }));
+
+      await storageService.upload.uploadItem(user.email, file, path, isTeam, updateProgressCallback)
         .then(({ res, data }) => {
-          dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Success, filePath: path, isFolder: false, type: extension }));
-
-          // if (parentFolderId === currentFolderId) {
-          //const index = items.findIndex((obj) => obj.name === file.name);
-
-          //   items[index].fileId = data.fileId;
-          //   items[index].id = data.id;
-          // }
+          dispatch(tasksActions.updateNotification({
+            uuid: notificationUuid,
+            merge: { status: FileStatusTypes.Success }
+          }));
 
           if (res.status === 402) {
             rateLimited = true;
             throw new Error('Rate limited');
           }
         }).catch((err) => {
-          dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Error, filePath: path, isFolder: false, type: extension }));
+          dispatch(tasksActions.updateNotification({
+            uuid: notificationUuid,
+            merge: { status: FileStatusTypes.Error }
+          }));
 
           uploadErrors.push(err);
           console.log(err);
@@ -202,10 +226,11 @@ export const uploadItemsThunk = createAsyncThunk(
             return new Error('Rate limited');
           }
         });
+
       return uploadErrors;
     };
 
-    for (const file of filesToUpload) {
+    for (const [index, file] of filesToUpload.entries()) {
 
       const type = file.type === undefined ? null : file.type;
       const path = relativePath + '/' + file.name + '.' + type;
@@ -216,7 +241,7 @@ export const uploadItemsThunk = createAsyncThunk(
       file.file = file;
       file.folderPath = folderPath;
 
-      await queueFileLogger.push(() => uploadFile(file, path, rateLimited, items));
+      await tasksService.push(() => uploadFile(notificationsUuids[index], file, path, rateLimited, items));
 
       if (uploadErrors.length > 0) {
         throw new Error('There were some errors during upload');
@@ -228,15 +253,47 @@ export const uploadItemsThunk = createAsyncThunk(
 
 export const downloadItemsThunk = createAsyncThunk(
   'storage/downloadItems',
-  async (items: DriveFileData[], { getState, dispatch }: any) => {
-    const { namePath } = getState().storage;
+  async (items: DriveItemData[], { getState, dispatch }: any) => {
     const isTeam: boolean = selectorIsTeam(getState());
-    const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+    const notificationsUuids: string[] = [];
 
-    for (const item of items) {
-      const path = relativePath + '/' + item.name + '.' + item.type;
+    items.forEach(item => {
+      const uuid: string = Date.now().toString();
+      const notification: NotificationData = {
+        uuid,
+        action: FileActionTypes.Download,
+        status: FileStatusTypes.Pending,
+        name: item.name,
+        type: item.type,
+        isFolder: item.isFolder
+      };
 
-      await queueFileLogger.push(() => downloadService.downloadFile(item, path, dispatch, isTeam));
+      notificationsUuids.push(uuid);
+      dispatch(tasksActions.addNotification(notification));
+    });
+
+    for (const [index, item] of items.entries()) {
+      const updateProgressCallback = (progress: number) => dispatch(tasksActions.updateNotification({
+        uuid: notificationsUuids[index],
+        merge: {
+          status: FileStatusTypes.Downloading,
+          progress
+        }
+      }));
+
+      dispatch(tasksActions.updateNotification({
+        uuid: notificationsUuids[index],
+        merge: { status: FileStatusTypes.Decrypting }
+      }));
+
+      await downloadService.downloadFile(item, isTeam, updateProgressCallback);
+
+      dispatch(tasksActions.updateNotification({
+        uuid: notificationsUuids[index],
+        merge: {
+          status: FileStatusTypes.Success
+        }
+      }));
     }
   });
 

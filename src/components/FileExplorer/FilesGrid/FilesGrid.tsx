@@ -5,9 +5,12 @@ import FileGridItem from './FileGridItem/FileGridItem';
 import { RootState } from '../../../store';
 
 import './FilesGrid.scss';
+import { DriveItemData } from '../../../models/interfaces';
+import DriveGridItemSkeleton from '../../skinSkeleton/DriveGridItemSkeleton';
 
 interface FilesGridProps {
-  items: any[];
+  isLoading: boolean;
+  items: DriveItemData[];
 }
 
 interface FilesGridState { }
@@ -19,6 +22,12 @@ class FilesGrid extends React.Component<FilesGridProps, FilesGridState> {
     this.state = {};
   }
 
+  get loadingSkeleton(): JSX.Element[] {
+    return Array(10).fill(0).map((n, i) => (
+      <DriveGridItemSkeleton key={i}/>
+    ));
+  }
+
   get itemsList(): JSX.Element[] {
     return this.props.items.map((item: any, index: number) =>
       <FileGridItem
@@ -28,12 +37,14 @@ class FilesGrid extends React.Component<FilesGridProps, FilesGridState> {
   }
 
   render(): ReactNode {
+    const { isLoading } = this.props;
+
     return (
       <div className="files-grid pointer-events-none flex-grow">
-        {this.itemsList}
+        {isLoading ? this.loadingSkeleton : this.itemsList}
       </div>
     );
   }
 }
 
-export default connect((state: RootState) => ({ }))(FilesGrid);
+export default connect((state: RootState) => ({}))(FilesGrid);

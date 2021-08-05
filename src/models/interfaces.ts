@@ -96,18 +96,24 @@ export interface DriveFileMetadataPayload {
 
 export type DriveItemData = DriveFileData & DriveFolderData
 
-export interface ILoggerFile {
+export interface NotificationData {
+  uuid: string;
   isFolder: boolean;
   type?: string;
-  filePath: string,
-  action: FileActionTypes,
-  status: FileStatusTypes,
-  progress?: string
+  name: string;
+  action: FileActionTypes;
+  status: FileStatusTypes;
+  progress?: number;
 }
 
-export interface ILogger {
-  [filePath: string]: ILoggerFile
+export interface UpdateNotificationPayload {
+  uuid: string;
+  merge: {
+    status?: FileStatusTypes;
+    progress?: number;
+  }
 }
+
 export interface IFormValues {
   name: string,
   lastname: string,

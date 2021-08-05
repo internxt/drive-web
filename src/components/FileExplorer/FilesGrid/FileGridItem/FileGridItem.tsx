@@ -1,4 +1,4 @@
-import React, { DragEvent, Fragment, ReactNode } from 'react';
+import React, { MouseEvent, DragEvent, Fragment, ReactNode } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import * as Unicons from '@iconscout/react-unicons';
 
@@ -10,16 +10,14 @@ import fileService from '../../../../services/file.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { connect } from 'react-redux';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
-import downloadService from '../../../../services/download.service';
 
 import './FileGridItem.scss';
-import { FileActionTypes, FileStatusTypes, ItemAction, Workspace } from '../../../../models/enums';
-import queueFileLogger from '../../../../services/queueFileLogger';
+import { ItemAction, Workspace } from '../../../../models/enums';
+import tasksService from '../../../../services/tasks.service';
 
 import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
 import { uiActions } from '../../../../store/slices/ui';
-import { updateFileStatusLogger } from '../../../../store/slices/files';
 import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
 import { getAllItems } from '../../../../services/dragAndDrop.service';
 interface FileGridItemProps {
@@ -167,17 +165,11 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 
   onDownloadButtonClicked = (e: MouseEvent): void => {
-    const { item, namePath } = this.props;
-    const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-    const path = relativePath + '/' + item.name;
+    const { item, dispatch } = this.props;
 
     e.stopPropagation();
-    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
-    const isFolder = item.fileId ? false : true;
-
-    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, type: item.type, isFolder }));
-    queueFileLogger.push(() => downloadService.downloadFile(item, path, this.props.dispatch, isTeam));
+    tasksService.push(() => dispatch(storageThunks.downloadItemsThunk([item])));
   }
 
   onShareButtonClicked = (): void => {
@@ -219,6 +211,14 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     if (item.isFolder) {
       dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
     }
+  }
+
+  onItemDragStart = (e: DragEvent<HTMLDivElement>): void => {
+    // TODO: drag start handler
+  }
+
+  onItemDragEnd = (e: DragEvent<HTMLDivElement>): void => {
+    // TODO: drag end handler
   }
 
   onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
@@ -286,6 +286,9 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
         onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
+        draggable={true}
+        onDragStart={this.onItemDragStart}
+        onDragEnd={this.onItemDragEnd}
         onDragOver={this.onItemDragOver}
         onDragLeave={this.onItemDragLeave}
         onDrop={this.onItemDrop}

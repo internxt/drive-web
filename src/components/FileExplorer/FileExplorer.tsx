@@ -20,7 +20,6 @@ import DriveItemInfoMenu from '../DriveItemInfoMenu/DriveItemInfoMenu';
 import { FileViewMode } from '../../models/enums';
 import FilesList from './FilesList/FilesList';
 import FilesGrid from './FilesGrid/FilesGrid';
-import LoadingFileExplorer from '../LoadingFileExplorer/LoadingFileExplorer';
 import folderEmptyImage from '../../assets/images/folder-empty.png';
 import noResultsSearchImage from '../../assets/images/no-results-search.png';
 import { uiActions } from '../../store/slices/ui';
@@ -401,9 +400,10 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       [FileViewMode.Grid]: <Unicons.UilListUiAlt />
     };
     const viewModes = {
-      [FileViewMode.List]: <FilesList items={items} />,
-      [FileViewMode.Grid]: <FilesGrid items={items} />
+      [FileViewMode.List]: FilesList,
+      [FileViewMode.Grid]: FilesGrid
     };
+    const ViewModeComponent = viewModes[viewMode];
 
     return (
       <Fragment>
@@ -445,10 +445,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
                 onDrop={this.onViewDrop}
                 className="flex flex-col justify-between flex-grow overflow-y-auto overflow-x-hidden"
               >
-                {isLoading ?
-                  <LoadingFileExplorer /> :
-                  viewModes[viewMode]
-                }
+                <ViewModeComponent items={items} isLoading={isLoading} />
               </div>
 
               {/* PAGINATION */}

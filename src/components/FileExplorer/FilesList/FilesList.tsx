@@ -7,8 +7,10 @@ import { AppDispatch, RootState } from '../../../store';
 import { connect } from 'react-redux';
 import { storageActions } from '../../../store/slices/storage';
 import { DriveItemData } from '../../../models/interfaces';
+import DriveListItemSkeleton from '../../skinSkeleton/DriveListItemSkeleton';
 
 interface FilesListProps {
+  isLoading: boolean;
   items: DriveItemData[];
   selectedItems: DriveItemData[];
   dispatch: AppDispatch;
@@ -21,6 +23,10 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
     super(props);
 
     this.state = {};
+  }
+
+  get hasItems(): boolean {
+    return this.props.items.length > 0;
   }
 
   get itemsList(): JSX.Element[] {
@@ -38,6 +44,12 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
     return selectedItems.length === files.length && files.length > 0;
   }
 
+  get loadingSkeleton(): JSX.Element[] {
+    return Array(10).fill(0).map((n, i) => (
+      <DriveListItemSkeleton key={i} />
+    ));
+  }
+
   onSelectAllButtonClicked = () => {
     const { dispatch, items } = this.props;
     const files: DriveItemData[] = items.filter(item => !item.isFolder);
@@ -48,12 +60,14 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
   }
 
   render(): ReactNode {
+    const { isLoading } = this.props;
+
     return (
       <div className="pointer-events-none flex-grow bg-white">
         <div className="pointer-events-none w-full">
           <div className="files-list flex border-b border-l-neutral-30 bg-white text-neutral-500 py-2 text-sm">
-            <div className="w-0.5/12 px-3 rounded-tl-4px flex items-center justify-center box-content">
-              <input readOnly checked={this.isAllSelected} onClick={this.onSelectAllButtonClicked} type="checkbox" className="pointer-events-auto" />
+            <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
+              <input disabled={!this.hasItems} readOnly checked={this.isAllSelected} onClick={this.onSelectAllButtonClicked} type="checkbox" className="pointer-events-auto" />
             </div>
             <div className="w-0.5/12 px-3 flex items-center box-content">Type</div>
             <div className="flex-grow flex items-center">Name</div>
@@ -62,7 +76,7 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
             <div className="w-2/12 flex items-center">Size</div>
             <div className="w-1/12 flex items-center rounded-tr-4px">Actions</div>
           </div>
-          {this.itemsList}
+          {isLoading ? this.loadingSkeleton : this.itemsList}
         </div>
       </div>
     );

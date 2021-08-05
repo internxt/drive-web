@@ -10,15 +10,13 @@ import './FileListItem.scss';
 import dateService from '../../../../services/date.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { storageActions, storageSelectors, storageThunks } from '../../../../store/slices/storage';
-import downloadService from '../../../../services/download.service';
+import tasksService from '../../../../services/tasks.service';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import fileService from '../../../../services/file.service';
 import iconService from '../../../../services/icon.service';
-import { FileActionTypes, FileStatusTypes, ItemAction, Workspace } from '../../../../models/enums';
-import queueFileLogger from '../../../../services/queueFileLogger';
+import { ItemAction, Workspace } from '../../../../models/enums';
 import { uiActions } from '../../../../store/slices/ui';
-import { updateFileStatusLogger } from '../../../../store/slices/files';
 import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
 import { getAllItems } from '../../../../services/dragAndDrop.service';
 
@@ -37,7 +35,6 @@ interface FileListItemProps {
 
 interface FileListItemState {
   isEditingName: boolean;
-  showContextMenu: boolean;
   dirtyName: string;
   nameInputRef: React.RefObject<HTMLInputElement>;
 }
@@ -48,7 +45,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     this.state = {
       isEditingName: false,
-      showContextMenu: false,
       dirtyName: '',
       nameInputRef: React.createRef()
     };
@@ -152,16 +148,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
   onItemRightClicked = (e: MouseEvent): void => {
     e.preventDefault();
-
-    document.removeEventListener('click', this.onOutsideContextMenuClicked);
-    document.addEventListener('click', this.onOutsideContextMenuClicked);
-
-    this.setState({ showContextMenu: true });
-  }
-
-  onOutsideContextMenuClicked = (): void => {
-    document.removeEventListener('click', this.onOutsideContextMenuClicked);
-    this.setState({ showContextMenu: false });
   }
 
   onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -185,17 +171,11 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   onDownloadButtonClicked = (e: MouseEvent): void => {
-    const { item, namePath } = this.props;
-    const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-    const path = relativePath + '/' + item.name;
+    const { item, dispatch } = this.props;
 
     e.stopPropagation();
-    const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
-    const isFolder = item.fileId ? false : true;
-
-    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, type: item.type, isFolder }));
-    queueFileLogger.push(() => downloadService.downloadFile(item, path, this.props.dispatch, isTeam));
+    tasksService.push(() => dispatch(storageThunks.downloadItemsThunk([item])));
   }
 
   onShareButtonClicked = (e: MouseEvent): void => {
@@ -285,6 +265,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     return (
       <div
         className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
+        draggable={true}
         onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
