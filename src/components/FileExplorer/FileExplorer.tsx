@@ -8,7 +8,7 @@ import * as Unicons from '@iconscout/react-unicons';
 import { removeAccents } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
 
-import { DriveFileData, DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
+import { DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
 import analyticsService from '../../services/analytics.service';
 import { DevicePlatform, Workspace } from '../../models/enums';
 
@@ -32,16 +32,20 @@ import deviceService from '../../services/device.service';
 import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
 import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
 
+import { getAllItems } from '../../services/dragAndDrop.service';
+import DeleteItemsDialog from '../dialogs/DeleteItemsDialog/DeleteItemsDialog';
+
 interface FileExplorerProps {
   title: JSX.Element | string;
   isLoading: boolean;
   items: DriveItemData[];
+  onItemsDeleted: () => void;
   onFileUploaded: () => void;
   onFolderCreated: () => void;
   user: UserSettings | any;
   currentFolderId: number;
   isDraggingAnItem: boolean;
-  selectedItems: DriveFileData[];
+  selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
   itemToShareId: number;
@@ -163,11 +167,9 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   }
 
   onPreviousPageButtonClicked = (): void => {
-    console.log('previous page button clicked!');
   }
 
   onNextPageButtonClicked = (): void => {
-    console.log('next page button clicked!');
   }
 
   getTeamByUser = () => {
@@ -354,13 +356,30 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     this.props.dispatch(storageActions.setIsDraggingAnItem(false));
   }
 
-  onViewDrop = (e: DragEvent<HTMLDivElement>): void => {
+  onViewDrop = async (e: DragEvent<HTMLDivElement>): Promise<void> => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log('onViewDrop');
+    const itemsDragged = await getAllItems(e.dataTransfer);
+    const { numberOfItems, rootList, files } = itemsDragged;
+    const { dispatch } = this.props;
 
-    this.props.dispatch(storageActions.setIsDraggingAnItem(false));
+    const namePathDestinationArray = this.props.namePath.map(level => level.name);
+
+    namePathDestinationArray[0] = '';
+    const folderPath = namePathDestinationArray.join('/');
+
+    if (files) {
+      // files where dragged directly
+      await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: this.props.currentFolderId, folderPath: folderPath }));
+    }
+    if (rootList) {
+      for (const root of rootList) {
+        await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
+      }
+    }
+
+    dispatch(storageActions.setIsDraggingAnItem(false));
   }
 
   render(): ReactNode {
@@ -371,7 +390,9 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       isDraggingAnItem,
       title,
       items,
+      isDeleteItemsDialogOpen,
       isCreateFolderDialogOpen,
+      onItemsDeleted,
       onFolderCreated
     } = this.props;
     const { fileInputRef } = this.state;
@@ -386,10 +407,11 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 
     return (
       <Fragment>
+        {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
-        <div className="flex flex-grow h-1 ">
-          <div className="flex-grow flex flex-col">
+        <div className="flex flex-grow h-1 max-w-full w-full">
+          <div className="flex-grow flex flex-col w-1">
             <div className="flex justify-between pb-4">
               <div className="text-lg">
                 {title}
@@ -490,7 +512,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
           </div>
 
           {
-            infoItemId ? <DriveItemInfoMenu/> : null
+            infoItemId ? <DriveItemInfoMenu /> : null
           }
         </div>
       </Fragment>

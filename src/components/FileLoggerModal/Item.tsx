@@ -1,6 +1,7 @@
 import { FileActionTypes, FileStatusTypes } from '../../models/enums';
 import { ILoggerFile } from '../../models/interfaces';
 import iconService from '../../services/icon.service';
+import { getItemFullName } from '../../services/storage.service/storage-name.service';
 
 interface ItemProps {
   item: ILoggerFile
@@ -8,7 +9,7 @@ interface ItemProps {
 
 const Item = ({ item }: ItemProps): JSX.Element => {
   const statusClassName = item.status === 'success' || item.status === 'error' ? '' : 'opacity-50';
-  const IconComponent = iconService.getItemIcon(item.type || '');
+  const IconComponent = iconService.getItemIcon(item.isFolder, item.type || '');
   const fileMessagesByStatus = {
     [FileStatusTypes.Pending]: item.action === FileActionTypes.Download ? 'Pending to download' : 'Pending to upload',
     [FileStatusTypes.Uploading]: item.progress + '% Uploading file...',
@@ -29,7 +30,7 @@ const Item = ({ item }: ItemProps): JSX.Element => {
     [FileStatusTypes.Decrypting]: 'Decrypting files',
     [FileStatusTypes.CreatingDirectoryStructure]: 'Creating directory structure'
   };
-  const name = item.filePath.substr(item.filePath.lastIndexOf('/') + 1);
+  const name = getItemFullName(item.filePath.substr(item.filePath.lastIndexOf('/') + 1), item.type);
   const icon: JSX.Element = <IconComponent className='flex items-center justify-center mr-2.5 w-6' />;
   const message: string = item.isFolder ?
     folderMessagesByStatus[item.status] :

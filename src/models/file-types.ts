@@ -131,7 +131,8 @@ const xlsExtensions: FileExtensionMap = {
 };
 
 const xmlExtensions: FileExtensionMap = {
-  'xml': ['xml', 'xsl', 'xsd']
+  'xml': ['xml', 'xsl', 'xsd'],
+  'svg': ['svg']
 };
 
 const zipExtensions: FileExtensionMap = {

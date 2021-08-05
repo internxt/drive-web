@@ -48,7 +48,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
           </button>
 
           <div>
-            <div className="py-3 mb-2">
+            <div className="py-3 mb-1.5">
               {collapsed ?
                 <img className='opacity-0 w-6 sidenav-logo' src={smallLogo} alt="" /> :
                 <div className="w-28 h-auto flex items-center" onClick={() => {
@@ -60,7 +60,6 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
             </div>
 
             <div className={`${!collapsed ? 'mb-10' : ''}`}>
-              <span className='h-3 text-xs text-m-neutral-100 font-semibold mb-4'>{!collapsed && 'Storage'}</span>
               <SidenavItem
                 label='Drive'
                 to="/app"

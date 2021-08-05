@@ -1,36 +1,36 @@
-import { useEffect, useState } from 'react';
-import { UilClipboardAlt, UilTimes } from '@iconscout/react-unicons';
-
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { selectUser } from '../../../store/slices/user';
-import { storageActions } from '../../../store/slices/storage';
-import { uiActions } from '../../../store/slices/ui';
+import { UilClipboardAlt } from '@iconscout/react-unicons';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
+import { generateFileKey, Network } from '../../../lib/network';
 import { DriveItemData } from '../../../models/interfaces';
 import notify from '../../Notifications';
 import history from '../../../lib/history';
-import { generateFileKey, Network } from '../../../lib/network';
-import localStorageService from '../../../services/localStorage.service';
-import { generateShareLink } from '../../../services/share.service';
+import { uiActions } from '../../../store/slices/ui';
+import BaseDialog from '../BaseDialog/BaseDialog';
+import shareService from '../../../services/share.service';
+import './ShareItemDialog.scss';
+import { storageActions } from '../../../store/slices/storage';
 
-interface ShareDialogProps {
+interface ShareItemDialogProps {
   item: DriveItemData
 }
 
 const DEFAULT_VIEWS = 10;
 
-const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
+const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const isOpen = useAppSelector(state => state.ui.isShareItemDialogOpen);
-  const user = useAppSelector(selectUser);
+  const user = useAppSelector((state) => state.user.user);
   const [linkToCopy, setLinkToCopy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [numberOfAttempts, setNumberOfAttempts] = useState(DEFAULT_VIEWS);
-
+  const isOpen = useAppSelector(state => state.ui.isShareItemDialogOpen);
   const onClose = (): void => {
     dispatch(uiActions.setIsShareItemDialogOpen(false));
     dispatch(storageActions.setItemToShare(0));
   };
+  const itemFullName = item.isFolder ? item.name : `${item.name}.${item.type}`;
 
   const handleShareLink = async (views: number) => {
     try {
@@ -41,19 +41,17 @@ const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
         return;
       }
 
-      const xUser = localStorageService.getUser();
-
-      if (!xUser) {
+      if (!user) {
         return history.push('/login');
       }
 
-      const { bucket, mnemonic, userId, email } = xUser;
+      const { bucket, mnemonic, userId, email } = user;
       const network = new Network(email, userId, mnemonic);
       const { index } = await network.getFileInfo(bucket, fileId);
       const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
       const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
 
-      const link = await generateShareLink(fileId, {
+      const link = await shareService.generateShareLink(fileId, {
         bucket,
         fileToken,
         isFolder: false,
@@ -84,15 +82,17 @@ const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
   }, [numberOfAttempts]);
 
   return (
-    <div className={`${isOpen ? 'flex' : 'hidden'} absolute w-full h-full bg-m-neutral-100 bg-opacity-80 z-10`}>
-      <div className='flex flex-col absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 w-104 py-8 rounded-lg overflow-hidden z-20 bg-white'>
-        <span className='self-center text-center text-m-neutral-100'>{item.name + (item.type ? '.' + item.type : '')}</span>
-        <UilTimes className='absolute right-8 cursor-pointer transition duration-200 ease-in-out text-blue-60 hover:text-blue-70' onClick={onClose} />
+    <BaseDialog
+      isOpen={isOpen}
+      title={itemFullName}
+      titleClasses='text-m-neutral-100 text-base'
+      onClose={onClose}
+    >
+      <div className='share-dialog flex flex-col mb-8'>
+        <hr className="border-t-1 border-l-neutral-50 mt-7 mb-6" />
 
-        <div className='w-full border-t border-m-neutral-60 my-6' />
-
-        <div className='flex flex-col px-8'>
-          <span className='text-neutral-500 self-center'>Share your Drive file with this private link</span>
+        <div className="px-8">
+          <p className='w-full text-neutral-500 text-center'>Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link</p>
 
           <div className='flex mt-3'>
             <span className='text-blue-60 mr-4'>1.</span>
@@ -112,7 +112,7 @@ const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
             <span className='text-neutral-500'>Get link to share</span>
           </div>
 
-          <div className='flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer'
+          <div className='flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text'
             onClick={() => {
               navigator.clipboard.writeText(linkToCopy);
               notify('Link copied!', 'info', 2500);
@@ -122,8 +122,8 @@ const ShareDialog = ({ item }: ShareDialogProps): JSX.Element => {
           </div>
         </div>
       </div>
-    </div>
+    </BaseDialog >
   );
 };
 
-export default ShareDialog;
+export default ShareItemDialog;

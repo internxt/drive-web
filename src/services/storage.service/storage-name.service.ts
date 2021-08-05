@@ -1,3 +1,5 @@
+import { DriveItemData } from '../../models/interfaces';
+
 export function checkFileNameExists(currentCommanderItems: any[], fileName: string, type): boolean {
   return currentCommanderItems.some(
     (item) => !item.isFolder && item.name === fileName && item.type === type
@@ -59,11 +61,16 @@ export function getNewFolderName(name: string, currentCommanderItems: any[]): st
   return finalName;
 }
 
+export function getItemFullName(itemName: string, itemType?: string): string {
+  return `${itemName}${itemType ? ('.' + itemType) : ''}`;
+}
+
 const nameService = {
   checkFileNameExists,
   getNewFileName,
   getNewFolderName,
-  getNextNewName
+  getNextNewName,
+  getItemFullName
 };
 
 export default nameService;

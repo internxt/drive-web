@@ -10,11 +10,11 @@ import { RootState } from '../../../store';
 import './CreateFolderDialog.scss';
 import BaseInput from '../../Inputs/BaseInput';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import AuthButton from '../../Buttons/AuthButton';
 import notify from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
 import { selectorIsTeam } from '../../../store/slices/team';
+import BaseButton from '../../Buttons/BaseButton';
 
 interface CreateFolderDialogProps {
   onFolderCreated: () => void;
@@ -32,6 +32,9 @@ const CreateFolderDialog = ({
   const isTeam: boolean = useAppSelector((state) => selectorIsTeam(state));
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
+  const createButtonLabel = isValid ?
+    isLoading ? 'Creating...' : 'Create' :
+    'Create';
 
   const onClose = (): void => {
     reset();
@@ -43,9 +46,10 @@ const CreateFolderDialog = ({
       setIsLoading(true);
       await folderService.createFolder(isTeam, currentFolderId, formData.createFolder);
 
-      dispatch(storageThunks.fetchFolderContentThunk());
       dispatch(uiActions.setIsCreateFolderDialogOpen(false));
       reset();
+
+      onFolderCreated && onFolderCreated();
 
     } catch (err) {
       if (err.includes('already exists')) {
@@ -54,7 +58,6 @@ const CreateFolderDialog = ({
         notify(err.message || err, 'error');
       }
     } finally {
-      onFolderCreated && onFolderCreated();
       setIsLoading(false);
     }
   };
@@ -80,10 +83,12 @@ const CreateFolderDialog = ({
 
         <div className='flex justify-center items-center bg-l-neutral-20 py-6 mt-6'>
           <div className='flex w-64'>
-            <button onClick={() => onClose()} className='secondary_dialog w-full mr-4'>
+            <BaseButton classes='cancel w-full mr-4' onClick={() => onClose()}>
               Cancel
-            </button>
-            <AuthButton text='Create' textWhenDisabled={isValid ? 'Creating...' : 'Create'} isDisabled={isLoading || !isValid} />
+            </BaseButton>
+            <BaseButton classes="w-full primary border" disabled={isLoading || !isValid}>
+              {createButtonLabel}
+            </BaseButton>
           </div>
         </div>
       </form>

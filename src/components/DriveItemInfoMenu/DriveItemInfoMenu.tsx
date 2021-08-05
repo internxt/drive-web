@@ -49,7 +49,7 @@ class DriveItemInfoMenu extends React.Component<DriveItemInfoMenuProps, DriveIte
 
   render(): JSX.Element {
     const item = this.props.item || {};
-    const ItemIconComponent = iconService.getItemIcon(item.type);
+    const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
     return (
       <div className="w-activity-1280 min-w-activity-1280 bg-white ml-24px rounded-4px p-24px">

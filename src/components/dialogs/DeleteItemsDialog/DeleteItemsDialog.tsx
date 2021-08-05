@@ -9,8 +9,11 @@ import BaseDialog from '../BaseDialog/BaseDialog';
 import './DeleteItemsDialog.scss';
 import { useState } from 'react';
 import { uiActions } from '../../../store/slices/ui';
+import BaseButton from '../../Buttons/BaseButton';
 
-interface DeleteItemsDialogProps { }
+interface DeleteItemsDialogProps {
+  onItemsDeleted?: () => void;
+}
 
 const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
   const itemsToDelete: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToDelete);
@@ -29,6 +32,9 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
       if (itemsToDelete.length > 0) {
         await dispatch(storageThunks.deleteItemsThunk(itemsToDelete));
       }
+
+      props.onItemsDeleted && props.onItemsDeleted();
+
       onClose();
     } catch (e) {
       console.log(e);
@@ -49,12 +55,12 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
 
       <div className='flex justify-center items-center bg-l-neutral-20 py-6 mt-6'>
         <div className='flex w-64'>
-          <button onClick={() => onClose()} className='secondary_dialog w-full mr-2'>
+          <BaseButton onClick={() => onClose()} classes='cancel w-full mr-2'>
             Cancel
-          </button>
-          <button className='primary w-11/12 ml-2' disabled={isLoading} onClick={() => onAccept()} >
+          </BaseButton>
+          <BaseButton classes='primary w-11/12 ml-2' disabled={isLoading} onClick={() => onAccept()} >
             {isLoading ? 'Deleting...' : 'Delete'}
-          </button>
+          </BaseButton>
         </div>
       </div>
     </BaseDialog>

@@ -20,7 +20,8 @@ import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
 import { uiActions } from '../../../../store/slices/ui';
 import { updateFileStatusLogger } from '../../../../store/slices/files';
-
+import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
+import { getAllItems } from '../../../../services/dragAndDrop.service';
 interface FileGridItemProps {
   user: UserSettings;
   item: DriveItemData;
@@ -79,7 +80,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       <Fragment>
         <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
-            className="w-full dense border border-white`"
+            className="w-full dense border border-white no-ring rect"
             ref={nameInputRef}
             type="text"
             value={dirtyName}
@@ -89,12 +90,12 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
             onKeyPress={this.onEnterKeyPressed}
             autoFocus
           />
-          <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
+          <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
         </div>
         <span
           className={`${ṣpanDisplayClass} file-grid-item-name-span`}
           onDoubleClick={this.onNameDoubleClicked}
-        >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
+        >{getItemFullName(item.name, item.type)}</span>
       </Fragment>
     );
   }
@@ -165,15 +166,18 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     );
   }
 
-  onDownloadButtonClicked = (): void => {
-    const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+  onDownloadButtonClicked = (e: MouseEvent): void => {
+    const { item, namePath } = this.props;
+    const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+    const path = relativePath + '/' + item.name;
 
-    const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
-
-    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, isFolder: false }));
+    e.stopPropagation();
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
-    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));
+    const isFolder = item.fileId ? false : true;
+
+    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, type: item.type, isFolder }));
+    queueFileLogger.push(() => downloadService.downloadFile(item, path, this.props.dispatch, isTeam));
   }
 
   onShareButtonClicked = (): void => {
@@ -232,11 +236,31 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     this.props.dispatch(storageActions.setDraggingItemTargetData(null));
   }
 
-  onItemDrop = (e: DragEvent<HTMLDivElement>): void => {
+  onItemDrop = async (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log('onItemDrop!');
+    const { draggingTargetItemData, dispatch } = this.props;
+
+    if (draggingTargetItemData && draggingTargetItemData.isFolder) {
+      const namePathDestinationArray = this.props.namePath.map(level => level.name);
+
+      namePathDestinationArray[0] = '';
+      const folderPath = namePathDestinationArray.join('/') + '/' + draggingTargetItemData.name;
+
+      const itemsDragged = await getAllItems(e.dataTransfer);
+      const { numberOfItems, rootList, files } = itemsDragged;
+
+      if (files) {
+        // files where dragged directly
+        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: draggingTargetItemData.id, folderPath: folderPath }));
+      }
+      if (rootList) {
+        for (const root of rootList) {
+          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
+        }
+      }
+    }
 
     this.props.dispatch(storageActions.setDraggingItemTargetData(null));
   }
@@ -249,7 +273,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
-    const ItemIconComponent = iconService.getItemIcon(item.type);
+    const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
     const height = this.state.itemRef.current ?
       this.state.itemRef.current?.clientWidth + 'px' :
       'auto';

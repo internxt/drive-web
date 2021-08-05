@@ -1,15 +1,12 @@
-td {
-    padding: 14px 0;
-}
 
 @layer components {
     .file-list-item {
         background-color: white;
     
-        @apply border-b border-l-neutral-30 text-sm;
+        @apply py-3.5 border-b border-l-neutral-30 text-sm w-full flex;
 
         &:hover, &.selected {
-            @apply bg-blue-10;
+            @apply bg-blue-20;
         }
     }
     
@@ -22,8 +19,7 @@ td {
     }
 
     .file-list-item-name-span {
-        max-width: 400px;
-        @apply w-min whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1 border border-dashed border-opacity-0 border-blue-40 hover:border-opacity-100;
+        @apply max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1 border border-dashed border-opacity-0 border-blue-40 hover:border-opacity-100;
     }
 
     .file-list-item-actions-button {

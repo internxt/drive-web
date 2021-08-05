@@ -19,6 +19,8 @@ import { FileActionTypes, FileStatusTypes, ItemAction, Workspace } from '../../.
 import queueFileLogger from '../../../../services/queueFileLogger';
 import { uiActions } from '../../../../store/slices/ui';
 import { updateFileStatusLogger } from '../../../../store/slices/files';
+import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
+import { getAllItems } from '../../../../services/dragAndDrop.service';
 
 interface FileListItemProps {
   user: UserSettings | undefined;
@@ -61,7 +63,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       <Fragment>
         <div className={isEditingName ? 'block' : 'hidden'}>
           <input
-            className="dense border border-white`"
+            className="dense border border-white no-ring rect"
             ref={nameInputRef}
             type="text"
             value={dirtyName}
@@ -71,13 +73,13 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             onKeyPress={this.onEnterKeyPressed}
             autoFocus
           />
-          <span className="ml-1">{!item.isFolder ? ('.' + item.type) : ''}</span>
+          <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
         </div>
         <span
           className={`${spanDisplayClass} file-list-item-name-span`}
-          onClick={(e) => e.stopPropagation() }
+          onClick={(e) => e.stopPropagation()}
           onDoubleClick={this.onNameDoubleClicked}
-        >{`${item.name}${!item.isFolder ? ('.' + item.type) : ''}`}</span>
+        >{getItemFullName(item.name, item.type)}</span>
       </Fragment>
     );
   }
@@ -183,14 +185,17 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   onDownloadButtonClicked = (e: MouseEvent): void => {
-    const relativePath = this.props.namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-    const path = relativePath + '/' + this.props.item.name + '.' + this.props.item.type;
+    const { item, namePath } = this.props;
+    const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+    const path = relativePath + '/' + item.name;
 
     e.stopPropagation();
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
-    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, isFolder: false }));
-    queueFileLogger.push(() => downloadService.downloadFile(this.props.item, path, this.props.dispatch, isTeam));
+    const isFolder = item.fileId ? false : true;
+
+    this.props.dispatch(updateFileStatusLogger({ action: FileActionTypes.Download, status: FileStatusTypes.Pending, filePath: path, type: item.type, isFolder }));
+    queueFileLogger.push(() => downloadService.downloadFile(item, path, this.props.dispatch, isTeam));
   }
 
   onShareButtonClicked = (e: MouseEvent): void => {
@@ -240,12 +245,34 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     this.props.dispatch(storageActions.setDraggingItemTargetData(null));
   }
 
-  onItemDrop = (e: React.DragEvent<HTMLTableRowElement>): void => {
+  onItemDrop = async (e: React.DragEvent<HTMLTableRowElement>): void => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log('onItemDrop!');
+    const { draggingTargetItemData, dispatch } = this.props;
 
+    console.log(draggingTargetItemData);
+    console.log('Name Path ', this.props.namePath);
+
+    if (draggingTargetItemData && draggingTargetItemData.isFolder) {
+      const namePathDestinationArray = this.props.namePath.map(level => level.name);
+
+      namePathDestinationArray[0] = '';
+      const folderPath = namePathDestinationArray.join('/') + '/' + draggingTargetItemData.name;
+
+      const itemsDragged = await getAllItems(e.dataTransfer);
+      const { numberOfItems, rootList, files } = itemsDragged;
+
+      if (files) {
+        // files where dragged directly
+        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: draggingTargetItemData.id, folderPath: folderPath }));
+      }
+      if (rootList) {
+        for (const root of rootList) {
+          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
+        }
+      }
+    }
     this.props.dispatch(storageActions.setDraggingItemTargetData(null));
   }
 
@@ -256,10 +283,10 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
       'pointer-events-auto';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
-    const ItemIconComponent = iconService.getItemIcon(item.type);
+    const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
     return (
-      <tr
+      <div
         className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
         onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
@@ -268,7 +295,9 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         onDragLeave={this.onItemDragLeave}
         onDrop={this.onItemDrop}
       >
-        <td className="px-4">
+
+        {/* SELECTION */}
+        <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
           {!item.isFolder ?
             <input
               onClick={(e) => e.stopPropagation()}
@@ -278,20 +307,22 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             /> :
             null
           }
-        </td>
-        <td>
+        </div>
+
+        {/* ICON */}
+        <div className="w-0.5/12 flex items-center px-3 box-content">
           <div className="h-8 w-8 flex justify-center">
             <ItemIconComponent className="h-full" />
           </div>
-        </td>
-        <td>
-          <div>
-            <div className="mb-1">
-              {this.nameNode}
-            </div>
-          </div>
-        </td>
-        <td>
+        </div>
+
+        {/* NAME */}
+        <div className="flex-grow flex items-center w-1">
+          {this.nameNode}
+        </div>
+
+        {/* HOVER ACTIONS */}
+        <div className="pl-3 w-2/12 items-center hidden xl:flex">
           <div className="flex">
             {!item.isFolder ?
               <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
@@ -305,10 +336,16 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
               <Unicons.UilTrashAlt className="h-5" />
             </button>
           </div>
-        </td>
-        <td className="whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</td>
-        <td className="whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</td>
-        <td>
+        </div>
+
+        {/* DATE */}
+        <div className="hidden lg:flex items-center w-3/12 whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>
+
+        {/* SIZE */}
+        <div className="flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</div>
+
+        {/* ACTIONS BUTTON */}
+        <div className="flex items-center w-1/12">
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold">
               <Unicons.UilEllipsisH className="w-full h-full" />
@@ -324,8 +361,8 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
               />
             </Dropdown.Menu>
           </Dropdown>
-        </td>
-      </tr>
+        </div>
+      </div>
     );
   }
 }
