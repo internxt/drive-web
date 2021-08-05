@@ -5,7 +5,7 @@ import teamReducer from './slices/team';
 import networkReducer from './slices/network';
 import storageReducer from './slices/storage';
 import uiReducer from './slices/ui';
-import filesState from './slices/files';
+import tasksReducer from './slices/tasks';
 
 export const store = configureStore({
   reducer: {
@@ -14,7 +14,7 @@ export const store = configureStore({
     network: networkReducer,
     storage: storageReducer,
     ui: uiReducer,
-    filesState: filesState
+    tasks: tasksReducer
   }
 });
 

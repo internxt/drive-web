@@ -7,8 +7,6 @@ import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';
 import { DevicePlatform, FileActionTypes, FileStatusTypes } from '../../models/enums';
-import { updateFileStatusLogger } from '../../store/slices/files';
-import { AppDispatch } from '../../store';
 
 export interface UploadItemPayload {
   file: any,
@@ -18,11 +16,7 @@ export interface UploadItemPayload {
   name: string
 }
 
-export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, dispatch: AppDispatch, isTeam: boolean): Promise<any> {
-  const fileType: string = file.name.split('.').pop() || '';
-
-  dispatch(updateFileStatusLogger({ action: FileActionTypes.Upload, status: FileStatusTypes.Encrypting, filePath: path, isFolder: false, type: fileType }));
-
+export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, isTeam: boolean): Promise<any> {
   if (!file.parentFolderId) {
     throw new Error('No folder ID provided');
   }

@@ -1,44 +1,52 @@
 import { Fragment, useState } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
-import Item from './Item';
+import FileLoggerItem from './FileLoggerItem/FileLoggerItem';
 import './FileLogger.scss';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { clearFileLoggerStatus, selectFinishedFiles, selectLoggerFiles } from '../../store/slices/files';
 import { useEffect } from 'react';
 import spinnerIcon from '../../assets/icons/spinner.svg';
+import { tasksActions, tasksSelectors } from '../../store/slices/tasks';
+import { FileStatusTypes } from '../../models/enums';
 
-const FileLoggerModal = (): JSX.Element => {
-  const fileHistory = useAppSelector(selectLoggerFiles);
+const FileLogger = (): JSX.Element => {
+  const notifications = useAppSelector((state) => state.tasks.notifications);
   const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinized] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const finishedEntries = useAppSelector(selectFinishedFiles);
-
+  const finishedNotifications = useAppSelector(tasksSelectors.getFinishedNotifications);
+  const items: JSX.Element[] = notifications.map(n => <FileLoggerItem item={n} key={n.uuid} />);
   const handleClose = () => {
     if (hasFinished) {
       setIsOpen(false);
-      dispatch(clearFileLoggerStatus());
+      dispatch(tasksActions.clearNotifications());
     }
+  };
+  const handleLeavePage = (e) => {
+    const confirmationMessage = '';
+
+    e.returnValue = confirmationMessage; //Trident, Chrome 34+
+    return confirmationMessage; // WebKit, Chrome <34
   };
 
   useEffect(() => {
-    if (Object.values(fileHistory).length) {
+    if (Object.values(notifications).length) {
       setIsOpen(true);
 
-      for (const key in fileHistory) {
-        if (fileHistory[key].action === 'download') {
+      for (const notification of notifications) {
+        if (notification.action === 'download') {
           setIsDownloading(true);
         }
-        if (fileHistory[key].action === 'upload') {
+        if (notification.action === 'upload') {
           setIsUploading(true);
         }
       }
 
-      const processingItems = Object.values(fileHistory).findIndex(item => item.status !== 'success' && item.status !== 'error');
+      const processingItems = notifications.findIndex(item =>
+        item.status !== FileStatusTypes.Success && item.status !== FileStatusTypes.Error);
 
       if (processingItems !== -1) {
         setHasFinished(false);
@@ -48,14 +56,7 @@ const FileLoggerModal = (): JSX.Element => {
         setIsUploading(false);
       }
     }
-  }, [fileHistory]);
-
-  const handleLeavePage = (e) => {
-    const confirmationMessage = '';
-
-    e.returnValue = confirmationMessage; //Trident, Chrome 34+
-    return confirmationMessage; // WebKit, Chrome <34
-  };
+  }, [notifications]);
 
   useEffect(() => {
     if (!hasFinished) {
@@ -78,9 +79,9 @@ const FileLoggerModal = (): JSX.Element => {
                 :
                 <Fragment>
                   {!isDownloading ?
-                    `Uploading ${Object.values(finishedEntries).length} of ${Object.values(fileHistory).length}`
+                    `Uploading ${Object.values(finishedNotifications).length} of ${notifications.length}`
                     :
-                    `Downloading ${Object.values(finishedEntries).length} of ${Object.values(fileHistory).length}`
+                    `Downloading ${Object.values(finishedNotifications).length} of ${notifications.length}`
                   }
                 </Fragment>
               }
@@ -102,10 +103,10 @@ const FileLoggerModal = (): JSX.Element => {
       </div>
 
       <div className='overflow-y-scroll scrollbar pt-2.5 h-full'>
-        {Object.values(fileHistory).map(file => <Item item={file} key={file.filePath} />)}
+        {items}
       </div>
     </div>
   );
 };
 
-export default FileLoggerModal;
+export default FileLogger;
