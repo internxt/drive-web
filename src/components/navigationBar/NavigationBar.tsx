@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
 
 // Assets
@@ -17,11 +17,12 @@ import HeaderButton from './HeaderButton';
 import './NavigationBar.scss';
 import history from '../../lib/history';
 
-import Settings from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
 import SettingsMenu from './SettingsMenu';
+import { UserSettings } from '../../models/interfaces';
 
 interface NavigationBarProps {
-  navbarItems: JSX.Element
+  navbarItems?: JSX.Element
   showFileButtons?: boolean
   showSettingsButton?: boolean
   setSearchFunction?: any
@@ -38,7 +39,7 @@ interface NavigationBarProps {
 }
 
 interface NavigationBarState {
-  navbarItems: JSX.Element
+  navbarItems: JSX.Element | undefined
   workspace: string
   menuButton: any
   isTeam: boolean
@@ -60,8 +61,8 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     };
   }
 
-  getNavBarItems(isTeam: boolean) {
-    const xTeam = Settings.exists('xTeam');
+  getNavBarItems(isTeam: boolean): JSX.Element {
+    const xTeam = localStorageService.exists('xTeam');
 
     return <Nav className="m-auto">
       <div className="top-bar">
@@ -79,18 +80,18 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     </Nav>;
   }
 
-  componentDidMount() {
-    if (Settings.exists('xTeam')) {
-      const admin = Settings.getTeams().isAdmin;
+  componentDidMount(): void {
+    if (localStorageService.exists('xTeam')) {
+      const admin = localStorageService.getTeams().isAdmin;
 
       this.setState({ isAdmin: !!admin });
     } else {
       this.setState({ isAdmin: true });
     }
-    let user: string;
 
     try {
-      user = Settings.getUser().email;
+      const user: UserSettings | null = localStorageService.getUser()?.email;
+
       if (user == null) {
         throw new Error();
       }
@@ -106,7 +107,7 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: NavigationBarProps): void {
     if (this.props.isTeam !== prevProps.isTeam) {
       this.setState({
         isTeam: this.props.isTeam,
@@ -114,20 +115,19 @@ class NavigationBar extends React.Component<NavigationBarProps, NavigationBarSta
         workspace: this.props.isTeam ? 'Team workspace' : 'My workspace'
       });
     }
-    if (Settings.exists('xTeam') && Settings.exists('teamActivation')) {
-      Settings.del('teamActivation');
+    if (localStorageService.exists('xTeam') && localStorageService.exists('teamActivation')) {
+      localStorageService.del('teamActivation');
       this.setState({
         navbarItems: this.getNavBarItems(this.props.isTeam)
       });
     }
   }
 
-  handleChangeWorkspace() {
+  handleChangeWorkspace(): void {
     this.props.handleChangeWorkspace && this.props.handleChangeWorkspace();
   }
 
-  render() {
-
+  render(): JSX.Element {
     return (
       <Navbar id="mainNavBar">
         <Navbar.Brand>

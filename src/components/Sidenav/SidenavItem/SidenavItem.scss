@@ -1,0 +1,17 @@
+@layer components {
+  .side-navigator-item {
+    @apply select-none py-1 hover:text-blue-60 cursor-pointer;
+  }
+
+  .side-navigator-item {
+    @apply mb-3;
+  }
+
+  a.nav-link {
+    @apply text-neutral-900 no-underline hover:text-blue-60 w-full;
+  }
+
+  a.nav-link.active {
+    @apply text-blue-60;
+  }
+}

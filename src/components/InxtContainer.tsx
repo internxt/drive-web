@@ -4,11 +4,12 @@ import './InxtContainer.scss';
 
 interface InxtContainerProps {
     style?: React.CSSProperties
-    children: any
+    children: any,
+    text?: string | Element
 }
 
 class InxtContainer extends React.Component<InxtContainerProps> {
-  render() {
+  render(): JSX.Element {
     return <Container className="InxtContainer" style={this.props.style}>
       {this.props.children}
     </Container>;

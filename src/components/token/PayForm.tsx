@@ -5,12 +5,12 @@ import NavigationBar from '../navigationBar/NavigationBar';
 import history from '../../lib/history';
 import Finish from './finish/Finish';
 import { getTokenInfo } from '../../services/token.service';
-import Settings from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
 import { getHeaders } from '../../lib/auth';
 
 interface ResetProps {
     match?: any
-    isAuthenticated: Boolean
+    isAuthenticated: boolean
 }
 
 const plans = ['200GB - €3.49/month', '2TB - €8.99/month'];
@@ -42,7 +42,7 @@ class PayToken extends React.Component<ResetProps> {
         history.push('/login');
       }
 
-      const user = Settings.getUser();
+      const user = localStorageService.getUser();
 
       getTokenInfo().then((res) => {
         const tokenInfo = res;

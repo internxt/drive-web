@@ -1,27 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Dropdown, ProgressBar } from 'react-bootstrap';
 import HeaderButton from './HeaderButton';
 
 import history from '../../lib/history';
-import { getUserData } from '../../lib/analytics';
-import customPrettySize from '../../lib/sizer';
+import { bytesToString } from '../../services/size.service';
 import account from '../../assets/Dashboard-Icons/Account.svg';
-import Settings, { UserSettings } from '../../lib/settings';
+import localStorageService from '../../services/localStorage.service';
 import SessionStorage from '../../lib/sessionStorage';
-import { getHeaders } from '../../lib/auth';
-import { getLimit } from '../../services/storage.service';
+import { getLimit } from '../../services/limit.service';
+import { UserSettings } from '../../models/interfaces';
+import authService from '../../services/auth.service';
+import usageService, { UsageResponse } from '../../services/usage.service';
 
 interface SettingMenuProp {
-  isTeam: boolean,
+  isTeam: boolean
 }
 
-interface UsageResponse {
-  _id: string
-  total: number
-}
-
-const DEFAULT_LIMIT = 1024 * 1024 * 1024 * 10;
+const DEFAULT_LIMIT = 1024 * 1024 * 1024 * 2;
 
 function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
 
@@ -47,7 +43,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
     if (teamsStorage) {
       setBarLimitTeams(parseInt(teamsStorage, 10));
     } else {
-      if (Settings.get('xTeam')) {
+      if (localStorageService.get('xTeam')) {
         getLimit(true).then((teamsStorage) => {
           if (teamsStorage) {
             SessionStorage.set('teamsStorage', teamsStorage);
@@ -60,9 +56,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
   }, []);
 
   const fetchUsage = () => {
-    return fetch('/api/usage', {
-      headers: getHeaders(true, false, isTeam)
-    }).then(res => res.json())
+    return usageService.fetchUsage(isTeam)
       .then((res: UsageResponse) => {
         setBarUsage(res.total);
       }).catch(() => null);
@@ -71,7 +65,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
   const putLimitUser = () => {
     if (barLimit > 0) {
       if (barLimit < 108851651149824) {
-        return customPrettySize(barLimit);
+        return bytesToString(barLimit);
       } else if (barLimit >= 108851651149824) {
         return '\u221E';
       } else {
@@ -84,13 +78,13 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
     fetchUsage().then();
   }, [barUsage, isTeam]);
 
-  const isAdmin = Settings.getTeams().isAdmin;
-  const xTeam = Settings.exists('xTeam');
+  const isAdmin = localStorageService.getTeams().isAdmin;
+  const xTeam = localStorageService.exists('xTeam');
 
   let user: UserSettings | null = null;
 
   try {
-    user = Settings.getUser();
+    user = localStorageService.getUser();
     if (user == null) {
       throw new Error();
     }
@@ -108,7 +102,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
         <div className="dropdown-menu-group info">
           <p className="name-lastname">{isTeam ? 'Business' : `${user.name} ${user.lastname}`}</p>
           {isTeam ? <ProgressBar className="mini-progress-bar" now={barUsage} max={barLimitTeams} /> : <ProgressBar className="mini-progress-bar" now={barUsage} max={barLimit} />}
-          <p className="space-used">Used <strong>{customPrettySize(barUsage)}</strong> of {barLimitTeams && isTeam ? <strong>{barLimitTeams > 0 ? customPrettySize(barLimitTeams) : '...'}</strong> : <strong>{putLimitUser()}</strong>}</p>
+          <p className="space-used">Used <strong>{bytesToString(barUsage)}</strong> of {barLimitTeams && isTeam ? <strong>{barLimitTeams > 0 ? bytesToString(barLimitTeams) : '...'}</strong> : <strong>{putLimitUser()}</strong>}</p>
         </div>
         <Dropdown.Divider />
         <div className="dropdown-menu-group">
@@ -173,14 +167,7 @@ function SettingMenu({ isTeam }: SettingMenuProp): JSX.Element {
         </div>
         <Dropdown.Divider />
         <div className="dropdown-menu-group">
-          <Dropdown.Item onClick={(e) => {
-            window.analytics.track('user-signout', {
-              email: getUserData().email
-            });
-            Settings.clear();
-            Settings.del('workspace');
-            history.push('/login');
-          }}>Sign out</Dropdown.Item>
+          <Dropdown.Item onClick={(e) => authService.logOut()}>Sign out</Dropdown.Item>
         </div>
       </Dropdown.Menu>
     </Dropdown>

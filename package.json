@@ -1,18 +1,18 @@
 {
   "name": "drive-web",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^6.2.0",
+    "@iconscout/react-unicons": "^1.1.6",
     "@mapbox/react-click-to-select": "^2.2.0",
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
+    "@reduxjs/toolkit": "^1.6.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.53",
-    "@types/react-dom": "^16.9.8",
+    "@types/filesystem": "^0.0.32",
     "axios": "^0.21.1",
     "bip39": "^3.0.3",
     "bootstrap": "^4.5.3",
@@ -21,32 +21,41 @@
     "crypto-js": "^4.0.0",
     "history": "^4.10.1",
     "immutability-helper": "^3.1.1",
-    "inxt-js": "git+ssh://git@github.com:internxt/inxt-js.git#inxt-js-web-integration-without-rs",
+    "inxt-js": "git+ssh://git@github.com:internxt/inxt-js.git#beta",
     "jquery": "^3.5.1",
     "js-file-download": "^0.4.12",
+    "moment": "^2.29.1",
     "natural-orderby": "^2.0.3",
     "openpgp": "^4.10.10",
     "popper.js": "^1.16.1",
     "prettysize": "^2.0.0",
     "query-string": "^6.13.8",
     "react": "^17.0.1",
+    "react-animated-css": "^1.2.1",
     "react-bootstrap": "^1.4.3",
+    "react-contextmenu": "^2.14.0",
     "react-device-detect": "^1.15.0",
     "react-dom": "^17.0.1",
+    "react-hook-form": "^7.11.0",
+    "react-loading-skeleton": "^2.2.0",
+    "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "react-timeago": "^5.2.0",
     "react-toastify": "^6.2.0",
+    "react-tooltip": "^4.2.21",
     "reactjs-popup": "^2.0.4",
+    "redux-thunk": "^2.3.0",
     "sanitize-filename": "^1.6.3",
     "socket.io-client": "^3.1.0",
     "typescript": "^4.0.3",
+    "uniqid": "^5.3.0",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
     "preinstall": "node ./scripts/use-yarn.js",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "craco start",
+    "build": "craco build",
     "test": "jest tests/",
     "eject": "react-scripts eject",
     "lint": "npm run lint:js && npm run lint:scss",
@@ -59,7 +68,9 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
       "semi": "error",
@@ -112,9 +123,6 @@
         "error",
         "never"
       ],
-      "no-unused-vars": [
-        "error"
-      ],
       "no-useless-constructor": [
         "error"
       ],
@@ -124,7 +132,12 @@
       "no-empty": [
         "error"
       ],
-      "brace-style": "error"
+      "brace-style": "error",
+      "@typescript-eslint/no-empty-interface": "off",
+      "@typescript-eslint/no-inferrable-types": "off",
+      "@typescript-eslint/no-empty-function": "off",
+      "@typescript-eslint/no-extra-semi": "off",
+      "@typescript-eslint/ban-types": "off"
     }
   },
   "browserslist": {
@@ -142,15 +155,28 @@
   "devDependencies": {
     "@testing-library/dom": "^7.26.0",
     "@types/analytics-node": "^3.1.3",
+    "@types/async": "^3.2.7",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.53",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-redux": "^7.1.17",
     "@types/react-router-dom": "^5.1.7",
     "@types/socket.io-client": "^1.4.35",
+    "autoprefixer": "^9",
+    "customize-cra": "^1.0.0",
     "dotenv": "^10.0.0",
+    "postcss": "^7",
     "prop-types": "^15.7.2",
+    "redux-devtools": "^3.7.0",
+    "redux-devtools-extension": "^2.13.9",
     "sass": "^1.32.4",
     "stylelint": "^13.4.0",
     "stylelint-config-standard": "^20.0.0",
     "stylelint-scss": "^3.17.2",
-    "ts-jest": "26"
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat",
+    "ts-jest": "26",
+    "wasm-loader": "^1.3.0"
   },
   "proxy": "http://localhost:8000"
 }

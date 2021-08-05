@@ -1,15 +1,31 @@
 import { getHeaders } from '../lib/auth';
-import Settings from '../lib/settings';
+import localStorageService from '../services/localStorage.service';
 import { decryptPGP } from '../lib/utilspgp';
 
-export async function getTeamsInfo() {
+export function isTeamActivated(): Promise<any> {
+  const team: any = localStorage.getTeams();
+
+  return fetch(`/api/team/isactivated/${team.bridge_user}`, {
+    method: 'get',
+    headers: getHeaders(true, false)
+  }).then((response) => response.json())
+    .catch(() => {
+      console.log('Error getting user activation');
+    });
+}
+
+export async function getTeamsInfo(): Promise<any> {
   return fetch('/api/teams/info', {
     method: 'get',
     headers: getHeaders(true, false, false)
-  }).then(res => res.json());
+  }).then(res => {
+    return res.json();
+  }).catch(() => {
+    throw new Error ('Can not get info team');
+  });
 }
 
-export async function getKeys(mail: string) {
+export async function getKeys(mail: string): Promise<any> {
   return fetch(`/api/user/keys/${mail}`, {
     method: 'GET',
     headers: getHeaders(true, false)
@@ -27,18 +43,31 @@ export async function getKeys(mail: string) {
   });
 }
 
-export async function storeTeamsInfo() {
-  const { userTeam, tokenTeams } = await getTeamsInfo();
+export async function storeTeamsInfo(): Promise<void> {
+  try {
+    const { userTeam, tokenTeams } = await getTeamsInfo();
 
-  if (userTeam && tokenTeams) {
-    const mnemonic = await decryptPGP(Buffer.from(userTeam.bridge_mnemonic, 'base64').toString());
+    if (userTeam && tokenTeams) {
+      const mnemonic = await decryptPGP(Buffer.from(userTeam.bridge_mnemonic, 'base64').toString());
 
-    userTeam.bridge_mnemonic = mnemonic.data;
+      userTeam.bridge_mnemonic = mnemonic.data;
 
-    Settings.set('xTeam', JSON.stringify(userTeam));
-    Settings.set('xTokenTeam', tokenTeams);
-  } else {
-    Settings.del('xTeam');
-    Settings.del('xTokenTeam');
+      localStorageService.set('xTeam', JSON.stringify(userTeam));
+      localStorageService.set('xTokenTeam', tokenTeams);
+    } else {
+      localStorageService.del('xTeam');
+      localStorageService.del('xTokenTeam');
+    }
+  } catch (error) {
+    throw new Error ('Can not get info team');
   }
 }
+
+const teamsService = {
+  isTeamActivated,
+  getTeamsInfo,
+  getKeys,
+  storeTeamsInfo
+};
+
+export default teamsService;

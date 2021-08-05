@@ -1,120 +1,127 @@
-import React from 'react';
+import { Component, createElement } from 'react';
 import { Switch, Route, Redirect, Router } from 'react-router-dom';
-import history from './lib/history';
-import './App.scss';
-import Login from './components/forms/Login';
-import Remove from './components/forms/Remove';
-import New from './components/forms/New';
-import DealifyRegister from './components/forms/DealifyRegister';
-import XCloud from './components/xcloud/XCloud';
-import Activation from './components/forms/Activation';
-import NotFound from './NotFound';
-import Deactivation from './components/forms/Deactivation';
-import Share from './components/forms/Share';
-import Reset from './components/forms/Reset';
-import Storage from './components/Storage';
-import Security from './components/Security';
+import { connect } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
-import Checkout from './components/Checkout';
-import Referred from './components/Referred';
-// import PayToken from './components/token/PayForm';
-import Teams from './components/forms/Teams';
-import JoinTeam from './components/forms/JoinTeam';
-import DeactivationTeams from './components/forms/DeactivationTeam';
-import { analytics, PATH_NAMES } from './lib/analytics';
-import Settings from './lib/settings';
-import Success from './components/teams/Success';
-class App extends React.Component {
-  state = {
-    token: '',
-    user: {},
-    isAuthenticated: false,
-    isActivated: false
+
+import { initializeUserThunk } from './store/slices/user';
+import { setHasConnection } from './store/slices/network';
+import { AppViewConfig, UserSettings } from './models/interfaces';
+import configService from './services/config.service';
+import analyticsService, { PATH_NAMES } from './services/analytics.service';
+import layouts from './layouts';
+import views from './views';
+import history from './lib/history';
+import { AppDispatch, RootState } from './store';
+
+interface AppProps {
+  isAuthenticated: boolean;
+  isInitialized: boolean;
+  user: UserSettings;
+  dispatch: AppDispatch;
+}
+
+interface AppState { }
+
+class App extends Component<AppProps, AppState> {
+  constructor(props: AppProps) {
+    super(props);
+
+    this.state = {};
   }
 
-  handleKeySaved = (user: JSON) => {
-    Settings.set('xUser', JSON.stringify(user));
-    this.setState({ isAuthenticated: true, user: user });
+  async componentDidMount(): Promise<void> {
+    const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({ path: history.location.pathname });
+    const dispatch: AppDispatch = this.props.dispatch;
+
+    window.addEventListener('offline', () => {
+      dispatch(setHasConnection(false));
+    });
+    window.addEventListener('online', () => {
+      dispatch(setHasConnection(true));
+    });
+
+    try {
+      await this.props.dispatch(initializeUserThunk({
+        redirectToLogin: !!currentRouteConfig?.auth
+      })).unwrap();
+    } catch (e) {
+      console.log(e);
+    }
   }
 
-  render() {
+  get routes(): JSX.Element[] {
+    const routes: JSX.Element[] = views.map(v => {
+      const viewConfig: AppViewConfig | undefined = configService.getViewConfig({ id: v.id });
+      const layoutConfig = layouts.find(l => l.id === viewConfig?.layout) || layouts[0];
+      const componentProps: {
+        key: string, exact: boolean; path: string; render: any
+      } = {
+        key: v.id,
+        exact: !!viewConfig?.exact,
+        path: viewConfig?.path || '',
+        render: (props: any) => createElement(
+          layoutConfig.component,
+          {},
+          createElement(
+            v.component,
+            { ...props, ...v.componentProps }
+          )
+        )
+      };
+
+      return (
+        <Route
+          {...componentProps}
+        />
+      );
+    });
+
+    return routes;
+  }
+
+  render(): JSX.Element {
+    const { isInitialized, isAuthenticated } = this.props;
     const pathName = window.location.pathname.split('/')[1];
 
     if (window.location.pathname) {
       if (pathName === 'new' && window.location.search !== '') {
-        analytics.page(PATH_NAMES[window.location.pathname]);
+        analyticsService.page(PATH_NAMES[window.location.pathname]);
       }
     }
 
-    return (
-      <Router history={history}>
-        <Switch>
-          <Redirect from='//*' to='/*' />
-          <Route exact path='/login' render={(props) => <Login {...props} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
+    if (!isAuthenticated || isInitialized) {
+      return (
+        <Router history={history}>
+          <Switch>
+            <Redirect from='//*' to='/*' />
+            <Route exact path='/'>
+              <Redirect to="/login" />
+            </Route>
+            {this.routes}
+          </Switch>
 
-          <Route exact path='/activate/:email'
-            render={(props: any) => <New {...props}
-              isNewUser={true}
-              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
-          <Route exact path='/appsumo/:email'
-            render={(props: any) => <New {...props}
-              isNewUser={false}
-              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
-          <Route exact path='/new'
-            render={(props: any) => <New {...props}
-              isNewUser={true}
-              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
-          <Route exact path='/dealify'
-            render={(props: any) => <DealifyRegister {...props}
-              isNewUser={true}
-              isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />} />
-          <Route exact path='/team/success/:sessionId' render={(props: any) =>
-            <Success {...props}
-              isAuthenticated={this.state.isAuthenticated} />} />
-
-          <Route exact path='/storage' render={(props) => <Storage {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/invite' render={(props) => <Referred {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route path='/reset/:token' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route path='/checkout/:sessionId' render={(props) => <Checkout {...props} />} />
-          <Route exact path='/reset' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/settings' render={(props) => <Reset {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          {/* <Route exact path='/token' render={(props) => <PayToken {...props} isAuthenticated={this.state.isAuthenticated} />} /> */}
-          <Route exact path='/teams/' render={(props) => <Teams {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/team/cancel/' render={(props) => <Teams {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route path='/teams/join/:token' render={(props) => <JoinTeam {...props} />} />
-          <Route path='/activations/:token' render={(props) => <Activation {...props} />} />
-          <Route path='/deactivations/:token' render={(props) => <Deactivation {...props} />} />
-          <Route path='/deactivationsTeams/:token' render={(props) => <DeactivationTeams {...props} />} />
-          <Route path='/security' render={(props) => <Security {...props} isAuthenticated={this.state.isAuthenticated} />} />
-          <Route exact path='/app' render={(props) => <XCloud {...props}
-            isAuthenticated={this.state.isAuthenticated}
-            user={this.state.user}
-            isActivated={this.state.isActivated}
-            handleKeySaved={this.handleKeySaved} />
-          } />
-          <Route exact path='/remove' render={(props: any) => <Remove {...props} />} isAuthenticated={this.state.isAuthenticated} handleKeySaved={this.handleKeySaved} />
-          <Route exact path='/:token([a-z0-9]{10})' render={(props) => <Share {...props} />} />
-          <Route exact path='/'>
-            <Redirect to="/login" />
-          </Route>
-          <Route component={NotFound} />
-        </Switch>
-
-        {/^[a-z0-9]{10}$/.test(pathName)
-          ? <ToastContainer />
-          : <ToastContainer
-            position="bottom-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick={true}
-            rtl={false}
-            draggable={true}
-            pauseOnHover={true}
-            className="" />}
-      </Router>
-    );
+          {/^[a-z0-9]{10}$/.test(pathName)
+            ? <ToastContainer />
+            : <ToastContainer
+              position="bottom-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick={true}
+              rtl={false}
+              draggable={true}
+              pauseOnHover={true}
+              className="" />}
+        </Router>
+      );
+    } else {
+      return <div></div>;
+    }
   }
 }
 
-export default App;
+export default connect((state: RootState) => ({
+  isAuthenticated: state.user.isAuthenticated,
+  isInitialized: state.user.isInitialized,
+  user: state.user.user
+}))(App);

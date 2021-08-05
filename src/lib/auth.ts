@@ -1,6 +1,6 @@
-import Settings from './settings';
+import localStorageService from '../services/localStorage.service';
 
-function getHeaders(withAuth: Boolean, withMnemonic: Boolean, isTeam: Boolean = false): Headers {
+function getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam: boolean = false): Headers {
   const headers = new Headers();
 
   headers.append('content-type', 'application/json; charset=utf-8');
@@ -9,19 +9,19 @@ function getHeaders(withAuth: Boolean, withMnemonic: Boolean, isTeam: Boolean = 
 
   if (isTeam) {
     if (withAuth) {
-      headers.append('Authorization', `Bearer ${Settings.get('xTokenTeam')}`);
+      headers.append('Authorization', `Bearer ${localStorageService.get('xTokenTeam')}`);
     }
 
     if (withMnemonic) {
-      headers.append('internxt-mnemonic', `${Settings.getTeams().bridge_mnemonic}`);
+      headers.append('internxt-mnemonic', `${localStorageService.getTeams().bridge_mnemonic}`);
     }
   } else {
     if (withAuth) {
-      headers.append('Authorization', `Bearer ${Settings.get('xToken')}`);
+      headers.append('Authorization', `Bearer ${localStorageService.get('xToken')}`);
     }
 
     if (withMnemonic) {
-      headers.append('internxt-mnemonic', `${Settings.get('xMnemonic')}`);
+      headers.append('internxt-mnemonic', `${localStorageService.get('xMnemonic')}`);
     }
   }
 

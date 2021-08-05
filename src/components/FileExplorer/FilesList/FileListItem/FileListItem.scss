@@ -1,0 +1,32 @@
+
+@layer components {
+    .file-list-item {
+        background-color: white;
+    
+        @apply py-3.5 border-b border-l-neutral-30 text-sm w-full flex;
+
+        &:hover, &.selected {
+            @apply bg-blue-20;
+        }
+    }
+    
+    .hover-action {
+        @apply transition opacity-0 group-hover:opacity-100 text-blue-60;
+
+        img {
+            width: 14px;
+        }
+    }
+
+    .file-list-item-name-span {
+        @apply max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1 border border-dashed border-opacity-0 border-blue-40 hover:border-opacity-100;
+    }
+
+    .file-list-item-actions-button {
+        @apply rounded-1/2 w-5 h-5;
+        img {
+            width: 12px;
+            margin: auto;
+        }
+    }
+}

@@ -1,0 +1,13 @@
+@layer components {
+  .option {
+    span {
+      @apply ml-1.5 text-sm font-normal text-neutral-700
+    }
+    
+    @apply flex items-center justify-center w-40 h-full cursor-pointer
+  }
+
+  .payment_interval {
+    @apply text-supporting-2 mb-0.5
+  }
+}

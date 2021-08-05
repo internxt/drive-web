@@ -1,13 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.scss';
+import { Provider } from 'react-redux';
+
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import 'bootstrap/dist/css/bootstrap.css';
+import { store } from './store';
+import { userActions } from './store/slices/user';
+import { teamActions } from './store/slices/team';
+
+import './index.scss';
+import { storageThunks } from './store/slices/storage';
+
+// Initializes store
+store.dispatch(userActions.initialize());
+store.dispatch(teamActions.initialize());
+store.dispatch(storageThunks.initializeThunk());
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

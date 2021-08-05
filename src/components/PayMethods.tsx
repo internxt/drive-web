@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from 'react';
+import React, { ReactNode, SyntheticEvent } from 'react';
 import { Container, Card, Row, Col } from 'react-bootstrap';
 import './PayMethods.scss';
 
@@ -40,7 +40,7 @@ class PayMethods extends React.Component<PayMethodsProps, PayMethodsState> {
 
   }
 
-  render() {
+  render(): ReactNode {
     return (
       <Container fluid>
 
