@@ -257,7 +257,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
       }
       if (rootList) {
         for (const root of rootList) {
-          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
+          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: draggingTargetItemData.id }));
         }
       }
     }
