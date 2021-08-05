@@ -299,7 +299,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <FileDropdownActions
-              hiddenActions={item.isFolder ? [ItemAction.Download] : []}
+              hiddenActions={item.isFolder ? [ItemAction.Download, ItemAction.Share] : []}
               onRenameButtonClicked={this.onRenameButtonClicked}
               onDownloadButtonClicked={this.onDownloadButtonClicked}
               onShareButtonClicked={this.onShareButtonClicked}
