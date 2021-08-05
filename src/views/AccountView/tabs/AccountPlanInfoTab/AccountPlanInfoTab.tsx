@@ -3,12 +3,13 @@ import { useState } from 'react';
 import SessionStorage from '../../../../lib/sessionStorage';
 import { bytesToString } from '../../../../services/size.service';
 import usageService, { putLimitUser } from '../../../../services/usage.service';
-import { useAppSelector } from '../../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { selectUserPlan, setIsLoadingStripePlan } from '../../../../store/slices/user';
 import { UilUserCircle, UilEnvelope } from '@iconscout/react-unicons';
 import './AccountPlanInfoTab.scss';
 import { ListItem } from '../AccountBillingTab/BillingPlanItem';
 import { selectorIsTeam } from '../../../../store/slices/team';
+import { setCurrentAccountTab } from '../../../../store/slices/ui';
 
 const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
   const [usage, setUsage] = useState(0);
@@ -19,6 +20,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
   const isTeam = useAppSelector(selectorIsTeam);
   const [isLoading, setIsLoading] = useState(false);
   const isLoadingStripe = useAppSelector(setIsLoadingStripePlan);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const getUsage = async () => {
@@ -120,13 +122,15 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
             <span className='text-neutral-700 font-semibold text-sm'>{putNameProduct()}</span>
 
             <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
-              { !isLoadingStripe ?
+              {!isLoadingStripe ?
                 <Fragment>
                   {
                     userPlan ?
                       <Fragment>
                         <span className='font-bold'>{userPlan?.price}€</span>
-                        <span className='text-xs mb-1 ml-2'>/{userPlan?.paymentInterval}</span>
+                        <span className='text-xs mb-1 ml-2'
+
+                        >/{userPlan?.paymentInterval}</span>
                       </Fragment>
                       :
                       <span className='font-bold'>Free plan</span>
@@ -139,7 +143,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
 
             {plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
 
-            <button className='primary w-full' onClick={() => console.log('clicked')}>
+            <button className='primary w-full' onClick={() => dispatch(setCurrentAccountTab('plans'))}>
               Upgrade
             </button>
           </div>

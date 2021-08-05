@@ -124,7 +124,8 @@ export interface IFormValues {
   confirmPassword: string,
   acceptTerms: boolean,
   backupKey: string,
-  createFolder: string
+  createFolder: string,
+  teamMembers: number
 }
 
 export type IBillingPlan = {

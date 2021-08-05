@@ -1,16 +1,15 @@
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import * as Unicons from '@iconscout/react-unicons';
+import { UilClipboardAlt } from '@iconscout/react-unicons';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
 import { generateFileKey, Network } from '../../../lib/network';
 import { DriveItemData } from '../../../models/interfaces';
 import notify from '../../Notifications';
-import shareService from '../../../services/share.service';
 import history from '../../../lib/history';
 import { uiActions } from '../../../store/slices/ui';
 import BaseDialog from '../BaseDialog/BaseDialog';
-
+import shareService from '../../../services/share.service';
 import './ShareItemDialog.scss';
 import { storageActions } from '../../../store/slices/storage';
 
@@ -118,12 +117,12 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
               navigator.clipboard.writeText(linkToCopy);
               notify('Link copied!', 'info', 2500);
             }}>
-            <span className='text-neutral-900 text-xs'>{isLoading ? 'Loading link...' : linkToCopy}</span>
-            <Unicons.UilClipboardAlt className='text-blue-60' />
+            <span className='text-neutral-900 text-xs w-56 truncate overflow-hidden'>{isLoading ? 'Loading link...' : linkToCopy}</span>
+            <UilClipboardAlt className='text-blue-60' />
           </div>
         </div>
       </div>
-    </BaseDialog>
+    </BaseDialog >
   );
 };
 

@@ -12,7 +12,6 @@ import './AccountBillingTab.scss';
 import { useAppDispatch } from '../../../../store/hooks';
 import { setUserPlan, userActions } from '../../../../store/slices/user';
 import { fetchUserPlan } from '../../../../services/user.service';
-import LoadingFileExplorer from '../../../../components/LoadingFileExplorer/LoadingFileExplorer';
 import { UilBuilding, UilHome } from '@iconscout/react-unicons';
 import BillingCardSkeletton from '../../../../components/skinSkeleton/BillingCardSkeletton';
 
@@ -69,15 +68,12 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
   const [products, setProducts] = useState<IBillingPlan>({});
   const [teamsProducts, setTeamsProducts] = useState<IBillingPlan>({});
   const dispatch = useAppDispatch();
-  const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
     const getProducts = async () => {
+      const userPlan = await fetchUserPlan();
+
       try {
-        const userInfo = await fetchUserPlan();
-
-        const userPlan = userInfo === null ? null : userInfo;
-
         const products = await loadAvailableProducts();
         const teamsProducts = await loadAvailableTeamsProducts();
 
@@ -90,11 +86,13 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
           product: product,
           plans: await loadAvailablePlans(product) || [],
           selected: '',
-          currentPlan: userPlan ? userPlan.planId : null
+          currentPlan: userPlan?.planId || ''
         }));
         const teamsProductsWithPlans = teamsProducts.map(async product => ({
           product: product,
-          plans: await loadAvailableTeamsPlans(product) || []
+          plans: await loadAvailableTeamsPlans(product) || [],
+          selected: '',
+          currentPlan: userPlan?.planId || ''
         }));
 
         const finalProducts = await Promise.all(productsWithPlans);
@@ -161,9 +159,7 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
     }
   };
 
-  const handlePaymentTeams = async (selectedPlanToBuy, productId, totalTeamMembers) => {
-    setStatusMessage('Purchasing...');
-
+  const handlePaymentTeams = async (selectedPlanToBuy, totalTeamMembers) => {
     const mnemonicTeam = generateMnemonic(256);
     const encMnemonicTeam = await encryptPGP(mnemonicTeam);
 
@@ -186,13 +182,10 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
         throw Error(result.error);
       }
 
-      setStatusMessage('Redirecting to Stripe...');
-
       stripe.redirectToCheckout({ sessionId: result.id }).catch(err => {
       });
     }).catch(err => {
       console.error('Error starting Stripe session. Reason: %s', err);
-      setStatusMessage('Please contact us. Reason: ' + err.message);
     });
   };
 
