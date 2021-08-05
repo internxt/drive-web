@@ -251,9 +251,6 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
     const { draggingTargetItemData, dispatch } = this.props;
 
-    console.log(draggingTargetItemData);
-    console.log('Name Path ', this.props.namePath);
-
     if (draggingTargetItemData && draggingTargetItemData.isFolder) {
       const namePathDestinationArray = this.props.namePath.map(level => level.name);
 
@@ -269,7 +266,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
       }
       if (rootList) {
         for (const root of rootList) {
-          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }));
+          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: draggingTargetItemData.id }));
         }
       }
     }
