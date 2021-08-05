@@ -104,19 +104,32 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     const isTeam = this.props.workspace === Workspace.Business ? true : false;
 
     try {
+      const oldName = item.name;
+
       if (item.name !== dirtyName) {
+        this.props.dispatch(storageActions.resetItemName({ name: dirtyName, id: item.id, isFolder: !!item.isFolder }));
         if (item.isFolder) {
           folderService.updateMetaData(item.id, data, isTeam)
-            .then(() => {
+            .then((res) => {
+              if (!res) {
+                this.props.dispatch(storageActions.resetItemName({ name: oldName, id: item.id, isFolder: !!item.isFolder }));
+              }
+              /*
               this.props.dispatch(
                 storageThunks.fetchFolderContentThunk()
               );
+              */
             });
         } else {
-          fileService.updateMetaData(item.fileId, data as DriveFileMetadataPayload, isTeam).then(() => {
+          fileService.updateMetaData(item.fileId, data as DriveFileMetadataPayload, isTeam).then((res) => {
+            if (!res) {
+              this.props.dispatch(storageActions.resetItemName({ name: oldName, id: item.id, isFolder: !!item.isFolder }));
+            }
+            /*
             this.props.dispatch(
               storageThunks.fetchFolderContentThunk()
             );
+            */
           });
         }
       }
@@ -246,17 +259,19 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
       namePathDestinationArray[0] = '';
 
-      const itemsDragged = await getAllItems(e.dataTransfer);
-      const { numberOfItems, rootList, files } = itemsDragged;
-
       let folderPath = namePathDestinationArray.join('/');
 
       folderPath = !draggingTargetItemData.isFolder ? folderPath : folderPath + '/' + draggingTargetItemData.name;
+
+      const itemsDragged = await getAllItems(e.dataTransfer, folderPath);
+
+      const { numberOfItems, rootList, files } = itemsDragged;
+
       const parentFolderId = draggingTargetItemData.isFolder ? draggingTargetItemData.id : this.props.currentFolderId;
 
       if (files) {
         // files where dragged directly
-        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId, folderPath }));
+        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId }));
       }
       if (rootList) {
         for (const root of rootList) {

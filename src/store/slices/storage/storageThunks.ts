@@ -62,7 +62,8 @@ interface CreateFolderTreeStructurePayload {
 
 interface IRoot extends DirectoryEntry {
   childrenFiles: File[],
-  childrenFolders: IRoot[]
+  childrenFolders: IRoot[],
+  fullPathEdited: string
 }
 
 export const createFolderTreeStructureThunk = createAsyncThunk(
@@ -85,6 +86,7 @@ export const createFolderTreeStructureThunk = createAsyncThunk(
     }
 
     // Uploads the root folder
+<<<<<<< HEAD
     await folderService.createFolder(isTeam, currentFolderId, root.name).then(async (folderUploaded) => {
       promises.push(
         dispatch(uploadItemsThunk({
@@ -94,6 +96,11 @@ export const createFolderTreeStructureThunk = createAsyncThunk(
           options: { withNotifications: false }
         }))
       );
+=======
+    folderService.createFolder(isTeam, currentFolderId, root.name).then((folderUploaded) => {
+      // Once the root folder is uploaded it uploads the file children
+      dispatch(uploadItemsThunk({ files: root.childrenFiles, parentFolderId: folderUploaded.id, folderPath: root.fullPathEdited }));
+>>>>>>> 82c076c8a4d2c626e4f1e78372647dcc13040d5f
       // Once the root folder is uploaded upload folder children
       for (const subTreeRoot of root.childrenFolders) {
         promises.push(dispatch(createFolderTreeStructureThunk({
@@ -188,7 +195,6 @@ export const uploadItemsThunk = createAsyncThunk(
       return;
     }
 
-    // 1.
     files.forEach(file => {
       const { filename, extension } = getFilenameAndExt(file.name);
       const notification: NotificationData = {
@@ -375,7 +381,11 @@ export const deleteItemsThunk = createAsyncThunk(
 
     await storageService.deleteItems(itemsToDelete, isTeam);
 
-    dispatch(fetchFolderContentThunk(currentFolderId));
+    for (const item of itemsToDelete) {
+      dispatch(storageActions.deleteItem(item));
+    }
+
+    //dispatch(fetchFolderContentThunk(currentFolderId));
   }
 );
 
