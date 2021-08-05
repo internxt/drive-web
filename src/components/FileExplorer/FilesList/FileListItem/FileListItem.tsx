@@ -252,7 +252,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
       folderPath = !draggingTargetItemData.isFolder ? folderPath : folderPath + '/' + draggingTargetItemData.name;
       const parentFolderId = draggingTargetItemData.isFolder ? draggingTargetItemData.id : this.props.currentFolderId;
-      const itemsDragged = await getAllItems(e.dataTransfer);
+      const itemsDragged = await getAllItems(e.dataTransfer, folderPath);
       const { numberOfItems, rootList, files } = itemsDragged;
 
       if (files) {

@@ -260,17 +260,19 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
 
       namePathDestinationArray[0] = '';
 
-      const itemsDragged = await getAllItems(e.dataTransfer);
-      const { numberOfItems, rootList, files } = itemsDragged;
-
       let folderPath = namePathDestinationArray.join('/');
 
       folderPath = !draggingTargetItemData.isFolder ? folderPath : folderPath + '/' + draggingTargetItemData.name;
+
+      const itemsDragged = await getAllItems(e.dataTransfer, folderPath);
+
+      const { numberOfItems, rootList, files } = itemsDragged;
+
       const parentFolderId = draggingTargetItemData.isFolder ? draggingTargetItemData.id : this.props.currentFolderId;
 
       if (files) {
         // files where dragged directly
-        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId, folderPath }));
+        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId }));
       }
       if (rootList) {
         for (const root of rootList) {

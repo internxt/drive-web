@@ -59,7 +59,8 @@ interface CreateFolderTreeStructurePayload {
 }
 interface IRoot extends DirectoryEntry {
   childrenFiles: File[],
-  childrenFolders: IRoot[]
+  childrenFolders: IRoot[],
+  fullPathEdited: string
 }
 
 export const createFolderTreeStructureThunk = createAsyncThunk(
@@ -70,7 +71,7 @@ export const createFolderTreeStructureThunk = createAsyncThunk(
     // Uploads the root folder
     folderService.createFolder(isTeam, currentFolderId, root.name).then((folderUploaded) => {
       // Once the root folder is uploaded it uploads the file children
-      dispatch(uploadItemsThunk({ files: root.childrenFiles, parentFolderId: folderUploaded.id, folderPath: root.fullPath }));
+      dispatch(uploadItemsThunk({ files: root.childrenFiles, parentFolderId: folderUploaded.id, folderPath: root.fullPathEdited }));
       // Once the root folder is uploaded upload folder children
       for (const subTreeRoot of root.childrenFolders) {
         dispatch(createFolderTreeStructureThunk({ root: subTreeRoot, currentFolderId: folderUploaded.id }));
@@ -135,14 +136,16 @@ export const uploadItemsThunk = createAsyncThunk(
     // so we need to add the relative folderPath (the path from parent folder uploaded to the level of the file being uploaded)
     // when uploading deeper files than the current level
     // TODO:
-    /* if (files.folderPath) {
+    /*
+    if (files.folderPath) {
       if (relativePath !== '') {
         relativePath += '/' + files.folderPath;
       } else {
         // if is the first path level, DO NOT ADD a '/'
         relativePath += files.folderPath;
       }
-    } */
+    }
+    */
 
     files.forEach(file => {
       const { filename, extension } = getFilenameAndExt(file.name);
@@ -208,6 +211,10 @@ export const uploadItemsThunk = createAsyncThunk(
             uuid: notificationUuid,
             merge: { status: FileStatusTypes.Success }
           }));
+          data.name = file.name;
+          if (currentFolderId === parentFolderId) {
+            dispatch(storageActions.addItems(data));
+          }
 
           if (res.status === 402) {
             rateLimited = true;

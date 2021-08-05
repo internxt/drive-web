@@ -147,6 +147,9 @@ export const storageSlice = createSlice({
           break;
         }
       }
+    },
+    addItems(state: StorageState, action: PayloadAction<DriveItemData>) {
+      state.items.push(action.payload);
     }
   },
   extraReducers

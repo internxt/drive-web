@@ -2,8 +2,10 @@
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../lib/constants';
 import { v4 as uuid } from 'uuid';
 
-export async function getAllItems(dataTransfer) {
-  const entries = await getEntries(dataTransfer.items);
+export async function getAllItems(dataTransfer, pathToDrop) {
+  console.log(pathToDrop);
+
+  const entries = await getEntries(dataTransfer.items, pathToDrop);
 
   // console.log(entries);
   const levels: Array<[]> = [];
@@ -35,7 +37,7 @@ export async function getAllItems(dataTransfer) {
     files: entries.childrenIndex['']
   };
 
-  // console.log(items);
+  console.log(items);
   return items;// entries;
 }
 
@@ -56,7 +58,8 @@ function parentFullPath(filePath) {
   return parentPath;
 }
 
-async function getEntries(dataTransferItemList: DataTransferItemList) {
+async function getEntries(dataTransferItemList: DataTransferItemList, pathToDrop) {
+  console.log(pathToDrop);
   const entryList: DataTransferItem[] = [];
   const fileEntryList: File[] = [];
   const directoryEntryList: DataTransferItem[] = [];
@@ -85,6 +88,7 @@ async function getEntries(dataTransferItemList: DataTransferItemList) {
       }
 
       await getFile(entry).then(fileEntry => {
+        fileEntry.fullPathEdited = pathToDrop + '/' + fileEntry.webkitRelativePath;
         fileEntryList.push(fileEntry);
         totalSize += fileEntry.size;
         childrenIndex[indexKey].push(fileEntry);
@@ -94,7 +98,9 @@ async function getEntries(dataTransferItemList: DataTransferItemList) {
       });
       entryList.push(entry);
     } else if (entry.isDirectory) {
+      //console.log(entry);
       // entry.children = [];
+      entry.fullPathEdited = pathToDrop + entry.fullPath;
       entryList.push(entry);
       directoryEntryList.push(entry);
       const reader = entry.createReader();

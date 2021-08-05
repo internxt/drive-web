@@ -359,14 +359,15 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     e.preventDefault();
     e.stopPropagation();
 
-    const itemsDragged = await getAllItems(e.dataTransfer);
-    const { numberOfItems, rootList, files } = itemsDragged;
     const { dispatch } = this.props;
 
     const namePathDestinationArray = this.props.namePath.map(level => level.name);
 
     namePathDestinationArray[0] = '';
     const folderPath = namePathDestinationArray.join('/');
+
+    const itemsDragged = await getAllItems(e.dataTransfer, folderPath);
+    const { numberOfItems, rootList, files } = itemsDragged;
 
     if (files) {
       // files where dragged directly
