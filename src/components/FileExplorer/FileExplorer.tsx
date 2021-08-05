@@ -447,9 +447,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 
             <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden">
               <div
-                onDragOver={this.onViewDragOver}
-                onDragLeave={this.onViewDragLeave}
-                onDrop={this.onViewDrop}
                 className="flex flex-col justify-between flex-grow overflow-y-auto overflow-x-hidden"
               >
                 <ViewModeComponent items={items} isLoading={isLoading} />

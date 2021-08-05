@@ -306,12 +306,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
         onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
-        draggable={true}
-        onDragStart={this.onItemDragStart}
-        onDragEnd={this.onItemDragEnd}
-        onDragOver={this.onItemDragOver}
-        onDragLeave={this.onItemDragLeave}
-        onDrop={this.onItemDrop}
+        draggable={false}
       >
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
