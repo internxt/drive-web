@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { storageSelectors, storageThunks } from '../../../store/slices/storage';
+import { storageActions, storageSelectors, storageThunks } from '../../../store/slices/storage';
 import folderService from '../../../services/folder.service';
 import { IFormValues, UserSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
@@ -32,9 +32,7 @@ const CreateFolderDialog = ({
   const isTeam: boolean = useAppSelector((state) => selectorIsTeam(state));
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
-  const createButtonLabel = isValid ?
-    isLoading ? 'Creating...' : 'Create' :
-    'Create';
+  const createButtonLabel = isValid ? 'Create' : 'Create';
 
   const onClose = (): void => {
     reset();
@@ -43,8 +41,9 @@ const CreateFolderDialog = ({
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
     try {
-      setIsLoading(true);
-      await folderService.createFolder(isTeam, currentFolderId, formData.createFolder);
+      const data = await folderService.createFolder(isTeam, currentFolderId, formData.createFolder);
+
+      dispatch(storageActions.addItems(data));
 
       dispatch(uiActions.setIsCreateFolderDialogOpen(false));
       reset();
@@ -52,13 +51,11 @@ const CreateFolderDialog = ({
       onFolderCreated && onFolderCreated();
 
     } catch (err) {
-      if (err.includes('already exists')) {
-        notify('Folder with the same name already exists', 'error');
-      } else {
-        notify(err.message || err, 'error');
-      }
+      setIsLoading(false);
+      onClose();
     } finally {
       setIsLoading(false);
+      onClose();
     }
   };
 
