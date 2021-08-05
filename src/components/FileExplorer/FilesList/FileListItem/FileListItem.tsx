@@ -94,7 +94,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         if (item.isFolder) {
           folderService.updateMetaData(item.id, data, isTeam)
             .then((res) => {
-              if (!res.id) {
+              if (!res) {
                 this.props.dispatch(storageActions.resetItemName({ name: oldName, id: item.id, isFolder: !!item.isFolder }));
               }
               // this.props.dispatch(storageActions.resetItemName({ name: dirtyName, id: item.id, isFolder: item.isFolder }));
@@ -105,7 +105,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
             });
         } else {
           fileService.updateMetaData(item.fileId, data, isTeam).then((res) => {
-            if (!res.id) {
+            if (!res) {
               this.props.dispatch(storageActions.resetItemName({ name: oldName, id: item.id, isFolder: !!item.isFolder }));
             }
             /*
