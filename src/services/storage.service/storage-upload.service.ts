@@ -35,8 +35,7 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
 
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
-    const relativePath = file.file.fullPathEdited + file.file.name + (file.file.type ? '.' + file.file.type : '');
-
+    const relativePath = file.folderPath + file.file.name + (file.file.type ? '.' + file.file.type : '');
     const content = new Blob([file.file.content], { type: file.file.type });
 
     const fileId = await network.uploadFile(bucketId, {
