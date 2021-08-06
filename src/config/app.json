@@ -1,4 +1,8 @@
 {
+  "plan": {
+    "freePlanStorageLimit": 2147483648,
+    "maxStorageLimit": 108851651149824
+  },
   "fileExplorer": {
     "recentsLimit": 10
   },
@@ -16,23 +20,10 @@
       "exact": true
     },
     {
-      "id": "invite",
-      "layout": "empty",
-      "path": "/invite",
-      "exact": true
-    },
-    {
       "id": "login",
       "layout": "empty",
       "path": "/login",
       "exact": true
-    },
-    {
-      "id": "storage",
-      "layout": "header-and-sidenav",
-      "path": "/storage",
-      "exact": true,
-      "auth": true
     },
     {
       "id": "drive",
@@ -52,20 +43,6 @@
       "id": "account",
       "layout": "header-and-sidenav",
       "path": "/account",
-      "exact": true,
-      "auth": true
-    },
-    {
-      "id": "teams",
-      "layout": "empty",
-      "path": "/teams",
-      "exact": true,
-      "auth": true
-    },
-    {
-      "id": "teams-cancel",
-      "layout": "empty",
-      "path": "/team/cancel",
       "exact": true,
       "auth": true
     },
@@ -99,27 +76,6 @@
       "layout": "empty",
       "path": "/checkout/:sessionId",
       "exact": false,
-      "auth": true
-    },
-    {
-      "id": "reset",
-      "layout": "empty",
-      "path": "/reset",
-      "exact": true,
-      "auth": true
-    },
-    {
-      "id": "reset-token",
-      "layout": "empty",
-      "path": "/reset/:token",
-      "exact": false,
-      "auth": true
-    },
-    {
-      "id": "settings",
-      "layout": "empty",
-      "path": "/settings",
-      "exact": true,
       "auth": true
     },
     {

@@ -8,19 +8,17 @@ import { IFormValues, UserSettings } from '../../models/interfaces';
 import localStorageService from '../../services/localStorage.service';
 import { emailRegexPattern, validateEmail } from '../../services/validation.service';
 import analyticsService from '../../services/analytics.service';
-import { initializeUser, readReferalCookie } from '../../services/auth.service';
+import { readReferalCookie } from '../../services/auth.service';
 import BaseInput from '../../components/Inputs/BaseInput';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
 import AuthButton from '../../components/Buttons/AuthButton';
 import { useAppDispatch } from '../../store/hooks';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
-import { setUser } from '../../store/slices/user';
+import { setUser, userActions, userThunks } from '../../store/slices/user';
 import { getHeaders } from '../../lib/auth';
 import AesUtils from '../../lib/AesUtil';
 import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
-import BaseButton from '../../components/Buttons/BaseButton';
-import { texts } from '../SignInView/SignInView';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope, UilUser } from '@iconscout/react-unicons';
 import { Link } from 'react-router-dom';
 
@@ -104,10 +102,10 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       const xToken = res.token;
       const xUser = res.user;
 
+      dispatch(userActions.setUser(xUser));
       xUser.mnemonic = mnemonic;
 
-      return initializeUser(email, xUser.mnemonic).then((rootFolderInfo) => {
-        xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
+      return dispatch(userThunks.initializeUserThunk()).then((rootFolderInfo) => {
         localStorageService.set('xToken', xToken);
         localStorageService.set('xMnemonic', mnemonic);
         dispatch(setUser(xUser));
@@ -146,34 +144,28 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         revocationKey: codrevocationKey,
         referrer: referrer
       })
-    }).then(response => {
+    }).then(async (response) => {
       if (response.status === 200) {
-        return response.json().then((body) => {
-          // Manage succesfull register
-          const { token, uuid } = body;
-          const user: UserSettings = body.user;
+        const body = await response.json();
+        const { token, uuid } = body;
+        const user: UserSettings = body.user;
 
-          window.analytics.identify(uuid, { email: email, member_tier: 'free' });
-          analyticsService.trackSignUp({
-            properties: {
-              userId: uuid,
-              email: email
-            }
-          });
-
-          localStorageService.set('xToken', token);
-          user.mnemonic = decryptTextWithKey(user.mnemonic, password);
-          dispatch(setUser({ ...user }));
-          localStorageService.set('xMnemonic', user.mnemonic);
-
-          return initializeUser(email, user.mnemonic).then((rootFolderInfo) => {
-            user.root_folder_id = rootFolderInfo.user.root_folder_id;
-            user.bucket = rootFolderInfo.user.bucket;
-            dispatch(setUser({ ...user }));
-            history.push('/login');
-          });
+        window.analytics.identify(uuid, { email: email, member_tier: 'free' });
+        analyticsService.trackSignUp({
+          properties: {
+            userId: uuid,
+            email: email
+          }
         });
 
+        localStorageService.set('xToken', token);
+        user.mnemonic = decryptTextWithKey(user.mnemonic, password);
+        dispatch(setUser({ ...user }));
+        localStorageService.set('xMnemonic', user.mnemonic);
+
+        dispatch(userThunks.initializeUserThunk()).then(() => {
+          history.push('/app');
+        });
       } else {
         return response.json().then((body) => {
           if (body.error) {
@@ -218,7 +210,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
   return (
     <div className='flex h-full w-full'>
-      <SideInfo texts={texts} />
+      <SideInfo title="" subtitle="" />
 
       <div className='flex flex-col items-center justify-center w-full'>
         <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>

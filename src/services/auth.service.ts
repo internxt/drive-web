@@ -8,22 +8,8 @@ import { decryptText, decryptTextWithKey, encryptText, encryptTextWithKey, passT
 import { validateFormat } from './keys.service';
 import { decryptPGP } from '../lib/utilspgp';
 import * as bip39 from 'bip39';
-
-export async function initializeUser(email: string, mnemonic: string): Promise<Response> {
-  return fetch('/api/initialize', {
-    method: 'POST',
-    headers: getHeaders(true, true),
-    body: JSON.stringify({
-      email: email,
-      mnemonic: mnemonic
-    })
-  }).then(res => {
-    if (res.status !== 200) {
-      throw Error(res.statusText);
-    }
-    return res.json();
-  });
-}
+import userService from './user.service';
+import { toast } from 'react-toastify';
 
 export function logOut(): void {
   analyticsService.trackSignOut();
@@ -38,6 +24,21 @@ export function isUserSignedIn(): boolean {
   const xToken = localStorageService.get('xToken');
 
   return !!xUser && !!xMnemonic && !!xToken;
+}
+
+export function cancelAccount(): Promise<void> {
+  return fetch('/api/deactivate', {
+    method: 'GET',
+    headers: getHeaders(true, false)
+  })
+    .then(res => res.json())
+    .then(res => {
+      toast.warn('A desactivation email has been sent to your email inbox');
+    }).catch(err => {
+      toast.warn('Error deleting account');
+      console.log(err);
+      throw err;
+    });
 }
 
 export const check2FANeeded = async (email: string): Promise<any> => {
@@ -266,23 +267,12 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
 
   xUser.mnemonic = mnemonic;
 
-  const rootFolderInfo = await initializeUser(email, xUser.mnemonic);
+  const rootFolderInfo = await userService.initializeUser(email, xUser.mnemonic);
 
   xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
   localStorageService.set('xToken', xToken);
   localStorageService.set('xMnemonic', mnemonic);
   return xUser;
-};
-
-const authService = {
-  initializeUser,
-  logOut,
-  isUserSignedIn,
-  doLogin,
-  doAccess,
-  doRegister,
-  check2FANeeded,
-  readReferalCookie
 };
 
 export const getSalt = async (): Promise<any> => {
@@ -406,6 +396,16 @@ export const store2FA = async (code: string, twoFactorCode: string): Promise<voi
   if (response.status !== 200) {
     throw new Error(data.error);
   }
+};
+
+const authService = {
+  logOut,
+  isUserSignedIn,
+  doLogin,
+  doAccess,
+  doRegister,
+  check2FANeeded,
+  readReferalCookie
 };
 
 export default authService;

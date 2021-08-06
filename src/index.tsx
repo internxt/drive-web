@@ -10,11 +10,13 @@ import { teamActions } from './store/slices/team';
 
 import './index.scss';
 import { storageThunks } from './store/slices/storage';
+import { planThunks } from './store/slices/plan';
 
 // Initializes store
 store.dispatch(userActions.initialize());
 store.dispatch(teamActions.initialize());
 store.dispatch(storageThunks.initializeThunk());
+store.dispatch(planThunks.initializeThunk());
 
 ReactDOM.render(
   <React.StrictMode>

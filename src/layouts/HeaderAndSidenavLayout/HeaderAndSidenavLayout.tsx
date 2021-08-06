@@ -1,13 +1,11 @@
 import { Link } from 'react-router-dom';
+import history from '../../lib/history';
+
 import AppHeader from '../../components/AppHeader/AppHeader';
 import Sidenav from '../../components/Sidenav/Sidenav';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
-import { useEffect } from 'react';
-import SessionStorage from '../../lib/sessionStorage';
-import { getLimit } from '../../services/limit.service';
-import localStorageService from '../../services/localStorage.service';
 import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
 import { DriveItemData } from '../../models/interfaces';
 import InviteMemberDialog from '../../components/dialogs/InviteMemberDialog/InviteMemberDialog';
@@ -30,29 +28,9 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const isInviteMemberDialogOpen = useAppSelector((state) => state.ui.isInviteMemberDialogOpen);
 
-  useEffect(() => {
-    const limitStorage = SessionStorage.get('limitStorage');
-    const teamsStorage = SessionStorage.get('teamsStorage');
-
-    if (!limitStorage) {
-      getLimit(false).then((limitStorage) => {
-        if (limitStorage) {
-          SessionStorage.set('limitStorage', limitStorage);
-        }
-      });
-    }
-
-    if (!teamsStorage) {
-      if (localStorageService.get('xTeam')) {
-        getLimit(true).then((teamsStorage) => {
-          if (teamsStorage) {
-            SessionStorage.set('teamsStorage', teamsStorage);
-          }
-        });
-      }
-    }
-
-  }, []);
+  if (!isAuthenticated) {
+    history.push('/');
+  }
 
   return isAuthenticated ? (
     <div className='h-auto min-h-full flex flex-col'>

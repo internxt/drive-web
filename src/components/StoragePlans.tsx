@@ -9,10 +9,10 @@ import iconInxt from '../assets/PaymentBridges/inxt.svg';
 import iconPayPal from '../assets/PaymentBridges/paypal.svg';
 import { getHeaders } from '../lib/auth';
 
-import SessionStorage from '../lib/sessionStorage';
-import { RootState } from '../store';
+import { AppDispatch, RootState } from '../store';
 import analyticsService from '../services/analytics.service';
 import { UserSettings } from '../models/interfaces';
+import { planThunks } from '../store/slices/plan';
 
 const stripeGlobal = window.Stripe;
 
@@ -36,7 +36,8 @@ const PaymentBridges = [
 
 interface StoragePlansProps {
   currentPlan: any;
-  user: UserSettings
+  user: UserSettings;
+  dispatch: AppDispatch;
 }
 
 interface StoragePlansState {
@@ -107,6 +108,7 @@ class StoragePlans extends React.Component<StoragePlansProps, StoragePlansState>
   }
 
   handleStripePayment() {
+
     this.setState({ statusMessage: 'Purchasing...' });
 
     const stripe = new stripeGlobal(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
@@ -130,8 +132,8 @@ class StoragePlans extends React.Component<StoragePlansProps, StoragePlansState>
       }
       analyticsService.trackUserEnterPayments();
       this.setState({ statusMessage: 'Redirecting to Stripe...' });
-      SessionStorage.del('limitStorage');
       stripe.redirectToCheckout({ sessionId: result.id }).then(result => {
+        this.props.dispatch(planThunks.initializeThunk());
       }).catch(err => {
         this.setState({ statusMessage: 'Failed to redirect to Stripe. Reason:' + err.message });
       });

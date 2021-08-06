@@ -26,7 +26,6 @@ import { uiActions } from '../../store/slices/ui';
 
 import './FileExplorer.scss';
 import usageService, { UsageResponse } from '../../services/usage.service';
-import SessionStorage from '../../lib/sessionStorage';
 import deviceService from '../../services/device.service';
 import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
 import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
@@ -56,7 +55,8 @@ interface FileExplorerProps {
   namePath: FolderPath[];
   sortFunction: ((a: DriveItemData, b: DriveItemData) => number) | null;
   dispatch: AppDispatch;
-  workspace: Workspace
+  workspace: Workspace;
+  planLimit: number;
 }
 
 interface FileExplorerState {
@@ -120,13 +120,13 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   }
 
   onUploadInputChanged = async (e) => {
-    const limitStorage = SessionStorage.get('limitStorage');
-    const isTeam = this.props.workspace === Workspace.Business ? true : false;
+    const { planLimit } = this.props;
+    const isTeam = this.props.workspace === Workspace.Business;
 
     try {
       const usage: UsageResponse = await usageService.fetchUsage(isTeam);
 
-      if (limitStorage && usage.total >= parseInt(limitStorage)) {
+      if (planLimit && usage.total >= parseInt(planLimit)) {
         this.props.dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
       } else {
         this.dispatchUpload(e);
@@ -539,6 +539,7 @@ export default connect(
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
       sortFunction: state.storage.sortFunction,
-      workspace: state.team.workspace
+      workspace: state.team.workspace,
+      planLimit: state.plan.planLimit
     };
   })(FileExplorer);

@@ -7,11 +7,11 @@ const BillingCardSkeletton = (): JSX.Element => {
 
       <p className='text-sm mt-4 mb-2'><Skeleton /></p>
 
-      {Array(3).fill(1).map(_ => <Skeleton width={200} height={44} className='mb-2' />)}
+      {Array(3).fill(1).map((n, i) => <Skeleton width={200} height={44} className='mb-2' key={i} />)}
 
       <Skeleton width={180} height={10} className='my-3' />
 
-      {Array(3).fill(1).map(_ => <Skeleton width={200} height={15} className='mb-2' />)}
+      {Array(3).fill(1).map((n, i) => <Skeleton width={200} height={15} className='mb-2' key={i} />)}
 
       <div className='mt-4' />
       <Skeleton height={36} className="w-full" />

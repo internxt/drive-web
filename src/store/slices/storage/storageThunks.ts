@@ -1,18 +1,16 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+import _ from 'lodash';
 
 import { storageActions, storageSelectors, StorageState } from '.';
-import { getFilenameAndExt, renameFile } from '../../../lib/utils';
+import { getFilenameAndExt } from '../../../lib/utils';
 import folderService from '../../../services/folder.service';
 import storageService from '../../../services/storage.service';
-import tasksService from '../../../services/tasks.service';
 import downloadService from '../../../services/download.service';
-import _ from 'lodash';
 import { selectorIsTeam } from '../team';
 import { DriveFileData, DriveItemData, FolderPath, NotificationData } from '../../../models/interfaces';
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 import fileService from '../../../services/file.service';
-import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../lib/constants';
 import { uiActions } from '../ui';
 import { tasksActions } from '../tasks';
@@ -358,16 +356,9 @@ export const fetchFolderContentThunk = createAsyncThunk(
 export const deleteItemsThunk = createAsyncThunk(
   'storage/deleteItems',
   async (itemsToDelete: DriveItemData[], { getState, dispatch }: any) => {
-    const currentFolderId: number = storageSelectors.currentFolderId(getState());
     const isTeam: boolean = selectorIsTeam(getState());
 
     await storageService.deleteItems(itemsToDelete, isTeam);
-
-    for (const item of itemsToDelete) {
-      dispatch(storageActions.deleteItem(item));
-    }
-
-    //dispatch(fetchFolderContentThunk(currentFolderId));
   }
 );
 
@@ -390,10 +381,8 @@ export const goToFolderThunk = createAsyncThunk(
 export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
     .addCase(uploadItemsThunk.pending, (state, action) => { })
-    .addCase(uploadItemsThunk.fulfilled, (state, action) => {
-      console.log('uploadItemsThunk fulfilled!');
-    })
-    .addCase(uploadItemsThunk.rejected, (state, action: any) => {
+    .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
+    .addCase(uploadItemsThunk.rejected, (state, action) => {
       toast.warn(action.error.message);
     });
 
@@ -418,7 +407,7 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
     .addCase(fetchFolderContentThunk.fulfilled, (state, action) => {
       state.isLoading = false;
     })
-    .addCase(fetchFolderContentThunk.rejected, (state, action: any) => {
+    .addCase(fetchFolderContentThunk.rejected, (state, action) => {
       state.isLoading = false;
       toast.warn(action.payload);
     });

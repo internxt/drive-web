@@ -14,15 +14,17 @@ import { storeTeamsInfo } from '../../services/teams.service';
 import { generateNewKeys } from '../../services/pgp.service';
 import { validateFormat } from '../../services/keys.service';
 import { UserSettings } from '../../models/interfaces';
-import { setUser } from '../../store/slices/user';
 import analyticsService from '../../services/analytics.service';
 
 import './LoginView.scss';
+import { userActions } from '../../store/slices/user';
+import { planThunks } from '../../store/slices/plan';
+import { AppDispatch } from '../../store';
 
 interface LoginViewProps {
-  email?: string
-  password?: string
-  setUser: (user: UserSettings) => void
+  email?: string;
+  password?: string;
+  dispatch: AppDispatch;
 }
 
 class LoginView extends React.Component<LoginViewProps> {
@@ -45,7 +47,7 @@ class LoginView extends React.Component<LoginViewProps> {
     // const xKeyPublic = localStorage.getItem('xKeyPublic');
 
     if (user && user.registerCompleted && mnemonic) {
-      this.props.setUser(user);
+      this.props.dispatch(userActions.setUser(user));
       history.push('/app');
     } else if (user && user.registerCompleted === false) {
       history.push('/appsumo/' + user.email);
@@ -215,7 +217,8 @@ class LoginView extends React.Component<LoginViewProps> {
           revocationKey: revocateKey
         };
 
-        this.props.setUser(user);
+        this.props.dispatch(userActions.setUser(user));
+
         localStorageService.set('xToken', data.token);
         localStorageService.set('xMnemonic', user.mnemonic);
 
@@ -366,4 +369,4 @@ class LoginView extends React.Component<LoginViewProps> {
   }
 }
 
-export default connect(null, { setUser })(LoginView);
+export default connect(null)(LoginView);

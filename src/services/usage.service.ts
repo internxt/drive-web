@@ -1,6 +1,4 @@
 import { getHeaders } from '../lib/auth';
-import { UserSettings } from '../models/interfaces';
-import localStorageService from './localStorage.service';
 import { bytesToString } from './size.service';
 
 export interface UsageResponse {
@@ -14,21 +12,21 @@ export async function fetchUsage(isTeam: boolean): Promise<UsageResponse> {
   return response.json();
 }
 
-export const putLimitUser = (limit: number): string => {
+export const getUserLimitString = (limit: number): string => {
+  let result = '...';
+
   if (limit > 0) {
-    if (limit < 108851651149824) {
-      return bytesToString(limit);
-    } else if (limit >= 108851651149824) {
-      return '\u221E';
-    } else {
-      return '...';
-    }
+    limit < 108851651149824 ?
+      result = bytesToString(limit) :
+      result = '\u221E';
   }
+
+  return result;
 };
 
 const usageService = {
   fetchUsage,
-  putLimitUser
+  getUserLimitString
 };
 
 export default usageService;
