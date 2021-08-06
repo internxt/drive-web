@@ -161,6 +161,10 @@ export function trackFileUploadBucketIdUndefined(payload: { email: string, platf
   window.analytics.track(AnalyticsTrack.FileUploadBucketIdUndefined, payload);
 }
 
+export function trackShareLinkBucketIdUndefined(payload: { email: string }): void {
+  window.analytics.track(AnalyticsTrack.ShareLinkBucketIdUndefined, payload);
+}
+
 const analyticsService = {
   page,
   identify,
