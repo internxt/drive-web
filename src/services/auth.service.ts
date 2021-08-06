@@ -40,6 +40,22 @@ export function isUserSignedIn(): boolean {
   return !!xUser && !!xMnemonic && !!xToken;
 }
 
+export function cancelAccount(): Promise<void> {
+  return fetch('/api/deactivate', {
+    method: 'GET',
+    headers: getHeaders(true, false)
+  })
+    .then(res => res.json())
+    .then(res => {
+      toast.warn('A desactivation email has been sent to your email inbox');
+    }).catch(err => {
+      toast.warn('Error deleting account');
+      console.log(err);
+      throw err;
+    });
+}
+
+
 export const check2FANeeded = async (email: string): Promise<any> => {
   try {
     const response = await fetch('/api/login', {
@@ -274,17 +290,6 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
   return xUser;
 };
 
-const authService = {
-  initializeUser,
-  logOut,
-  isUserSignedIn,
-  doLogin,
-  doAccess,
-  doRegister,
-  check2FANeeded,
-  readReferalCookie
-};
-
 export const getSalt = async (): Promise<any> => {
   const email = localStorageService.getUser().email;
 
@@ -406,6 +411,17 @@ export const store2FA = async (code: string, twoFactorCode: string): Promise<voi
   if (response.status !== 200) {
     throw new Error(data.error);
   }
+};
+
+const authService = {
+  initializeUser,
+  logOut,
+  isUserSignedIn,
+  doLogin,
+  doAccess,
+  doRegister,
+  check2FANeeded,
+  readReferalCookie
 };
 
 export default authService;

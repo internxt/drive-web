@@ -1,8 +1,8 @@
-import React, { Fragment, useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { useState } from 'react';
 import SessionStorage from '../../../../lib/sessionStorage';
 import { bytesToString } from '../../../../services/size.service';
-import usageService, { putLimitUser } from '../../../../services/usage.service';
+import usageService, { getUserLimitString } from '../../../../services/usage.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { selectUserPlan, setIsLoadingStripePlan } from '../../../../store/slices/user';
 import { UilUserCircle, UilEnvelope } from '@iconscout/react-unicons';
@@ -40,15 +40,8 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
     getUsage();
   }, [isTeam]);
 
-  const limitUser = () => {
-    let limit;
-
-    if (isTeam) {
-      limit = putLimitUser(limitBusiness);
-    } else {
-      limit = putLimitUser(limitPersonal);
-    }
-    return limit;
+  const limitUser = (): number => {
+    return isTeam ? limitBusiness : limitPersonal;
   };
 
   const putNameProduct = () => {
@@ -58,7 +51,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
       if (userPlan) {
         name = userPlan.name;
       } else {
-        name = limitUser();
+        name = getUserLimitString(limitUser());
       }
     }
     return name;
@@ -106,7 +99,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
             {isLoading ?
               <span>Loading usage...</span>
               :
-              <span className='account_config_description m-0'>{bytesToString(usage)} of {limitUser()}</span>
+              <span className='account_config_description m-0'>{bytesToString(usage)} of {getUserLimitString(limitUser())}</span>
             }
 
             <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-1'>

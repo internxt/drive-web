@@ -189,48 +189,6 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
     });
   };
 
-  const renderItemIndividual = (product, index) => {
-    return (
-      <Fragment key={product.product.id}>
-        <BillingPlanItem
-          product={product.product}
-          plans={product.plans}
-          selectedPlan={product.selected}
-          currentPlan={product.currentPlan}
-          buttontext='Subscribe'
-          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-          handlePlanSelection={handlePlanSelection}
-          handlePaymentIndividual={handlePaymentIndividual}
-          isPaying={isPaying}
-          isBusiness={false}
-          handlePaymentTeams={handlePaymentTeams}
-        />
-        {index < Object.keys(products).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
-      </Fragment>
-    );
-  };
-
-  const renderItemTeams = (product, index) => {
-    return (
-      <Fragment key={product.product.id}>
-        <BillingPlanItem
-          product={product.product}
-          plans={product.plans}
-          selectedPlan={product.selected}
-          currentPlan={product.currentPlan}
-          buttontext='Subscribe'
-          characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-          handlePlanSelection={handlePlanSelection}
-          handlePaymentIndividual={handlePaymentIndividual}
-          isPaying={isPaying}
-          isBusiness={true}
-          handlePaymentTeams={handlePaymentTeams}
-        />
-        {index < Object.keys(teamsProducts).length - 1 && <div className='h-full border-r border-m-neutral-60' />}
-      </Fragment>
-    );
-  };
-
   return (
     <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
       <div className='flex justify-evenly items-center h-11'>
@@ -246,11 +204,37 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
       <div className='flex h-88 border-t border-m-neutral-60 justify-evenly'>
         {!isLoading ?
           currentOption === 'individual' ?
-            Object.values(products).map(renderItemIndividual)
-            :
-            Object.values(teamsProducts).map(renderItemTeams)
-          :
-          Array(3).fill(1).map(_ => <BillingCardSkeletton />)
+            Object.values(products).map((product, i) => (
+              <BillingPlanItem
+                key={i}
+                product={product.product}
+                plans={product.plans}
+                selectedPlan={product.selected}
+                currentPlan={product.currentPlan}
+                buttontext='Subscribe'
+                characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+                handlePlanSelection={handlePlanSelection}
+                handlePaymentIndividual={handlePaymentIndividual}
+                isPaying={isPaying}
+                isBusiness={false}
+                handlePaymentTeams={handlePaymentTeams}
+              />)) :
+            Object.values(teamsProducts).map((product, i) => (
+              <BillingPlanItem
+                key={i}
+                product={product.product}
+                plans={product.plans}
+                selectedPlan={product.selected}
+                currentPlan={product.currentPlan}
+                buttontext='Subscribe'
+                characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
+                handlePlanSelection={handlePlanSelection}
+                handlePaymentIndividual={handlePaymentIndividual}
+                isPaying={isPaying}
+                isBusiness={false}
+                handlePaymentTeams={handlePaymentTeams}
+              />)) :
+          Array(3).fill(1).map((n, i) => <BillingCardSkeletton key={i} />)
         }
       </div>
     </div>

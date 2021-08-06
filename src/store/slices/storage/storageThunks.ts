@@ -358,16 +358,9 @@ export const fetchFolderContentThunk = createAsyncThunk(
 export const deleteItemsThunk = createAsyncThunk(
   'storage/deleteItems',
   async (itemsToDelete: DriveItemData[], { getState, dispatch }: any) => {
-    const currentFolderId: number = storageSelectors.currentFolderId(getState());
     const isTeam: boolean = selectorIsTeam(getState());
 
     await storageService.deleteItems(itemsToDelete, isTeam);
-
-    for (const item of itemsToDelete) {
-      dispatch(storageActions.deleteItem(item));
-    }
-
-    //dispatch(fetchFolderContentThunk(currentFolderId));
   }
 );
 
@@ -390,10 +383,8 @@ export const goToFolderThunk = createAsyncThunk(
 export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
     .addCase(uploadItemsThunk.pending, (state, action) => { })
-    .addCase(uploadItemsThunk.fulfilled, (state, action) => {
-      console.log('uploadItemsThunk fulfilled!');
-    })
-    .addCase(uploadItemsThunk.rejected, (state, action: any) => {
+    .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
+    .addCase(uploadItemsThunk.rejected, (state, action) => {
       toast.warn(action.error.message);
     });
 
@@ -418,7 +409,7 @@ export const extraReducers = (builder: ActionReducerMapBuilder<StorageState>): v
     .addCase(fetchFolderContentThunk.fulfilled, (state, action) => {
       state.isLoading = false;
     })
-    .addCase(fetchFolderContentThunk.rejected, (state, action: any) => {
+    .addCase(fetchFolderContentThunk.rejected, (state, action) => {
       state.isLoading = false;
       toast.warn(action.payload);
     });

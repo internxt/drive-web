@@ -3,7 +3,6 @@ import { Button, Container, Dropdown, DropdownButton, Form } from 'react-bootstr
 import { toast } from 'react-toastify';
 import copy from 'copy-to-clipboard';
 
-import NavigationBar from '../../components/navigationBar/NavigationBar';
 import { getHeaders } from '../../lib/auth';
 import localStorageService from '../../services/localStorage.service';
 
@@ -126,7 +125,6 @@ class ReferredView extends Component {
       const user = localStorageService.getUser();
 
       return <div>
-        <NavigationBar navbarItems={<h5>Referrals</h5>} showlocalStorageServiceButton={true} />
         <div className="Referred">
           <Container className="referred-box p-5">
             <div className="referred-title">Earn money by referring friends</div>
