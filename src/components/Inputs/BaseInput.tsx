@@ -21,7 +21,7 @@ interface InputProps {
 
 const InputPrimary = ({ label, type, register, required, placeholder, pattern, icon, minLength, maxLength, min, error, onClick }: InputProps): JSX.Element => (
   <div className='relative flex-1'>
-    <input type={type} placeholder={placeholder} autoComplete={label !== 'email' ? 'off' : 'on'} min={0}
+    <input type={type} placeholder={placeholder} autoComplete={label === 'email' ? 'email' : 'new-password'} min={0}
       {...register(label, {
         required,
         minLength,
