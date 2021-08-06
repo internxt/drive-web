@@ -1,6 +1,5 @@
 import { Fragment, useEffect } from 'react';
 import { useState } from 'react';
-import SessionStorage from '../../../../lib/sessionStorage';
 import { bytesToString } from '../../../../services/size.service';
 import usageService, { getUserLimitString } from '../../../../services/usage.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
@@ -10,16 +9,18 @@ import './AccountPlanInfoTab.scss';
 import { ListItem } from '../AccountBillingTab/BillingPlanItem';
 import { selectorIsTeam } from '../../../../store/slices/team';
 import { setCurrentAccountTab } from '../../../../store/slices/ui';
+import { planSelectors } from '../../../../store/slices/plan';
 
 const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
   const [usage, setUsage] = useState(0);
-  const limitPersonal = parseInt(SessionStorage.get('limitStorage') || (1024 * 1024 * 1024 * 2).toString());
-  const limitBusiness = parseInt(SessionStorage.get('teamsStorage') || (1024 * 1024 * 1024 * 2).toString());
+  const isLoadingPlanLimit = useAppSelector((state) => state.plan.isLoading);
+  const planLimit = useAppSelector((state) => state.plan.planLimit);
   const user = useAppSelector((state) => state.user.user);
   const userPlan = useAppSelector(selectUserPlan);
   const isTeam = useAppSelector(selectorIsTeam);
   const [isLoading, setIsLoading] = useState(false);
   const isLoadingStripe = useAppSelector(setIsLoadingStripePlan);
+  const hasLifetimePlan = useAppSelector(planSelectors.hasLifetimePlan);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -40,21 +41,17 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
     getUsage();
   }, [isTeam]);
 
-  const limitUser = (): number => {
-    return isTeam ? limitBusiness : limitPersonal;
-  };
-
-  const putNameProduct = () => {
-    let name;
+  const planName = () => {
+    let planName;
 
     if (!isLoadingStripe) {
       if (userPlan) {
-        name = userPlan.name;
+        planName = userPlan.name;
       } else {
-        name = getUserLimitString(limitUser());
+        planName = getUserLimitString(planLimit);
       }
     }
-    return name;
+    return planName;
   };
 
   return (
@@ -96,23 +93,22 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
 
           <h2 className='account_config_title mt-0.5 mb-1'>Usage</h2>
           <div className='flex flex-col items-center justify-center w-56 h-14 bg-l-neutral-20 rounded-md px-6'>
-            {isLoading ?
-              <span>Loading usage...</span>
-              :
-              <span className='account_config_description m-0'>{bytesToString(usage)} of {getUserLimitString(limitUser())}</span>
+            {isLoading || isLoadingPlanLimit ?
+              <span>Loading...</span> :
+              <span className='account_config_description m-0'>{bytesToString(usage)} of {getUserLimitString(planLimit)}</span>
             }
 
             <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-1'>
-              <div className='h-full bg-blue-70' style={{ width: (usage / limitUser()) * 100 }} />
+              <div className='h-full bg-blue-70' style={{ width: (usage / planLimit) * 100 }} />
             </div>
           </div>
         </div>
 
-        <div className='flex flex-col w-56 items-start justify-between'>
+        <div className='w-56 items-start justify-between'>
           <h2 className='account_config_title'>Current plan</h2>
 
           <div className='flex flex-col w-full'>
-            <span className='text-neutral-700 font-semibold text-sm'>{putNameProduct()}</span>
+            <span className='text-neutral-700 font-semibold text-sm'>{planName()}</span>
 
             <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
               {!isLoadingStripe ?
@@ -126,7 +122,9 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
                         >/{userPlan?.paymentInterval}</span>
                       </Fragment>
                       :
-                      <span className='font-bold'>Free plan</span>
+                      <span className='font-bold'>
+                        { !hasLifetimePlan ? 'Free plan' : 'Lifetime' }
+                      </span>
                   }
                 </Fragment>
                 :
@@ -134,9 +132,9 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
               }
             </div>
 
-            {plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
+            {!hasLifetimePlan && plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
 
-            <button className='primary w-full' onClick={() => dispatch(setCurrentAccountTab('plans'))}>
+            <button className={`${hasLifetimePlan ? 'hidden' : ''} primary w-full`} onClick={() => dispatch(setCurrentAccountTab('plans'))}>
               Upgrade
             </button>
           </div>

@@ -1,18 +1,16 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+import _ from 'lodash';
 
 import { storageActions, storageSelectors, StorageState } from '.';
-import { getFilenameAndExt, renameFile } from '../../../lib/utils';
+import { getFilenameAndExt } from '../../../lib/utils';
 import folderService from '../../../services/folder.service';
 import storageService from '../../../services/storage.service';
-import tasksService from '../../../services/tasks.service';
 import downloadService from '../../../services/download.service';
-import _ from 'lodash';
 import { selectorIsTeam } from '../team';
 import { DriveFileData, DriveItemData, FolderPath, NotificationData } from '../../../models/interfaces';
 import { FileActionTypes, FileStatusTypes } from '../../../models/enums';
 import fileService from '../../../services/file.service';
-import { UploadItemPayload } from '../../../services/storage.service/storage-upload.service';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../lib/constants';
 import { uiActions } from '../ui';
 import { tasksActions } from '../tasks';

@@ -12,6 +12,8 @@ import BaseDialog from '../BaseDialog/BaseDialog';
 import shareService from '../../../services/share.service';
 import './ShareItemDialog.scss';
 import { storageActions } from '../../../store/slices/storage';
+import { trackShareLinkBucketIdUndefined } from '../../../services/analytics.service';
+import { userThunks } from '../../../store/slices/user';
 
 interface ShareItemDialogProps {
   item: DriveItemData
@@ -27,9 +29,14 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   const [numberOfAttempts, setNumberOfAttempts] = useState(DEFAULT_VIEWS);
   const isOpen = useAppSelector(state => state.ui.isShareItemDialogOpen);
   const onClose = (): void => {
+    close();
+  };
+
+  const close = () => {
     dispatch(uiActions.setIsShareItemDialogOpen(false));
     dispatch(storageActions.setItemToShare(0));
   };
+
   const itemFullName = item.isFolder ? item.name : `${item.name}.${item.type}`;
 
   const handleShareLink = async (views: number) => {
@@ -46,6 +53,16 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       }
 
       const { bucket, mnemonic, userId, email } = user;
+
+      if (!bucket) {
+        trackShareLinkBucketIdUndefined({ email });
+        close();
+        notify('Cannot generate share link due to missing bucket', 'error');
+        dispatch(userThunks.logoutThunk());
+
+        return;
+      }
+
       const network = new Network(email, userId, mnemonic);
       const { index } = await network.getFileInfo(bucket, fileId);
       const fileToken = await network.createFileToken(bucket, fileId, 'PULL');

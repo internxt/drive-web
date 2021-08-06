@@ -92,7 +92,7 @@ const FileLogger = (): JSX.Element => {
         </div>
 
         <div className='flex items-center'>
-          <div onClick={() => setIsMinized(!isMinimized)} className={`mr-2 transform duration-300 text-white ${!isMinimized ? 'rotate-180' : 'rotate-0'} cursor-pointer`}>
+          <div onClick={() => setIsMinized(!isMinimized)} className={`mr-2 transform duration-300 text-white ${isMinimized ? 'rotate-180' : 'rotate-0'} cursor-pointer`}>
             <Unicons.UilAngleDoubleDown className="h-5" />
           </div>
 

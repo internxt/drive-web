@@ -177,7 +177,6 @@ export const {
   popNamePathUpTo,
   pathChangeWorkSpace,
   resetItemName,
-  deleteItem,
   addItems
 } = storageSlice.actions;
 

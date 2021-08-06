@@ -1,10 +1,15 @@
 import { AppViewLayout, FileActionTypes, FileStatusTypes } from './enums';
 
 export interface AppConfig {
+  plan: AppPlanConfig;
   fileExplorer: AppFileExplorerConfig;
   views: AppViewConfig;
 }
 
+export interface AppPlanConfig {
+  freePlanStorageLimit: number; 
+  maxStorageLimit: number;
+}
 export interface AppFileExplorerConfig {
   recentsLimit: number;
 }

@@ -1,6 +1,5 @@
 import { ComponentClass, FunctionComponent } from 'react';
 
-import NewView from './NewView/NewView';
 import DriveView from './DriveView/DriveView';
 import RecentsView from './RecentsView/RecentsView';
 import NotFoundView from './NotFoundView/NotFoundView';
@@ -18,7 +17,7 @@ import RemoveAccountView from './RemoveAccountView/RemoveAccountView';
 
 const views: Array<{ id: string, component: string | FunctionComponent<any> | ComponentClass<any>, componentProps?: any }> = [
   { id: 'signup', component: SignUpView, componentProps: { isNewUser: true } },
-  { id: 'appsumo', component: NewView, componentProps: { isNewUser: false } },
+  { id: 'appsumo', component: SignUpView, componentProps: { isNewUser: false } },
   { id: 'login', component: SignInView },
   { id: 'drive', component: DriveView },
   { id: 'recents', component: RecentsView },

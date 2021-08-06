@@ -5,7 +5,7 @@ import { getHeaders } from '../lib/auth';
  * @param {String} maxCalls - Max number of API calls that it can be made (Default 5 calls)
  *
  */
-export function getLimit(isTeam: boolean, maxCalls : number = 5) {
+function fetchLimit(isTeam: boolean, maxCalls : number = 5): Promise<number> {
   return fetch('/api/limit', {
     method: 'get',
     headers: getHeaders(true, false, isTeam)
@@ -18,8 +18,15 @@ export function getLimit(isTeam: boolean, maxCalls : number = 5) {
     return res1.maxSpaceBytes;
   }).catch(err => {
     if (maxCalls > 0) {
-      return getLimit(isTeam, maxCalls - 1);
+      return fetchLimit(isTeam, maxCalls - 1);
     }
+
     console.log('Error getting /api/limit for App', err);
   });
 }
+
+const limitService = {
+  fetchLimit
+};
+
+export default limitService;

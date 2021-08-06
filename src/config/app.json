@@ -1,4 +1,8 @@
 {
+  "plan": {
+    "freePlanStorageLimit": 2147483648,
+    "maxStorageLimit": 108851651149824
+  },
   "fileExplorer": {
     "recentsLimit": 10
   },

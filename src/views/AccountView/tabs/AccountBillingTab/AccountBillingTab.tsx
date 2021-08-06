@@ -3,7 +3,6 @@ import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/in
 import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts, payStripePlan } from '../../../../services/products.service';
 import notify from '../../../../components/Notifications';
 import analyticsService from '../../../../services/analytics.service';
-import SessionStorage from '../../../../lib/sessionStorage';
 import BillingPlanItem from './BillingPlanItem';
 import { generateMnemonic } from 'bip39';
 import { encryptPGP } from '../../../../lib/utilspgp';
@@ -149,7 +148,6 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
       const session = await payStripePlan(body);
 
       analyticsService.trackUserEnterPayments();
-      SessionStorage.del('limitStorage');
 
       await stripe.redirectToCheckout({ sessionId: session.id });
     } catch (err) {

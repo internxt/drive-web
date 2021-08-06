@@ -48,7 +48,8 @@ export enum AnalyticsTrack {
   DeleteWelcomeFile = 'file-welcome-delete',
   FileShare = 'file-share',
   UserResetPasswordRequest = 'user-reset-password-request',
-  FileUploadBucketIdUndefined = 'file-upload-bucketid-undefined'
+  FileUploadBucketIdUndefined = 'file-upload-bucketid-undefined',
+  ShareLinkBucketIdUndefined = 'share-link-bucketid-undefined',
 }
 
 export enum DevicePlatform {

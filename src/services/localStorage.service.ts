@@ -33,7 +33,6 @@ function clear(): void {
   localStorage.removeItem('xTeam');
   localStorage.removeItem('xTokenTeam');
   localStorage.removeItem('limitStorage');
-  sessionStorage.removeItem('limitStorage');
   sessionStorage.removeItem('teamsStorage');
 }
 
