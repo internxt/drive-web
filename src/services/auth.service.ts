@@ -8,22 +8,7 @@ import { decryptText, decryptTextWithKey, encryptText, encryptTextWithKey, passT
 import { validateFormat } from './keys.service';
 import { decryptPGP } from '../lib/utilspgp';
 import * as bip39 from 'bip39';
-
-export async function initializeUser(email: string, mnemonic: string): Promise<Response> {
-  return fetch('/api/initialize', {
-    method: 'POST',
-    headers: getHeaders(true, true),
-    body: JSON.stringify({
-      email: email,
-      mnemonic: mnemonic
-    })
-  }).then(res => {
-    if (res.status !== 200) {
-      throw Error(res.statusText);
-    }
-    return res.json();
-  });
-}
+import userService from './user.service';
 
 export function logOut(): void {
   analyticsService.trackSignOut();
@@ -266,7 +251,7 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
 
   xUser.mnemonic = mnemonic;
 
-  const rootFolderInfo = await initializeUser(email, xUser.mnemonic);
+  const rootFolderInfo = await userService.initializeUser(email, xUser.mnemonic);
 
   xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
   localStorageService.set('xToken', xToken);
@@ -275,7 +260,6 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
 };
 
 const authService = {
-  initializeUser,
   logOut,
   isUserSignedIn,
   doLogin,

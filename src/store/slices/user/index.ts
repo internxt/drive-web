@@ -9,6 +9,7 @@ import localStorageService from '../../../services/localStorage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
 import { selectorIsTeam, setWorkspace, teamActions } from '../team';
+import authService from '../../../services/auth.service';
 
 interface UserState {
   isInitializing: boolean;
@@ -36,7 +37,13 @@ export const initializeUserThunk = createAsyncThunk(
 
     if (user && isAuthenticated) {
       if (!user.root_folder_id) {
-        await userService.initializeUser();
+        const initializeUserBody = await userService.initializeUser(user.email, user.mnemonic);
+
+        dispatch(userActions.setUser({
+          ...user,
+          root_folder_id: initializeUserBody.user.root_folder_id,
+          bucket: initializeUserBody.user.bucket
+        }));
 
         dispatch(setIsUserInitialized(true));
       } else {
@@ -47,7 +54,7 @@ export const initializeUserThunk = createAsyncThunk(
           localStorageService.del('xTeam');
         }
 
-        if (localStorageService.exists('xTeam') && isTeam && localStorageService.get('workspace') === 'business') {
+        if (localStorageService.exists('xTeam') && isTeam && localStorageService.get('workspace') === Workspace.Business) {
           dispatch(handleChangeWorkspaceThunk());
         }
 
@@ -70,10 +77,23 @@ export const handleChangeWorkspaceThunk = createAsyncThunk(
   }
 );
 
+export const logoutThunk = createAsyncThunk(
+  'user/logout',
+  async (payload: void, { dispatch, getState }: any) => {
+    authService.logOut();
+
+    dispatch(teamActions.setWorkspace(Workspace.Personal));
+    dispatch(userActions.resetState());
+  }
+);
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    resetState: (state: UserState) => {
+      Object.assign(state, initialState);
+    },
     initialize: (state: UserState) => {
       state.user = localStorageService.getUser();
       state.isAuthenticated = !!state.user;
@@ -84,6 +104,7 @@ export const userSlice = createSlice({
     setUser: (state: UserState, action: PayloadAction<UserSettings>) => {
       state.isAuthenticated = !!action.payload;
       state.user = action.payload;
+
       localStorageService.set('xUser', JSON.stringify(action.payload));
     },
     setUserPlan: (state: UserState, action: PayloadAction<IUserPlan>) => {
@@ -91,9 +112,6 @@ export const userSlice = createSlice({
     },
     setIsLoadingStripePlan: (state: UserState, action: PayloadAction<boolean>) => {
       state.isLoadingStripe = action.payload;
-    },
-    clearUserPlan: (state: UserState) => {
-      state.currentPlan = null;
     }
   },
   extraReducers: (builder) => {
@@ -112,18 +130,30 @@ export const userSlice = createSlice({
         toast.warn('User initialization error ' + errorMsg);
         history.push('/login');
       });
+
+    builder
+      .addCase(logoutThunk.pending, (state, action) => { })
+      .addCase(logoutThunk.fulfilled, (state, action) => { })
+      .addCase(logoutThunk.rejected, (state, action) => { });
   }
 });
 
 export const {
   initialize,
+  resetState,
   setIsUserInitialized,
   setUser,
-  setUserPlan,
-  clearUserPlan
+  setUserPlan
 } = userSlice.actions;
 export const userActions = userSlice.actions;
+
 export const selectUserPlan = (state: RootState): IUserPlan | null => state.user.currentPlan;
 export const setIsLoadingStripePlan = (state: RootState): boolean => state.user.isLoadingStripe;
+
+export const userThunks = {
+  initializeUserThunk,
+  logoutThunk,
+  handleChangeWorkspaceThunk
+};
 
 export default userSlice.reducer;

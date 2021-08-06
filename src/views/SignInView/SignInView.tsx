@@ -118,7 +118,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
 
   return (
     <div className='flex h-full w-full'>
-      <SideInfo texts={texts} />
+      <SideInfo title="" subtitle="" />
 
       <div className='flex flex-col items-center justify-center w-full'>
         <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>

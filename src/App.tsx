@@ -43,7 +43,7 @@ class App extends Component<AppProps, AppState> {
     try {
       await this.props.dispatch(initializeUserThunk({
         redirectToLogin: !!currentRouteConfig?.auth
-      })).unwrap();
+      }));
     } catch (e) {
       console.log(e);
     }
@@ -82,6 +82,7 @@ class App extends Component<AppProps, AppState> {
   render(): JSX.Element {
     const { isInitialized, isAuthenticated } = this.props;
     const pathName = window.location.pathname.split('/')[1];
+    let template: JSX.Element = <div></div>;
 
     if (window.location.pathname) {
       if (pathName === 'new' && window.location.search !== '') {
@@ -90,7 +91,7 @@ class App extends Component<AppProps, AppState> {
     }
 
     if (!isAuthenticated || isInitialized) {
-      return (
+      template = (
         <Router history={history}>
           <Switch>
             <Redirect from='//*' to='/*' />
@@ -114,9 +115,9 @@ class App extends Component<AppProps, AppState> {
               className="" />}
         </Router>
       );
-    } else {
-      return <div></div>;
     }
+
+    return template;
   }
 }
 

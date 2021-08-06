@@ -13,6 +13,7 @@ import shareService from '../../../services/share.service';
 import './ShareItemDialog.scss';
 import { storageActions } from '../../../store/slices/storage';
 import { trackShareLinkBucketIdUndefined, trackShareLinkGenerationError } from '../../../services/analytics.service';
+import { userThunks } from '../../../store/slices/user';
 
 interface ShareItemDialogProps {
   item: DriveItemData
@@ -57,8 +58,9 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         trackShareLinkBucketIdUndefined({ email });
         close();
         notify('Cannot generate share link due to missing bucket', 'error');
-        localStorage.clear();
-        return history.push('/login');
+        dispatch(userThunks.logoutThunk());
+
+        return;
       }
 
       const network = new Network(email, userId, mnemonic);

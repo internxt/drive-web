@@ -1,9 +1,7 @@
 import { ComponentClass, FunctionComponent } from 'react';
 
-import NewView from './NewView/NewView';
 import DriveView from './DriveView/DriveView';
 import RecentsView from './RecentsView/RecentsView';
-import StorageView from './StorageView/StorageView';
 import NotFoundView from './NotFoundView/NotFoundView';
 import ReferredView from './ReferredView/ReferredVIew';
 import AccountView from './AccountView/AccountView';
@@ -21,12 +19,11 @@ import RemoveAccountView from './RemoveAccountView/RemoveAccountView';
 
 const views: Array<{ id: string, component: string | FunctionComponent<any> | ComponentClass<any>, componentProps?: any }> = [
   { id: 'signup', component: SignUpView, componentProps: { isNewUser: true } },
-  { id: 'appsumo', component: NewView, componentProps: { isNewUser: false } },
+  { id: 'appsumo', component: SignUpView, componentProps: { isNewUser: false } },
   { id: 'login', component: SignInView },
   { id: 'invite', component: ReferredView },
   { id: 'drive', component: DriveView },
   { id: 'recents', component: RecentsView },
-  { id: 'storage', component: StorageView },
   { id: 'account', component: AccountView },
   { id: 'teams', component: TeamsView },
   { id: 'teams-cancel', component: TeamsView },
