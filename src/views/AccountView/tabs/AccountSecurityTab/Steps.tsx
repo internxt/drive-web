@@ -55,7 +55,7 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
         <div className="flex items-center">
           <img src={qr} alt="Bidi Code" />
           <div className="flex flex-col justify-between h-full py-3 ml-4">
-            <div className="bg-l-neutral-20 p-4 rounded-md w-max font-semibold text-neutral-500">{backupKey}</div>
+            <div className="bg-l-neutral-20 p-4 rounded-md w-max font-semibold text-neutral-500 select-text">{backupKey}</div>
             <div className="security-info_texts">If you are unable to scan the QR code<br />enter this code into the app.</div>
           </div>
         </div>
@@ -67,7 +67,7 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
     return (
       <div className='flex flex-col items-center'>
         <div className='security-info_texts text-center'>Your backup key is below. You will need this incase you lose your device.<br />Keep an offline backup of your key. Keep it safe and secure.</div>
-        <div className="bg-l-neutral-20 p-4 rounded-md w-max font-semibold text-neutral-500 mt-4">{backupKey}</div>
+        <div className="bg-l-neutral-20 p-4 rounded-md w-max font-semibold text-neutral-500 mt-4 select-text">{backupKey}</div>
       </div>
     );
   }
