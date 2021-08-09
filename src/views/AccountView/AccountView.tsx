@@ -1,6 +1,7 @@
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import { Component } from 'react';
+import queryString from 'query-string';
 
 import './AccountView.scss';
 import AccountBillingTab from './tabs/AccountBillingTab/AccountBillingTab';
@@ -11,6 +12,7 @@ import { AppDispatch, RootState } from '../../store';
 import { connect } from 'react-redux';
 import { planThunks } from '../../store/slices/plan';
 import { uiActions } from '../../store/slices/ui';
+import history from '../../lib/history';
 
 export enum AccountViewTab {
   Billing = 'billing',
@@ -31,6 +33,13 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
   }
 
   componentDidMount() {
+    const locationQueryParams = queryString.parse(history.location.search);
+    const queryTab = locationQueryParams.tab;
+
+    if (queryTab && Object.values(AccountViewTab).includes(queryTab as AccountViewTab) && this.props.currentTab !== queryTab) {
+      this.props.dispatch(uiActions.setCurrentAccountTab(queryTab as string));
+    }
+
     this.props.dispatch(planThunks.initializeThunk());
   }
 

@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import queryString from 'query-string';
 
+import history from '../../../lib/history';
 interface UISliceState {
   isSidenavCollapsed: boolean;
   isCreateFolderDialogOpen: boolean;
@@ -53,7 +55,19 @@ export const uiSlice = createSlice({
       state.isDriveItemInfoMenuOpen = action.payload;
     },
     setCurrentAccountTab: (state: UISliceState, action: PayloadAction<string>) => {
+      const currentQueryParams = queryString.parse(history.location.search);
+      const newQueryParams = {
+        ...currentQueryParams,
+        tab: action.payload
+      };
+      const newQueryString = queryString.stringify(newQueryParams);
+
       state.currentAccountTab = action.payload;
+
+      history.push({
+        pathname: history.location.pathname,
+        search: newQueryString && `?${newQueryString}`
+      });
     }
   }
 });
