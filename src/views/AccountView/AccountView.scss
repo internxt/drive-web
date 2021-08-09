@@ -1,5 +1,5 @@
 @layer components {
-  .test {
+  .account-view {
     .nav-item {
       @apply flex h-10 items-start justify-center text-sm text-m-neutral-100;
     }
@@ -23,6 +23,10 @@
     .tab-pane.show {
       @apply flex px-8 justify-center;
     }
+  }
+
+  .tab-content {
+    @apply h-full overflow-y-auto;
   }
 
   .account_config_title {

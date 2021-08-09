@@ -1,16 +1,17 @@
-import { Fragment, useEffect } from 'react';
-import { useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
+import { UilUserCircle, UilEnvelope } from '@iconscout/react-unicons';
+
 import { bytesToString } from '../../../../services/size.service';
 import usageService, { getUserLimitString } from '../../../../services/usage.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { selectUserPlan, setIsLoadingStripePlan } from '../../../../store/slices/user';
-import { UilUserCircle, UilEnvelope } from '@iconscout/react-unicons';
-import './AccountPlanInfoTab.scss';
-import { ListItem } from '../AccountBillingTab/BillingPlanItem';
+import { ListItem } from '../AccountPlansTab/BillingPlanItem';
 import { selectorIsTeam } from '../../../../store/slices/team';
 import { setCurrentAccountTab } from '../../../../store/slices/ui';
 import { planSelectors } from '../../../../store/slices/plan';
 import { AccountViewTab } from '../../AccountView';
+
+import './AccountPlanInfoTab.scss';
 
 const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
   const [usage, setUsage] = useState(0);
@@ -59,9 +60,11 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
   };
 
   return (
-    <div className='flex justify-around w-full pt-8'>
-      <div className='flex w-full h-60 justify-around'>
-        <div className='flex flex-col w-64 h-full rounded-lg bg-l-neutral-20'>
+    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-8 w-full h-60 justify-around py-8'>
+
+      {/* USER CARD */}
+      <div className="flex justify-center">
+        <div className='flex flex-col w-64 h-64 rounded-lg bg-l-neutral-20'>
           <div className='flex flex-1 items-center justify-center'>
             <UilUserCircle className='text-blue-60 w-20 h-20' />
           </div>
@@ -75,7 +78,10 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
             }
           </div>
         </div>
+      </div>
 
+      {/* PERSONAL INFORMATION */}
+      <div className="flex justify-center">
         <div className='flex flex-col items-start h-full'>
           <h2 className='account_config_title mb-3'>Personal information</h2>
 
@@ -107,8 +113,11 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
             </div>
           </div>
         </div>
+      </div>
 
-        <div className='w-56 items-start justify-between'>
+      {/* CURRENT PLAN */}
+      <div className="flex justify-center">
+        <div className='w-56'>
           <h2 className='account_config_title'>Current plan</h2>
 
           <div className='flex flex-col w-full'>
@@ -127,7 +136,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
                       </Fragment>
                       :
                       <span className='font-bold'>
-                        { !hasLifetimePlan ? 'Free plan' : 'Lifetime' }
+                        {!hasLifetimePlan ? 'Free plan' : 'Lifetime'}
                       </span>
                   }
                 </Fragment>

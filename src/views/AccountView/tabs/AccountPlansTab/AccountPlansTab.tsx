@@ -7,17 +7,18 @@ import BillingPlanItem from './BillingPlanItem';
 import { generateMnemonic } from 'bip39';
 import { encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
-import './AccountBillingTab.scss';
+import './AccountPlansTab.scss';
 import { useAppDispatch } from '../../../../store/hooks';
 import { setUserPlan, userActions } from '../../../../store/slices/user';
 import { fetchUserPlan } from '../../../../services/user.service';
 import { UilBuilding, UilHome } from '@iconscout/react-unicons';
 import BillingCardSkeletton from '../../../../components/skinSkeleton/BillingCardSkeletton';
+import { Workspace } from '../../../../models/enums';
 
-const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: 'individual' | 'business', isBusiness: boolean, onClick: () => void }) => {
+const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: Workspace, isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
     switch (true) {
-      case isBusiness && currentOption === 'business':
+      case isBusiness && currentOption === Workspace.Business:
         return (
           <div className='option border-b-2 border-blue-60' onClick={onClick}>
             <UilBuilding className='text-blue-60 active' />
@@ -25,7 +26,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
           </div>
         );
 
-      case isBusiness && currentOption === 'individual':
+      case isBusiness && currentOption === Workspace.Personal:
         return (
           <div className='option' onClick={onClick}>
             <UilBuilding />
@@ -33,7 +34,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
           </div>
         );
 
-      case !isBusiness && currentOption === 'individual':
+      case !isBusiness && currentOption === Workspace.Personal:
         return (
           <div className='option border-b-2 border-blue-60' onClick={onClick}>
             <UilHome className='text-blue-60 active' />
@@ -41,7 +42,7 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
           </div>
         );
 
-      case !isBusiness && currentOption === 'business':
+      case !isBusiness && currentOption === Workspace.Business:
         return (
           <div className='option' onClick={onClick}>
             <UilHome />
@@ -60,8 +61,8 @@ const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, cu
 
 const objectMap = (obj: Record<any, any>, fn): Record<any, any> => Object.fromEntries(Object.entries(obj).map(([key, value], i) => [key, fn(value, key, i)]));
 
-const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
-  const [currentOption, setCurrentOption] = useState<'individual' | 'business'>('individual');
+const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
+  const [currentOption, setCurrentOption] = useState<Workspace.Personal | Workspace.Business>(Workspace.Personal);
   const [isLoading, setIsLoading] = useState(true);
   const [isPaying, setIsPaying] = useState(false);
   const [products, setProducts] = useState<IBillingPlan>({});
@@ -191,17 +192,17 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
     <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
       <div className='flex justify-evenly items-center h-11'>
         <Option text='Individuals' currentOption={currentOption} isBusiness={false} onClick={() => {
-          setCurrentOption('individual');
+          setCurrentOption(Workspace.Personal);
         }} />
         <div className='w-px h-1/2 border-r border-m-neutral-60' />
         <Option text='Business' currentOption={currentOption} isBusiness={true} onClick={() => {
-          setCurrentOption('business');
+          setCurrentOption(Workspace.Business);
         }} />
       </div>
 
-      <div className='flex h-88 border-t border-m-neutral-60 justify-evenly'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 border-t border-m-neutral-60 justify-evenly'>
         {!isLoading ?
-          currentOption === 'individual' ?
+          currentOption === Workspace.Personal ?
             Object.values(products).map((product, i) => (
               <BillingPlanItem
                 key={i}
@@ -232,11 +233,14 @@ const AccountBillingTab = ({ plansCharacteristics }: { plansCharacteristics: str
                 isBusiness={false}
                 handlePaymentTeams={handlePaymentTeams}
               />)) :
-          Array(3).fill(1).map((n, i) => <BillingCardSkeletton key={i} />)
+          Array(3).fill(1).map((n, i) => (
+            <div className="flex justify-center" key={i}>
+              <BillingCardSkeletton />
+            </div>))
         }
       </div>
     </div>
   );
 };
 
-export default AccountBillingTab;
+export default AccountPlansTab;

@@ -3,7 +3,6 @@ import { ComponentClass, FunctionComponent } from 'react';
 import DriveView from './DriveView/DriveView';
 import RecentsView from './RecentsView/RecentsView';
 import NotFoundView from './NotFoundView/NotFoundView';
-import ReferredView from './ReferredView/ReferredVIew';
 import AccountView from './AccountView/AccountView';
 import JoinTeamView from './JoinTeamView/JoinTeamView';
 import DeactivationView from './DeactivationView/DeactivationView';
