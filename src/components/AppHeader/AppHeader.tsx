@@ -67,9 +67,14 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   onSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    this.props.dispatch(storageActions.setFilters({
-      text: e.target.value
-    }));
+    const alphanumericAndSpaces = /^[a-zA-Z0-9 .]*$/gm;
+    const isValid = alphanumericAndSpaces.test(e.target.value);
+
+    if (isValid) {
+      this.props.dispatch(storageActions.setFilters({
+        text: e.target.value
+      }));
+    }
   }
 
   render(): ReactNode {
