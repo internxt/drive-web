@@ -3,8 +3,7 @@ import Tab from 'react-bootstrap/Tab';
 import { Component } from 'react';
 import queryString from 'query-string';
 
-import './AccountView.scss';
-import AccountBillingTab from './tabs/AccountBillingTab/AccountBillingTab';
+import AccountPlansTab from './tabs/AccountPlansTab/AccountPlansTab';
 import AccountPasswordTab from './tabs/AccountPasswordTab/AccountPasswordTab';
 import AccountSecurityTab from './tabs/AccountSecurityTab/AccountSecurityTab';
 import AccountPlanInfoTab from './tabs/AccountPlanInfoTab/AccountPlanInfoTab';
@@ -13,6 +12,8 @@ import { connect } from 'react-redux';
 import { planThunks } from '../../store/slices/plan';
 import { uiActions } from '../../store/slices/ui';
 import history from '../../lib/history';
+
+import './AccountView.scss';
 
 export enum AccountViewTab {
   Billing = 'billing',
@@ -51,14 +52,14 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
     const plansCharacteristics = ['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing'];
 
     return (
-      <div className='h-full rounded-md bg-white test pb-16 mt-2'>
-        <Tabs activeKey={this.props.currentTab} onSelect={this.onTabSelected} className='relative flex px-8 pt-3.5' >
+      <div className='account-view h-full rounded-md bg-white pb-16 mt-2 '>
+        <Tabs activeKey={this.props.currentTab} onSelect={this.onTabSelected} className='flex px-8 pt-3.5 account-tabs' >
           <Tab title='Billing' eventKey={AccountViewTab.Billing}>
             <AccountPlanInfoTab plansCharacteristics={plansCharacteristics} />
           </Tab>
 
           <Tab title='Plans' eventKey={AccountViewTab.Plans}>
-            <AccountBillingTab plansCharacteristics={plansCharacteristics} />
+            <AccountPlansTab plansCharacteristics={plansCharacteristics} />
           </Tab>
 
           <Tab title='Password' eventKey={AccountViewTab.Password}>
@@ -67,9 +68,6 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
 
           <Tab title='Security' eventKey={AccountViewTab.Security}>
             <AccountSecurityTab />
-          </Tab>
-
-          <Tab title='' className='w-full h-full' >
           </Tab>
         </Tabs>
       </div>
