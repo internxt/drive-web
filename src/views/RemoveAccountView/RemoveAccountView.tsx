@@ -1,12 +1,11 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import AuthButton from '../../components/Buttons/AuthButton';
 import BaseInput from '../../components/Inputs/BaseInput';
 import { IFormValues } from '../../models/interfaces';
 import { emailRegexPattern } from '../../services/validation.service';
-import history from '../../lib/history';
+
 import { useState } from 'react';
-import { sendDeactivationEmail } from '../../services/user.service';
+import userService from '../../services/user.service';
 import notify from '../../components/Notifications';
 import BaseButton from '../../components/Buttons/BaseButton';
 import { UilEnvelope } from '@iconscout/react-unicons';
@@ -21,7 +20,7 @@ const RemoveAccount = (): JSX.Element => {
   const sendEmail = async (email: string) => {
     try {
       setIsLoading(true);
-      await sendDeactivationEmail(email);
+      await userService.sendDeactivationEmail(email);
       notify('Deactivation email sent!', 'success');
     } catch (err) {
       notify('Error deactivating account. Please contact us.', 'error');
@@ -71,7 +70,12 @@ const RemoveAccount = (): JSX.Element => {
                 error={errors.email}
               />
 
-              <AuthButton isDisabled={isLoading || !isValid} text='Send email' textWhenDisabled={isValid ? 'Sending email...' : 'Send email'} />
+              <BaseButton disabled={isLoading || !isValid} classes="primary w-full">
+                {isLoading ?
+                  'Sending email...' :
+                  'Send email'
+                }
+              </BaseButton>
             </form>
 
             <Link className="mt-4" to='/login'>Back to login</Link>

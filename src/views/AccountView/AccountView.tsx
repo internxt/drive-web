@@ -1,6 +1,7 @@
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import { Component } from 'react';
+import queryString from 'query-string';
 
 import './AccountView.scss';
 import AccountBillingTab from './tabs/AccountBillingTab/AccountBillingTab';
@@ -10,22 +11,40 @@ import AccountPlanInfoTab from './tabs/AccountPlanInfoTab/AccountPlanInfoTab';
 import { AppDispatch, RootState } from '../../store';
 import { connect } from 'react-redux';
 import { planThunks } from '../../store/slices/plan';
+import { uiActions } from '../../store/slices/ui';
+import history from '../../lib/history';
 
-interface AccountViewState {
-  currentTab: string;
-  dispatch: AppDispatch;
+export enum AccountViewTab {
+  Billing = 'billing',
+  Plans = 'plans',
+  Password = 'password',
+  Security = 'security'
 }
-class AccountView extends Component<{}, AccountViewState> {
-  constructor(props: {}) {
+interface AccountViewProps {
+  dispatch: AppDispatch;
+  currentTab: string;
+}
+interface AccountViewState {}
+class AccountView extends Component<AccountViewProps, AccountViewState> {
+  constructor(props: AccountViewProps) {
     super(props);
 
-    this.state = {
-      currentTab: 'billing'
-    };
+    this.state = { };
   }
 
   componentDidMount() {
+    const locationQueryParams = queryString.parse(history.location.search);
+    const queryTab = locationQueryParams.tab;
+
+    if (queryTab && Object.values(AccountViewTab).includes(queryTab as AccountViewTab) && this.props.currentTab !== queryTab) {
+      this.props.dispatch(uiActions.setCurrentAccountTab(queryTab as string));
+    }
+
     this.props.dispatch(planThunks.initializeThunk());
+  }
+
+  onTabSelected = (tabKey: string) => {
+    tabKey && this.props.dispatch(uiActions.setCurrentAccountTab(tabKey));
   }
 
   render(): JSX.Element {
@@ -33,24 +52,20 @@ class AccountView extends Component<{}, AccountViewState> {
 
     return (
       <div className='h-full rounded-md bg-white test pb-16 mt-2'>
-        <Tabs activeKey={this.state.currentTab} onSelect={key => key && this.setState({ currentTab: key })} defaultActiveKey="billing" className='relative flex px-8 pt-3.5' >
-          <Tab title='Billing' eventKey='billing'>
+        <Tabs activeKey={this.props.currentTab} onSelect={this.onTabSelected} className='relative flex px-8 pt-3.5' >
+          <Tab title='Billing' eventKey={AccountViewTab.Billing}>
             <AccountPlanInfoTab plansCharacteristics={plansCharacteristics} />
           </Tab>
 
-          <Tab title='Plans' eventKey='plans'>
+          <Tab title='Plans' eventKey={AccountViewTab.Plans}>
             <AccountBillingTab plansCharacteristics={plansCharacteristics} />
           </Tab>
 
-          <Tab title='Password' eventKey='password'>
+          <Tab title='Password' eventKey={AccountViewTab.Password}>
             <AccountPasswordTab />
           </Tab>
 
-          {/* <Tab title='Referrals' eventKey='referrals'>
-        <AccountReferralsTab />
-      </Tab> */}
-
-          <Tab title='Security' eventKey='security'>
+          <Tab title='Security' eventKey={AccountViewTab.Security}>
             <AccountSecurityTab />
           </Tab>
 

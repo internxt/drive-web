@@ -10,6 +10,7 @@ import { ListItem } from '../AccountBillingTab/BillingPlanItem';
 import { selectorIsTeam } from '../../../../store/slices/team';
 import { setCurrentAccountTab } from '../../../../store/slices/ui';
 import { planSelectors } from '../../../../store/slices/plan';
+import { AccountViewTab } from '../../AccountView';
 
 const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
   const [usage, setUsage] = useState(0);
@@ -22,6 +23,9 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
   const isLoadingStripe = useAppSelector(setIsLoadingStripePlan);
   const hasLifetimePlan = useAppSelector(planSelectors.hasLifetimePlan);
   const dispatch = useAppDispatch();
+  const onUpgradeButtonClicked = () => {
+    dispatch(setCurrentAccountTab(AccountViewTab.Plans));
+  };
 
   useEffect(() => {
     const getUsage = async () => {
@@ -134,7 +138,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
 
             {!hasLifetimePlan && plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
 
-            <button className={`${hasLifetimePlan ? 'hidden' : ''} primary w-full`} onClick={() => dispatch(setCurrentAccountTab('plans'))}>
+            <button className={`${hasLifetimePlan ? 'hidden' : ''} primary w-full`} onClick={onUpgradeButtonClicked}>
               Upgrade
             </button>
           </div>

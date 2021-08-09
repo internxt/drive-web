@@ -7,11 +7,9 @@ import notify from '../../../../components/Notifications';
 import './AccountSecurityTab.scss';
 import Skeleton from 'react-loading-skeleton';
 
-interface SecurityProps {
-  isAuthenticated: boolean
-}
+interface SecurityProps {}
 
-const AccountSecurityTab = ({ isAuthenticated }: SecurityProps): JSX.Element => {
+const AccountSecurityTab = (props: SecurityProps): JSX.Element => {
   const [currentStep, setCurrentStep] = useState(1);
   const [has2FA, setHas2FA] = useState(false);
   const [qr, setQr] = useState('');
