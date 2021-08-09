@@ -28,6 +28,7 @@ export const Plan = ({ plan, onClick, selectedPlan, currentPlan, totalTeamMember
   const classCurrentPlan = 'border-3 border-blue-60 cursor-default';
   const classSelectedPlan = selectedPlan === plan.id ? 'border-blue-60 bg-blue-10' : 'border-m-neutral-60';
   const multiplyValue = totalTeamMembers < 1 || !totalTeamMembers ? 1 : totalTeamMembers;
+  const anuallyInterval = (((plan.price / 100) * (currentPlan === plan.id ? 1 : multiplyValue)) / plan.interval_count) / 12;
 
   return (
     <div className={`relative flex justify-between items-center px-4 mb-2 w-full h-11 rounded text-neutral-500 overflow-hidden ${currentPlan === plan.id ? classCurrentPlan : `border ${classSelectedPlan} cursor-pointer hover:border-blue-60`}`}
@@ -39,18 +40,13 @@ export const Plan = ({ plan, onClick, selectedPlan, currentPlan, totalTeamMember
       <p>{plan.name}</p>
 
       <div className='flex items-end'>
-        <p className='font-bold mr-2'>{(((plan.price / 100) * (currentPlan === plan.id ? 1 : multiplyValue)) / plan.interval_count).toFixed(2)}€</p>
-        {plan.interval_count > 1 ?
-          <div className='flex'>
-            <p className='payment_interval'>/{plan.interval_count}&nbsp;</p>
-            <p className='payment_interval'>{plan.interval}s</p>
-          </div>
-          :
+        {
           plan.interval === 'year' ?
-            <p className='payment_interval'>/annually</p>
+            <p className='font-bold mr-2'>{anuallyInterval.toFixed(2)}€</p>
             :
-            <p className='payment_interval'>/month</p>
+            <p className='font-bold mr-2'>{(((plan.price / 100) * (currentPlan === plan.id ? 1 : multiplyValue)) / plan.interval_count).toFixed(2)}€</p>
         }
+        <p className='payment_interval'>/month</p>
       </div>
     </div>
   );
