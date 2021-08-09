@@ -55,13 +55,13 @@
     {
       "id": "deactivation",
       "layout": "empty",
-      "path": "/deactivationsTeams/:token",
+      "path": "/deactivations/:token",
       "exact": false
     },
     {
       "id": "teams-deactivation",
       "layout": "empty",
-      "path": "/deactivations/:token",
+      "path": "/deactivationsTeams/:token",
       "exact": false
     },
     {

@@ -28,8 +28,8 @@ export function isUserActivated(): Promise<any> {
     });
 }
 
-export const sendDeactivationEmail = async (email: string): Promise<void> => {
-  await fetch(`/api/reset/${email}`, {
+export const sendDeactivationEmail = (email: string): Promise<Response> => {
+  return fetch(`/api/reset/${email}`, {
     method: 'GET',
     headers: getHeaders(false, false)
   });
