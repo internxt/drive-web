@@ -12,8 +12,8 @@ const FileLoggerItem = ({ item }: ItemProps): JSX.Element => {
   const IconComponent = iconService.getItemIcon(item.isFolder, item.type || '');
   const fileMessagesByStatus = {
     [FileStatusTypes.Pending]: item.action === FileActionTypes.Download ? 'Pending to download' : 'Pending to upload',
-    [FileStatusTypes.Uploading]: (item.progress || 0) *100 + '% Uploading file...',
-    [FileStatusTypes.Downloading]: (item.progress || 0)*100 + '% Downloading file...',
+    [FileStatusTypes.Uploading]: ((item.progress || 0) * 100).toFixed(2) + '% Uploading file...',
+    [FileStatusTypes.Downloading]: ((item.progress || 0) * 100).toFixed(2) + '% Downloading file...',
     [FileStatusTypes.Success]: item.action === FileActionTypes.Download ? 'File downloaded' : 'File uploaded',
     [FileStatusTypes.Error]: item.action === FileActionTypes.Download ? 'Error during download' : 'Error during upload',
     [FileStatusTypes.Encrypting]: 'Encrypting file',
