@@ -1,4 +1,4 @@
-import React, { MouseEvent, DragEvent, Fragment, ReactNode } from 'react';
+import React, { MouseEvent, Fragment, ReactNode } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import * as Unicons from '@iconscout/react-unicons';
 
@@ -19,18 +19,20 @@ import iconService from '../../../../services/icon.service';
 import { uiActions } from '../../../../store/slices/ui';
 import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
 import { getAllItems } from '../../../../services/dragAndDrop.service';
+import { NativeTypes } from 'react-dnd-html5-backend';
+import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 interface FileGridItemProps {
   user: UserSettings;
   item: DriveItemData;
   selectedItems: DriveItemData[];
-  isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveItemData | null;
   currentFolderId: number;
   namePath: FolderPath[];
   isItemSelected: (item: DriveItemData) => boolean;
   isDriveItemInfoMenuOpen: boolean;
   dispatch: AppDispatch;
   workspace: Workspace;
+  isOver: boolean;
+  connectDropTarget: ConnectDropTarget;
 }
 
 interface FileGridItemState {
@@ -225,84 +227,20 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
     }
   }
 
-  onItemDragStart = (e: DragEvent<HTMLDivElement>): void => {
-    // TODO: drag start handler
-  }
-
-  onItemDragEnd = (e: DragEvent<HTMLDivElement>): void => {
-    // TODO: drag end handler
-  }
-
-  onItemDragOver = (e: DragEvent<HTMLDivElement>): void => {
-    const { item, isDraggingAnItem, draggingTargetItemData } = this.props;
-
-    if (item.isFolder) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      this.props.dispatch(storageActions.setDraggingItemTargetData(item));
-    }
-  }
-
-  onItemDragLeave = (e: DragEvent<HTMLDivElement>): void => {
-    this.props.dispatch(storageActions.setDraggingItemTargetData(null));
-  }
-
-  onItemDrop = async (e: DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const { draggingTargetItemData, dispatch } = this.props;
-
-    if (draggingTargetItemData && draggingTargetItemData.isFolder) {
-      const namePathDestinationArray = this.props.namePath.map(level => level.name);
-
-      namePathDestinationArray[0] = '';
-
-      let folderPath = namePathDestinationArray.join('/');
-
-      folderPath = !draggingTargetItemData.isFolder ? folderPath : folderPath + '/' + draggingTargetItemData.name;
-
-      const itemsDragged = await getAllItems(e.dataTransfer, folderPath);
-
-      const { numberOfItems, rootList, files } = itemsDragged;
-
-      const parentFolderId = draggingTargetItemData.isFolder ? draggingTargetItemData.id : this.props.currentFolderId;
-
-      if (files) {
-        // files where dragged directly
-        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId }));
-      }
-      if (rootList) {
-        for (const root of rootList) {
-          const currentFolderId = parentFolderId;
-
-          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId }));
-        }
-      }
-    }
-
-    this.props.dispatch(storageActions.setDraggingItemTargetData(null));
-  }
-
   render(): ReactNode {
     const { itemRef } = this.state;
-    const { isDraggingAnItem, draggingTargetItemData, item, isItemSelected } = this.props;
-    const isDraggingOverThisItem: boolean = !!draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
-    const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
-      `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
-      'pointer-events-auto';
+    const { item, isItemSelected, isOver, connectDropTarget } = this.props;
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
     const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
     const height = this.state.itemRef.current ?
       this.state.itemRef.current?.clientWidth + 'px' :
       'auto';
 
-    return (
+    return connectDropTarget(
       <div
         ref={itemRef}
         style={{ height }}
-        className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-grid-item`}
+        className={`${selectedClassNames} ${isOver ? 'drag-over-effect' : ''} group file-grid-item`}
         onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
         onDoubleClick={this.onItemDoubleClicked}
@@ -336,6 +274,47 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
   }
 }
 
+const dropTargetSpec: DropTargetSpec<FileGridItemProps> = {
+  drop: (props, monitor, component) => {
+    const { dispatch, namePath, item } = props;
+    const droppedData = monitor.getItem();
+
+    if (item.isFolder) {
+      const namePathDestinationArray = namePath.map(level => level.name);
+
+      namePathDestinationArray[0] = '';
+
+      let folderPath = namePathDestinationArray.join('/');
+
+      folderPath = folderPath + '/' + item.name;
+
+      getAllItems(droppedData, folderPath).then(async ({ rootList, files }) => {
+        if (files) {
+          // files where dragged directly
+          await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id, folderPath }));
+        }
+        if (rootList) {
+          for (const root of rootList) {
+            const currentFolderId = item.id;
+
+            await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId }));
+          }
+        }
+      });
+    }
+  },
+  hover: (props, monitor, component) => { }
+};
+
+const dropTargetCollect: DropTargetCollector<{ isOver: boolean, connectDropTarget: ConnectDropTarget }, FileGridItemProps> = (connect, monitor, props) => {
+  const isOver = monitor.isOver() && props.item.isFolder;
+
+  return {
+    isOver,
+    connectDropTarget: connect.dropTarget()
+  };
+};
+
 export default connect(
   (state: RootState) => {
     const isItemSelected = storageSelectors.isItemSelected(state);
@@ -343,12 +322,10 @@ export default connect(
 
     return {
       isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen,
-      isDraggingAnItem: state.storage.isDraggingAnItem,
       selectedItems: state.storage.selectedItems,
-      draggingTargetItemData: state.storage.draggingTargetItemData,
       namePath: state.storage.namePath,
       currentFolderId,
       isItemSelected,
       workspace: state.team.workspace
     };
-  })(FileGridItem);
+  })(DropTarget((props) => props.item.isFolder ? [NativeTypes.FILE] : [], dropTargetSpec, dropTargetCollect)(FileGridItem));

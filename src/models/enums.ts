@@ -64,3 +64,7 @@ export enum Workspace {
   Personal = 'personal',
   Business = 'business'
 }
+
+export enum DragAndDropType {
+  DriveItem = 'drive-item'
+}

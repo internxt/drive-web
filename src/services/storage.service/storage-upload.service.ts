@@ -6,7 +6,7 @@ import localStorageService from '../localStorage.service';
 import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';
-import { DevicePlatform, FileActionTypes, FileStatusTypes } from '../../models/enums';
+import { DevicePlatform } from '../../models/enums';
 
 export interface UploadItemPayload {
   file: any,

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileViewMode } from '../../../models/enums';
-import { DriveFileData, DriveFolderData, DriveItemData, FolderPath } from '../../../models/interfaces';
+import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interfaces';
 
 import selectors from './storageSelectors';
 import thunks, { extraReducers } from './storageThunks';
@@ -32,8 +32,6 @@ export interface StorageState {
   isLoadingRecents: boolean;
   recents: DriveItemData[];
   filters: StorageFilters;
-  isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveItemData | null;
   selectedItems: DriveItemData[];
   itemToShareId: number;
   itemsToDelete: DriveItemData[];
@@ -51,8 +49,6 @@ const initialState: StorageState = {
   isLoadingRecents: false,
   recents: [],
   filters: filtersFactory(),
-  isDraggingAnItem: false,
-  draggingTargetItemData: null,
   selectedItems: [],
   itemToShareId: 0,
   itemsToDelete: [],
@@ -73,16 +69,10 @@ export const storageSlice = createSlice({
     setIsLoadingRecents: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    setIsDraggingAnItem: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.isDraggingAnItem = action.payload;
-    },
-    setDraggingItemTargetData: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
-      state.draggingTargetItemData = action.payload;
-    },
     setItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.items = action.payload;
     },
-    setRecents: (state: StorageState, action: PayloadAction<DriveFileData[]>) => {
+    setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;
     },
     setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
@@ -158,8 +148,6 @@ export const storageSlice = createSlice({
 export const {
   setIsLoading,
   setIsLoadingRecents,
-  setIsDraggingAnItem,
-  setDraggingItemTargetData,
   setItems,
   setRecents,
   setFilters,

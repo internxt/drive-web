@@ -63,8 +63,8 @@ class FilesList extends React.Component<FilesListProps, FilesListState> {
     const { isLoading } = this.props;
 
     return (
-      <div className="pointer-events-none flex-grow bg-white">
-        <div className="pointer-events-none w-full">
+      <div className="flex-grow bg-white">
+        <div className="w-full">
           <div className="files-list flex border-b border-l-neutral-30 bg-white text-neutral-500 py-2 text-sm">
             <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
               <input disabled={!this.hasItems} readOnly checked={this.isAllSelected} onClick={this.onSelectAllButtonClicked} type="checkbox" className="pointer-events-auto" />

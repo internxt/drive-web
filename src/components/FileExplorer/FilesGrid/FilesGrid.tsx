@@ -40,7 +40,7 @@ class FilesGrid extends React.Component<FilesGridProps, FilesGridState> {
     const { isLoading } = this.props;
 
     return (
-      <div className="files-grid pointer-events-none flex-grow">
+      <div className="files-grid flex-grow">
         {isLoading ? this.loadingSkeleton : this.itemsList}
       </div>
     );

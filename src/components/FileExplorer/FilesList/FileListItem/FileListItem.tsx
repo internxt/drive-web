@@ -1,4 +1,5 @@
 import React, { MouseEvent, Fragment, ReactNode } from 'react';
+import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { connect } from 'react-redux';
 import { Dropdown } from 'react-bootstrap';
 import * as Unicons from '@iconscout/react-unicons';
@@ -18,18 +19,19 @@ import { ItemAction, Workspace } from '../../../../models/enums';
 import { uiActions } from '../../../../store/slices/ui';
 import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
 import { getAllItems } from '../../../../services/dragAndDrop.service';
+import { NativeTypes } from 'react-dnd-html5-backend';
 
 interface FileListItemProps {
   user: UserSettings | undefined;
-  isDraggingAnItem: boolean;
-  draggingTargetItemData: DriveItemData | null;
   item: DriveItemData;
   selectedItems: DriveItemData[];
   currentFolderId: number;
   namePath: FolderPath[];
   isItemSelected: (item: DriveItemData) => boolean;
   dispatch: AppDispatch
-  workspace: Workspace
+  workspace: Workspace,
+  isOver: boolean;
+  connectDropTarget: ConnectDropTarget;
 }
 
 interface FileListItemState {
@@ -221,66 +223,14 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
     }
   }
 
-  onItemDragOver = (e: React.DragEvent<HTMLTableRowElement>): void => {
-    const { item, isDraggingAnItem, draggingTargetItemData } = this.props;
-
-    if (item.isFolder) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      this.props.dispatch(storageActions.setDraggingItemTargetData(item));
-    }
-  }
-
-  onItemDragLeave = (e: React.DragEvent<HTMLTableRowElement>): void => {
-    this.props.dispatch(storageActions.setDraggingItemTargetData(null));
-  }
-
-  onItemDrop = async (e: React.DragEvent<HTMLTableRowElement>): void => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const { draggingTargetItemData, dispatch, namePath } = this.props;
-
-    if (draggingTargetItemData && draggingTargetItemData.isFolder) {
-      const namePathDestinationArray = namePath.map(level => level.name);
-
-      namePathDestinationArray[0] = '';
-
-      let folderPath = namePathDestinationArray.join('/');
-
-      folderPath = !draggingTargetItemData.isFolder ? folderPath : folderPath + '/' + draggingTargetItemData.name;
-      const parentFolderId = draggingTargetItemData.isFolder ? draggingTargetItemData.id : this.props.currentFolderId;
-      const itemsDragged = await getAllItems(e.dataTransfer, folderPath);
-      const { numberOfItems, rootList, files } = itemsDragged;
-
-      if (files) {
-        // files where dragged directly
-        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId, folderPath }));
-      }
-      if (rootList) {
-        for (const root of rootList) {
-          const currentFolderId = parentFolderId;
-
-          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId }));
-        }
-      }
-    }
-    dispatch(storageActions.setDraggingItemTargetData(null));
-  }
-
   render(): ReactNode {
-    const { isDraggingAnItem, draggingTargetItemData, item, isItemSelected } = this.props;
-    const isDraggingOverThisItem: boolean = !!draggingTargetItemData && draggingTargetItemData.id === item.id && draggingTargetItemData.isFolder === item.isFolder;
-    const pointerEventsClassNames: string = (isDraggingAnItem || isDraggingOverThisItem) ?
-      `pointer-events-none descendants ${item.isFolder ? 'only' : ''}` :
-      'pointer-events-auto';
+    const { item, isItemSelected, isOver, connectDropTarget } = this.props;
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
     const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
-    return (
+    return connectDropTarget(
       <div
-        className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} ${pointerEventsClassNames} group file-list-item`}
+        className={`${selectedClassNames} ${isOver ? 'drag-over-effect' : ''} group file-list-item`}
         draggable={false}
         onContextMenu={this.onItemRightClicked}
         onClick={this.onItemClicked}
@@ -360,18 +310,57 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 }
 
+const dropTargetSpec: DropTargetSpec<FileListItemProps> = {
+  drop: (props, monitor, component) => {
+    const { dispatch, namePath, item } = props;
+    const droppedData = monitor.getItem();
+
+    if (item.isFolder) {
+      const namePathDestinationArray = namePath.map(level => level.name);
+
+      namePathDestinationArray[0] = '';
+
+      let folderPath = namePathDestinationArray.join('/');
+
+      folderPath = folderPath + '/' + item.name;
+
+      getAllItems(droppedData, folderPath).then(async ({ rootList, files }) => {
+        if (files) {
+          // files where dragged directly
+          await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id, folderPath }));
+        }
+        if (rootList) {
+          for (const root of rootList) {
+            const currentFolderId = item.id;
+
+            await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId }));
+          }
+        }
+      });
+    }
+  },
+  hover: (props, monitor, component) => { }
+};
+
+const dropTargetCollect: DropTargetCollector<{ isOver: boolean, connectDropTarget: ConnectDropTarget }, FileListItemProps> = (connect, monitor, props) => {
+  const isOver = monitor.isOver() && props.item.isFolder;
+
+  return {
+    isOver,
+    connectDropTarget: connect.dropTarget()
+  };
+};
+
 export default connect(
   (state: RootState) => {
     const isItemSelected = storageSelectors.isItemSelected(state);
     const currentFolderId = storageSelectors.currentFolderId(state);
 
     return {
-      isDraggingAnItem: state.storage.isDraggingAnItem,
       selectedItems: state.storage.selectedItems,
-      draggingTargetItemData: state.storage.draggingTargetItemData,
       namePath: state.storage.namePath,
       currentFolderId,
       isItemSelected,
       workspace: state.team.workspace
     };
-  })(FileListItem);
+  })(DropTarget((props) => props.item.isFolder ? [NativeTypes.FILE] : [], dropTargetSpec, dropTargetCollect)(FileListItem));
