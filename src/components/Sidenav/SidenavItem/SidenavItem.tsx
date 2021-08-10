@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
@@ -35,19 +35,23 @@ const SidenavItem = ({ label, to, icon, isOpen, onClick }: SidenavItemProps): JS
       placement="right"
       overlay={overlay}
       show={isOpen ? false : undefined}
+      transition={false}
     >
-      <div
-        className={`transform duration-200 ${isOpen ? '' : 'collapsed'} side-navigator-item`}
-        onClick={onClick}
-      >
-        {
-          to ?
-            <NavLink exact className={`${isOpen ? '' : 'justify-center'} nav-link flex items-center py-1.5`} to={to}>{content}</NavLink> :
-            <div className={`${isOpen ? '' : 'justify-center'} flex items-center py-1.5`}>{content}</div>
-        }
-      </div>
+      {({ ref, ...triggerHandler }) => (
+        <div
+          ref={ref}
+          {...triggerHandler}
+          className={`transform duration-200 ${isOpen ? '' : 'collapsed'} side-navigator-item`}
+          onClick={onClick}
+        >
+          {
+            to ?
+              <NavLink exact className={`${isOpen ? '' : 'justify-center'} nav-link flex items-center py-1.5`} to={to}>{content}</NavLink> :
+              <div className={`${isOpen ? '' : 'justify-center'} flex items-center py-1.5`}>{content}</div>
+          }
+        </div>
+      )}
     </OverlayTrigger>
-
   );
 };
 
