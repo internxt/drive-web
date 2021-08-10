@@ -93,10 +93,12 @@ class DriveItemInfoMenu extends React.Component<DriveItemInfoMenuProps, DriveIte
             </div> : null
           }
 
-          <div className="file-activity-info-item">
-            <span className="label">Size</span>
-            <span className="value">{sizeService.bytesToString(item.size, false).toUpperCase()}</span>
-          </div>
+          {!item.isFolder &&
+            <div className="file-activity-info-item">
+              <span className="label">Size</span>
+              <span className="value">{sizeService.bytesToString(item.size, false).toUpperCase()}</span>
+            </div>
+          }
           <div className="file-activity-info-item">
             <span className="label">Modified</span>
             <span className="value">{dateService.format(item.updatedAt, 'DD MMMM YYYY')}</span>
