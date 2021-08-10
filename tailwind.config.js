@@ -58,6 +58,9 @@ module.exports = {
         '112': '28rem',
         '120': '30rem',
         '156': '37.5rem'
+      },
+      boxShadow: {
+        'b': '2px 1px 3px 0 rgba(0,0,0,0.1),2px 1px 2px 0 rgba(0,0,0,0.06)'
       }
     },
     colors: {

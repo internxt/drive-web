@@ -1,41 +1,53 @@
 import { Fragment } from 'react';
 import { NavLink } from 'react-router-dom';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import './SidenavItem.scss';
 
 interface SidenavItemProps {
   label: string,
-  tooltipLabel?: string,
   to?: string,
   icon: JSX.Element,
   isOpen: boolean,
   onClick?: () => void
 }
 
-const SidenavItem = ({ label, tooltipLabel, to, icon, isOpen, onClick }: SidenavItemProps): JSX.Element => {
+const SidenavItem = ({ label, to, icon, isOpen, onClick }: SidenavItemProps): JSX.Element => {
   const content: JSX.Element = (
     <Fragment>
       {icon}
 
       {isOpen
-        ? <span className='ml-2.5 text-base text-neutral-10' data-for="mainTooltip" data-tip={tooltipLabel} data-iscapture="true">{label}</span>
+        ? <span className='ml-2.5 text-base text-neutral-10'>{label}</span>
         : null
       }
     </Fragment>
   );
+  const overlay = (
+    <Tooltip id="sidenav-tooltip" className="shadow-b bg-white py-2.5 px-4 text-xs rounded-r-4px">
+      {label}
+    </Tooltip>);
 
   onClick = onClick || (() => { });
 
   return (
-    <div className={`transform duration-200 ${isOpen ? '' : 'collapsed'} side-navigator-item`}
-      onClick={onClick}
+    <OverlayTrigger
+      placement="right"
+      overlay={overlay}
+      show={isOpen ? false : undefined}
     >
-      {
-        to ?
-          <NavLink exact className={`${isOpen ? '' : 'justify-center'} nav-link flex items-center`} to={to}>{content}</NavLink> :
-          <div className={`${isOpen ? '' : 'justify-center'} flex items-center`}>{content}</div>
-      }
-    </div>
+      <div
+        className={`transform duration-200 ${isOpen ? '' : 'collapsed'} side-navigator-item`}
+        onClick={onClick}
+      >
+        {
+          to ?
+            <NavLink exact className={`${isOpen ? '' : 'justify-center'} nav-link flex items-center py-1.5`} to={to}>{content}</NavLink> :
+            <div className={`${isOpen ? '' : 'justify-center'} flex items-center py-1.5`}>{content}</div>
+        }
+      </div>
+    </OverlayTrigger>
+
   );
 };
 
