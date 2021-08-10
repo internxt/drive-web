@@ -31,7 +31,18 @@ interface SignUpProps {
 }
 
 const SignUp = (props: SignUpProps): JSX.Element => {
-  const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
+  const qs = queryString.parse(history.location.search);
+  const hasEmailParam = qs.email && validateEmail(qs.email as string);
+  const hasTokenParam = qs.token;
+  const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
+  const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>(
+    {
+      mode: 'onChange',
+      defaultValues: {
+        email: hasEmailParam ? qs.email as string : ''
+      }
+    }
+  );
   const dispatch = useAppDispatch();
 
   const password = useWatch({ control, name: 'password', defaultValue: '' });
@@ -43,11 +54,6 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const qs = queryString.parse(history.location.search);
-  const hasEmailParam = props.match.params.email && validateEmail(props.match.params.email);
-  const hasTokenParam = qs.token;
-  const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
 
   if (hasTokenParam && typeof hasTokenParam === 'string') {
     localStorageService.clear();
