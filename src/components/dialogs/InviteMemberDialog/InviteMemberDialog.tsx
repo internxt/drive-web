@@ -7,7 +7,7 @@ import { RootState } from '../../../store';
 import BaseInput from '../../Inputs/BaseInput';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../Buttons/AuthButton';
-import notify from '../../Notifications';
+import notify, { ToastType } from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { sendEmailTeamsMember } from '../../../services/teamsSendEmail.service';
 import { useEffect } from 'react';
@@ -15,6 +15,7 @@ import { getMembers, removeMember } from '../../../services/teamsMembers.service
 import { useState } from 'react';
 import { UilTrashAlt, UilUserPlus } from '@iconscout/react-unicons';
 import { uiActions } from '../../../store/slices/ui';
+import i18n from '../../../services/i18n.service';
 
 interface InviteMemberCreateDialogProps {
   team: TeamsSettings | undefined
@@ -44,7 +45,10 @@ const InviteMemberCreateDialog = ({
     try {
       if (team && team.isAdmin) {
         await sendEmailTeamsMember(formData.email);
-        notify(`Invitation email sent to ${formData.email}`, 'success');
+        notify(
+          i18n.get('success.teamInvitationSent', { email: formData.email }),
+          ToastType.Success
+        );
         const userExists = members.some(userObj => userObj.user === formData.email);
 
         if (!userExists) {
@@ -57,22 +61,22 @@ const InviteMemberCreateDialog = ({
 
       }
     } catch (error) {
-      notify(error.message || error, 'error');
+      notify(error.message || error, ToastType.Error);
     }
 
   };
 
   const deleteMembers = async (memberToDelete: InfoInvitationsMembers) => {
-    const typeMember = memberToDelete.isMember ? 'member' : 'invitation';
+    const resource = memberToDelete.isMember ? 'member' : 'invitation';
 
     try {
       await removeMember(memberToDelete);
       const filterRemovedMember = members.filter(member => member.user !== memberToDelete.user);
 
       setMembers(filterRemovedMember);
-      notify(`The ${typeMember} has been successfully deleted`, 'success');
+      notify(i18n.get('success.deletedTeamMember', { resource }), ToastType.Success);
     } catch (error) {
-      notify(`The ${typeMember} has been successfully deleted`, 'error');
+      notify(i18n.get('error.deleteTeamMember'), ToastType.Error);
     }
   };
 

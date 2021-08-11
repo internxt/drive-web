@@ -1,13 +1,13 @@
 import _ from 'lodash';
 
 import { getHeaders } from '../lib/auth';
-import fileService from './file.service';
 import history from '../lib/history';
 import localStorageService from './localStorage.service';
 import analyticsService from './analytics.service';
 import { DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../models/interfaces';
 import { DevicePlatform } from '../models/enums';
-import notify from '../components/Notifications';
+import notify, { ToastType } from '../components/Notifications';
+import i18n from './i18n.service';
 
 export interface IFolders {
   bucket: string
@@ -123,9 +123,9 @@ export async function createFolder(isTeam: boolean, currentFolderId: number | nu
 
   if (response.status !== 201) {
     if (responseJSON.error.includes('already exists')) {
-      notify('Folder with the same name already exists', 'error');
+      notify(i18n.get('error.folderAlreadyExists'), ToastType.Error);
     } else {
-      notify(responseJSON.error.message || responseJSON.error, 'error');
+      notify(responseJSON.error.message || responseJSON.error, ToastType.Error);
     }
     throw responseJSON.error;
   }

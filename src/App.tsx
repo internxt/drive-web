@@ -105,18 +105,7 @@ class App extends Component<AppProps, AppState> {
               {this.routes}
             </Switch>
 
-            {/^[a-z0-9]{10}$/.test(pathName)
-              ? <ToastContainer />
-              : <ToastContainer
-                position="bottom-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick={true}
-                rtl={false}
-                draggable={true}
-                pauseOnHover={true}
-                className="" />}
+            <ToastContainer />
           </Router>
         </DndProvider>
       );

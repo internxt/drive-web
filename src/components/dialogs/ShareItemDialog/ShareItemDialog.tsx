@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 
 import { generateFileKey, Network } from '../../../lib/network';
 import { DriveItemData } from '../../../models/interfaces';
-import notify from '../../Notifications';
+import notify, { ToastType } from '../../Notifications';
 import history from '../../../lib/history';
 import { uiActions } from '../../../store/slices/ui';
 import BaseDialog from '../BaseDialog/BaseDialog';
@@ -14,6 +14,7 @@ import './ShareItemDialog.scss';
 import { storageActions } from '../../../store/slices/storage';
 import { trackShareLinkBucketIdUndefined } from '../../../services/analytics.service';
 import { userThunks } from '../../../store/slices/user';
+import i18n from '../../../services/i18n.service';
 
 interface ShareItemDialogProps {
   item: DriveItemData
@@ -57,7 +58,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       if (!bucket) {
         trackShareLinkBucketIdUndefined({ email });
         close();
-        notify('Cannot generate share link due to missing bucket', 'error');
+        notify(i18n.get('success.linkCopied').get('error.shareLinkMissingBucket'), ToastType.Error);
         dispatch(userThunks.logoutThunk());
 
         return;
@@ -82,8 +83,8 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       if (err.status === 401) {
         return history.push('/login');
       }
-      notify(err.message, 'error');
-      setLinkToCopy('Unavailable link');
+      notify(err.message, ToastType.Error);
+      setLinkToCopy(i18n.get('error.unavailableLink'));
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +133,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
           <div className='flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text'
             onClick={() => {
               navigator.clipboard.writeText(linkToCopy);
-              notify('Link copied!', 'info', 2500);
+              notify(i18n.get('success.linkCopied'), ToastType.Info);
             }}>
             <span className='text-neutral-900 text-xs w-56 truncate overflow-hidden'>{isLoading ? 'Loading link...' : linkToCopy}</span>
             <UilClipboardAlt className='text-blue-60' />

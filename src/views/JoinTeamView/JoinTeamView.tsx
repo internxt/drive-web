@@ -6,7 +6,8 @@ import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 
 import './JoinTeamView.scss';
-import notify from '../../components/Notifications';
+import notify, { ToastType } from '../../components/Notifications';
+import i18n from '../../services/i18n.service';
 
 interface JoinTeamProps {
   match: any
@@ -50,12 +51,12 @@ class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
       if (response.status === 200) {
         this.setState({ isTeamActivated: true });
         localStorage.setItem('teamActivation', 'true');
-        notify('You have successfully joined to the team', 'success');
+        notify(i18n.get('success.joinedToTheTeam'), ToastType.Success);
         history.push('/');
       } else {
         // Wrong activation
         this.setState({ isTeamActivated: false });
-        notify('Your activation code is invalid. Maybe you have used this link before and your account is already activated.', 'error');
+        notify(i18n.get('error.invalidActivationCode'), ToastType.Error);
       }
 
     }).catch(error => {
@@ -65,9 +66,9 @@ class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
 
   redirect = (): void => {
     if (this.state.isTeamActivated) {
-      toast.info('You have successfully joined to the team, please login', { className: 'xcloud-toast-info' });
+      notify(i18n.get('success.joinedToTheTeam'), ToastType.Success);
     } else {
-      toast.warn('Your activation code is invalid. Maybe you have used this link before and your account is already activated.');
+      notify(i18n.get('error.invalidActivationCode'), ToastType.Warning);
     }
     history.push('/');
   }

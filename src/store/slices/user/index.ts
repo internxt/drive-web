@@ -99,7 +99,7 @@ export const userSlice = createSlice({
       Object.assign(state, initialState);
     },
     initialize: (state: UserState) => {
-      state.user = localStorageService.getUser();
+      state.user = localStorageService.getUser() || undefined;
       state.isAuthenticated = !!state.user;
     },
     setIsUserInitialized: (state: UserState, action: PayloadAction<boolean>) => {

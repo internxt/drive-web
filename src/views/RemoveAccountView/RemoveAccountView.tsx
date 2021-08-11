@@ -6,10 +6,11 @@ import { emailRegexPattern } from '../../services/validation.service';
 
 import { useState } from 'react';
 import userService from '../../services/user.service';
-import notify from '../../components/Notifications';
+import notify, { ToastType } from '../../components/Notifications';
 import BaseButton from '../../components/Buttons/BaseButton';
 import { UilEnvelope } from '@iconscout/react-unicons';
 import { Link } from 'react-router-dom';
+import i18n from '../../services/i18n.service';
 
 const RemoveAccount = (): JSX.Element => {
   const { register, formState: { errors, isValid }, handleSubmit, getValues } = useForm<IFormValues>({ mode: 'onChange' });
@@ -21,9 +22,9 @@ const RemoveAccount = (): JSX.Element => {
     try {
       setIsLoading(true);
       await userService.sendDeactivationEmail(email);
-      notify('Deactivation email sent!', 'success');
+      notify(i18n.get('success.accountDeactivationEmailSent'), ToastType.Success);
     } catch (err) {
-      notify('Error deactivating account. Please contact us.', 'error');
+      notify(i18n.get('error.deactivatingAccount'), ToastType.Error);
     } finally {
       setIsLoading(false);
       setStep(2);

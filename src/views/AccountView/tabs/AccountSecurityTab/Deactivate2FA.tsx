@@ -6,8 +6,9 @@ import { deactivate2FA } from '../../../../services/auth.service';
 import { twoFactorRegexPattern } from '../../../../services/validation.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import BaseInput from '../../../../components/Inputs/BaseInput';
-import notify from '../../../../components/Notifications';
+import notify, { ToastType } from '../../../../components/Notifications';
 import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
+import i18n from '../../../../services/i18n.service';
 
 interface Deactivate2FAProps {
   passwordSalt: string,
@@ -28,12 +29,12 @@ const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Ele
       setIsLoading(true);
       await deactivate2FA(passwordSalt, formData.password, formData.twoFactorCode);
 
-      notify('Your Two-Factor Authentication has been disabled', 'success');
+      notify(i18n.get('success.twoFactorAuthDisabled'), ToastType.Success);
       setHas2FA(false);
       reset();
     } catch (err) {
       console.log(err);
-      notify(err.message || 'Internal server error. Try again later', 'error');
+      notify(err.message || i18n.get('error.serverError'), ToastType.Error);
     } finally {
       setIsLoading(false);
     }

@@ -39,7 +39,7 @@ export function getNewFolderName(name: string, currentCommanderItems: any[]): st
 
   const foldName = name.replace(/ /g, '');
 
-  currentFolder.map((folder) => {
+  currentFolder.forEach((folder) => {
     const fold = folder.name.replace(/ /g, '');
 
     if (foldName === fold) {

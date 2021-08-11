@@ -1,0 +1,29 @@
+{
+  "success": {
+    "passwordChanged": "Password changed successfully",
+    "teamInvitationSent": "Invitation email sent to {email}",
+    "referralInvitationSent": "Invitation email sent to {email}",
+    "deletedTeamMember": "The {resource} has been successfully deleted",
+    "accountDeactivationEmailSent": "Deactivation email sent!",
+    "claimEmailSent": "Claim email sent!",
+    "linkCopied": "Link copied!",
+    "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
+    "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
+    "joinedToTheTeam": "You have successfully joined to the team"
+  },
+  "error": {
+    "genericError": "There was an error: {reason}",
+    "serverError": "Internal server error. Try again later",
+    "deleteTeamMember": "Error deleting team member",
+    "folderAlreadyExists": "Folder with the same name already exists",
+    "sendReferralInvitation": "Could not send invitation email",
+    "sendClaimEmail": "Could not send claim email",
+    "anyReferralCredit": "You don\t have any credit on your account",
+    "backupKeyDontMatch": "The backup key inserted does not match your unique backup key",
+    "shareLinkMissingBucket": "Cannot generate share link due to missing bucket",
+    "unavailableLink": "Unavailable link",
+    "invalidActivationCode": "Your activation code is invalid. Maybe you have used this link before and your account is already activated",
+    "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {reason}",
+    "deactivatingAccount": "Error deactivating account. Please contact us."
+  }
+}
