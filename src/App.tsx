@@ -2,7 +2,6 @@ import { Component, createElement } from 'react';
 import { Switch, Route, Redirect, Router } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
-import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { DndProvider } from 'react-dnd';

@@ -26,6 +26,9 @@ export const tasksSlice = createSlice({
     },
     clearNotifications: (state: TasksState) => {
       state.notifications = [];
+    },
+    resetState: (state: TasksState) => {
+      Object.assign(state, initialState);
     }
   }
 });

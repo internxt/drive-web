@@ -10,6 +10,8 @@ import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
 import { selectorIsTeam, setWorkspace, teamActions } from '../team';
 import authService from '../../../services/auth.service';
+import { tasksActions } from '../tasks';
+import { uiActions } from '../ui';
 
 interface UserState {
   isInitializing: boolean;
@@ -84,6 +86,8 @@ export const logoutThunk = createAsyncThunk(
 
     dispatch(teamActions.setWorkspace(Workspace.Personal));
     dispatch(userActions.resetState());
+    dispatch(uiActions.resetState());
+    dispatch(tasksActions.resetState());
   }
 );
 
