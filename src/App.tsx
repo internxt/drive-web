@@ -2,6 +2,10 @@ import { Component, createElement } from 'react';
 import { Switch, Route, Redirect, Router } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
+import { TouchBackend } from 'react-dnd-touch-backend';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
+import { DndProvider } from 'react-dnd';
 
 import { initializeUserThunk } from './store/slices/user';
 import { setHasConnection } from './store/slices/network';
@@ -16,7 +20,7 @@ import { AppDispatch, RootState } from './store';
 interface AppProps {
   isAuthenticated: boolean;
   isInitialized: boolean;
-  user: UserSettings;
+  user: UserSettings | undefined;
   dispatch: AppDispatch;
 }
 
@@ -92,28 +96,30 @@ class App extends Component<AppProps, AppState> {
 
     if (!isAuthenticated || isInitialized) {
       template = (
-        <Router history={history}>
-          <Switch>
-            <Redirect from='//*' to='/*' />
-            <Route exact path='/'>
-              <Redirect to="/login" />
-            </Route>
-            {this.routes}
-          </Switch>
+        <DndProvider backend={HTML5Backend}>
+          <Router history={history}>
+            <Switch>
+              <Redirect from='//*' to='/*' />
+              <Route exact path='/'>
+                <Redirect to="/login" />
+              </Route>
+              {this.routes}
+            </Switch>
 
-          {/^[a-z0-9]{10}$/.test(pathName)
-            ? <ToastContainer />
-            : <ToastContainer
-              position="bottom-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick={true}
-              rtl={false}
-              draggable={true}
-              pauseOnHover={true}
-              className="" />}
-        </Router>
+            {/^[a-z0-9]{10}$/.test(pathName)
+              ? <ToastContainer />
+              : <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={true}
+                rtl={false}
+                draggable={true}
+                pauseOnHover={true}
+                className="" />}
+          </Router>
+        </DndProvider>
       );
     }
 

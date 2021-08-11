@@ -32,6 +32,8 @@ import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
 
 import { getAllItems } from '../../services/dragAndDrop.service';
 import DeleteItemsDialog from '../dialogs/DeleteItemsDialog/DeleteItemsDialog';
+import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
+import { NativeTypes } from 'react-dnd-html5-backend';
 
 interface FileExplorerProps {
   title: JSX.Element | string;
@@ -43,7 +45,6 @@ interface FileExplorerProps {
   onDragAndDropEnd: () => void;
   user: UserSettings | any;
   currentFolderId: number;
-  isDraggingAnItem: boolean;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
@@ -57,6 +58,8 @@ interface FileExplorerProps {
   dispatch: AppDispatch;
   workspace: Workspace;
   planLimit: number;
+  isOver: boolean;
+  connectDropTarget: ConnectDropTarget;
 }
 
 interface FileExplorerState {
@@ -347,59 +350,19 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     );
   }
 
-  onViewDragOver = (e: DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
-    // e.stopPropagation();
-
-    this.props.dispatch(storageActions.setIsDraggingAnItem(true));
-  }
-
-  onViewDragLeave = (e: DragEvent<HTMLDivElement>): void => {
-    // console.log('onViewDragLeave: ', e);
-    this.props.dispatch(storageActions.setIsDraggingAnItem(false));
-  }
-
-  onViewDrop = async (e: DragEvent<HTMLDivElement>): Promise<void> => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const { dispatch } = this.props;
-
-    const namePathDestinationArray = this.props.namePath.map(level => level.name);
-
-    namePathDestinationArray[0] = '';
-    const folderPath = namePathDestinationArray.join('/');
-
-    const itemsDragged = await getAllItems(e.dataTransfer, folderPath);
-    const { numberOfItems, rootList, files } = itemsDragged;
-
-    if (files) {
-      // files where dragged directly
-      await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: this.props.currentFolderId, folderPath: folderPath }))
-        .then(() => this.props.onDragAndDropEnd());
-    }
-    if (rootList) {
-      for (const root of rootList) {
-        await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: this.props.currentFolderId }))
-          .then(() => this.props.onDragAndDropEnd());
-      }
-    }
-
-    dispatch(storageActions.setIsDraggingAnItem(false));
-  }
-
   render(): ReactNode {
     const {
       isLoading,
       infoItemId,
       viewMode,
-      isDraggingAnItem,
       title,
       items,
       isDeleteItemsDialogOpen,
       isCreateFolderDialogOpen,
       onItemsDeleted,
-      onFolderCreated
+      onFolderCreated,
+      isOver,
+      connectDropTarget
     } = this.props;
     const { fileInputRef } = this.state;
     const viewModesIcons = {
@@ -413,113 +376,157 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     const ViewModeComponent = viewModes[viewMode];
 
     return (
-      <Fragment>
-        {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
-        {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
+      connectDropTarget(
+        <div className="flex flex-column flex-grow h-1">
+          {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
+          {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
-        <div className="flex flex-grow h-1 max-w-full w-full">
-          <div className="flex-grow flex flex-col w-1">
-            <div className="flex justify-between pb-4">
-              <div className="text-lg">
-                {title}
-              </div>
-
-              <div className="flex">
-                {this.hasAnyItemSelected ?
-                  <button className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <Unicons.UilCloudDownload className="h-5 mr-1.5" /><span>Download</span>
-                  </button> :
-                  <button className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <Unicons.UilCloudUpload className="h-5 mr-1.5" /><span>Upload</span>
-                  </button>
-                }
-                {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-2" onClick={this.onCreateFolderButtonClicked}>
-                  <Unicons.UilFolderPlus />
-                </button> : null}
-                {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-2" onClick={this.onBulkDeleteButtonClicked}>
-                  <Unicons.UilTrashAlt />
-                </button> : null}
-                <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
-                  {viewModesIcons[viewMode]}
-                </button>
-              </div>
-            </div>
-
-            <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden">
-              <div
-                className="flex flex-col justify-between flex-grow overflow-y-auto overflow-x-hidden"
-              >
-                <ViewModeComponent items={items} isLoading={isLoading} />
-              </div>
-
-              {/* PAGINATION */}
-              {(false && !isLoading) ? (
-                <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
-                  <span className="text-sm w-1/3" />
-                  <div className="flex justify-center w-1/3">
-                    <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                      <Unicons.UilAngleDoubleLeft />
-                    </button>
-                    <button className="pagination-button">
-                      1
-                    </button>
-                    <button onClick={this.onNextPageButtonClicked} className="pagination-button">
-                      <Unicons.UilAngleDoubleRight />
-                    </button>
-                  </div>
-                  <div className="w-1/3"></div>
+          <div className="flex flex-grow h-full max-w-full w-full">
+            <div className="flex-grow flex flex-col w-1">
+              <div className="flex justify-between pb-4">
+                <div className="text-lg">
+                  {title}
                 </div>
-              ) : null}
 
-              {/* EMPTY FOLDER */
-                !this.hasFilters && !this.hasItems && !isLoading ?
-                  <FileExplorerOverlay
-                    icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
-                    title="This folder is empty"
-                    subtitle="Drag and drop here or click on upload button"
-                  />
-                  :
-                  null
-              }
+                <div className="flex">
+                  {this.hasAnyItemSelected ?
+                    <button className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
+                      <Unicons.UilCloudDownload className="h-5 mr-1.5" /><span>Download</span>
+                    </button> :
+                    <button className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
+                      <Unicons.UilCloudUpload className="h-5 mr-1.5" /><span>Upload</span>
+                    </button>
+                  }
+                  {!this.hasAnyItemSelected ? <button className="w-8 secondary square mr-2" onClick={this.onCreateFolderButtonClicked}>
+                    <Unicons.UilFolderPlus />
+                  </button> : null}
+                  {this.hasAnyItemSelected ? <button className="w-8 secondary square mr-2" onClick={this.onBulkDeleteButtonClicked}>
+                    <Unicons.UilTrashAlt />
+                  </button> : null}
+                  <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
+                    {viewModesIcons[viewMode]}
+                  </button>
+                </div>
+              </div>
 
-              {/* NO SEARCH RESULTS */
-                this.hasFilters && !this.hasItems && !isLoading ?
-                  <FileExplorerOverlay
-                    icon={<img alt="" src={noResultsSearchImage} className="w-full m-auto" />}
-                    title="There are no results for this search"
-                    subtitle="Drag and drop here or click on upload button"
-                  />
-                  :
-                  null
-              }
+              <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden">
+                <div
+                  className="flex flex-col justify-between flex-grow overflow-y-auto overflow-x-hidden"
+                >
+                  <ViewModeComponent items={items} isLoading={isLoading} />
+                </div>
 
-              {/* DRAG AND DROP */
-                isDraggingAnItem ?
-                  <div
-                    className="drag-over-effect pointer-events-none absolute h-full w-full flex justify-center items-end"
-                  ></div> :
-                  null
-              }
+                {/* PAGINATION */}
+                {(false && !isLoading) ? (
+                  <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
+                    <span className="text-sm w-1/3" />
+                    <div className="flex justify-center w-1/3">
+                      <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
+                        <Unicons.UilAngleDoubleLeft />
+                      </button>
+                      <button className="pagination-button">
+                        1
+                      </button>
+                      <button onClick={this.onNextPageButtonClicked} className="pagination-button">
+                        <Unicons.UilAngleDoubleRight />
+                      </button>
+                    </div>
+                    <div className="w-1/3"></div>
+                  </div>
+                ) : null}
+
+                {/* EMPTY FOLDER */
+                  !this.hasFilters && !this.hasItems && !isLoading ?
+                    <FileExplorerOverlay
+                      icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
+                      title="This folder is empty"
+                      subtitle="Drag and drop here or click on upload button"
+                    />
+                    :
+                    null
+                }
+
+                {/* NO SEARCH RESULTS */
+                  this.hasFilters && !this.hasItems && !isLoading ?
+                    <FileExplorerOverlay
+                      icon={<img alt="" src={noResultsSearchImage} className="w-full m-auto" />}
+                      title="There are no results for this search"
+                      subtitle="Drag and drop here or click on upload button"
+                    />
+                    :
+                    null
+                }
+
+                {/* DRAG AND DROP */
+                  isOver ?
+                    <div
+                      className="drag-over-effect pointer-events-none absolute h-full w-full flex justify-center items-end"
+                    ></div> :
+                    null
+                }
+              </div>
+
+              <input
+                className="hidden"
+                ref={fileInputRef}
+                type="file"
+                onChange={this.onUploadInputChanged}
+                multiple={true}
+              />
+
             </div>
 
-            <input
-              className="hidden"
-              ref={fileInputRef}
-              type="file"
-              onChange={this.onUploadInputChanged}
-              multiple={true}
-            />
-
+            {
+              infoItemId ? <DriveItemInfoMenu /> : null
+            }
           </div>
-
-          {
-            infoItemId ? <DriveItemInfoMenu /> : null
-          }
         </div>
-      </Fragment>
+      )
     );
   }
 }
+
+const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
+  drop: (props, monitor, component) => {
+    const { dispatch, currentFolderId, onDragAndDropEnd } = props;
+    const droppedData: { files: File[], items: DataTransferItemList } = monitor.getItem();
+    const isAlreadyDropped = monitor.didDrop();
+    const namePathDestinationArray = props.namePath.map(level => level.name);
+
+    if (isAlreadyDropped) {
+      return;
+    }
+
+    namePathDestinationArray[0] = '';
+
+    const folderPath = namePathDestinationArray.join('/');
+
+    getAllItems(droppedData, folderPath).then(async ({ rootList, files }) => {
+      if (files) {
+        // files where dragged directly
+        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: currentFolderId, folderPath: folderPath }))
+          .then(() => onDragAndDropEnd());
+      }
+
+      if (rootList) {
+        for (const root of rootList) {
+          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: currentFolderId }))
+            .then(() => onDragAndDropEnd());
+        }
+      }
+    });
+  },
+  hover: (props, monitor, component) => { }
+};
+
+const dropTargetCollect: DropTargetCollector<{ isOver: boolean, connectDropTarget: ConnectDropTarget }, FileExplorerProps> = (connect, monitor, props) => {
+  const isOver = monitor.isOver({ shallow: true });
+
+  return {
+    isOver,
+    connectDropTarget: connect.dropTarget()
+  };
+};
 
 export default connect(
   (state: RootState) => {
@@ -531,7 +538,6 @@ export default connect(
       currentFolderId,
       selectedItems: state.storage.selectedItems,
       storageFilters: state.storage.filters,
-      isDraggingAnItem: state.storage.isDraggingAnItem,
       itemToShareId: state.storage.itemToShareId,
       isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
       isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
@@ -542,4 +548,4 @@ export default connect(
       workspace: state.team.workspace,
       planLimit: state.plan.planLimit
     };
-  })(FileExplorer);
+  })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(FileExplorer));

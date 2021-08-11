@@ -3,11 +3,7 @@ import { MAX_ALLOWED_UPLOAD_SIZE } from '../lib/constants';
 import { v4 as uuid } from 'uuid';
 
 export async function getAllItems(dataTransfer, pathToDrop) {
-  console.log(pathToDrop);
-
   const entries = await getEntries(dataTransfer.items, pathToDrop);
-
-  // console.log(entries);
   const levels: Array<[]> = [];
 
   //There is always a root ?
@@ -37,7 +33,6 @@ export async function getAllItems(dataTransfer, pathToDrop) {
     files: entries.childrenIndex['']
   };
 
-  console.log(items);
   return items;// entries;
 }
 
@@ -59,7 +54,6 @@ function parentFullPath(filePath) {
 }
 
 async function getEntries(dataTransferItemList: DataTransferItemList, pathToDrop) {
-  console.log(pathToDrop);
   const entryList: DataTransferItem[] = [];
   const fileEntryList: File[] = [];
   const directoryEntryList: DataTransferItem[] = [];
