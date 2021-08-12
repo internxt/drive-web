@@ -28,6 +28,7 @@ interface FileListItemProps {
   currentFolderId: number;
   namePath: FolderPath[];
   isItemSelected: (item: DriveItemData) => boolean;
+  isSomeItemSelected: boolean;
   dispatch: AppDispatch
   workspace: Workspace,
   isOver: boolean;
@@ -61,6 +62,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
         <div className={isEditingName ? 'block' : 'hidden'}>
           <input
             className="dense border border-white no-ring rect"
+            onClick={(e) => e.stopPropagation()}
             ref={nameInputRef}
             type="text"
             value={dirtyName}
@@ -224,7 +226,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
   }
 
   render(): ReactNode {
-    const { item, isItemSelected, isOver, connectDropTarget } = this.props;
+    const { item, isItemSelected, isSomeItemSelected, isOver, connectDropTarget } = this.props;
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
     const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
@@ -264,7 +266,7 @@ class FileListItem extends React.Component<FileListItemProps, FileListItemState>
 
         {/* HOVER ACTIONS */}
         <div className="pl-3 w-2/12 items-center hidden xl:flex">
-          <div className="flex">
+          <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
             {!item.isFolder ?
               <button onClick={this.onDownloadButtonClicked} className="hover-action mr-4">
                 <Unicons.UilCloudDownload className="h-5" />
@@ -325,11 +327,10 @@ const dropTargetSpec: DropTargetSpec<FileListItemProps> = {
       folderPath = folderPath + '/' + item.name;
 
       getAllItems(droppedData, folderPath).then(async ({ rootList, files }) => {
-        if (files) {
-          // files where dragged directly
+        if (files) { // Only files
           await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id, folderPath }));
         }
-        if (rootList) {
+        if (rootList) { // Directory tree
           for (const root of rootList) {
             const currentFolderId = item.id;
 
@@ -355,12 +356,14 @@ export default connect(
   (state: RootState) => {
     const isItemSelected = storageSelectors.isItemSelected(state);
     const currentFolderId = storageSelectors.currentFolderId(state);
+    const isSomeItemSelected = storageSelectors.isSomeItemSelected(state);
 
     return {
       selectedItems: state.storage.selectedItems,
       namePath: state.storage.namePath,
       currentFolderId,
       isItemSelected,
+      isSomeItemSelected,
       workspace: state.team.workspace
     };
   })(DropTarget((props) => props.item.isFolder ? [NativeTypes.FILE] : [], dropTargetSpec, dropTargetCollect)(FileListItem));

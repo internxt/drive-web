@@ -38,8 +38,6 @@ export interface StorageState {
   infoItemId: number;
   viewMode: FileViewMode;
   namePath: FolderPath[];
-  sortFunction: ((a: DriveItemData, b: DriveItemData) => number) | null;
-  searchFunction: ((item: DriveItemData) => boolean) | null;
 }
 
 const initialState: StorageState = {
@@ -54,9 +52,7 @@ const initialState: StorageState = {
   itemsToDelete: [],
   infoItemId: 0,
   viewMode: FileViewMode.List,
-  namePath: [],
-  sortFunction: null,
-  searchFunction: null
+  namePath: []
 };
 
 export const storageSlice = createSlice({
@@ -107,9 +103,6 @@ export const storageSlice = createSlice({
     },
     setInfoItem: (state: StorageState, action: PayloadAction<number>) => {
       state.infoItemId = action.payload;
-    },
-    setSortFunction: (state: StorageState, action: PayloadAction<((a: DriveItemData, b: DriveItemData) => number) | null>) => {
-      state.sortFunction = action.payload;
     },
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;

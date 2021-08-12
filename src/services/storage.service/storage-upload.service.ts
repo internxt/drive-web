@@ -43,7 +43,7 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
       filesize: file.file.size,
       filecontent: content,
       progressCallback: updateProgressCallback
-    }).catch(e => console.error('Error in storage upload service: ', e));
+    });
 
     const name = encryptFilename(file.file.name, file.file.parentFolderId);
 
@@ -73,7 +73,6 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
 
   } catch (err) {
     analyticsService.trackFileUploadError({ file_size: file.size, file_type: file.type, folder_id: file.parentFolderId, userEmail, msg: err.message, platform: DevicePlatform.Web });
-    toast.warn(`File upload error. Reason: ${err.message}`);
 
     throw err;
   }

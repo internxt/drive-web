@@ -9,6 +9,8 @@ import './ShareView.scss';
 import { getShareInfo } from '../../services/share.service';
 import { Network } from '../../lib/network';
 import AesUtils from '../../lib/AesUtil';
+import notify, { ToastType } from '../../components/Notifications';
+import i18n from '../../services/i18n.service';
 
 interface ShareViewProps {
   match?: any
@@ -20,15 +22,6 @@ interface ShareViewState {
 }
 
 class ShareView extends React.Component<ShareViewProps, ShareViewState> {
-  toastOptions: ToastOptions = {
-    position: 'bottom-right',
-    autoClose: 5000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    draggable: true,
-    pauseOnHover: true
-  }
-
   state = {
     token: this.props.match.params.token,
     progress: 0
@@ -46,7 +39,7 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
         this.download();
       }
     } else {
-      toast.warn('This secure link has expired', this.toastOptions);
+      notify(i18n.get('error.linkExpired'), ToastType.Error);
     }
   }
 
@@ -54,11 +47,7 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
     const token = this.state.token;
     const shareInfo = await getShareInfo(token);
 
-    toast.info('Securely retrieving file ...', {
-      position: 'bottom-right',
-      autoClose: false,
-      draggable: false
-    });
+    notify(i18n.get('info.retrievingFile'), ToastType.Info);
 
     const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${shareInfo.fileMeta.folderId.toString()}`;
     const decryptedFilename = AesUtils.decrypt(shareInfo.fileMeta.name, salt);
@@ -67,11 +56,7 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
 
     const network = new Network('NONE', 'NONE', 'NONE');
 
-    toast.info(`Downloading file ${filename} ...`, {
-      position: 'bottom-right',
-      autoClose: false,
-      draggable: false
-    });
+    notify(i18n.get('info.downloadingFile', { filename }), ToastType.Info);
 
     const file = await network.downloadFile(shareInfo.bucket, shareInfo.file, {
       fileEncryptionKey: Buffer.from(shareInfo.encryptionKey, 'hex'),

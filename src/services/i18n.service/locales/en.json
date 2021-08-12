@@ -24,6 +24,16 @@
     "unavailableLink": "Unavailable link",
     "invalidActivationCode": "Your activation code is invalid. Maybe you have used this link before and your account is already activated",
     "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {reason}",
-    "deactivatingAccount": "Error deactivating account. Please contact us."
+    "deactivatingAccount": "Error deactivating account. Please contact us.",
+    "fetchingFolderContent": "Error fetching folder content",
+    "uploadingFolder": "Error uploading folder",
+    "uploadingFile": "Error uploading file: {reason}",
+    "downloadingFile": "Error downloading file: Reason is {reason}",
+    "downloadingItems": "Some of the elements could not be downloaded",
+    "linkExpired": "This secure link has expired"
+  },
+  "info": {
+    "downloadingFile": "Downloading file {filename}...",
+    "retrievingFile": "Securely retrieving file..."
   }
 }

@@ -1,4 +1,4 @@
-import { createRef, ReactNode, Component, Fragment, DragEvent } from 'react';
+import { createRef, ReactNode, Component } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
@@ -67,7 +67,6 @@ interface FileExplorerState {
   email: string;
   token: string;
   isDragging: boolean;
-  searchFunction: any;
   isAdmin: boolean;
   isMember: boolean;
 }
@@ -81,7 +80,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       email: '',
       token: '',
       isDragging: false,
-      searchFunction: null,
       isAdmin: true,
       isMember: false
     };
@@ -206,23 +204,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     });
   }
 
-  setSearchFunction = (e) => {
-    const { currentFolderId } = this.props;
-    const searchString = removeAccents(e.target.value.toString()).toLowerCase();
-    let func: ((item: any) => void) | null = null;
-
-    if (searchString) {
-      func = function (item) {
-        return item.name.toLowerCase().includes(searchString);
-      };
-    }
-
-    this.setState({ searchFunction: func });
-    this.props.dispatch(
-      storageThunks.fetchFolderContentThunk(currentFolderId)
-    );
-  };
-
   openFolder = (e): Promise<void> => {
     return new Promise((resolve) => {
       this.props.dispatch(
@@ -343,10 +324,10 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   folderTraverseUp() {
     const { dispatch, namePath } = this.props;
 
-    dispatch(storageActions.popNamePath);
+    // dispatch(storageActions.popNamePath);
 
     dispatch(
-      storageThunks.fetchFolderContentThunk(_.last(namePath).id)
+      storageThunks.fetchFolderContentThunk(_.last(namePath)?.id)
     );
   }
 
@@ -504,14 +485,20 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
     getAllItems(droppedData, folderPath).then(async ({ rootList, files }) => {
       if (files) {
         // files where dragged directly
-        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: currentFolderId, folderPath: folderPath }))
-          .then(() => onDragAndDropEnd());
+        await dispatch(storageThunks.uploadItemsThunk({
+          files, parentFolderId: currentFolderId, folderPath: folderPath, options: {
+            onSuccess: onDragAndDropEnd
+          }
+        }));
       }
 
       if (rootList) {
         for (const root of rootList) {
-          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: currentFolderId }))
-            .then(() => onDragAndDropEnd());
+          await dispatch(storageThunks.createFolderTreeStructureThunk({
+            root, currentFolderId: currentFolderId, options: {
+              onSuccess: onDragAndDropEnd
+            }
+          }));
         }
       }
     });

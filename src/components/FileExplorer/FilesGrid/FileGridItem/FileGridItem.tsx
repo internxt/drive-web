@@ -80,6 +80,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
         <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
             className="w-full dense border border-white no-ring rect"
+            onClick={(e) => e.stopPropagation()}
             ref={nameInputRef}
             type="text"
             value={dirtyName}
@@ -93,6 +94,7 @@ class FileGridItem extends React.Component<FileGridItemProps, FileGridItemState>
         </div>
         <span
           className={`${ṣpanDisplayClass} file-grid-item-name-span`}
+          onClick={(e) => e.stopPropagation()}
           onDoubleClick={this.onNameDoubleClicked}
         >{getItemFullName(item.name, item.type)}</span>
       </Fragment>

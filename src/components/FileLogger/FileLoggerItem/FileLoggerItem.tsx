@@ -8,7 +8,6 @@ interface ItemProps {
 }
 
 const FileLoggerItem = ({ item }: ItemProps): JSX.Element => {
-  const statusClassName = item.status === 'success' || item.status === 'error' ? '' : 'opacity-50';
   const IconComponent = iconService.getItemIcon(item.isFolder, item.type || '');
   const fileMessagesByStatus = {
     [FileStatusTypes.Pending]: item.action === FileActionTypes.Download ? 'Pending to download' : 'Pending to upload',
@@ -30,9 +29,11 @@ const FileLoggerItem = ({ item }: ItemProps): JSX.Element => {
   };
   const fullName = getItemFullName(item.name, item.type);
   const icon: JSX.Element = <IconComponent className='flex items-center justify-center mr-2.5 w-6' />;
+  const statusClassName = [FileStatusTypes.Success, FileStatusTypes.Error].includes(item.status) ? '' : 'opacity-50';
   const message: string = item.isFolder ?
     folderMessagesByStatus[item.status] :
     fileMessagesByStatus[item.status];
+  const messageClassName = item.status === FileStatusTypes.Error ? 'text-red-50' : 'text-neutral-500';
 
   return (
     <div className={`${statusClassName} flex items-center px-4`}>
@@ -43,7 +44,7 @@ const FileLoggerItem = ({ item }: ItemProps): JSX.Element => {
           {fullName}
         </span>
 
-        <span className='text-xs text-neutral-500'>
+        <span className={`text-xs ${messageClassName}`}>
           {message}
         </span>
       </div>

@@ -122,11 +122,6 @@ export async function createFolder(isTeam: boolean, currentFolderId: number | nu
   const responseJSON = await response.json();
 
   if (response.status !== 201) {
-    if (responseJSON.error.includes('already exists')) {
-      notify(i18n.get('error.folderAlreadyExists'), ToastType.Error);
-    } else {
-      notify(responseJSON.error.message || responseJSON.error, ToastType.Error);
-    }
     throw responseJSON.error;
   }
 
