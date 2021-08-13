@@ -15,6 +15,7 @@ import localStorageService from '../../services/localStorage.service';
 import { setWorkspace } from '../../store/slices/team';
 import { uiActions } from '../../store/slices/ui';
 import { storageActions, StorageFilters } from '../../store/slices/storage';
+import validationService from '../../services/validation.service';
 
 interface AppHeaderProps {
   user: UserSettings | undefined;
@@ -67,10 +68,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   onSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const alphanumericDotsAndSpaces = /^[a-zA-Z0-9 ._-]*$/gm;
-    const isValid = alphanumericDotsAndSpaces.test(e.target.value);
-
-    if (isValid) {
+    if (validationService.validateSearchText(e.target.value)) {
       this.props.dispatch(storageActions.setFilters({
         text: e.target.value
       }));

@@ -22,6 +22,10 @@ export interface AppViewConfig {
   auth?: boolean;
 }
 
+export interface AppPlugin {
+  install: () => void;
+}
+
 export interface UserSettings {
   bucket: string
   createdAt: Date

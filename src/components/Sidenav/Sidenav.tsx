@@ -40,7 +40,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
     const { collapsed, onCollapseButtonClicked } = this.props;
 
     return (
-      <div className={`transform duration-200 ${collapsed ? 'collapsed' : ''} side-nav`}>
+      <div className={`${collapsed ? 'collapsed' : ''} side-nav`}>
 
         {/* LOGO & ITEMS */}
         <div>

@@ -19,7 +19,6 @@ import fileExplorerItemWrapper, { dropTargetCollect, dropTargetSpec, FileExplore
 
 interface FileGridItemState {
   itemRef: React.RefObject<HTMLDivElement>;
-  oldValueIsDriveItemInfoMenuOpen: boolean;
 }
 
 class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridItemState> {
@@ -27,8 +26,7 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
     super(props);
 
     this.state = {
-      itemRef: React.createRef(),
-      oldValueIsDriveItemInfoMenuOpen: props.isDriveItemInfoMenuOpen
+      itemRef: React.createRef()
     };
   }
 
@@ -149,6 +147,7 @@ export default connect(
       currentFolderId,
       isItemSelected,
       workspace: state.team.workspace,
+      isSidenavCollapsed: state.ui.isSidenavCollapsed,
       isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen
     };
   })(fileExplorerItemWrapper(DropTarget((props) => props.dropTargetTypes, dropTargetSpec, dropTargetCollect)(FileGridItem)));

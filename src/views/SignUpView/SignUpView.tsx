@@ -6,7 +6,7 @@ import queryString from 'query-string';
 import SideInfo from '../Authentication/SideInfo';
 import { IFormValues, UserSettings } from '../../models/interfaces';
 import localStorageService from '../../services/localStorage.service';
-import { emailRegexPattern, validateEmail } from '../../services/validation.service';
+import validationService, { emailRegexPattern } from '../../services/validation.service';
 import analyticsService from '../../services/analytics.service';
 import { readReferalCookie } from '../../services/auth.service';
 import BaseInput from '../../components/Inputs/BaseInput';
@@ -32,7 +32,7 @@ interface SignUpProps {
 
 const SignUp = (props: SignUpProps): JSX.Element => {
   const qs = queryString.parse(history.location.search);
-  const hasEmailParam = qs.email && validateEmail(qs.email as string);
+  const hasEmailParam = qs.email && validationService.validateEmail(qs.email as string);
   const hasTokenParam = qs.token;
   const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
   const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>(

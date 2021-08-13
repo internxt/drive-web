@@ -118,13 +118,16 @@ export const storageSlice = createSlice({
     pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
       state.namePath = [action.payload];
     },
-    patchItem: (state: StorageState, action: PayloadAction<{list: StorageItemList, id: number, isFolder: boolean, patch: DriveItemPatch}>) => {
-      const { list, id, isFolder, patch } = action.payload;
-      const item = state.lists[list].find(i => i.id === id && i.isFolder === isFolder);
+    patchItem: (state: StorageState, action: PayloadAction<{ id: number, isFolder: boolean, patch: DriveItemPatch }>) => {
+      const { id, isFolder, patch } = action.payload;
 
-      Object.assign(item, patch);
+      Object.values(state.lists).forEach(list => {
+        const item = list.find(i => i.id === id && i.isFolder === isFolder);
+
+        item && Object.assign(item, patch);
+      });
     },
-    pushItems(state: StorageState, action: PayloadAction<{list: StorageItemList, items: DriveItemData | DriveItemData[]}>) {
+    pushItems(state: StorageState, action: PayloadAction<{ list: StorageItemList, items: DriveItemData | DriveItemData[] }>) {
       action.payload.items = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
       state.lists[action.payload.list].push(...action.payload.items);
     }

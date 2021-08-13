@@ -178,6 +178,7 @@ export default connect(
       currentFolderId,
       isItemSelected,
       workspace: state.team.workspace,
+      isSidenavCollapsed: state.ui.isSidenavCollapsed,
       isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen
     };
   })(fileExplorerItemWrapper(DropTarget((props) => props.dropTargetTypes, dropTargetSpec, dropTargetCollect)(FileListItem)));
