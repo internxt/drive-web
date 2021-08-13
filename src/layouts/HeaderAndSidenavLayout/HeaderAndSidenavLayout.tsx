@@ -7,7 +7,6 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
-import { DriveItemData } from '../../models/interfaces';
 import InviteMemberDialog from '../../components/dialogs/InviteMemberDialog/InviteMemberDialog';
 import FileLogger from '../../components/FileLogger/FileLogger';
 
@@ -20,9 +19,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const { children } = props;
   const isAuthenticated: boolean = useAppSelector((state) => state.user.isAuthenticated);
   const isSidenavCollapsed: boolean = useAppSelector((state) => state.ui.isSidenavCollapsed);
-  const currentItems: DriveItemData[] = useAppSelector((state) => state.storage.items);
-  const itemToShareId: number = useAppSelector((state) => state.storage.itemToShareId);
-  const itemToShare: DriveItemData | undefined = currentItems.find(item => item.id === itemToShareId);
+  const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const toggleIsSidenavCollapsed: () => void = () => dispatch(uiActions.setIsSidenavCollapsed(!isSidenavCollapsed));
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);

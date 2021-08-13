@@ -1,18 +1,18 @@
 import React, { SetStateAction } from 'react';
 import { useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import * as Unicons from '@iconscout/react-unicons';
 
 import { IFormValues } from '../../../../models/interfaces';
 import { store2FA } from '../../../../services/auth.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import BaseInput from '../../../../components/Inputs/BaseInput';
 import { twoFactorRegexPattern } from '../../../../services/validation.service';
-import notify from '../../../../components/Notifications';
+import notify, { ToastType } from '../../../../components/Notifications';
 import googleAuthenticatorIcon from '../../../../assets/icons/google-authenticator.svg';
 import appStoreIcon from '../../../../assets/icons/app-store.svg';
 import playStoreIcon from '../../../../assets/icons/play-store.svg';
 import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
+import i18n from '../../../../services/i18n.service';
 
 interface StepsProps {
   currentStep: number,
@@ -32,17 +32,17 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
     try {
       if (formData.backupKey !== backupKey) {
-        setError('The backup key inserted does not match your unique backup key.');
+        setError(i18n.get('error.backupKeyDontMatch'));
         return;
       }
       setIsLoading(true);
 
       await store2FA(backupKey, formData.twoFactorCode);
-      notify('Your Two-Factor Authentication has been activated!', 'success');
+      notify(i18n.get('success.twoFactorAuthActivated'), ToastType.Success);
       setHas2FA(true);
       reset();
     } catch (err) {
-      notify(err.message || 'Internal server error. Try again later', 'error');
+      notify(err.message || i18n.get('error.serverError'), ToastType.Error);
     } finally {
       setIsLoading(false);
     }

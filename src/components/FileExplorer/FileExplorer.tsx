@@ -1,4 +1,4 @@
-import { createRef, ReactNode, Component, Fragment, DragEvent } from 'react';
+import { createRef, ReactNode, Component } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
@@ -48,10 +48,9 @@ interface FileExplorerProps {
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
-  itemToShareId: number;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
-  infoItemId: number;
+  infoItem: DriveItemData | null;
   viewMode: FileViewMode;
   namePath: FolderPath[];
   sortFunction: ((a: DriveItemData, b: DriveItemData) => number) | null;
@@ -67,7 +66,6 @@ interface FileExplorerState {
   email: string;
   token: string;
   isDragging: boolean;
-  searchFunction: any;
   isAdmin: boolean;
   isMember: boolean;
 }
@@ -81,7 +79,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       email: '',
       token: '',
       isDragging: false,
-      searchFunction: null,
       isAdmin: true,
       isMember: false
     };
@@ -206,23 +203,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     });
   }
 
-  setSearchFunction = (e) => {
-    const { currentFolderId } = this.props;
-    const searchString = removeAccents(e.target.value.toString()).toLowerCase();
-    let func: ((item: any) => void) | null = null;
-
-    if (searchString) {
-      func = function (item) {
-        return item.name.toLowerCase().includes(searchString);
-      };
-    }
-
-    this.setState({ searchFunction: func });
-    this.props.dispatch(
-      storageThunks.fetchFolderContentThunk(currentFolderId)
-    );
-  };
-
   openFolder = (e): Promise<void> => {
     return new Promise((resolve) => {
       this.props.dispatch(
@@ -343,17 +323,17 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   folderTraverseUp() {
     const { dispatch, namePath } = this.props;
 
-    dispatch(storageActions.popNamePath);
+    // dispatch(storageActions.popNamePath);
 
     dispatch(
-      storageThunks.fetchFolderContentThunk(_.last(namePath).id)
+      storageThunks.fetchFolderContentThunk(_.last(namePath)?.id)
     );
   }
 
   render(): ReactNode {
     const {
       isLoading,
-      infoItemId,
+      infoItem,
       viewMode,
       title,
       items,
@@ -477,7 +457,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
             </div>
 
             {
-              infoItemId ? <DriveItemInfoMenu /> : null
+              infoItem && <DriveItemInfoMenu />
             }
           </div>
         </div>
@@ -504,19 +484,24 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
     getAllItems(droppedData, folderPath).then(async ({ rootList, files }) => {
       if (files) {
         // files where dragged directly
-        await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: currentFolderId, folderPath: folderPath }))
-          .then(() => onDragAndDropEnd());
+        await dispatch(storageThunks.uploadItemsThunk({
+          files, parentFolderId: currentFolderId, folderPath: folderPath, options: {
+            onSuccess: onDragAndDropEnd
+          }
+        }));
       }
 
       if (rootList) {
         for (const root of rootList) {
-          await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: currentFolderId }))
-            .then(() => onDragAndDropEnd());
+          await dispatch(storageThunks.createFolderTreeStructureThunk({
+            root, currentFolderId: currentFolderId, options: {
+              onSuccess: onDragAndDropEnd
+            }
+          }));
         }
       }
     });
-  },
-  hover: (props, monitor, component) => { }
+  }
 };
 
 const dropTargetCollect: DropTargetCollector<{ isOver: boolean, connectDropTarget: ConnectDropTarget }, FileExplorerProps> = (connect, monitor, props) => {
@@ -538,13 +523,11 @@ export default connect(
       currentFolderId,
       selectedItems: state.storage.selectedItems,
       storageFilters: state.storage.filters,
-      itemToShareId: state.storage.itemToShareId,
       isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
       isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
-      infoItemId: state.storage.infoItemId,
+      infoItem: state.storage.infoItem,
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
-      sortFunction: state.storage.sortFunction,
       workspace: state.team.workspace,
       planLimit: state.plan.planLimit
     };

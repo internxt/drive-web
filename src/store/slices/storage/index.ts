@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FileViewMode } from '../../../models/enums';
-import { DriveFileData, DriveItemData, FolderPath } from '../../../models/interfaces';
+import { FileViewMode, StorageItemList } from '../../../models/enums';
+import { DriveItemData, DriveItemPatch, FolderPath } from '../../../models/interfaces';
 
 import selectors from './storageSelectors';
 import thunks, { extraReducers } from './storageThunks';
@@ -19,44 +19,35 @@ function filtersFactory(): StorageFilters {
   };
 }
 
-interface itemRenamePayload {
-  id: number,
-  isFolder: boolean,
-  name
-}
-
 export interface StorageState {
   isLoading: boolean;
   isDeletingItems: boolean;
-  items: DriveItemData[];
+  lists: { [key in StorageItemList]: DriveItemData[] }
   isLoadingRecents: boolean;
-  recents: DriveItemData[];
   filters: StorageFilters;
   selectedItems: DriveItemData[];
-  itemToShareId: number;
+  itemToShare: DriveItemData | null;
   itemsToDelete: DriveItemData[];
-  infoItemId: number;
+  infoItem: DriveItemData | null;
   viewMode: FileViewMode;
   namePath: FolderPath[];
-  sortFunction: ((a: DriveItemData, b: DriveItemData) => number) | null;
-  searchFunction: ((item: DriveItemData) => boolean) | null;
 }
 
 const initialState: StorageState = {
   isLoading: false,
   isDeletingItems: false,
-  items: [],
+  lists: {
+    [StorageItemList.Drive]: [],
+    [StorageItemList.Recents]: []
+  },
   isLoadingRecents: false,
-  recents: [],
   filters: filtersFactory(),
   selectedItems: [],
-  itemToShareId: 0,
+  itemToShare: null,
   itemsToDelete: [],
-  infoItemId: 0,
+  infoItem: null,
   viewMode: FileViewMode.List,
-  namePath: [],
-  sortFunction: null,
-  searchFunction: null
+  namePath: []
 };
 
 export const storageSlice = createSlice({
@@ -70,10 +61,10 @@ export const storageSlice = createSlice({
       state.isLoading = action.payload;
     },
     setItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
-      state.items = action.payload;
+      state.lists.drive = action.payload;
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
-      state.recents = action.payload;
+      state.lists.recents = action.payload;
     },
     setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
       Object.assign(state.filters, action.payload);
@@ -99,17 +90,14 @@ export const storageSlice = createSlice({
     clearSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
     },
-    setItemToShare: (state: StorageState, action: PayloadAction<number>) => {
-      state.itemToShareId = action.payload;
+    setItemToShare: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
+      state.itemToShare = action.payload;
     },
     setItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.itemsToDelete = action.payload;
     },
-    setInfoItem: (state: StorageState, action: PayloadAction<number>) => {
-      state.infoItemId = action.payload;
-    },
-    setSortFunction: (state: StorageState, action: PayloadAction<((a: DriveItemData, b: DriveItemData) => number) | null>) => {
-      state.sortFunction = action.payload;
+    setInfoItem: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
+      state.infoItem = action.payload;
     },
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
@@ -130,16 +118,15 @@ export const storageSlice = createSlice({
     pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
       state.namePath = [action.payload];
     },
-    resetItemName: (state: StorageState, action: PayloadAction<itemRenamePayload>) => {
-      for (let i=0; i < state.items.length; i++) {
-        if (!!state.items[i].isFolder === action.payload.isFolder && state.items[i].id === action.payload.id) {
-          state.items[i].name = action.payload.name;
-          break;
-        }
-      }
+    patchItem: (state: StorageState, action: PayloadAction<{list: StorageItemList, id: number, isFolder: boolean, patch: DriveItemPatch}>) => {
+      const { list, id, isFolder, patch } = action.payload;
+      const item = state.lists[list].find(i => i.id === id && i.isFolder === isFolder);
+
+      Object.assign(item, patch);
     },
-    addItems(state: StorageState, action: PayloadAction<DriveItemData>) {
-      state.items.push(action.payload);
+    pushItems(state: StorageState, action: PayloadAction<{list: StorageItemList, items: DriveItemData | DriveItemData[]}>) {
+      action.payload.items = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
+      state.lists[action.payload.list].push(...action.payload.items);
     }
   },
   extraReducers
@@ -158,14 +145,13 @@ export const {
   setItemToShare,
   setItemsToDelete,
   setInfoItem,
-  setSortFunction,
   setViewMode,
   resetNamePath,
   pushNamePath,
   popNamePathUpTo,
   pathChangeWorkSpace,
-  resetItemName,
-  addItems
+  patchItem,
+  pushItems
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

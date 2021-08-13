@@ -105,7 +105,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
           <div className='flex flex-col items-center justify-center w-56 h-14 bg-l-neutral-20 rounded-md px-6'>
             {isLoading || isLoadingPlanLimit ?
               <span>Loading...</span> :
-              <span className='account_config_description m-0'>{bytesToString(usage)} of {getUserLimitString(planLimit)}</span>
+              <span className='account_config_description m-0'>{bytesToString(usage) || '0'} of {getUserLimitString(planLimit)}</span>
             }
 
             <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-1'>

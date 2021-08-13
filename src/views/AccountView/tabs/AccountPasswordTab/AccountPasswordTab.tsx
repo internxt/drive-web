@@ -5,8 +5,9 @@ import BaseInput from '../../../../components/Inputs/BaseInput';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import { useState } from 'react';
 import { changePassword } from '../../../../services/auth.service';
-import notify from '../../../../components/Notifications';
+import notify, { ToastType } from '../../../../components/Notifications';
 import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
+import i18n from '../../../../services/i18n.service';
 
 const AccountPasswordTab = (): JSX.Element => {
   const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
@@ -29,7 +30,7 @@ const AccountPasswordTab = (): JSX.Element => {
 
       setIsLoading(true);
       await changePassword(formData.password, formData.currentPassword, formData.email);
-      notify('Password changed successfully', 'success');
+      notify(i18n.get('success.passwordChanged'), ToastType.Success);
       reset();
       setError('');
     } catch (err) {

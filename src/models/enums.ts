@@ -68,3 +68,8 @@ export enum Workspace {
 export enum DragAndDropType {
   DriveItem = 'drive-item'
 }
+
+export enum StorageItemList {
+  Drive = 'drive',
+  Recents = 'recents'
+}

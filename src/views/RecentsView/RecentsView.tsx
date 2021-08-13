@@ -52,7 +52,7 @@ class RecentsView extends Component<RecentsViewProps, {}> {
 }
 
 export default connect((state: RootState) => {
-  const filteredItems = storageSelectors.filteredItems(state)(state.storage.recents);
+  const filteredItems = storageSelectors.filteredItems(state)(state.storage.lists.recents);
 
   return {
     isLoadingRecents: state.storage.isLoadingRecents,

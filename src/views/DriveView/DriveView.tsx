@@ -76,7 +76,7 @@ class DriveView extends Component<DriveViewProps, {}> {
 }
 
 export default connect((state: RootState) => {
-  const filteredItems = storageSelectors.filteredItems(state)(state.storage.items);
+  const filteredItems = storageSelectors.filteredItems(state)(state.storage.lists.drive);
 
   return {
     namePath: state.storage.namePath,

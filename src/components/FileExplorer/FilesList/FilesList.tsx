@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 
-import FileListItem from './FileListItem/FileListItem';
+import FileListItem from '../FileExplorerItem/FileListItem/FileListItem';
 
 import './FilesList.scss';
 import { AppDispatch, RootState } from '../../../store';

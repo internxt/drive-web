@@ -4,9 +4,9 @@ import queryString from 'query-string';
 import history from '../../../lib/history';
 interface UISliceState {
   isSidenavCollapsed: boolean;
+  showFileLogger: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
-  showFileLogger: boolean;
   isReachedPlanLimitDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
@@ -16,9 +16,9 @@ interface UISliceState {
 
 const initialState: UISliceState = {
   isSidenavCollapsed: false,
+  showFileLogger: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
-  showFileLogger: false,
   isReachedPlanLimitDialogOpen: false,
   isShareItemDialogOpen: false,
   isInviteMemberDialogOpen: false,
@@ -33,14 +33,14 @@ export const uiSlice = createSlice({
     setIsSidenavCollapsed: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isSidenavCollapsed = action.payload;
     },
+    setShowFileLogger: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.showFileLogger = action.payload;
+    },
     setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isCreateFolderDialogOpen = action.payload;
     },
     setIsDeleteItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDeleteItemsDialogOpen = action.payload;
-    },
-    setShowFileLogger: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.showFileLogger = action.payload;
     },
     setIsReachedPlanLimitDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isReachedPlanLimitDialogOpen = action.payload;
@@ -68,6 +68,9 @@ export const uiSlice = createSlice({
         pathname: history.location.pathname,
         search: newQueryString && `?${newQueryString}`
       });
+    },
+    resetState: (state: UISliceState) => {
+      Object.assign(state, initialState);
     }
   }
 });

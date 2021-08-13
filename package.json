@@ -13,6 +13,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@types/filesystem": "^0.0.32",
+    "@types/lodash": "^4.14.172",
     "axios": "^0.21.1",
     "bip39": "^3.0.3",
     "bootstrap": "^4.5.3",
@@ -24,6 +25,7 @@
     "inxt-js": "git+ssh://git@github.com:internxt/inxt-js.git#beta",
     "jquery": "^3.5.1",
     "js-file-download": "^0.4.12",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "natural-orderby": "^2.0.3",
     "openpgp": "^4.10.10",
@@ -49,6 +51,7 @@
     "redux-thunk": "^2.3.0",
     "sanitize-filename": "^1.6.3",
     "socket.io-client": "^3.1.0",
+    "string-template": "^1.0.0",
     "typescript": "^4.0.3",
     "uniqid": "^5.3.0",
     "web-vitals": "^0.2.4"

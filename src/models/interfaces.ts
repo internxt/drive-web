@@ -7,7 +7,7 @@ export interface AppConfig {
 }
 
 export interface AppPlanConfig {
-  freePlanStorageLimit: number; 
+  freePlanStorageLimit: number;
   maxStorageLimit: number;
 }
 export interface AppFileExplorerConfig {
@@ -100,6 +100,10 @@ export interface DriveFileMetadataPayload {
 }
 
 export type DriveItemData = DriveFileData & DriveFolderData
+
+export interface DriveItemPatch {
+  name?: string;
+}
 
 export interface NotificationData {
   uuid: string;

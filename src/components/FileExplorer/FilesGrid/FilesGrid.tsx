@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { connect } from 'react-redux';
 
-import FileGridItem from './FileGridItem/FileGridItem';
+import FileGridItem from '../FileExplorerItem/FileGridItem/FileGridItem';
 import { RootState } from '../../../store';
 
 import './FilesGrid.scss';

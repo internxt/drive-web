@@ -1,7 +1,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts, payStripePlan } from '../../../../services/products.service';
-import notify from '../../../../components/Notifications';
+import notify, { ToastType } from '../../../../components/Notifications';
 import analyticsService from '../../../../services/analytics.service';
 import BillingPlanItem from './BillingPlanItem';
 import { generateMnemonic } from 'bip39';
@@ -14,6 +14,7 @@ import { fetchUserPlan } from '../../../../services/user.service';
 import { UilBuilding, UilHome } from '@iconscout/react-unicons';
 import BillingCardSkeletton from '../../../../components/skinSkeleton/BillingCardSkeletton';
 import { Workspace } from '../../../../models/enums';
+import i18n from '../../../../services/i18n.service';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: Workspace, isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -152,7 +153,9 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
 
       await stripe.redirectToCheckout({ sessionId: session.id });
     } catch (err) {
-      notify('Failed to redirect to Stripe. Please contact us. Reason: ' + err.message, 'error');
+      notify(i18n.get('error.redirectToStripe', {
+        reason: err.message
+      }), ToastType.Error);
     } finally {
       setIsPaying(false);
     }

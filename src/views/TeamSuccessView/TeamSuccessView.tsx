@@ -4,7 +4,7 @@ import history from '../../lib/history';
 
 import './TeamSuccessView.scss';
 
-export default function Success(props: any): JSX.Element {
+export default function Success(props: { match: any}): JSX.Element {
   checkSessionStripe(props.match.params.sessionId).then(() => history.push('/'));
 
   return (
