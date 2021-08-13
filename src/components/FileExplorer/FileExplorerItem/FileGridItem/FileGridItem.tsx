@@ -15,7 +15,7 @@ import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
 import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
 import { DropTarget } from 'react-dnd';
-import fileExplorerItemWrapper, { dropTargetCollect, dropTargetSpec, FileExplorerItemViewProps } from '../fileExplorerItemWrapper';
+import fileExplorerItemWrapper, { dropTargetCollect, dropTargetSpec, FileExplorerItemViewProps, getDropTargetType } from '../fileExplorerItemWrapper';
 
 interface FileGridItemState {
   itemRef: React.RefObject<HTMLDivElement>;
@@ -150,4 +150,4 @@ export default connect(
       isSidenavCollapsed: state.ui.isSidenavCollapsed,
       isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen
     };
-  })(fileExplorerItemWrapper(DropTarget((props) => props.dropTargetTypes, dropTargetSpec, dropTargetCollect)(FileGridItem)));
+  })(fileExplorerItemWrapper(DropTarget(getDropTargetType, dropTargetSpec, dropTargetCollect)(FileGridItem)));

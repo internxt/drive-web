@@ -57,7 +57,6 @@ export interface FileExplorerItemViewProps {
   onNameBlurred: () => void;
   onNameDoubleClicked: (e: React.MouseEvent) => void;
   onEnterKeyPressed: (e: React.KeyboardEvent) => void;
-  dropTargetTypes: string | string[];
   connectDropTarget: ConnectDropTarget;
 }
 
@@ -65,6 +64,8 @@ export interface DropTargetCollectorProps {
   isDraggingOverThisItem: boolean,
   connectDropTarget: ConnectDropTarget
 }
+
+export const getDropTargetType = (props: FileExplorerItemViewProps): string | string[] => props.item.isFolder ? [NativeTypes.FILE] : [];
 
 export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
   drop: (props, monitor, component) => {
@@ -259,10 +260,6 @@ const fileExplorerItemWrapper =
         if (item.isFolder) {
           dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
         }
-      }
-
-      get dropTargetTypes(): string | string[] {
-        return this.props.item.isFolder ? [NativeTypes.FILE] : [];
       }
 
       render(): ReactNode {

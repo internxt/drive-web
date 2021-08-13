@@ -14,7 +14,7 @@ import { storageActions, storageSelectors } from '../../../../store/slices/stora
 import iconService from '../../../../services/icon.service';
 import { ItemAction } from '../../../../models/enums';
 import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
-import fileExplorerItemWrapper, { dropTargetCollect, dropTargetSpec, FileExplorerItemViewProps } from '../fileExplorerItemWrapper';
+import fileExplorerItemWrapper, { dropTargetCollect, dropTargetSpec, FileExplorerItemViewProps, getDropTargetType } from '../fileExplorerItemWrapper';
 
 class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
   get nameNode(): JSX.Element {
@@ -181,4 +181,4 @@ export default connect(
       isSidenavCollapsed: state.ui.isSidenavCollapsed,
       isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen
     };
-  })(fileExplorerItemWrapper(DropTarget((props) => props.dropTargetTypes, dropTargetSpec, dropTargetCollect)(FileListItem)));
+  })(fileExplorerItemWrapper(DropTarget(getDropTargetType, dropTargetSpec, dropTargetCollect)(FileListItem)));
