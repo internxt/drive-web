@@ -99,7 +99,7 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps, File
             <span>Info</span>
           </Dropdown.Item> : null
         }
-        <hr className="text-l-neutral-30 my-1.5"></hr>
+        <hr className="text-l-neutral-30 my-1.5 -mx-3"></hr>
         { !hiddenActions.includes(ItemAction.Delete) ?
           <Dropdown.Item
             id="delete"

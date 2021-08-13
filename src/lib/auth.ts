@@ -7,22 +7,16 @@ function getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam: boolean = 
   headers.append('internxt-version', '1.0.0');
   headers.append('internxt-client', 'drive-web');
 
-  if (isTeam) {
-    if (withAuth) {
-      headers.append('Authorization', `Bearer ${localStorageService.get('xTokenTeam')}`);
-    }
-
-    if (withMnemonic) {
-      headers.append('internxt-mnemonic', `${localStorageService.getTeams().bridge_mnemonic}`);
-    }
-  } else {
-    if (withAuth) {
+  if (withAuth) {
+    isTeam ?
+      headers.append('Authorization', `Bearer ${localStorageService.get('xTokenTeam')}`) :
       headers.append('Authorization', `Bearer ${localStorageService.get('xToken')}`);
-    }
+  }
 
-    if (withMnemonic) {
+  if (withMnemonic) {
+    isTeam ?
+      headers.append('internxt-mnemonic', `${localStorageService.getTeams().bridge_mnemonic}`) :
       headers.append('internxt-mnemonic', `${localStorageService.get('xMnemonic')}`);
-    }
   }
 
   return headers;

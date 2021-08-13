@@ -41,7 +41,7 @@ const SidenavItem = ({ label, to, icon, isOpen, onClick }: SidenavItemProps): JS
         <div
           ref={ref}
           {...triggerHandler}
-          className={`transform duration-200 ${isOpen ? '' : 'collapsed'} side-navigator-item`}
+          className={`${isOpen ? '' : 'collapsed'} side-navigator-item`}
           onClick={onClick}
         >
           {

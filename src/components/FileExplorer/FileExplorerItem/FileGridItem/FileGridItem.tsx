@@ -15,11 +15,10 @@ import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
 import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
 import { DropTarget } from 'react-dnd';
-import fileExplorerItemWrapper, { dropTargetCollect, dropTargetSpec, FileExplorerItemViewProps } from '../fileExplorerItemWrapper';
+import fileExplorerItemWrapper, { dropTargetCollect, dropTargetSpec, FileExplorerItemViewProps, getDropTargetType } from '../fileExplorerItemWrapper';
 
 interface FileGridItemState {
   itemRef: React.RefObject<HTMLDivElement>;
-  oldValueIsDriveItemInfoMenuOpen: boolean;
 }
 
 class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridItemState> {
@@ -27,8 +26,7 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
     super(props);
 
     this.state = {
-      itemRef: React.createRef(),
-      oldValueIsDriveItemInfoMenuOpen: props.isDriveItemInfoMenuOpen
+      itemRef: React.createRef()
     };
   }
 
@@ -68,7 +66,7 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
           <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
         </div>
         <span
-          className={`${ṣpanDisplayClass} file-grid-item-name-span`}
+          className={`${ṣpanDisplayClass} cursor-text file-grid-item-name-span`}
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={onNameDoubleClicked}
         >{getItemFullName(item.name, item.type)}</span>
@@ -149,6 +147,7 @@ export default connect(
       currentFolderId,
       isItemSelected,
       workspace: state.team.workspace,
+      isSidenavCollapsed: state.ui.isSidenavCollapsed,
       isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen
     };
-  })(fileExplorerItemWrapper(DropTarget((props) => props.dropTargetTypes, dropTargetSpec, dropTargetCollect)(FileGridItem)));
+  })(fileExplorerItemWrapper(DropTarget(getDropTargetType, dropTargetSpec, dropTargetCollect)(FileGridItem)));

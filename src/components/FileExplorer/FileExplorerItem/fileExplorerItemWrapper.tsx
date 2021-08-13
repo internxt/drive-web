@@ -5,8 +5,6 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { Workspace } from '../../../models/enums';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../models/interfaces';
 import { getAllItems } from '../../../services/dragAndDrop.service';
-import fileService from '../../../services/file.service';
-import folderService from '../../../services/folder.service';
 import { getItemFullName } from '../../../services/storage.service/storage-name.service';
 import { AppDispatch } from '../../../store';
 import { storageActions, storageThunks } from '../../../store/slices/storage';
@@ -21,6 +19,7 @@ interface FileExplorerItemProps {
   namePath: FolderPath[];
   isItemSelected: (item: DriveItemData) => boolean;
   isSomeItemSelected: boolean;
+  isSidenavCollapsed: boolean;
   isDriveItemInfoMenuOpen: boolean;
   dispatch: AppDispatch
   workspace: Workspace,
@@ -41,6 +40,7 @@ export interface FileExplorerItemViewProps {
   isEditingName: boolean;
   dirtyName: string;
   nameInputRef: React.RefObject<HTMLInputElement>;
+  isSidenavCollapsed: boolean;
   isDriveItemInfoMenuOpen: boolean;
   isDraggingOverThisItem: boolean;
   isSomeItemSelected: boolean;
@@ -57,7 +57,6 @@ export interface FileExplorerItemViewProps {
   onNameBlurred: () => void;
   onNameDoubleClicked: (e: React.MouseEvent) => void;
   onEnterKeyPressed: (e: React.KeyboardEvent) => void;
-  dropTargetTypes: string | string[];
   connectDropTarget: ConnectDropTarget;
 }
 
@@ -65,6 +64,8 @@ export interface DropTargetCollectorProps {
   isDraggingOverThisItem: boolean,
   connectDropTarget: ConnectDropTarget
 }
+
+export const getDropTargetType = (props: FileExplorerItemViewProps): string | string[] => props.item.isFolder ? [NativeTypes.FILE] : [];
 
 export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
   drop: (props, monitor, component) => {
@@ -149,46 +150,16 @@ const fileExplorerItemWrapper =
         );
       }
 
-      confirmNameChange() {
-        const { item } = this.props;
+      async confirmNameChange() {
+        const { item, dispatch } = this.props;
         const { dirtyName, nameInputRef } = this.state;
-        const data: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
-        const isTeam = this.props.workspace === Workspace.Business ? true : false;
+        const metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
 
-        try {
-          const oldName = item.name;
-
-          if (item.name !== dirtyName) {
-            this.props.dispatch(storageActions.resetItemName({ name: dirtyName, id: item.id, isFolder: !!item.isFolder }));
-            if (item.isFolder) {
-              folderService.updateMetaData(item.id, data, isTeam)
-                .then((res) => {
-                  if (!res) {
-                    this.props.dispatch(storageActions.resetItemName({ name: oldName, id: item.id, isFolder: !!item.isFolder }));
-                  }
-                  // this.props.dispatch(storageActions.resetItemName({ name: dirtyName, id: item.id, isFolder: item.isFolder }));
-                  /*
-                  this.props.dispatch(
-                    storageThunks.fetchFolderContentThunk()
-                  );*/
-                });
-            } else {
-              fileService.updateMetaData(item.fileId, data, isTeam).then((res) => {
-                if (!res) {
-                  this.props.dispatch(storageActions.resetItemName({ name: oldName, id: item.id, isFolder: !!item.isFolder }));
-                }
-                /*
-                this.props.dispatch(
-                  storageThunks.fetchFolderContentThunk()
-                );*/
-              });
-            }
-          }
-        } catch (e) {
-          console.log('Error during folder/file name change: ', e);
-        } finally {
-          nameInputRef.current?.blur();
+        if (item.name !== dirtyName) {
+          await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }));
         }
+
+        nameInputRef.current?.blur();
       }
 
       onNameDoubleClicked = (e: React.MouseEvent): void => {
@@ -289,10 +260,6 @@ const fileExplorerItemWrapper =
         if (item.isFolder) {
           dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
         }
-      }
-
-      get dropTargetTypes(): string | string[] {
-        return this.props.item.isFolder ? [NativeTypes.FILE] : [];
       }
 
       render(): ReactNode {

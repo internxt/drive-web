@@ -165,11 +165,15 @@ code {
     min-width: 150px;
     max-width: 250px;
 
-    @apply no-underline py-1 px-2 hover:bg-l-neutral-20 active:bg-l-neutral-30 rounded-1px text-neutral-900 text-sm flex items-center;
+    @apply no-underline py-1 px-2 hover:bg-l-neutral-20 active:bg-l-neutral-30 rounded-1px text-neutral-900 text-base flex items-center;
 
     img {
       height: 14px;
     }
+  }
+
+  .dropdown-item+.dropdown-item {
+    @apply mt-2;
   }
 
   /* INPUTS */
@@ -179,7 +183,7 @@ code {
   input[type="text"],
   input[type="email"],
   input[type="password"] {
-    @apply ring-1 ring-m-neutral-100 rounded focus:ring-blue-60 text-neutral-500 placeholder-m-neutral-100 text-sm px-3 py-2;
+    @apply ring-1 ring-m-neutral-100 rounded focus:ring-blue-60 text-neutral-500 placeholder-m-neutral-100 text-base px-3 py-2;
 
     &:focus {
       outline: none !important;

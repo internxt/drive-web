@@ -1,5 +1,4 @@
-import fileDownload from 'js-file-download';
-
+import axios from 'axios';
 import { getHeaders } from '../lib/auth';
 import { DevicePlatform } from '../models/enums';
 import { DriveFileData, DriveFileMetadataPayload, UserSettings } from '../models/interfaces';
@@ -9,20 +8,13 @@ import localStorageService from './localStorage.service';
 export function updateMetaData(itemId: string, data: DriveFileMetadataPayload, isTeam: boolean): Promise<void> {
   const user = localStorageService.getUser();
 
-  return fetch(`/api/storage/file/${itemId}/meta`, {
-    method: 'post',
-    headers: getHeaders(true, true, isTeam),
-    body: JSON.stringify(data)
-  }).then(() => {
+  return axios.post(`/api/storage/file/${itemId}/meta`, data).then(() => {
     analyticsService.trackFileRename({
       file_id: itemId,
       email: user.email,
       platform: DevicePlatform.Web
     });
-  })
-    .catch((err) => {
-      throw new Error(`Cannot update metadata file ${err}`);
-    });
+  });
 }
 
 export function deleteFile(fileData: DriveFileData, isTeam: boolean): Promise<void> {

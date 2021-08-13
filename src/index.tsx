@@ -11,6 +11,10 @@ import { teamActions } from './store/slices/team';
 import './index.scss';
 import { storageThunks } from './store/slices/storage';
 import { planThunks } from './store/slices/plan';
+import plugins from './plugins';
+
+// Installs plugins
+plugins.forEach(plugin => plugin.install());
 
 // Initializes store
 store.dispatch(userActions.initialize());

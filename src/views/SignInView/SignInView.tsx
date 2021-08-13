@@ -7,7 +7,7 @@ import { useAppDispatch } from '../../store/hooks';
 import BaseInput from '../../components/Inputs/BaseInput';
 import SideInfo from '../Authentication/SideInfo';
 import AuthButton from '../../components/Buttons/AuthButton';
-import { emailRegexPattern, twoFactorRegexPattern, validateEmail } from '../../services/validation.service';
+import validationService, { emailRegexPattern, twoFactorRegexPattern } from '../../services/validation.service';
 import { check2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from '../../services/localStorage.service';
 import analyticsService from '../../services/analytics.service';
@@ -76,7 +76,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
     } catch (err) {
       console.error('Login error. ' + err.message);
 
-      if (err.message.includes('not activated') && validateEmail(email)) {
+      if (err.message.includes('not activated') && validationService.validateEmail(email)) {
         history.push(`/activate/${email}`);
       } else {
         analyticsService.signInAttempted(email, err);
@@ -88,10 +88,6 @@ export default function SignInView(props: SignInProps): JSX.Element {
     } finally {
       setIsLoggingIn(false);
     }
-  };
-
-  const handlePasswordInputClick = () => {
-    setShowPassword(!showPassword);
   };
 
   useEffect(() => {

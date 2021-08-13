@@ -14,7 +14,7 @@ import { storageActions, storageSelectors } from '../../../../store/slices/stora
 import iconService from '../../../../services/icon.service';
 import { ItemAction } from '../../../../models/enums';
 import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
-import fileExplorerItemWrapper, { dropTargetCollect, dropTargetSpec, FileExplorerItemViewProps } from '../fileExplorerItemWrapper';
+import fileExplorerItemWrapper, { dropTargetCollect, dropTargetSpec, FileExplorerItemViewProps, getDropTargetType } from '../fileExplorerItemWrapper';
 
 class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
   get nameNode(): JSX.Element {
@@ -48,7 +48,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
           <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
         </div>
         <span
-          className={`${spanDisplayClass} file-list-item-name-span`}
+          className={`${spanDisplayClass} cursor-text file-list-item-name-span`}
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={onNameDoubleClicked}
         >{getItemFullName(item.name, item.type)}</span>
@@ -178,6 +178,7 @@ export default connect(
       currentFolderId,
       isItemSelected,
       workspace: state.team.workspace,
+      isSidenavCollapsed: state.ui.isSidenavCollapsed,
       isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen
     };
-  })(fileExplorerItemWrapper(DropTarget((props) => props.dropTargetTypes, dropTargetSpec, dropTargetCollect)(FileListItem)));
+  })(fileExplorerItemWrapper(DropTarget(getDropTargetType, dropTargetSpec, dropTargetCollect)(FileListItem)));

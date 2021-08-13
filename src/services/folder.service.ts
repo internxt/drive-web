@@ -8,6 +8,7 @@ import { DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../mo
 import { DevicePlatform } from '../models/enums';
 import notify, { ToastType } from '../components/Notifications';
 import i18n from './i18n.service';
+import axios from 'axios';
 
 export interface IFolders {
   bucket: string
@@ -133,23 +134,16 @@ export async function createFolder(isTeam: boolean, currentFolderId: number | nu
   return responseJSON;
 }
 
-export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload, isTeam): Promise<void> {
+export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload, isTeam: boolean): Promise<void> {
   const user: UserSettings = localStorageService.getUser();
 
-  return fetch(`/api/storage/folder/${itemId}/meta`, {
-    method: 'post',
-    headers: getHeaders(true, true, isTeam),
-    body: JSON.stringify(data)
-  })
+  return axios.post(`/api/storage/folder/${itemId}/meta`, data)
     .then(() => {
       analyticsService.trackFolderRename({
         email: user.email,
         fileId: itemId,
         platform: DevicePlatform.Web
       });
-    })
-    .catch((err) => {
-      throw new Error(`Cannot update metadata folder ${err}`);
     });
 }
 

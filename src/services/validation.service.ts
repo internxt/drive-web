@@ -6,7 +6,7 @@ export const reservedRe = /^\.+$/;
 export const windowsReservedRe = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i;
 export const windowsTrailingRe = /[\. ]+$/;
 
-export const validateLoginForm = (email: string, password: string): boolean => {
+const validateLoginForm = (email: string, password: string): boolean => {
   let isValid = true;
 
   if (email.length < 5 || !validateEmail(email)) {
@@ -19,13 +19,28 @@ export const validateLoginForm = (email: string, password: string): boolean => {
   return isValid;
 };
 
-export const validateEmail = (email: string) => {
+const validateEmail = (email: string) => {
   // eslint-disable-next-line no-control-regex
   return emailRegexPattern.test(email.toLowerCase());
 };
 
-export const validate2FA = (twoFactorCode: string): boolean => {
+const validate2FA = (twoFactorCode: string): boolean => {
   const pattern = /^\d{3}(\s+)?\d{3}$/;
 
   return pattern.test(twoFactorCode);
 };
+
+const validateSearchText = (value: string): boolean => {
+  const alphanumericDotsAndSpaces = /^[a-zA-Z0-9 ._-]*$/gm;
+
+  return alphanumericDotsAndSpaces.test(e.target.value);
+};
+
+const validationService = {
+  validateLoginForm,
+  validateEmail,
+  validate2FA,
+  validateSearchText
+};
+
+export default validationService;
