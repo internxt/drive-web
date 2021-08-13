@@ -183,7 +183,7 @@ code {
   input[type="text"],
   input[type="email"],
   input[type="password"] {
-    @apply ring-1 ring-m-neutral-100 rounded focus:ring-blue-60 text-neutral-500 placeholder-m-neutral-100 text-sm px-3 py-2;
+    @apply ring-1 ring-m-neutral-100 rounded focus:ring-blue-60 text-neutral-500 placeholder-m-neutral-100 text-base px-3 py-2;
 
     &:focus {
       outline: none !important;

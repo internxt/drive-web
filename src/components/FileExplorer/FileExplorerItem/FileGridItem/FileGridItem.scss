@@ -28,6 +28,6 @@
     }
 
     .file-grid-item-name-span {
-        @apply whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-sm px-1 border border-dashed border-opacity-0 border-blue-40 hover:border-opacity-100;
+        @apply whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-base px-1 border border-dashed border-opacity-0 border-blue-40 hover:border-opacity-100;
     }
 }

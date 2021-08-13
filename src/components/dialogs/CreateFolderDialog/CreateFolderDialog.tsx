@@ -6,7 +6,6 @@ import { storageThunks } from '../../../store/slices/storage';
 import { UserSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
-import './CreateFolderDialog.scss';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
 import BaseButton from '../../Buttons/BaseButton';
@@ -47,8 +46,15 @@ const CreateFolderDialog = ({
       title='Create folder'
       onClose={onClose}
     >
-      <div className='w-64 self-center'>
-        <input autoFocus placeholder='Enter folder name' value={folderName} onChange={(e) => setFolderName(e.target.value)} />
+      <div className='w-64 self-center mt-4'>
+        <input
+          autoFocus
+          type="text"
+          placeholder='Enter folder name'
+          value={folderName}
+          onChange={(e) => setFolderName(e.target.value)}
+          className="w-full py-2 px-2.5"
+        />
       </div>
 
       <div className='flex justify-center items-center bg-l-neutral-20 py-6 mt-6'>
