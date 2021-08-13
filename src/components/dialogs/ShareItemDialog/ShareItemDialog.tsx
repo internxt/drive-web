@@ -35,7 +35,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
 
   const close = () => {
     dispatch(uiActions.setIsShareItemDialogOpen(false));
-    dispatch(storageActions.setItemToShare(0));
+    dispatch(storageActions.setItemToShare(null));
   };
 
   const itemFullName = item.isFolder ? item.name : `${item.name}.${item.type}`;
@@ -43,11 +43,6 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   const handleShareLink = async (views: number) => {
     try {
       const fileId = item.fileId;
-
-      if (item.isDraggable === false) {
-        setLinkToCopy('https://internxt.com/Internxt.pdf');
-        return;
-      }
 
       if (!user) {
         return history.push('/login');
@@ -58,7 +53,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       if (!bucket) {
         trackShareLinkBucketIdUndefined({ email });
         close();
-        notify(i18n.get('success.linkCopied').get('error.shareLinkMissingBucket'), ToastType.Error);
+        notify(i18n.get('error.shareLinkMissingBucket'), ToastType.Error);
         dispatch(userThunks.logoutThunk());
 
         return;

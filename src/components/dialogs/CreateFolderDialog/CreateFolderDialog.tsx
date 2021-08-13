@@ -15,6 +15,7 @@ import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
 import { selectorIsTeam } from '../../../store/slices/team';
 import BaseButton from '../../Buttons/BaseButton';
+import { StorageItemList } from '../../../models/enums';
 
 interface CreateFolderDialogProps {
   onFolderCreated: () => void;
@@ -46,8 +47,6 @@ const CreateFolderDialog = ({
       const data = await folderService.createFolder(isTeam, currentFolderId, formData.createFolder);
 
       dispatch(uiActions.setIsCreateFolderDialogOpen(false));
-
-      dispatch(storageActions.addItems(data));
 
       onFolderCreated && onFolderCreated();
 

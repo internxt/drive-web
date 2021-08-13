@@ -48,10 +48,9 @@ interface FileExplorerProps {
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
-  itemToShareId: number;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
-  infoItemId: number;
+  infoItem: DriveItemData | null;
   viewMode: FileViewMode;
   namePath: FolderPath[];
   sortFunction: ((a: DriveItemData, b: DriveItemData) => number) | null;
@@ -334,7 +333,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   render(): ReactNode {
     const {
       isLoading,
-      infoItemId,
+      infoItem,
       viewMode,
       title,
       items,
@@ -458,7 +457,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
             </div>
 
             {
-              infoItemId ? <DriveItemInfoMenu /> : null
+              infoItem && <DriveItemInfoMenu />
             }
           </div>
         </div>
@@ -502,8 +501,7 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
         }
       }
     });
-  },
-  hover: (props, monitor, component) => { }
+  }
 };
 
 const dropTargetCollect: DropTargetCollector<{ isOver: boolean, connectDropTarget: ConnectDropTarget }, FileExplorerProps> = (connect, monitor, props) => {
@@ -525,13 +523,11 @@ export default connect(
       currentFolderId,
       selectedItems: state.storage.selectedItems,
       storageFilters: state.storage.filters,
-      itemToShareId: state.storage.itemToShareId,
       isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
       isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
-      infoItemId: state.storage.infoItemId,
+      infoItem: state.storage.infoItem,
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
-      sortFunction: state.storage.sortFunction,
       workspace: state.team.workspace,
       planLimit: state.plan.planLimit
     };

@@ -350,7 +350,7 @@ export const goToFolderThunk = createAsyncThunk(
       dispatch(storageActions.popNamePathUpTo(path)) :
       dispatch(storageActions.pushNamePath(path));
 
-    dispatch(storageActions.setInfoItem(0));
+    dispatch(storageActions.setInfoItem(null));
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
   }
 );

@@ -13,7 +13,7 @@ import dateService from '../../services/date.service';
 import { uiActions } from '../../store/slices/ui';
 
 interface DriveItemInfoMenuProps {
-  item: DriveItemData | undefined;
+  item: DriveItemData | null;
   currentFolderPath: string;
   dispatch: AppDispatch;
 }
@@ -43,7 +43,7 @@ class DriveItemInfoMenu extends React.Component<DriveItemInfoMenuProps, DriveIte
   }
 
   onCloseButtonClicked(): void {
-    this.props.dispatch(setInfoItem(0));
+    this.props.dispatch(setInfoItem(null));
     this.props.dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
   }
 
@@ -114,11 +114,10 @@ class DriveItemInfoMenu extends React.Component<DriveItemInfoMenuProps, DriveIte
 }
 
 export default connect((state: RootState) => {
-  const item: DriveItemData | undefined = storageSelectors.getInfoItem(state);
   const currentFolderPath: string = storageSelectors.currentFolderPath(state);
 
   return {
-    item,
+    item: state.storage.infoItem,
     currentFolderPath
   };
 })(DriveItemInfoMenu);
