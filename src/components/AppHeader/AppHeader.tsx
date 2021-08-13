@@ -146,7 +146,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
             }
             {this.props.team?.isAdmin && workspace === Workspace.Business &&
               <Fragment>
-                <hr className="text-l-neutral-30 my-1.5"></hr>
+                <hr className="text-l-neutral-30 my-1.5 -mx-3"></hr>
                 <Dropdown.Item
                   onClick={this.onInviteMemberClick}
                 >
@@ -155,7 +155,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
                 </Dropdown.Item>
               </Fragment>
             }
-            <hr className="text-l-neutral-30 my-1.5"></hr>
+            <hr className="text-l-neutral-30 my-1.5 -mx-3"></hr>
             <Dropdown.Item
               id="logout"
               className="text-red-60 hover:text-red-60"

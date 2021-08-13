@@ -66,7 +66,7 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
           <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
         </div>
         <span
-          className={`${ṣpanDisplayClass} file-grid-item-name-span`}
+          className={`${ṣpanDisplayClass} cursor-text file-grid-item-name-span`}
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={onNameDoubleClicked}
         >{getItemFullName(item.name, item.type)}</span>

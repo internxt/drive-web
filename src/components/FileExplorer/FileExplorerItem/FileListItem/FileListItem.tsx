@@ -48,7 +48,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
           <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
         </div>
         <span
-          className={`${spanDisplayClass} file-list-item-name-span`}
+          className={`${spanDisplayClass} cursor-text file-list-item-name-span`}
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={onNameDoubleClicked}
         >{getItemFullName(item.name, item.type)}</span>

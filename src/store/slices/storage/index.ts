@@ -3,7 +3,7 @@ import { FileViewMode, StorageItemList } from '../../../models/enums';
 import { DriveItemData, DriveItemPatch, FolderPath } from '../../../models/interfaces';
 
 import selectors from './storageSelectors';
-import thunks, { extraReducers } from './storageThunks';
+import thunks, { storageExtraReducers } from './thunks';
 
 export interface StorageFilters {
   text: string;
@@ -132,7 +132,7 @@ export const storageSlice = createSlice({
       state.lists[action.payload.list].push(...action.payload.items);
     }
   },
-  extraReducers
+  extraReducers: storageExtraReducers
 });
 
 export const {
