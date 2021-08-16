@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileViewMode, StorageItemList } from '../../../models/enums';
 import { DriveItemData, DriveItemPatch, FolderPath } from '../../../models/interfaces';
+import arrayService from '../../../services/array.service';
 
 import selectors from './storageSelectors';
 import thunks, { storageExtraReducers } from './thunks';
@@ -129,7 +130,17 @@ export const storageSlice = createSlice({
     },
     pushItems(state: StorageState, action: PayloadAction<{ list: StorageItemList, items: DriveItemData | DriveItemData[] }>) {
       action.payload.items = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
-      state.lists[action.payload.list].push(...action.payload.items);
+
+      const folders = action.payload.items.filter(item => item.isFolder);
+      const files = action.payload.items.filter(item => !item.isFolder);
+      const lastFolderIndex = state.lists[action.payload.list].filter(item => item.isFolder).length;
+
+      arrayService.insertAt(
+        state.lists[action.payload.list],
+        lastFolderIndex,
+        folders
+      );
+      state.lists[action.payload.list].push(...files);
     }
   },
   extraReducers: storageExtraReducers

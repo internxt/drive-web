@@ -33,7 +33,7 @@ const validate2FA = (twoFactorCode: string): boolean => {
 const validateSearchText = (value: string): boolean => {
   const alphanumericDotsAndSpaces = /^[a-zA-Z0-9 ._-]*$/gm;
 
-  return alphanumericDotsAndSpaces.test(e.target.value);
+  return alphanumericDotsAndSpaces.test(value);
 };
 
 const validationService = {

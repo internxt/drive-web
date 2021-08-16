@@ -44,13 +44,14 @@ export interface IChildrens {
   user_id: number
 }
 
-export interface ICreatedFolder {
-  bucket: string
-  id: number
-  name: string
-  parentId: number
-  updatedAt: Date
-  userId: number
+export interface CreatedFolder {
+  bucket: string;
+  id: number;
+  name: string;
+  parentId: number;
+  createdAt: string;
+  updatedAt: string;
+  userId: number;
 }
 
 export interface IContentFolder {
@@ -75,7 +76,7 @@ export interface IContentFolder {
 
 function extendUIPropertiesOf(contentFolder: IContentFolder) {
   const folders: IFolders[] = _.map(contentFolder.children, (o: IFolders) =>
-    _.extend({ isFolder: true, isSelected: false, isLoading: false, isDowloading: false }, o)
+    _.extend({ isFolder: true }, o)
   );
 
   return { newCommanderFolders: folders, newCommanderFiles: contentFolder.files };
@@ -110,7 +111,7 @@ export async function fetchFolderContent(rootId: number, isTeam: boolean): Promi
   }
 }
 
-export async function createFolder(isTeam: boolean, currentFolderId: number | null, folderName: string): Promise<ICreatedFolder[]> {
+export async function createFolder(isTeam: boolean, currentFolderId: number | null, folderName: string): Promise<CreatedFolder> {
   const user = localStorageService.getUser();
   const response = await fetch('/api/storage/folder', {
     method: 'post',

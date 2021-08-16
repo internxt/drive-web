@@ -10,7 +10,7 @@ import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
 import BaseButton from '../../Buttons/BaseButton';
 interface CreateFolderDialogProps {
-  onFolderCreated: () => void;
+  onFolderCreated?: () => void;
   user: UserSettings | undefined;
 }
 
