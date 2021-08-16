@@ -1,5 +1,5 @@
 @layer components {
-  .breadcrumb > li + li:before {
+  .breadcrumb > li + li::before {
     content: "/";
 
     @apply text-blue-60 cursor-default px-2;
@@ -7,7 +7,7 @@
 
   ol.breadcrumb {
     display: flex;
-  
+
     li {
       @apply text-lg text-neutral-500;
 

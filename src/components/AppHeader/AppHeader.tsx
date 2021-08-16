@@ -7,12 +7,10 @@ import * as Unicons from '@iconscout/react-unicons';
 
 import './AppHeader.scss';
 import { Dropdown } from 'react-bootstrap';
-import authService from '../../services/auth.service';
 import { Workspace } from '../../models/enums';
-import { handleChangeWorkspaceThunk, userActions, userThunks } from '../../store/slices/user';
+import { handleChangeWorkspaceThunk, userThunks } from '../../store/slices/user';
 import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
 import localStorageService from '../../services/localStorage.service';
-import { setWorkspace } from '../../store/slices/team';
 import { uiActions } from '../../store/slices/ui';
 import { storageActions, StorageFilters } from '../../store/slices/storage';
 import validationService from '../../services/validation.service';

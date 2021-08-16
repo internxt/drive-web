@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { store } from './store';
-import { userActions, userThunks } from './store/slices/user';
+import { userActions } from './store/slices/user';
 import { teamActions } from './store/slices/team';
 
 import './index.scss';
@@ -17,7 +17,6 @@ import plugins from './plugins';
 plugins.forEach(plugin => plugin.install(store));
 
 // Initializes store
-store.dispatch(userThunks.logoutThunk());
 store.dispatch(userActions.initialize());
 store.dispatch(teamActions.initialize());
 store.dispatch(storageThunks.initializeThunk());

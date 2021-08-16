@@ -63,7 +63,7 @@ class PayToken extends React.Component<ResetProps> {
     e.preventDefault();
     const formData = new FormData(e.target);
 
-    var object = {};
+    const object = {};
 
     formData.forEach(function (value, key) {
       object[key] = value;
@@ -82,7 +82,7 @@ class PayToken extends React.Component<ResetProps> {
 
     object['inxt'] = this.renderTotalINXT();
 
-    var json = JSON.stringify(object);
+    const json = JSON.stringify(object);
 
     return fetch('/api/token/buy', {
       method: 'post',
