@@ -219,16 +219,11 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     this.moveEvent[moveOpId].resolved += 1;
   };
 
-  move = (items, destination, moveOpId) => {
-    const isTeam = this.props.workspace === Workspace.Business ? true : false;
+  move = (items: DriveItemData[], destination: number, moveOpId) => {
+    const isTeam = this.props.workspace === Workspace.Business;
 
     // Don't want to request this...
-    if (
-      items
-        .filter((item) => item.isFolder)
-        .map((item) => item.id)
-        .includes(destination)
-    ) {
+    if (items.some((item) => item.isFolder && item.id === destination)) {
       return toast.warn('You can\'t move a folder inside itself\'');
     }
 
