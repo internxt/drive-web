@@ -79,9 +79,9 @@ export const handleChangeWorkspaceThunk = createAsyncThunk(
   }
 );
 
-export const logoutThunk = createAsyncThunk(
+export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
   'user/logout',
-  async (payload: void, { dispatch, getState }: any) => {
+  async (payload: void, { dispatch, getState }) => {
     authService.logOut();
 
     dispatch(teamActions.setWorkspace(Workspace.Personal));
