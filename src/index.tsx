@@ -14,7 +14,7 @@ import { planThunks } from './store/slices/plan';
 import plugins from './plugins';
 
 // Installs plugins
-plugins.forEach(plugin => plugin.install());
+plugins.forEach(plugin => plugin.install(store));
 
 // Initializes store
 store.dispatch(userActions.initialize());

@@ -1,3 +1,4 @@
+import { store as storeInstance } from '../store';
 import { AppViewLayout, FileActionTypes, FileStatusTypes } from './enums';
 
 export interface AppConfig {
@@ -22,8 +23,10 @@ export interface AppViewConfig {
   auth?: boolean;
 }
 
+type StoreType = typeof storeInstance;
+
 export interface AppPlugin {
-  install: () => void;
+  install: (store: StoreType) => void;
 }
 
 export interface UserSettings {

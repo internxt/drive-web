@@ -103,6 +103,7 @@ export async function fetchFolderContent(rootId: number, isTeam: boolean): Promi
     }
   } catch (err) {
     if (err.status && err.status === 401) {
+      console.log('catch fetchFolderContent: ', err);
       localStorageService.clear();
       history.push('/login');
     } else {
