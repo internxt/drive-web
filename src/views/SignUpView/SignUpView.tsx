@@ -34,7 +34,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const qs = queryString.parse(history.location.search);
   const hasEmailParam = qs.email && validationService.validateEmail(qs.email as string);
   const hasTokenParam = qs.token;
-  const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
+  // const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
   const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>(
     {
       mode: 'onChange',
@@ -47,7 +47,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const confirmPassword = useWatch({ control, name: 'confirmPassword', defaultValue: '' });
-  const [referrer, setReferrer] = useState('');
+  const [referrer] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
   const [signupError, setSignupError] = useState<Error | string>();
