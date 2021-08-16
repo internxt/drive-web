@@ -36,11 +36,11 @@ const storageSelectors = {
   },
 
   getInfoItem(state: RootState): DriveItemData | undefined {
-    return state.storage.lists.drive.find(item => item.id === state.storage.infoItemId);
+    return state.storage.lists.drive.find(item => item.id === state.storage.infoItem?.id);
   },
 
   isItemSelected(state: RootState): (item: DriveItemData) => boolean {
-    return (item) => state.storage.selectedItems.includes(item);
+    return (item) => state.storage.selectedItems.some(i => item.id === i.id);
   },
 
   isSomeItemSelected: (state: RootState): boolean => state.storage.selectedItems.length > 0,
