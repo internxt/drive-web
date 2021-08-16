@@ -66,7 +66,6 @@ class DriveView extends Component<DriveViewProps, {}> {
         title={<Breadcrumbs items={this.breadcrumbItems} />}
         isLoading={isLoading}
         items={items}
-        onItemsDeleted={this.fetchItems}
         onFileUploaded={this.fetchItems}
         onDragAndDropEnd={this.fetchItems}
       />

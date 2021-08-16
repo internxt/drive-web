@@ -141,6 +141,13 @@ export const storageSlice = createSlice({
         folders
       );
       state.lists[action.payload.list].push(...files);
+    },
+    popItems(state: StorageState, action: PayloadAction<DriveItemData[]>) {
+      const itemsToDelete = action.payload;
+
+      Object.keys(state.lists).forEach(listKey => {
+        state.lists[listKey] = state.lists[listKey].filter((item:DriveItemData) => !itemsToDelete.find((i) => i.id === item.id));
+      });
     }
   },
   extraReducers: storageExtraReducers

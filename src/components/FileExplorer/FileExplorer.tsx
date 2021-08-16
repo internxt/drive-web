@@ -12,6 +12,7 @@ import analyticsService from '../../services/analytics.service';
 import { DevicePlatform, Workspace } from '../../models/enums';
 
 import { storageThunks, storageActions, storageSelectors, StorageFilters } from '../../store/slices/storage';
+import folderService, { CreatedFolder } from '../../services/folder.service';
 import { AppDispatch, RootState } from '../../store';
 
 import DriveItemInfoMenu from '../DriveItemInfoMenu/DriveItemInfoMenu';
