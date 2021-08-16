@@ -1,5 +1,5 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import { StorageState } from '..';
+import { storageActions, StorageState } from '..';
 import { RootState } from '../../..';
 import { DriveItemData } from '../../../../models/interfaces';
 import storageService from '../../../../services/storage.service';
@@ -11,6 +11,7 @@ export const deleteItemsThunk = createAsyncThunk<void, DriveItemData[], { state:
     const isTeam: boolean = selectorIsTeam(getState());
 
     await storageService.deleteItems(itemsToDelete, isTeam);
+    dispatch(storageActions.popItems(itemsToDelete));
   }
 );
 
