@@ -12,7 +12,6 @@ function fetchLimit(isTeam: boolean): Promise<number> {
   }).then(res1 => {
     return res1.maxSpaceBytes;
   }).catch(error => {
-    console.log('oror getting /api/limit for App', error);
     throw error;
   });
 }
