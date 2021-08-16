@@ -185,7 +185,11 @@ const fileExplorerItemWrapper =
       onEnterKeyPressed = (e: React.KeyboardEvent): void => {
         if (e.key === 'Enter') {
           this.confirmNameChange();
+          const { item, dispatch } = this.props;
+
+          dispatch(storageActions.deselectItems([item]));
         }
+
       }
 
       onItemClicked = (): void => {
