@@ -6,8 +6,6 @@ import localStorageService from './localStorage.service';
 import analyticsService from './analytics.service';
 import { DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../models/interfaces';
 import { DevicePlatform } from '../models/enums';
-import notify, { ToastType } from '../components/Notifications';
-import i18n from './i18n.service';
 import axios from 'axios';
 
 export interface IFolders {

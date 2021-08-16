@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-import packageJson from '../../package.json';
 import { Workspace } from '../models/enums';
 import { AppPlugin } from '../models/interfaces';
 import localStorageService from '../services/localStorage.service';
