@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-import packageJson from '../../package.json';
 import { Workspace } from '../models/enums';
 import { AppPlugin } from '../models/interfaces';
 import localStorageService from '../services/localStorage.service';
@@ -18,7 +17,7 @@ const axiosPlugin: AppPlugin = {
         localStorageService.getTeams().bridge_mnemonic :
         localStorageService.get('xMnemonic');
 
-      requestConfig.baseURL = packageJson.proxy;
+      requestConfig.baseURL = process.env.REACT_APP_API_URL;
 
       requestConfig.headers = {
         'content-type': 'application/json; charset=utf-8',
