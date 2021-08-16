@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Unicons from '@iconscout/react-unicons';
 
-import { removeAccents } from '../../lib/utils';
 import { getHeaders } from '../../lib/auth';
 
 import { DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
@@ -13,7 +12,7 @@ import analyticsService from '../../services/analytics.service';
 import { DevicePlatform, Workspace } from '../../models/enums';
 
 import { storageThunks, storageActions, storageSelectors, StorageFilters } from '../../store/slices/storage';
-import folderService, { ICreatedFolder } from '../../services/folder.service';
+import folderService, { CreatedFolder } from '../../services/folder.service';
 import { AppDispatch, RootState } from '../../store';
 
 import DriveItemInfoMenu from '../DriveItemInfoMenu/DriveItemInfoMenu';
@@ -41,7 +40,7 @@ interface FileExplorerProps {
   items: DriveItemData[];
   onItemsDeleted: () => void;
   onFileUploaded: () => void;
-  onFolderCreated: () => void;
+  onFolderCreated?: () => void;
   onDragAndDropEnd: () => void;
   user: UserSettings | any;
   currentFolderId: number;
@@ -100,13 +99,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 
   componentDidMount = () => {
     deviceService.redirectForMobile();
-  }
-
-  onCreateFolderConfirmed(folderName: string): Promise<ICreatedFolder[]> {
-    const { currentFolderId } = this.props;
-    const isTeam = this.props.workspace === Workspace.Business ? true : false;
-
-    return folderService.createFolder(isTeam, currentFolderId, folderName);
   }
 
   onUploadButtonClicked = (): void => {
