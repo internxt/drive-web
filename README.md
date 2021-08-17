@@ -1,3 +1,5 @@
+![Build Status](https://jenkins.api.internxt.com/buildStatus/icon?job=drive-web-deploy)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

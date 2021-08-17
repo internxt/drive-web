@@ -45,7 +45,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
             }
           }));
 
-          // TODO: update locally
+          dispatch(storageActions.popItems(item));
         })
         .catch(error => {
           dispatch(tasksActions.updateNotification({
