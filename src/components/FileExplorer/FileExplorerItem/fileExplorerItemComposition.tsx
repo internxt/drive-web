@@ -26,6 +26,7 @@ interface FileExplorerItemProps {
   isDriveItemInfoMenuOpen: boolean;
   dispatch: AppDispatch
   workspace: Workspace,
+  isDraggingThisItem: boolean;
   isDraggingOverThisItem: boolean;
   connectDragSource: ConnectDragSource;
   connectDropTarget: ConnectDropTarget;
@@ -46,6 +47,7 @@ export interface FileExplorerItemViewProps {
   nameInputRef: React.RefObject<HTMLInputElement>;
   isSidenavCollapsed: boolean;
   isDriveItemInfoMenuOpen: boolean;
+  isDraggingThisItem: boolean;
   isDraggingOverThisItem: boolean;
   isSomeItemSelected: boolean;
   isItemSelected: (item: DriveItemData) => boolean;
@@ -88,7 +90,9 @@ export const dragSourceCollect: DragSourceCollector<DragSourceCollectorProps, Fi
   };
 };
 
-export const getDropTargetType = (props: FileExplorerItemViewProps): string | string[] => props.item.isFolder ? [NativeTypes.FILE, DragAndDropType.DriveItem] : [];
+export const getDropTargetType = (props: FileExplorerItemViewProps): string | string[] => props.item.isFolder && !props.isDraggingThisItem ?
+  [NativeTypes.FILE, DragAndDropType.DriveItem] :
+  [];
 
 export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
   drop: (props, monitor, component) => {

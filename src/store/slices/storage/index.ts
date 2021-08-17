@@ -142,10 +142,11 @@ export const storageSlice = createSlice({
       );
       state.lists[action.payload.list].push(...files);
     },
-    popItems(state: StorageState, action: PayloadAction<DriveItemData | DriveItemData[]>) {
-      const itemsToDelete = !Array.isArray(action.payload) ? [action.payload] : action.payload;
+    popItems(state: StorageState, action: PayloadAction<{ lists?: StorageItemList[], items: DriveItemData | DriveItemData[]}>) {
+      const listsToUpdate = action.payload.lists || Object.values(StorageItemList);
+      const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
-      Object.keys(state.lists).forEach(listKey => {
+      listsToUpdate.forEach(listKey => {
         state.lists[listKey] = state.lists[listKey].filter((item:DriveItemData) => !itemsToDelete.find((i) => i.id === item.id));
       });
     }
