@@ -1,15 +1,13 @@
 import { createRef, ReactNode, Component } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Unicons from '@iconscout/react-unicons';
 
 import { getHeaders } from '../../lib/auth';
 
 import { DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
-import analyticsService from '../../services/analytics.service';
-import { DevicePlatform, Workspace } from '../../models/enums';
+import { Workspace } from '../../models/enums';
 
 import { storageThunks, storageActions, storageSelectors, StorageFilters } from '../../store/slices/storage';
 import { AppDispatch, RootState } from '../../store';
@@ -28,7 +26,7 @@ import deviceService from '../../services/device.service';
 import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
 import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
 
-import { getAllItems } from '../../services/dragAndDrop.service';
+import { getAllItems } from '../../services/drag-and-drop.service';
 import DeleteItemsDialog from '../dialogs/DeleteItemsDialog/DeleteItemsDialog';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';

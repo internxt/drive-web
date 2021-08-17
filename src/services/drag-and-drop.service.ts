@@ -1,6 +1,5 @@
 /* eslint-disable no-loop-func */
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../lib/constants';
-import { v4 as uuid } from 'uuid';
 
 export async function getAllItems(dataTransfer, pathToDrop) {
   const entries = await getEntries(dataTransfer.items, pathToDrop);
@@ -36,14 +35,6 @@ export async function getAllItems(dataTransfer, pathToDrop) {
   return items;// entries;
 }
 
-function getParentName(fullPath) {
-  // fullPath of a file
-  const namePath = fullPath.split('/');
-  const parentName = namePath[namePath.length - 2];
-
-  return parentName;
-}
-
 function parentFullPath(filePath) {
   const arrayPath = filePath.split('/');
 
@@ -70,8 +61,6 @@ async function getEntries(dataTransferItemList: DataTransferItemList, pathToDrop
   }
   while (queue.length > 0) {
     const entry = queue.shift();
-
-    entry.uuid = uuid();
 
     if (entry.isFile) {
       // eslint-disable-next-line no-loop-func
@@ -174,3 +163,10 @@ async function getFile(fileEntry) {
     console.log(err);
   }
 }
+
+const dragAndDropService = {
+  getAllItems,
+  getAllFileEntries
+};
+
+export default dragAndDropService;

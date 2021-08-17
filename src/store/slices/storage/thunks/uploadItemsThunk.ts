@@ -6,7 +6,7 @@ import { selectorIsTeam } from '../../team';
 import folderService from '../../../../services/folder.service';
 import { getFilenameAndExt } from '../../../../lib/utils';
 import storageService from '../../../../services/storage.service';
-import { FileActionTypes, FileStatusTypes } from '../../../../models/enums';
+import { TaskType, TaskStatus } from '../../../../models/enums';
 import { NotificationData } from '../../../../models/interfaces';
 import { tasksActions } from '../../tasks';
 import { StorageState } from '..';
@@ -57,8 +57,8 @@ export const uploadItemsThunk = createAsyncThunk(
       const fileContent = file;
       const notification: NotificationData = {
         uuid: requestId,
-        action: FileActionTypes.Upload,
-        status: FileStatusTypes.Pending,
+        action: TaskType.UploadFile,
+        status: TaskStatus.Pending,
         name: finalFilename,
         isFolder: false,
         type: extension
@@ -82,7 +82,7 @@ export const uploadItemsThunk = createAsyncThunk(
           dispatch(tasksActions.updateNotification({
             uuid: notificationUuid,
             merge: {
-              status: FileStatusTypes.Uploading,
+              status: TaskStatus.InProcess,
               progress
             }
           }));
@@ -93,7 +93,7 @@ export const uploadItemsThunk = createAsyncThunk(
           dispatch(tasksActions.updateNotification({
             uuid: notificationUuid,
             merge: {
-              status: FileStatusTypes.Encrypting
+              status: TaskStatus.Encrypting
             }
           }));
         }
@@ -114,7 +114,7 @@ export const uploadItemsThunk = createAsyncThunk(
           if (options?.withNotifications) {
             dispatch(tasksActions.updateNotification({
               uuid: notificationUuid,
-              merge: { status: FileStatusTypes.Success }
+              merge: { status: TaskStatus.Success }
             }));
           }
         })
@@ -122,7 +122,7 @@ export const uploadItemsThunk = createAsyncThunk(
           if (options?.withNotifications) {
             dispatch(tasksActions.updateNotification({
               uuid: notificationUuid,
-              merge: { status: FileStatusTypes.Error }
+              merge: { status: TaskStatus.Error }
             }));
           }
 

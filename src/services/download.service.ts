@@ -1,5 +1,4 @@
 import fileDownload from 'js-file-download';
-import { toast } from 'react-toastify';
 
 import localStorageService from './localStorage.service';
 import analyticsService from './analytics.service';

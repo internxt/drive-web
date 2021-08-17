@@ -162,11 +162,25 @@ export function deleteFolder(folderData: DriveFolderData, isTeam: boolean): Prom
   });
 }
 
+export async function moveFolder(data: { folderId: number, destination: number }): Promise<void> {
+  const user = localStorageService.getUser();
+  const response = await axios.post('/api/storage/moveFolder', data);
+
+  analyticsService.trackMoveItem('folder', {
+    file_id: response.data.item.id,
+    email: user.email,
+    platform: DevicePlatform.Web
+  });
+
+  return response.data;
+}
+
 const folderService = {
   fetchFolderContent,
   createFolder,
   updateMetaData,
-  deleteFolder
+  deleteFolder,
+  moveFolder
 };
 
 export default folderService;

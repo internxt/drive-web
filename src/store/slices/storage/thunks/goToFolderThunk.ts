@@ -9,7 +9,7 @@ import { fetchFolderContentThunk } from './fetchFolderContentThunk';
 
 export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootState }>(
   'storage/goToFolder',
-  async (path: FolderPath, { getState, dispatch }: any) => {
+  async (path: FolderPath, { getState, dispatch }) => {
     const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
 
     await dispatch(fetchFolderContentThunk(path.id)).unwrap();

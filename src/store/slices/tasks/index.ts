@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../..';
-import { FileStatusTypes } from '../../../models/enums';
+import { TaskStatus } from '../../../models/enums';
 import { NotificationData, UpdateNotificationPayload } from '../../../models/interfaces';
 
 interface TasksState {
@@ -35,9 +35,9 @@ export const tasksSlice = createSlice({
 
 export const tasksSelectors = {
   getSuccessfulNotifications: (state: RootState): NotificationData[] =>
-    state.tasks.notifications.filter(n => n.status === FileStatusTypes.Success),
+    state.tasks.notifications.filter(n => n.status === TaskStatus.Success),
   getFinishedNotifications: (state: RootState): NotificationData[] =>
-    state.tasks.notifications.filter(n => n.status === FileStatusTypes.Success || n.status === FileStatusTypes.Error)
+    state.tasks.notifications.filter(n => n.status === TaskStatus.Success || n.status === TaskStatus.Error)
 };
 
 export const {
