@@ -3,7 +3,7 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '..';
 import { RootState } from '../../..';
 import notify, { ToastType } from '../../../../components/Notifications';
-import { FileActionTypes, FileStatusTypes } from '../../../../models/enums';
+import { TaskType, TaskStatus } from '../../../../models/enums';
 import { DriveItemData, NotificationData } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import i18n from '../../../../services/i18n.service';
@@ -21,8 +21,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
       const uuid: string = `${requestId}-${i}`;
       const notification: NotificationData = {
         uuid,
-        action: FileActionTypes.Download,
-        status: FileStatusTypes.Pending,
+        action: TaskType.DownloadFile,
+        status: TaskStatus.Pending,
         name: item.name,
         type: item.type,
         isFolder: item.isFolder
@@ -37,21 +37,21 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
         const updateProgressCallback = (progress: number) => dispatch(tasksActions.updateNotification({
           uuid: notificationsUuids[index],
           merge: {
-            status: FileStatusTypes.Downloading,
+            status: TaskStatus.InProcess,
             progress
           }
         }));
 
         dispatch(tasksActions.updateNotification({
           uuid: notificationsUuids[index],
-          merge: { status: FileStatusTypes.Decrypting }
+          merge: { status: TaskStatus.Decrypting }
         }));
 
         await downloadService.downloadFile(item, isTeam, updateProgressCallback).then(() => {
           dispatch(tasksActions.updateNotification({
             uuid: notificationsUuids[index],
             merge: {
-              status: FileStatusTypes.Success
+              status: TaskStatus.Success
             }
           }));
         });
@@ -59,7 +59,7 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
         dispatch(tasksActions.updateNotification({
           uuid: notificationsUuids[index],
           merge: {
-            status: FileStatusTypes.Error
+            status: TaskStatus.Error
           }
         }));
 

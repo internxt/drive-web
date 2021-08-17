@@ -17,8 +17,16 @@ export function deleteItems(items: DriveItemData[], isTeam: boolean): Promise<an
   return Promise.all(promises);
 }
 
+export function moveItem(item: DriveItemData, destinationFolderId: number): Promise<void> {
+  return (item.isFolder ?
+    folderService.moveFolder({ folderId: item.id, destination: destinationFolderId }) :
+    fileService.moveFile({ fileId: item.fileId, destination: destinationFolderId })
+  );
+}
+
 const storageService = {
   deleteItems,
+  moveItem,
   upload,
   name
 };

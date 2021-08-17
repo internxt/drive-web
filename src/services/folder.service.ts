@@ -6,8 +6,6 @@ import localStorageService from './localStorage.service';
 import analyticsService from './analytics.service';
 import { DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../models/interfaces';
 import { DevicePlatform } from '../models/enums';
-import notify, { ToastType } from '../components/Notifications';
-import i18n from './i18n.service';
 import axios from 'axios';
 
 export interface IFolders {
@@ -164,11 +162,25 @@ export function deleteFolder(folderData: DriveFolderData, isTeam: boolean): Prom
   });
 }
 
+export async function moveFolder(data: { folderId: number, destination: number }): Promise<void> {
+  const user = localStorageService.getUser();
+  const response = await axios.post('/api/storage/moveFolder', data);
+
+  analyticsService.trackMoveItem('folder', {
+    file_id: response.data.item.id,
+    email: user.email,
+    platform: DevicePlatform.Web
+  });
+
+  return response.data;
+}
+
 const folderService = {
   fetchFolderContent,
   createFolder,
   updateMetaData,
-  deleteFolder
+  deleteFolder,
+  moveFolder
 };
 
 export default folderService;

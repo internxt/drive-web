@@ -11,7 +11,7 @@ export const deleteItemsThunk = createAsyncThunk<void, DriveItemData[], { state:
     const isTeam: boolean = selectorIsTeam(getState());
 
     await storageService.deleteItems(itemsToDelete, isTeam);
-    dispatch(storageActions.popItems(itemsToDelete));
+    dispatch(storageActions.popItems({ items: itemsToDelete }));
   }
 );
 

@@ -1,5 +1,5 @@
 import { store as storeInstance } from '../store';
-import { AppViewLayout, FileActionTypes, FileStatusTypes } from './enums';
+import { AppViewLayout, TaskType, TaskStatus } from './enums';
 
 export interface AppConfig {
   plan: AppPlanConfig;
@@ -52,7 +52,7 @@ export interface TeamsSettings {
   bridge_mnemonic: string
   isAdmin: boolean
   bridge_password: string
-  bridge_user: string,
+  bridge_user: string;
   root_folder_id: number;
 }
 
@@ -114,15 +114,15 @@ export interface NotificationData {
   isFolder: boolean;
   type?: string;
   name: string;
-  action: FileActionTypes;
-  status: FileStatusTypes;
+  action: TaskType;
+  status: TaskStatus;
   progress?: number;
 }
 
 export interface UpdateNotificationPayload {
   uuid: string;
   merge: {
-    status?: FileStatusTypes;
+    status?: TaskStatus;
     progress?: number;
   }
 }
@@ -219,8 +219,8 @@ export type IUserPlan = {
 
 export interface IActionUpdateFileLoggerEntry {
   filePath: string,
-  action?: FileActionTypes,
-  status?: FileStatusTypes,
+  action?: TaskType,
+  status?: TaskStatus,
   progress?: number,
   errorMessage?: string
 }

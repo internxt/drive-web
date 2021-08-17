@@ -6,7 +6,7 @@ import { validateFormat } from '../../src/services/keys.service';
 import { config } from 'dotenv';
 config();
 
-describe('# Keys service tests', () => {
+describe('# keys service tests', () => {
   it('Should not update private key if encryption & encoding is fine', async () => {
     const keys = await generateNewKeys();
     const plainPrivateKey = keys.privateKeyArmored;
