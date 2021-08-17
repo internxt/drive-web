@@ -11,18 +11,6 @@ function copyToClipboard(text: string): void {
   copy(text);
 }
 
-// Method to remove accents and other special characters from string
-function removeAccents(string: string): string {
-  const accents = 'ÀÁÂÃÄÅĄĀāàáâãäåąßÒÓÔÕÕÖØŐòóôőõöøĎďDŽdžÈÉÊËĘèéêëęðÇçČčĆćÐÌÍÎÏĪìíîïīÙÚÛÜŰùűúûüĽĹŁľĺłÑŇŃňñńŔŕŠŚŞšśşŤťŸÝÿýŽŻŹžżźđĢĞģğ';
-  const accentsOut = 'AAAAAAAAaaaaaaaasOOOOOOOOoooooooDdDZdzEEEEEeeeeeeCcCcCcDIIIIIiiiiiUUUUUuuuuuLLLlllNNNnnnRrSSSsssTtYYyyZZZzzzdGGgg';
-
-  return string.split('').map((letter, index) => {
-    const accentIndex = accents.indexOf(letter);
-
-    return accentIndex !== -1 ? accentsOut[accentIndex] : letter;
-  }).join('');
-}
-
 // Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
 function passToHash(passObject: PassObjectInterface) {
   try {
@@ -104,10 +92,6 @@ function getFilenameAndExt(entireFilename: string): IGetFilenameAndExt {
   return { filename, extension };
 }
 
-function renameFile(file: File, newName: string) {
-  return new File([file], newName);
-}
-
 function encryptFilename(filename:string, folderId: string) {
   const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
 
@@ -120,13 +104,11 @@ function encryptFilename(filename:string, folderId: string) {
 
 export {
   copyToClipboard,
-  removeAccents,
   passToHash,
   encryptText,
   decryptText,
   encryptFilename,
   encryptTextWithKey,
   decryptTextWithKey,
-  getFilenameAndExt,
-  renameFile
+  getFilenameAndExt
 };
