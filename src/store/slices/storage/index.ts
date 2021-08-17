@@ -127,6 +127,10 @@ export const storageSlice = createSlice({
 
         item && Object.assign(item, patch);
       });
+
+      if (state.infoItem?.id === id) {
+        Object.assign(state.infoItem, patch);
+      }
     },
     pushItems(state: StorageState, action: PayloadAction<{ list: StorageItemList, items: DriveItemData | DriveItemData[] }>) {
       action.payload.items = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
