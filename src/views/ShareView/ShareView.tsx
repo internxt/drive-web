@@ -29,6 +29,7 @@ interface ShareViewState {
   progress: number;
   info: GetShareInfoWithDecryptedName | null;
   linkExpired:boolean;
+  accessedFile: boolean;
 }
 
 class ShareView extends React.Component<ShareViewProps, ShareViewState> {
@@ -36,21 +37,24 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
     token: this.props.match.params.token,
     progress: 0,
     info: null,
-    linkExpired: false
+    linkExpired: false,
+    accessedFile: false
   }
 
   componentDidMount() {
     if (isMobile) {
       window.location.href = `https://api.internxt.com:8081/https://drive.internxt.com/api/storage/share/${this.state.token}`;
-    } else {
-      this.loadInfo();
     }
   }
 
-  async loadInfo(): Promise<void> {
+  loadInfo = async (): Promise<void> =>{
     const token = this.state.token;
 
     const info:any = await getShareInfo(token);
+
+    this.setState({
+      accessedFile:true
+    });
 
     if (info.error) {
       this.setState({
@@ -99,7 +103,10 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
   render(): JSX.Element {
     let body;
 
-    if (this.state.linkExpired){
+    if (!this.state.accessedFile){
+      body =
+          <BaseButton onClick={this.loadInfo} classes="bg-blue-60 text-white font-bold p-5">{i18n.get('action.accessFile')}</BaseButton>;
+    } else if (this.state.linkExpired){
       body = <p className="text-lg text-red-70">{i18n.get('error.linkExpired')}</p>;
     } else if (this.state.info){
       const info = this.state.info as unknown as GetShareInfoWithDecryptedName;
@@ -117,7 +124,7 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
         (<div style={{ width:`${progressBarPixelsTotal}px` }}><div style={{ width: `${progressBarPixelsCurrent}px` }} className="border-t-8 rounded border-l-neutral-50 transition-width duration-1000"></div></div>)
         : <Unicons.UilCheck className="text-green-50" height="40" width="40"></Unicons.UilCheck>;
 
-      const Button =
+      const DownloadButton =
           <BaseButton onClick={this.download} classes="bg-blue-60 text-white font-bold p-5">{i18n.get('action.download')}</BaseButton>;
 
       body =
@@ -125,7 +132,7 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
           <div className="flex items-center"><ItemIconComponent className="mr-5"></ItemIconComponent> <h1 className="text-2xl">{info.decryptedName}</h1></div>
           <p className="text-l-neutral-50 text-sm mt-1">{formattedSize}</p>
           <div className="h-12 mt-5">
-            {progress ? ProgressComponent : Button}
+            {progress ? ProgressComponent : DownloadButton}
           </div>
         </div>;
 
