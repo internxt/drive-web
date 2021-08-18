@@ -18,8 +18,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://npm.pkg.github.com'
-      - run: echo "@internxt:registry=https://npm.pkg.github.com\n" > .npmrc
-      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }} >> .npmrc
+
+      - run: echo "registry=https://registry.yarnpkg.com/\n" > .npmrc
+      - run: echo "@internxt:registry=https://npm.pkg.github.com\n" >> .npmrc
+      # You cannot read packages from other private repos with GITHUB_TOKEN
+      # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
+      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN}} >> .npmrc
       - run: yarn
       - run: yarn run test
         env:
