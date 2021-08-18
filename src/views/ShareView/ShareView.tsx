@@ -48,13 +48,13 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
   }
 
   loadInfo = async (): Promise<void> =>{
-    const token = this.state.token;
-
-    const info:any = await getShareInfo(token);
-
     this.setState({
       accessedFile:true
     });
+
+    const token = this.state.token;
+
+    const info:any = await getShareInfo(token);
 
     if (info.error) {
       this.setState({
