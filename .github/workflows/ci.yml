@@ -18,7 +18,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://npm.pkg.github.com'
-      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }} > .npmrc
+      - run: echo "@internxt:registry=https://npm.pkg.github.com\n" > .npmrc
+      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }} >> .npmrc
       - run: yarn
       - run: yarn run test
         env:
