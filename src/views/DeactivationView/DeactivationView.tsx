@@ -6,7 +6,7 @@ import history from '../../lib/history';
 import { isMobile } from 'react-device-detect';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import localStorageService from '../../services/localStorage.service';
+import localStorageService from '../../services/local-storage.service';
 
 import './DeactivationView.scss';
 

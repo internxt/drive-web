@@ -5,13 +5,14 @@ import { RootState } from '../..';
 import history from '../../../lib/history';
 import { IUserPlan, UserSettings } from '../../../models/interfaces';
 import { Workspace } from '../../../models/enums';
-import localStorageService from '../../../services/localStorage.service';
+import localStorageService from '../../../services/local-storage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
 import { selectorIsTeam, setWorkspace, teamActions } from '../team';
 import authService from '../../../services/auth.service';
 import { tasksActions } from '../tasks';
 import { uiActions } from '../ui';
+import { planThunks } from '../plan';
 
 interface UserState {
   isInitializing: boolean;
@@ -35,7 +36,6 @@ export const initializeUserThunk = createAsyncThunk(
   'user/initialize',
   async (payload: { redirectToLogin: boolean } = { redirectToLogin: true }, { dispatch, getState }: any) => {
     const { user, isAuthenticated } = getState().user;
-    const isTeam = selectorIsTeam(getState());
 
     if (user && isAuthenticated) {
       if (!user.root_folder_id) {
@@ -53,11 +53,7 @@ export const initializeUserThunk = createAsyncThunk(
           await storeTeamsInfo();
           dispatch(teamActions.initialize());
         } catch (e) {
-          localStorageService.del('xTeam');
-        }
-
-        if (localStorageService.exists('xTeam') && isTeam && localStorageService.get('workspace') === Workspace.Business) {
-          dispatch(changeWorkspaceThunk());
+          localStorageService.removeItem('xTeam');
         }
 
         dispatch(setIsUserInitialized(true));
@@ -76,6 +72,8 @@ export const changeWorkspaceThunk = createAsyncThunk<void, void, { state: RootSt
 
     dispatch(setWorkspace(newWorkspace));
     localStorageService.set('workspace', newWorkspace);
+
+    dispatch(planThunks.initializeThunk());
   }
 );
 

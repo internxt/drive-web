@@ -34,10 +34,10 @@ interface FileExplorerProps {
   title: JSX.Element | string;
   isLoading: boolean;
   items: DriveItemData[];
-  onItemsDeleted: () => void;
-  onFileUploaded: () => void;
+  onItemsDeleted?: () => void;
+  onFileUploaded?: () => void;
   onFolderCreated?: () => void;
-  onDragAndDropEnd: () => void;
+  onDragAndDropEnd?: () => void;
   user: UserSettings | any;
   currentFolderId: number;
   selectedItems: DriveItemData[];
@@ -48,7 +48,6 @@ interface FileExplorerProps {
   infoItem: DriveItemData | null;
   viewMode: FileViewMode;
   namePath: FolderPath[];
-  sortFunction: ((a: DriveItemData, b: DriveItemData) => number) | null;
   dispatch: AppDispatch;
   workspace: Workspace;
   planLimit: number;
@@ -129,7 +128,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
         parentFolderId: currentFolderId,
         folderPath: namePath.slice(1).reduce((t, path) => `${t}${path.name}/`, '')
       })
-    ).then(() => onFileUploaded());
+    ).then(() => onFileUploaded && onFileUploaded());
   }
 
   onViewModeButtonClicked = (): void => {

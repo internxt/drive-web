@@ -1,3 +1,4 @@
+import { Workspace } from '../models/enums';
 import { UserSettings, TeamsSettings } from '../models/interfaces';
 
 function get(key: string): string | null {
@@ -14,11 +15,17 @@ function getUser(): UserSettings | null {
   return stringUser ? JSON.parse(stringUser) : null;
 }
 
-function getTeams(): TeamsSettings {
-  return JSON.parse(localStorage.getItem('xTeam') || '{}');
+function getTeams(): TeamsSettings | null {
+  const stringTeam: string | null = localStorage.getItem('xTeam');
+
+  return stringTeam ? JSON.parse(stringTeam) : null;
 }
 
-function del(key: string): void {
+function getWorkspace(): string {
+  return localStorage.getItem('workspace') || Workspace.Personal;
+}
+
+function removeItem(key: string): void {
   localStorage.removeItem(key);
 }
 
@@ -33,7 +40,7 @@ function clear(): void {
   localStorage.removeItem('xTeam');
   localStorage.removeItem('xTokenTeam');
   localStorage.removeItem('limitStorage');
-  sessionStorage.removeItem('teamsStorage');
+  localStorage.removeItem('workspace');
 }
 
 const localStorageService = {
@@ -41,7 +48,8 @@ const localStorageService = {
   get,
   getUser,
   getTeams,
-  del,
+  getWorkspace,
+  removeItem,
   exists,
   clear
 };

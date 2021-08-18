@@ -1,19 +1,9 @@
-import { getHeaders } from '../lib/auth';
+import axios from 'axios';
 
-function fetchLimit(isTeam: boolean): Promise<number> {
-  return fetch('/api/limit', {
-    method: 'get',
-    headers: getHeaders(true, false, isTeam)
-  }).then(res => {
-    if (res.status !== 200) {
-      throw res;
-    }
-    return res.json();
-  }).then(res1 => {
-    return res1.maxSpaceBytes;
-  }).catch(error => {
-    throw error;
-  });
+async function fetchLimit(): Promise<number> {
+  const response = await axios.get('/api/limit');
+
+  return response.data.maxSpaceBytes;
 }
 
 const limitService = {

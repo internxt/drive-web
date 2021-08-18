@@ -3,7 +3,7 @@ import { getHeaders } from '../lib/auth';
 import { DevicePlatform } from '../models/enums';
 import { DriveFileData, DriveFileMetadataPayload, UserSettings } from '../models/interfaces';
 import analyticsService from './analytics.service';
-import localStorageService from './localStorage.service';
+import localStorageService from './local-storage.service';
 
 export function updateMetaData(itemId: string, data: DriveFileMetadataPayload, isTeam: boolean): Promise<void> {
   const user = localStorageService.getUser() as UserSettings;

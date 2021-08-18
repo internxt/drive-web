@@ -1,7 +1,7 @@
 import * as prettySize from 'prettysize';
 import { AnalyticsTrack, DevicePlatform } from '../models/enums';
 import { UserSettings } from '../models/interfaces';
-import localStorageService from '../services/localStorage.service';
+import localStorageService from './local-storage.service';
 
 export const PATH_NAMES = {
   '/new': 'drive-web-register',

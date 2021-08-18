@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 
 import { encryptFilename } from '../../lib/utils';
 import { getEnvironmentConfig, Network } from '../../lib/network';
-import localStorageService from '../localStorage.service';
+import localStorageService from '../local-storage.service';
 import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';

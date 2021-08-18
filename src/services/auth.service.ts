@@ -1,5 +1,5 @@
 import { getHeaders } from '../lib/auth';
-import localStorageService from '../services/localStorage.service';
+import localStorageService from './local-storage.service';
 import history from '../lib/history';
 import analyticsService from './analytics.service';
 import { generateNewKeys, updateKeys } from './pgp.service';
@@ -15,7 +15,7 @@ import { UserSettings } from '../models/interfaces';
 export function logOut(): void {
   analyticsService.trackSignOut();
   localStorageService.clear();
-  localStorageService.del('workspace');
+  localStorageService.removeItem('workspace');
   history.push('/login');
 }
 

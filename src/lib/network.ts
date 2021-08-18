@@ -1,7 +1,7 @@
 import { Environment } from 'inxt-js';
 import { createHash } from 'crypto';
-import localStorageService from '../services/localStorage.service';
-import { UserSettings } from '../models/interfaces';
+import localStorageService from '../services/local-storage.service';
+import { TeamsSettings, UserSettings } from '../models/interfaces';
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 
@@ -130,7 +130,7 @@ export class Network {
  */
 export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
   if (isTeam) {
-    const team = localStorageService.getTeams();
+    const team = localStorageService.getTeams() as TeamsSettings;
 
     return {
       bridgeUser: team.bridge_user,

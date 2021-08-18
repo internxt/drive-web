@@ -1,24 +1,21 @@
 import { connect } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { UilTrashAlt, UilUserPlus } from '@iconscout/react-unicons';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { IFormValues, InfoInvitationsMembers, TeamsSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
-
 import BaseInput from '../../Inputs/BaseInput';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import AuthButton from '../../Buttons/AuthButton';
 import notify, { ToastType } from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
-import { sendEmailTeamsMember } from '../../../services/teamsSendEmail.service';
-import { useEffect } from 'react';
-import { getMembers, removeMember } from '../../../services/teamsMembers.service';
-import { useState } from 'react';
-import { UilTrashAlt, UilUserPlus } from '@iconscout/react-unicons';
+import { getMembers, removeMember, sendEmailTeamsMember } from '../../../services/teams.service';
 import { uiActions } from '../../../store/slices/ui';
 import i18n from '../../../services/i18n.service';
 
 interface InviteMemberCreateDialogProps {
-  team: TeamsSettings | undefined
+  team: TeamsSettings | undefined | null
 }
 
 const InviteMemberCreateDialog = ({
@@ -84,17 +81,17 @@ const InviteMemberCreateDialog = ({
     <BaseDialog
       isOpen={isOpen}
       title='Manage your team'
+      panelClasses="w-156"
       onClose={onClose}
-      classes="w-156"
     >
-      <div className='flex mt-2 items-center justify-center text-center w-auto'>
+      <div className='flex mt-2 items-center justify-center text-center px-12'>
         <span>
         Welcome to your Business Drive Account. Here you can add and remove team members and invitations
         </span>
       </div>
 
       <div className='flex flex-col self-center mt-6 items-start w-96'>
-        <form className='flex w-full' onSubmit={handleSubmit(onSubmit)}>
+        <form className='flex w-full m' onSubmit={handleSubmit(onSubmit)}>
           <div className='flex-1'>
             <BaseInput
               placeholder='Type email: jhondoe@internxt.com'

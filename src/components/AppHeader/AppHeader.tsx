@@ -9,7 +9,6 @@ import { Dropdown } from 'react-bootstrap';
 import { Workspace } from '../../models/enums';
 import { changeWorkspaceThunk, userThunks } from '../../store/slices/user';
 import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
-import localStorageService from '../../services/localStorage.service';
 import { uiActions } from '../../store/slices/ui';
 import { storageActions, StorageFilters } from '../../store/slices/storage';
 import validationService from '../../services/validation.service';
@@ -17,7 +16,7 @@ import { selectorIsTeam } from '../../store/slices/team';
 
 interface AppHeaderProps {
   user: UserSettings | undefined;
-  team: TeamsSettings | undefined;
+  team: TeamsSettings | undefined | null;
   workspace: Workspace;
   isTeam: boolean;
   storageFilters: StorageFilters;
@@ -72,9 +71,8 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   render(): ReactNode {
-    const { user, isTeam, storageFilters } = this.props;
+    const { user, isTeam, storageFilters, team } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
-    const team = localStorageService.exists('xTeam');
 
     return (
       <div className="flex items-center justify-between w-full py-3 mb-2">
@@ -125,20 +123,20 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
                   id="business"
                   onClick={this.onChangeWorkspaceButtonClicked}
                 >
-                  {isTeam ?
+                  {!isTeam ?
+                    <Fragment>
+                      <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
+                      <span>Business</span>
+
+                    </Fragment> :
                     <Fragment>
                       <Unicons.UilUser className="text-blue-60 h-5 mr-1" />
                       <span>Personal</span>
                     </Fragment>
-                    :
-                    <Fragment>
-                      <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
-                      <span>Business</span>
-                    </Fragment>
                   }
                 </Dropdown.Item>)
             }
-            {this.props.team?.isAdmin && isTeam &&
+            {team?.isAdmin && isTeam &&
               <Fragment>
                 <hr className="text-l-neutral-30 my-1.5 -mx-3"></hr>
                 <Dropdown.Item

@@ -5,7 +5,7 @@ import queryString from 'query-string';
 
 import SideInfo from '../Authentication/SideInfo';
 import { IFormValues, UserSettings } from '../../models/interfaces';
-import localStorageService from '../../services/localStorage.service';
+import localStorageService from '../../services/local-storage.service';
 import validationService, { emailRegexPattern } from '../../services/validation.service';
 import analyticsService from '../../services/analytics.service';
 import { readReferalCookie } from '../../services/auth.service';
