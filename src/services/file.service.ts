@@ -46,14 +46,9 @@ export async function moveFile(data: { fileId: string, destination: number }): P
 }
 
 async function fetchRecents(limit: number): Promise<DriveFileData[]> {
-  const user: UserSettings | null = localStorageService.getUser();
-  const fetchOptions = {
-    method: 'GET',
-    headers: getHeaders(true, false, !!user?.teams)
-  };
-  const response = await fetch(`/api/storage/recents?limit=${limit}`, fetchOptions);
+  const response = await axios.get(`/api/storage/recents?limit=${limit}`);
 
-  return response.json();
+  return response.data;
 }
 
 const fileService = {

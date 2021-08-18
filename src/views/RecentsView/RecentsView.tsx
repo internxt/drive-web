@@ -2,8 +2,7 @@ import { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 
 import FileExplorer from '../../components/FileExplorer/FileExplorer';
-import { AppFileExplorerConfig, DriveItemData } from '../../models/interfaces';
-import configService from '../../services/config.service';
+import { DriveItemData } from '../../models/interfaces';
 import { AppDispatch, RootState } from '../../store';
 import { storageSelectors, storageThunks } from '../../store/slices/storage';
 import history from '../../lib/history';
@@ -23,11 +22,8 @@ class RecentsView extends Component<RecentsViewProps, {}> {
 
   refreshRecents = () => {
     const { dispatch } = this.props;
-    const fileExplorerConfig: AppFileExplorerConfig = configService.getAppConfig().fileExplorer;
 
-    dispatch(storageThunks.fetchRecentsThunk({
-      limit: fileExplorerConfig.recentsLimit
-    }));
+    dispatch(storageThunks.fetchRecentsThunk());
   }
 
   redirectToDrive = () => {

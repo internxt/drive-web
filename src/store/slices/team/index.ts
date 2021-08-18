@@ -24,6 +24,9 @@ export const teamSlice = createSlice({
     },
     setWorkspace: (state: TeamState, action: PayloadAction<Workspace>) => {
       state.workspace = action.payload;
+    },
+    resetState: (state: TeamState) => {
+      Object.assign(state, initialState);
     }
   }
 });

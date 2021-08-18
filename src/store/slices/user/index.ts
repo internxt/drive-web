@@ -82,7 +82,7 @@ export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
   async (payload: void, { dispatch, getState }) => {
     authService.logOut();
 
-    dispatch(teamActions.setWorkspace(Workspace.Personal));
+    dispatch(teamActions.resetState());
     dispatch(userActions.resetState());
     dispatch(uiActions.resetState());
     dispatch(tasksActions.resetState());

@@ -120,18 +120,14 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   };
 
   const doRegister = async (name: string, lastname: string, email: string, password: string) => {
-    // Setup hash and salt
     const hashObj = passToHash({ password: password });
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
-    // Setup mnemonic
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithKey(mnemonic, password);
 
-    //Generate keys
     const { privateKeyArmored, publicKeyArmored: codpublicKey, revocationCertificate: codrevocationKey } = await generateNewKeys();
 
-    //Datas
     const encPrivateKey = AesUtils.encrypt(privateKeyArmored, password, false);
 
     return fetch('/api/register', {
@@ -155,6 +151,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         const body = await response.json();
         const { token, uuid } = body;
         const user: UserSettings = body.user;
+
+        user.privateKey = Buffer.from(AesUtils.decrypt(user.privateKey, password)).toString('base64');
 
         window.analytics.identify(uuid, { email: email, member_tier: 'free' });
         analyticsService.trackSignUp({

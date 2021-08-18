@@ -7,23 +7,13 @@ import localStorageService from './local-storage.service';
 export function loadDataAtChangeWorkspace(dispatch: AppDispatch, workspace: Workspace): void {
   const user = localStorageService.getUser() as UserSettings;
   const team = localStorageService.getTeams() as TeamsSettings;
+  const isTeam = workspace === Workspace.Business;
+  const rootFolderId = isTeam ? team.root_folder_id : user.root_folder_id;
 
-  if (workspace === Workspace.Personal) {
-    dispatch(storageThunks.fetchFolderContentThunk(user.root_folder_id));
-    const pathPersonalRoot = {
-      id: user.root_folder_id,
-      name: 'Drive'
-    };
-
-    dispatch(storageActions.pathChangeWorkSpace(pathPersonalRoot));
-
-  } else {
-    const pathBusinessRoot = {
-      id: team.root_folder_id,
-      name: 'Drive'
-    };
-
-    dispatch(storageThunks.fetchFolderContentThunk(team.root_folder_id));
-    dispatch(storageActions.pathChangeWorkSpace(pathBusinessRoot));
-  }
+  dispatch(storageThunks.fetchFolderContentThunk(rootFolderId));
+  dispatch(storageThunks.fetchRecentsThunk());
+  dispatch(storageActions.pathChangeWorkSpace({
+    id: rootFolderId,
+    name: 'Drive'
+  }));
 }

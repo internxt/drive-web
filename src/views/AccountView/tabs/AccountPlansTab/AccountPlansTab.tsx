@@ -1,11 +1,11 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect } from 'react';
 import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts, payStripePlan } from '../../../../services/products.service';
 import notify, { ToastType } from '../../../../components/Notifications';
 import analyticsService from '../../../../services/analytics.service';
 import BillingPlanItem from './BillingPlanItem';
 import { generateMnemonic } from 'bip39';
-import { encryptPGP } from '../../../../lib/utilspgp';
+import { decryptPGP, encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
 import './AccountPlansTab.scss';
 import { useAppDispatch } from '../../../../store/hooks';
@@ -136,7 +136,6 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
   const handlePaymentIndividual = async (selectedPlan: string, productId: string) => {
     setIsPaying(true);
     const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
-
     const body: { plan: string, product: string, test?: boolean, SUCCESS_URL?: string, CANCELED_URL?: string} = {
       plan: selectedPlan,
       product: productId
@@ -161,10 +160,9 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
     }
   };
 
-  const handlePaymentTeams = async (selectedPlanToBuy, totalTeamMembers) => {
+  const handlePaymentTeams = async (selectedPlanToBuy, productId: string, totalTeamMembers: number) => {
     const mnemonicTeam = generateMnemonic(256);
     const encMnemonicTeam = await encryptPGP(mnemonicTeam);
-
     const codMnemonicTeam = Buffer.from(encMnemonicTeam.data).toString('base64');
     const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
     const body = {
@@ -184,8 +182,7 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
         throw Error(result.error);
       }
 
-      stripe.redirectToCheckout({ sessionId: result.id }).catch(err => {
-      });
+      stripe.redirectToCheckout({ sessionId: result.id }).catch(err => {});
     }).catch(err => {
       console.error('Error starting Stripe session. Reason: %s', err);
     });
@@ -233,7 +230,7 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
                 handlePlanSelection={handlePlanSelection}
                 handlePaymentIndividual={handlePaymentIndividual}
                 isPaying={isPaying}
-                isBusiness={false}
+                isBusiness={true}
                 handlePaymentTeams={handlePaymentTeams}
               />)) :
           Array(3).fill(1).map((n, i) => (
