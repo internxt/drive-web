@@ -1,7 +1,7 @@
 name: Drive Web CI
 on:
   push:
-    branches: [master, DW20BT-50]
+    branches: [master]
   pull_request:
     branches: [master]
 
