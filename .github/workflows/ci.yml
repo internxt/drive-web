@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: git clone https://${{ secrets.X_GITHUB_USER }}:${{ secrets.X_GITHUB_TOKEN }}@github.com/internxt/inxt-js
       - run: yarn
       - run: yarn run test
         env:
