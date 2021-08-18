@@ -1,6 +1,7 @@
 import { Environment } from 'inxt-js';
 import { createHash } from 'crypto';
 import localStorageService from '../services/localStorage.service';
+import { UserSettings } from '../models/interfaces';
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 
@@ -139,7 +140,7 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
     };
   }
 
-  const user = localStorageService.getUser();
+  const user = localStorageService.getUser() as UserSettings;
 
   return {
     bridgeUser: user.email,

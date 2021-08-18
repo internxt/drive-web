@@ -13,10 +13,9 @@ import desktopService from '../../services/desktop.service';
 import './Sidenav.scss';
 
 interface SidenavProps {
-  user: UserSettings;
+  user: UserSettings | undefined;
   collapsed: boolean;
   onCollapseButtonClicked: () => void;
-  isTeam: boolean
 }
 
 interface SidenavState { }

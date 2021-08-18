@@ -12,7 +12,7 @@ import { selectorIsTeam } from '../../team';
 import { uploadItemsThunk } from './uploadItemsThunk';
 
 interface IRoot extends DirectoryEntry {
-  folderId?: number;
+  folderId: number | null;
   childrenFiles: File[],
   childrenFolders: IRoot[],
   fullPathEdited: string

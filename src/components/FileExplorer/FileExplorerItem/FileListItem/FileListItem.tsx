@@ -67,6 +67,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
       item,
       isItemSelected,
       isSomeItemSelected,
+      isDraggingThisItem,
       isDraggingOverThisItem,
       connectDragSource,
       connectDropTarget,
@@ -79,13 +80,15 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
       onShareButtonClicked,
       onDeleteButtonClicked
     } = this.props;
+    const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
+    const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
     const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
     return connectDragSource(
       connectDropTarget(
         <div
-          className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} group file-list-item`}
+          className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
           draggable={false}
           onContextMenu={onItemRightClicked}
           onClick={onItemClicked}

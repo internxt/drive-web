@@ -137,7 +137,7 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
     setIsPaying(true);
     const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
 
-    const body: { plan: string, product: string, test?: boolean } = {
+    const body: { plan: string, product: string, test?: boolean, SUCCESS_URL?: string, CANCELED_URL?: string} = {
       plan: selectedPlan,
       product: productId
     };

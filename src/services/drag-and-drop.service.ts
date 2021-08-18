@@ -1,4 +1,5 @@
-/* eslint-disable no-loop-func */
+/* eslint-disable */
+// @ts-nocheck
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../lib/constants';
 
 export async function getAllItems(dataTransfer, pathToDrop) {

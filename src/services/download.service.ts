@@ -8,7 +8,7 @@ import { DriveItemData } from '../models/interfaces';
 
 export async function downloadFile(itemData: DriveItemData, isTeam: boolean, updateProgressCallback: (progress: number) => void): Promise<void> {
   const userEmail: string = localStorageService.getUser()?.email || '';
-  const fileId = itemData.fileId || itemData.id;
+  const fileId = itemData.fileId;
   const completeFilename = itemData.type ?
     `${itemData.name}.${itemData.type}` :
     `${itemData.name}`;
@@ -33,19 +33,19 @@ export async function downloadFile(itemData: DriveItemData, isTeam: boolean, upd
   }
 }
 
-const trackFileDownloadStart = (userEmail: string, file_id: number, file_name: string, file_size: number, file_type: string, folder_id: string) => {
+const trackFileDownloadStart = (userEmail: string, file_id: string, file_name: string, file_size: number, file_type: string, folder_id: number) => {
   const data = { file_id, file_name, file_size, file_type, email: userEmail, folder_id, platform: DevicePlatform.Web };
 
   analyticsService.trackFileDownloadStart(data);
 };
 
-const trackFileDownloadError = (userEmail: string, file_id: number, msg: string) => {
+const trackFileDownloadError = (userEmail: string, file_id: string, msg: string) => {
   const data = { file_id, email: userEmail, msg, platform: DevicePlatform.Web };
 
   analyticsService.trackFileDownloadError(data);
 };
 
-const trackFileDownloadFinished = (userEmail: string, file_id: number, file_size: number) => {
+const trackFileDownloadFinished = (userEmail: string, file_id: string, file_size: number) => {
   const data = { file_id, file_size, email: userEmail, platform: DevicePlatform.Web };
 
   analyticsService.trackFileDownloadFinished(data);

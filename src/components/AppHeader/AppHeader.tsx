@@ -5,20 +5,21 @@ import { AppDispatch, RootState } from '../../store';
 import history from '../../lib/history';
 import * as Unicons from '@iconscout/react-unicons';
 
-import './AppHeader.scss';
 import { Dropdown } from 'react-bootstrap';
 import { Workspace } from '../../models/enums';
-import { handleChangeWorkspaceThunk, userThunks } from '../../store/slices/user';
+import { changeWorkspaceThunk, userThunks } from '../../store/slices/user';
 import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
 import localStorageService from '../../services/localStorage.service';
 import { uiActions } from '../../store/slices/ui';
 import { storageActions, StorageFilters } from '../../store/slices/storage';
 import validationService from '../../services/validation.service';
+import { selectorIsTeam } from '../../store/slices/team';
 
 interface AppHeaderProps {
   user: UserSettings | undefined;
   team: TeamsSettings | undefined;
   workspace: Workspace;
+  isTeam: boolean;
   storageFilters: StorageFilters;
   dispatch: AppDispatch;
 }
@@ -30,12 +31,9 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
     super(props);
 
     this.state = {};
-
-    this.onAccountButtonClicked = this.onAccountButtonClicked.bind(this);
-    this.onSearchButtonClicked = this.onSearchButtonClicked.bind(this);
   }
 
-  onSearchButtonClicked(): void {
+  onSearchButtonClicked = (): void => {
     // TODO: do search
   }
 
@@ -47,11 +45,11 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
     window.open('https://help.internxt.com/');
   }
 
-  onBusinesButtonClicked = (): void => {
+  onChangeWorkspaceButtonClicked = (): void => {
     const { dispatch } = this.props;
 
     dispatch(
-      handleChangeWorkspaceThunk()
+      changeWorkspaceThunk()
     ).then(() => {
       loadDataAtChangeWorkspace(dispatch, this.props.workspace);
     });
@@ -74,7 +72,7 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 
   render(): ReactNode {
-    const { user, workspace, storageFilters } = this.props;
+    const { user, isTeam, storageFilters } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
     const team = localStorageService.exists('xTeam');
 
@@ -93,15 +91,15 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">
             <div className="flex items-center cursor-pointer">
-              {workspace === Workspace.Personal ?
+              {isTeam ?
                 <Fragment>
-                  <Unicons.UilUser className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5 text-blue-60" />
-                  <span className="text-neutral-500 text-base whitespace-nowrap">{userFullName}</span>
+                  <Unicons.UilBuilding className="h-6 w6 rounded-2xl mr-1 bg-l-neutral-30 p-1 text-blue-60" />
+                  <span className="text-neutral-500 text-base">Business</span>
                 </Fragment>
                 :
                 <Fragment>
-                  <Unicons.UilBuilding className="user-avatar rounded-2xl mr-1 bg-l-neutral-30 p-0.5 text-blue-60" />
-                  <span className="text-neutral-500 text-base">Business</span>
+                  <Unicons.UilUser className="h-6 w6 rounded-2xl mr-1 bg-l-neutral-30 p-1 text-blue-60" />
+                  <span className="text-neutral-500 text-base whitespace-nowrap">{userFullName}</span>
                 </Fragment>
               }
             </div>
@@ -122,27 +120,25 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
               <span>Support</span>
             </Dropdown.Item>
             {
-              team &&
-              (<Dropdown.Item
-                id="business"
-                onClick={this.onBusinesButtonClicked}
-              >
-                {workspace === Workspace.Personal ?
-                  <Fragment>
-                    <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
-                    <span>Business</span>
-                  </Fragment>
-
-                  :
-                  <Fragment>
-                    <Unicons.UilUser className="text-blue-60 h-5 mr-1" />
-                    <span>Personal</span>
-                  </Fragment>
-
-                }
-              </Dropdown.Item>)
+              team && (
+                <Dropdown.Item
+                  id="business"
+                  onClick={this.onChangeWorkspaceButtonClicked}
+                >
+                  {isTeam ?
+                    <Fragment>
+                      <Unicons.UilUser className="text-blue-60 h-5 mr-1" />
+                      <span>Personal</span>
+                    </Fragment>
+                    :
+                    <Fragment>
+                      <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
+                      <span>Business</span>
+                    </Fragment>
+                  }
+                </Dropdown.Item>)
             }
-            {this.props.team?.isAdmin && workspace === Workspace.Business &&
+            {this.props.team?.isAdmin && isTeam &&
               <Fragment>
                 <hr className="text-l-neutral-30 my-1.5 -mx-3"></hr>
                 <Dropdown.Item
@@ -169,9 +165,14 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   }
 }
 
-export default connect((state: RootState) => ({
-  user: state.user.user,
-  team: state.team.team,
-  workspace: state.team.workspace,
-  storageFilters: state.storage.filters
-}))(AppHeader);
+export default connect((state: RootState) => {
+  const isTeam = selectorIsTeam(state);
+
+  return {
+    user: state.user.user,
+    team: state.team.team,
+    workspace: state.team.workspace,
+    isTeam,
+    storageFilters: state.storage.filters
+  };
+})(AppHeader);

@@ -1,6 +1,5 @@
 import { createRef, ReactNode, Component } from 'react';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Unicons from '@iconscout/react-unicons';
 
@@ -90,7 +89,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     return this.props.storageFilters.text.length > 0;
   }
 
-  componentDidMount = () => {
+  componentDidMount () {
     deviceService.redirectForMobile();
   }
 
@@ -111,7 +110,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     try {
       const usage: UsageResponse = await usageService.fetchUsage(isTeam);
 
-      if (planLimit && usage.total >= parseInt(planLimit)) {
+      if (planLimit && usage.total >= planLimit) {
         this.props.dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
       } else {
         this.dispatchUpload(e);

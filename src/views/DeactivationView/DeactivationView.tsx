@@ -67,7 +67,7 @@ class DeactivationView extends React.Component<DeactivationProps> {
   render(): JSX.Element {
 
     if (!isMobile) {
-      return '';
+      return <div></div>;
     } else {
       return <Container>
         <Alert variant="danger">{this.state.result}</Alert>

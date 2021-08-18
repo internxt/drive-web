@@ -75,6 +75,7 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
       isItemSelected,
       connectDragSource,
       connectDropTarget,
+      isDraggingThisItem,
       isDraggingOverThisItem,
       onRenameButtonClicked,
       onDownloadButtonClicked,
@@ -85,6 +86,8 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
       onItemClicked,
       onItemDoubleClicked
     } = this.props;
+    const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
+    const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
     const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
     const height = this.state.itemRef.current ?
@@ -96,7 +99,7 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
         <div
           ref={itemRef}
           style={{ height }}
-          className={`${selectedClassNames} ${isDraggingOverThisItem ? 'drag-over-effect' : ''} group file-grid-item`}
+          className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-grid-item`}
           onContextMenu={onItemRightClicked}
           onClick={onItemClicked}
           onDoubleClick={onItemDoubleClicked}

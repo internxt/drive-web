@@ -6,7 +6,7 @@ import analyticsService from './analytics.service';
 import localStorageService from './localStorage.service';
 
 export function updateMetaData(itemId: string, data: DriveFileMetadataPayload, isTeam: boolean): Promise<void> {
-  const user = localStorageService.getUser();
+  const user = localStorageService.getUser() as UserSettings;
 
   return axios.post(`/api/storage/file/${itemId}/meta`, data).then(() => {
     analyticsService.trackFileRename({
@@ -18,7 +18,7 @@ export function updateMetaData(itemId: string, data: DriveFileMetadataPayload, i
 }
 
 export function deleteFile(fileData: DriveFileData, isTeam: boolean): Promise<void> {
-  const user = localStorageService.getUser();
+  const user = localStorageService.getUser() as UserSettings;
   const fetchOptions = {
     method: 'DELETE',
     headers: getHeaders(true, false, isTeam)
@@ -33,7 +33,7 @@ export function deleteFile(fileData: DriveFileData, isTeam: boolean): Promise<vo
 }
 
 export async function moveFile(data: { fileId: string, destination: number }): Promise<void> {
-  const user = localStorageService.getUser();
+  const user = localStorageService.getUser() as UserSettings;
   const response = await axios.post('/api/storage/moveFile', data);
 
   analyticsService.trackMoveItem('file', {
