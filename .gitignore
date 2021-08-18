@@ -25,3 +25,5 @@ yarn-error.log*
 .env
 debug.log
 .eslintcache
+
+.npmrc

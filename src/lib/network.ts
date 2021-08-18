@@ -1,4 +1,4 @@
-import { Environment } from 'inxt-js';
+import { Environment } from '@internxt/inxt-js';
 import { createHash } from 'crypto';
 import localStorageService from '../services/localStorage.service';
 

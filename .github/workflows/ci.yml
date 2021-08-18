@@ -17,8 +17,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn add inxt-js@https://${{ secrets.x_GITHUB_TOKEN }}@github.com/internxt/inxt-js
+          registry-url: 'https://npm.pkg.github.com'
       - run: yarn
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: yarn run test
         env:
           CI: true
