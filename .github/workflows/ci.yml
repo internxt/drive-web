@@ -25,7 +25,6 @@ jobs:
       # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN}} >> .npmrc
       - run: echo "always-auth=true" >> .npmrc
-      - run: cat .npmrc
       - run: yarn
       - run: yarn run test
         env:
