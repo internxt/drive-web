@@ -48,7 +48,7 @@ class DriveItemInfoMenu extends React.Component<DriveItemInfoMenuProps, DriveIte
   }
 
   render(): JSX.Element {
-    const item = this.props.item || {};
+    const { item } = this.props;
     const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
     return (

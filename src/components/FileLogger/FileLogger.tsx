@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { useEffect } from 'react';
 import spinnerIcon from '../../assets/icons/spinner.svg';
 import { tasksActions, tasksSelectors } from '../../store/slices/tasks';
-import { FileStatusTypes } from '../../models/enums';
+import { TaskStatus } from '../../models/enums';
 
 const FileLogger = (): JSX.Element => {
   const notifications = useAppSelector((state) => state.tasks.notifications);
@@ -46,7 +46,7 @@ const FileLogger = (): JSX.Element => {
       }
 
       const processingItems = notifications.findIndex(item =>
-        item.status !== FileStatusTypes.Success && item.status !== FileStatusTypes.Error);
+        item.status !== TaskStatus.Success && item.status !== TaskStatus.Error);
 
       if (processingItems !== -1) {
         setHasFinished(false);

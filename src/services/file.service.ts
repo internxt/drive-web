@@ -32,6 +32,19 @@ export function deleteFile(fileData: DriveFileData, isTeam: boolean): Promise<vo
   });
 }
 
+export async function moveFile(data: { fileId: string, destination: number }): Promise<void> {
+  const user = localStorageService.getUser();
+  const response = await axios.post('/api/storage/moveFile', data);
+
+  analyticsService.trackMoveItem('file', {
+    file_id: response.data.item.id,
+    email: user.email,
+    platform: DevicePlatform.Web
+  });
+
+  return response.data;
+}
+
 async function fetchRecents(limit: number): Promise<DriveFileData[]> {
   const user: UserSettings | null = localStorageService.getUser();
   const fetchOptions = {
@@ -46,6 +59,7 @@ async function fetchRecents(limit: number): Promise<DriveFileData[]> {
 const fileService = {
   updateMetaData,
   deleteFile,
+  moveFile,
   fetchRecents
 };
 

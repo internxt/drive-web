@@ -127,6 +127,10 @@ export const storageSlice = createSlice({
 
         item && Object.assign(item, patch);
       });
+
+      if (state.infoItem?.id === id) {
+        Object.assign(state.infoItem, patch);
+      }
     },
     pushItems(state: StorageState, action: PayloadAction<{ list: StorageItemList, items: DriveItemData | DriveItemData[] }>) {
       action.payload.items = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
@@ -142,11 +146,12 @@ export const storageSlice = createSlice({
       );
       state.lists[action.payload.list].push(...files);
     },
-    popItems(state: StorageState, action: PayloadAction<DriveItemData[]>) {
-      const itemsToDelete = action.payload;
+    popItems(state: StorageState, action: PayloadAction<{ lists?: StorageItemList[], items: DriveItemData | DriveItemData[]}>) {
+      const listsToUpdate = action.payload.lists || Object.values(StorageItemList);
+      const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
-      Object.keys(state.lists).forEach(listKey => {
-        state.lists[listKey] = state.lists[listKey].filter((item:DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && i.isFolder === item.isFolder));
+      listsToUpdate.forEach(listKey => {
+        state.lists[listKey] = state.lists[listKey].filter((item:DriveItemData) => !itemsToDelete.find((i) => i.id === item.id));
       });
     }
   },

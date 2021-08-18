@@ -1,13 +1,16 @@
 import React, { Component, ComponentClass, Fragment, ReactNode } from 'react';
-import { ConnectDropTarget, DndComponentClass, DropTargetCollector, DropTargetSpec } from 'react-dnd';
+import { ConnectDragSource, ConnectDropTarget, DndComponentClass, DragSource, DragSourceCollector, DragSourceSpec, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 
-import { Workspace } from '../../../models/enums';
+import { DragAndDropType, Workspace } from '../../../models/enums';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../models/interfaces';
-import { getAllItems } from '../../../services/dragAndDrop.service';
+import { getAllItems } from '../../../services/drag-and-drop.service';
 import { getItemFullName } from '../../../services/storage.service/storage-name.service';
-import { AppDispatch } from '../../../store';
+import { AppDispatch, RootState } from '../../../store';
 import { storageActions, storageThunks } from '../../../store/slices/storage';
+import storageSelectors from '../../../store/slices/storage/storageSelectors';
 import { uiActions } from '../../../store/slices/ui';
 import FileListItem from './FileListItem/FileListItem';
 
@@ -23,7 +26,9 @@ interface FileExplorerItemProps {
   isDriveItemInfoMenuOpen: boolean;
   dispatch: AppDispatch
   workspace: Workspace,
+  isDraggingThisItem: boolean;
   isDraggingOverThisItem: boolean;
+  connectDragSource: ConnectDragSource;
   connectDropTarget: ConnectDropTarget;
 }
 
@@ -42,6 +47,7 @@ export interface FileExplorerItemViewProps {
   nameInputRef: React.RefObject<HTMLInputElement>;
   isSidenavCollapsed: boolean;
   isDriveItemInfoMenuOpen: boolean;
+  isDraggingThisItem: boolean;
   isDraggingOverThisItem: boolean;
   isSomeItemSelected: boolean;
   isItemSelected: (item: DriveItemData) => boolean;
@@ -57,22 +63,53 @@ export interface FileExplorerItemViewProps {
   onNameBlurred: () => void;
   onNameDoubleClicked: (e: React.MouseEvent) => void;
   onEnterKeyPressed: (e: React.KeyboardEvent) => void;
+  connectDragSource: ConnectDragSource;
   connectDropTarget: ConnectDropTarget;
 }
 
+export interface DragSourceCollectorProps {
+  isDraggingThisItem: boolean;
+}
 export interface DropTargetCollectorProps {
   isDraggingOverThisItem: boolean,
   connectDropTarget: ConnectDropTarget
 }
 
-export const getDropTargetType = (props: FileExplorerItemViewProps): string | string[] => props.item.isFolder ? [NativeTypes.FILE] : [];
+export const getDragSourceType = (props: FileExplorerItemViewProps): string => DragAndDropType.DriveItem;
+
+export const dragSourceSpec: DragSourceSpec<FileExplorerItemViewProps> = {
+  beginDrag: (props, monitor, component) => {
+    return props.item;
+  }
+};
+
+export const dragSourceCollect: DragSourceCollector<DragSourceCollectorProps, FileExplorerItemViewProps> = (connect, monitor, props) => {
+  return {
+    isDraggingThisItem: monitor.isDragging(),
+    connectDragSource: connect.dragSource()
+  };
+};
+
+export const getDropTargetType = (props: FileExplorerItemViewProps): string | string[] => props.item.isFolder && !props.isDraggingThisItem ?
+  [NativeTypes.FILE, DragAndDropType.DriveItem] :
+  [];
 
 export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
   drop: (props, monitor, component) => {
     const { dispatch, namePath, item } = props;
+    const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
 
-    if (item.isFolder) {
+    if (!item.isFolder) {
+      return;
+    }
+
+    if (droppedType === DragAndDropType.DriveItem) {
+      dispatch(storageThunks.moveItemsThunk({
+        items: [droppedData],
+        destinationFolderId: item.id
+      }));
+    } else if (droppedType === NativeTypes.FILE) {
       const namePathDestinationArray = namePath.map(level => level.name);
 
       namePathDestinationArray[0] = '';
@@ -275,4 +312,27 @@ const fileExplorerItemWrapper =
       }
     };
 
-export default fileExplorerItemWrapper;
+const fileExplorerItemComposition = compose(
+  connect(
+    (state: RootState) => {
+      const isItemSelected = storageSelectors.isItemSelected(state);
+      const isSomeItemSelected = storageSelectors.isSomeItemSelected(state);
+      const currentFolderId = storageSelectors.currentFolderId(state);
+
+      return {
+        isSomeItemSelected,
+        selectedItems: state.storage.selectedItems,
+        namePath: state.storage.namePath,
+        currentFolderId,
+        isItemSelected,
+        workspace: state.team.workspace,
+        isSidenavCollapsed: state.ui.isSidenavCollapsed,
+        isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen
+      };
+    }),
+  DragSource(getDragSourceType, dragSourceSpec, dragSourceCollect),
+  DropTarget(getDropTargetType, dropTargetSpec, dropTargetCollect),
+  fileExplorerItemWrapper
+);
+
+export default fileExplorerItemComposition;

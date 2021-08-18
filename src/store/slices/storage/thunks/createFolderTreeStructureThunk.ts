@@ -3,7 +3,7 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '..';
 import { RootState } from '../../..';
 import notify, { ToastType } from '../../../../components/Notifications';
-import { FileActionTypes, FileStatusTypes } from '../../../../models/enums';
+import { TaskType, TaskStatus } from '../../../../models/enums';
 import { NotificationData } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
@@ -34,8 +34,8 @@ export const createFolderTreeStructureThunk = createAsyncThunk<void, CreateFolde
     const levels = [root];
     const notification: NotificationData = {
       uuid: requestId,
-      action: FileActionTypes.UploadFolder,
-      status: FileStatusTypes.Pending,
+      action: TaskType.UploadFolder,
+      status: TaskStatus.Pending,
       name: root.name,
       isFolder: true
     };
@@ -71,7 +71,7 @@ export const createFolderTreeStructureThunk = createAsyncThunk<void, CreateFolde
         dispatch(tasksActions.updateNotification({
           uuid: notification.uuid,
           merge: {
-            status: FileStatusTypes.Success
+            status: TaskStatus.Success
           }
         }));
       }
@@ -81,7 +81,7 @@ export const createFolderTreeStructureThunk = createAsyncThunk<void, CreateFolde
       options?.withNotification && dispatch(tasksActions.updateNotification({
         uuid: notification.uuid,
         merge: {
-          status: FileStatusTypes.Error
+          status: TaskStatus.Error
         }
       }));
 

@@ -34,6 +34,8 @@
     "uploadingFile": "Error uploading file: {reason}",
     "downloadingFile": "Error downloading file: Reason is {reason}",
     "downloadingItems": "Some of the elements could not be downloaded",
+    "movingItemInsideItself": "You can't move a folder inside itself",
+    "movingItem": "Error moving {name}",
     "linkExpired": "This secure link has expired"
   },
   "info": {
@@ -42,5 +44,47 @@
   },
   "action": {
     "download": "Download"
+  },
+  "tasks": {
+    "upload-file": {
+      "pending": "Pending to upload",
+      "encrypting": "Encrypting file",
+      "in-process": "{progress}% Uploading file",
+      "success": "File uploaded",
+      "error": "Error during upload"
+    },
+    "upload-folder": {
+      "pending": "Pending to upload",
+      "encrypting": "Encrypting files",
+      "in-process": "Uploading folder",
+      "success": "Folder uploaded",
+      "error": "Error during upload"
+    },
+    "download-file": {
+      "pending": "Pending to download",
+      "decrypting": "Decrypting file",
+      "in-process": "{progress}% Downloading file",
+      "success": "File downloaded",
+      "error": "Error during download"
+    },
+    "download-folder": {
+      "pending": "Pending to download",
+      "decrypting": "Decrypting files",
+      "in-process": "Downloading folder",
+      "success": "Folder downloaded",
+      "error": "Error during download"
+    },
+    "move-file": {
+      "pending": "Pending to move",
+      "in-process": "Moving file",
+      "success": "File moved",
+      "error": "Error during movement"
+    },
+    "move-folder": {
+      "pending": "Pending to move",
+      "in-process": "Moving folder",
+      "success": "Folder moved",
+      "error": "Error during movement"
+    }
   }
 }
