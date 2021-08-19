@@ -15,6 +15,7 @@ import { UilBuilding, UilHome } from '@iconscout/react-unicons';
 import BillingCardSkeletton from '../../../../components/skinSkeleton/BillingCardSkeletton';
 import { Workspace } from '../../../../models/enums';
 import i18n from '../../../../services/i18n.service';
+import envService from '../../../../services/env.service';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: Workspace, isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -135,7 +136,7 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
 
   const handlePaymentIndividual = async (selectedPlan: string, productId: string) => {
     setIsPaying(true);
-    const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+    const stripe = window.Stripe(!envService.isProduction() ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
     const body: { plan: string, product: string, test?: boolean} = {
       plan: selectedPlan,
       product: productId
@@ -164,13 +165,13 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
     const mnemonicTeam = generateMnemonic(256);
     const encMnemonicTeam = await encryptPGP(mnemonicTeam);
     const codMnemonicTeam = Buffer.from(encMnemonicTeam.data).toString('base64');
-    const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+    const stripe = window.Stripe(!envService.isProduction() ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
     const body = {
       plan: selectedPlanToBuy,
       sessionType: 'team',
       quantity: totalTeamMembers,
       mnemonicTeam: codMnemonicTeam,
-      test: process.env.NODE_ENV !== 'production'
+      test: !envService.isProduction()
     };
 
     fetch('/api/stripe/teams/session', {

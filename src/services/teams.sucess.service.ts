@@ -1,5 +1,6 @@
 import { getHeaders } from '../lib/auth';
 import { decryptPGP } from '../lib/utilspgp';
+import envService from './env.service';
 import { storeTeamsInfo } from './teams.service';
 
 export function getTeamInfo() {
@@ -26,7 +27,7 @@ export async function checkSessionStripe(sessionId: string) {
     headers: getHeaders(true, false),
     body: JSON.stringify({
       checkoutSessionId: sessionId,
-      test: process.env.NODE_ENV !== 'production',
+      test: !envService.isProduction(),
       mnemonic: mnemonic.data
     })
   }).then((res) => {

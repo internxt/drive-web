@@ -1,5 +1,6 @@
 import { getHeaders } from '../lib/auth';
 import { IUserPlan } from '../models/interfaces';
+import envService from './env.service';
 
 export async function initializeUser(email: string, mnemonic: string): Promise<any> {
   const response = await fetch('/api/initialize', {
@@ -36,7 +37,7 @@ export const sendDeactivationEmail = (email: string): Promise<Response> => {
 };
 
 export const fetchUserPlan = async (): Promise<IUserPlan | null> => {
-  const isTest = process.env.NODE_ENV !== 'production' ? true : false;
+  const isTest = !envService.isProduction();
   const response = await fetch(`/api/storage/user/info/stripe/${isTest}`, {
     method: 'GET',
     headers: getHeaders(true, false)

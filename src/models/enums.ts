@@ -1,3 +1,8 @@
+export enum NodeEnv {
+  Development = 'development',
+  Production = 'production'
+}
+
 export enum AppViewLayout {
   Empty = 'empty',
   HeaderAndSidenav = 'header-and-sidenav'
