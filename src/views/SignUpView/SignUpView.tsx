@@ -108,8 +108,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       const xToken = res.token;
       const xUser = res.user;
 
-      dispatch(userActions.setUser(xUser));
       xUser.mnemonic = mnemonic;
+      dispatch(userActions.setUser(xUser));
 
       return dispatch(userThunks.initializeUserThunk()).then((rootFolderInfo) => {
         localStorageService.set('xToken', xToken);
@@ -197,10 +197,14 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         throw new Error('Passwords do not match');
       }
 
+      console.log('isNewUser?', props.isNewUser);
+
       if (!props.isNewUser) {
         await updateInfo(name, lastname, email, password).then(() => {
+          console.log('redirecting to login');
           history.push('/login');
         }).catch(err => {
+          console.log('ERR', err);
           throw new Error(err.message + ', please contact us');
         });
       } else {
