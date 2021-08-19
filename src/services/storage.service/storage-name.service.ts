@@ -3,6 +3,9 @@ import { DriveItemData } from '../../models/interfaces';
 export function checkFileNameExists(items: DriveItemData[], filename: string, type: string): [boolean, number, string] {
   const FILENAME_INCREMENT_REGEX = /( \([0-9]+\))$/i;
   const INCREMENT_INDEX_REGEX = /\(([^)]+)\)/;
+
+  const cleanFilename = filename.replace(FILENAME_INCREMENT_REGEX, '');
+
   const infoFilenames: { name: string, cleanName: string; type: string; incrementIndex: number; }[] = items
     .map(item => {
       const cleanName = item.name.replace(FILENAME_INCREMENT_REGEX, '');
@@ -16,15 +19,19 @@ export function checkFileNameExists(items: DriveItemData[], filename: string, ty
         incrementIndex
       };
     })
-    .filter(item => item.cleanName === filename && item.type === type)
+    .filter(item => item.cleanName === cleanFilename && item.type === type)
     .sort((a, b) => b.incrementIndex - a.incrementIndex);
-  const filenameExists = items.some(item => item.name === filename && item.type === type);
-  const filenameIndex = filenameExists ?
-    (infoFilenames.length > 0 ? (infoFilenames[0].incrementIndex + 1) : 0) :
-    0;
-  const finalFilename = filenameIndex > 0 ? getNextNewName(filename, filenameIndex) : filename;
 
-  return [filenameExists, filenameIndex, finalFilename];
+  const filenameExists = !!infoFilenames.length;
+
+  if (filenameExists){
+    const index = infoFilenames[0].incrementIndex + 1;
+
+    return [true, index, getNextNewName(cleanFilename, index)];
+  } else {
+    return [false, 0, filename];
+  }
+
 }
 
 export function getNextNewName(filename: string, i: number): string {

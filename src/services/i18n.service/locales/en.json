@@ -9,7 +9,8 @@
     "linkCopied": "Link copied!",
     "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
-    "joinedToTheTeam": "You have successfully joined to the team"
+    "joinedToTheTeam": "You have successfully joined to the team",
+    "done": "Done"
   },
   "error": {
     "genericError": "There was an error: {reason}",
@@ -40,6 +41,10 @@
   "info": {
     "downloadingFile": "Downloading file {filename}...",
     "retrievingFile": "Securely retrieving file..."
+  },
+  "action": {
+    "download": "Download",
+    "accessFile": "Access File"
   },
   "tasks": {
     "upload-file": {

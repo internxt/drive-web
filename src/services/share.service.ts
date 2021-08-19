@@ -12,7 +12,7 @@ interface GenerateShareLinkRequestBody {
   bucket: string
 }
 
-interface GetShareInfoResponse {
+export interface GetShareInfoResponse {
   user: string;
   token: string;
   file: string;
