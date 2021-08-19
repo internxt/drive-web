@@ -136,7 +136,7 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
   const handlePaymentIndividual = async (selectedPlan: string, productId: string) => {
     setIsPaying(true);
     const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
-    const body: { plan: string, product: string, test?: boolean, SUCCESS_URL?: string, CANCELED_URL?: string} = {
+    const body: { plan: string, product: string, test?: boolean} = {
       plan: selectedPlan,
       product: productId
     };
