@@ -19,11 +19,6 @@ const axiosPlugin: AppPlugin = {
         localStorageService.getTeams()?.bridge_mnemonic :
         localStorageService.get('xMnemonic');
 
-<<<<<<< HEAD
-=======
-      requestConfig.baseURL = process.env.REACT_APP_API_URL;
-
->>>>>>> master
       requestConfig.headers = {
         'content-type': 'application/json; charset=utf-8',
         'internxt-version': '1.0.0',
