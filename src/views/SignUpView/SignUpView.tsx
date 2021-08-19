@@ -197,11 +197,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         throw new Error('Passwords do not match');
       }
 
-      console.log('isNewUser?', props.isNewUser);
-
       if (!props.isNewUser) {
         await updateInfo(name, lastname, email, password).then(() => {
-          console.log('redirecting to login');
           history.push('/login');
         }).catch(err => {
           console.log('ERR', err);
