@@ -16,7 +16,8 @@ module.exports = {
         'width': 'width'
       },
       height: {
-        'footer': 'var(--footer-height)'
+        'footer': 'var(--footer-height)',
+        'fit': 'fit-content'
       },
       width: {
         'sidenav-1280': '180px',
@@ -193,7 +194,7 @@ module.exports = {
       }
 
       addBase({
-        ':root': extractColorVars(theme('colors')),
+        ':root': extractColorVars(theme('colors'))
       });
     }
   ]
