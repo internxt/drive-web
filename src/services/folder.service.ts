@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { getHeaders } from '../lib/auth';
 import history from '../lib/history';
-import localStorageService from './localStorage.service';
+import localStorageService from './local-storage.service';
 import analyticsService from './analytics.service';
 import { DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../models/interfaces';
 import { DevicePlatform } from '../models/enums';

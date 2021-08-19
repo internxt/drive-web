@@ -85,7 +85,6 @@ const InviteMemberCreateDialog = ({
       isOpen={isOpen}
       title='Manage your team'
       onClose={onClose}
-      additionalStyling='w-156'
     >
       <div className='flex mt-2 items-center justify-center text-center w-auto'>
         <span>

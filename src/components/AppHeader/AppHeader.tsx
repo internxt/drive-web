@@ -10,7 +10,7 @@ import { Dropdown } from 'react-bootstrap';
 import { Workspace } from '../../models/enums';
 import { handleChangeWorkspaceThunk, userThunks } from '../../store/slices/user';
 import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
-import localStorageService from '../../services/localStorage.service';
+import localStorageService from '../../services/local-storage.service';
 import { uiActions } from '../../store/slices/ui';
 import { storageActions, StorageFilters } from '../../store/slices/storage';
 import validationService from '../../services/validation.service';

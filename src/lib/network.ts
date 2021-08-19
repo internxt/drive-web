@@ -1,6 +1,6 @@
 import { Environment } from 'inxt-js';
 import { createHash } from 'crypto';
-import localStorageService from '../services/localStorage.service';
+import localStorageService from '../services/local-storage.service';
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 

@@ -1,5 +1,5 @@
 import { getHeaders } from '../lib/auth';
-import localStorageService from '../services/localStorage.service';
+import localStorageService from './local-storage.service';
 import { decryptPGP } from '../lib/utilspgp';
 
 export function isTeamActivated(): Promise<any> {

@@ -2,6 +2,10 @@
   .account-view {
     .nav-item {
       @apply flex h-10 items-start justify-center text-sm text-m-neutral-100;
+
+      &.active {
+        @apply border-b border-blue-60;
+      }
     }
 
     a.nav-item.nav-link:nth-child(6) {
@@ -12,21 +16,17 @@
       @apply px-6 border-b border-l-neutral-50;
     }
 
-    .nav-item.active {
-      @apply border-b border-blue-60;
+    .tab-content {
+      @apply pt-8 pb-5 h-full overflow-y-auto;
     }
 
     .tab-pane {
-      @apply hidden;
+      @apply min-h-full h-1 hidden;
     }
 
     .tab-pane.show {
       @apply flex px-8 justify-center;
     }
-  }
-
-  .tab-content {
-    @apply h-full overflow-y-auto;
   }
 
   .account_config_title {

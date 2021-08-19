@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import copy from 'copy-to-clipboard';
 
 import { getHeaders } from '../../lib/auth';
-import localStorageService from '../../services/localStorage.service';
+import localStorageService from '../../services/local-storage.service';
 
 import twitter from '../../assets/Share-Icons/Twitter.svg';
 import facebook from '../../assets/Share-Icons/Facebook.svg';

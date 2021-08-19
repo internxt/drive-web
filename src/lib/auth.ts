@@ -1,4 +1,4 @@
-import localStorageService from '../services/localStorage.service';
+import localStorageService from '../services/local-storage.service';
 
 function getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam: boolean = false): Headers {
   const headers = new Headers();

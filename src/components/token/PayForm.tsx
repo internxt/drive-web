@@ -4,7 +4,7 @@ import { Form, Col, Button, Container, Row } from 'react-bootstrap';
 import history from '../../lib/history';
 import Finish from './finish/Finish';
 import { getTokenInfo } from '../../services/token.service';
-import localStorageService from '../../services/localStorage.service';
+import localStorageService from '../../services/local-storage.service';
 import { getHeaders } from '../../lib/auth';
 
 interface ResetProps {

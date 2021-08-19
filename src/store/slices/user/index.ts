@@ -5,7 +5,7 @@ import { RootState } from '../..';
 import history from '../../../lib/history';
 import { IUserPlan, UserSettings } from '../../../models/interfaces';
 import { Workspace } from '../../../models/enums';
-import localStorageService from '../../../services/localStorage.service';
+import localStorageService from '../../../services/local-storage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
 import { selectorIsTeam, setWorkspace, teamActions } from '../team';
@@ -84,7 +84,7 @@ export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
   async (payload: void, { dispatch, getState }) => {
     authService.logOut();
 
-    dispatch(teamActions.setWorkspace(Workspace.Personal));
+    dispatch(teamActions.resetState());
     dispatch(userActions.resetState());
     dispatch(uiActions.resetState());
     dispatch(tasksActions.resetState());

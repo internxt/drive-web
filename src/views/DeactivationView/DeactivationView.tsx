@@ -1,17 +1,21 @@
 import * as React from 'react';
 import { Alert, Container } from 'react-bootstrap';
 import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css';
+import { connect } from 'react-redux';
 
 import history from '../../lib/history';
 import { isMobile } from 'react-device-detect';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import localStorageService from '../../services/localStorage.service';
+
+import { AppDispatch } from '../../store';
+import { userThunks } from '../../store/slices/user';
+import notify, { ToastType } from '../../components/Notifications';
 
 import './DeactivationView.scss';
-
 interface DeactivationProps {
-  match?: any
+  match?: any;
+  dispatch: AppDispatch;
 }
 
 class DeactivationView extends React.Component<DeactivationProps> {
@@ -26,11 +30,10 @@ class DeactivationView extends React.Component<DeactivationProps> {
   }
 
   ClearAndRedirect = () => {
-    console.log('Clear and redirect');
-    localStorageService.clear();
+    this.props.dispatch(userThunks.logoutThunk());
 
     if (!isMobile) {
-      toast.info('Your account has been deactivated');
+      notify('Your account has been deactivated', ToastType.Info);
       history.push('/');
     } else {
       this.setState({ result: this.confirmDeactivation() });
@@ -65,9 +68,8 @@ class DeactivationView extends React.Component<DeactivationProps> {
   }
 
   render(): JSX.Element {
-
     if (!isMobile) {
-      return '';
+      return <div></div>;
     } else {
       return <Container>
         <Alert variant="danger">{this.state.result}</Alert>
@@ -86,4 +88,4 @@ class DeactivationView extends React.Component<DeactivationProps> {
   }
 }
 
-export default DeactivationView;
+export default connect()(DeactivationView);

@@ -1,6 +1,6 @@
 import { getHeaders } from '../lib/auth';
 import { encryptPGPInvitations } from '../lib/utilspgp';
-import localStorageService from './localStorage.service';
+import localStorageService from './local-storage.service';
 import { getKeys } from './teams.service';
 
 export async function sendEmailTeamsMember(mail: string): Promise<void> {

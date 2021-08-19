@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 
-import localStorageService from '../../../../services/localStorage.service';
+import localStorageService from '../../../../services/local-storage.service';
 import { IFormValues } from '../../../../models/interfaces';
 import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../../services/referral.service';
 import { emailRegexPattern } from '../../../../services/validation.service';

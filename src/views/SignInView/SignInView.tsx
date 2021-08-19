@@ -9,7 +9,7 @@ import SideInfo from '../Authentication/SideInfo';
 import AuthButton from '../../components/Buttons/AuthButton';
 import validationService, { emailRegexPattern, twoFactorRegexPattern } from '../../services/validation.service';
 import { check2FANeeded, doLogin } from '../../services/auth.service';
-import localStorageService from '../../services/localStorage.service';
+import localStorageService from '../../services/local-storage.service';
 import analyticsService from '../../services/analytics.service';
 import history from '../../lib/history';
 import bigLogo from '../../assets/icons/big-logo.svg';

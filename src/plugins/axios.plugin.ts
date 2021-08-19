@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { Workspace } from '../models/enums';
 import { AppPlugin } from '../models/interfaces';
-import localStorageService from '../services/localStorage.service';
+import localStorageService from '../services/local-storage.service';
 import { userThunks } from '../store/slices/user';
 
 const axiosPlugin: AppPlugin = {

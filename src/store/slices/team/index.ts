@@ -2,10 +2,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../..';
 import { Workspace } from '../../../models/enums';
 import { TeamsSettings } from '../../../models/interfaces';
-import localStorageService from '../../../services/localStorage.service';
+import localStorageService from '../../../services/local-storage.service';
 
 interface TeamState {
-  team?: TeamsSettings
+  team?: TeamsSettings | null,
   workspace: Workspace
 }
 
@@ -20,9 +20,13 @@ export const teamSlice = createSlice({
   reducers: {
     initialize: (state: TeamState) => {
       state.team = localStorageService.getTeams();
+      state.workspace = localStorageService.getWorkspace() as Workspace;
     },
     setWorkspace: (state: TeamState, action: PayloadAction<Workspace>) => {
       state.workspace = action.payload;
+    },
+    resetState: (state: TeamState) => {
+      Object.assign(state, initialState);
     }
   }
 });

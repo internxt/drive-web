@@ -1,6 +1,6 @@
 import fileDownload from 'js-file-download';
 
-import localStorageService from './localStorage.service';
+import localStorageService from './local-storage.service';
 import analyticsService from './analytics.service';
 import { DevicePlatform } from '../models/enums';
 import { getEnvironmentConfig, Network } from '../lib/network';

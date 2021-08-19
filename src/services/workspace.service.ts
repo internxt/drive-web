@@ -1,7 +1,7 @@
 import { Workspace } from '../models/enums';
 import { AppDispatch } from '../store';
 import { storageActions, storageThunks } from '../store/slices/storage';
-import localStorageService from './localStorage.service';
+import localStorageService from './local-storage.service';
 
 export function loadDataAtChangeWorkspace(dispatch: AppDispatch, workspace: Workspace): void {
   const user = localStorageService.getUser();
