@@ -6,7 +6,7 @@ import history from '../../lib/history';
 import { isMobile } from 'react-device-detect';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import localStorageService from '../../services/localStorage.service';
+import localStorageService from '../../services/local-storage.service';
 
 import './DeactivationView.scss';
 
@@ -67,7 +67,7 @@ class DeactivationView extends React.Component<DeactivationProps> {
   render(): JSX.Element {
 
     if (!isMobile) {
-      return '';
+      return <div></div>;
     } else {
       return <Container>
         <Alert variant="danger">{this.state.result}</Alert>

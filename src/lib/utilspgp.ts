@@ -1,5 +1,5 @@
 import * as openpgp from 'openpgp';
-import localStorageService from '../services/localStorage.service';
+import localStorageService from '../services/local-storage.service';
 
 export async function isValidBase64(key: string): Promise<boolean> {
   const isPlain = await isValid(key);

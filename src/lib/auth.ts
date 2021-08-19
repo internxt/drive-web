@@ -1,4 +1,4 @@
-import localStorageService from '../services/localStorage.service';
+import localStorageService from '../services/local-storage.service';
 
 function getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam: boolean = false): Headers {
   const headers = new Headers();
@@ -15,7 +15,7 @@ function getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam: boolean = 
 
   if (withMnemonic) {
     isTeam ?
-      headers.append('internxt-mnemonic', `${localStorageService.getTeams().bridge_mnemonic}`) :
+      headers.append('internxt-mnemonic', `${localStorageService.getTeams()?.bridge_mnemonic}`) :
       headers.append('internxt-mnemonic', `${localStorageService.get('xMnemonic')}`);
   }
 

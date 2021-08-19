@@ -70,6 +70,6 @@ export const moveItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<Sto
     .addCase(moveItemsThunk.pending, (state, action) => { })
     .addCase(moveItemsThunk.fulfilled, (state, action) => { })
     .addCase(moveItemsThunk.rejected, (state, action) => {
-      notify(i18n.get('error.movingItem', { name: 'TODO: filename' }), ToastType.Error);
+      notify(i18n.get('error.movingItem'), ToastType.Error);
     });
 };

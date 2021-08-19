@@ -3,10 +3,10 @@ import { getHeaders } from '../lib/auth';
 import { DevicePlatform } from '../models/enums';
 import { DriveFileData, DriveFileMetadataPayload, UserSettings } from '../models/interfaces';
 import analyticsService from './analytics.service';
-import localStorageService from './localStorage.service';
+import localStorageService from './local-storage.service';
 
 export function updateMetaData(itemId: string, data: DriveFileMetadataPayload, isTeam: boolean): Promise<void> {
-  const user = localStorageService.getUser();
+  const user = localStorageService.getUser() as UserSettings;
 
   return axios.post(`/api/storage/file/${itemId}/meta`, data).then(() => {
     analyticsService.trackFileRename({
@@ -18,7 +18,7 @@ export function updateMetaData(itemId: string, data: DriveFileMetadataPayload, i
 }
 
 export function deleteFile(fileData: DriveFileData, isTeam: boolean): Promise<void> {
-  const user = localStorageService.getUser();
+  const user = localStorageService.getUser() as UserSettings;
   const fetchOptions = {
     method: 'DELETE',
     headers: getHeaders(true, false, isTeam)
@@ -33,7 +33,7 @@ export function deleteFile(fileData: DriveFileData, isTeam: boolean): Promise<vo
 }
 
 export async function moveFile(data: { fileId: string, destination: number }): Promise<void> {
-  const user = localStorageService.getUser();
+  const user = localStorageService.getUser() as UserSettings;
   const response = await axios.post('/api/storage/moveFile', data);
 
   analyticsService.trackMoveItem('file', {
@@ -46,14 +46,9 @@ export async function moveFile(data: { fileId: string, destination: number }): P
 }
 
 async function fetchRecents(limit: number): Promise<DriveFileData[]> {
-  const user: UserSettings | null = localStorageService.getUser();
-  const fetchOptions = {
-    method: 'GET',
-    headers: getHeaders(true, false, !!user?.teams)
-  };
-  const response = await fetch(`/api/storage/recents?limit=${limit}`, fetchOptions);
+  const response = await axios.get(`/api/storage/recents?limit=${limit}`);
 
-  return response.json();
+  return response.data;
 }
 
 const fileService = {

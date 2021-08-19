@@ -18,10 +18,9 @@ export const initializeThunk = createAsyncThunk(
   'plan/initialize',
   async (payload: void, { dispatch, getState }: any) => {
     const isAuthenticated = getState().user.isAuthenticated;
-    const isTeam = selectorIsTeam(getState());
 
     if (isAuthenticated) {
-      const planLimit = await limitService.fetchLimit(isTeam);
+      const planLimit = await limitService.fetchLimit();
 
       dispatch(setPlanLimit(planLimit));
     }

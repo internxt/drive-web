@@ -55,6 +55,13 @@ export const Plan = ({ plan, onClick, selectedPlan, currentPlan, totalTeamMember
 const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection, handlePaymentIndividual, selectedPlan, currentPlan, isPaying, isBusiness, handlePaymentTeams }: PlanProps): JSX.Element => {
   const [buttonText, setButtonText] = useState(selectedPlan ? 'Subscribe' : 'Choose your payment');
   const [totalTeamMembers, setTotalTeamMembers] = useState(1);
+  const onBuyButtonClicked = () => {
+    if (isBusiness) {
+      handlePaymentTeams(selectedPlan, product.id, totalTeamMembers);
+    } else {
+      handlePaymentIndividual(selectedPlan, product.id);
+    }
+  };
 
   useEffect(() => {
     setButtonText(selectedPlan ? 'Subscribe' : 'Choose your payment');
@@ -92,13 +99,7 @@ const BillingPlanItem = ({ product, plans, characteristics, handlePlanSelection,
       {characteristics.map(text => <ListItem text={text} key={text} />)}
 
       <div className='mt-4' />
-      <BaseButton classes="w-full primary" disabled={isPaying || !selectedPlan || totalTeamMembers < 1} onClick={() => {
-        if (isBusiness) {
-          handlePaymentTeams(selectedPlan, product.id, totalTeamMembers);
-        } else {
-          handlePaymentIndividual(selectedPlan, product.id);
-        }
-      }}>
+      <BaseButton classes="w-full primary" disabled={isPaying || !selectedPlan || totalTeamMembers < 1} onClick={onBuyButtonClicked}>
         {selectedPlan && isPaying ? 'Redirecting to Stripe...' : buttonText}
       </BaseButton>
     </div>

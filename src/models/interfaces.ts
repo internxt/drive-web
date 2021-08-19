@@ -4,7 +4,7 @@ import { AppViewLayout, TaskType, TaskStatus } from './enums';
 export interface AppConfig {
   plan: AppPlanConfig;
   fileExplorer: AppFileExplorerConfig;
-  views: AppViewConfig;
+  views: AppViewConfig[];
 }
 
 export interface AppPlanConfig {
@@ -17,7 +17,7 @@ export interface AppFileExplorerConfig {
 
 export interface AppViewConfig {
   id: string;
-  layout: AppViewLayout;
+  layout: AppViewLayout | string;
   path: string;
   exact: boolean;
   auth?: boolean;
@@ -100,7 +100,7 @@ export interface DriveFileData {
 }
 
 export interface DriveFileMetadataPayload {
-  metadata: { itemName: string; }
+  metadata: { itemName?: string; }
 }
 
 export type DriveItemData = DriveFileData & DriveFolderData

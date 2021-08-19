@@ -1,5 +1,5 @@
 import { getHeaders } from '../lib/auth';
-import localStorageService from '../services/localStorage.service';
+import localStorageService from './local-storage.service';
 import history from '../lib/history';
 import analyticsService from './analytics.service';
 import { generateNewKeys, updateKeys } from './pgp.service';
@@ -10,11 +10,12 @@ import { decryptPGP } from '../lib/utilspgp';
 import * as bip39 from 'bip39';
 import userService from './user.service';
 import { toast } from 'react-toastify';
+import { UserSettings } from '../models/interfaces';
 
 export function logOut(): void {
   analyticsService.trackSignOut();
   localStorageService.clear();
-  localStorageService.del('workspace');
+  localStorageService.removeItem('workspace');
   history.push('/login');
 }
 
@@ -276,7 +277,7 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
 };
 
 export const getSalt = async (): Promise<any> => {
-  const email = localStorageService.getUser().email;
+  const email = localStorageService.getUser()?.email;
 
   const response = await fetch('/api/login', {
     method: 'post',
@@ -291,6 +292,7 @@ export const getSalt = async (): Promise<any> => {
 
 export const changePassword = async (newPassword: string, currentPassword: string, email: string) => {
   const salt = await getSalt();
+  const user = localStorageService.getUser() as UserSettings;
 
   if (!salt) {
     throw new Error('Internal server error. Please reload.');
@@ -307,7 +309,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 
   // Encrypt the mnemonic
   const encryptedMnemonic = encryptTextWithKey(localStorage.xMnemonic, newPassword);
-  const privateKey = Buffer.from(localStorageService.getUser().privateKey, 'base64').toString();
+  const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = AesUtils.encrypt(privateKey, newPassword);
 
   const response = await fetch('/api/user/password', {

@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { useEffect } from 'react';
 import spinnerIcon from '../../assets/icons/spinner.svg';
 import { tasksActions, tasksSelectors } from '../../store/slices/tasks';
-import { TaskStatus } from '../../models/enums';
+import { TaskStatus, TaskType } from '../../models/enums';
 
 const FileLogger = (): JSX.Element => {
   const notifications = useAppSelector((state) => state.tasks.notifications);
@@ -37,10 +37,10 @@ const FileLogger = (): JSX.Element => {
       setIsOpen(true);
 
       for (const notification of notifications) {
-        if (notification.action === 'download') {
+        if (notification.action === TaskType.DownloadFile || notification.action === TaskType.DownloadFolder) {
           setIsDownloading(true);
         }
-        if (notification.action === 'upload') {
+        if (notification.action === TaskType.UploadFile || notification.action === TaskType.UploadFolder) {
           setIsUploading(true);
         }
       }

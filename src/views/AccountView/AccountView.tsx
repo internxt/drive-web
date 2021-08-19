@@ -14,6 +14,7 @@ import { uiActions } from '../../store/slices/ui';
 import history from '../../lib/history';
 
 import './AccountView.scss';
+import { SelectCallback } from 'react-bootstrap/esm/helpers';
 
 export enum AccountViewTab {
   Billing = 'billing',
@@ -44,7 +45,7 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
     this.props.dispatch(planThunks.initializeThunk());
   }
 
-  onTabSelected = (tabKey: string) => {
+  onTabSelected: SelectCallback = (tabKey) => {
     tabKey && this.props.dispatch(uiActions.setCurrentAccountTab(tabKey));
   }
 

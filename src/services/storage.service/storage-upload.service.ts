@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 
 import { encryptFilename } from '../../lib/utils';
 import { getEnvironmentConfig, Network } from '../../lib/network';
-import localStorageService from '../localStorage.service';
+import localStorageService from '../local-storage.service';
 import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';
@@ -10,6 +10,8 @@ import { DevicePlatform } from '../../models/enums';
 
 export interface UploadItemPayload {
   file: any,
+  size: number,
+  type: string;
   parentFolderId: number
   folderPath: string | undefined
   isTeam: boolean
@@ -22,7 +24,7 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
   }
 
   try {
-    analyticsService.trackFileUploadStart({ file_size: file.size, file_type: file.type, folder_id: file.parentFolderId, userEmail, platform: DevicePlatform.Web });
+    analyticsService.trackFileUploadStart({ file_size: file.size, file_type: file.type, folder_id: file.parentFolderId, email: userEmail, platform: DevicePlatform.Web });
     const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
     if (!bucketId) {
@@ -67,12 +69,12 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
       return res.json();
     });
 
-    analyticsService.trackFileUploadFinished({ file_size: file.size, file_id: data.id, file_type: file.type, userEmail });
+    analyticsService.trackFileUploadFinished({ file_size: file.size, file_id: data.id, file_type: file.type, email: userEmail });
 
     return { res, data };
 
   } catch (err) {
-    analyticsService.trackFileUploadError({ file_size: file.size, file_type: file.type, folder_id: file.parentFolderId, userEmail, msg: err.message, platform: DevicePlatform.Web });
+    analyticsService.trackFileUploadError({ file_size: file.size, file_type: file.type, folder_id: file.parentFolderId, email: userEmail, msg: err.message, platform: DevicePlatform.Web });
 
     throw err;
   }

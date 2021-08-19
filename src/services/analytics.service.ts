@@ -1,7 +1,7 @@
 import * as prettySize from 'prettysize';
 import { AnalyticsTrack, DevicePlatform } from '../models/enums';
 import { UserSettings } from '../models/interfaces';
-import localStorageService from '../services/localStorage.service';
+import localStorageService from './local-storage.service';
 
 export const PATH_NAMES = {
   '/new': 'drive-web-register',
@@ -23,7 +23,7 @@ export function page(pageName: string): void {
 }
 
 function getUser(): UserSettings {
-  return localStorageService.getUser();
+  return localStorageService.getUser() as UserSettings;
 }
 
 function identifyPlanName(bytes: number): string {
@@ -86,28 +86,28 @@ export function trackFileRename(payload: { email: string, file_id: number | stri
   window.analytics.track(AnalyticsTrack.FileRename, payload);
 }
 
-export function trackFileDownloadStart(payload: { file_id: number, file_name: string, file_size: number, file_type: string, email: string, folder_id: string, platform: DevicePlatform }): void {
+export function trackFileDownloadStart(payload: { file_id: string, file_name: string, file_size: number, file_type: string, email: string, folder_id: number, platform: DevicePlatform }): void {
   window.analytics.track(AnalyticsTrack.FileDownloadStart, payload);
 }
 
-export function trackFileDownloadError(payload: { file_id: number, email: string, msg: string, platform: DevicePlatform }): void {
+export function trackFileDownloadError(payload: { file_id: string, email: string, msg: string, platform: DevicePlatform }): void {
   window.analytics.track(AnalyticsTrack.FileDownloadError, payload);
 }
 
-export function trackFileDownloadFinished(payload: { file_id: number, file_size: number, email: string, platform: DevicePlatform }): void {
+export function trackFileDownloadFinished(payload: { file_id: string, file_size: number, email: string, platform: DevicePlatform }): void {
   window.analytics.track(AnalyticsTrack.FileDownloadFinished, payload);
 }
 
 export function trackFileUploadStart(payload: {
   file_size: number,
-  file_type: string, folder_id: string, email: string, platform: DevicePlatform
+  file_type: string, folder_id: number, email: string, platform: DevicePlatform
 }): void {
   window.analytics.track(AnalyticsTrack.FileUploadStart, payload);
 }
 
 export function trackFileUploadError(payload: {
   file_size: number,
-  file_type: string, folder_id: string, email: string, msg: string, platform: DevicePlatform
+  file_type: string, folder_id: number, email: string, msg: string, platform: DevicePlatform
 }): void {
   window.analytics.track(AnalyticsTrack.FileUploadError, payload);
 }

@@ -15,6 +15,7 @@ import { storageActions } from '../../../store/slices/storage';
 import { trackShareLinkBucketIdUndefined } from '../../../services/analytics.service';
 import { userThunks } from '../../../store/slices/user';
 import i18n from '../../../services/i18n.service';
+import { getItemFullName } from '../../../services/storage.service/storage-name.service';
 
 interface ShareItemDialogProps {
   item: DriveItemData
@@ -38,7 +39,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
     dispatch(storageActions.setItemToShare(null));
   };
 
-  const itemFullName = item.isFolder ? item.name : `${item.name}.${item.type}`;
+  const itemFullName = getItemFullName(item.name, item.type);
 
   const handleShareLink = async (views: number) => {
     try {

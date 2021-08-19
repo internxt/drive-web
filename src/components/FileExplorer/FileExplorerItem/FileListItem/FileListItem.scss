@@ -9,6 +9,10 @@
     &.selected {
       @apply bg-blue-20;
     }
+
+    &.is-dragging {
+      @apply opacity-50;
+    }
   }
 
   .hover-action {

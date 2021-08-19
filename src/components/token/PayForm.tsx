@@ -4,7 +4,7 @@ import { Form, Col, Button, Container, Row } from 'react-bootstrap';
 import history from '../../lib/history';
 import Finish from './finish/Finish';
 import { getTokenInfo } from '../../services/token.service';
-import localStorageService from '../../services/localStorage.service';
+import localStorageService from '../../services/local-storage.service';
 import { getHeaders } from '../../lib/auth';
 
 interface ResetProps {
@@ -47,7 +47,7 @@ class PayToken extends React.Component<ResetProps> {
       const tokenInfo = res;
       const tokenPrice = tokenInfo.INXT.quote.EUR.price;
 
-      this.setState({ inxtEUR: tokenPrice.toFixed(2), email: user.email });
+      this.setState({ inxtEUR: tokenPrice.toFixed(2), email: user?.email || '' });
     }).catch(() => {
       this.setState({
         finish: true, error: true

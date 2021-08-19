@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { getHeaders } from '../lib/auth';
 import history from '../lib/history';
-import localStorageService from './localStorage.service';
+import localStorageService from './local-storage.service';
 import analyticsService from './analytics.service';
 import { DriveFolderData, DriveFolderMetadataPayload, UserSettings } from '../models/interfaces';
 import { DevicePlatform } from '../models/enums';
@@ -111,7 +111,7 @@ export async function fetchFolderContent(rootId: number, isTeam: boolean): Promi
 }
 
 export async function createFolder(isTeam: boolean, currentFolderId: number | null, folderName: string): Promise<CreatedFolder> {
-  const user = localStorageService.getUser();
+  const user = localStorageService.getUser() as UserSettings;
   const response = await fetch('/api/storage/folder', {
     method: 'post',
     headers: getHeaders(true, true, isTeam),
@@ -135,7 +135,7 @@ export async function createFolder(isTeam: boolean, currentFolderId: number | nu
 }
 
 export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload, isTeam: boolean): Promise<void> {
-  const user: UserSettings = localStorageService.getUser();
+  const user: UserSettings = localStorageService.getUser() as UserSettings;
 
   return axios.post(`/api/storage/folder/${itemId}/meta`, data)
     .then(() => {
@@ -148,7 +148,7 @@ export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload,
 }
 
 export function deleteFolder(folderData: DriveFolderData, isTeam: boolean): Promise<void | Response> {
-  const user = localStorageService.getUser();
+  const user = localStorageService.getUser() as UserSettings;
   const fetchOptions = {
     method: 'DELETE',
     headers: getHeaders(true, false, isTeam)
@@ -163,7 +163,7 @@ export function deleteFolder(folderData: DriveFolderData, isTeam: boolean): Prom
 }
 
 export async function moveFolder(data: { folderId: number, destination: number }): Promise<void> {
-  const user = localStorageService.getUser();
+  const user = localStorageService.getUser() as UserSettings;
   const response = await axios.post('/api/storage/moveFolder', data);
 
   analyticsService.trackMoveItem('folder', {
