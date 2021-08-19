@@ -16,7 +16,7 @@
     {
       "id":  "appsumo",
       "layout": "empty",
-      "path": "/appsumo/:email",
+      "path": "/appsumo",
       "exact": true
     },
     {
