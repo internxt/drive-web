@@ -32,7 +32,7 @@ interface SignUpProps {
 
 const SignUp = (props: SignUpProps): JSX.Element => {
   const qs = queryString.parse(history.location.search);
-  const hasEmailParam = qs.email && validationService.validateEmail(qs.email as string);
+  const hasEmailParam = qs.email && validationService.validateEmail(qs.email as string) || false;
   const hasTokenParam = qs.token;
   // const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
   const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>(
@@ -58,7 +58,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   if (hasTokenParam && typeof hasTokenParam === 'string') {
     localStorageService.clear();
     localStorageService.set('xToken', hasTokenParam);
-    history.replace(history.location.pathname);
+
   }
 
   const updateInfo = (name: string, lastname: string, email: string, password: string) => {
@@ -246,6 +246,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             placeholder='Email'
             label='email'
             type='email'
+            disabled={hasEmailParam}
             icon={<UilEnvelope className='w-4' />}
             register={register}
             required={true}
