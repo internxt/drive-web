@@ -6,7 +6,8 @@ import './BaseInput.scss';
 
 interface InputProps {
   label: Path<IFormValues>,
-  type: string
+  type: string,
+  disabled?: boolean
   register: UseFormRegister<IFormValues>,
   required: boolean,
   minLength?: ValidationRule<string | number> | undefined
@@ -19,9 +20,9 @@ interface InputProps {
   onClick?: () => void
 }
 
-const InputPrimary = ({ label, type, register, required, placeholder, pattern, icon, minLength, maxLength, min, error, onClick }: InputProps): JSX.Element => (
+const InputPrimary = ({ label, disabled, type, register, required, placeholder, pattern, icon, minLength, maxLength, min, error, onClick }: InputProps): JSX.Element => (
   <div className='relative flex-1'>
-    <input type={type} placeholder={placeholder} autoComplete={label === 'email' ? 'email' : 'new-password'} min={0}
+    <input type={type} disabled={disabled} placeholder={placeholder} autoComplete={label === 'email' ? 'email' : 'new-password'} min={0}
       {...register(label, {
         required,
         minLength,
@@ -33,7 +34,7 @@ const InputPrimary = ({ label, type, register, required, placeholder, pattern, i
     />
 
     <div className={`text-m-neutral-100 absolute ${label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-4 cursor-pointer' : 'right-3 bottom-4'} flex items-center justify-center`}
-      onClick={() => label === 'password' || label === 'confirmPassword' || label === 'currentPassword' ? onClick && onClick() && onClick() : null}
+      onClick={() => label === 'password' || label === 'confirmPassword' || label === 'currentPassword' ? onClick && onClick() : null}
     >
       {icon || null}
     </div>

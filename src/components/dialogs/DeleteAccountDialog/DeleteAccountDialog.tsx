@@ -9,6 +9,7 @@ const DeleteAccountDialog = (props: { isOpen: boolean, onClose: () => void; }): 
   const onAccept = async (): Promise<void> => {
     try {
       await authService.cancelAccount();
+      onClose();
     } catch (e) {
       console.log(e);
     }

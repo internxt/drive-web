@@ -50,13 +50,13 @@ export const uploadItemsThunk = createAsyncThunk(
       return;
     }
 
-    for (const file of files) {
+    for (const [index, file] of files.entries()) {
       const { filename, extension } = getFilenameAndExt(file.name);
       const parentFolderContent = await folderService.fetchFolderContent(parentFolderId, isTeam);
       const [filenameExist, filenameIndex, finalFilename] = storageService.name.checkFileNameExists(parentFolderContent.newCommanderFiles, filename, extension);
       const fileContent = file;
       const notification: NotificationData = {
-        uuid: requestId,
+        uuid: `${requestId}-${index}`,
         action: TaskType.UploadFile,
         status: TaskStatus.Pending,
         name: finalFilename,

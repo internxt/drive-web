@@ -49,67 +49,73 @@ class DriveItemInfoMenu extends React.Component<DriveItemInfoMenuProps, DriveIte
 
   render(): JSX.Element {
     const { item } = this.props;
-    const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
+    let template: JSX.Element = <div></div>;
 
-    return (
-      <div className="w-activity-1280 min-w-activity-1280 bg-white ml-24px rounded-4px p-24px">
+    if (item) {
+      const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
-        {/* HEADER */}
-        <div className="flex items-center mb-6">
-          <div className="flex items-center min-w-9 w-9 h-9">
-            <ItemIconComponent className="h-full" />
-          </div>
-          <span
-            className="mx-2 overflow-hidden whitespace-nowrap overflow-ellipsis block font-semibold text-neutral-700 text-sm w-full max-w-full"
-          >{this.itemFullName}</span>
-          <div className="w-6 cursor-pointer" onClick={this.onCloseButtonClicked}>
-            <Unicons.UilTimes className="text-blue-40" />
-          </div>
-        </div>
+      template = (
+        <div className="w-activity-1280 min-w-activity-1280 bg-white ml-24px rounded-4px p-24px">
 
-        {/* TABS */}
-        <div className="border-b border-l-neutral-50 text-center text-sm mb-4">
-          <div className="file-activity-tabs-inner-container">
-            <div className="border-b border-blue-60 text-blue-60 w-1/2">
-              Info
+          {/* HEADER */}
+          <div className="flex items-center mb-6">
+            <div className="flex items-center min-w-9 w-9 h-9">
+              <ItemIconComponent className="h-full" />
+            </div>
+            <span
+              className="mx-2 overflow-hidden whitespace-nowrap overflow-ellipsis block font-semibold text-neutral-700 text-sm w-full max-w-full"
+            >{this.itemFullName}</span>
+            <div className="w-6 cursor-pointer" onClick={this.onCloseButtonClicked}>
+              <Unicons.UilTimes className="text-blue-40" />
             </div>
           </div>
-        </div>
 
-        {/* INFO TAB CONTENT */}
-        <div className="relative border-l border-dashed border-l-neutral-50 pl-4">
-          <div className="w-3 absolute bg-white -left-1.5">
-            <Unicons.UilFolderNetwork className="w-full" />
-          </div>
-          <div className="file-activity-info-item">
-            <span className="label">Folder path</span>
-            <span className="value whitespace-nowrap overflow-ellipsis overflow-hidden">{this.itemFullPath}</span>
+          {/* TABS */}
+          <div className="border-b border-l-neutral-50 text-center text-sm mb-4">
+            <div className="file-activity-tabs-inner-container">
+              <div className="border-b border-blue-60 text-blue-60 w-1/2">
+                Info
+              </div>
+            </div>
           </div>
 
-          {
-            !item.isFolder ? <div className="file-activity-info-item">
-              <span className="label">Type</span>
-              <span className="value">{item.type}</span>
-            </div> : null
-          }
-
-          {!item.isFolder &&
+          {/* INFO TAB CONTENT */}
+          <div className="relative border-l border-dashed border-l-neutral-50 pl-4">
+            <div className="w-3 absolute bg-white -left-1.5">
+              <Unicons.UilFolderNetwork className="w-full" />
+            </div>
             <div className="file-activity-info-item">
-              <span className="label">Size</span>
-              <span className="value">{sizeService.bytesToString(item.size, false).toUpperCase()}</span>
+              <span className="label">Folder path</span>
+              <span className="value whitespace-nowrap overflow-ellipsis overflow-hidden">{this.itemFullPath}</span>
             </div>
-          }
-          <div className="file-activity-info-item">
-            <span className="label">Modified</span>
-            <span className="value">{dateService.format(item.updatedAt, 'DD MMMM YYYY')}</span>
-          </div>
-          <div className="file-activity-info-item">
-            <span className="label">Created</span>
-            <span className="value">{dateService.format(item.createdAt, 'DD MMMM YYYY')}</span>
+
+            {
+              !item.isFolder ? <div className="file-activity-info-item">
+                <span className="label">Type</span>
+                <span className="value">{item.type}</span>
+              </div> : null
+            }
+
+            {!item.isFolder &&
+              <div className="file-activity-info-item">
+                <span className="label">Size</span>
+                <span className="value">{sizeService.bytesToString(item.size, false).toUpperCase()}</span>
+              </div>
+            }
+            <div className="file-activity-info-item">
+              <span className="label">Modified</span>
+              <span className="value">{dateService.format(item.updatedAt, 'DD MMMM YYYY')}</span>
+            </div>
+            <div className="file-activity-info-item">
+              <span className="label">Created</span>
+              <span className="value">{dateService.format(item.createdAt, 'DD MMMM YYYY')}</span>
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    }
+
+    return template;
   }
 }
 

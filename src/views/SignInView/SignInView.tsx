@@ -44,7 +44,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
   const [showErrors, setShowErrors] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showTwoFactorCode, setShowTwoFactorCode] = useState(false);
-  const user: UserSettings = useSelector((state: RootState) => state.user.user);
+  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
   const onSubmit: SubmitHandler<IFormValues> = async formData => {
     setIsLoggingIn(true);

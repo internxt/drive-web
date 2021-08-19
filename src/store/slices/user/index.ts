@@ -12,6 +12,7 @@ import { selectorIsTeam, setWorkspace, teamActions } from '../team';
 import authService from '../../../services/auth.service';
 import { tasksActions } from '../tasks';
 import { uiActions } from '../ui';
+import { planThunks } from '../plan';
 
 interface UserState {
   isInitializing: boolean;
@@ -35,7 +36,6 @@ export const initializeUserThunk = createAsyncThunk(
   'user/initialize',
   async (payload: { redirectToLogin: boolean } = { redirectToLogin: true }, { dispatch, getState }: any) => {
     const { user, isAuthenticated } = getState().user;
-    const isTeam = selectorIsTeam(getState());
 
     if (user && isAuthenticated) {
       if (!user.root_folder_id) {
@@ -53,11 +53,7 @@ export const initializeUserThunk = createAsyncThunk(
           await storeTeamsInfo();
           dispatch(teamActions.initialize());
         } catch (e) {
-          localStorageService.del('xTeam');
-        }
-
-        if (localStorageService.exists('xTeam') && isTeam && localStorageService.get('workspace') === Workspace.Business) {
-          dispatch(handleChangeWorkspaceThunk());
+          localStorageService.removeItem('xTeam');
         }
 
         dispatch(setIsUserInitialized(true));
@@ -68,14 +64,16 @@ export const initializeUserThunk = createAsyncThunk(
   }
 );
 
-export const handleChangeWorkspaceThunk = createAsyncThunk(
+export const changeWorkspaceThunk = createAsyncThunk<void, void, { state: RootState }>(
   'user/changeWorkspace',
-  async (payload: void, { dispatch, getState }: any) => {
+  async (payload: void, { dispatch, getState }) => {
     const isTeam: boolean = selectorIsTeam(getState());
+    const newWorkspace = isTeam ? Workspace.Personal : Workspace.Business;
 
-    isTeam ? dispatch(setWorkspace(Workspace.Personal)) : dispatch(setWorkspace(Workspace.Business));
+    dispatch(setWorkspace(newWorkspace));
+    localStorageService.set('workspace', newWorkspace);
 
-    localStorageService.set('workspace', isTeam ? Workspace.Business : Workspace.Personal);
+    dispatch(planThunks.initializeThunk());
   }
 );
 
@@ -156,7 +154,7 @@ export const setIsLoadingStripePlan = (state: RootState): boolean => state.user.
 export const userThunks = {
   initializeUserThunk,
   logoutThunk,
-  handleChangeWorkspaceThunk
+  changeWorkspaceThunk
 };
 
 export const userSelectors = {

@@ -47,7 +47,7 @@ class PayToken extends React.Component<ResetProps> {
       const tokenInfo = res;
       const tokenPrice = tokenInfo.INXT.quote.EUR.price;
 
-      this.setState({ inxtEUR: tokenPrice.toFixed(2), email: user.email });
+      this.setState({ inxtEUR: tokenPrice.toFixed(2), email: user?.email || '' });
     }).catch(() => {
       this.setState({
         finish: true, error: true

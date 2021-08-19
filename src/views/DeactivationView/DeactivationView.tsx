@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Alert, Container } from 'react-bootstrap';
 import axios from 'axios';
-import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
+import 'react-toastify/dist/ReactToastify.css';
 
 import history from '../../lib/history';
 import { isMobile } from 'react-device-detect';

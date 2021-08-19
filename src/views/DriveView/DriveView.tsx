@@ -27,7 +27,7 @@ class DriveView extends Component<DriveViewProps, {}> {
   fetchItems = (): void => {
     const { dispatch } = this.props;
 
-    dispatch(storageThunks.fetchFolderContentThunk());
+    dispatch(storageThunks.fetchFolderContentThunk(-1));
   }
 
   get breadcrumbItems(): BreadcrumbItemData[] {

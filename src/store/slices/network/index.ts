@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from '..';
+import { RootState } from '../..';
 
 interface NetworkState {
   hasConnection: boolean
@@ -21,6 +21,6 @@ export const networkSlice = createSlice({
 
 export const { setHasConnection } = networkSlice.actions;
 
-export const selectHasConnection = (state: RootState) => state.network.hasConnection;
+export const selectHasConnection = (state: RootState): boolean => state.network.hasConnection;
 
 export default networkSlice.reducer;

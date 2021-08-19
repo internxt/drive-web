@@ -7,17 +7,17 @@ import { userThunks } from '../store/slices/user';
 
 const axiosPlugin: AppPlugin = {
   install(store): void {
+    axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+
     axios.interceptors.request.use(requestConfig => {
       const workspace = localStorageService.get('workspace');
       const isTeam = workspace === Workspace.Business;
-      const bearerToken = !isTeam ?
-        localStorageService.get('xToken') :
-        localStorageService.get('xTokenTeam');
+      const bearerToken = isTeam ?
+        localStorageService.get('xTokenTeam') :
+        localStorageService.get('xToken');
       const mnemonic = isTeam ?
-        localStorageService.getTeams().bridge_mnemonic :
+        localStorageService.getTeams()?.bridge_mnemonic :
         localStorageService.get('xMnemonic');
-
-      requestConfig.baseURL = process.env.REACT_APP_API_URL;
 
       requestConfig.headers = {
         'content-type': 'application/json; charset=utf-8',
