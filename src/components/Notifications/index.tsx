@@ -26,7 +26,7 @@ const Toast = ({ text, IconComponent, messageClassName }: ToastProps): JSX.Eleme
 const notify = (text: string, type: ToastType, duration: number = 3000): void => {
   const configByType = {
     success: {
-      messageClassName: 'text-neutral-900',
+      messageClassName: 'text-white',
       background: '#42BE65',
       icon: Unicons.UilCheckCircle
     },

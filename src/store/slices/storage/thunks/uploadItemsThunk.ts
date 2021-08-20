@@ -7,7 +7,7 @@ import folderService from '../../../../services/folder.service';
 import { getFilenameAndExt } from '../../../../lib/utils';
 import storageService from '../../../../services/storage.service';
 import { TaskType, TaskStatus } from '../../../../models/enums';
-import { NotificationData } from '../../../../models/interfaces';
+import { DriveItemData, NotificationData } from '../../../../models/interfaces';
 import { tasksActions } from '../../tasks';
 import { StorageState } from '..';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../lib/constants';
@@ -52,8 +52,12 @@ export const uploadItemsThunk = createAsyncThunk(
 
     for (const [index, file] of files.entries()) {
       const { filename, extension } = getFilenameAndExt(file.name);
-      const parentFolderContent = await folderService.fetchFolderContent(parentFolderId, isTeam);
-      const [filenameExist, filenameIndex, finalFilename] = storageService.name.checkFileNameExists(parentFolderContent.newCommanderFiles, filename, extension);
+      const parentFolderContent = await folderService.fetchFolderContent(parentFolderId);
+      const [filenameExist, filenameIndex, finalFilename] = storageService.name.checkFileNameExists(
+        parentFolderContent.files as DriveItemData[],
+        filename,
+        extension
+      );
       const fileContent = file;
       const notification: NotificationData = {
         uuid: `${requestId}-${index}`,

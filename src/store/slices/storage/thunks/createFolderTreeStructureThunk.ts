@@ -8,7 +8,6 @@ import { NotificationData } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
 import { tasksActions } from '../../tasks';
-import { selectorIsTeam } from '../../team';
 import { uploadItemsThunk } from './uploadItemsThunk';
 
 interface IRoot extends DirectoryEntry {
@@ -30,7 +29,6 @@ interface CreateFolderTreeStructurePayload {
 export const createFolderTreeStructureThunk = createAsyncThunk<void, CreateFolderTreeStructurePayload, { state: RootState }>(
   'storage/createFolderStructure',
   async ({ root, currentFolderId, options }, { getState, dispatch, requestId }) => {
-    const isTeam: boolean = selectorIsTeam(getState());
     const levels = [root];
     const notification: NotificationData = {
       uuid: requestId,
@@ -51,7 +49,7 @@ export const createFolderTreeStructureThunk = createAsyncThunk<void, CreateFolde
 
       while (levels.length > 0) {
         const level: IRoot = levels.shift() as IRoot;
-        const folderUploaded = await folderService.createFolder(isTeam, level.folderId, level.name);
+        const folderUploaded = await folderService.createFolder(level.folderId, level.name);
 
         await dispatch(uploadItemsThunk({
           files: level.childrenFiles || [],

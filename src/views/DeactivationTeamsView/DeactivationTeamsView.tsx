@@ -1,72 +1,71 @@
-import * as React from 'react';
+import { Component, ReactNode } from 'react';
 import axios from 'axios';
-import history from '../../lib/history';
-import { toast } from 'react-toastify';
+import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 
-import './DeactivationTeamsView.scss';
+import history from '../../lib/history';
+import notify, { ToastType } from '../../components/Notifications';
 
 interface DeactivationTeamsViewProps {
-    match: any
+    match: match<{ token: string}>
 }
 
-class DeactivationTeamsView extends React.Component<DeactivationTeamsViewProps> {
+class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
     state = {
       token: this.props.match.params.token,
       result: this.confirmDeactivation(),
       errorReason: ''
     }
 
-    IsValidToken = (token: string) => {
+    IsValidToken = (token: string): boolean => {
       return /^[a-z0-9]{512}$/.test(token);
     }
 
-    ClearAndRedirect = () => {
+    ClearAndRedirect = (): void => {
       console.log('Clear and redirect');
       localStorage.clear();
 
-      toast.info('Your account has been deactivated');
+      notify('Your account has been deactivated', ToastType.Info);
       history.push('/');
 
     }
 
-    ConfirmDeactivateTeam = (token: string) => {
+    ConfirmDeactivateTeam = (token: string): Promise<void> => {
       console.log(token);
-      axios.get('/api/confirmDeactivationTeam/' + token).then(res => {
+
+      return axios.get('/api/confirmDeactivationTeam/' + token).then(res => {
         console.log('All is ok');
         this.ClearAndRedirect();
       }).catch(err => {
-        toast.warn('Invalid token');
+        notify('Invalid token', ToastType.Warning);
         history.push('/');
       });
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
       console.log('TOKEN WEB', this.state.token);
       if (this.IsValidToken(this.state.token)) {
         this.ConfirmDeactivateTeam(this.state.token);
       } else {
 
-        toast.warn('Invalid token');
+        notify('Invalid token', ToastType.Warning);
         history.push('/');
 
       }
     }
 
-    render() {
-
-      return '';
-
-    }
-
-    confirmDeactivation() {
+    confirmDeactivation(): JSX.Element {
       return <p>Your account has been deactivated</p>;
     }
 
-    invalidDeactivationToken() {
+    invalidDeactivationToken(): JSX.Element {
       return <div>
         <p>Invalid token</p>
       </div>;
+    }
+
+    render(): ReactNode {
+      return <div></div>;
     }
 }
 

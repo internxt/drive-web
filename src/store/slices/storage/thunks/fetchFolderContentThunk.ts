@@ -4,25 +4,27 @@ import _ from 'lodash';
 import { storageActions, StorageState } from '..';
 import { RootState } from '../../..';
 import notify, { ToastType } from '../../../../components/Notifications';
+import { DriveItemData } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
-import { selectorIsTeam } from '../../team';
 import storageSelectors from '../storageSelectors';
 
 export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchFolderContent',
   async (folderId: number = -1, { getState, dispatch }) => {
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
-    const isTeam: boolean = selectorIsTeam(getState());
 
     folderId = ~folderId ? folderId : currentFolderId;
 
-    const content = await folderService.fetchFolderContent(folderId, isTeam);
+    const content = await folderService.fetchFolderContent(folderId);
 
     dispatch(storageActions.clearSelectedItems());
 
     dispatch(
-      storageActions.setItems(_.concat(content.newCommanderFolders, content.newCommanderFiles))
+      storageActions.setItems(_.concat(
+        content.folders as DriveItemData[],
+        content.files as DriveItemData[]
+      ))
     );
   }
 );

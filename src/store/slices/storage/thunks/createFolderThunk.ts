@@ -7,14 +7,12 @@ import { StorageItemList } from '../../../../models/enums';
 import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
 import folderService, { CreatedFolder } from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
-import { selectorIsTeam } from '../../team';
 
 export const createFolderThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/createFolder',
   async (folderName: string, { getState, dispatch }) => {
-    const isTeam: boolean = selectorIsTeam(getState());
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
-    const createdFolder: CreatedFolder = await folderService.createFolder(isTeam, currentFolderId, folderName);
+    const createdFolder: CreatedFolder = await folderService.createFolder(currentFolderId, folderName);
     const createdFolderNormalized: DriveFolderData = {
       ...createdFolder,
       name: folderName,
@@ -43,6 +41,8 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
       const errorMessage = action.error.message?.includes('already exists') ?
         i18n.get('error.folderAlreadyExists') :
         i18n.get('error.creatingFolder');
+
+      console.log('createFolderThunk rejected: ', action);
 
       notify(errorMessage, ToastType.Error);
     });

@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react';
+import { generateMnemonic } from 'bip39';
+import { UilBuilding, UilHome } from '@iconscout/react-unicons';
+
 import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts, payStripePlan } from '../../../../services/products.service';
 import notify, { ToastType } from '../../../../components/Notifications';
 import analyticsService from '../../../../services/analytics.service';
 import BillingPlanItem from './BillingPlanItem';
-import { generateMnemonic } from 'bip39';
-import { decryptPGP, encryptPGP } from '../../../../lib/utilspgp';
+import { encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
-import './AccountPlansTab.scss';
 import { useAppDispatch } from '../../../../store/hooks';
-import { setUserPlan, userActions } from '../../../../store/slices/user';
 import { fetchUserPlan } from '../../../../services/user.service';
-import { UilBuilding, UilHome } from '@iconscout/react-unicons';
 import BillingCardSkeletton from '../../../../components/skinSkeleton/BillingCardSkeletton';
 import { Workspace } from '../../../../models/enums';
 import i18n from '../../../../services/i18n.service';
 import envService from '../../../../services/env.service';
+import { planActions } from '../../../../store/slices/plan';
+
+import './AccountPlansTab.scss';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: Workspace, isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -80,9 +82,9 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
         const teamsProducts = await loadAvailableTeamsProducts();
 
         if (userPlan) {
-          dispatch(setUserPlan(userPlan));
+          dispatch(planActions.setUserPlan(userPlan));
         }
-        dispatch(userActions.setIsLoadingStripePlan(false));
+        dispatch(planActions.setIsLoadingStripePlan(false));
 
         const productsWithPlans = products.map(async product => ({
           product: product,

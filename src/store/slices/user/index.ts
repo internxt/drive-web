@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { RootState } from '../..';
 
 import history from '../../../lib/history';
-import { IUserPlan, UserSettings } from '../../../models/interfaces';
+import { UserSettings } from '../../../models/interfaces';
 import { Workspace } from '../../../models/enums';
 import localStorageService from '../../../services/local-storage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
@@ -18,18 +18,14 @@ interface UserState {
   isInitializing: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;
-  user?: UserSettings,
-  currentPlan: null | IUserPlan,
-  isLoadingStripe: boolean
+  user?: UserSettings
 }
 
 const initialState: UserState = {
   isInitializing: false,
   isAuthenticated: false,
   isInitialized: false,
-  user: undefined,
-  currentPlan: null,
-  isLoadingStripe: true
+  user: undefined
 };
 
 export const initializeUserThunk = createAsyncThunk(
@@ -108,12 +104,6 @@ export const userSlice = createSlice({
       state.user = action.payload;
 
       localStorageService.set('xUser', JSON.stringify(action.payload));
-    },
-    setUserPlan: (state: UserState, action: PayloadAction<IUserPlan>) => {
-      state.currentPlan = action.payload;
-    },
-    setIsLoadingStripePlan: (state: UserState, action: PayloadAction<boolean>) => {
-      state.isLoadingStripe = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -144,22 +134,14 @@ export const {
   initialize,
   resetState,
   setIsUserInitialized,
-  setUser,
-  setUserPlan
+  setUser
 } = userSlice.actions;
 export const userActions = userSlice.actions;
 
-export const selectUserPlan = (state: RootState): IUserPlan | null => state.user.currentPlan;
-export const setIsLoadingStripePlan = (state: RootState): boolean => state.user.isLoadingStripe;
 export const userThunks = {
   initializeUserThunk,
   logoutThunk,
   changeWorkspaceThunk
-};
-
-export const userSelectors = {
-  selectUserPlan,
-  setIsLoadingStripePlan
 };
 
 export default userSlice.reducer;

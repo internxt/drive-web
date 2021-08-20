@@ -4,7 +4,6 @@ import { UilUserCircle, UilEnvelope } from '@iconscout/react-unicons';
 import { bytesToString } from '../../../../services/size.service';
 import usageService, { getUserLimitString } from '../../../../services/usage.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
-import { selectUserPlan, setIsLoadingStripePlan } from '../../../../store/slices/user';
 import { ListItem } from '../AccountPlansTab/BillingPlanItem';
 import { selectorIsTeam } from '../../../../store/slices/team';
 import { setCurrentAccountTab } from '../../../../store/slices/ui';
@@ -15,13 +14,13 @@ import './AccountPlanInfoTab.scss';
 
 const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
   const [usage, setUsage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const isLoadingPlanLimit = useAppSelector((state) => state.plan.isLoading);
   const planLimit = useAppSelector((state) => state.plan.planLimit);
   const user = useAppSelector((state) => state.user.user);
-  const userPlan = useAppSelector(selectUserPlan);
+  const userPlan = useAppSelector((state) => state.plan.currentPlan);
   const isTeam = useAppSelector(selectorIsTeam);
-  const [isLoading, setIsLoading] = useState(false);
-  const isLoadingStripe = useAppSelector(setIsLoadingStripePlan);
+  const isLoadingStripe = useAppSelector((state) => state.plan.isLoadingStripe);
   const hasLifetimePlan = useAppSelector(planSelectors.hasLifetimePlan);
   const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
