@@ -1,26 +1,26 @@
 import { Fragment, useEffect, useState } from 'react';
-import { UilUserCircle, UilEnvelope } from '@iconscout/react-unicons';
+import { UilUserCircle, UilEnvelope, UilCheck } from '@iconscout/react-unicons';
 
 import { bytesToString } from '../../../../services/size.service';
 import usageService, { getUserLimitString } from '../../../../services/usage.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
-import { ListItem } from '../AccountPlansTab/BillingPlanItem';
 import { selectorIsTeam } from '../../../../store/slices/team';
 import { setCurrentAccountTab } from '../../../../store/slices/ui';
 import { planSelectors } from '../../../../store/slices/plan';
 import { AccountViewTab } from '../../AccountView';
+import configService from '../../../../services/config.service';
 
 import './AccountPlanInfoTab.scss';
 
-const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
+const AccountPlanInfoTab = (props: { }): JSX.Element => {
   const [usage, setUsage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const isLoadingPlanLimit = useAppSelector((state) => state.plan.isLoading);
-  const planLimit = useAppSelector((state) => state.plan.planLimit);
   const user = useAppSelector((state) => state.user.user);
+  const isLoadingPlanLimit = useAppSelector((state) => state.plan.isLoadingPlanLimit);
+  const planLimit = useAppSelector((state) => state.plan.planLimit);
+  const isLoadingCurrentPlan = useAppSelector((state) => state.plan.isLoadingCurrentPlan);
   const userPlan = useAppSelector((state) => state.plan.currentPlan);
   const isTeam = useAppSelector(selectorIsTeam);
-  const isLoadingStripe = useAppSelector((state) => state.plan.isLoadingStripe);
   const hasLifetimePlan = useAppSelector(planSelectors.hasLifetimePlan);
   const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
@@ -39,7 +39,6 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
       } finally {
         setIsLoading(false);
       }
-
     };
 
     getUsage();
@@ -48,13 +47,12 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
   const planName = () => {
     let planName;
 
-    if (!isLoadingStripe) {
-      if (userPlan) {
-        planName = userPlan.name;
-      } else {
-        planName = getUserLimitString(planLimit);
-      }
+    if (userPlan) {
+      planName = userPlan.name;
+    } else {
+      planName = getUserLimitString(planLimit);
     }
+
     return planName;
   };
 
@@ -123,7 +121,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
             <span className='text-neutral-700 font-semibold text-sm'>{planName()}</span>
 
             <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
-              {!isLoadingStripe ?
+              {!isLoadingCurrentPlan ?
                 <Fragment>
                   {
                     userPlan ?
@@ -144,7 +142,12 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
               }
             </div>
 
-            {!hasLifetimePlan && plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
+            {!hasLifetimePlan && configService.getAppConfig().plan.defaultFeatures.map((text, index) => (
+              <div key={index} className='flex justify-start items-center mb-2'>
+                <UilCheck className="text-blue-60" />
+                <p className='text-xs ml-2.5'>{text}</p>
+              </div>
+            ))}
 
             <button className={`${hasLifetimePlan ? 'hidden' : ''} primary w-full`} onClick={onUpgradeButtonClicked}>
               Upgrade

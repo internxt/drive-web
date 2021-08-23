@@ -113,7 +113,7 @@ export async function createFolder(currentFolderId: number | null, folderName: s
   }
 }
 
-export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload, isTeam: boolean): Promise<void> {
+export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload): Promise<void> {
   const user: UserSettings = localStorageService.getUser() as UserSettings;
 
   return axios.post(`/api/storage/folder/${itemId}/meta`, data)
@@ -126,7 +126,7 @@ export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload,
     });
 }
 
-export function deleteFolder(folderData: DriveFolderData, isTeam: boolean): Promise<void | Response> {
+export function deleteFolder(folderData: DriveFolderData): Promise<void | Response> {
   const user = localStorageService.getUser() as UserSettings;
 
   return axios.delete(`/api/storage/folder/${folderData.id}`).then(() => {

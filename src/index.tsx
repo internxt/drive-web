@@ -8,10 +8,12 @@ import { store } from './store';
 import { userActions } from './store/slices/user';
 import { teamActions } from './store/slices/team';
 
-import './index.scss';
+import plugins from './plugins';
 import { storageThunks } from './store/slices/storage';
 import { planThunks } from './store/slices/plan';
-import plugins from './plugins';
+import { productsThunks } from './store/slices/products';
+
+import './index.scss';
 
 // Installs plugins
 plugins.forEach(plugin => plugin.install(store));
@@ -21,6 +23,7 @@ store.dispatch(userActions.initialize());
 store.dispatch(teamActions.initialize());
 store.dispatch(storageThunks.initializeThunk());
 store.dispatch(planThunks.initializeThunk());
+store.dispatch(productsThunks.initializeThunk());
 
 ReactDOM.render(
   <React.StrictMode>

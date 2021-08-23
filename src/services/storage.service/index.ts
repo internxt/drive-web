@@ -9,7 +9,7 @@ export function deleteItems(items: DriveItemData[], isTeam: boolean): Promise<an
 
   for (const item of items) {
     promises.push((item.isFolder ?
-      folderService.deleteFolder(item as DriveFolderData, isTeam) :
+      folderService.deleteFolder(item as DriveFolderData) :
       fileService.deleteFile(item as DriveFileData, isTeam)
     ));
   }

@@ -10,6 +10,7 @@ export interface AppConfig {
 export interface AppPlanConfig {
   freePlanStorageLimit: number;
   maxStorageLimit: number;
+  defaultFeatures: string[];
 }
 export interface AppFileExplorerConfig {
   recentsLimit: number;
@@ -139,15 +140,6 @@ export interface IFormValues {
   backupKey: string,
   createFolder: string,
   teamMembers: number
-}
-
-export type IBillingPlan = {
-  [id: string]: {
-    product: IStripeProduct,
-    plans: IStripePlan[],
-    selected: string,
-    currentPlan: string
-  }
 }
 
 export type IStripeProduct = {

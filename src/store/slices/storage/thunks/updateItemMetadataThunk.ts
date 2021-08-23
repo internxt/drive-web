@@ -17,7 +17,7 @@ export const updateItemMetadataThunk = createAsyncThunk<void, { item: DriveItemD
     const { item, metadata } = payload;
 
     item.isFolder ?
-      await folderService.updateMetaData(item.id, metadata, isTeam) :
+      await folderService.updateMetaData(item.id, metadata) :
       await fileService.updateMetaData(item.fileId, metadata, isTeam);
 
     dispatch(storageActions.patchItem({

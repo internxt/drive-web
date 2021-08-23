@@ -1,71 +1,102 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+
 import { RootState } from '../..';
 import { IUserPlan } from '../../../models/interfaces';
 import configService from '../../../services/config.service';
 import limitService from '../../../services/limit.service';
+import { fetchUserPlan } from '../../../services/user.service';
 
 interface PlanState {
+  isLoadingCurrentPlan: boolean;
+  isLoadingPlanLimit: boolean;
   currentPlan: IUserPlan | null;
-  isLoadingStripe: boolean;
-  isLoading: boolean;
   planLimit: number;
 }
 
 const initialState: PlanState = {
+  isLoadingCurrentPlan: false,
+  isLoadingPlanLimit: false,
   currentPlan: null,
-  isLoadingStripe: true,
-  isLoading: false,
   planLimit: 0
 };
 
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
   'plan/initialize',
   async (payload: void, { dispatch, getState }) => {
+    const promises: Promise<void>[] = [];
+
+    promises.push(dispatch(fetchCurrentPlanThunk()).then());
+    promises.push(dispatch(fetchLimitThunk()).then());
+
+    await Promise.all(promises);
+  }
+);
+
+export const fetchCurrentPlanThunk = createAsyncThunk<IUserPlan | null, void, { state: RootState }>(
+  'plan/fetchCurrentPlan',
+  async (payload: void, { dispatch, getState }) => {
+    const currentPlan = await fetchUserPlan();
+
+    return currentPlan;
+  }
+);
+
+export const fetchLimitThunk = createAsyncThunk<number, void, { state: RootState }>(
+  'plan/fetchLimit',
+  async (payload: void, { dispatch, getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
+    let planLimit = 0;
 
     if (isAuthenticated) {
-      const planLimit = await limitService.fetchLimit();
-
-      dispatch(setPlanLimit(planLimit));
+      planLimit = await limitService.fetchLimit();
     }
+
+    return planLimit;
   }
 );
 
 export const planSlice = createSlice({
   name: 'plan',
   initialState,
-  reducers: {
-    setUserPlan: (state: PlanState, action: PayloadAction<IUserPlan>) => {
-      state.currentPlan = action.payload;
-    },
-    setIsLoadingStripePlan: (state: PlanState, action: PayloadAction<boolean>) => {
-      state.isLoadingStripe = action.payload;
-    },
-    setPlanLimit: (state: PlanState, action: PayloadAction<number>) => {
-      state.planLimit = action.payload;
-    }
-  },
+  reducers: { },
   extraReducers: (builder) => {
     builder
-      .addCase(initializeThunk.pending, (state, action) => {
-        state.isLoading = true;
+      .addCase(initializeThunk.pending, (state, action) => { })
+      .addCase(initializeThunk.fulfilled, (state, action) => { })
+      .addCase(initializeThunk.rejected, (state, action) => { });
+
+    builder
+      .addCase(fetchCurrentPlanThunk.pending, (state, action) => {
+        state.isLoadingCurrentPlan = true;
       })
-      .addCase(initializeThunk.fulfilled, (state, action) => {
-        state.isLoading = false;
+      .addCase(fetchCurrentPlanThunk.fulfilled, (state, action) => {
+        state.isLoadingCurrentPlan = false;
+        state.currentPlan = action.payload;
       })
-      .addCase(initializeThunk.rejected, (state, action) => {
-        state.isLoading = false;
+      .addCase(fetchCurrentPlanThunk.rejected, (state, action) => {
+        state.isLoadingCurrentPlan = false;
+      });
+
+    builder
+      .addCase(fetchLimitThunk.pending, (state, action) => {
+        state.isLoadingPlanLimit = true;
+      })
+      .addCase(fetchLimitThunk.fulfilled, (state, action) => {
+        state.isLoadingPlanLimit = false;
+        state.planLimit = action.payload;
+      })
+      .addCase(fetchLimitThunk.rejected, (state, action) => {
+        state.isLoadingPlanLimit = false;
       });
   }
 });
 
-export const {
-  setPlanLimit
-} = planSlice.actions;
 export const planActions = planSlice.actions;
 
 export const planThunks = {
-  initializeThunk
+  initializeThunk,
+  fetchCurrentPlanThunk,
+  fetchLimitThunk
 };
 
 export const planSelectors = {

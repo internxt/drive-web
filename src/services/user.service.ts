@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { getHeaders } from '../lib/auth';
 import { IUserPlan } from '../models/interfaces';
 import envService from './env.service';
@@ -38,18 +39,9 @@ export const sendDeactivationEmail = (email: string): Promise<Response> => {
 
 export const fetchUserPlan = async (): Promise<IUserPlan | null> => {
   const isTest = !envService.isProduction();
-  const response = await fetch(`/api/storage/user/info/stripe/${isTest}`, {
-    method: 'GET',
-    headers: getHeaders(true, false)
-  });
+  const response = await axios.get('/api/storage/user/info/stripe/');
 
-  const data = await response.json();
-
-  if (response.status !== 200) {
-    return null;
-  }
-
-  return data;
+  return response.data;
 };
 
 const userService = {

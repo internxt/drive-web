@@ -13,10 +13,7 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
   'storage/fetchFolderContent',
   async (folderId: number = -1, { getState, dispatch }) => {
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
-
-    folderId = ~folderId ? folderId : currentFolderId;
-
-    const content = await folderService.fetchFolderContent(folderId);
+    const content = await folderService.fetchFolderContent(~folderId ? folderId : currentFolderId);
 
     dispatch(storageActions.clearSelectedItems());
 
