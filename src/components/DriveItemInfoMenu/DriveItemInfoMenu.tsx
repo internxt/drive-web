@@ -99,7 +99,7 @@ class DriveItemInfoMenu extends React.Component<DriveItemInfoMenuProps, DriveIte
             {!item.isFolder &&
               <div className="file-activity-info-item">
                 <span className="label">Size</span>
-                <span className="value">{sizeService.bytesToString(item.size, false).toUpperCase()}</span>
+                <span className="value">{sizeService.bytesToString(item.size, false)}</span>
               </div>
             }
             <div className="file-activity-info-item">
