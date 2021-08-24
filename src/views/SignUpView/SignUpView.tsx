@@ -55,6 +55,18 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const strongPasswordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).+$/;
+
+  const formInputError = Object.values(errors)[0];
+
+  let bottomInfoError: null | string = null;
+
+  if (formInputError?.message){
+    bottomInfoError = formInputError.message;
+  } else if (showError && signupError){
+    bottomInfoError = signupError.toString();
+  }
+
   if (hasTokenParam && typeof hasTokenParam === 'string') {
     localStorageService.clear();
     localStorageService.set('xToken', hasTokenParam);
@@ -108,8 +120,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       const xToken = res.token;
       const xUser = res.user;
 
-      dispatch(userActions.setUser(xUser));
       xUser.mnemonic = mnemonic;
+      dispatch(userActions.setUser(xUser));
 
       return dispatch(userThunks.initializeUserThunk()).then((rootFolderInfo) => {
         localStorageService.set('xToken', xToken);
@@ -199,6 +211,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         await updateInfo(name, lastname, email, password).then(() => {
           history.push('/login');
         }).catch(err => {
+          console.log('ERR', err);
           throw new Error(err.message + ', please contact us');
         });
       } else {
@@ -268,8 +281,9 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             }
             register={register}
             required={true}
-            minLength={1}
+            minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
             error={errors.password}
+            pattern={{ value: strongPasswordRegex, message: 'The password must contain lowercase/uppercase letters and at least a number' }}
           />
 
           <BaseInput
@@ -288,12 +302,9 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             error={errors.confirmPassword}
           />
 
-          {
-            signupError && showError &&
-            <div className='flex mt-1 mb-2'>
-              <span className='text-red-60 text-sm font-medium'>{signupError}</span>
-            </div>
-          }
+          <div className='mt-1 mb-2'>
+            <span className='text-red-60 text-sm font-medium'>{bottomInfoError}</span>
+          </div>
 
           <span className='text-xs font-normal text-neutral-500 text-justify mb-3'>
             Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we don't know your password.

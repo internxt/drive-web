@@ -192,7 +192,7 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
   };
 
   return (
-    <div className='flex flex-col w-full border border-m-neutral-60 rounded-xl mt-10'>
+    <div className='w-full h-fit border border-m-neutral-60 rounded-xl'>
       <div className='flex justify-evenly items-center h-11'>
         <Option text='Individuals' currentOption={currentOption} isBusiness={false} onClick={() => {
           setCurrentOption(Workspace.Personal);

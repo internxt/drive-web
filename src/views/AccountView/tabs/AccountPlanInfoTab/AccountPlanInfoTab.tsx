@@ -11,8 +11,10 @@ import { planSelectors } from '../../../../store/slices/plan';
 import { AccountViewTab } from '../../AccountView';
 
 import './AccountPlanInfoTab.scss';
+import DeleteAccountDialog from '../../../../components/dialogs/DeleteAccountDialog/DeleteAccountDialog';
 
 const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
+  const [isDeleteAccountDialogOpen, setIsDeleteAccountDialogOpen] = useState(false);
   const [usage, setUsage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const isLoadingPlanLimit = useAppSelector((state) => state.plan.isLoading);
@@ -25,6 +27,9 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
   const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
     dispatch(setCurrentAccountTab(AccountViewTab.Plans));
+  };
+  const onDeletePermanentlyAccountClicked = (): void => {
+    setIsDeleteAccountDialogOpen(true);
   };
 
   useEffect(() => {
@@ -59,100 +64,112 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
   };
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-8 w-full h-60 justify-around py-8'>
+    <Fragment>
+      <DeleteAccountDialog isOpen={isDeleteAccountDialogOpen} onClose={() => setIsDeleteAccountDialogOpen(false)} />
 
-      {/* USER CARD */}
-      <div className="flex justify-center">
-        <div className='flex flex-col w-64 h-64 rounded-lg bg-l-neutral-20'>
-          <div className='flex flex-1 items-center justify-center'>
-            <UilUserCircle className='text-blue-60 w-20 h-20' />
-          </div>
+      <div className="flex flex-col w-full h-full items-center">
+        <div className='flex-grow grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-8 w-full justify-around'>
 
-          <div className='flex flex-col justify-center items-center h-20 border-t border-white'>
-            <span className='label_small'>Name</span>
-            {isTeam ?
-              <span className='subtitle m-0'>Business</span>
-              :
-              <span className='subtitle m-0'>{user?.name} {user?.lastname}</span>
-            }
-          </div>
-        </div>
-      </div>
+          {/* USER CARD */}
+          <div className="flex justify-center">
+            <div className='flex flex-col w-64 h-64 rounded-lg bg-l-neutral-20'>
+              <div className='flex flex-1 items-center justify-center'>
+                <UilUserCircle className='text-blue-60 w-20 h-20' />
+              </div>
 
-      {/* PERSONAL INFORMATION */}
-      <div className="flex justify-center">
-        <div className='flex flex-col items-start h-full'>
-          <h2 className='account_config_title mb-3'>Personal information</h2>
-
-          <div className='flex items-center'>
-            <UilUserCircle className='label_icon' />
-            <span className='label_small'>Name</span>
-          </div>
-          {isTeam ?
-            <span className='subtitle'>Business</span>
-            :
-            <span className='subtitle'>{user?.name} {user?.lastname}</span>
-          }
-
-          <div className='flex items-center'>
-            <UilEnvelope className='label_icon' />
-            <span className='label_small'>Email</span>
-          </div>
-          <span className='subtitle'>{user?.email}</span>
-
-          <h2 className='account_config_title mt-0.5 mb-1'>Usage</h2>
-          <div className='flex flex-col items-center justify-center w-56 h-14 bg-l-neutral-20 rounded-md px-6'>
-            {isLoading || isLoadingPlanLimit ?
-              <span>Loading...</span> :
-              <span className='account_config_description m-0'>{bytesToString(usage) || '0'} of {getUserLimitString(planLimit)}</span>
-            }
-
-            <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-1'>
-              <div className='h-full bg-blue-70' style={{ width: (usage / planLimit) * 100 }} />
+              <div className='flex flex-col justify-center items-center h-20 border-t border-white'>
+                <span className='label_small'>Name</span>
+                {isTeam ?
+                  <span className='subtitle m-0'>Business</span>
+                  :
+                  <span className='subtitle m-0'>{user?.name} {user?.lastname}</span>
+                }
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* CURRENT PLAN */}
-      <div className="flex justify-center">
-        <div className='w-56'>
-          <h2 className='account_config_title'>Current plan</h2>
+          {/* PERSONAL INFORMATION */}
+          <div className="flex justify-center">
+            <div className='flex flex-col items-start h-full'>
+              <h2 className='account_config_title mb-3'>Personal information</h2>
 
-          <div className='flex flex-col w-full'>
-            <span className='text-neutral-700 font-semibold text-sm'>{planName()}</span>
-
-            <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
-              {!isLoadingStripe ?
-                <Fragment>
-                  {
-                    userPlan ?
-                      <Fragment>
-                        <span className='font-bold'>{userPlan?.price}€</span>
-                        <span className='text-xs mb-1 ml-2'
-
-                        >/{userPlan?.paymentInterval}</span>
-                      </Fragment>
-                      :
-                      <span className='font-bold'>
-                        {!hasLifetimePlan ? 'Free plan' : 'Lifetime'}
-                      </span>
-                  }
-                </Fragment>
+              <div className='flex items-center'>
+                <UilUserCircle className='label_icon' />
+                <span className='label_small'>Name</span>
+              </div>
+              {isTeam ?
+                <span className='subtitle'>Business</span>
                 :
-                <span className='font-bold'>Loading plan...</span>
+                <span className='subtitle'>{user?.name} {user?.lastname}</span>
               }
+
+              <div className='flex items-center'>
+                <UilEnvelope className='label_icon' />
+                <span className='label_small'>Email</span>
+              </div>
+              <span className='subtitle'>{user?.email}</span>
+
+              <h2 className='account_config_title mt-0.5 mb-1'>Usage</h2>
+              <div className='flex flex-col items-center justify-center w-56 h-14 bg-l-neutral-20 rounded-md px-6'>
+                {isLoading || isLoadingPlanLimit ?
+                  <span>Loading...</span> :
+                  <span className='account_config_description m-0'>{bytesToString(usage) || '0'} of {getUserLimitString(planLimit)}</span>
+                }
+
+                <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-1'>
+                  <div className='h-full bg-blue-70' style={{ width: (usage / planLimit) * 100 }} />
+                </div>
+              </div>
             </div>
+          </div>
 
-            {!hasLifetimePlan && plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
+          {/* CURRENT PLAN */}
+          <div className="flex justify-center">
+            <div className='w-56'>
+              <h2 className='account_config_title'>Current plan</h2>
 
-            <button className={`${hasLifetimePlan ? 'hidden' : ''} primary w-full`} onClick={onUpgradeButtonClicked}>
-              Upgrade
-            </button>
+              <div className='flex flex-col w-full'>
+                <span className='text-neutral-700 font-semibold text-sm'>{planName()}</span>
+
+                <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
+                  {!isLoadingStripe ?
+                    <Fragment>
+                      {
+                        userPlan ?
+                          <Fragment>
+                            <span className='font-bold'>{userPlan?.price}€</span>
+                            <span className='text-xs mb-1 ml-2'
+
+                            >/{userPlan?.paymentInterval}</span>
+                          </Fragment>
+                          :
+                          <span className='font-bold'>
+                            {!hasLifetimePlan ? 'Free plan' : 'Lifetime'}
+                          </span>
+                      }
+                    </Fragment>
+                    :
+                    <span className='font-bold'>Loading plan...</span>
+                  }
+                </div>
+
+                {!hasLifetimePlan && plansCharacteristics.map((text, index) => <ListItem text={text} key={index} />)}
+
+                <button className={`${hasLifetimePlan ? 'hidden' : ''} primary w-full`} onClick={onUpgradeButtonClicked}>
+                Upgrade
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+
+        <span
+          className="text-m-neutral-80 cursor-pointer mt-10"
+          onClick={onDeletePermanentlyAccountClicked}
+        >Permanently delete account</span>
       </div>
-    </div>
+    </Fragment>
+
   );
 };
 
