@@ -143,7 +143,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
           <div className="hidden lg:flex items-center w-3/12 whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>
 
           {/* SIZE */}
-          <div className="flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false).toUpperCase()}</div>
+          <div className="flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false)}</div>
 
           {/* ACTIONS BUTTON */}
           <div className="flex items-center w-1/12">
