@@ -1,6 +1,6 @@
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 
-import { StorageState } from '..';
+import { StorageState } from '../storage.model';
 import { initializeThunk, initializeThunkExtraReducers } from './initializeThunk';
 import { resetNamePathThunk, resetNamePathThunkExtraReducers } from './resetNamePathThunk';
 import { uploadItemsThunk, uploadItemsThunkExtraReducers } from './uploadItemsThunk';

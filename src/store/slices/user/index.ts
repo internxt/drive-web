@@ -4,15 +4,15 @@ import { RootState } from '../..';
 
 import history from '../../../lib/history';
 import { UserSettings } from '../../../models/interfaces';
-import { Workspace } from '../../../models/enums';
 import localStorageService from '../../../services/local-storage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
-import { selectorIsTeam, setWorkspace, teamActions } from '../team';
+import { teamActions } from '../team';
 import authService from '../../../services/auth.service';
 import { tasksActions } from '../tasks';
 import { uiActions } from '../ui';
-import { planThunks } from '../plan';
+import { sessionActions } from '../session';
+import { storageActions } from '../storage';
 
 interface UserState {
   isInitializing: boolean;
@@ -28,10 +28,15 @@ const initialState: UserState = {
   user: undefined
 };
 
-export const initializeUserThunk = createAsyncThunk(
+export const initializeUserThunk = createAsyncThunk<void, {redirectToLogin: boolean } | undefined, { state: RootState }>(
   'user/initialize',
-  async (payload: { redirectToLogin: boolean } = { redirectToLogin: true }, { dispatch, getState }: any) => {
+  async (payload: { redirectToLogin?: boolean } = {}, { dispatch, getState }) => {
+    const defaultPayload = {
+      redirectToLogin: true
+    };
     const { user, isAuthenticated } = getState().user;
+
+    payload = { ...defaultPayload, ...payload };
 
     if (user && isAuthenticated) {
       if (!user.root_folder_id) {
@@ -60,26 +65,15 @@ export const initializeUserThunk = createAsyncThunk(
   }
 );
 
-export const changeWorkspaceThunk = createAsyncThunk<void, void, { state: RootState }>(
-  'user/changeWorkspace',
-  async (payload: void, { dispatch, getState }) => {
-    const isTeam: boolean = selectorIsTeam(getState());
-    const newWorkspace = isTeam ? Workspace.Personal : Workspace.Business;
-
-    dispatch(setWorkspace(newWorkspace));
-    localStorageService.set('workspace', newWorkspace);
-
-    dispatch(planThunks.initializeThunk());
-  }
-);
-
 export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
   'user/logout',
   async (payload: void, { dispatch, getState }) => {
     authService.logOut();
 
-    dispatch(teamActions.resetState());
+    dispatch(sessionActions.resetState());
     dispatch(userActions.resetState());
+    dispatch(teamActions.resetState());
+    dispatch(storageActions.resetState());
     dispatch(uiActions.resetState());
     dispatch(tasksActions.resetState());
   }
@@ -89,9 +83,6 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    resetState: (state: UserState) => {
-      Object.assign(state, initialState);
-    },
     initialize: (state: UserState) => {
       state.user = localStorageService.getUser() || undefined;
       state.isAuthenticated = !!state.user;
@@ -104,6 +95,9 @@ export const userSlice = createSlice({
       state.user = action.payload;
 
       localStorageService.set('xUser', JSON.stringify(action.payload));
+    },
+    resetState: (state: UserState) => {
+      Object.assign(state, initialState);
     }
   },
   extraReducers: (builder) => {
@@ -140,8 +134,7 @@ export const userActions = userSlice.actions;
 
 export const userThunks = {
   initializeUserThunk,
-  logoutThunk,
-  changeWorkspaceThunk
+  logoutThunk
 };
 
 export default userSlice.reducer;

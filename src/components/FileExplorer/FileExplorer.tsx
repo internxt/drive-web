@@ -8,7 +8,7 @@ import { getHeaders } from '../../lib/auth';
 import { DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
 import { Workspace } from '../../models/enums';
 
-import { storageThunks, storageActions, storageSelectors, StorageFilters } from '../../store/slices/storage';
+import { storageActions, storageSelectors } from '../../store/slices/storage';
 import { AppDispatch, RootState } from '../../store';
 
 import DriveItemInfoMenu from '../DriveItemInfoMenu/DriveItemInfoMenu';
@@ -29,6 +29,8 @@ import { getAllItems } from '../../services/drag-and-drop.service';
 import DeleteItemsDialog from '../dialogs/DeleteItemsDialog/DeleteItemsDialog';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
+import { StorageFilters } from '../../store/slices/storage/storage.model';
+import storageThunks from '../../store/slices/storage/storage.thunks';
 
 interface FileExplorerProps {
   title: JSX.Element | string;
@@ -384,7 +386,7 @@ export default connect(
       infoItem: state.storage.infoItem,
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
-      workspace: state.team.workspace,
+      workspace: state.session.workspace,
       planLimit: state.plan.planLimit
     };
   })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(FileExplorer));

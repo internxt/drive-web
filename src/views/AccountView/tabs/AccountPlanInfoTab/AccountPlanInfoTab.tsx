@@ -4,23 +4,23 @@ import { UilUserCircle, UilEnvelope, UilCheck } from '@iconscout/react-unicons';
 import { bytesToString } from '../../../../services/size.service';
 import usageService, { getUserLimitString } from '../../../../services/usage.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
-import { selectorIsTeam } from '../../../../store/slices/team';
 import { setCurrentAccountTab } from '../../../../store/slices/ui';
 import { planSelectors } from '../../../../store/slices/plan';
 import { AccountViewTab } from '../../AccountView';
 import configService from '../../../../services/config.service';
+import { sessionSelectors } from '../../../../store/slices/session/session.selectors';
 
 import './AccountPlanInfoTab.scss';
 
-const AccountPlanInfoTab = (props: { }): JSX.Element => {
+const AccountPlanInfoTab = (): JSX.Element => {
   const [usage, setUsage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const user = useAppSelector((state) => state.user.user);
   const isLoadingPlanLimit = useAppSelector((state) => state.plan.isLoadingPlanLimit);
   const planLimit = useAppSelector((state) => state.plan.planLimit);
-  const isLoadingCurrentPlan = useAppSelector((state) => state.plan.isLoadingCurrentPlan);
-  const userPlan = useAppSelector((state) => state.plan.currentPlan);
-  const isTeam = useAppSelector(selectorIsTeam);
+  const isLoadingPlans = useAppSelector((state) => state.plan.isLoadingPlans);
+  const currentPlan = useAppSelector(planSelectors.currentPlan);
+  const isTeam = useAppSelector(sessionSelectors.isTeam);
   const hasLifetimePlan = useAppSelector(planSelectors.hasLifetimePlan);
   const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
@@ -47,8 +47,8 @@ const AccountPlanInfoTab = (props: { }): JSX.Element => {
   const planName = () => {
     let planName;
 
-    if (userPlan) {
-      planName = userPlan.name;
+    if (currentPlan) {
+      planName = currentPlan.name;
     } else {
       planName = getUserLimitString(planLimit);
     }
@@ -57,7 +57,7 @@ const AccountPlanInfoTab = (props: { }): JSX.Element => {
   };
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-8 w-full h-60 justify-around py-8'>
+    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-8 w-full justify-around py-8'>
 
       {/* USER CARD */}
       <div className="flex justify-center">
@@ -117,42 +117,40 @@ const AccountPlanInfoTab = (props: { }): JSX.Element => {
         <div className='w-56'>
           <h2 className='account_config_title'>Current plan</h2>
 
-          <div className='flex flex-col w-full'>
-            <span className='text-neutral-700 font-semibold text-sm'>{planName()}</span>
+          {!isLoadingPlans ?
+            <div className='flex flex-col w-full'>
+              <Fragment>
+                <span className='text-neutral-700 font-semibold text-sm'>{planName()}</span>
 
-            <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
-              {!isLoadingCurrentPlan ?
-                <Fragment>
+                <div className='flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3'>
                   {
-                    userPlan ?
+                    currentPlan?.planId ?
                       <Fragment>
-                        <span className='font-bold'>{userPlan?.price}€</span>
-                        <span className='text-xs mb-1 ml-2'
-
-                        >/{userPlan?.paymentInterval}</span>
+                        <span className='font-bold'>{currentPlan?.price}</span>
+                        <span className='text-xs mb-1 ml-2'>/{currentPlan?.paymentInterval}</span>
                       </Fragment>
                       :
                       <span className='font-bold'>
                         {!hasLifetimePlan ? 'Free plan' : 'Lifetime'}
                       </span>
                   }
-                </Fragment>
-                :
-                <span className='font-bold'>Loading plan...</span>
-              }
+                </div>
+              </Fragment>
+
+              {!hasLifetimePlan && configService.getAppConfig().plan.defaultFeatures.map((text, index) => (
+                <div key={index} className='flex justify-start items-center mb-2'>
+                  <UilCheck className="text-blue-60" />
+                  <p className='text-xs ml-2.5'>{text}</p>
+                </div>
+              ))}
+
+              <button className={`${hasLifetimePlan ? 'hidden' : ''} primary w-full`} onClick={onUpgradeButtonClicked}>
+                Upgrade
+              </button>
             </div>
-
-            {!hasLifetimePlan && configService.getAppConfig().plan.defaultFeatures.map((text, index) => (
-              <div key={index} className='flex justify-start items-center mb-2'>
-                <UilCheck className="text-blue-60" />
-                <p className='text-xs ml-2.5'>{text}</p>
-              </div>
-            ))}
-
-            <button className={`${hasLifetimePlan ? 'hidden' : ''} primary w-full`} onClick={onUpgradeButtonClicked}>
-              Upgrade
-            </button>
-          </div>
+            :
+            <span className=''>Loading plan...</span>
+          }
         </div>
       </div>
     </div>

@@ -1,5 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import { storageActions, StorageState } from '..';
+
+import { StorageState } from '../storage.model';
+import { storageActions } from '..';
 import { RootState } from '../../..';
 import { AppFileExplorerConfig, DriveItemData } from '../../../../models/interfaces';
 import configService from '../../../../services/config.service';

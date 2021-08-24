@@ -2,15 +2,15 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import notify, { ToastType } from '../../../../components/Notifications';
 import i18n from '../../../../services/i18n.service';
-import { selectorIsTeam } from '../../team';
 import folderService from '../../../../services/folder.service';
 import { getFilenameAndExt } from '../../../../lib/utils';
 import storageService from '../../../../services/storage.service';
 import { TaskType, TaskStatus } from '../../../../models/enums';
 import { DriveItemData, NotificationData } from '../../../../models/interfaces';
 import { tasksActions } from '../../tasks';
-import { StorageState } from '..';
+import { StorageState } from '../storage.model';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../lib/constants';
+import { sessionSelectors } from '../../session/session.selectors';
 
 interface UploadItemsPayload {
   files: File[];
@@ -34,7 +34,7 @@ export const uploadItemsThunk = createAsyncThunk(
     const { namePath, items } = getState().storage;
 
     const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
-    const isTeam: boolean = selectorIsTeam(getState());
+    const isTeam: boolean = sessionSelectors.isTeam(getState());
     const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
     const filesToUpload: any[] = [];
     const uploadErrors: any[] = [];

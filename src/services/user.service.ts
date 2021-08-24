@@ -1,7 +1,4 @@
-import axios from 'axios';
 import { getHeaders } from '../lib/auth';
-import { IUserPlan } from '../models/interfaces';
-import envService from './env.service';
 
 export async function initializeUser(email: string, mnemonic: string): Promise<any> {
   const response = await fetch('/api/initialize', {
@@ -37,18 +34,10 @@ export const sendDeactivationEmail = (email: string): Promise<Response> => {
   });
 };
 
-export const fetchUserPlan = async (): Promise<IUserPlan | null> => {
-  const isTest = !envService.isProduction();
-  const response = await axios.get('/api/storage/user/info/stripe/');
-
-  return response.data;
-};
-
 const userService = {
   initializeUser,
   isUserActivated,
-  sendDeactivationEmail,
-  fetchUserPlan
+  sendDeactivationEmail
 };
 
 export default userService;

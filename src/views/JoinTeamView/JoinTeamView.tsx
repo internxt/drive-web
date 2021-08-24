@@ -10,10 +10,11 @@ import i18n from '../../services/i18n.service';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { userThunks } from '../../store/slices/user';
+import { match } from 'react-router';
 
 interface JoinTeamProps {
   dispatch: AppDispatch;
-  match: any;
+  match: match<{token: string}>;
 }
 
 interface JoinTeamState {

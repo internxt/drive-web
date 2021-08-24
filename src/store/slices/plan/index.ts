@@ -1,22 +1,30 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../..';
-import { IUserPlan } from '../../../models/interfaces';
+import { StoragePlan } from '../../../models/interfaces';
 import configService from '../../../services/config.service';
 import limitService from '../../../services/limit.service';
-import { fetchUserPlan } from '../../../services/user.service';
+import planService from '../../../services/plan.service';
+import { sessionSelectors } from '../session/session.selectors';
 
 interface PlanState {
-  isLoadingCurrentPlan: boolean;
+  isLoadingPlans: boolean;
   isLoadingPlanLimit: boolean;
-  currentPlan: IUserPlan | null;
+  individualPlan: StoragePlan | null;
+  teamPlan: StoragePlan | null;
   planLimit: number;
 }
 
+interface FetchPlansResult {
+  individualPlan: StoragePlan | null;
+  teamPlan: StoragePlan | null;
+}
+
 const initialState: PlanState = {
-  isLoadingCurrentPlan: false,
+  isLoadingPlans: false,
   isLoadingPlanLimit: false,
-  currentPlan: null,
+  individualPlan: null,
+  teamPlan: null,
   planLimit: 0
 };
 
@@ -25,19 +33,27 @@ export const initializeThunk = createAsyncThunk<void, void, { state: RootState }
   async (payload: void, { dispatch, getState }) => {
     const promises: Promise<void>[] = [];
 
-    promises.push(dispatch(fetchCurrentPlanThunk()).then());
+    promises.push(dispatch(fetchPlans()).then());
     promises.push(dispatch(fetchLimitThunk()).then());
 
     await Promise.all(promises);
   }
 );
 
-export const fetchCurrentPlanThunk = createAsyncThunk<IUserPlan | null, void, { state: RootState }>(
-  'plan/fetchCurrentPlan',
+export const fetchPlans = createAsyncThunk<FetchPlansResult, void, { state: RootState }>(
+  'plan/fetchPlans',
   async (payload: void, { dispatch, getState }) => {
-    const currentPlan = await fetchUserPlan();
+    const user = getState().user.user;
+    const promises: Promise<StoragePlan | null>[] = [];
 
-    return currentPlan;
+    promises.push(planService.fetchIndividualPlan());
+    if (user?.teams) {
+      promises.push(planService.fetchTeamPlan());
+    }
+
+    const [individualPlan, teamPlan] = await Promise.all(promises);
+
+    return { individualPlan, teamPlan };
   }
 );
 
@@ -66,15 +82,16 @@ export const planSlice = createSlice({
       .addCase(initializeThunk.rejected, (state, action) => { });
 
     builder
-      .addCase(fetchCurrentPlanThunk.pending, (state, action) => {
-        state.isLoadingCurrentPlan = true;
+      .addCase(fetchPlans.pending, (state, action) => {
+        state.isLoadingPlans = true;
       })
-      .addCase(fetchCurrentPlanThunk.fulfilled, (state, action) => {
-        state.isLoadingCurrentPlan = false;
-        state.currentPlan = action.payload;
+      .addCase(fetchPlans.fulfilled, (state, action) => {
+        state.isLoadingPlans = false;
+        state.individualPlan = action.payload.individualPlan;
+        state.teamPlan = action.payload.teamPlan;
       })
-      .addCase(fetchCurrentPlanThunk.rejected, (state, action) => {
-        state.isLoadingCurrentPlan = false;
+      .addCase(fetchPlans.rejected, (state, action) => {
+        state.isLoadingPlans = false;
       });
 
     builder
@@ -91,16 +108,28 @@ export const planSlice = createSlice({
   }
 });
 
+const currentPlanSelector = (state: RootState): StoragePlan | null => {
+  const isTeam = sessionSelectors.isTeam(state);
+
+  return isTeam ? state.plan.teamPlan : state.plan.individualPlan;
+};
+
+export const planSelectors = {
+  currentPlan: currentPlanSelector,
+  // TODO: fix this wrong condition lifetime
+  hasLifetimePlan: (state: RootState): boolean => {
+    const currentPlan = currentPlanSelector(state);
+
+    return (currentPlan === null && state.plan.planLimit > configService.getAppConfig().plan.freePlanStorageLimit);
+  }
+};
+
 export const planActions = planSlice.actions;
 
 export const planThunks = {
   initializeThunk,
-  fetchCurrentPlanThunk,
+  fetchPlans,
   fetchLimitThunk
-};
-
-export const planSelectors = {
-  hasLifetimePlan: (state: RootState): boolean => (state.plan.currentPlan === null && state.plan.planLimit > configService.getAppConfig().plan.freePlanStorageLimit)
 };
 
 export default planSlice.reducer;

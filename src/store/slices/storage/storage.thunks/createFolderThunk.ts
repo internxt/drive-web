@@ -1,6 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { storageActions, storageSelectors, StorageState } from '..';
+import { StorageState } from '../storage.model';
+import { storageActions, storageSelectors } from '..';
 import { RootState } from '../../..';
 import notify, { ToastType } from '../../../../components/Notifications';
 import { StorageItemList } from '../../../../models/enums';

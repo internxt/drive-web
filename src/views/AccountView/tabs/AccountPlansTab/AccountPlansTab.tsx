@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, Fragment, Component } from 'react';
 import { generateMnemonic } from 'bip39';
 import { UilBuilding, UilHome } from '@iconscout/react-unicons';
 
@@ -14,14 +14,16 @@ import envService from '../../../../services/env.service';
 import { payStripePlan } from '../../../../services/products.service';
 import { useAppSelector } from '../../../../store/hooks';
 
-import './AccountPlansTab.scss';
 import configService from '../../../../services/config.service';
+
+import './AccountPlansTab.scss';
 
 const AccountPlansTab = (props: {}): JSX.Element => {
   const [currentOption, setCurrentOption] = useState<Workspace.Personal | Workspace.Business>(Workspace.Personal);
   const [selectedPlanId, setSelectedPlanId] = useState<string>('');
   const [isPaying, setIsPaying] = useState(false);
-  const currentPlan = useAppSelector((state) => state.plan.currentPlan);
+  const individualPlan = useAppSelector((state) => state.plan.individualPlan);
+  const teamPlan = useAppSelector((state) => state.plan.teamPlan);
   const isLoadingIndividualProducts = useAppSelector((state) => state.products.isLoadingIndividualProducts);
   const individualProducts = useAppSelector((state) => state.products.individualProducts);
   const individualProductsPlans = useAppSelector((state) => state.products.individualProductsPlans);
@@ -116,11 +118,13 @@ const AccountPlansTab = (props: {}): JSX.Element => {
             return (
               <Fragment key={index}>
                 <div className={`option ${isSelected ? tabOptionSelectedClassName : ''}`} onClick={option.onClick}>
-                  <UilBuilding className={isSelected ? tabOptionIconSelectedClassName : ''} />
+                  <div className={isSelected ? tabOptionIconSelectedClassName : ''} >
+                    {option.icon}
+                  </div>
                   <span>{option.label}</span>
                 </div>
 
-                { index < tabOptions.length - 1 &&
+                {index < tabOptions.length - 1 &&
                   <div className='w-px h-1/2 border-r border-m-neutral-60' />
                 }
               </Fragment>
@@ -139,7 +143,7 @@ const AccountPlansTab = (props: {}): JSX.Element => {
                 product={product}
                 plans={individualProductsPlans[i]}
                 selectedPlanId={selectedPlanId}
-                currentPlanId={currentPlan?.planId}
+                currentPlanId={individualPlan?.planId}
                 characteristics={configService.getAppConfig().plan.defaultFeatures}
                 handlePlanSelection={onPlanSelected}
                 handlePaymentIndividual={handlePaymentIndividual}
@@ -159,7 +163,7 @@ const AccountPlansTab = (props: {}): JSX.Element => {
                 product={product}
                 plans={teamProductsPlans[i]}
                 selectedPlanId={selectedPlanId}
-                currentPlanId={currentPlan?.planId}
+                currentPlanId={teamPlan?.planId}
                 characteristics={configService.getAppConfig().plan.defaultFeatures}
                 handlePlanSelection={onPlanSelected}
                 handlePaymentIndividual={handlePaymentIndividual}

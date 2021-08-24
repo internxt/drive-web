@@ -7,12 +7,14 @@ import * as Unicons from '@iconscout/react-unicons';
 
 import { Dropdown } from 'react-bootstrap';
 import { Workspace } from '../../models/enums';
-import { changeWorkspaceThunk, userThunks } from '../../store/slices/user';
-import { loadDataAtChangeWorkspace } from '../../services/workspace.service';
+import { userThunks } from '../../store/slices/user';
 import { uiActions } from '../../store/slices/ui';
-import { storageActions, StorageFilters } from '../../store/slices/storage';
+import { storageActions } from '../../store/slices/storage';
 import validationService from '../../services/validation.service';
-import { selectorIsTeam } from '../../store/slices/team';
+import { StorageFilters } from '../../store/slices/storage/storage.model';
+import { sessionSelectors } from '../../store/slices/session/session.selectors';
+import sessionThunks from '../../store/slices/session/session.thunks';
+import storageThunks from '../../store/slices/storage/storage.thunks';
 
 interface AppHeaderProps {
   user: UserSettings | undefined;
@@ -47,11 +49,10 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
   onChangeWorkspaceButtonClicked = (): void => {
     const { dispatch } = this.props;
 
-    dispatch(
-      changeWorkspaceThunk()
-    ).then(() => {
-      loadDataAtChangeWorkspace(dispatch, this.props.workspace);
-    });
+    dispatch(sessionThunks.changeWorkspaceThunk());
+    dispatch(storageThunks.resetNamePathThunk());
+    dispatch(storageThunks.fetchFolderContentThunk());
+    dispatch(storageThunks.fetchRecentsThunk());
   }
 
   onLogoutButtonClicked = (): void => {
@@ -164,12 +165,12 @@ class AppHeader extends React.Component<AppHeaderProps, AppHeaderState> {
 }
 
 export default connect((state: RootState) => {
-  const isTeam = selectorIsTeam(state);
+  const isTeam = sessionSelectors.isTeam(state);
 
   return {
     user: state.user.user,
     team: state.team.team,
-    workspace: state.team.workspace,
+    workspace: state.session.workspace,
     isTeam,
     storageFilters: state.storage.filters
   };

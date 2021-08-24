@@ -9,9 +9,10 @@ import { userActions } from './store/slices/user';
 import { teamActions } from './store/slices/team';
 
 import plugins from './plugins';
-import { storageThunks } from './store/slices/storage';
 import { planThunks } from './store/slices/plan';
 import { productsThunks } from './store/slices/products';
+import storageThunks from './store/slices/storage/storage.thunks';
+import { sessionActions } from './store/slices/session';
 
 import './index.scss';
 
@@ -21,6 +22,7 @@ plugins.forEach(plugin => plugin.install(store));
 // Initializes store
 store.dispatch(userActions.initialize());
 store.dispatch(teamActions.initialize());
+store.dispatch(sessionActions.initialize());
 store.dispatch(storageThunks.initializeThunk());
 store.dispatch(planThunks.initializeThunk());
 store.dispatch(productsThunks.initializeThunk());

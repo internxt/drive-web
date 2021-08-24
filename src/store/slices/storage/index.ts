@@ -3,36 +3,9 @@ import { FileViewMode, StorageItemList } from '../../../models/enums';
 import { DriveItemData, DriveItemPatch, FolderPath } from '../../../models/interfaces';
 import arrayService from '../../../services/array.service';
 
-import selectors from './storageSelectors';
-import thunks, { storageExtraReducers } from './thunks';
-
-export interface StorageFilters {
-  text: string;
-}
-
-export interface StorageSetFiltersPayload {
-  text?: string;
-}
-
-function filtersFactory(): StorageFilters {
-  return {
-    text: ''
-  };
-}
-
-export interface StorageState {
-  isLoading: boolean;
-  isDeletingItems: boolean;
-  lists: { [key in StorageItemList]: DriveItemData[] }
-  isLoadingRecents: boolean;
-  filters: StorageFilters;
-  selectedItems: DriveItemData[];
-  itemToShare: DriveItemData | null;
-  itemsToDelete: DriveItemData[];
-  infoItem: DriveItemData | null;
-  viewMode: FileViewMode;
-  namePath: FolderPath[];
-}
+import selectors from './storage.selectors';
+import { storageExtraReducers } from '../storage/storage.thunks';
+import { StorageState, StorageSetFiltersPayload, filtersFactory } from './storage.model';
 
 const initialState: StorageState = {
   isLoading: false,
@@ -153,6 +126,9 @@ export const storageSlice = createSlice({
       listsToUpdate.forEach(listKey => {
         state.lists[listKey] = state.lists[listKey].filter((item:DriveItemData) => !itemsToDelete.find((i) => i.id === item.id));
       });
+    },
+    resetState(state: StorageState) {
+      Object.assign(state, initialState);
     }
   },
   extraReducers: storageExtraReducers
@@ -181,8 +157,6 @@ export const {
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;
-
-export const storageThunks = thunks;
 
 export const storageActions = storageSlice.actions;
 

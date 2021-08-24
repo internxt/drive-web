@@ -201,12 +201,15 @@ enum StripePlanNames {
   'Annually'
 }
 
-export type IUserPlan = {
-  name: StripeProductNames,
-  paymentInterval: StripePlanNames,
-  planId: string,
-  price: string,
-  productId: string
+export type StoragePlan = {
+  planId: string;
+  productId: string;
+  name: StripeProductNames;
+  simpleName: string;
+  paymentInterval: StripePlanNames;
+  price: string;
+  isTeam: boolean;
+  storageLimit: number;
 }
 
 export interface IActionUpdateFileLoggerEntry {

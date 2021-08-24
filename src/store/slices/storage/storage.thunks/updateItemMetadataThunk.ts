@@ -1,19 +1,20 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { storageActions, StorageState } from '..';
+import { StorageState } from '../storage.model';
+import { storageActions } from '..';
 import { RootState } from '../../..';
 import notify, { ToastType } from '../../../../components/Notifications';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../models/interfaces';
 import fileService from '../../../../services/file.service';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
-import { selectorIsTeam } from '../../team';
+import { sessionSelectors } from '../../session/session.selectors';
 
 export const updateItemMetadataThunk = createAsyncThunk<void, { item: DriveItemData, metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload }, { state: RootState }>(
   'storage/updateItemMetadata',
   async (payload: { item: DriveItemData, metadata: DriveFileMetadataPayload
      | DriveFolderMetadataPayload }, { getState, dispatch }) => {
-    const isTeam: boolean = selectorIsTeam(getState());
+    const isTeam: boolean = sessionSelectors.isTeam(getState());
     const { item, metadata } = payload;
 
     item.isFolder ?

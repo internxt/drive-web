@@ -1,11 +1,12 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { storageActions, StorageState } from '..';
+import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
 import { FolderPath } from '../../../../models/interfaces';
 import { uiActions } from '../../ui';
-import storageSelectors from '../storageSelectors';
+import storageSelectors from '../storage.selectors';
 import { fetchFolderContentThunk } from './fetchFolderContentThunk';
+import { storageActions } from '..';
 
 export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootState }>(
   'storage/goToFolder',

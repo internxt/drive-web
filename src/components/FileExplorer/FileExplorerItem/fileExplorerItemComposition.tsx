@@ -9,8 +9,9 @@ import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, Fo
 import { getAllItems } from '../../../services/drag-and-drop.service';
 import { getItemFullName } from '../../../services/storage.service/storage-name.service';
 import { AppDispatch, RootState } from '../../../store';
-import { storageActions, storageThunks } from '../../../store/slices/storage';
-import storageSelectors from '../../../store/slices/storage/storageSelectors';
+import { storageActions } from '../../../store/slices/storage';
+import storageSelectors from '../../../store/slices/storage/storage.selectors';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../store/slices/ui';
 import FileListItem from './FileListItem/FileListItem';
 
@@ -325,7 +326,7 @@ const fileExplorerItemComposition = compose(
         namePath: state.storage.namePath,
         currentFolderId,
         isItemSelected,
-        workspace: state.team.workspace,
+        workspace: state.session.workspace,
         isSidenavCollapsed: state.ui.isSidenavCollapsed,
         isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen
       };

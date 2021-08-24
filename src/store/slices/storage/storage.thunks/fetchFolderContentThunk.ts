@@ -1,15 +1,16 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
-import { storageActions, StorageState } from '..';
+import { storageActions } from '..';
 import { RootState } from '../../..';
 import notify, { ToastType } from '../../../../components/Notifications';
 import { DriveItemData } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
-import storageSelectors from '../storageSelectors';
+import { StorageState } from '../storage.model';
+import storageSelectors from '../storage.selectors';
 
-export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
+export const fetchFolderContentThunk = createAsyncThunk<void, number | undefined, { state: RootState }>(
   'storage/fetchFolderContent',
   async (folderId: number = -1, { getState, dispatch }) => {
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
