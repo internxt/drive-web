@@ -385,6 +385,6 @@ export default connect(
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
       workspace: state.team.workspace,
-      planLimit: state.plan.planLimit
+      planLimit: state.plan.limit
     };
   })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(FileExplorer));
