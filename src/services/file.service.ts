@@ -17,14 +17,10 @@ export function updateMetaData(itemId: string, data: DriveFileMetadataPayload, i
   });
 }
 
-export function deleteFile(fileData: DriveFileData, isTeam: boolean): Promise<void> {
+export function deleteFile(fileData: DriveFileData): Promise<void> {
   const user = localStorageService.getUser() as UserSettings;
-  const fetchOptions = {
-    method: 'DELETE',
-    headers: getHeaders(true, false, isTeam)
-  };
 
-  return fetch(`/api/storage/folder/${fileData.folderId}/file/${fileData.id}`, fetchOptions).then(() => {
+  return axios.delete(`/api/storage/folder/${fileData.folderId}/file/${fileData.id}`).then(() => {
     analyticsService.trackDeleteItem(fileData, {
       email: user.email,
       platform: DevicePlatform.Web

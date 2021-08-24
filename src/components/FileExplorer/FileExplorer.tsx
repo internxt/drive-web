@@ -158,34 +158,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   onNextPageButtonClicked = (): void => {
   }
 
-  getTeamByUser = () => {
-    const { user } = this.props;
-
-    return new Promise((resolve, reject) => {
-      fetch(`/api/teams-members/${user.email}`, {
-        method: 'get',
-        headers: getHeaders(true, false)
-      }).then((result) => {
-        if (result.status !== 200) {
-          return;
-        }
-        return result.json();
-      }).then(result => {
-        if (result.admin === user.email) {
-          result.rol = 'admin';
-          this.setState({ isAdmin: true, isMember: false });
-        } else {
-          result.rol = 'member';
-          this.setState({ isAdmin: false, isMember: true });
-        }
-        resolve(result);
-      }).catch(err => {
-        console.log(err);
-        reject(err);
-      });
-    });
-  }
-
   render(): ReactNode {
     const {
       isLoading,

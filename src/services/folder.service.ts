@@ -126,7 +126,7 @@ export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload,
     });
 }
 
-export function deleteFolder(folderData: DriveFolderData, isTeam: boolean): Promise<void | Response> {
+export function deleteFolder(folderData: DriveFolderData): Promise<void | Response> {
   const user = localStorageService.getUser() as UserSettings;
 
   return axios.delete(`/api/storage/folder/${folderData.id}`).then(() => {
