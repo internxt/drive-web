@@ -1,6 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { storageActions, StorageState } from '..';
 import { RootState } from '../../..';
+import { excludeHiddenItems } from '../../../../lib/utils';
 import { AppFileExplorerConfig, DriveItemData } from '../../../../models/interfaces';
 import configService from '../../../../services/config.service';
 import fileService from '../../../../services/file.service';
@@ -11,8 +12,10 @@ export const fetchRecentsThunk = createAsyncThunk<void, void, { state: RootState
     const fileExplorerConfig: AppFileExplorerConfig = configService.getAppConfig().fileExplorer;
     const recents: DriveItemData[] = await fileService.fetchRecents(fileExplorerConfig.recentsLimit) as DriveItemData[];
 
+    const recentsWithoutHiddenFiles = excludeHiddenItems(recents);
+
     dispatch(storageActions.clearSelectedItems());
-    dispatch(storageActions.setRecents(recents));
+    dispatch(storageActions.setRecents(recentsWithoutHiddenFiles));
   });
 
 export const fetchRecentsThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
