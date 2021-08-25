@@ -1,34 +1,11 @@
 import { config } from 'dotenv';
 import { DriveItemData } from '../../src/models/interfaces';
 import { checkFileNameExists } from '../../src/services/storage.service/storage-name.service';
+import { driveItemFake } from '../fakes';
 config();
 
 describe('checkFileNameExists tests', () => {
-  const baseFake: DriveItemData = {
-    bucket:'test',
-    color:'test',
-    createdAt:'test',
-    created_at:'test',
-    deleted:false,
-    deletedAt: null,
-    encrypt_version:'test',
-    fileId:'test',
-    folderId:1,
-    folder_id:1,
-    icon:'test',
-    iconId:1,
-    icon_id:1,
-    id:1,
-    isFolder:false,
-    name:'test',
-    parentId:1,
-    parent_id:1,
-    size:1,
-    type:'',
-    updatedAt:'test',
-    userId:1,
-    user_id:1
-  };
+  const baseFake = driveItemFake;
 
   it('Should not rename if a file with the same name doesnt exist', () => {
     const items: DriveItemData[] = [

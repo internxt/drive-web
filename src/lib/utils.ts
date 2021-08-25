@@ -1,5 +1,6 @@
 import copy from 'copy-to-clipboard';
 import CryptoJS from 'crypto-js';
+import { DriveItemData } from '../models/interfaces';
 import AesUtil from './AesUtil';
 
 interface PassObjectInterface {
@@ -102,6 +103,14 @@ function encryptFilename(filename:string, folderId: string) {
   return AesUtil.encrypt(filename, `${CRYPTO_KEY}-${folderId}`);
 }
 
+function excludeHiddenItems(items: DriveItemData[]): DriveItemData[]{
+  return items.filter((item) => !isHiddenItem(item));
+}
+
+function isHiddenItem(item: DriveItemData): boolean{
+  return !!item.name.match(/^\..*$/);
+}
+
 export {
   copyToClipboard,
   passToHash,
@@ -110,5 +119,7 @@ export {
   encryptFilename,
   encryptTextWithKey,
   decryptTextWithKey,
-  getFilenameAndExt
+  getFilenameAndExt,
+  excludeHiddenItems,
+  isHiddenItem
 };
