@@ -13,6 +13,7 @@ import { AccountViewTab } from '../../AccountView';
 import './AccountPlanInfoTab.scss';
 import DeleteAccountDialog from '../../../../components/dialogs/DeleteAccountDialog/DeleteAccountDialog';
 import PlanUsage from '../../../../components/PlanUsage';
+import { bytesToString } from '../../../../services/size.service';
 
 const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
   const [isDeleteAccountDialogOpen, setIsDeleteAccountDialogOpen] = useState(false);
@@ -89,8 +90,17 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
               </div>
               <span className='subtitle'>{user?.email}</span>
 
-              <h2 className='account_config_title mt-0.5 mb-1'>Usage</h2>
-              <PlanUsage className="px-6 h-14" {...plan}/>
+              <h2 className='account_config_title mt-0.5 mb-2'>Usage</h2>
+              <div className="flex flex-col items-start justify-center w-60 bg-l-neutral-20 rounded-md py-3 px-6">
+                {plan.isLoading ?
+                  <span>Loading...</span> :
+                  <span className='account_config_description m-0'>{bytesToString(plan.usage) || '0'} of {getUserLimitString(plan.limit)}</span>
+                }
+
+                <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-3'>
+                  <div className='h-full bg-blue-70' style={{ width: (plan.usage / plan.limit) * 100 }} />
+                </div>
+              </div>
             </div>
           </div>
 
