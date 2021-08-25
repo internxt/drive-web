@@ -1,28 +1,33 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../..';
+import { Workspace } from '../../../models/enums';
 import configService from '../../../services/config.service';
 import limitService from '../../../services/limit.service';
-import { selectorIsTeam } from '../team';
+import usageService from '../../../services/usage.service';
 
-interface PlanState {
+export interface PlanState {
   isLoading: boolean;
-  planLimit: number;
+  limit: number;
+  usage: number;
 }
 
 const initialState: PlanState = {
   isLoading: false,
-  planLimit: 0
+  limit: 0,
+  usage: 0
 };
 
 export const initializeThunk = createAsyncThunk(
   'plan/initialize',
   async (payload: void, { dispatch, getState }: any) => {
     const isAuthenticated = getState().user.isAuthenticated;
+    const isTeam = getState().team.workspace !== Workspace.Personal;
 
     if (isAuthenticated) {
-      const planLimit = await limitService.fetchLimit();
+      const [planLimit, usageResponse] = await Promise.all([limitService.fetchLimit(), usageService.fetchUsage(isTeam)]);
 
       dispatch(setPlanLimit(planLimit));
+      dispatch(setUsage(usageResponse.total));
     }
   }
 );
@@ -32,7 +37,10 @@ export const planSlice = createSlice({
   initialState,
   reducers: {
     setPlanLimit: (state: PlanState, action: PayloadAction<number>) => {
-      state.planLimit = action.payload;
+      state.limit = action.payload;
+    },
+    setUsage: (state: PlanState, action: PayloadAction<number>) => {
+      state.usage = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -50,7 +58,8 @@ export const planSlice = createSlice({
 });
 
 export const {
-  setPlanLimit
+  setPlanLimit,
+  setUsage
 } = planSlice.actions;
 export const planActions = planSlice.actions;
 
@@ -59,7 +68,7 @@ export const planThunks = {
 };
 
 export const planSelectors = {
-  hasLifetimePlan: (state: RootState): boolean => (state.user.currentPlan === null && state.plan.planLimit > configService.getAppConfig().plan.freePlanStorageLimit)
+  hasLifetimePlan: (state: RootState): boolean => (state.user.currentPlan === null && state.plan.limit > configService.getAppConfig().plan.freePlanStorageLimit)
 };
 
 export default planSlice.reducer;

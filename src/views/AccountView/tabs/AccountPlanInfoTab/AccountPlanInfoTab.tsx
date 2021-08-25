@@ -1,28 +1,25 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { UilUserCircle, UilEnvelope } from '@iconscout/react-unicons';
 
-import { bytesToString } from '../../../../services/size.service';
-import usageService, { getUserLimitString } from '../../../../services/usage.service';
+import { getUserLimitString } from '../../../../services/usage.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { selectUserPlan, setIsLoadingStripePlan } from '../../../../store/slices/user';
 import { ListItem } from '../AccountPlansTab/BillingPlanItem';
 import { selectorIsTeam } from '../../../../store/slices/team';
 import { setCurrentAccountTab } from '../../../../store/slices/ui';
-import { planSelectors } from '../../../../store/slices/plan';
+import { planSelectors, PlanState } from '../../../../store/slices/plan';
 import { AccountViewTab } from '../../AccountView';
 
 import './AccountPlanInfoTab.scss';
 import DeleteAccountDialog from '../../../../components/dialogs/DeleteAccountDialog/DeleteAccountDialog';
+import PlanUsage from '../../../../components/PlanUsage';
 
 const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
   const [isDeleteAccountDialogOpen, setIsDeleteAccountDialogOpen] = useState(false);
-  const [usage, setUsage] = useState(0);
-  const isLoadingPlanLimit = useAppSelector((state) => state.plan.isLoading);
-  const planLimit = useAppSelector((state) => state.plan.planLimit);
+  const plan: PlanState = useAppSelector((state) => state.plan);
   const user = useAppSelector((state) => state.user.user);
   const userPlan = useAppSelector(selectUserPlan);
   const isTeam = useAppSelector(selectorIsTeam);
-  const [isLoading, setIsLoading] = useState(false);
   const isLoadingStripe = useAppSelector(setIsLoadingStripePlan);
   const hasLifetimePlan = useAppSelector(planSelectors.hasLifetimePlan);
   const dispatch = useAppDispatch();
@@ -33,24 +30,6 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
     setIsDeleteAccountDialogOpen(true);
   };
 
-  useEffect(() => {
-    const getUsage = async () => {
-      setIsLoading(true);
-      try {
-        const usage = await usageService.fetchUsage(isTeam);
-
-        setUsage(usage.total);
-      } catch (err) {
-        console.error('Could not load current user usage.', err);
-      } finally {
-        setIsLoading(false);
-      }
-
-    };
-
-    getUsage();
-  }, [isTeam]);
-
   const planName = () => {
     let planName;
 
@@ -58,7 +37,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
       if (userPlan) {
         planName = userPlan.name;
       } else {
-        planName = getUserLimitString(planLimit);
+        planName = getUserLimitString(plan.limit);
       }
     }
     return planName;
@@ -111,16 +90,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
               <span className='subtitle'>{user?.email}</span>
 
               <h2 className='account_config_title mt-0.5 mb-1'>Usage</h2>
-              <div className='flex flex-col items-center justify-center w-56 h-14 bg-l-neutral-20 rounded-md px-6'>
-                {isLoading || isLoadingPlanLimit ?
-                  <span>Loading...</span> :
-                  <span className='account_config_description m-0'>{bytesToString(usage) || '0'} of {getUserLimitString(planLimit)}</span>
-                }
-
-                <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-1'>
-                  <div className='h-full bg-blue-70' style={{ width: (usage / planLimit) * 100 }} />
-                </div>
-              </div>
+              <PlanUsage className="px-6" {...plan}/>
             </div>
           </div>
 

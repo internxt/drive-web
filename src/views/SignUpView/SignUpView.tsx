@@ -21,6 +21,7 @@ import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope, UilUser } from '@iconscout/react-unicons';
 import { Link } from 'react-router-dom';
+import { planThunks } from '../../store/slices/plan';
 
 interface SignUpProps {
   match: any;
@@ -179,6 +180,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         dispatch(setUser({ ...user }));
         localStorageService.set('xMnemonic', user.mnemonic);
 
+        dispatch(planThunks.initializeThunk());
         dispatch(userThunks.initializeUserThunk()).then(() => {
           history.push('/app');
         });

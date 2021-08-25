@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux';
 import { IFormValues, UserSettings } from '../../models/interfaces';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope } from '@iconscout/react-unicons';
 import { Link } from 'react-router-dom';
+import { planThunks } from '../../store/slices/plan';
 
 interface SignInProps {
   email?: string,
@@ -61,6 +62,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
         analyticsService.trackSignIn({ email, userId: data.user.uuid });
 
         try {
+          dispatch(planThunks.initializeThunk());
           await dispatch(initializeUserThunk()).unwrap();
         } catch (e) {
           console.log(e);
