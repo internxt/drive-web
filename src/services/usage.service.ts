@@ -1,4 +1,5 @@
-import { getHeaders } from '../lib/auth';
+import axios, { AxiosResponse } from 'axios';
+
 import { bytesToString } from './size.service';
 
 export interface UsageResponse {
@@ -6,10 +7,10 @@ export interface UsageResponse {
   total: number;
 }
 
-export async function fetchUsage(isTeam: boolean): Promise<UsageResponse> {
-  const response: Response = await fetch('/api/usage', { headers: getHeaders(true, false, isTeam) });
+export async function fetchUsage(): Promise<UsageResponse> {
+  const response: AxiosResponse<UsageResponse> = await axios.get('/api/usage');
 
-  return response.json();
+  return response.data;
 }
 
 export const getUserLimitString = (limit: number): string => {

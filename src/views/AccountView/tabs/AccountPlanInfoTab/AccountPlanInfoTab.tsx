@@ -1,8 +1,7 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { UilUserCircle, UilEnvelope, UilCheck } from '@iconscout/react-unicons';
 
-import { bytesToString } from '../../../../services/size.service';
-import usageService, { getUserLimitString } from '../../../../services/usage.service';
+import { getUserLimitString } from '../../../../services/usage.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { setCurrentAccountTab } from '../../../../store/slices/ui';
 import { planSelectors } from '../../../../store/slices/plan';
@@ -12,18 +11,18 @@ import { sessionSelectors } from '../../../../store/slices/session/session.selec
 
 import './AccountPlanInfoTab.scss';
 import DeleteAccountDialog from '../../../../components/dialogs/DeleteAccountDialog/DeleteAccountDialog';
+import { bytesToString } from '../../../../services/size.service';
 
 const AccountPlanInfoTab = (): JSX.Element => {
   const [isDeleteAccountDialogOpen, setIsDeleteAccountDialogOpen] = useState(false);
-  const [usage, setUsage] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const user = useAppSelector((state) => state.user.user);
   const isLoadingPlanLimit = useAppSelector((state) => state.plan.isLoadingPlanLimit);
+  const planUsage = useAppSelector((state) => state.plan.planUsage);
   const planLimit = useAppSelector((state) => state.plan.planLimit);
   const isLoadingPlans = useAppSelector((state) => state.plan.isLoadingPlans);
   const currentPlan = useAppSelector(planSelectors.currentPlan);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
-  const hasLifetimePlan = useAppSelector(planSelectors.hasLifetimePlan);
+  const isCurrentPlanLifetime = useAppSelector(planSelectors.isCurrentPlanLifetime);
   const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
     dispatch(setCurrentAccountTab(AccountViewTab.Plans));
@@ -31,23 +30,6 @@ const AccountPlanInfoTab = (): JSX.Element => {
   const onDeletePermanentlyAccountClicked = (): void => {
     setIsDeleteAccountDialogOpen(true);
   };
-
-  useEffect(() => {
-    const getUsage = async () => {
-      setIsLoading(true);
-      try {
-        const usage = await usageService.fetchUsage(isTeam);
-
-        setUsage(usage.total);
-      } catch (err) {
-        console.error('Could not load current user usage.', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getUsage();
-  }, [isTeam]);
 
   const planName = () => {
     let planName;
@@ -107,15 +89,15 @@ const AccountPlanInfoTab = (): JSX.Element => {
               </div>
               <span className='subtitle'>{user?.email}</span>
 
-              <h2 className='account_config_title mt-0.5 mb-1'>Usage</h2>
-              <div className='flex flex-col items-center justify-center w-56 h-14 bg-l-neutral-20 rounded-md px-6'>
-                {isLoading || isLoadingPlanLimit ?
+              <h2 className='account_config_title mt-0.5 mb-2'>Usage</h2>
+              <div className="flex flex-col items-start justify-center w-60 bg-l-neutral-20 rounded-md py-3 px-6">
+                { isLoadingPlans || isLoadingPlanLimit ?
                   <span>Loading...</span> :
-                  <span className='account_config_description m-0'>{bytesToString(usage) || '0'} of {getUserLimitString(planLimit)}</span>
+                  <span className='account_config_description w-full m-0'>{bytesToString(planUsage) || '0'} of {getUserLimitString(planLimit)}</span>
                 }
 
-                <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-1'>
-                  <div className='h-full bg-blue-70' style={{ width: (usage / planLimit) * 100 }} />
+                <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-3'>
+                  <div className='h-full bg-blue-70' style={{ width: isLoadingPlans || isLoadingPlanLimit ? 0 : (planUsage / planLimit) * 100 }} />
                 </div>
               </div>
             </div>
@@ -140,20 +122,20 @@ const AccountPlanInfoTab = (): JSX.Element => {
                           </Fragment>
                           :
                           <span className='font-bold'>
-                            {!hasLifetimePlan ? 'Free plan' : 'Lifetime'}
+                            {!isCurrentPlanLifetime ? 'Free plan' : 'Lifetime'}
                           </span>
                       }
                     </div>
                   </Fragment>
 
-                  {!hasLifetimePlan && configService.getAppConfig().plan.defaultFeatures.map((text, index) => (
+                  {!isCurrentPlanLifetime && configService.getAppConfig().plan.defaultFeatures.map((text, index) => (
                     <div key={index} className='flex justify-start items-center mb-2'>
                       <UilCheck className="text-blue-60" />
                       <p className='text-xs ml-2.5'>{text}</p>
                     </div>
                   ))}
 
-                  <button className={`${hasLifetimePlan ? 'hidden' : ''} primary w-full`} onClick={onUpgradeButtonClicked}>
+                  <button className={`${isCurrentPlanLifetime ? 'hidden' : ''} primary w-full`} onClick={onUpgradeButtonClicked}>
                     Upgrade
                   </button>
                 </div>

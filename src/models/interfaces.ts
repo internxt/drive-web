@@ -209,6 +209,7 @@ export type StoragePlan = {
   paymentInterval: StripePlanNames;
   price: string;
   isTeam: boolean;
+  isLifetime: boolean;
   storageLimit: number;
 }
 

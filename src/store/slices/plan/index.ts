@@ -2,17 +2,19 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../..';
 import { StoragePlan } from '../../../models/interfaces';
-import configService from '../../../services/config.service';
 import limitService from '../../../services/limit.service';
 import planService from '../../../services/plan.service';
+import usageService from '../../../services/usage.service';
 import { sessionSelectors } from '../session/session.selectors';
 
-interface PlanState {
+export interface PlanState {
   isLoadingPlans: boolean;
   isLoadingPlanLimit: boolean;
+  isLoadingPlanUsage: boolean;
   individualPlan: StoragePlan | null;
   teamPlan: StoragePlan | null;
   planLimit: number;
+  planUsage: number;
 }
 
 interface FetchPlansResult {
@@ -23,9 +25,11 @@ interface FetchPlansResult {
 const initialState: PlanState = {
   isLoadingPlans: false,
   isLoadingPlanLimit: false,
+  isLoadingPlanUsage: false,
   individualPlan: null,
   teamPlan: null,
-  planLimit: 0
+  planLimit: 0,
+  planUsage: 0
 };
 
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
@@ -35,6 +39,7 @@ export const initializeThunk = createAsyncThunk<void, void, { state: RootState }
 
     promises.push(dispatch(fetchPlans()).then());
     promises.push(dispatch(fetchLimitThunk()).then());
+    promises.push(dispatch(fetchUsageThunk()).then());
 
     await Promise.all(promises);
   }
@@ -61,20 +66,36 @@ export const fetchLimitThunk = createAsyncThunk<number, void, { state: RootState
   'plan/fetchLimit',
   async (payload: void, { dispatch, getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
-    let planLimit = 0;
+    let limit = 0;
 
     if (isAuthenticated) {
-      planLimit = await limitService.fetchLimit();
+      limit = await limitService.fetchLimit();
     }
 
-    return planLimit;
+    return limit;
+  }
+);
+
+export const fetchUsageThunk = createAsyncThunk<number, void, { state: RootState }>(
+  'plan/fetchUsage',
+  async (payload: void, { dispatch, getState }) => {
+    const isAuthenticated = getState().user.isAuthenticated;
+    let usage = 0;
+
+    if (isAuthenticated) {
+      const usageResponse = await usageService.fetchUsage();
+
+      usage = usageResponse.total;
+    }
+
+    return usage;
   }
 );
 
 export const planSlice = createSlice({
   name: 'plan',
   initialState,
-  reducers: { },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(initializeThunk.pending, (state, action) => { })
@@ -105,6 +126,18 @@ export const planSlice = createSlice({
       .addCase(fetchLimitThunk.rejected, (state, action) => {
         state.isLoadingPlanLimit = false;
       });
+
+    builder
+      .addCase(fetchUsageThunk.pending, (state, action) => {
+        state.isLoadingPlanUsage = true;
+      })
+      .addCase(fetchUsageThunk.fulfilled, (state, action) => {
+        state.isLoadingPlanUsage = false;
+        state.planUsage = action.payload;
+      })
+      .addCase(fetchUsageThunk.rejected, (state, action) => {
+        state.isLoadingPlanUsage = false;
+      });
   }
 });
 
@@ -116,11 +149,10 @@ const currentPlanSelector = (state: RootState): StoragePlan | null => {
 
 export const planSelectors = {
   currentPlan: currentPlanSelector,
-  // TODO: fix this wrong condition lifetime
-  hasLifetimePlan: (state: RootState): boolean => {
+  isCurrentPlanLifetime: (state: RootState): boolean => {
     const currentPlan = currentPlanSelector(state);
 
-    return (currentPlan === null && state.plan.planLimit > configService.getAppConfig().plan.freePlanStorageLimit);
+    return currentPlan !== null && currentPlan.isLifetime;
   }
 };
 
@@ -129,7 +161,8 @@ export const planActions = planSlice.actions;
 export const planThunks = {
   initializeThunk,
   fetchPlans,
-  fetchLimitThunk
+  fetchLimitThunk,
+  fetchUsageThunk
 };
 
 export default planSlice.reducer;

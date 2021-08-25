@@ -31,6 +31,7 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { StorageFilters } from '../../store/slices/storage/storage.model';
 import storageThunks from '../../store/slices/storage/storage.thunks';
+import { planThunks } from '../../store/slices/plan';
 
 interface FileExplorerProps {
   title: JSX.Element | string;
@@ -53,6 +54,7 @@ interface FileExplorerProps {
   dispatch: AppDispatch;
   workspace: Workspace;
   planLimit: number;
+  planUsage: number;
   isOver: boolean;
   connectDropTarget: ConnectDropTarget;
 }
@@ -105,13 +107,12 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   }
 
   onUploadInputChanged = async (e) => {
-    const { planLimit } = this.props;
-    const isTeam = this.props.workspace === Workspace.Business;
+    const { dispatch, planLimit } = this.props;
 
     try {
-      const usage: UsageResponse = await usageService.fetchUsage(isTeam);
+      const planUsage: number = await dispatch(planThunks.fetchUsageThunk()).unwrap();
 
-      if (planLimit && usage.total >= planLimit) {
+      if (planLimit && planUsage >= planLimit) {
         this.props.dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
       } else {
         this.dispatchUpload(e);
@@ -359,6 +360,7 @@ export default connect(
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
       workspace: state.session.workspace,
-      planLimit: state.plan.planLimit
+      planLimit: state.plan.planLimit,
+      planUsage: state.plan.planUsage
     };
   })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(FileExplorer));
