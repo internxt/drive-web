@@ -26,11 +26,11 @@ jobs:
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN}} >> .npmrc
       - run: echo "always-auth=true" >> .npmrc
       - run: yarn
-      - run: yarn run test
-        env:
-          CI: true
+      # - run: yarn run test
+      #   env:
+      #     CI: true
       - name: Build
-      - run: yarn build
+        run: yarn build
       - name: Install netlify
         run: npm install -g netlify
       - name: Deploy build
