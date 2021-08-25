@@ -1,7 +1,7 @@
 name: Drive Web CI
 on:
   push:
-    branches: [master, DW20BT-50]
+    branches: [master]
   pull_request:
     branches: [master]
 
@@ -28,9 +28,18 @@ jobs:
       - run: yarn
       # - run: yarn run test
       #   env:
-      #     CI: true
+      #     CI: true # TODO: UNDO ASAP
       - name: Build
         env:
+          REACT_APP_CRYPTO_SECRET: ${{ secrets.REACT_APP_CRYPTO_SECRET }}
+          REACT_APP_STRIPE_PK: ${{ secrets.REACT_APP_STRIPE_PK }}
+          REACT_APP_STRIPE_TEST_PK: ${{ secrets.REACT_APP_STRIPE_TEST_PK }}
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+          REACT_APP_SEGMENT_KEY: ${{ secrets.REACT_APP_SEGMENT_KEY }}
+          REACT_APP_MAGIC_IV: ${{ secrets.REACT_APP_MAGIC_IV }}
+          REACT_APP_MAGIC_SALT: ${{ secrets.REACT_APP_MAGIC_SALT }}
+          REACT_APP_CRYPTO_SECRET2: ${{ secrets.REACT_APP_CRYPTO_SECRET2 }}
+          GENERATE_SOURCEMAP: ${{ secrets.GENERATE_SOURCEMAP }}
           CI: false
         run: yarn build
       - name: Install netlify
