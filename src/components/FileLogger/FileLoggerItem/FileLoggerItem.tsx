@@ -14,7 +14,7 @@ const FileLoggerItem = ({ item }: ItemProps): JSX.Element => {
   const icon: JSX.Element = <IconComponent className='flex items-center justify-center mr-2.5 w-6' />;
   const statusClassName = [TaskStatus.Success, TaskStatus.Error].includes(item.status) ? '' : 'opacity-50';
   const message: string = i18n.get(`tasks.${item.action}.${item.status}`, {
-    progress: item.progress ? item.progress * 100 : 0
+    progress: item.progress ? (item.progress * 100).toFixed(2) : 0
   });
   const messageClassName = item.status === TaskStatus.Error ? 'text-red-50' : 'text-neutral-500';
 
