@@ -1,5 +1,5 @@
 [build]
-  command = "echo //npm.pkg.github.com/:_authToken=${PERSONAL_ACCESS_TOKEN} >> .npmrc && echo 'always-auth=true' >> .npmrc && yarn && yarn build"
+  command = "echo //npm.pkg.github.com/:_authToken=${PERSONAL_ACCESS_TOKEN} >> .npmrc && echo 'always-auth=true' >> .npmrc && cat .npmrc && yarn && yarn build"
 
 [[redirects]]
 
