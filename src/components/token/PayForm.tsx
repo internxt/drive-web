@@ -99,13 +99,19 @@ class PayToken extends React.Component<ResetProps> {
       });
   }
 
-  renderSwitch = () => {
+  renderSwitch = (): JSX.Element[] => {
+    let result: JSX.Element[] = [];
+
     switch (this.state.planSelector) {
       case '0':
-        return planB.map((item, index) => <option value={index}>{item}</option>);
+        result = planB.map((item, index) => <option value={index}>{item}</option>);
+        break;
       case '1':
-        return planC.map((item, index) => <option value={index}>{item}</option>);
+        result = planC.map((item, index) => <option value={index}>{item}</option>);
+        break;
     }
+
+    return result;
   };
 
   calculateTotalEUR = (): number => {
@@ -137,7 +143,7 @@ class PayToken extends React.Component<ResetProps> {
     return totalINXT;
   };
 
-  render() {
+  render(): JSX.Element {
     return <div>
       <Container className="form-main">
         {this.state.finish ?

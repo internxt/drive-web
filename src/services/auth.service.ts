@@ -1,3 +1,5 @@
+import * as bip39 from 'bip39';
+
 import { getHeaders } from '../lib/auth';
 import localStorageService from './local-storage.service';
 import history from '../lib/history';
@@ -7,11 +9,12 @@ import AesUtils from '../lib/AesUtil';
 import { decryptText, decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../lib/utils';
 import { validateFormat } from './keys.service';
 import { decryptPGP } from '../lib/utilspgp';
-import * as bip39 from 'bip39';
 import userService from './user.service';
 import notify, { ToastType } from '../components/Notifications';
 import i18n from './i18n.service';
 import { UserSettings } from '../models/interfaces';
+import httpService from './http.service';
+import { Workspace } from '../models/enums';
 
 export function logOut(): void {
   analyticsService.trackSignOut();
@@ -28,12 +31,8 @@ export function isUserSignedIn(): boolean {
 }
 
 export function cancelAccount(): Promise<void> {
-  return fetch('/api/deactivate', {
-    method: 'GET',
-    headers: getHeaders(true, false)
-  })
-    .then(res => res.json())
-    .then(res => {
+  return httpService.get<void>('/api/deactivate', { authWorkspace: Workspace.Personal })
+    .then(() => {
       notify(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
     }).catch(err => {
       notify(i18n.get('error.deactivatingAccount'), ToastType.Warning);
