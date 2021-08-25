@@ -9,13 +9,13 @@ import { validateFormat } from './keys.service';
 import { decryptPGP } from '../lib/utilspgp';
 import * as bip39 from 'bip39';
 import userService from './user.service';
-import { toast } from 'react-toastify';
+import notify, { ToastType } from '../components/Notifications';
+import i18n from './i18n.service';
 import { UserSettings } from '../models/interfaces';
 
 export function logOut(): void {
   analyticsService.trackSignOut();
   localStorageService.clear();
-  localStorageService.removeItem('workspace');
   history.push('/login');
 }
 
@@ -34,9 +34,9 @@ export function cancelAccount(): Promise<void> {
   })
     .then(res => res.json())
     .then(res => {
-      toast.warn('A desactivation email has been sent to your email inbox');
+      notify(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
     }).catch(err => {
-      toast.warn('Error deleting account');
+      notify(i18n.get('error.deactivatingAccount'), ToastType.Warning);
       console.log(err);
       throw err;
     });
@@ -407,7 +407,8 @@ const authService = {
   doAccess,
   doRegister,
   check2FANeeded,
-  readReferalCookie
+  readReferalCookie,
+  cancelAccount
 };
 
 export default authService;
