@@ -90,7 +90,7 @@ const AccountPlanInfoTab = ({ plansCharacteristics }: { plansCharacteristics: st
               <span className='subtitle'>{user?.email}</span>
 
               <h2 className='account_config_title mt-0.5 mb-1'>Usage</h2>
-              <PlanUsage className="px-6" {...plan}/>
+              <PlanUsage className="px-6 h-14" {...plan}/>
             </div>
           </div>
 
