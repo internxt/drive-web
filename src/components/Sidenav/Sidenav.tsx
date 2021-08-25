@@ -90,7 +90,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
           {
             !collapsed &&
             (<Link to="/account">
-              <PlanUsage className="absolute bottom-0 left-0 pl-6 pr-16 pb-6" {...this.props.plan}></PlanUsage>
+              <PlanUsage className="absolute bottom-0 left-0 pl-6 pr-16 pb-4" {...this.props.plan}></PlanUsage>
             </Link>)
           }
         </div>
