@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import httpService from './http.service';
 
 import { bytesToString } from './size.service';
 
@@ -8,9 +8,9 @@ export interface UsageResponse {
 }
 
 export async function fetchUsage(): Promise<UsageResponse> {
-  const response: AxiosResponse<UsageResponse> = await axios.get('/api/usage');
+  const response: UsageResponse = await httpService.get('/api/usage');
 
-  return response.data;
+  return response;
 }
 
 export const getUserLimitString = (limit: number): string => {

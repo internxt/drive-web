@@ -35,11 +35,14 @@ const initialState: PlanState = {
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
   'plan/initialize',
   async (payload: void, { dispatch, getState }) => {
+    const isAuthenticated = getState().user.isAuthenticated;
     const promises: Promise<void>[] = [];
 
-    promises.push(dispatch(fetchPlans()).then());
-    promises.push(dispatch(fetchLimitThunk()).then());
-    promises.push(dispatch(fetchUsageThunk()).then());
+    if (isAuthenticated) {
+      promises.push(dispatch(fetchPlans()).then());
+      promises.push(dispatch(fetchLimitThunk()).then());
+      promises.push(dispatch(fetchUsageThunk()).then());
+    }
 
     await Promise.all(promises);
   }

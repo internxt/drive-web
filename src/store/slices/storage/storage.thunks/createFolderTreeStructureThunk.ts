@@ -49,7 +49,7 @@ export const createFolderTreeStructureThunk = createAsyncThunk<void, CreateFolde
 
       while (levels.length > 0) {
         const level: IRoot = levels.shift() as IRoot;
-        const folderUploaded = await folderService.createFolder(level.folderId, level.name);
+        const folderUploaded = await folderService.createFolder(level.folderId as number, level.name);
 
         await dispatch(uploadItemsThunk({
           files: level.childrenFiles || [],

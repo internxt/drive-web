@@ -1,5 +1,5 @@
 import { store as storeInstance } from '../store';
-import { AppViewLayout, TaskType, TaskStatus } from './enums';
+import { AppViewLayout, TaskType, TaskStatus, StripeMemberTiers, RenewalPeriod, TimeInterval, StripeProductNames } from './enums';
 
 export interface AppConfig {
   plan: AppPlanConfig;
@@ -151,54 +151,23 @@ export type IStripeProduct = {
 
 export type IStripeCustomer = {
   product: string,
-  payment_frequency: StripePlanNames
+  payment_frequency: RenewalPeriod
 }
 
 export type StripeProductMetadata = {
   is_drive: string,
   member_tier: keyof typeof StripeMemberTiers,
   price_eur: string,
-  simple_name: keyof typeof StripeSimpleNames,
+  simple_name: keyof typeof RenewalPeriod,
   size_bytes: string
-}
-
-export enum StripeMemberTiers {
-  'infinite',
-  'lifetime',
-  'premium'
-}
-
-export enum StripeSimpleNames {
-  'infinite',
-  '20TB',
-  '2TB',
-  '200GB',
-  '20GB'
-}
-
-export enum StripeProductNames {
-  'Drive 20GB',
-  'Drive 200GB',
-  'Drive 2 TB'
 }
 
 export type IStripePlan = {
   id: string,
-  interval: keyof typeof StripePlanIntervals,
+  interval: keyof typeof TimeInterval,
   interval_count: number,
-  name: keyof typeof StripePlanNames,
+  name: keyof typeof RenewalPeriod,
   price: number
-}
-
-enum StripePlanIntervals {
-  'month',
-  'year'
-}
-
-enum StripePlanNames {
-  'Montlhy',
-  'Semiannually',
-  'Annually'
 }
 
 export type StoragePlan = {
@@ -206,7 +175,7 @@ export type StoragePlan = {
   productId: string;
   name: StripeProductNames;
   simpleName: string;
-  paymentInterval: StripePlanNames;
+  paymentInterval: RenewalPeriod;
   price: string;
   isTeam: boolean;
   isLifetime: boolean;

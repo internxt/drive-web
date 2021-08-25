@@ -91,7 +91,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
 
               <h2 className='account_config_title mt-0.5 mb-2'>Usage</h2>
               <div className="flex flex-col items-start justify-center w-60 bg-l-neutral-20 rounded-md py-3 px-6">
-                { isLoadingPlans || isLoadingPlanLimit ?
+                {isLoadingPlans || isLoadingPlanLimit ?
                   <span>Loading...</span> :
                   <span className='account_config_description w-full m-0'>{bytesToString(planUsage) || '0'} of {getUserLimitString(planLimit)}</span>
                 }
@@ -117,7 +117,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
                       {
                         currentPlan?.planId ?
                           <Fragment>
-                            <span className='font-bold'>{currentPlan?.price}</span>
+                            <span className='font-bold'>{currentPlan?.price}€</span>
                             <span className='text-xs mb-1 ml-2'>/{currentPlan?.paymentInterval}</span>
                           </Fragment>
                           :

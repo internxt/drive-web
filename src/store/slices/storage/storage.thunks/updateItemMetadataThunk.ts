@@ -8,18 +8,16 @@ import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } f
 import fileService from '../../../../services/file.service';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
-import { sessionSelectors } from '../../session/session.selectors';
 
 export const updateItemMetadataThunk = createAsyncThunk<void, { item: DriveItemData, metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload }, { state: RootState }>(
   'storage/updateItemMetadata',
   async (payload: { item: DriveItemData, metadata: DriveFileMetadataPayload
      | DriveFolderMetadataPayload }, { getState, dispatch }) => {
-    const isTeam: boolean = sessionSelectors.isTeam(getState());
     const { item, metadata } = payload;
 
     item.isFolder ?
       await folderService.updateMetaData(item.id, metadata) :
-      await fileService.updateMetaData(item.fileId, metadata, isTeam);
+      await fileService.updateMetaData(item.fileId, metadata);
 
     dispatch(storageActions.patchItem({
       id: item.id,

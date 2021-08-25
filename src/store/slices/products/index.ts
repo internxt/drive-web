@@ -25,10 +25,13 @@ const initialState: ProductsState = {
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
   'products/initialize',
   async (payload: void, { dispatch, getState }) => {
+    const isAuthenticated = getState().user.isAuthenticated;
     const promises: Promise<void>[] = [];
 
-    promises.push(dispatch(fetchIndividualProductsThunk()).then());
-    promises.push(dispatch(fetchTeamProductsThunk()).then());
+    if (isAuthenticated) {
+      promises.push(dispatch(fetchIndividualProductsThunk()).then());
+      promises.push(dispatch(fetchTeamProductsThunk()).then());
+    }
 
     await Promise.all(promises);
   }

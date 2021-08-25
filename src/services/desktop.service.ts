@@ -1,4 +1,3 @@
-import { url } from 'inspector';
 import operatingSystemService from './operating-system.service';
 
 function getDownloadAppUrl(): string {

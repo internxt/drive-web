@@ -1,10 +1,10 @@
 import { Component, ReactNode } from 'react';
-import axios from 'axios';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 
 import history from '../../lib/history';
 import notify, { ToastType } from '../../components/Notifications';
+import httpService from '../../services/http.service';
 
 interface DeactivationTeamsViewProps {
     match: match<{ token: string}>
@@ -13,7 +13,6 @@ interface DeactivationTeamsViewProps {
 class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
     state = {
       token: this.props.match.params.token,
-      result: this.confirmDeactivation(),
       errorReason: ''
     }
 
@@ -30,11 +29,10 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
 
     }
 
-    ConfirmDeactivateTeam = (token: string): Promise<void> => {
+    confirmDeactivation = (token: string): Promise<void> => {
       console.log(token);
 
-      return axios.get('/api/confirmDeactivationTeam/' + token).then(res => {
-        console.log('All is ok');
+      return httpService.get<void>('/api/confirmDeactivationTeam/' + token).then(() => {
         this.ClearAndRedirect();
       }).catch(err => {
         notify('Invalid token', ToastType.Warning);
@@ -45,17 +43,13 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
     componentDidMount(): void {
       console.log('TOKEN WEB', this.state.token);
       if (this.IsValidToken(this.state.token)) {
-        this.ConfirmDeactivateTeam(this.state.token);
+        this.confirmDeactivation(this.state.token);
       } else {
 
         notify('Invalid token', ToastType.Warning);
         history.push('/');
 
       }
-    }
-
-    confirmDeactivation(): JSX.Element {
-      return <p>Your account has been deactivated</p>;
     }
 
     invalidDeactivationToken(): JSX.Element {

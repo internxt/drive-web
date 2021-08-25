@@ -1,5 +1,7 @@
 import { UilCheck } from '@iconscout/react-unicons';
+import { TimeInterval } from '../../../../models/enums';
 import { IStripePlan } from '../../../../models/interfaces';
+import moneyService from '../../../../services/money.service';
 
 interface ProductPlanItemProps {
   plan: IStripePlan;
@@ -12,8 +14,9 @@ interface ProductPlanItemProps {
 export const ProductPlanItem = ({ plan, isSelected, isCurrentPlan, totalTeamMembers, onClick }: ProductPlanItemProps): JSX.Element => {
   const classCurrentPlan = isCurrentPlan ? 'border-3 border-blue-60 cursor-default' : '';
   const classSelectedPlan = isSelected ? 'border-blue-60 bg-blue-10' : 'border-m-neutral-60';
-  const multiplyValue = totalTeamMembers < 1 || !totalTeamMembers ? 1 : totalTeamMembers;
-  const anuallyInterval = (((plan.price / 100) * (isCurrentPlan ? 1 : multiplyValue)) / plan.interval_count) / 12;
+  const priceMultiplier = !totalTeamMembers || totalTeamMembers < 1 ? 1 : totalTeamMembers;
+  const monthlyPrice = moneyService.getMonthlyPrice(plan.price / 100, plan.interval_count, plan.interval as TimeInterval);
+  const priceToShow = monthlyPrice * priceMultiplier;
 
   return (
     <div
@@ -27,10 +30,7 @@ export const ProductPlanItem = ({ plan, isSelected, isCurrentPlan, totalTeamMemb
 
       <div className='flex items-end'>
         {
-          plan.interval === 'year' ?
-            <p className='font-bold mr-2'>{anuallyInterval.toFixed(2)}€</p>
-            :
-            <p className='font-bold mr-2'>{(((plan.price / 100) * (isCurrentPlan ? 1 : multiplyValue)) / plan.interval_count).toFixed(2)}€</p>
+          <p className='font-bold mr-2'>{priceToShow.toFixed(2)}€</p>
         }
         <p className='payment_interval'>/month</p>
       </div>

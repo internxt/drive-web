@@ -1,14 +1,23 @@
-import axios from 'axios';
-import { getHeaders } from '../lib/auth';
 import { DevicePlatform } from '../models/enums';
 import { DriveFileData, DriveFileMetadataPayload, UserSettings } from '../models/interfaces';
 import analyticsService from './analytics.service';
+import httpService from './http.service';
 import localStorageService from './local-storage.service';
 
-export function updateMetaData(itemId: string, data: DriveFileMetadataPayload, isTeam: boolean): Promise<void> {
+export interface MoveFilePayload {
+  fileId: string;
+  destination: number
+}
+export interface MoveFileResponse {
+  item: DriveFileData;
+  destination: number;
+  moved: boolean;
+}
+
+export function updateMetaData(itemId: string, data: DriveFileMetadataPayload): Promise<void> {
   const user = localStorageService.getUser() as UserSettings;
 
-  return axios.post(`/api/storage/file/${itemId}/meta`, data).then(() => {
+  return httpService.post(`/api/storage/file/${itemId}/meta`, data).then(() => {
     analyticsService.trackFileRename({
       file_id: itemId,
       email: user.email,
@@ -20,7 +29,7 @@ export function updateMetaData(itemId: string, data: DriveFileMetadataPayload, i
 export function deleteFile(fileData: DriveFileData): Promise<void> {
   const user = localStorageService.getUser() as UserSettings;
 
-  return axios.delete(`/api/storage/folder/${fileData.folderId}/file/${fileData.id}`).then(() => {
+  return httpService.delete(`/api/storage/folder/${fileData.folderId}/file/${fileData.id}`).then(() => {
     analyticsService.trackDeleteItem(fileData, {
       email: user.email,
       platform: DevicePlatform.Web
@@ -28,23 +37,23 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
   });
 }
 
-export async function moveFile(data: { fileId: string, destination: number }): Promise<void> {
+export async function moveFile(data: MoveFilePayload): Promise<MoveFileResponse> {
   const user = localStorageService.getUser() as UserSettings;
-  const response = await axios.post('/api/storage/moveFile', data);
+  const response = await httpService.post<MoveFilePayload, MoveFileResponse>('/api/storage/moveFile', data);
 
   analyticsService.trackMoveItem('file', {
-    file_id: response.data.item.id,
+    file_id: response.item.id,
     email: user.email,
     platform: DevicePlatform.Web
   });
 
-  return response.data;
+  return response;
 }
 
 async function fetchRecents(limit: number): Promise<DriveFileData[]> {
-  const response = await axios.get(`/api/storage/recents?limit=${limit}`);
+  const response = await httpService.get<DriveFileData[]>(`/api/storage/recents?limit=${limit}`);
 
-  return response.data;
+  return response;
 }
 
 const fileService = {
