@@ -43,8 +43,6 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
         i18n.get('error.folderAlreadyExists') :
         i18n.get('error.creatingFolder');
 
-      console.log('createFolderThunk rejected: ', action);
-
       notify(errorMessage, ToastType.Error);
     });
 };
