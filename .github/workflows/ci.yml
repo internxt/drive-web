@@ -30,6 +30,8 @@ jobs:
       #   env:
       #     CI: true
       - name: Build
+        env:
+          CI: false
         run: yarn build
       - name: Install netlify
         run: npm install -g netlify
