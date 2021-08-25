@@ -19,16 +19,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://npm.pkg.github.com'
 
-      - name: Remove inxt-js private link
-        run: yarn remove inxt-js
+      # - name: Remove inxt-js private link
+      #   run: yarn remove inxt-js
       - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
       # You cannot read packages from other private repos with GITHUB_TOKEN
       # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
       - run: echo "always-auth=true" >> .npmrc
-      - name: Add inxt-js package link
-        run: yarn add @internxt/inxt-js
+      # - name: Add inxt-js package link
+      #   run: yarn add @internxt/inxt-js
       - run: yarn
       # - run: yarn run test
       #   env:
