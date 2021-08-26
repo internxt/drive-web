@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { storageThunks } from '../../../store/slices/storage';
 import { UserSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
 import BaseButton from '../../Buttons/BaseButton';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
   user: UserSettings | undefined;

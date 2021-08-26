@@ -1,12 +1,13 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import { storageActions, StorageState } from '..';
 
 import { RootState } from '../../..';
-import storageSelectors from '../storageSelectors';
+import { storageActions } from '..';
+import { StorageState } from '../storage.model';
+import storageSelectors from '../storage.selectors';
 
 export const resetNamePathThunk = createAsyncThunk<void, void, { state: RootState }>(
   'storage/resetNamePath',
-  async (payload: void, { getState, dispatch }: any) => {
+  async (payload: void, { getState, dispatch }) => {
     const { user } = getState().user;
     const rootFolderId: number = storageSelectors.rootFolderId(getState());
 

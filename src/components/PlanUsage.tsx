@@ -10,7 +10,7 @@ export default function PlanUsage({ limit, usage, isLoading, className = '' }: {
         <p >Usage</p>
       </div>
       <div className='flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mb-3'>
-        <div className='h-full bg-blue-70' style={{ width: (usage / limit) * 100 }} />
+        <div className='h-full bg-blue-70' style={{ width: isLoading ? 0 : (usage / limit) * 100 }} />
       </div>
       {isLoading ?
         <p>Loading...</p> :

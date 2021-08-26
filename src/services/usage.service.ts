@@ -1,4 +1,5 @@
-import { getHeaders } from '../lib/auth';
+import httpService from './http.service';
+
 import { bytesToString } from './size.service';
 
 export interface UsageResponse {
@@ -6,10 +7,8 @@ export interface UsageResponse {
   total: number;
 }
 
-export async function fetchUsage(isTeam: boolean): Promise<UsageResponse> {
-  const response: Response = await fetch(`${process.env.REACT_APP_API_URL}/api/usage`, { headers: getHeaders(true, false, isTeam) });
-
-  return response.json();
+export async function fetchUsage(): Promise<UsageResponse> {
+  return httpService.get('/api/usage');
 }
 
 export const getUserLimitString = (limit: number): string => {

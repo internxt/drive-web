@@ -1,6 +1,6 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { StorageState } from '..';
+import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
 import { TaskType, TaskStatus } from '../../../../models/enums';
 import { DriveItemData, NotificationData } from '../../../../models/interfaces';
@@ -8,12 +8,12 @@ import downloadService from '../../../../services/download.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import { tasksActions } from '../../tasks';
-import { selectorIsTeam } from '../../team';
+import { sessionSelectors } from '../../session/session.selectors';
 
 export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
   'storage/downloadItems',
   async (items: DriveItemData[], { getState, dispatch, requestId, rejectWithValue }) => {
-    const isTeam: boolean = selectorIsTeam(getState());
+    const isTeam: boolean = sessionSelectors.isTeam(getState());
     const notificationsUuids: string[] = [];
     const errors: any[] = [];
 

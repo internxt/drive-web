@@ -1,3 +1,6 @@
+import * as bip39 from 'bip39';
+import { aes } from '@internxt/lib';
+
 import { getHeaders } from '../lib/auth';
 import localStorageService from './local-storage.service';
 import history from '../lib/history';
@@ -6,11 +9,11 @@ import { generateNewKeys, updateKeys } from './pgp.service';
 import { decryptText, decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../lib/utils';
 import { getAesInitFromEnv, validateFormat } from './keys.service';
 import { decryptPGP } from '../lib/utilspgp';
-import * as bip39 from 'bip39';
 import userService from './user.service';
 import i18n from './i18n.service';
 import { UserSettings } from '../models/interfaces';
-import { aes } from '@internxt/lib';
+import httpService from './http.service';
+import { Workspace } from '../models/enums';
 import notificationsService, { ToastType } from './notifications.service';
 
 export function logOut(): void {
@@ -20,12 +23,8 @@ export function logOut(): void {
 }
 
 export function cancelAccount(): Promise<void> {
-  return fetch(`${process.env.REACT_APP_API_URL}/api/deactivate`, {
-    method: 'GET',
-    headers: getHeaders(true, false)
-  })
-    .then(res => res.json())
-    .then(res => {
+  return httpService.get<void>('/api/deactivate', { authWorkspace: Workspace.Personal })
+    .then(() => {
       notificationsService.show(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
     }).catch(err => {
       notificationsService.show(i18n.get('error.deactivatingAccount'), ToastType.Warning);

@@ -13,6 +13,7 @@ import facebook from '../../assets/Share-Icons/Facebook.svg';
 import telegram from '../../assets/Share-Icons/Telegram.svg';
 
 import './ReferredView.scss';
+import notify, { ToastType } from '../../components/Notifications';
 
 class ReferredView extends Component {
     state = {
@@ -91,7 +92,7 @@ class ReferredView extends Component {
         if (res.response.status !== 200) {
           throw res.data;
         } else {
-          toast.info(`Invitation email sent to ${mail}`);
+          notify(`Invitation email sent to ${mail}`, ToastType.Info);
         }
       }).catch(err => {
         toast.warn(`Error: ${err.error ? err.error : 'Internal Server Error'}`);

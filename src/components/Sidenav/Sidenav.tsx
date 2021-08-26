@@ -41,6 +41,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
 
   render(): JSX.Element {
     const { collapsed, onCollapseButtonClicked } = this.props;
+    const { planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = this.props.plan;
 
     return (
       <div className={`${collapsed ? 'collapsed' : ''} side-nav`}>
@@ -90,7 +91,12 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
           {
             !collapsed &&
             (<Link to="/account">
-              <PlanUsage className="absolute bottom-0 left-0 px-6 pb-4" {...this.props.plan}></PlanUsage>
+              <PlanUsage
+                className="absolute bottom-0 left-0 px-6 pb-4"
+                limit={planLimit}
+                usage={planUsage}
+                isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
+              ></PlanUsage>
             </Link>)
           }
         </div>

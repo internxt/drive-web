@@ -2,6 +2,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import { Component } from 'react';
 import queryString from 'query-string';
+import { SelectCallback } from 'react-bootstrap/esm/helpers';
 
 import AccountPlansTab from './tabs/AccountPlansTab/AccountPlansTab';
 import AccountPasswordTab from './tabs/AccountPasswordTab/AccountPasswordTab';
@@ -9,12 +10,10 @@ import AccountSecurityTab from './tabs/AccountSecurityTab/AccountSecurityTab';
 import AccountPlanInfoTab from './tabs/AccountPlanInfoTab/AccountPlanInfoTab';
 import { AppDispatch, RootState } from '../../store';
 import { connect } from 'react-redux';
-import { planThunks } from '../../store/slices/plan';
 import { uiActions } from '../../store/slices/ui';
 import history from '../../lib/history';
 
 import './AccountView.scss';
-import { SelectCallback } from 'react-bootstrap/esm/helpers';
 
 export enum AccountViewTab {
   Billing = 'billing',
@@ -41,8 +40,6 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
     if (queryTab && Object.values(AccountViewTab).includes(queryTab as AccountViewTab) && this.props.currentTab !== queryTab) {
       this.props.dispatch(uiActions.setCurrentAccountTab(queryTab as string));
     }
-
-    this.props.dispatch(planThunks.initializeThunk());
   }
 
   onTabSelected: SelectCallback = (tabKey) => {
@@ -50,17 +47,15 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
   }
 
   render(): JSX.Element {
-    const plansCharacteristics = ['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing'];
-
     return (
       <div className='account-view h-full rounded-md bg-white pb-16 mt-2 '>
         <Tabs activeKey={this.props.currentTab} onSelect={this.onTabSelected} className='flex px-8 pt-3.5 account-tabs' >
           <Tab title='Billing' eventKey={AccountViewTab.Billing}>
-            <AccountPlanInfoTab plansCharacteristics={plansCharacteristics} />
+            <AccountPlanInfoTab />
           </Tab>
 
           <Tab title='Plans' eventKey={AccountViewTab.Plans}>
-            <AccountPlansTab plansCharacteristics={plansCharacteristics} />
+            <AccountPlansTab />
           </Tab>
 
           <Tab title='Password' eventKey={AccountViewTab.Password}>

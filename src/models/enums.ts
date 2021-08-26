@@ -74,3 +74,34 @@ export enum StorageItemList {
   Drive = 'drive',
   Recents = 'recents'
 }
+
+export enum StripeMemberTiers {
+  'infinite',
+  'lifetime',
+  'premium'
+}
+
+export enum StripeSimpleNames {
+  'infinite',
+  '20TB',
+  '2TB',
+  '200GB',
+  '20GB'
+}
+
+export enum StripeProductNames {
+  'Drive 20GB',
+  'Drive 200GB',
+  'Drive 2 TB'
+}
+
+export enum TimeInterval {
+  Month = 'month',
+  Year = 'year'
+}
+
+export enum RenewalPeriod {
+  Monthly = 'Monthly',
+  Semiannually = 'Semiannually',
+  Annually = 'Annually'
+}

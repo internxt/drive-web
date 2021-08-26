@@ -1,24 +1,23 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { storageActions, StorageState } from '..';
+import { StorageState } from '../storage.model';
+import { storageActions } from '..';
 import { RootState } from '../../..';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../models/interfaces';
 import fileService from '../../../../services/file.service';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { selectorIsTeam } from '../../team';
 
 export const updateItemMetadataThunk = createAsyncThunk<void, { item: DriveItemData, metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload }, { state: RootState }>(
   'storage/updateItemMetadata',
   async (payload: { item: DriveItemData, metadata: DriveFileMetadataPayload
      | DriveFolderMetadataPayload }, { getState, dispatch }) => {
-    const isTeam: boolean = selectorIsTeam(getState());
     const { item, metadata } = payload;
 
     item.isFolder ?
-      await folderService.updateMetaData(item.id, metadata, isTeam) :
-      await fileService.updateMetaData(item.fileId, metadata, isTeam);
+      await folderService.updateMetaData(item.id, metadata) :
+      await fileService.updateMetaData(item.fileId, metadata);
 
     dispatch(storageActions.patchItem({
       id: item.id,

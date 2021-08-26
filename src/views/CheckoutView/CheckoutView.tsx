@@ -4,7 +4,7 @@ interface CheckoutViewProps {
     match?: any
 }
 interface CheckoutViewState {
-    sessionId: any
+    sessionId: string;
 }
 
 class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState> {
@@ -16,7 +16,7 @@ class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState>
     };
   }
 
-  checkSessionId(sessionId): RegExpExecArray | null {
+  checkSessionId(sessionId: string): RegExpExecArray | null {
     const pattern = /^cs_(test|live)_[a-zA-Z0-9]+$/;
 
     return pattern.exec(sessionId);
@@ -38,7 +38,7 @@ class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState>
     }
   }
 
-  render(): JSX.Element {
+  render(): ReactNode {
     if (!this.checkSessionId(this.state.sessionId)) {
       if (this.state.sessionId === 'ok' || this.state.sessionId === 'cancel') {
         return <div>{this.state.sessionId}</div>;

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Alert, Container } from 'react-bootstrap';
-import axios from 'axios';
 import { connect } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 import { isMobile } from 'react-device-detect';
@@ -10,8 +9,10 @@ import history from '../../lib/history';
 import { AppDispatch } from '../../store';
 import { userThunks } from '../../store/slices/user';
 
-import './DeactivationView.scss';
+import httpService from '../../services/http.service';
 import notificationsService, { ToastType } from '../../services/notifications.service';
+
+import './DeactivationView.scss';
 interface DeactivationProps {
   match?: any;
   dispatch: AppDispatch;
@@ -40,7 +41,7 @@ class DeactivationView extends React.Component<DeactivationProps> {
   }
 
   ConfirmDeactivateUser = (token: string) => {
-    axios.get('/api/confirmDeactivation/' + token).then(res => {
+    return httpService.get<void>('/api/confirmDeactivation/' + token).then(response => {
       this.ClearAndRedirect();
     }).catch(err => {
       if (!isMobile) {

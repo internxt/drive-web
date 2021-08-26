@@ -1,20 +1,19 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { storageActions, storageSelectors, StorageState } from '..';
+import { StorageState } from '../storage.model';
+import { storageActions, storageSelectors } from '..';
 import { RootState } from '../../..';
 import { StorageItemList } from '../../../../models/enums';
 import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
-import folderService, { CreatedFolder } from '../../../../services/folder.service';
+import folderService, { CreateFolderResponse } from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { selectorIsTeam } from '../../team';
 
 export const createFolderThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/createFolder',
   async (folderName: string, { getState, dispatch }) => {
-    const isTeam: boolean = selectorIsTeam(getState());
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
-    const createdFolder: CreatedFolder = await folderService.createFolder(isTeam, currentFolderId, folderName);
+    const createdFolder: CreateFolderResponse = await folderService.createFolder(currentFolderId, folderName);
     const createdFolderNormalized: DriveFolderData = {
       ...createdFolder,
       name: folderName,

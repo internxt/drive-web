@@ -20,6 +20,7 @@ import { IFormValues, UserSettings } from '../../models/interfaces';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope } from '@iconscout/react-unicons';
 import { Link } from 'react-router-dom';
 import { planThunks } from '../../store/slices/plan';
+import { productsThunks } from '../../store/slices/products';
 
 interface SignInProps {
   email?: string,
@@ -64,6 +65,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
         analyticsService.trackSignIn({ email, userId: data.user.uuid });
 
         try {
+          dispatch(productsThunks.initializeThunk());
           dispatch(planThunks.initializeThunk());
           await dispatch(initializeUserThunk()).unwrap();
         } catch (e) {

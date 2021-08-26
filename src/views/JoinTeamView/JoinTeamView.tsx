@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { match } from 'react-router';
 
 import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
@@ -12,7 +13,7 @@ import './JoinTeamView.scss';
 
 interface JoinTeamProps {
   dispatch: AppDispatch;
-  match: any;
+  match: match<{token: string}>;
 }
 
 interface JoinTeamState {
