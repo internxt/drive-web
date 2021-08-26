@@ -1,8 +1,7 @@
-import { useState, Fragment, Component } from 'react';
+import { useState, Fragment } from 'react';
 import { generateMnemonic } from 'bip39';
 import { UilBuilding, UilHome } from '@iconscout/react-unicons';
 
-import notify, { ToastType } from '../../../../components/Notifications';
 import analyticsService from '../../../../services/analytics.service';
 import ProductItem from './ProductItem';
 import { encryptPGP } from '../../../../lib/utilspgp';
@@ -13,6 +12,7 @@ import i18n from '../../../../services/i18n.service';
 import envService from '../../../../services/env.service';
 import { payStripePlan } from '../../../../services/products.service';
 import { useAppSelector } from '../../../../store/hooks';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 import configService from '../../../../services/config.service';
 
@@ -68,7 +68,7 @@ const AccountPlansTab = (props: {}): JSX.Element => {
 
       await stripe.redirectToCheckout({ sessionId: session.id });
     } catch (err) {
-      notify(i18n.get('error.redirectToStripe', {
+      notificationsService.show(i18n.get('error.redirectToStripe', {
         reason: err.message
       }), ToastType.Error);
     } finally {
@@ -88,7 +88,7 @@ const AccountPlansTab = (props: {}): JSX.Element => {
       test: !envService.isProduction()
     };
 
-    fetch('/api/stripe/teams/session', {
+    fetch(`${process.env.REACT_APP_API_URL}/api/stripe/teams/session`, {
       method: 'POST',
       headers: getHeaders(true, false),
       body: JSON.stringify(body)

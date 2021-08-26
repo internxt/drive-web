@@ -3,7 +3,7 @@ import { getHeaders } from '../lib/auth';
 export const referralCopiedText = 'I\'ve made the switch to @Internxt a secure and free alternative to Dropbox that truly respects your privacy. Sign up using this exclusive link and get 10 GB free for life, and €5 that can be used if you ever decide to upgrade your Internxt storage plan!';
 
 export const getCredit = async (): Promise<number> => {
-  const response = await fetch('/api/user/credit', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/credit`, {
     method: 'GET',
     headers: getHeaders(true, false)
   });
@@ -22,7 +22,7 @@ export const parseUrl = (text: string): string => (
 );
 
 export const sendInvitationEmail = async (email: string): Promise<void> => {
-  const response = await fetch('/api/user/invite', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/invite`, {
     method: 'POST',
     headers: getHeaders(true, false),
     body: JSON.stringify({ email })
@@ -37,7 +37,7 @@ export const sendInvitationEmail = async (email: string): Promise<void> => {
 };
 
 export const sendClaimEmail = async (email: string): Promise<void> => {
-  const response = await fetch('/api/user/claim', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/claim`, {
     method: 'POST',
     headers: getHeaders(true, false),
     body: JSON.stringify({ email })

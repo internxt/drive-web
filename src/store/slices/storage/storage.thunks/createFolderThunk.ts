@@ -3,11 +3,11 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { storageActions, storageSelectors } from '..';
 import { RootState } from '../../..';
-import notify, { ToastType } from '../../../../components/Notifications';
 import { StorageItemList } from '../../../../models/enums';
 import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
 import folderService, { CreateFolderResponse } from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 export const createFolderThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/createFolder',
@@ -43,6 +43,6 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
         i18n.get('error.folderAlreadyExists') :
         i18n.get('error.creatingFolder');
 
-      notify(errorMessage, ToastType.Error);
+      notificationsService.show(errorMessage, ToastType.Error);
     });
 };

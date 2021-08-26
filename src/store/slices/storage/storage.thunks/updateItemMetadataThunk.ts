@@ -3,11 +3,11 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import notify, { ToastType } from '../../../../components/Notifications';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../models/interfaces';
 import fileService from '../../../../services/file.service';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 export const updateItemMetadataThunk = createAsyncThunk<void, { item: DriveItemData, metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload }, { state: RootState }>(
   'storage/updateItemMetadata',
@@ -37,6 +37,6 @@ export const updateItemMetadataThunkExtraReducers = (builder: ActionReducerMapBu
         i18n.get('error.fileAlreadyExists') :
         i18n.get('error.changingName');
 
-      notify(errorMessage, ToastType.Error);
+      notificationsService.show(errorMessage, ToastType.Error);
     });
 };

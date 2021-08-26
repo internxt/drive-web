@@ -1,7 +1,7 @@
 import { getHeaders } from '../lib/auth';
 
 export async function initializeUser(email: string, mnemonic: string): Promise<any> {
-  const response = await fetch('/api/initialize', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/initialize`, {
     method: 'post',
     headers: getHeaders(true, true),
     body: JSON.stringify({
@@ -18,7 +18,7 @@ export async function initializeUser(email: string, mnemonic: string): Promise<a
 }
 
 export const sendDeactivationEmail = (email: string): Promise<Response> => {
-  return fetch(`/api/reset/${email}`, {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/reset/${email}`, {
     method: 'GET',
     headers: getHeaders(false, false)
   });

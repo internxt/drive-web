@@ -3,12 +3,12 @@ import _ from 'lodash';
 
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import notify, { ToastType } from '../../../../components/Notifications';
 import { DriveItemData } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
-import i18n from '../../../../services/i18n.service';
 import { StorageState } from '../storage.model';
 import storageSelectors from '../storage.selectors';
+import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 export const fetchFolderContentThunk = createAsyncThunk<void, number | undefined, { state: RootState }>(
   'storage/fetchFolderContent',
@@ -37,7 +37,7 @@ export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBu
     })
     .addCase(fetchFolderContentThunk.rejected, (state, action) => {
       state.isLoading = false;
-      notify(
+      notificationsService.show(
         i18n.get('error.fetchingFolderContent'),
         ToastType.Error
       );

@@ -42,7 +42,7 @@ class ReferredView extends Component {
     }
 
     getCredit = () => {
-      fetch('/api/user/credit', {
+      fetch(`${process.env.REACT_APP_API_URL}/api/user/credit`, {
         method: 'GET',
         headers: getHeaders(true, false)
       }).then(async res => {
@@ -87,7 +87,7 @@ class ReferredView extends Component {
     }
 
     sendInvitationEmail = (mail) => {
-      fetch('/api/user/invite', {
+      fetch(`${process.env.REACT_APP_API_URL}/api/user/invite`, {
         method: 'POST',
         headers: getHeaders(true, false),
         body: JSON.stringify({ email: mail })
@@ -105,7 +105,7 @@ class ReferredView extends Component {
     }
 
     sendClaimEmail = () => {
-      fetch('/api/user/claim', {
+      fetch(`${process.env.REACT_APP_API_URL}/api/user/claim`, {
         method: 'POST',
         headers: getHeaders(true, false),
         body: JSON.stringify({ email: this.state.email })

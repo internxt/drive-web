@@ -3,10 +3,10 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import notify, { ToastType } from '../../../../components/Notifications';
 import { StorageItemList, TaskStatus, TaskType } from '../../../../models/enums';
 import { DriveItemData, NotificationData } from '../../../../models/interfaces';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import storageService from '../../../../services/storage.service';
 import { tasksActions } from '../../tasks';
 
@@ -22,7 +22,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
     const promises: Promise<void>[] = [];
 
     if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
-      return notify(i18n.get('error.movingItemInsideItself'), ToastType.Error);
+      return notificationsService.show(i18n.get('error.movingItemInsideItself'), ToastType.Error);
     }
 
     for (const [index, item] of items.entries()) {
@@ -71,6 +71,6 @@ export const moveItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<Sto
     .addCase(moveItemsThunk.pending, (state, action) => { })
     .addCase(moveItemsThunk.fulfilled, (state, action) => { })
     .addCase(moveItemsThunk.rejected, (state, action) => {
-      notify(i18n.get('error.movingItem'), ToastType.Error);
+      notificationsService.show(i18n.get('error.movingItem'), ToastType.Error);
     });
 };

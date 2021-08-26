@@ -3,8 +3,8 @@ import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 
 import history from '../../lib/history';
-import notify, { ToastType } from '../../components/Notifications';
 import httpService from '../../services/http.service';
+import notificationsService, { ToastType } from '../../services/notifications.service';
 
 interface DeactivationTeamsViewProps {
     match: match<{ token: string}>
@@ -24,7 +24,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
       console.log('Clear and redirect');
       localStorage.clear();
 
-      notify('Your account has been deactivated', ToastType.Info);
+      notificationsService.show('Your account has been deactivated', ToastType.Info);
       history.push('/');
 
     }
@@ -35,7 +35,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
       return httpService.get<void>('/api/confirmDeactivationTeam/' + token).then(() => {
         this.ClearAndRedirect();
       }).catch(err => {
-        notify('Invalid token', ToastType.Warning);
+        notificationsService.show('Invalid token', ToastType.Warning);
         history.push('/');
       });
     }
@@ -46,7 +46,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
         this.confirmDeactivation(this.state.token);
       } else {
 
-        notify('Invalid token', ToastType.Warning);
+        notificationsService.show('Invalid token', ToastType.Warning);
         history.push('/');
 
       }

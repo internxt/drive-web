@@ -72,8 +72,12 @@ export const productsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(initializeThunk.pending, (state, action) => { })
-      .addCase(initializeThunk.fulfilled, (state, action) => { })
-      .addCase(initializeThunk.rejected, (state, action) => { });
+      .addCase(initializeThunk.fulfilled, (state, action) => {
+        console.log('fulfilled!');
+      })
+      .addCase(initializeThunk.rejected, (state, action) => {
+        console.log(action.error);
+      });
 
     builder
       .addCase(fetchIndividualProductsThunk.pending, (state, action) => {

@@ -8,9 +8,7 @@ export interface UsageResponse {
 }
 
 export async function fetchUsage(): Promise<UsageResponse> {
-  const response: UsageResponse = await httpService.get('/api/usage');
-
-  return response;
+  return httpService.get('/api/usage');
 }
 
 export const getUserLimitString = (limit: number): string => {

@@ -1,16 +1,15 @@
 import React from 'react';
-import 'react-toastify/dist/ReactToastify.css';
+import { connect } from 'react-redux';
+import { match } from 'react-router';
 
 import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
-
-import './JoinTeamView.scss';
-import notify, { ToastType } from '../../components/Notifications';
 import i18n from '../../services/i18n.service';
-import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { userThunks } from '../../store/slices/user';
-import { match } from 'react-router';
+import notificationsService, { ToastType } from '../../services/notifications.service';
+
+import './JoinTeamView.scss';
 
 interface JoinTeamProps {
   dispatch: AppDispatch;
@@ -43,7 +42,7 @@ class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
   joinToTheTeam = (token): void => {
     const { dispatch } = this.props;
 
-    fetch(`/api/teams/join/${token}`, {
+    fetch(`${process.env.REACT_APP_API_URL}/api/teams/join/${token}`, {
       method: 'post',
       headers: getHeaders(false, false),
       body: JSON.stringify({
@@ -54,14 +53,14 @@ class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
       if (response.status === 200) {
         this.setState({ isTeamActivated: true });
         localStorage.setItem('teamActivation', 'true');
-        notify(i18n.get('success.joinedToTheTeam'), ToastType.Success);
+        notificationsService.show(i18n.get('success.joinedToTheTeam'), ToastType.Success);
         history.push('/');
 
         dispatch(userThunks.initializeUserThunk());
       } else {
         // Wrong activation
         this.setState({ isTeamActivated: false });
-        notify(i18n.get('error.invalidActivationCode'), ToastType.Error);
+        notificationsService.show(i18n.get('error.invalidActivationCode'), ToastType.Error);
       }
 
     }).catch(error => {

@@ -2,11 +2,11 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
-import notify, { ToastType } from '../../../../components/Notifications';
 import { TaskType, TaskStatus } from '../../../../models/enums';
 import { NotificationData } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import { tasksActions } from '../../tasks';
 import { uploadItemsThunk } from './uploadItemsThunk';
 
@@ -101,6 +101,6 @@ export const createFolderTreeStructureThunkExtraReducers = (builder: ActionReduc
         errorMessage = action.error.message || action.error + '';
       }
 
-      notify(errorMessage, ToastType.Error);
+      notificationsService.show(errorMessage, ToastType.Error);
     });
 };
