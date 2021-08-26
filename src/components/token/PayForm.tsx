@@ -6,9 +6,10 @@ import Finish from './finish/Finish';
 import { getTokenInfo } from '../../services/token.service';
 import localStorageService from '../../services/local-storage.service';
 import { getHeaders } from '../../lib/auth';
+import { match } from 'react-router-dom';
 
 interface ResetProps {
-  match?: any
+  match: match<{ token: string }>
   isAuthenticated: boolean
 }
 
@@ -19,20 +20,23 @@ const planC = ['prepay 6 months - €9.49/month', 'prepay 12 months - €8.99/mo
 const totalPlanC = [9.49 * 6, 8.99 * 12];
 
 class PayToken extends React.Component<ResetProps> {
+  constructor(props: ResetProps) {
+    super(props);
 
-  state = {
-    token: this.props.match.params.token,
-    planSelector: '0',
-    paySelector: '0',
-    email: '',
-    finish: false,
-    error: false,
-    inxtEUR: 1,
-    inxt: '',
-    wallet: ''
+    this.state = {
+      token: this.props.match.params.token,
+      planSelector: '0',
+      paySelector: '0',
+      email: '',
+      finish: false,
+      error: false,
+      inxtEUR: 1,
+      inxt: '',
+      wallet: ''
+    };
   }
 
-  isLoggedIn = () => {
+  isLoggedIn = (): boolean => {
     return !(!localStorage.xToken);
   }
 
@@ -151,7 +155,7 @@ class PayToken extends React.Component<ResetProps> {
               >
                 We currently accept Internxt tokens for crypto payments with a minimum order size of €10.
                 <br />
-                  Complete the crypto payment request form below and we'll email you with a crypto invoice.
+                Complete the crypto payment request form below and we'll email you with a crypto invoice.
               </div>
 
               <div
