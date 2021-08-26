@@ -22,14 +22,6 @@ export function logOut(): void {
   history.push('/login');
 }
 
-export function isUserSignedIn(): boolean {
-  const xUser = localStorageService.get('xUser');
-  const xMnemonic = localStorageService.get('xMnemonic');
-  const xToken = localStorageService.get('xToken');
-
-  return !!xUser && !!xMnemonic && !!xToken;
-}
-
 export function cancelAccount(): Promise<void> {
   return httpService.get<void>('/api/deactivate', { authWorkspace: Workspace.Personal })
     .then(() => {
@@ -401,7 +393,6 @@ export const store2FA = async (code: string, twoFactorCode: string): Promise<voi
 
 const authService = {
   logOut,
-  isUserSignedIn,
   doLogin,
   doAccess,
   doRegister,

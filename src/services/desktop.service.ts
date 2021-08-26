@@ -10,7 +10,7 @@ function getDownloadAppUrl(): string {
     case 'MacOS':
       url = 'https://internxt.com/downloads/drive.dmg';
       break;
-    case 'Linux':
+    case 'LinuxOS':
     case 'UNIXOS':
       url = 'https://internxt.com/downloads/drive.deb';
       break;

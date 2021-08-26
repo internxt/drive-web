@@ -6,19 +6,6 @@ export const reservedRe = /^\.+$/;
 export const windowsReservedRe = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i;
 export const windowsTrailingRe = /[\. ]+$/;
 
-const validateLoginForm = (email: string, password: string): boolean => {
-  let isValid = true;
-
-  if (email.length < 5 || !validateEmail(email)) {
-    isValid = false;
-  }
-  if (password.length < 1) {
-    isValid = false;
-  }
-
-  return isValid;
-};
-
 const validateEmail = (email: string) => {
   // eslint-disable-next-line no-control-regex
   return emailRegexPattern.test(email.toLowerCase());
@@ -37,7 +24,6 @@ const validateSearchText = (value: string): boolean => {
 };
 
 const validationService = {
-  validateLoginForm,
   validateEmail,
   validate2FA,
   validateSearchText
