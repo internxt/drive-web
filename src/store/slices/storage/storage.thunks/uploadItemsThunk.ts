@@ -1,11 +1,11 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
+import { items as itemUtils } from '@internxt/lib';
 
 import i18n from '../../../../services/i18n.service';
 import folderService from '../../../../services/folder.service';
-import { getFilenameAndExt } from '../../../../lib/utils';
 import storageService from '../../../../services/storage.service';
 import { TaskType, TaskStatus } from '../../../../models/enums';
-import { DriveItemData, NotificationData } from '../../../../models/interfaces';
+import { NotificationData } from '../../../../models/interfaces';
 import { tasksActions } from '../../tasks';
 import { StorageState } from '../storage.model';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../lib/constants';
@@ -51,13 +51,9 @@ export const uploadItemsThunk = createAsyncThunk(
     }
 
     for (const [index, file] of files.entries()) {
-      const { filename, extension } = getFilenameAndExt(file.name);
+      const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const parentFolderContent = await folderService.fetchFolderContent(parentFolderId);
-      const [filenameExist, filenameIndex, finalFilename] = storageService.name.checkFileNameExists(
-        parentFolderContent.files as DriveItemData[],
-        filename,
-        extension
-      );
+      const [filenameExist, filenameIndex, finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
       const fileContent = file;
       const notification: NotificationData = {
         uuid: `${requestId}-${index}`,

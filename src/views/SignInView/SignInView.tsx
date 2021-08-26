@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
+import { auth } from '@internxt/lib';
 
 import { initializeUserThunk, setUser } from '../../store/slices/user';
 import { RootState } from '../../store';
@@ -7,7 +9,7 @@ import { useAppDispatch } from '../../store/hooks';
 import BaseInput from '../../components/Inputs/BaseInput';
 import SideInfo from '../Authentication/SideInfo';
 import AuthButton from '../../components/Buttons/AuthButton';
-import validationService, { emailRegexPattern, twoFactorRegexPattern } from '../../services/validation.service';
+import { twoFactorRegexPattern } from '../../services/validation.service';
 import { check2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from '../../services/local-storage.service';
 import analyticsService from '../../services/analytics.service';
@@ -80,7 +82,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
     } catch (err) {
       console.error('Login error. ' + err.message);
 
-      if (err.message.includes('not activated') && validationService.validateEmail(email)) {
+      if (err.message.includes('not activated') && auth.isValidEmail(email)) {
         history.push(`/activate/${email}`);
       } else {
         analyticsService.signInAttempted(email, err);

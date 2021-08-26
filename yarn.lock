@@ -1383,6 +1383,31 @@
   dependencies:
     react ">=15.0.0 <17.0.0"
 
+"@internxt/inxt-js@^1.0.2":
+  version "1.0.2"
+  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.0.2/54975f8ac06f50432f9fbad4e8ef5f72ed5d4853f823ba3133d216b62f4cece0#9c440e5004f44480f502d9625abdc83a2d3f27f0"
+  integrity sha512-4QmabO3e+CpFJsGiGbJ+Vm6Kkh6AJTUtsTePtmPlDuH4MCsnzeSKObbnHr3XWSk9vRcrIzNnO0jqqRzaEsP3Sg==
+  dependencies:
+    "@types/progress-stream" "^2.0.2"
+    async "^3.2.0"
+    axios "^0.19.2"
+    bip39 "^3.0.2"
+    blob-to-stream "^1.0.3"
+    buffer-to-stream "^1.0.0"
+    commander "^8.0.0"
+    memory-blob-store "^5.0.1"
+    multistream "^4.1.0"
+    mux-demux "^3.7.9"
+    progress-stream "^2.0.0"
+    stream-to-blob "^2.0.1"
+    streamsaver "^2.0.4"
+    winston "^3.3.3"
+
+"@internxt/lib@^1.0.5":
+  version "1.0.5"
+  resolved "https://npm.pkg.github.com/download/@internxt/lib/1.0.5/dc7bb1b3b89fad2ad119997f37ceaedd63946f059dabb71950590c2f16fcb8e2#766189757663f4cfc21419b0eeb7a498414e3c6f"
+  integrity sha512-FC3ko/DZ7JSITcSx4dVhnk0SmrMsMj0XuUBweIuIvuNlGgGa/iAWjuZWvpIjIRWO/TW/xHWd4PObvuYXULCnvw==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"
@@ -6801,25 +6826,6 @@ invariant@^2.2.4:
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
   dependencies:
     loose-envify "^1.0.0"
-
-"inxt-js@git+ssh://git@github.com:internxt/inxt-js.git#beta":
-  version "1.0.0"
-  resolved "git+ssh://git@github.com:internxt/inxt-js.git#6b2c9f44b304f1b04bfe1eecaab722a134e66491"
-  dependencies:
-    "@types/progress-stream" "^2.0.2"
-    async "^3.2.0"
-    axios "^0.19.2"
-    bip39 "^3.0.2"
-    blob-to-stream "^1.0.3"
-    buffer-to-stream "^1.0.0"
-    commander "^8.0.0"
-    memory-blob-store "^5.0.1"
-    multistream "^4.1.0"
-    mux-demux "^3.7.9"
-    progress-stream "^2.0.0"
-    stream-to-blob "^2.0.1"
-    streamsaver "^2.0.4"
-    winston "^3.3.3"
 
 ip-regex@^2.1.0:
   version "2.1.0"
