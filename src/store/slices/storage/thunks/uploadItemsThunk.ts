@@ -3,7 +3,7 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import i18n from '../../../../services/i18n.service';
 import { selectorIsTeam } from '../../team';
 import folderService from '../../../../services/folder.service';
-import { getFilenameAndExt } from '../../../../lib/utils';
+import { items as itemUtils } from '@internxt/lib';
 import storageService from '../../../../services/storage.service';
 import { TaskType, TaskStatus } from '../../../../models/enums';
 import { NotificationData } from '../../../../models/interfaces';
@@ -51,9 +51,9 @@ export const uploadItemsThunk = createAsyncThunk(
     }
 
     for (const [index, file] of files.entries()) {
-      const { filename, extension } = getFilenameAndExt(file.name);
+      const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const parentFolderContent = await folderService.fetchFolderContent(parentFolderId, isTeam);
-      const [filenameExist, filenameIndex, finalFilename] = storageService.name.checkFileNameExists(parentFolderContent.newCommanderFiles, filename, extension);
+      const [filenameExist, filenameIndex, finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.newCommanderFiles, filename, extension);
       const fileContent = file;
       const notification: NotificationData = {
         uuid: `${requestId}-${index}`,
