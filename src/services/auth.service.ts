@@ -20,7 +20,7 @@ export function logOut(): void {
 }
 
 export function cancelAccount(): Promise<void> {
-  return fetch('/api/deactivate', {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/deactivate`, {
     method: 'GET',
     headers: getHeaders(true, false)
   })
@@ -36,7 +36,7 @@ export function cancelAccount(): Promise<void> {
 
 export const check2FANeeded = async (email: string): Promise<any> => {
   try {
-    const response = await fetch('/api/login', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
       method: 'POST',
       headers: getHeaders(true, true),
       body: JSON.stringify({ email })
@@ -66,7 +66,7 @@ const generateNewKeysWithEncrypted = async (password: string) => {
 
 export const doLogin = async (email: string, password: string, twoFactorCode: string) => {
   try {
-    const response = await fetch('/api/login', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
       method: 'post',
       headers: getHeaders(false, false),
       body: JSON.stringify({ email })
@@ -95,7 +95,7 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
 
 export const doAccess = async (email: string, password: string, encPass: string, twoFactorCode: string, keys: any) => {
   try {
-    const response = await fetch('/api/access', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/access`, {
       method: 'post',
       headers: getHeaders(false, false),
       body: JSON.stringify({
@@ -182,7 +182,7 @@ export const doRegister = async (name: string, lastname: string, email: string, 
     //Datas
     const encPrivateKey = AesUtils.encrypt(privateKeyArmored, password, false);
 
-    const response = await fetch('/api/register', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register`, {
       method: 'post',
       headers: getHeaders(true, true),
       body: JSON.stringify({
@@ -244,7 +244,7 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
     }
   };
 
-  const response = await fetch('/api/appsumo/update', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appsumo/update`, {
     method: 'POST',
     headers: getHeaders(true, false),
     body: JSON.stringify(body)
@@ -271,7 +271,7 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
 export const getSalt = async (): Promise<any> => {
   const email = localStorageService.getUser()?.email;
 
-  const response = await fetch('/api/login', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
     method: 'post',
     headers: getHeaders(false, false),
     body: JSON.stringify({ email })
@@ -304,7 +304,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = AesUtils.encrypt(privateKey, newPassword);
 
-  const response = await fetch('/api/user/password', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/password`, {
     method: 'PATCH',
     headers: getHeaders(true, true),
     body: JSON.stringify({
@@ -332,7 +332,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 };
 
 export const userHas2FAStored = async (): Promise<any> => {
-  const response = await fetch('/api/login', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
     method: 'POST',
     headers: getHeaders(true, false),
     body: JSON.stringify({ email: JSON.parse(localStorage.xUser).email })
@@ -344,7 +344,7 @@ export const userHas2FAStored = async (): Promise<any> => {
 };
 
 export const generateNew2FA = async (): Promise<any> => {
-  const response = await fetch('/api/tfa', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
     method: 'GET',
     headers: getHeaders(true, false)
   });
@@ -361,7 +361,7 @@ export const deactivate2FA = async (passwordSalt: string, deactivationPassword: 
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
 
-  const response = await fetch('/api/tfa', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
     method: 'DELETE',
     headers: getHeaders(true, false),
     body: JSON.stringify({
@@ -377,7 +377,7 @@ export const deactivate2FA = async (passwordSalt: string, deactivationPassword: 
 };
 
 export const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const response = await fetch('/api/tfa', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
     method: 'PUT',
     headers: getHeaders(true, false),
     body: JSON.stringify({

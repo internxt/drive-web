@@ -84,7 +84,7 @@ class PayToken extends React.Component<ResetProps> {
 
     const json = JSON.stringify(object);
 
-    return fetch('/api/token/buy', {
+    return fetch(`${process.env.REACT_APP_API_URL}/api/token/buy`, {
       method: 'post',
       headers: getHeaders(true, false),
       body: json

@@ -3,7 +3,7 @@ import { decryptPGP } from '../lib/utilspgp';
 import { storeTeamsInfo } from './teams.service';
 
 export function getTeamInfo() {
-  return fetch('/api/teams/team/info', {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/teams/team/info`, {
     method: 'get',
     headers: getHeaders(true, false, false)
   }).then(res => {
@@ -21,7 +21,7 @@ export async function checkSessionStripe(sessionId: string) {
 
   const mnemonic = await decryptPGP(Buffer.from(userTeam.bridge_mnemonic, 'base64').toString());
 
-  return fetch('/api/teams/checkout/session', {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/teams/checkout/session`, {
     method: 'post',
     headers: getHeaders(true, false),
     body: JSON.stringify({

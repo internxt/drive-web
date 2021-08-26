@@ -1,7 +1,7 @@
 import openpgp from 'openpgp';
 import { getHeaders } from '../lib/auth';
 
-export async function generateNewKeys() {
+export async function generateNewKeys(): Promise<{ privateKeyArmored: string, publicKeyArmored: string, revocationCertificate: string}> {
   const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await openpgp.generateKey({
     userIds: [{ email: 'inxt@inxt.com' }],
     curve: 'ed25519'
@@ -14,16 +14,16 @@ export async function generateNewKeys() {
   };
 }
 
-export function updateKeys(newPublicKey, newPrivateKey, newRevocationKey) {
+export function updateKeys(newPublicKey: string, newPrivateKey: string, newRevocationKey: string): Promise<void> {
   const updatedKeys = {
     publicKey: newPublicKey,
     privateKey: newPrivateKey,
     revocationKey: newRevocationKey
   };
 
-  return fetch('/api/user/keys', {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/user/keys`, {
     method: 'PATCH',
     headers: getHeaders(true, false),
     body: JSON.stringify(updatedKeys)
-  });
+  }).then();
 }
