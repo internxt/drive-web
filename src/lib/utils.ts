@@ -1,7 +1,8 @@
 import copy from 'copy-to-clipboard';
 import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../models/interfaces';
-import AesUtil from './AesUtil';
+import { aes, items as itemUtils } from '@internxt/lib';
+import { getAesInitFromEnv } from '../services/keys.service';
 
 interface PassObjectInterface {
   salt?: string | null
@@ -65,34 +66,6 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string
   }
 }
 
-interface IGetFilenameAndExt {
-  filename: string,
-  extension: string
-}
-
-/**
- * Separates entire filename in filename and extension
- * @param entireFilename Filename + extension
- * @returns Filename and extension splitted
- */
-function getFilenameAndExt(entireFilename: string): IGetFilenameAndExt {
-  // based on path.parse native nodejs function
-  const re = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-
-  const fileInfo = re.exec(entireFilename);
-
-  if (!fileInfo) {
-    return { filename: '', extension: '' };
-  }
-
-  const extensionWithDot = fileInfo[4];
-  const filename = fileInfo[3].substring(0, fileInfo[3].length - extensionWithDot.length);
-
-  const extension = extensionWithDot.split('.')[1];
-
-  return { filename, extension };
-}
-
 function encryptFilename(filename:string, folderId: string) {
   const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
 
@@ -100,15 +73,11 @@ function encryptFilename(filename:string, folderId: string) {
     throw new Error('Cannot encrypt filename due to missing encryption key');
   }
 
-  return AesUtil.encrypt(filename, `${CRYPTO_KEY}-${folderId}`);
+  return aes.encrypt(filename, `${CRYPTO_KEY}-${folderId}`, getAesInitFromEnv());
 }
 
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[]{
-  return items.filter((item) => !isHiddenItem(item));
-}
-
-function isHiddenItem(item: DriveItemData): boolean{
-  return !!item.name.match(/^\..*$/);
+  return items.filter((item) => !itemUtils.isHiddenItem(item));
 }
 
 export {
@@ -119,7 +88,5 @@ export {
   encryptFilename,
   encryptTextWithKey,
   decryptTextWithKey,
-  getFilenameAndExt,
-  excludeHiddenItems,
-  isHiddenItem
+  excludeHiddenItems
 };

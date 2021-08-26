@@ -8,13 +8,13 @@ import { isMobile } from 'react-device-detect';
 import './ShareView.scss';
 import { getShareInfo, GetShareInfoResponse } from '../../services/share.service';
 import { Network } from '../../lib/network';
-import AesUtils from '../../lib/AesUtil';
 import i18n from '../../services/i18n.service';
 import { ReactComponent as Spinner } from '../../assets/icons/spinner.svg';
 import { ReactComponent as Logo } from '../../assets/icons/big-logo.svg';
 import iconService from '../../services/icon.service';
 import BaseButton from '../../components/Buttons/BaseButton';
 import sizeService from '../../services/size.service';
+import { aes } from '@internxt/lib';
 
 interface ShareViewProps {
   match?: any
@@ -93,7 +93,7 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
   getDecryptedName(info: GetShareInfoWithDecryptedName){
 
     const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.fileMeta.folderId.toString()}`;
-    const decryptedFilename = AesUtils.decrypt(info.fileMeta.name, salt);
+    const decryptedFilename = aes.decrypt(info.fileMeta.name, salt);
     const type = info.fileMeta.type;
 
     return `${decryptedFilename}${type ? `.${type}` : ''}`;

@@ -1383,6 +1383,11 @@
   dependencies:
     react ">=15.0.0 <17.0.0"
 
+"@internxt/lib@^1.0.5":
+  version "1.0.5"
+  resolved "https://npm.pkg.github.com/download/@internxt/lib/1.0.5/dc7bb1b3b89fad2ad119997f37ceaedd63946f059dabb71950590c2f16fcb8e2#766189757663f4cfc21419b0eeb7a498414e3c6f"
+  integrity sha512-FC3ko/DZ7JSITcSx4dVhnk0SmrMsMj0XuUBweIuIvuNlGgGa/iAWjuZWvpIjIRWO/TW/xHWd4PObvuYXULCnvw==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"

@@ -4,7 +4,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import localStorageService from '../../../../services/local-storage.service';
 import { IFormValues } from '../../../../models/interfaces';
 import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../../services/referral.service';
-import { emailRegexPattern } from '../../../../services/validation.service';
+import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import BaseInput from '../../../../components/Inputs/BaseInput';
 import notify, { ToastType } from '../../../../components/Notifications';

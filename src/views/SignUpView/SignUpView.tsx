@@ -6,7 +6,6 @@ import queryString from 'query-string';
 import SideInfo from '../Authentication/SideInfo';
 import { IFormValues, UserSettings } from '../../models/interfaces';
 import localStorageService from '../../services/local-storage.service';
-import validationService, { emailRegexPattern } from '../../services/validation.service';
 import analyticsService from '../../services/analytics.service';
 import { readReferalCookie } from '../../services/auth.service';
 import BaseInput from '../../components/Inputs/BaseInput';
@@ -16,12 +15,15 @@ import { useAppDispatch } from '../../store/hooks';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
 import { setUser, userActions, userThunks } from '../../store/slices/user';
 import { getHeaders } from '../../lib/auth';
-import AesUtils from '../../lib/AesUtil';
 import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope, UilUser } from '@iconscout/react-unicons';
 import { Link } from 'react-router-dom';
 import { planThunks } from '../../store/slices/plan';
+import { getAesInitFromEnv } from '../../services/keys.service';
+import { aes, auth } from '@internxt/lib';
+import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
+import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 
 interface SignUpProps {
   match: any;
@@ -33,7 +35,7 @@ interface SignUpProps {
 
 const SignUp = (props: SignUpProps): JSX.Element => {
   const qs = queryString.parse(history.location.search);
-  const hasEmailParam = qs.email && validationService.validateEmail(qs.email as string) || false;
+  const hasEmailParam = qs.email && auth.isValidEmail(qs.email as string) || false;
   const hasTokenParam = qs.token;
   // const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
   const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>(
@@ -55,8 +57,6 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const strongPasswordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).+$/;
 
   const formInputError = Object.values(errors)[0];
 
@@ -141,7 +141,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
     const { privateKeyArmored, publicKeyArmored: codpublicKey, revocationCertificate: codrevocationKey } = await generateNewKeys();
 
-    const encPrivateKey = AesUtils.encrypt(privateKeyArmored, password, false);
+    const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
 
     return fetch('/api/register', {
       method: 'post',
@@ -165,7 +165,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         const { token, uuid } = body;
         const user: UserSettings = body.user;
 
-        user.privateKey = Buffer.from(AesUtils.decrypt(user.privateKey, password)).toString('base64');
+        user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
 
         window.analytics.identify(uuid, { email: email, member_tier: 'free' });
         analyticsService.trackSignUp({
@@ -285,7 +285,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             required={true}
             minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
             error={errors.password}
-            pattern={{ value: strongPasswordRegex, message: 'The password must contain lowercase/uppercase letters and at least a number' }}
+            pattern={{ value: isValidPasswordRegex, message: 'The password must contain lowercase/uppercase letters and at least a number' }}
           />
 
           <BaseInput

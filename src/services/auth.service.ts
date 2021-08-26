@@ -3,15 +3,15 @@ import localStorageService from './local-storage.service';
 import history from '../lib/history';
 import analyticsService from './analytics.service';
 import { generateNewKeys, updateKeys } from './pgp.service';
-import AesUtils from '../lib/AesUtil';
 import { decryptText, decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../lib/utils';
-import { validateFormat } from './keys.service';
+import { getAesInitFromEnv, validateFormat } from './keys.service';
 import { decryptPGP } from '../lib/utilspgp';
 import * as bip39 from 'bip39';
 import userService from './user.service';
 import notify, { ToastType } from '../components/Notifications';
 import i18n from './i18n.service';
 import { UserSettings } from '../models/interfaces';
+import { aes } from '@internxt/lib';
 
 export function logOut(): void {
   analyticsService.trackSignOut();
@@ -66,7 +66,7 @@ const generateNewKeysWithEncrypted = async (password: string) => {
 
   return {
     privateKeyArmored,
-    privateKeyArmoredEncrypted: AesUtils.encrypt(privateKeyArmored, password, false),
+    privateKeyArmoredEncrypted: aes.encrypt(privateKeyArmored, password, getAesInitFromEnv()),
     publicKeyArmored,
     revocationCertificate
   };
@@ -188,7 +188,7 @@ export const doRegister = async (name: string, lastname: string, email: string, 
     const { privateKeyArmored, publicKeyArmored: codpublicKey, revocationCertificate: codrevocationKey } = await generateNewKeys();
 
     //Datas
-    const encPrivateKey = AesUtils.encrypt(privateKeyArmored, password, false);
+    const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
 
     const response = await fetch('/api/register', {
       method: 'post',
@@ -310,7 +310,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   // Encrypt the mnemonic
   const encryptedMnemonic = encryptTextWithKey(localStorage.xMnemonic, newPassword);
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
-  const privateKeyEncrypted = AesUtils.encrypt(privateKey, newPassword);
+  const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
   const response = await fetch('/api/user/password', {
     method: 'PATCH',
