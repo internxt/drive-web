@@ -93,7 +93,7 @@ function getFilenameAndExt(entireFilename: string): IGetFilenameAndExt {
   return { filename, extension };
 }
 
-function encryptFilename(filename:string, folderId: string) {
+function encryptFilename(filename:string, folderId: number): string {
   const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
 
   if (!CRYPTO_KEY) {
@@ -111,6 +111,10 @@ function isHiddenItem(item: DriveItemData): boolean{
   return !!item.name.match(/^\..*$/);
 }
 
+function renameFile(file: File, newName: string): File {
+  return new File([file], newName);
+}
+
 export {
   copyToClipboard,
   passToHash,
@@ -121,5 +125,6 @@ export {
   decryptTextWithKey,
   getFilenameAndExt,
   excludeHiddenItems,
-  isHiddenItem
+  isHiddenItem,
+  renameFile
 };

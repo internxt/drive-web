@@ -29,7 +29,7 @@ export const createFolderThunk = createAsyncThunk<void, string, { state: RootSta
     };
 
     dispatch(storageActions.pushItems({
-      list: StorageItemList.Drive,
+      lists: [StorageItemList.Drive],
       items: createdFolderNormalized as DriveItemData
     }));
   }

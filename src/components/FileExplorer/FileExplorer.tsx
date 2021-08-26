@@ -38,7 +38,7 @@ interface FileExplorerProps {
   onFileUploaded?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
-  user: UserSettings | any;
+  user: UserSettings | undefined;
   currentFolderId: number;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
@@ -162,7 +162,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     const { user } = this.props;
 
     return new Promise((resolve, reject) => {
-      fetch(`/api/teams-members/${user.email}`, {
+      fetch(`/api/teams-members/${user?.email}`, {
         method: 'get',
         headers: getHeaders(true, false)
       }).then((result) => {
@@ -171,7 +171,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
         }
         return result.json();
       }).then(result => {
-        if (result.admin === user.email) {
+        if (result.admin === user?.email) {
           result.rol = 'admin';
           this.setState({ isAdmin: true, isMember: false });
         } else {
