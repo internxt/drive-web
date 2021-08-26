@@ -8,9 +8,21 @@ import localStorageService from '../../services/local-storage.service';
 import { getHeaders } from '../../lib/auth';
 import { match } from 'react-router-dom';
 
-interface ResetProps {
+interface PayTokenProps {
   match: match<{ token: string }>
   isAuthenticated: boolean
+}
+
+interface PayTokenState {
+  token: string;
+  planSelector: string;
+  paySelector: string;
+  email: string;
+  finish: boolean;
+  error: boolean;
+  inxtEUR: number;
+  inxt: string;
+  wallet: string;
 }
 
 const plans = ['200GB - €3.49/month', '2TB - €8.99/month'];
@@ -19,8 +31,8 @@ const totalPlanB = [3.99 * 6, 3.49 * 12];
 const planC = ['prepay 6 months - €9.49/month', 'prepay 12 months - €8.99/month'];
 const totalPlanC = [9.49 * 6, 8.99 * 12];
 
-class PayToken extends React.Component<ResetProps> {
-  constructor(props: ResetProps) {
+class PayToken extends React.Component<PayTokenProps, PayTokenState> {
+  constructor(props: PayTokenProps) {
     super(props);
 
     this.state = {
@@ -59,8 +71,11 @@ class PayToken extends React.Component<ResetProps> {
     });
   }
 
-  handleChange = (event: any) => {
-    this.setState({ [event.target.id]: event.target.value });
+  handleChange = (event: any): void => {
+    const statePropKey = event.target.id;
+    const changes = { [statePropKey]: event.target.value } as Pick<PayTokenState, keyof PayTokenState>;
+
+    this.setState(changes);
   }
 
   parseSubmit = (e) => {
