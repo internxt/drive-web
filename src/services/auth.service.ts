@@ -9,9 +9,9 @@ import { validateFormat } from './keys.service';
 import { decryptPGP } from '../lib/utilspgp';
 import * as bip39 from 'bip39';
 import userService from './user.service';
-import notify, { ToastType } from '../components/Notifications';
 import i18n from './i18n.service';
 import { UserSettings } from '../models/interfaces';
+import notificationsService, { ToastType } from './notifications.service';
 
 export function logOut(): void {
   analyticsService.trackSignOut();
@@ -26,9 +26,9 @@ export function cancelAccount(): Promise<void> {
   })
     .then(res => res.json())
     .then(res => {
-      notify(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
+      notificationsService.show(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
     }).catch(err => {
-      notify(i18n.get('error.deactivatingAccount'), ToastType.Warning);
+      notificationsService.show(i18n.get('error.deactivatingAccount'), ToastType.Warning);
       console.log(err);
       throw err;
     });

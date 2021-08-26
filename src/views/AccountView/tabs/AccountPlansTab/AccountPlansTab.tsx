@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts, payStripePlan } from '../../../../services/products.service';
-import notify, { ToastType } from '../../../../components/Notifications';
 import analyticsService from '../../../../services/analytics.service';
 import BillingPlanItem from './BillingPlanItem';
 import { generateMnemonic } from 'bip39';
-import { decryptPGP, encryptPGP } from '../../../../lib/utilspgp';
+import { encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
 import './AccountPlansTab.scss';
 import { useAppDispatch } from '../../../../store/hooks';
@@ -15,6 +14,7 @@ import { UilBuilding, UilHome } from '@iconscout/react-unicons';
 import BillingCardSkeletton from '../../../../components/skinSkeleton/BillingCardSkeletton';
 import { Workspace } from '../../../../models/enums';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: Workspace, isBusiness: boolean, onClick: () => void }) => {
   const Body = () => {
@@ -105,7 +105,7 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
         setProducts(keyedProducts);
         setTeamsProducts(keyedTeamsProducts);
       } catch (err) {
-        //notify(err.message, 'error');
+        //notificationsService.show(y(err.message, 'error');
       } finally {
         setIsLoading(false);
       }
@@ -152,7 +152,7 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
 
       await stripe.redirectToCheckout({ sessionId: session.id });
     } catch (err) {
-      notify(i18n.get('error.redirectToStripe', {
+      notificationsService.show(i18n.get('error.redirectToStripe', {
         reason: err.message
       }), ToastType.Error);
     } finally {
