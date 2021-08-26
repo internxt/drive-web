@@ -3,9 +3,9 @@ import _ from 'lodash';
 
 import { storageActions, StorageState } from '..';
 import { RootState } from '../../..';
-import notify, { ToastType } from '../../../../components/Notifications';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import { selectorIsTeam } from '../../team';
 import storageSelectors from '../storageSelectors';
 
@@ -37,7 +37,7 @@ export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBu
     })
     .addCase(fetchFolderContentThunk.rejected, (state, action) => {
       state.isLoading = false;
-      notify(
+      notificationsService.show(
         i18n.get('error.fetchingFolderContent'),
         ToastType.Error
       );

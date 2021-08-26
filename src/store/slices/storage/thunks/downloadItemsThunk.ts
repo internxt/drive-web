@@ -2,11 +2,11 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { StorageState } from '..';
 import { RootState } from '../../..';
-import notify, { ToastType } from '../../../../components/Notifications';
 import { TaskType, TaskStatus } from '../../../../models/enums';
 import { DriveItemData, NotificationData } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import { tasksActions } from '../../tasks';
 import { selectorIsTeam } from '../../team';
 
@@ -78,9 +78,9 @@ export const downloadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder
     .addCase(downloadItemsThunk.fulfilled, (state, action) => { })
     .addCase(downloadItemsThunk.rejected, (state, action: any) => {
       if (action.payload && action.payload.length > 0) {
-        notify(i18n.get('error.downloadingItems'), ToastType.Error);
+        notificationsService.show(i18n.get('error.downloadingItems'), ToastType.Error);
       } else {
-        notify(
+        notificationsService.show(
           i18n.get('error.downloadingFile', { reason: action.error.message || '' }),
           ToastType.Error
         );

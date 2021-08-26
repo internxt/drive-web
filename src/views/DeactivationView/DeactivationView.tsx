@@ -3,16 +3,15 @@ import { Alert, Container } from 'react-bootstrap';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
-
-import history from '../../lib/history';
 import { isMobile } from 'react-device-detect';
 import { toast } from 'react-toastify';
 
+import history from '../../lib/history';
 import { AppDispatch } from '../../store';
 import { userThunks } from '../../store/slices/user';
-import notify, { ToastType } from '../../components/Notifications';
 
 import './DeactivationView.scss';
+import notificationsService, { ToastType } from '../../services/notifications.service';
 interface DeactivationProps {
   match?: any;
   dispatch: AppDispatch;
@@ -33,7 +32,7 @@ class DeactivationView extends React.Component<DeactivationProps> {
     this.props.dispatch(userThunks.logoutThunk());
 
     if (!isMobile) {
-      notify('Your account has been deactivated', ToastType.Info);
+      notificationsService.show('Your account has been deactivated', ToastType.Info);
       history.push('/');
     } else {
       this.setState({ result: this.confirmDeactivation() });
