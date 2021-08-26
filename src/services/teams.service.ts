@@ -4,7 +4,7 @@ import { decryptPGP, encryptPGPInvitations } from '../lib/utilspgp';
 import { InfoInvitationsMembers, TeamsSettings } from '../models/interfaces';
 
 export async function getTeamsInfo(): Promise<any> {
-  return fetch('/api/teams/info', {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/teams/info`, {
     method: 'get',
     headers: getHeaders(true, false, false)
   }).then(res => {
@@ -15,7 +15,7 @@ export async function getTeamsInfo(): Promise<any> {
 }
 
 export async function getKeys(mail: string): Promise<any> {
-  return fetch(`/api/user/keys/${mail}`, {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/user/keys/${mail}`, {
     method: 'GET',
     headers: getHeaders(true, false)
   }).then(async(res) =>{
@@ -53,7 +53,7 @@ export async function storeTeamsInfo(): Promise<void> {
 }
 
 export function getMembers(): Promise<InfoInvitationsMembers[]> {
-  return fetch('/api/teams/members', {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/teams/members`, {
     method: 'get',
     headers: getHeaders(true, false)
   }).then((response) => {
@@ -66,7 +66,7 @@ export function getMembers(): Promise<InfoInvitationsMembers[]> {
 export function removeMember(item: InfoInvitationsMembers): Promise<void> {
   const typeMember = item.isMember ? 'member' : 'invitation';
 
-  return fetch(`/api/teams/${typeMember}`, {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/teams/${typeMember}`, {
     method: 'delete',
     headers: getHeaders(true, false),
     body: JSON.stringify({
@@ -107,7 +107,7 @@ export async function sendEmailTeamsMember(mail: string): Promise<void> {
 }
 
 const fetchInvitation = (email: string, bridgePass: string, mnemonicTeam: string, bridgeuser: string) => {
-  return fetch('/api/teams/team/invitations', {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/teams/team/invitations`, {
     method: 'POST',
     headers: getHeaders(true, false, true),
     body: JSON.stringify({

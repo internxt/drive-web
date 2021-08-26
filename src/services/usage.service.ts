@@ -7,7 +7,7 @@ export interface UsageResponse {
 }
 
 export async function fetchUsage(isTeam: boolean): Promise<UsageResponse> {
-  const response: Response = await fetch('/api/usage', { headers: getHeaders(true, false, isTeam) });
+  const response: Response = await fetch(`${process.env.REACT_APP_API_URL}/api/usage`, { headers: getHeaders(true, false, isTeam) });
 
   return response.json();
 }

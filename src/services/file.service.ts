@@ -24,7 +24,7 @@ export function deleteFile(fileData: DriveFileData, isTeam: boolean): Promise<vo
     headers: getHeaders(true, false, isTeam)
   };
 
-  return fetch(`/api/storage/folder/${fileData.folderId}/file/${fileData.id}`, fetchOptions).then(() => {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/storage/folder/${fileData.folderId}/file/${fileData.id}`, fetchOptions).then(() => {
     analyticsService.trackDeleteItem(fileData, {
       email: user.email,
       platform: DevicePlatform.Web
