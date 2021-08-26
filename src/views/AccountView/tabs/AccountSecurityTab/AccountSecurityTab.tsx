@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
+import { Fragment } from 'react';
+
 import { generateNew2FA, userHas2FAStored } from '../../../../services/auth.service';
-import React, { Fragment } from 'react';
 import Deactivate2FA from './Deactivate2FA';
 import Steps from './Steps';
-import notify, { ToastType } from '../../../../components/Notifications';
 import './AccountSecurityTab.scss';
 import Skeleton from 'react-loading-skeleton';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 interface SecurityProps { }
 
@@ -41,7 +42,7 @@ const AccountSecurityTab = (props: SecurityProps): JSX.Element => {
         setPasswordSalt(has2fa.sKey);
       }
     } catch (err) {
-      notify(i18n.get('error.genericError', { reason: err.message }), ToastType.Error);
+      notificationsService.show(i18n.get('error.genericError', { reason: err.message }), ToastType.Error);
     } finally {
       setIsLoading(false);
     }

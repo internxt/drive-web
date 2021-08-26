@@ -1,6 +1,5 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import notify, { ToastType } from '../../../../components/Notifications';
 import i18n from '../../../../services/i18n.service';
 import { selectorIsTeam } from '../../team';
 import folderService from '../../../../services/folder.service';
@@ -11,6 +10,7 @@ import { NotificationData } from '../../../../models/interfaces';
 import { tasksActions } from '../../tasks';
 import { StorageState } from '..';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../lib/constants';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 interface UploadItemsPayload {
   files: File[];
@@ -43,7 +43,7 @@ export const uploadItemsThunk = createAsyncThunk(
     options = Object.assign({ withNotifications: true }, options || {});
 
     if (showSizeWarning) {
-      notify(
+      notificationsService.show(
         'File too large.\nYou can only upload or download files of up to 1GB through the web app',
         ToastType.Warning
       );
@@ -143,7 +143,7 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsThunk.pending, (state, action) => { })
     .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
     .addCase(uploadItemsThunk.rejected, (state, action) => {
-      notify(
+      notificationsService.show(
         i18n.get('error.uploadingFile', { reason: action.error.message || '' }),
         ToastType.Error
       );

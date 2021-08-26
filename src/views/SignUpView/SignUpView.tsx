@@ -107,7 +107,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       }
     };
 
-    return fetch('/api/appsumo/update', {
+    return fetch(`${process.env.REACT_APP_API_URL}/api/appsumo/update`, {
       method: 'POST',
       headers: getHeaders(true, false),
       body: JSON.stringify(body)
@@ -143,7 +143,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
     const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
 
-    return fetch('/api/register', {
+    return fetch(`${process.env.REACT_APP_API_URL}/api/register`, {
       method: 'post',
       headers: getHeaders(true, true),
       body: JSON.stringify({

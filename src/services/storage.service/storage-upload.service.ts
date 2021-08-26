@@ -60,7 +60,7 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
       const body = JSON.stringify({ file: fileEntry });
       const params = { method: 'post', headers, body };
 
-      return fetch('/api/storage/file', params);
+      return fetch(`${process.env.REACT_APP_API_URL}/api/storage/file`, params);
     };
 
     let res;

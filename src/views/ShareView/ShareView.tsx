@@ -129,7 +129,7 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
 
       body =
         <div className="bg-white w-full mx-5 md:w-1/2 xl:w-1/4 border border-solid rounded border-l-neutral-50 flex flex-col items-center justify-center py-8" style={{ minHeight:'40%' }}>
-          <div className="flex items-center"><ItemIconComponent className="mr-5"></ItemIconComponent> <h1 className="text-2xl">{info.decryptedName}</h1></div>
+          <div className="flex items-center max-w-full px-4"><ItemIconComponent className="mr-5"></ItemIconComponent> <h1 className="text-2xl overflow-ellipsis overflow-hidden whitespace-nowrap max-w-full">{info.decryptedName}</h1></div>
           <p className="text-l-neutral-50 text-sm mt-1">{formattedSize}</p>
           <div className="h-12 mt-5">
             {progress ? ProgressComponent : DownloadButton}
