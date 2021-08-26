@@ -18,16 +18,6 @@ export async function initializeUser(email: string, mnemonic: string): Promise<a
   }
 }
 
-export function isUserActivated(): Promise<any> {
-  return fetch('/api/user/isactivated', {
-    method: 'get',
-    headers: getHeaders(true, false)
-  }).then((response) => response.json())
-    .catch(() => {
-      console.log('Error getting user activation');
-    });
-}
-
 export const sendDeactivationEmail = (email: string): Promise<Response> => {
   return fetch(`/api/reset/${email}`, {
     method: 'GET',
@@ -53,7 +43,6 @@ export const fetchUserPlan = async (): Promise<IUserPlan | null> => {
 
 const userService = {
   initializeUser,
-  isUserActivated,
   sendDeactivationEmail,
   fetchUserPlan
 };

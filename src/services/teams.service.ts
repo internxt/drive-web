@@ -3,18 +3,6 @@ import localStorageService from './local-storage.service';
 import { decryptPGP, encryptPGPInvitations } from '../lib/utilspgp';
 import { InfoInvitationsMembers, TeamsSettings } from '../models/interfaces';
 
-export function isTeamActivated(): Promise<any> {
-  const team: any = localStorage.getTeams();
-
-  return fetch(`/api/team/isactivated/${team.bridge_user}`, {
-    method: 'get',
-    headers: getHeaders(true, false)
-  }).then((response) => response.json())
-    .catch(() => {
-      console.log('Error getting user activation');
-    });
-}
-
 export async function getTeamsInfo(): Promise<any> {
   return fetch('/api/teams/info', {
     method: 'get',
@@ -139,7 +127,6 @@ const fetchInvitation = (email: string, bridgePass: string, mnemonicTeam: string
 };
 
 const teamsService = {
-  isTeamActivated,
   getTeamsInfo,
   getKeys,
   storeTeamsInfo,

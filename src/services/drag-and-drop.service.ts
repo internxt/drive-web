@@ -108,31 +108,6 @@ async function getEntries(dataTransferItemList: DataTransferItemList, pathToDrop
   return { entryList, fileEntryList, totalSize, filesAboveMaxSize, directoryEntryList, childrenIndex };
 }
 
-// Drop handler function to get all files
-export async function getAllFileEntries(dataTransferItemList: DataTransferItemList) {
-  const fileEntries = [];
-  // Use BFS to traverse entire directory/file structure
-  const queue: unknown[] = [];
-
-  // dataTransferItemList is not iterable i.e. no forEach
-  for (let i = 0; i < dataTransferItemList.length; i++) {
-    queue.push(dataTransferItemList[i].webkitGetAsEntry());
-  }
-  while (queue.length > 0) {
-    const entry = queue.shift();
-
-    if (entry.isFile) {
-      fileEntries.push(entry);
-    } else if (entry.isDirectory) {
-      const reader = entry.createReader();
-
-      queue.push(...await readAllDirectoryEntries(reader));
-    }
-  }
-
-  return fileEntries;
-}
-
 // Get all the entries (files or sub-directories) in a directory by calling readEntries until it returns empty array
 async function readAllDirectoryEntries(directoryReader, level = 0) {
   const entries = [];
@@ -166,8 +141,7 @@ async function getFile(fileEntry) {
 }
 
 const dragAndDropService = {
-  getAllItems,
-  getAllFileEntries
+  getAllItems
 };
 
 export default dragAndDropService;

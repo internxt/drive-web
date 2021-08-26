@@ -7,19 +7,6 @@ export const reservedRe = /^\.+$/;
 export const windowsReservedRe = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i;
 export const windowsTrailingRe = /[\. ]+$/;
 
-const validateLoginForm = (email: string, password: string): boolean => {
-  let isValid = true;
-
-  if (email.length < 5 || !auth.isValidEmail(email)) {
-    isValid = false;
-  }
-  if (password.length < 1) {
-    isValid = false;
-  }
-
-  return isValid;
-};
-
 const validate2FA = (twoFactorCode: string): boolean => {
   const pattern = /^\d{3}(\s+)?\d{3}$/;
 
@@ -33,7 +20,6 @@ const validateSearchText = (value: string): boolean => {
 };
 
 const validationService = {
-  validateLoginForm,
   validate2FA,
   validateSearchText
 };
