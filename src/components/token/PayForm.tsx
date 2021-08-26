@@ -6,10 +6,23 @@ import Finish from './finish/Finish';
 import { getTokenInfo } from '../../services/token.service';
 import localStorageService from '../../services/local-storage.service';
 import { getHeaders } from '../../lib/auth';
+import { match } from 'react-router-dom';
 
-interface ResetProps {
-  match?: any
+interface PayTokenProps {
+  match: match<{ token: string }>
   isAuthenticated: boolean
+}
+
+interface PayTokenState {
+  token: string;
+  planSelector: string;
+  paySelector: string;
+  email: string;
+  finish: boolean;
+  error: boolean;
+  inxtEUR: number;
+  inxt: string;
+  wallet: string;
 }
 
 const plans = ['200GB - €3.49/month', '2TB - €8.99/month'];
@@ -18,21 +31,24 @@ const totalPlanB = [3.99 * 6, 3.49 * 12];
 const planC = ['prepay 6 months - €9.49/month', 'prepay 12 months - €8.99/month'];
 const totalPlanC = [9.49 * 6, 8.99 * 12];
 
-class PayToken extends React.Component<ResetProps> {
+class PayToken extends React.Component<PayTokenProps, PayTokenState> {
+  constructor(props: PayTokenProps) {
+    super(props);
 
-  state = {
-    token: this.props.match.params.token,
-    planSelector: '0',
-    paySelector: '0',
-    email: '',
-    finish: false,
-    error: false,
-    inxtEUR: 1,
-    inxt: '',
-    wallet: ''
+    this.state = {
+      token: this.props.match.params.token,
+      planSelector: '0',
+      paySelector: '0',
+      email: '',
+      finish: false,
+      error: false,
+      inxtEUR: 1,
+      inxt: '',
+      wallet: ''
+    };
   }
 
-  isLoggedIn = () => {
+  isLoggedIn = (): boolean => {
     return !(!localStorage.xToken);
   }
 
@@ -55,8 +71,11 @@ class PayToken extends React.Component<ResetProps> {
     });
   }
 
-  handleChange = (event: any) => {
-    this.setState({ [event.target.id]: event.target.value });
+  handleChange = (event: any): void => {
+    const statePropKey = event.target.id;
+    const changes = { [statePropKey]: event.target.value } as Pick<PayTokenState, keyof PayTokenState>;
+
+    this.setState(changes);
   }
 
   parseSubmit = (e) => {
@@ -84,7 +103,7 @@ class PayToken extends React.Component<ResetProps> {
 
     const json = JSON.stringify(object);
 
-    return fetch('/api/token/buy', {
+    return fetch(`${process.env.REACT_APP_API_URL}/api/token/buy`, {
       method: 'post',
       headers: getHeaders(true, false),
       body: json
@@ -151,7 +170,7 @@ class PayToken extends React.Component<ResetProps> {
               >
                 We currently accept Internxt tokens for crypto payments with a minimum order size of €10.
                 <br />
-                  Complete the crypto payment request form below and we'll email you with a crypto invoice.
+                Complete the crypto payment request form below and we'll email you with a crypto invoice.
               </div>
 
               <div

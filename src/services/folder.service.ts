@@ -82,7 +82,7 @@ function extendUIPropertiesOf(contentFolder: IContentFolder) {
 
 export async function fetchFolderContent(rootId: number, isTeam: boolean): Promise<any> {
   try {
-    const response: Response = await fetch(`/api/storage/folder/${rootId}`, {
+    const response: Response = await fetch(`${process.env.REACT_APP_API_URL}/api/storage/folder/${rootId}`, {
       method: 'get',
       headers: getHeaders(true, true, isTeam)
     });
@@ -112,7 +112,7 @@ export async function fetchFolderContent(rootId: number, isTeam: boolean): Promi
 
 export async function createFolder(isTeam: boolean, currentFolderId: number | null, folderName: string): Promise<CreatedFolder> {
   const user = localStorageService.getUser() as UserSettings;
-  const response = await fetch('/api/storage/folder', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/storage/folder`, {
     method: 'post',
     headers: getHeaders(true, true, isTeam),
     body: JSON.stringify({
@@ -154,7 +154,7 @@ export function deleteFolder(folderData: DriveFolderData, isTeam: boolean): Prom
     headers: getHeaders(true, false, isTeam)
   };
 
-  return fetch(`/api/storage/folder/${folderData.id}`, fetchOptions).then(() => {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/storage/folder/${folderData.id}`, fetchOptions).then(() => {
     analyticsService.trackDeleteItem(folderData, {
       email: user.email,
       platform: DevicePlatform.Web

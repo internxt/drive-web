@@ -42,7 +42,7 @@ class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
   joinToTheTeam = (token): void => {
     const { dispatch } = this.props;
 
-    fetch(`/api/teams/join/${token}`, {
+    fetch(`${process.env.REACT_APP_API_URL}/api/teams/join/${token}`, {
       method: 'post',
       headers: getHeaders(false, false),
       body: JSON.stringify({

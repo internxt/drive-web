@@ -173,7 +173,7 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
       test: process.env.NODE_ENV !== 'production'
     };
 
-    fetch('/api/stripe/teams/session', {
+    fetch(`${process.env.REACT_APP_API_URL}/api/stripe/teams/session`, {
       method: 'POST',
       headers: getHeaders(true, false),
       body: JSON.stringify(body)
