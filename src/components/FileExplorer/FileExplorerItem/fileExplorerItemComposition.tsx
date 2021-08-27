@@ -7,13 +7,13 @@ import { compose } from 'redux';
 import { DragAndDropType, Workspace } from '../../../models/enums';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../models/interfaces';
 import { getAllItems } from '../../../services/drag-and-drop.service';
-import { getItemFullName } from '../../../services/storage.service/storage-name.service';
 import { AppDispatch, RootState } from '../../../store';
 import { storageActions } from '../../../store/slices/storage';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../store/slices/ui';
 import FileListItem from './FileListItem/FileListItem';
+import { items } from '@internxt/lib';
 
 interface FileExplorerItemProps {
   user: UserSettings | undefined;
@@ -183,7 +183,7 @@ const fileExplorerItemWrapper =
               className={`${spanDisplayClass} file-list-item-name-span`}
               onClick={(e) => e.stopPropagation()}
               onDoubleClick={this.onNameDoubleClicked}
-            >{getItemFullName(item.name, item.type)}</span>
+            >{items.getItemDisplayName(item)}</span>
           </Fragment>
         );
       }
