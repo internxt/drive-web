@@ -12,14 +12,17 @@ import desktopService from '../../services/desktop.service';
 
 import './Sidenav.scss';
 import PlanUsage from '../PlanUsage';
-import { PlanState } from '../../store/slices/plan';
 import { Link } from 'react-router-dom';
+import { planSelectors } from '../../store/slices/plan';
 
 interface SidenavProps {
   user: UserSettings | undefined;
   collapsed: boolean;
   onCollapseButtonClicked: () => void;
-  plan: PlanState
+  planUsage: number;
+  planLimit: number;
+  isLoadingPlanLimit: boolean;
+  isLoadingPlanUsage: boolean;
 }
 
 interface SidenavState { }
@@ -40,8 +43,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
   }
 
   render(): JSX.Element {
-    const { collapsed, onCollapseButtonClicked } = this.props;
-    const { planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = this.props.plan;
+    const { collapsed, onCollapseButtonClicked, planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = this.props;
 
     return (
       <div className={`${collapsed ? 'collapsed' : ''} side-nav`}>
@@ -108,5 +110,8 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps, Siden
 export default connect(
   (state: RootState) => ({
     user: state.user.user,
-    plan: state.plan
+    planUsage: state.plan.planUsage,
+    planLimit: planSelectors.planLimitToShow(state),
+    isLoadingPlanLimit: state.plan.isLoadingPlanLimit,
+    isLoadingPlanUsage: state.plan.isLoadingPlanUsage
   }))(SideNavigatorItemSideNavigator);

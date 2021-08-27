@@ -31,7 +31,7 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { StorageFilters } from '../../store/slices/storage/storage.model';
 import storageThunks from '../../store/slices/storage/storage.thunks';
-import { planThunks } from '../../store/slices/plan';
+import { planSelectors, planThunks } from '../../store/slices/plan';
 
 interface FileExplorerProps {
   title: JSX.Element | string;
@@ -360,7 +360,7 @@ export default connect(
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
       workspace: state.session.workspace,
-      planLimit: state.plan.planLimit,
+      planLimit: planSelectors.planLimitToShow(state),
       planUsage: state.plan.planUsage
     };
   })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(FileExplorer));

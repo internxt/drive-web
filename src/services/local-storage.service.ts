@@ -39,7 +39,6 @@ function clear(): void {
   localStorage.removeItem('xToken');
   localStorage.removeItem('xTeam');
   localStorage.removeItem('xTokenTeam');
-  localStorage.removeItem('limitStorage');
   localStorage.removeItem('workspace');
 }
 

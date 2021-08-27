@@ -156,6 +156,15 @@ export const planSelectors = {
     const currentPlan = currentPlanSelector(state);
 
     return currentPlan !== null && currentPlan.isLifetime;
+  },
+  planLimitToShow: (state: RootState): number => {
+    const isTeam = sessionSelectors.isTeam(state);
+    const team = state.team.team;
+    const limit = isTeam ?
+      state.plan.planLimit / (team?.total_members || 1) :
+      state.plan.planLimit;
+
+    return limit;
   }
 };
 

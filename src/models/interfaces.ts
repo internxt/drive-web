@@ -49,12 +49,13 @@ export interface UserSettings {
 }
 
 export interface TeamsSettings {
-  bucket: string
+  isAdmin: boolean;
+  bucket: string;
   bridge_mnemonic: string
-  isAdmin: boolean
   bridge_password: string
   bridge_user: string;
   root_folder_id: number;
+  total_members: number;
 }
 
 export interface DriveFolderData {

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Workspace } from '../../../models/enums';
+import { LocalStorageItem, Workspace } from '../../../models/enums';
 import localStorageService from '../../../services/local-storage.service';
 import { SessionState } from './session.model';
 import { sessionExtraReducers } from './session.thunks';
@@ -16,7 +16,7 @@ export const sessionSlice = createSlice({
   reducers: {
     initialize: (state: SessionState) => {
       state.workspace = localStorageService.getWorkspace() as Workspace || Workspace.Personal;
-      localStorageService.set('workspace', state.workspace);
+      localStorageService.set(LocalStorageItem.Workspace, state.workspace);
     },
     setHasConnection: (state: SessionState, action: PayloadAction<boolean>) => {
       state.hasConnection = action.payload;
