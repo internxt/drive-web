@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Component } from 'react';
 import fileDownload from 'js-file-download';
 import { match } from 'react-router';
 
@@ -18,7 +18,7 @@ import sizeService from '../../services/size.service';
 import { aes } from '@internxt/lib';
 
 interface ShareViewProps {
-  match: match<{ token: string }>
+  match: match<{ token: string }>;
 }
 
 interface GetShareInfoWithDecryptedName extends GetShareInfoResponse {
@@ -33,16 +33,16 @@ interface ShareViewState {
   accessedFile: boolean;
 }
 
-class ShareView extends React.Component<ShareViewProps, ShareViewState> {
+class ShareView extends Component<ShareViewProps, ShareViewState> {
   state = {
     token: this.props.match.params.token,
     progress: 0,
     info: null,
     linkExpired: false,
-    accessedFile: false
-  }
+    accessedFile: false,
+  };
 
-  componentDidMount() {
+  componentDidMount(): void {
     if (isMobile) {
       window.location.href = `https://api.internxt.com:8081/https://drive.internxt.com/api/storage/share/${this.state.token}`;
     }
@@ -50,7 +50,7 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
 
   loadInfo = async (): Promise<void> => {
     this.setState({
-      accessedFile: true
+      accessedFile: true,
     });
 
     const token = this.state.token;
@@ -59,15 +59,15 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
 
     if (info.error) {
       this.setState({
-        linkExpired: true
+        linkExpired: true,
       });
     } else {
       info.decryptedName = this.getDecryptedName(info);
       this.setState({
-        info
+        info,
       });
     }
-  }
+  };
 
   download = async (): Promise<void> => {
     const info = this.state.info as unknown as GetShareInfoWithDecryptedName | null;
@@ -84,29 +84,30 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
         fileToken: info.fileToken,
         progressCallback: (progress) => {
           this.setState({ ...this.state, progress: Math.max(MIN_PROGRESS, progress * 100) });
-        }
+        },
       });
 
       fileDownload(file, info.decryptedName as string);
     }
-  }
+  };
 
   getDecryptedName(info: GetShareInfoWithDecryptedName): string {
-
     const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.fileMeta.folderId.toString()}`;
     const decryptedFilename = aes.decrypt(info.fileMeta.name, salt);
     const type = info.fileMeta.type;
 
     return `${decryptedFilename}${type ? `.${type}` : ''}`;
-
   }
 
   render(): JSX.Element {
     let body;
 
     if (!this.state.accessedFile) {
-      body =
-        <BaseButton onClick={this.loadInfo} classes="bg-blue-60 text-white font-bold p-5">{i18n.get('action.accessFile')}</BaseButton>;
+      body = (
+        <BaseButton onClick={this.loadInfo} classes="bg-blue-60 text-white font-bold p-5">
+          {i18n.get('action.accessFile')}
+        </BaseButton>
+      );
     } else if (this.state.linkExpired) {
       body = <p className="text-lg text-red-70">{i18n.get('error.linkExpired')}</p>;
     } else if (this.state.info) {
@@ -119,32 +120,51 @@ class ShareView extends React.Component<ShareViewProps, ShareViewState> {
       const { progress } = this.state;
 
       const progressBarPixelsTotal = 100;
-      const progressBarPixelsCurrent = progress * progressBarPixelsTotal / 100;
+      const progressBarPixelsCurrent = (progress * progressBarPixelsTotal) / 100;
 
-      const ProgressComponent = progress < 100 ?
-        (<div style={{ width: `${progressBarPixelsTotal}px` }}><div style={{ width: `${progressBarPixelsCurrent}px` }} className="border-t-8 rounded border-l-neutral-50 transition-width duration-1000"></div></div>)
-        : <Unicons.UilCheck className="text-green-50" height="40" width="40"></Unicons.UilCheck>;
-
-      const DownloadButton =
-        <BaseButton onClick={this.download} classes="bg-blue-60 text-white font-bold p-5">{i18n.get('action.download')}</BaseButton>;
-
-      body =
-        <div className="bg-white w-full mx-5 md:w-1/2 xl:w-1/4 border border-solid rounded border-l-neutral-50 flex flex-col items-center justify-center py-8" style={{ minHeight:'40%' }}>
-          <div className="flex items-center max-w-full px-4"><ItemIconComponent className="mr-5"></ItemIconComponent> <h1 className="text-2xl overflow-ellipsis overflow-hidden whitespace-nowrap max-w-full">{info.decryptedName}</h1></div>
-          <p className="text-l-neutral-50 text-sm mt-1">{formattedSize}</p>
-          <div className="h-12 mt-5">
-            {progress ? ProgressComponent : DownloadButton}
+      const ProgressComponent =
+        progress < 100 ? (
+          <div style={{ width: `${progressBarPixelsTotal}px` }}>
+            <div
+              style={{ width: `${progressBarPixelsCurrent}px` }}
+              className="border-t-8 rounded border-l-neutral-50 transition-width duration-1000"
+            ></div>
           </div>
-        </div>;
+        ) : (
+          <Unicons.UilCheck className="text-green-50" height="40" width="40"></Unicons.UilCheck>
+        );
 
+      const DownloadButton = (
+        <BaseButton onClick={this.download} classes="bg-blue-60 text-white font-bold p-5">
+          {i18n.get('action.download')}
+        </BaseButton>
+      );
+
+      body = (
+        <div
+          className="bg-white w-full mx-5 md:w-1/2 xl:w-1/4 border border-solid rounded border-l-neutral-50 flex flex-col items-center justify-center py-8"
+          style={{ minHeight: '40%' }}
+        >
+          <div className="flex items-center max-w-full px-4">
+            <ItemIconComponent className="mr-5"></ItemIconComponent>{' '}
+            <h1 className="text-2xl overflow-ellipsis overflow-hidden whitespace-nowrap max-w-full">
+              {info.decryptedName}
+            </h1>
+          </div>
+          <p className="text-l-neutral-50 text-sm mt-1">{formattedSize}</p>
+          <div className="h-12 mt-5">{progress ? ProgressComponent : DownloadButton}</div>
+        </div>
+      );
     } else {
       body = <Spinner className="fill-current animate-spin h-16 w-16" />;
     }
 
-    return <div className="flex justify-center items-center h-screen bg-gray-10 relative">
-      <Logo className="absolute top-5 left-5 h-auto w-32"></Logo>
-      {body}
-    </div>;
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-10 relative">
+        <Logo className="absolute top-5 left-5 h-auto w-32"></Logo>
+        {body}
+      </div>
+    );
   }
 }
 

@@ -11,7 +11,7 @@ export function redirectForMobile(): void {
 }
 
 const deviceService = {
-  redirectForMobile
+  redirectForMobile,
 };
 
 export default deviceService;

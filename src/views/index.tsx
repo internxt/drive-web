@@ -14,7 +14,11 @@ import SignInView from './SignInView/SignInView';
 import SignUpView from './SignUpView/SignUpView';
 import RemoveAccountView from './RemoveAccountView/RemoveAccountView';
 
-const views: Array<{ id: string, component: string | FunctionComponent<any> | ComponentClass<any>, componentProps?: any }> = [
+const views: Array<{
+  id: string;
+  component: string | FunctionComponent<any> | ComponentClass<any>;
+  componentProps?: any;
+}> = [
   { id: 'signup', component: SignUpView, componentProps: { isNewUser: true } },
   { id: 'appsumo', component: SignUpView, componentProps: { isNewUser: false } },
   { id: 'login', component: SignInView },
@@ -28,7 +32,7 @@ const views: Array<{ id: string, component: string | FunctionComponent<any> | Co
   { id: 'checkout', component: CheckoutView },
   { id: 'remove', component: RemoveAccountView },
   { id: 'share-token', component: ShareView },
-  { id: 'not-found', component: NotFoundView }
+  { id: 'not-found', component: NotFoundView },
 ];
 
 export default views;

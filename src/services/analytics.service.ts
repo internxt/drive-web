@@ -9,13 +9,13 @@ export const PATH_NAMES = {
   '/storage': 'drive-web-storage',
   '/settings': 'drive-web-settings',
   '/invite': 'drive-web-invite',
-  '/remove': 'drive-web-remove'
+  '/remove': 'drive-web-remove',
 };
 
 const payload = {
   usage: 0,
   limit: 0,
-  plan: 0
+  plan: 0,
 };
 
 export function page(pageName: string): void {
@@ -40,17 +40,21 @@ export function identifyUsage(newValue) {
 export function identifyPlan(newValue: number) {
   if (newValue !== payload.plan) {
     payload.plan = newValue;
-    window.analytics.identify(getUser().uuid, { userId: getUser().uuid, plan: identifyPlanName(newValue), platform: 'web' });
+    window.analytics.identify(getUser().uuid, {
+      userId: getUser().uuid,
+      plan: identifyPlanName(newValue),
+      platform: 'web',
+    });
   }
 }
 
 export function trackSignOut() {
   window.analytics.track(AnalyticsTrack.SignOut, {
-    email: getUser().email
+    email: getUser().email,
   });
 }
 
-export function trackSignIn(payload: { email: string, userId: string }): void {
+export function trackSignIn(payload: { email: string; userId: string }): void {
   window.analytics.track(AnalyticsTrack.SignIn, payload);
 }
 
@@ -58,11 +62,11 @@ export function signInAttempted(email: string, error: string | Error): void {
   window.analytics.track(AnalyticsTrack.SignInAttempted, {
     status: 'error',
     msg: error ? error : 'Login error',
-    email: email
+    email: email,
   });
 }
 
-export function trackSignUp(payload: { properties: { userId: string, email: string } }): void {
+export function trackSignUp(payload: { properties: { userId: string; email: string } }): void {
   window.analytics.track(AnalyticsTrack.SignUp, payload);
 }
 
@@ -70,57 +74,96 @@ export function trackUserEnterPayments(): void {
   window.analytics.track(AnalyticsTrack.UserEnterPayments);
 }
 
-export function trackPlanSubscriptionSelected(payload: { price: string, plan_type: string, payment_type: string, plan_length: number, email: string }): void {
+export function trackPlanSubscriptionSelected(payload: {
+  price: string;
+  plan_type: string;
+  payment_type: string;
+  plan_length: number;
+  email: string;
+}): void {
   window.analytics.track(AnalyticsTrack.PlanSubscriptionSelected, payload);
 }
 
-export function trackFolderCreated(payload: { email: string, platform: DevicePlatform }): void {
+export function trackFolderCreated(payload: { email: string; platform: DevicePlatform }): void {
   window.analytics.track(AnalyticsTrack.FolderCreated, payload);
 }
 
-export function trackFolderRename(payload: { email: string, fileId: number, platform: DevicePlatform }): void {
+export function trackFolderRename(payload: { email: string; fileId: number; platform: DevicePlatform }): void {
   window.analytics.track(AnalyticsTrack.FolderRename, payload);
 }
 
-export function trackFileRename(payload: { email: string, file_id: number | string, platform: DevicePlatform }): void {
+export function trackFileRename(payload: { email: string; file_id: number | string; platform: DevicePlatform }): void {
   window.analytics.track(AnalyticsTrack.FileRename, payload);
 }
 
-export function trackFileDownloadStart(payload: { file_id: string, file_name: string, file_size: number, file_type: string, email: string, folder_id: number, platform: DevicePlatform }): void {
+export function trackFileDownloadStart(payload: {
+  file_id: string;
+  file_name: string;
+  file_size: number;
+  file_type: string;
+  email: string;
+  folder_id: number;
+  platform: DevicePlatform;
+}): void {
   window.analytics.track(AnalyticsTrack.FileDownloadStart, payload);
 }
 
-export function trackFileDownloadError(payload: { file_id: string, email: string, msg: string, platform: DevicePlatform }): void {
+export function trackFileDownloadError(payload: {
+  file_id: string;
+  email: string;
+  msg: string;
+  platform: DevicePlatform;
+}): void {
   window.analytics.track(AnalyticsTrack.FileDownloadError, payload);
 }
 
-export function trackFileDownloadFinished(payload: { file_id: string, file_size: number, email: string, platform: DevicePlatform }): void {
+export function trackFileDownloadFinished(payload: {
+  file_id: string;
+  file_size: number;
+  email: string;
+  platform: DevicePlatform;
+}): void {
   window.analytics.track(AnalyticsTrack.FileDownloadFinished, payload);
 }
 
 export function trackFileUploadStart(payload: {
-  file_size: number,
-  file_type: string, folder_id: number, email: string, platform: DevicePlatform
+  file_size: number;
+  file_type: string;
+  folder_id: number;
+  email: string;
+  platform: DevicePlatform;
 }): void {
   window.analytics.track(AnalyticsTrack.FileUploadStart, payload);
 }
 
 export function trackFileUploadError(payload: {
-  file_size: number,
-  file_type: string, folder_id: number, email: string, msg: string, platform: DevicePlatform
+  file_size: number;
+  file_type: string;
+  folder_id: number;
+  email: string;
+  msg: string;
+  platform: DevicePlatform;
 }): void {
   window.analytics.track(AnalyticsTrack.FileUploadError, payload);
 }
 
-export function trackFileUploadFinished(payload: { file_type: string, file_id: number, file_size: number, email: string }): void {
+export function trackFileUploadFinished(payload: {
+  file_type: string;
+  file_id: number;
+  file_size: number;
+  email: string;
+}): void {
   window.analytics.track(AnalyticsTrack.FileUploadFinished, payload);
 }
 
-export function trackMoveItem(keyOp: string, payload: { email: string, file_id: number, platform: DevicePlatform }): void {
+export function trackMoveItem(
+  keyOp: string,
+  payload: { email: string; file_id: number; platform: DevicePlatform },
+): void {
   window.analytics.track(`${keyOp}-move`.toLowerCase(), payload);
 }
 
-export function trackDeleteItem(itemToDelete: any, payload: { email: string, platform: DevicePlatform }): void {
+export function trackDeleteItem(itemToDelete: any, payload: { email: string; platform: DevicePlatform }): void {
   window.analytics.track(`${itemToDelete.isFolder ? 'folder' : 'file'}-delete`, payload);
 }
 
@@ -142,7 +185,7 @@ export function identify(user: any, email: string): void {
     platform: DevicePlatform.Web,
     referrals_credit: user.credit,
     referrals_count: Math.floor(user.credit / 5),
-    createdAt: user.createdAt
+    createdAt: user.createdAt,
   });
 }
 
@@ -153,11 +196,11 @@ export function trackUserResetPasswordRequest(): void {
 export function track(email: string, status: 'error' | 'success'): void {
   window.analytics.track('user-change-password', {
     status,
-    email
+    email,
   });
 }
 
-export function trackFileUploadBucketIdUndefined(payload: { email: string, platform: DevicePlatform }): void {
+export function trackFileUploadBucketIdUndefined(payload: { email: string; platform: DevicePlatform }): void {
   window.analytics.track(AnalyticsTrack.FileUploadBucketIdUndefined, payload);
 }
 
@@ -192,7 +235,7 @@ const analyticsService = {
   signInAttempted,
   trackUserResetPasswordRequest,
   track,
-  trackFileUploadBucketIdUndefined
+  trackFileUploadBucketIdUndefined,
 };
 
 export default analyticsService;

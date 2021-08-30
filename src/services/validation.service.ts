@@ -14,7 +14,7 @@ const validateSearchText = (value: string): boolean => {
 
 const validationService = {
   validate2FA,
-  validateSearchText
+  validateSearchText,
 };
 
 export default validationService;

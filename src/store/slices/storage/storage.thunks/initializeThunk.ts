@@ -6,13 +6,14 @@ import { resetNamePathThunk } from './resetNamePathThunk';
 
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
   'storage/initialize',
-  async (payload: void, { getState, dispatch }) => {
+  async (payload: void, { dispatch }) => {
     dispatch(resetNamePathThunk());
-  });
+  },
+);
 
 export const initializeThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(initializeThunk.pending, (state, action) => { })
-    .addCase(initializeThunk.fulfilled, (state, action) => { })
-    .addCase(initializeThunk.rejected, (state, action) => { });
+    .addCase(initializeThunk.pending, () => undefined)
+    .addCase(initializeThunk.fulfilled, () => undefined)
+    .addCase(initializeThunk.rejected, () => undefined);
 };

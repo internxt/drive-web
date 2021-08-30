@@ -33,7 +33,7 @@ export async function decryptPGP(message: string) {
   return openpgp.decrypt({
     message: cipherText,
     publicKeys: publicKeyArmored.keys,
-    privateKeys: privateKeyArmored.keys
+    privateKeys: privateKeyArmored.keys,
   });
 }
 
@@ -54,7 +54,7 @@ export async function encryptPGP(message: string) {
   // Encrypt message
   return openpgp.encrypt({
     message: originalText,
-    publicKeys: publicKeyArmored.keys
+    publicKeys: publicKeyArmored.keys,
   });
 }
 
@@ -69,6 +69,6 @@ export async function encryptPGPInvitations(message: string, key: string) {
   // Encrypt message
   return openpgp.encrypt({
     message: originalText,
-    publicKeys: publicKeyArmored.keys
+    publicKeys: publicKeyArmored.keys,
   });
 }

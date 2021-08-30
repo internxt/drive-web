@@ -1,4 +1,8 @@
 @layer components {
+  a.nav-link.active {
+    @apply text-blue-60;
+  }
+
   .side-navigator-item {
     @apply relative cursor-pointer hover:text-blue-60 mb-3;
 
@@ -23,9 +27,5 @@
 
   a.nav-link {
     @apply text-neutral-900 no-underline hover:text-blue-60 w-full;
-  }
-
-  a.nav-link.active {
-    @apply text-blue-60;
   }
 }

@@ -3,7 +3,7 @@ function insertAt(array: unknown[], index: number, elementsToInsert: unknown[]):
 }
 
 const arrayService = {
-  insertAt
+  insertAt,
 };
 
 export default arrayService;

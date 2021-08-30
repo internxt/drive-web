@@ -16,7 +16,7 @@ const fetchTeamPlan = async (): Promise<StoragePlan | null> => {
 
 const planService = {
   fetchIndividualPlan,
-  fetchTeamPlan
+  fetchTeamPlan,
 };
 
 export default planService;

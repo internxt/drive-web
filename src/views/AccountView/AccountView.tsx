@@ -19,50 +19,51 @@ export enum AccountViewTab {
   Billing = 'billing',
   Plans = 'plans',
   Password = 'password',
-  Security = 'security'
+  Security = 'security',
 }
 interface AccountViewProps {
   dispatch: AppDispatch;
   currentTab: string;
 }
-interface AccountViewState {}
-class AccountView extends Component<AccountViewProps, AccountViewState> {
+class AccountView extends Component<AccountViewProps> {
   constructor(props: AccountViewProps) {
     super(props);
-
-    this.state = { };
   }
 
   componentDidMount() {
     const locationQueryParams = queryString.parse(history.location.search);
     const queryTab = locationQueryParams.tab;
 
-    if (queryTab && Object.values(AccountViewTab).includes(queryTab as AccountViewTab) && this.props.currentTab !== queryTab) {
+    if (
+      queryTab &&
+      Object.values(AccountViewTab).includes(queryTab as AccountViewTab) &&
+      this.props.currentTab !== queryTab
+    ) {
       this.props.dispatch(uiActions.setCurrentAccountTab(queryTab as string));
     }
   }
 
   onTabSelected: SelectCallback = (tabKey) => {
     tabKey && this.props.dispatch(uiActions.setCurrentAccountTab(tabKey));
-  }
+  };
 
   render(): JSX.Element {
     return (
-      <div className='account-view h-full rounded-md bg-white pb-16 mt-2 '>
-        <Tabs activeKey={this.props.currentTab} onSelect={this.onTabSelected} className='flex px-8 pt-3.5 account-tabs' >
-          <Tab title='Billing' eventKey={AccountViewTab.Billing}>
+      <div className="account-view h-full rounded-md bg-white pb-16 mt-2 ">
+        <Tabs activeKey={this.props.currentTab} onSelect={this.onTabSelected} className="flex px-8 pt-3.5 account-tabs">
+          <Tab title="Billing" eventKey={AccountViewTab.Billing}>
             <AccountPlanInfoTab />
           </Tab>
 
-          <Tab title='Plans' eventKey={AccountViewTab.Plans}>
+          <Tab title="Plans" eventKey={AccountViewTab.Plans}>
             <AccountPlansTab />
           </Tab>
 
-          <Tab title='Password' eventKey={AccountViewTab.Password}>
+          <Tab title="Password" eventKey={AccountViewTab.Password}>
             <AccountPasswordTab />
           </Tab>
 
-          <Tab title='Security' eventKey={AccountViewTab.Security}>
+          <Tab title="Security" eventKey={AccountViewTab.Security}>
             <AccountSecurityTab />
           </Tab>
         </Tabs>
@@ -71,9 +72,8 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
   }
 }
 
-export default connect(
-  (state: RootState) => {
-    return {
-      currentTab: state.ui.currentAccountTab
-    };
-  })(AccountView);
+export default connect((state: RootState) => {
+  return {
+    currentTab: state.ui.currentAccountTab,
+  };
+})(AccountView);

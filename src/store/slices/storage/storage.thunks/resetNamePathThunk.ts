@@ -14,16 +14,19 @@ export const resetNamePathThunk = createAsyncThunk<void, void, { state: RootStat
     dispatch(storageActions.resetNamePath());
 
     if (user) {
-      dispatch(storageActions.pushNamePath({
-        id: rootFolderId,
-        name: 'Drive'
-      }));
+      dispatch(
+        storageActions.pushNamePath({
+          id: rootFolderId,
+          name: 'Drive',
+        }),
+      );
     }
-  });
+  },
+);
 
 export const resetNamePathThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(resetNamePathThunk.pending, (state, action) => { })
-    .addCase(resetNamePathThunk.fulfilled, (state, action) => { })
-    .addCase(resetNamePathThunk.rejected, (state, action) => { });
+    .addCase(resetNamePathThunk.pending, () => undefined)
+    .addCase(resetNamePathThunk.fulfilled, () => undefined)
+    .addCase(resetNamePathThunk.rejected, () => undefined);
 };

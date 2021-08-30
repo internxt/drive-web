@@ -4,41 +4,42 @@ import { ProgressBar } from 'react-bootstrap';
 import CheckPasswordStrength from 'check-password-strength';
 
 interface PasswordStrengthProps {
-    password: string
+  password: string;
 }
 
 interface PasswordStrengthState {
-    percentage: number
+  percentage: number;
 }
 
 class PasswordStrength extends React.Component<PasswordStrengthProps, PasswordStrengthState> {
-    state = {
-      percentage: 0
+  state = {
+    percentage: 0,
+  };
+
+  checkPassword(password: string) {
+    if (!password) {
+      return this.setState({ percentage: 0 });
     }
+    const result = CheckPasswordStrength(password);
 
-    checkPassword(password: string) {
-      if (!password) {
-        return this.setState({ percentage: 0 });
-      }
-      const result = CheckPasswordStrength(password);
+    this.setState({
+      percentage: Math.floor(((result.id + 1) * 100) / 3),
+    });
+  }
 
-      this.setState({
-        percentage: Math.floor((result.id + 1) * 100 / 3)
-      });
-
+  componentDidUpdate(oldProps) {
+    if (oldProps.password !== this.props.password) {
+      this.checkPassword(this.props.password);
     }
+  }
 
-    componentDidUpdate(oldProps) {
-      if (oldProps.password !== this.props.password) {
-        this.checkPassword(this.props.password);
-      }
-    }
-
-    render() {
-      return <div className="password-strength">
+  render() {
+    return (
+      <div className="password-strength">
         <ProgressBar max={100} now={this.state.percentage} />
-      </div>;
-    }
+      </div>
+    );
+  }
 }
 
 export default PasswordStrength;

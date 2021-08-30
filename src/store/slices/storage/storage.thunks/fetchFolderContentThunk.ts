@@ -12,34 +12,26 @@ import notificationsService, { ToastType } from '../../../../services/notificati
 
 export const fetchFolderContentThunk = createAsyncThunk<void, number | undefined, { state: RootState }>(
   'storage/fetchFolderContent',
-  async (folderId: number = -1, { getState, dispatch }) => {
+  async (folderId = -1, { getState, dispatch }) => {
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
     const content = await folderService.fetchFolderContent(~folderId ? folderId : currentFolderId);
 
     dispatch(storageActions.clearSelectedItems());
 
-    dispatch(
-      storageActions.setItems(_.concat(
-        content.folders as DriveItemData[],
-        content.files as DriveItemData[]
-      ))
-    );
-  }
+    dispatch(storageActions.setItems(_.concat(content.folders as DriveItemData[], content.files as DriveItemData[])));
+  },
 );
 
 export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(fetchFolderContentThunk.pending, (state, action) => {
+    .addCase(fetchFolderContentThunk.pending, (state) => {
       state.isLoading = true;
     })
-    .addCase(fetchFolderContentThunk.fulfilled, (state, action) => {
+    .addCase(fetchFolderContentThunk.fulfilled, (state) => {
       state.isLoading = false;
     })
-    .addCase(fetchFolderContentThunk.rejected, (state, action) => {
+    .addCase(fetchFolderContentThunk.rejected, (state) => {
       state.isLoading = false;
-      notificationsService.show(
-        i18n.get('error.fetchingFolderContent'),
-        ToastType.Error
-      );
+      notificationsService.show(i18n.get('error.fetchingFolderContent'), ToastType.Error);
     });
 };

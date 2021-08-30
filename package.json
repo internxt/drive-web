@@ -23,18 +23,14 @@
     "copy-to-clipboard": "^3.3.1",
     "crypto-js": "^4.0.0",
     "history": "^4.10.1",
-    "immutability-helper": "^3.1.1",
-    "jquery": "^3.5.1",
     "js-file-download": "^0.4.12",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
-    "natural-orderby": "^2.0.3",
     "openpgp": "^4.10.10",
     "popper.js": "^1.16.1",
     "prettysize": "^2.0.0",
     "query-string": "^6.13.8",
     "react": "^17.0.1",
-    "react-animated-css": "^1.2.1",
     "react-bootstrap": "^1.4.3",
     "react-contextmenu": "^2.14.0",
     "react-device-detect": "^1.15.0",
@@ -47,14 +43,11 @@
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
-    "react-timeago": "^5.2.0",
     "react-toastify": "^6.2.0",
     "redux-thunk": "^2.3.0",
-    "sanitize-filename": "^1.6.3",
     "socket.io-client": "^3.1.0",
     "string-template": "^1.0.0",
     "typescript": "^4.0.3",
-    "uniqid": "^5.3.0",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
@@ -63,87 +56,13 @@
     "build": "craco build",
     "test": "jest tests/",
     "eject": "react-scripts eject",
-    "lint": "npm run lint:js && npm run lint:scss",
-    "lint:fix": "npm run lint:js:fix && npm run lint:scss:fix",
-    "lint:js": "eslint src/**/*.{js,ts,tsx}",
-    "lint:js:fix": "npm run lint:js -- --fix",
+    "format": "prettier {src,tests}/**/*.{ts,tsx} --write",
+    "lint:ts": "eslint {src,tests}/**/*.{ts,tsx}",
+    "lint:ts:fix": "yarn run lint:ts --fix",
     "lint:scss": "stylelint src/**/*.{css,scss}",
-    "lint:scss:fix": "npm run lint:scss -- --fix"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest",
-      "plugin:@typescript-eslint/eslint-recommended",
-      "plugin:@typescript-eslint/recommended"
-    ],
-    "rules": {
-      "semi": "error",
-      "comma-dangle": [
-        "error",
-        "never"
-      ],
-      "no-multiple-empty-lines": [
-        "error",
-        {
-          "max": 1,
-          "maxEOF": 0,
-          "maxBOF": 0
-        }
-      ],
-      "eqeqeq": "error",
-      "comma-spacing": [
-        "error",
-        {
-          "before": false,
-          "after": true
-        }
-      ],
-      "no-trailing-spaces": [
-        "error"
-      ],
-      "indent": [
-        "error",
-        2,
-        {
-          "SwitchCase": 1
-        }
-      ],
-      "quotes": [
-        "error",
-        "single"
-      ],
-      "object-curly-spacing": [
-        "error",
-        "always"
-      ],
-      "newline-after-var": [
-        "error",
-        "always"
-      ],
-      "no-multi-spaces": "error",
-      "curly": "error",
-      "keyword-spacing": "error",
-      "space-in-parens": [
-        "error",
-        "never"
-      ],
-      "no-useless-constructor": [
-        "error"
-      ],
-      "no-extra-semi": [
-        "error"
-      ],
-      "no-empty": [
-        "error"
-      ],
-      "brace-style": "error",
-      "@typescript-eslint/no-empty-interface": "off",
-      "@typescript-eslint/no-inferrable-types": "off",
-      "@typescript-eslint/no-empty-function": "off",
-      "@typescript-eslint/no-extra-semi": "off",
-      "@typescript-eslint/ban-types": "off"
-    }
+    "lint:scss:fix": "yarn run lint:scss --fix",
+    "lint": "yarn run lint:ts && yarn run lint:scss",
+    "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix"
   },
   "browserslist": {
     "production": [
@@ -171,7 +90,10 @@
     "autoprefixer": "^9",
     "customize-cra": "^1.0.0",
     "dotenv": "^10.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.1",
     "postcss": "^7",
+    "prettier": "^2.3.2",
     "prop-types": "^15.7.2",
     "redux-devtools": "^3.7.0",
     "redux-devtools-extension": "^2.13.9",

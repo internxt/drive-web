@@ -11,7 +11,7 @@ import InviteMemberDialog from '../../components/dialogs/InviteMemberDialog/Invi
 import FileLogger from '../../components/FileLogger/FileLogger';
 
 interface HeaderAndSidenavLayoutProps {
-  children: JSX.Element
+  children: JSX.Element;
 }
 
 export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProps): JSX.Element {
@@ -30,10 +30,10 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   }
 
   return isAuthenticated ? (
-    <div className='h-auto min-h-full flex flex-col'>
+    <div className="h-auto min-h-full flex flex-col">
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog item={itemToShare} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
-      {isInviteMemberDialogOpen && <InviteMemberDialog/>}
+      {isInviteMemberDialogOpen && <InviteMemberDialog />}
 
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />
@@ -45,7 +45,6 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
           <footer className="bg-l-neutral-20 h-footer"></footer>
         </div>
       </div>
-
     </div>
   ) : (
     <div className="App">

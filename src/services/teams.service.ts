@@ -7,20 +7,22 @@ import envService from './env.service';
 export async function getTeamsInfo(): Promise<any> {
   return fetch(`${process.env.REACT_APP_API_URL}/api/teams/info`, {
     method: 'get',
-    headers: getHeaders(true, false, false)
-  }).then(res => {
-    return res.json();
-  }).catch(() => {
-    throw new Error ('Can not get info team');
-  });
+    headers: getHeaders(true, false, false),
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .catch(() => {
+      throw new Error('Can not get info team');
+    });
 }
 
 export async function getKeys(mail: string): Promise<any> {
   return fetch(`${process.env.REACT_APP_API_URL}/api/user/keys/${mail}`, {
     method: 'GET',
-    headers: getHeaders(true, false)
-  }).then(async(res) =>{
-    if (res.status === 400){
+    headers: getHeaders(true, false),
+  }).then(async (res) => {
+    if (res.status === 400) {
       const res1 = await res.json();
 
       throw res1;
@@ -48,20 +50,22 @@ export async function storeTeamsInfo(): Promise<void> {
       localStorageService.removeItem('xTeam');
       localStorageService.removeItem('xTokenTeam');
     }
-  } catch (error) {
-    throw new Error ('Can not get info team');
+  } catch (err: unknown) {
+    throw new Error('Can not get info team');
   }
 }
 
 export function getMembers(): Promise<InfoInvitationsMembers[]> {
   return fetch(`${process.env.REACT_APP_API_URL}/api/teams/members`, {
     method: 'get',
-    headers: getHeaders(true, false)
-  }).then((response) => {
-    return response.json();
-  }).catch((err) => {
-    throw err;
-  });
+    headers: getHeaders(true, false),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => {
+      throw err;
+    });
 }
 
 export function removeMember(item: InfoInvitationsMembers): Promise<void> {
@@ -71,40 +75,36 @@ export function removeMember(item: InfoInvitationsMembers): Promise<void> {
     method: 'delete',
     headers: getHeaders(true, false),
     body: JSON.stringify({
-      item: item
+      item: item,
+    }),
+  })
+    .then((res) => {
+      if (res.status !== 200) {
+        throw new Error(`Can not delete this ${typeMember}`);
+      }
     })
-  }).then((res) => {
-    if (res.status !== 200) {
-      throw new Error(`Can not delete this ${typeMember}`);
-    }
-  }).catch((err) => {
-    throw err;
-  });
+    .catch((err) => {
+      throw err;
+    });
 }
 
 export async function sendEmailTeamsMember(mail: string): Promise<void> {
-  try {
-    const key = await getKeys(mail);
-    const xTeam = localStorageService.getTeams() as TeamsSettings;
+  const key = await getKeys(mail);
+  const xTeam = localStorageService.getTeams() as TeamsSettings;
 
-    //Datas
-    const bridgePass = xTeam.bridge_password;
-    const mnemonicTeam = xTeam.bridge_mnemonic;
+  //Datas
+  const bridgePass = xTeam.bridge_password;
+  const mnemonicTeam = xTeam.bridge_mnemonic;
 
-    //Encrypt
-    const EncryptBridgePass = await encryptPGPInvitations(bridgePass, key.publicKey);
-    const EncryptMnemonicTeam = await encryptPGPInvitations(mnemonicTeam, key.publicKey);
+  //Encrypt
+  const EncryptBridgePass = await encryptPGPInvitations(bridgePass, key.publicKey);
+  const EncryptMnemonicTeam = await encryptPGPInvitations(mnemonicTeam, key.publicKey);
 
-    const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
-    const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');
-    const bridgeuser = xTeam.bridge_user;
+  const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
+  const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');
+  const bridgeuser = xTeam.bridge_user;
 
-    await fetchInvitation(mail, base64bridge_password, base64Mnemonic, bridgeuser);
-
-  } catch (error) {
-    throw error;
-  }
-
+  await fetchInvitation(mail, base64bridge_password, base64Mnemonic, bridgeuser);
 }
 
 const fetchInvitation = (email: string, bridgePass: string, mnemonicTeam: string, bridgeuser: string) => {
@@ -115,30 +115,34 @@ const fetchInvitation = (email: string, bridgePass: string, mnemonicTeam: string
       email,
       bridgePass,
       mnemonicTeam,
-      bridgeuser
+      bridgeuser,
+    }),
+  })
+    .then((invitation) => {
+      if (invitation.status !== 200) {
+        throw new Error('Can not invite this member');
+      }
+      return invitation.json();
     })
-  }).then(invitation => {
-    if (invitation.status !== 200) {
-      throw new Error('Can not invite this member');
-    }
-    return invitation.json();
-  }).catch((err) => {
-    throw err;
-  });
+    .catch((err) => {
+      throw err;
+    });
 };
 
 function getTeamInfoStripeSuccess() {
   return fetch('/api/teams/team/info', {
     method: 'get',
-    headers: getHeaders(true, false, false)
-  }).then(res => {
-    if (res.status !== 200) {
-      throw Error();
-    }
-    return res.json();
-  }).catch(() => {
-    return {};
-  });
+    headers: getHeaders(true, false, false),
+  })
+    .then((res) => {
+      if (res.status !== 200) {
+        throw Error();
+      }
+      return res.json();
+    })
+    .catch(() => {
+      return {};
+    });
 }
 
 export async function checkSessionStripe(sessionId: string): Promise<any> {
@@ -152,16 +156,16 @@ export async function checkSessionStripe(sessionId: string): Promise<any> {
     body: JSON.stringify({
       checkoutSessionId: sessionId,
       test: !envService.isProduction(),
-      mnemonic: mnemonic.data
+      mnemonic: mnemonic.data,
+    }),
+  })
+    .then((res) => {
+      if (res.status !== 200) {
+        throw Error(res.statusText);
+      }
+      return res.json();
     })
-  }).then((res) => {
-    if (res.status !== 200) {
-      throw Error(res.statusText);
-    }
-    return res.json();
-  }).then(() => storeTeamsInfo())
-    .catch((err) => {
-    });
+    .then(() => storeTeamsInfo());
 }
 
 const teamsService = {
@@ -169,7 +173,7 @@ const teamsService = {
   getKeys,
   storeTeamsInfo,
   sendEmailTeamsMember,
-  checkSessionStripe
+  checkSessionStripe,
 };
 
 export default teamsService;

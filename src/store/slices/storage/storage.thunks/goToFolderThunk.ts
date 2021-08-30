@@ -15,18 +15,16 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
 
     await dispatch(fetchFolderContentThunk(path.id)).unwrap();
 
-    isInNamePath ?
-      dispatch(storageActions.popNamePathUpTo(path)) :
-      dispatch(storageActions.pushNamePath(path));
+    isInNamePath ? dispatch(storageActions.popNamePathUpTo(path)) : dispatch(storageActions.pushNamePath(path));
 
     dispatch(storageActions.setInfoItem(null));
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
-  }
+  },
 );
 
 export const goToFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(goToFolderThunk.pending, (state, action) => { })
-    .addCase(goToFolderThunk.fulfilled, (state, action) => { })
-    .addCase(goToFolderThunk.rejected, (state, action) => { });
+    .addCase(goToFolderThunk.pending, () => undefined)
+    .addCase(goToFolderThunk.fulfilled, () => undefined)
+    .addCase(goToFolderThunk.rejected, () => undefined);
 };

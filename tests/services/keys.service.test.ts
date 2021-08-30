@@ -7,7 +7,6 @@ import { config } from 'dotenv';
 config();
 
 describe('# keys service tests', () => {
-
   const aesInit = getAesInitFromEnv();
 
   it('Should not update private key if encryption & encoding is fine', async () => {

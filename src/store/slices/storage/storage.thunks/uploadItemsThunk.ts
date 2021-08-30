@@ -3,27 +3,28 @@ import { items as itemUtils } from '@internxt/lib';
 
 import i18n from '../../../../services/i18n.service';
 import folderService from '../../../../services/folder.service';
-import { getFilenameAndExt, renameFile } from '../../../../lib/utils';
+import { renameFile } from '../../../../lib/utils';
 import storageService from '../../../../services/storage.service';
 import { TaskType, TaskStatus } from '../../../../models/enums';
 import { DriveFileData, DriveItemData, NotificationData, UserSettings } from '../../../../models/interfaces';
 import { tasksActions } from '../../tasks';
 import { storageActions } from '..';
 import { ItemToUpload } from '../../../../services/storage.service/storage-upload.service';
-import { RootState } from '../../..';
 import { StorageState } from '../storage.model';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../lib/constants';
 import { sessionSelectors } from '../../session/session.selectors';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
+import { RootState } from '../../..';
+import errorService from '../../../../services/error.service';
 
 interface UploadItemsPayload {
   files: File[];
   parentFolderId: number;
   folderPath: string;
   options?: {
-    withNotifications?: boolean,
-    onSuccess?: () => void
-  }
+    withNotifications?: boolean;
+    onSuccess?: () => void;
+  };
 }
 
 /**
@@ -37,11 +38,14 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const user = getState().user.user as UserSettings;
     const { namePath } = getState().storage;
 
-    const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
+    const showSizeWarning = files.some((file) => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
+    const relativePath = namePath
+      .map((pathLevel) => pathLevel.name)
+      .slice(1)
+      .join('/');
     const filesToUpload: ItemToUpload[] = [];
-    const uploadErrors: any[] = [];
+    const uploadErrors: Error[] = [];
     const notificationsUuids: string[] = [];
 
     options = Object.assign({ withNotifications: true }, options || {});
@@ -49,7 +53,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     if (showSizeWarning) {
       notificationsService.show(
         'File too large.\nYou can only upload or download files of up to 1GB through the web app',
-        ToastType.Warning
+        ToastType.Warning,
       );
       return;
     }
@@ -57,7 +61,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     for (const [index, file] of files.entries()) {
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const parentFolderContent = await folderService.fetchFolderContent(parentFolderId);
-      const [filenameExist, filenameIndex, finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
+      const [, , finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
       const fileContent = renameFile(file, finalFilename);
       const notification: NotificationData = {
         uuid: `${requestId}-${index}`,
@@ -65,7 +69,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         status: TaskStatus.Pending,
         name: finalFilename,
         isFolder: false,
-        type: extension
+        type: extension,
       };
 
       filesToUpload.push({
@@ -74,7 +78,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         type: extension,
         content: fileContent,
         parentFolderId,
-        folderPath
+        folderPath,
       });
 
       if (options?.withNotifications) {
@@ -90,26 +94,36 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       const notificationUuid = notificationsUuids[index];
       const updateProgressCallback = (progress) => {
         if (options?.withNotifications) {
-          dispatch(tasksActions.updateNotification({
-            uuid: notificationUuid,
-            merge: {
-              status: TaskStatus.InProcess,
-              progress
-            }
-          }));
+          dispatch(
+            tasksActions.updateNotification({
+              uuid: notificationUuid,
+              merge: {
+                status: TaskStatus.InProcess,
+                progress,
+              },
+            }),
+          );
         }
       };
       const task = async (): Promise<DriveFileData> => {
         if (options?.withNotifications) {
-          dispatch(tasksActions.updateNotification({
-            uuid: notificationUuid,
-            merge: {
-              status: TaskStatus.Encrypting
-            }
-          }));
+          dispatch(
+            tasksActions.updateNotification({
+              uuid: notificationUuid,
+              merge: {
+                status: TaskStatus.Encrypting,
+              },
+            }),
+          );
         }
 
-        const uploadedFile = await storageService.upload.uploadItem(user.email, file, path, isTeam, updateProgressCallback);
+        const uploadedFile = await storageService.upload.uploadItem(
+          user.email,
+          file,
+          path,
+          isTeam,
+          updateProgressCallback,
+        );
 
         uploadedFile.name = file.name;
 
@@ -123,22 +137,28 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           dispatch(storageActions.pushItems({ items: uploadedFile as DriveItemData }));
 
           if (options?.withNotifications) {
-            dispatch(tasksActions.updateNotification({
-              uuid: notificationUuid,
-              merge: { status: TaskStatus.Success }
-            }));
+            dispatch(
+              tasksActions.updateNotification({
+                uuid: notificationUuid,
+                merge: { status: TaskStatus.Success },
+              }),
+            );
           }
         })
-        .catch(error => {
+        .catch((err: unknown) => {
+          const castedError = errorService.castError(err);
+
           if (options?.withNotifications) {
-            dispatch(tasksActions.updateNotification({
-              uuid: notificationUuid,
-              merge: { status: TaskStatus.Error }
-            }));
+            dispatch(
+              tasksActions.updateNotification({
+                uuid: notificationUuid,
+                merge: { status: TaskStatus.Error },
+              }),
+            );
           }
 
-          uploadErrors.push(error);
-          console.error(error);
+          uploadErrors.push(castedError);
+          console.error(castedError);
         });
     }
 
@@ -147,16 +167,17 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     if (uploadErrors.length > 0) {
       throw new Error('There were some errors during upload');
     }
-  });
+  },
+);
 
 export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(uploadItemsThunk.pending, (state, action) => { })
-    .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
+    .addCase(uploadItemsThunk.pending, () => undefined)
+    .addCase(uploadItemsThunk.fulfilled, () => undefined)
     .addCase(uploadItemsThunk.rejected, (state, action) => {
       notificationsService.show(
         i18n.get('error.uploadingFile', { reason: action.error.message || '' }),
-        ToastType.Error
+        ToastType.Error,
       );
     });
 };
