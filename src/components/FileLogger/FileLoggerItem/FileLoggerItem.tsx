@@ -2,7 +2,7 @@ import { TaskStatus } from '../../../models/enums';
 import { NotificationData } from '../../../models/interfaces';
 import i18n from '../../../services/i18n.service';
 import iconService from '../../../services/icon.service';
-import { getItemFullName } from '../../../services/storage.service/storage-name.service';
+import { items } from '@internxt/lib';
 
 interface ItemProps {
   item: NotificationData
@@ -10,7 +10,7 @@ interface ItemProps {
 
 const FileLoggerItem = ({ item }: ItemProps): JSX.Element => {
   const IconComponent = iconService.getItemIcon(item.isFolder, item.type || '');
-  const fullName = getItemFullName(item.name, item.type);
+  const fullName = items.getItemDisplayName(item);
   const icon: JSX.Element = <IconComponent className='flex items-center justify-center mr-2.5 w-6' />;
   const statusClassName = [TaskStatus.Success, TaskStatus.Error].includes(item.status) ? '' : 'opacity-50';
   const message: string = i18n.get(`tasks.${item.action}.${item.status}`, {

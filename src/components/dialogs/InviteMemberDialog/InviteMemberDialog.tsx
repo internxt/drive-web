@@ -57,7 +57,7 @@ const InviteMemberCreateDialog = ({
         }
 
       }
-    } catch (error) {
+    } catch (error: any) {
       notificationsService.show(error.message || error, ToastType.Error);
     }
 
