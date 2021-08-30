@@ -1,6 +1,6 @@
 export enum AppViewLayout {
   Empty = 'empty',
-  HeaderAndSidenav = 'header-and-sidenav'
+  HeaderAndSidenav = 'header-and-sidenav',
 }
 
 export enum TaskStatus {
@@ -9,7 +9,7 @@ export enum TaskStatus {
   Decrypting = 'decrypting',
   InProcess = 'in-process',
   Error = 'error',
-  Success = 'success'
+  Success = 'success',
 }
 
 export enum TaskType {
@@ -18,7 +18,7 @@ export enum TaskType {
   UploadFile = 'upload-file',
   UploadFolder = 'upload-folder',
   MoveFile = 'move-file',
-  MoveFolder = 'move-folder'
+  MoveFolder = 'move-folder',
 }
 
 export enum ItemAction {
@@ -26,7 +26,7 @@ export enum ItemAction {
   Download,
   Share,
   Info,
-  Delete
+  Delete,
 }
 
 export enum AnalyticsTrack {
@@ -54,31 +54,31 @@ export enum AnalyticsTrack {
 }
 
 export enum DevicePlatform {
-  Web = 'web'
+  Web = 'web',
 }
 
 export enum FileViewMode {
   List = 'list',
-  Grid = 'grid'
+  Grid = 'grid',
 }
 export enum Workspace {
   Personal = 'personal',
-  Business = 'business'
+  Business = 'business',
 }
 
 export enum DragAndDropType {
-  DriveItem = 'drive-item'
+  DriveItem = 'drive-item',
 }
 
 export enum StorageItemList {
   Drive = 'drive',
-  Recents = 'recents'
+  Recents = 'recents',
 }
 
 export enum StripeMemberTiers {
   'infinite',
   'lifetime',
-  'premium'
+  'premium',
 }
 
 export enum StripeSimpleNames {
@@ -86,24 +86,24 @@ export enum StripeSimpleNames {
   '20TB',
   '2TB',
   '200GB',
-  '20GB'
+  '20GB',
 }
 
 export enum StripeProductNames {
   'Drive 20GB',
   'Drive 200GB',
-  'Drive 2 TB'
+  'Drive 2 TB',
 }
 
 export enum TimeInterval {
   Month = 'month',
-  Year = 'year'
+  Year = 'year',
 }
 
 export enum RenewalPeriod {
   Monthly = 'Monthly',
   Semiannually = 'Semiannually',
-  Annually = 'Annually'
+  Annually = 'Annually',
 }
 
 export enum LocalStorageItem {
@@ -112,5 +112,5 @@ export enum LocalStorageItem {
   UserMnemonic = 'xMnemonic',
   UserToken = 'xToken',
   Team = 'xTeam',
-  TeamToken = 'xTokenTeam'
+  TeamToken = 'xTokenTeam',
 }

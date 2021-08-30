@@ -1,41 +1,48 @@
 import localStorageService from './local-storage.service';
 import analyticsService from './analytics.service';
-import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData, UserSettings } from '../models/interfaces';
+import {
+  DriveFileData,
+  DriveFolderData,
+  DriveFolderMetadataPayload,
+  DriveItemData,
+  UserSettings,
+} from '../models/interfaces';
 import { DevicePlatform } from '../models/enums';
 import httpService from './http.service';
+import errorService from './error.service';
 
 export interface IFolders {
-  bucket: string
-  color: string
-  createdAt: Date
-  encrypt_version: string
-  icon: string
-  iconId: any
-  icon_id: any
-  id: number
-  name: string
-  parentId: number
-  parent_id: number
-  updatedAt: Date
-  userId: number
-  user_id: number
+  bucket: string;
+  color: string;
+  createdAt: Date;
+  encrypt_version: string;
+  icon: string;
+  iconId: any;
+  icon_id: any;
+  id: number;
+  name: string;
+  parentId: number;
+  parent_id: number;
+  updatedAt: Date;
+  userId: number;
+  user_id: number;
 }
 
 export interface FolderChild {
-  bucket: string
-  color: string
-  createdAt: string
-  encrypt_version: string
-  icon: string
-  iconId: any
-  icon_id: any
-  id: number
-  name: string
-  parentId: number
-  parent_id: number
-  updatedAt: string
-  userId: number
-  user_id: number
+  bucket: string;
+  color: string;
+  createdAt: string;
+  encrypt_version: string;
+  icon: string;
+  iconId: any;
+  icon_id: any;
+  id: number;
+  name: string;
+  parentId: number;
+  parent_id: number;
+  updatedAt: string;
+  userId: number;
+  user_id: number;
 }
 
 export interface CreateFolderPayload {
@@ -54,23 +61,22 @@ export interface CreateFolderResponse {
 }
 
 export interface IContentFolder {
-  bucket: string
-  children: FolderChild[]
-  color: string
-  createdAt: string
-  encrypt_version: string
-  files: DriveItemData[]
-  icon: string
-  iconId: any
-  icon_id: any
-  id: number
-  name: string
-  parentId: number
-  parent_id: number
-  updatedAt: string
-  userId: number
-  user_id: number
-
+  bucket: string;
+  children: FolderChild[];
+  color: string;
+  createdAt: string;
+  encrypt_version: string;
+  files: DriveItemData[];
+  icon: string;
+  iconId: any;
+  icon_id: any;
+  id: number;
+  name: string;
+  parentId: number;
+  parent_id: number;
+  updatedAt: string;
+  userId: number;
+  user_id: number;
 }
 
 export interface FetchFolderContentResponse {
@@ -79,8 +85,8 @@ export interface FetchFolderContentResponse {
 }
 
 export interface MoveFolderPayload {
-  folderId: number,
-  destination: number
+  folderId: number;
+  destination: number;
 }
 
 export interface MoveFolderResponse {
@@ -90,22 +96,18 @@ export interface MoveFolderResponse {
 }
 
 export async function fetchFolderContent(folderId: number): Promise<FetchFolderContentResponse> {
-  try {
-    const response = await httpService.get<IContentFolder>(`/api/storage/folder/${folderId}`);
-    const result: FetchFolderContentResponse = {
-      folders: [],
-      files: []
-    };
+  const response = await httpService.get<IContentFolder>(`/api/storage/folder/${folderId}`);
+  const result: FetchFolderContentResponse = {
+    folders: [],
+    files: [],
+  };
 
-    if (response) {
-      result.folders = response.children.map(folder => ({ ...folder, isFolder: true }));
-      result.files = response.files;
-    }
-
-    return result;
-  } catch (error) {
-    throw error;
+  if (response) {
+    result.folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
+    result.files = response.files;
   }
+
+  return result;
 }
 
 export async function createFolder(currentFolderId: number, folderName: string): Promise<CreateFolderResponse> {
@@ -113,32 +115,33 @@ export async function createFolder(currentFolderId: number, folderName: string):
     const user = localStorageService.getUser() as UserSettings;
     const data: CreateFolderPayload = {
       parentFolderId: currentFolderId,
-      folderName
+      folderName,
     };
     const response = await httpService.post<CreateFolderPayload, CreateFolderResponse>('/api/storage/folder', data);
 
     analyticsService.trackFolderCreated({
       email: user.email,
-      platform: DevicePlatform.Web
+      platform: DevicePlatform.Web,
     });
 
     return response;
-  } catch (error) {
-    throw error.response.data.error || error;
+  } catch (err: unknown) {
+    const castedError = errorService.castError(err);
+
+    throw castedError;
   }
 }
 
 export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload): Promise<void> {
   const user: UserSettings = localStorageService.getUser() as UserSettings;
 
-  return httpService.post(`/api/storage/folder/${itemId}/meta`, data)
-    .then(() => {
-      analyticsService.trackFolderRename({
-        email: user.email,
-        fileId: itemId,
-        platform: DevicePlatform.Web
-      });
+  return httpService.post(`/api/storage/folder/${itemId}/meta`, data).then(() => {
+    analyticsService.trackFolderRename({
+      email: user.email,
+      fileId: itemId,
+      platform: DevicePlatform.Web,
     });
+  });
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
@@ -147,7 +150,7 @@ export function deleteFolder(folderData: DriveFolderData): Promise<void> {
   return httpService.delete(`/api/storage/folder/${folderData.id}`).then(() => {
     analyticsService.trackDeleteItem(folderData, {
       email: user.email,
-      platform: DevicePlatform.Web
+      platform: DevicePlatform.Web,
     });
   });
 }
@@ -159,7 +162,7 @@ export async function moveFolder(data: MoveFolderPayload): Promise<MoveFolderRes
   analyticsService.trackMoveItem('folder', {
     file_id: response.item.id,
     email: user.email,
-    platform: DevicePlatform.Web
+    platform: DevicePlatform.Web,
   });
 
   return response;
@@ -170,7 +173,7 @@ const folderService = {
   createFolder,
   updateMetaData,
   deleteFolder,
-  moveFolder
+  moveFolder,
 };
 
 export default folderService;

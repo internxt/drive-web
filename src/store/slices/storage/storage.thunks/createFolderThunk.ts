@@ -24,24 +24,26 @@ export const createFolderThunk = createAsyncThunk<void, string, { state: RootSta
       icon_id: null,
       isFolder: true,
       color: null,
-      encrypt_version: null
+      encrypt_version: null,
     };
 
-    dispatch(storageActions.pushItems({
-      lists: [StorageItemList.Drive],
-      items: createdFolderNormalized as DriveItemData
-    }));
-  }
+    dispatch(
+      storageActions.pushItems({
+        lists: [StorageItemList.Drive],
+        items: createdFolderNormalized as DriveItemData,
+      }),
+    );
+  },
 );
 
 export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(createFolderThunk.pending, (state, action) => { })
-    .addCase(createFolderThunk.fulfilled, (state, action) => { })
+    .addCase(createFolderThunk.pending, () => undefined)
+    .addCase(createFolderThunk.fulfilled, () => undefined)
     .addCase(createFolderThunk.rejected, (state, action) => {
-      const errorMessage = action.error.message?.includes('already exists') ?
-        i18n.get('error.folderAlreadyExists') :
-        i18n.get('error.creatingFolder');
+      const errorMessage = action.error.message?.includes('already exists')
+        ? i18n.get('error.folderAlreadyExists')
+        : i18n.get('error.creatingFolder');
 
       notificationsService.show(errorMessage, ToastType.Error);
     });

@@ -6,7 +6,7 @@ import localStorageService from './local-storage.service';
 
 export interface MoveFilePayload {
   fileId: string;
-  destination: number
+  destination: number;
 }
 export interface MoveFileResponse {
   item: DriveFileData;
@@ -21,7 +21,7 @@ export function updateMetaData(itemId: string, data: DriveFileMetadataPayload): 
     analyticsService.trackFileRename({
       file_id: itemId,
       email: user.email,
-      platform: DevicePlatform.Web
+      platform: DevicePlatform.Web,
     });
   });
 }
@@ -32,7 +32,7 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
   return httpService.delete(`/api/storage/folder/${fileData.folderId}/file/${fileData.id}`).then(() => {
     analyticsService.trackDeleteItem(fileData, {
       email: user.email,
-      platform: DevicePlatform.Web
+      platform: DevicePlatform.Web,
     });
   });
 }
@@ -44,7 +44,7 @@ export async function moveFile(data: MoveFilePayload): Promise<MoveFileResponse>
   analyticsService.trackMoveItem('file', {
     file_id: response.item.id,
     email: user.email,
-    platform: DevicePlatform.Web
+    platform: DevicePlatform.Web,
   });
 
   return response;
@@ -60,7 +60,7 @@ const fileService = {
   updateMetaData,
   deleteFile,
   moveFile,
-  fetchRecents
+  fetchRecents,
 };
 
 export default fileService;

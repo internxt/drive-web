@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { uiActions } from '../../../store/slices/ui';
 import BaseButton from '../../Buttons/BaseButton';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
+import errorService from '../../../services/error.service';
 
 interface DeleteItemsDialogProps {
   onItemsDeleted?: () => void;
@@ -36,29 +37,27 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
       props.onItemsDeleted && props.onItemsDeleted();
 
       onClose();
-    } catch (e) {
-      console.log(e);
+    } catch (err: unknown) {
+      const castedError = errorService.castError(err);
+
+      console.log(castedError.message);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <BaseDialog
-      isOpen={isOpen}
-      title='Delete items'
-      onClose={onClose}
-    >
-      <span className='text-center block w-full text-base px-8 text-neutral-900 mt-2'>
+    <BaseDialog isOpen={isOpen} title="Delete items" onClose={onClose}>
+      <span className="text-center block w-full text-base px-8 text-neutral-900 mt-2">
         Please confirm that you want to delete these items. This action can't be undone.
       </span>
 
-      <div className='flex justify-center items-center bg-l-neutral-20 py-6 mt-6'>
-        <div className='flex w-64'>
-          <BaseButton onClick={() => onClose()} classes='cancel w-full mr-2'>
+      <div className="flex justify-center items-center bg-l-neutral-20 py-6 mt-6">
+        <div className="flex w-64">
+          <BaseButton onClick={() => onClose()} classes="cancel w-full mr-2">
             Cancel
           </BaseButton>
-          <BaseButton classes='primary w-11/12 ml-2' disabled={isLoading} onClick={() => onAccept()} >
+          <BaseButton classes="primary w-11/12 ml-2" disabled={isLoading} onClick={() => onAccept()}>
             {isLoading ? 'Deleting...' : 'Delete'}
           </BaseButton>
         </div>

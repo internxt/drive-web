@@ -5,7 +5,6 @@ import { RootState } from '../../..';
 import { LocalStorageItem, Workspace } from '../../../../models/enums';
 import localStorageService from '../../../../services/local-storage.service';
 import { planThunks } from '../../plan';
-import storageThunks from '../../storage/storage.thunks';
 import { SessionState } from '../session.model';
 import { sessionSelectors } from '../session.selectors';
 
@@ -21,18 +20,18 @@ const changeWorkspaceThunk = createAsyncThunk<void, void, { state: RootState }>(
     // TODO: encapsulate reset storage logic
 
     dispatch(planThunks.initializeThunk());
-  }
+  },
 );
 
 const sessionThunks = {
-  changeWorkspaceThunk
+  changeWorkspaceThunk,
 };
 
 export const sessionExtraReducers = (builder: ActionReducerMapBuilder<SessionState>): void => {
   builder
-    .addCase(changeWorkspaceThunk.pending, (state, action) => { })
-    .addCase(changeWorkspaceThunk.fulfilled, (state, action) => { })
-    .addCase(changeWorkspaceThunk.rejected, (state, action) => { });
+    .addCase(changeWorkspaceThunk.pending, () => undefined)
+    .addCase(changeWorkspaceThunk.fulfilled, () => undefined)
+    .addCase(changeWorkspaceThunk.rejected, () => undefined);
 };
 
 export default sessionThunks;

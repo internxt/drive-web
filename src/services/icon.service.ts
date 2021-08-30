@@ -29,7 +29,7 @@ const iconsByFileExtensionGroup = {
   [FileExtensionGroup.Xls]: XlsFile,
   [FileExtensionGroup.Xml]: XmlFile,
   [FileExtensionGroup.Zip]: ZipFile,
-  [FileExtensionGroup.Default]: DefaultFile
+  [FileExtensionGroup.Default]: DefaultFile,
 };
 const extensionsList = fileExtensionService.computeExtensionsLists();
 
@@ -46,13 +46,11 @@ export const getItemIcon = (isFolder: boolean, itemExtension: string): FunctionC
     return !matched;
   });
 
-  return !isFolder ?
-    iconsByFileExtensionGroup[groupId] :
-    LightFolder;
+  return !isFolder ? iconsByFileExtensionGroup[groupId] : LightFolder;
 };
 
 const iconService = {
-  getItemIcon
+  getItemIcon,
 };
 
 export default iconService;

@@ -23,12 +23,8 @@ export async function validateFormat(privateKey: string, password: string) {
   return { update, newPrivKey, privkeyDecrypted };
 }
 
-export function getAesInitFromEnv(): {iv:string, salt:string} {
-  const {
-    REACT_APP_MAGIC_IV: MAGIC_IV,
-    REACT_APP_MAGIC_SALT: MAGIC_SALT
-  } = process.env;
+export function getAesInitFromEnv(): { iv: string; salt: string } {
+  const { REACT_APP_MAGIC_IV: MAGIC_IV, REACT_APP_MAGIC_SALT: MAGIC_SALT } = process.env;
 
   return { iv: MAGIC_IV as string, salt: MAGIC_SALT as string };
-
 }

@@ -15,9 +15,7 @@ export const getUserLimitString = (limit: number): string => {
   let result = '...';
 
   if (limit > 0) {
-    limit < 108851651149824 ?
-      result = bytesToString(limit) :
-      result = '\u221E';
+    limit < 108851651149824 ? (result = bytesToString(limit)) : (result = '\u221E');
   }
 
   return result;
@@ -25,7 +23,7 @@ export const getUserLimitString = (limit: number): string => {
 
 const usageService = {
   fetchUsage,
-  getUserLimitString
+  getUserLimitString,
 };
 
 export default usageService;

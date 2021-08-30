@@ -14,7 +14,7 @@ import { FileExplorerItemViewProps } from '../fileExplorerItemComposition';
 import fileExplorerItemComposition from '../fileExplorerItemComposition';
 import { items } from '@internxt/lib';
 
-class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
+class FileListItem extends React.Component<FileExplorerItemViewProps> {
   get nameNode(): JSX.Element {
     const {
       item,
@@ -24,11 +24,9 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
       onNameDoubleClicked,
       isEditingName,
       dirtyName,
-      nameInputRef
+      nameInputRef,
     } = this.props;
     const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
-
-    console.log(items);
 
     return (
       <Fragment>
@@ -45,13 +43,15 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
             onKeyPress={onEnterKeyPressed}
             autoFocus
           />
-          <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
+          <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
         </div>
         <span
           className={`${spanDisplayClass} cursor-text file-list-item-name-span`}
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={onNameDoubleClicked}
-        >{items.getItemDisplayName(item)}</span>
+        >
+          {items.getItemDisplayName(item)}
+        </span>
       </Fragment>
     );
   }
@@ -59,10 +59,8 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
   onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { item, dispatch } = this.props;
 
-    e.target.checked ?
-      dispatch(storageActions.selectItems([item])) :
-      dispatch(storageActions.deselectItems([item]));
-  }
+    e.target.checked ? dispatch(storageActions.selectItems([item])) : dispatch(storageActions.deselectItems([item]));
+  };
 
   render(): ReactNode {
     const {
@@ -80,7 +78,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
       onInfoButtonClicked,
       onDownloadButtonClicked,
       onShareButtonClicked,
-      onDeleteButtonClicked
+      onDeleteButtonClicked,
     } = this.props;
     const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
     const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
@@ -96,18 +94,16 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
           onClick={onItemClicked}
           onDoubleClick={onItemDoubleClicked}
         >
-
           {/* SELECTION */}
           <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
-            {!item.isFolder ?
+            {!item.isFolder ? (
               <input
                 onClick={(e) => e.stopPropagation()}
                 type="checkbox"
                 checked={isItemSelected(item)}
                 onChange={this.onSelectCheckboxChanged}
-              /> :
-              null
-            }
+              />
+            ) : null}
           </div>
 
           {/* ICON */}
@@ -118,23 +114,21 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
           </div>
 
           {/* NAME */}
-          <div className="flex-grow flex items-center w-1">
-            {this.nameNode}
-          </div>
+          <div className="flex-grow flex items-center w-1">{this.nameNode}</div>
 
           {/* HOVER ACTIONS */}
           <div className="pl-3 w-2/12 items-center hidden xl:flex">
             <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
-              {!item.isFolder ?
+              {!item.isFolder ? (
                 <button onClick={onDownloadButtonClicked} className="hover-action mr-4">
                   <Unicons.UilCloudDownload className="h-5" />
-                </button> : null
-              }
-              {!item.isFolder ?
+                </button>
+              ) : null}
+              {!item.isFolder ? (
                 <button onClick={onShareButtonClicked} className="hover-action mr-4">
                   <Unicons.UilShareAlt className="h-5" />
-                </button> : null
-              }
+                </button>
+              ) : null}
               <button onClick={onDeleteButtonClicked} className="hover-action">
                 <Unicons.UilTrashAlt className="h-5" />
               </button>
@@ -142,15 +136,23 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
           </div>
 
           {/* DATE */}
-          <div className="hidden lg:flex items-center w-3/12 whitespace-nowrap overflow-ellipsis">{dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>
+          <div className="hidden lg:flex items-center w-3/12 whitespace-nowrap overflow-ellipsis">
+            {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
+          </div>
 
           {/* SIZE */}
-          <div className="flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">{sizeService.bytesToString(item.size, false)}</div>
+          <div className="flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">
+            {sizeService.bytesToString(item.size, false)}
+          </div>
 
           {/* ACTIONS BUTTON */}
           <div className="flex items-center w-1/12">
             <Dropdown>
-              <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold">
+              <Dropdown.Toggle
+                variant="success"
+                id="dropdown-basic"
+                className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold"
+              >
                 <Unicons.UilEllipsisH className="w-full h-full" />
               </Dropdown.Toggle>
               <Dropdown.Menu>
@@ -165,8 +167,9 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
               </Dropdown.Menu>
             </Dropdown>
           </div>
-        </div>
-      ));
+        </div>,
+      ),
+    );
   }
 }
 

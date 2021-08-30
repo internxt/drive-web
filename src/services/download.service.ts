@@ -6,12 +6,14 @@ import { DevicePlatform } from '../models/enums';
 import { getEnvironmentConfig, Network } from '../lib/network';
 import { DriveItemData } from '../models/interfaces';
 
-export async function downloadFile(itemData: DriveItemData, isTeam: boolean, updateProgressCallback: (progress: number) => void): Promise<void> {
+export async function downloadFile(
+  itemData: DriveItemData,
+  isTeam: boolean,
+  updateProgressCallback: (progress: number) => void,
+): Promise<void> {
   const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId;
-  const completeFilename = itemData.type ?
-    `${itemData.name}.${itemData.type}` :
-    `${itemData.name}`;
+  const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
 
   try {
     trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
@@ -20,20 +22,29 @@ export async function downloadFile(itemData: DriveItemData, isTeam: boolean, upd
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
     const fileBlob = await network.downloadFile(bucketId, fileId, {
-      progressCallback: updateProgressCallback
+      progressCallback: updateProgressCallback,
     });
 
     fileDownload(fileBlob, completeFilename);
 
     trackFileDownloadFinished(userEmail, fileId, itemData.size);
-  } catch (err) {
-    trackFileDownloadError(userEmail, fileId, err.message);
+  } catch (err: unknown) {
+    const errMessage = err instanceof Error ? err.message : (err as string);
 
-    throw err;
+    trackFileDownloadError(userEmail, fileId, errMessage);
+
+    throw new Error(errMessage);
   }
 }
 
-const trackFileDownloadStart = (userEmail: string, file_id: string, file_name: string, file_size: number, file_type: string, folder_id: number) => {
+const trackFileDownloadStart = (
+  userEmail: string,
+  file_id: string,
+  file_name: string,
+  file_size: number,
+  file_type: string,
+  folder_id: number,
+) => {
   const data = { file_id, file_name, file_size, file_type, email: userEmail, folder_id, platform: DevicePlatform.Web };
 
   analyticsService.trackFileDownloadStart(data);
@@ -52,7 +63,7 @@ const trackFileDownloadFinished = (userEmail: string, file_id: string, file_size
 };
 
 const downloadService = {
-  downloadFile
+  downloadFile,
 };
 
 export default downloadService;

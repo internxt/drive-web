@@ -8,6 +8,7 @@ import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';
 import { DevicePlatform } from '../../models/enums';
 import { DriveFileData } from '../../models/interfaces';
+import errorService from '../error.service';
 
 export interface ItemToUpload {
   name: string;
@@ -16,16 +17,27 @@ export interface ItemToUpload {
   content: File;
   parentFolderId: number;
   folderPath: string;
-
 }
 
-export async function uploadItem(userEmail: string, file: ItemToUpload, path: string, isTeam: boolean, updateProgressCallback: (progress: number) => void): Promise<DriveFileData> {
+export async function uploadItem(
+  userEmail: string,
+  file: ItemToUpload,
+  path: string,
+  isTeam: boolean,
+  updateProgressCallback: (progress: number) => void,
+): Promise<DriveFileData> {
   if (!file.parentFolderId) {
     throw new Error('No folder ID provided');
   }
 
   try {
-    analyticsService.trackFileUploadStart({ file_size: file.size, file_type: file.type, folder_id: file.parentFolderId, email: userEmail, platform: DevicePlatform.Web });
+    analyticsService.trackFileUploadStart({
+      file_size: file.size,
+      file_type: file.type,
+      folder_id: file.parentFolderId,
+      email: userEmail,
+      platform: DevicePlatform.Web,
+    });
     const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
     if (!bucketId) {
@@ -46,7 +58,7 @@ export async function uploadItem(userEmail: string, file: ItemToUpload, path: st
       filepath: relativePath,
       filesize: file.size,
       filecontent: content,
-      progressCallback: updateProgressCallback
+      progressCallback: updateProgressCallback,
     });
 
     const name = encryptFilename(file.name, file.parentFolderId);
@@ -60,7 +72,7 @@ export async function uploadItem(userEmail: string, file: ItemToUpload, path: st
       size: file.size,
       folder_id,
       name,
-      encrypt_version
+      encrypt_version,
     };
     const headers = getHeaders(true, true, isTeam);
 
@@ -72,28 +84,41 @@ export async function uploadItem(userEmail: string, file: ItemToUpload, path: st
     };
 
     let res;
-    const data: DriveFileData = await createFileEntry().then(response => {
+    const data: DriveFileData = await createFileEntry().then((response) => {
       res = response;
       return res.json();
     });
 
-    analyticsService.trackFileUploadFinished({ file_size: file.size, file_id: data.id, file_type: file.type, email: userEmail });
+    analyticsService.trackFileUploadFinished({
+      file_size: file.size,
+      file_id: data.id,
+      file_type: file.type,
+      email: userEmail,
+    });
 
     if (res.status === 402) {
       throw new Error('Rate limited');
     }
 
     return data;
+  } catch (err: unknown) {
+    const castedError = errorService.castError(err);
 
-  } catch (err) {
-    analyticsService.trackFileUploadError({ file_size: file.size, file_type: file.type, folder_id: file.parentFolderId, email: userEmail, msg: err.message, platform: DevicePlatform.Web });
+    analyticsService.trackFileUploadError({
+      file_size: file.size,
+      file_type: file.type,
+      folder_id: file.parentFolderId,
+      email: userEmail,
+      msg: castedError.message,
+      platform: DevicePlatform.Web,
+    });
 
     throw err;
   }
 }
 
 const uploadService = {
-  uploadItem
+  uploadItem,
 };
 
 export default uploadService;

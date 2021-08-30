@@ -6,20 +6,20 @@ interface BreadcrumbsProps {
   items: BreadcrumbItemData[];
 }
 
-interface BreadcrumbsState { }
-
-class Breadcrumbs extends React.Component<BreadcrumbsProps, BreadcrumbsState> {
+class Breadcrumbs extends React.Component<BreadcrumbsProps> {
   constructor(props: BreadcrumbsProps) {
     super(props);
-
-    this.state = {};
   }
 
   get itemsList(): JSX.Element[] {
-    return this.props.items.map(item => (
-      <li className={`flex items-center ${item.active ? 'active' : ''}`} key={item.id} onClick={() => this.onItemClicked(item)}>
-        { item.icon ? item.icon : null}
-        { item.label ? <span className="label">{item.label}</span> : null}
+    return this.props.items.map((item) => (
+      <li
+        className={`flex items-center ${item.active ? 'active' : ''}`}
+        key={item.id}
+        onClick={() => this.onItemClicked(item)}
+      >
+        {item.icon ? item.icon : null}
+        {item.label ? <span className="label">{item.label}</span> : null}
       </li>
     ));
   }
@@ -28,18 +28,10 @@ class Breadcrumbs extends React.Component<BreadcrumbsProps, BreadcrumbsState> {
     if (item.active) {
       item.onClick && item.onClick();
     }
-  }
+  };
 
   render(): ReactNode {
-    return (
-      <nav>
-        {this.itemsList.length > 0 ?
-          <ol className="breadcrumb">
-            {this.itemsList}
-          </ol> :
-          ''}
-      </nav>
-    );
+    return <nav>{this.itemsList.length > 0 ? <ol className="breadcrumb">{this.itemsList}</ol> : ''}</nav>;
   }
 }
 

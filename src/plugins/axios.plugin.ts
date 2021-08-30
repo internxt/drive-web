@@ -9,16 +9,19 @@ const axiosPlugin: AppPlugin = {
   install(store): void {
     axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
-    axios.interceptors.request.use(requestConfig => {
-      const tokenByWorkspace: { [key in Workspace]: string; } = {
+    axios.interceptors.request.use((requestConfig) => {
+      const tokenByWorkspace: { [key in Workspace]: string } = {
         [Workspace.Personal]: localStorageService.get('xToken') || '',
-        [Workspace.Business]: localStorageService.get('xTokenTeam') || ''
+        [Workspace.Business]: localStorageService.get('xTokenTeam') || '',
       };
-      const mnemonicByWorkspace: { [key in Workspace]: string; } = {
+      const mnemonicByWorkspace: { [key in Workspace]: string } = {
         [Workspace.Personal]: localStorageService.get('xMnemonic') || '',
-        [Workspace.Business]: localStorageService.getTeams()?.bridge_mnemonic || ''
+        [Workspace.Business]: localStorageService.getTeams()?.bridge_mnemonic || '',
       };
-      const workspace = requestConfig.authWorkspace || localStorageService.get(LocalStorageItem.Workspace) as Workspace || Workspace.Personal;
+      const workspace =
+        requestConfig.authWorkspace ||
+        (localStorageService.get(LocalStorageItem.Workspace) as Workspace) ||
+        Workspace.Personal;
 
       console.log('axios.plugin url: ', requestConfig.url);
       console.log('axios.plugin workspace: ', workspace);
@@ -29,7 +32,7 @@ const axiosPlugin: AppPlugin = {
         'internxt-version': '1.0.0',
         'internxt-client': 'drive-web',
         Authorization: `Bearer ${tokenByWorkspace[workspace]}`,
-        'internxt-mnemonic': mnemonicByWorkspace[workspace]
+        'internxt-mnemonic': mnemonicByWorkspace[workspace],
       };
 
       return requestConfig;
@@ -44,7 +47,7 @@ const axiosPlugin: AppPlugin = {
 
       return Promise.reject(error);
     });
-  }
+  },
 };
 
 export default axiosPlugin;

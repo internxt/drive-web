@@ -1,7 +1,7 @@
 import httpService from './http.service';
 
 export interface FetchLimitResponse {
-  maxSpaceBytes: number
+  maxSpaceBytes: number;
 }
 
 async function fetchLimit(): Promise<number> {
@@ -11,7 +11,7 @@ async function fetchLimit(): Promise<number> {
 }
 
 const limitService = {
-  fetchLimit
+  fetchLimit,
 };
 
 export default limitService;

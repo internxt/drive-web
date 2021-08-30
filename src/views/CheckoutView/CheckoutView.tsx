@@ -1,10 +1,11 @@
 import React, { ReactNode } from 'react';
+import { match } from 'react-router-dom';
 
 interface CheckoutViewProps {
-    match?: any
+  match?: match<{ sessionId: string }>;
 }
 interface CheckoutViewState {
-    sessionId: string;
+  sessionId: string;
 }
 
 class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState> {
@@ -12,7 +13,7 @@ class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState>
     super(props);
 
     this.state = {
-      sessionId: this.props.match.params.sessionId
+      sessionId: this.props.match?.params.sessionId || '',
     };
   }
 
@@ -27,13 +28,18 @@ class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState>
 
     if (match) {
       if (this.state.sessionId) {
-        const stripe = new window.Stripe(match[1] === 'test' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+        const stripe = new window.Stripe(
+          match[1] === 'test' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK,
+        );
 
-        stripe.redirectToCheckout({ sessionId: this.state.sessionId }).then(result => {
-          console.log(result);
-        }).catch(err => {
-          console.log(err);
-        });
+        stripe
+          .redirectToCheckout({ sessionId: this.state.sessionId })
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     }
   }

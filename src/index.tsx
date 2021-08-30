@@ -17,7 +17,7 @@ import { sessionActions } from './store/slices/session';
 import './index.scss';
 
 // Installs plugins
-plugins.forEach(plugin => plugin.install(store));
+plugins.forEach((plugin) => plugin.install(store));
 
 // Initializes store
 store.dispatch(userActions.initialize());
@@ -33,7 +33,7 @@ ReactDOM.render(
       <App />
     </Provider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 
 // If you want to start measuring performance in your app, pass a function

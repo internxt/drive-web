@@ -3,9 +3,12 @@ import { IStripeCustomer, IStripePlan, IStripeProduct } from '../models/interfac
 import envService from './env.service';
 
 export const loadAvailableProducts = async (): Promise<IStripeProduct[]> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/stripe/products` + (envService.isProduction() ? '' : '?test=true'), {
-    headers: getHeaders(true, false)
-  });
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/api/stripe/products` + (envService.isProduction() ? '' : '?test=true'),
+    {
+      headers: getHeaders(true, false),
+    },
+  );
   const data = await response.json();
 
   return data;
@@ -14,7 +17,7 @@ export const loadAvailableProducts = async (): Promise<IStripeProduct[]> => {
 export const loadAvailablePlans = async (product: IStripeProduct): Promise<IStripePlan[]> => {
   const body = {
     product: product.id,
-    test: envService.isProduction() ? false : true
+    test: envService.isProduction() ? false : true,
   };
 
   if (envService.isProduction()) {
@@ -23,7 +26,7 @@ export const loadAvailablePlans = async (product: IStripeProduct): Promise<IStri
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/stripe/plans`, {
     method: 'post',
     headers: getHeaders(true, false),
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   });
   const data = await response.json();
 
@@ -33,7 +36,7 @@ export const loadAvailablePlans = async (product: IStripeProduct): Promise<IStri
 export const loadAvailableTeamsProducts = async (): Promise<IStripeProduct[]> => {
   const queryString = envService.isProduction() ? '' : '?test=true';
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/stripe/teams/products` + queryString, {
-    headers: getHeaders(true, false)
+    headers: getHeaders(true, false),
   });
   const data = await response.json();
 
@@ -43,13 +46,13 @@ export const loadAvailableTeamsProducts = async (): Promise<IStripeProduct[]> =>
 export const loadAvailableTeamsPlans = async (product: IStripeProduct): Promise<IStripePlan[]> => {
   const body = {
     product: product.id,
-    test: envService.isProduction() ? false : true
+    test: envService.isProduction() ? false : true,
   };
 
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/stripe/teams/plans`, {
     method: 'post',
     headers: getHeaders(true, false),
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   });
   const data = await response.json();
 
@@ -58,7 +61,7 @@ export const loadAvailableTeamsPlans = async (product: IStripeProduct): Promise<
 
 export const loadAllStripeCustomers = async (email: string): Promise<IStripeCustomer> => {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/stripe/v1/customers/${email}`, {
-    headers: getHeaders(true, false)
+    headers: getHeaders(true, false),
   });
   const data = await response.json();
 
@@ -69,7 +72,7 @@ export const payStripePlan = async (body): Promise<any> => {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
     method: 'POST',
     headers: getHeaders(true, false),
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   });
   const data = await response.json();
 

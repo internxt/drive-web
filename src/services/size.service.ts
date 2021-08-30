@@ -1,6 +1,12 @@
 import PrettySize from 'prettysize';
 
-export function bytesToString(size: number, removeSpace: boolean = true, useSingleChar: boolean = false, decimals: number = 1, hideSizeString: boolean = false): string {
+export function bytesToString(
+  size: number,
+  removeSpace = true,
+  useSingleChar = false,
+  decimals = 1,
+  hideSizeString = false,
+): string {
   if (size > 0) {
     return PrettySize(size, removeSpace, useSingleChar, decimals, hideSizeString);
   } else {
@@ -9,7 +15,7 @@ export function bytesToString(size: number, removeSpace: boolean = true, useSing
 }
 
 const sizeService = {
-  bytesToString
+  bytesToString,
 };
 
 export default sizeService;

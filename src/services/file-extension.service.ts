@@ -4,7 +4,7 @@ function computeExtensionsLists(): FileExtensionGroup {
   const extensionsLists: any = {};
 
   Object.values(FileExtensionGroup)
-    .filter(groupId => isNaN(Number(groupId)))
+    .filter((groupId) => isNaN(Number(groupId)))
     .forEach((groupId: string | FileExtensionGroup) => {
       extensionsLists[groupId as FileExtensionGroup] = computeExtensionsList(FileExtensionGroup[groupId]);
     });
@@ -19,7 +19,7 @@ function computeExtensionsList(groupId: FileExtensionGroup): string[] {
 }
 
 const fileExtensionService = {
-  computeExtensionsLists
+  computeExtensionsLists,
 };
 
 export default fileExtensionService;
