@@ -105,26 +105,37 @@ export const storageSlice = createSlice({
         Object.assign(state.infoItem, patch);
       }
     },
-    pushItems(state: StorageState, action: PayloadAction<{ list: StorageItemList, items: DriveItemData | DriveItemData[] }>) {
+    pushItems(state: StorageState, action: PayloadAction<{ lists?: StorageItemList[], items: DriveItemData | DriveItemData[] }>) {
       action.payload.items = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
+      const listsToUpdate = action.payload.lists || Object.values(StorageItemList);
       const folders = action.payload.items.filter(item => item.isFolder);
       const files = action.payload.items.filter(item => !item.isFolder);
-      const lastFolderIndex = state.lists[action.payload.list].filter(item => item.isFolder).length;
 
-      arrayService.insertAt(
-        state.lists[action.payload.list],
-        lastFolderIndex,
-        folders
-      );
-      state.lists[action.payload.list].push(...files);
+      listsToUpdate.forEach(listKey => {
+        const lastFolderIndex = state.lists[listKey].filter(item => item.isFolder).length;
+
+        arrayService.insertAt(
+          state.lists[listKey],
+          lastFolderIndex,
+          folders
+        );
+
+        const firstFileIndex = state.lists[listKey].findIndex(item => !item.isFolder);
+
+        arrayService.insertAt(
+          state.lists[listKey],
+          firstFileIndex,
+          files
+        );
+      });
     },
-    popItems(state: StorageState, action: PayloadAction<{ lists?: StorageItemList[], items: DriveItemData | DriveItemData[]}>) {
+    popItems(state: StorageState, action: PayloadAction<{ lists?: StorageItemList[], items: DriveItemData | DriveItemData[] }>) {
       const listsToUpdate = action.payload.lists || Object.values(StorageItemList);
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
       listsToUpdate.forEach(listKey => {
-        state.lists[listKey] = state.lists[listKey].filter((item:DriveItemData) => !itemsToDelete.find((i) => i.id === item.id));
+        state.lists[listKey] = state.lists[listKey].filter((item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id));
       });
     },
     resetState(state: StorageState) {

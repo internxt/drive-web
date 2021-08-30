@@ -3,10 +3,14 @@ import { items as itemUtils } from '@internxt/lib';
 
 import i18n from '../../../../services/i18n.service';
 import folderService from '../../../../services/folder.service';
+import { getFilenameAndExt, renameFile } from '../../../../lib/utils';
 import storageService from '../../../../services/storage.service';
 import { TaskType, TaskStatus } from '../../../../models/enums';
-import { NotificationData } from '../../../../models/interfaces';
+import { DriveFileData, DriveItemData, NotificationData, UserSettings } from '../../../../models/interfaces';
 import { tasksActions } from '../../tasks';
+import { storageActions } from '..';
+import { ItemToUpload } from '../../../../services/storage.service/storage-upload.service';
+import { RootState } from '../../..';
 import { StorageState } from '../storage.model';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../lib/constants';
 import { sessionSelectors } from '../../session/session.selectors';
@@ -27,16 +31,16 @@ interface UploadItemsPayload {
  *  1. Prepare files to upload
  *  2. Schedule tasks
  */
-export const uploadItemsThunk = createAsyncThunk(
+export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
-  async ({ files, parentFolderId, folderPath, options }: UploadItemsPayload, { getState, dispatch, requestId }: any) => {
-    const { user } = getState().user;
-    const { namePath, items } = getState().storage;
+  async ({ files, parentFolderId, folderPath, options }: UploadItemsPayload, { getState, dispatch, requestId }) => {
+    const user = getState().user.user as UserSettings;
+    const { namePath } = getState().storage;
 
     const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
     const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
-    const filesToUpload: any[] = [];
+    const filesToUpload: ItemToUpload[] = [];
     const uploadErrors: any[] = [];
     const notificationsUuids: string[] = [];
 
@@ -54,7 +58,7 @@ export const uploadItemsThunk = createAsyncThunk(
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const parentFolderContent = await folderService.fetchFolderContent(parentFolderId);
       const [filenameExist, filenameIndex, finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
-      const fileContent = file;
+      const fileContent = renameFile(file, finalFilename);
       const notification: NotificationData = {
         uuid: `${requestId}-${index}`,
         action: TaskType.UploadFile,
@@ -64,7 +68,14 @@ export const uploadItemsThunk = createAsyncThunk(
         type: extension
       };
 
-      filesToUpload.push({ name: finalFilename, size: file.size, type: extension, isLoading: true, content: fileContent });
+      filesToUpload.push({
+        name: finalFilename,
+        size: file.size,
+        type: extension,
+        content: fileContent,
+        parentFolderId,
+        folderPath
+      });
 
       if (options?.withNotifications) {
         dispatch(tasksActions.addNotification(notification));
@@ -88,7 +99,7 @@ export const uploadItemsThunk = createAsyncThunk(
           }));
         }
       };
-      const task = async () => {
+      const task = async (): Promise<DriveFileData> => {
         if (options?.withNotifications) {
           dispatch(tasksActions.updateNotification({
             uuid: notificationUuid,
@@ -98,19 +109,19 @@ export const uploadItemsThunk = createAsyncThunk(
           }));
         }
 
-        const { res, data } = await storageService.upload.uploadItem(user.email, file, path, isTeam, updateProgressCallback);
+        const uploadedFile = await storageService.upload.uploadItem(user.email, file, path, isTeam, updateProgressCallback);
 
-        if (res.status === 402) {
-          throw new Error('Rate limited');
-        }
+        uploadedFile.name = file.name;
+
+        return uploadedFile;
       };
 
       file.parentFolderId = parentFolderId;
-      file.file = file;
-      file.folderPath = folderPath;
 
       await task()
-        .then(() => {
+        .then((uploadedFile) => {
+          dispatch(storageActions.pushItems({ items: uploadedFile as DriveItemData }));
+
           if (options?.withNotifications) {
             dispatch(tasksActions.updateNotification({
               uuid: notificationUuid,
