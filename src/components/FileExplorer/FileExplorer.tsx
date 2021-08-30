@@ -39,7 +39,7 @@ interface FileExplorerProps {
   onFileUploaded?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
-  user: UserSettings | any;
+  user: UserSettings | undefined;
   currentFolderId: number;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;

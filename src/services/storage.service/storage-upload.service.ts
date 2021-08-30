@@ -7,25 +7,25 @@ import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';
 import { DevicePlatform } from '../../models/enums';
+import { DriveFileData } from '../../models/interfaces';
 import errorService from '../error.service';
 
-export interface UploadItemPayload {
-  file: any;
+export interface ItemToUpload {
+  name: string;
   size: number;
   type: string;
+  content: File;
   parentFolderId: number;
-  folderPath: string | undefined;
-  isTeam: boolean;
-  name: string;
+  folderPath: string;
 }
 
 export async function uploadItem(
   userEmail: string,
-  file: UploadItemPayload,
+  file: ItemToUpload,
   path: string,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-): Promise<any> {
+): Promise<DriveFileData> {
   if (!file.parentFolderId) {
     throw new Error('No folder ID provided');
   }
@@ -45,28 +45,35 @@ export async function uploadItem(
       toast.warn('Login again to start uploading files');
       localStorageService.clear();
       history.push('/login');
-      return;
+
+      throw new Error('Bucket not found!');
     }
 
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
-    const relativePath = file.folderPath + file.file.name + (file.file.type ? '.' + file.file.type : '');
-    const content = new Blob([file.file.content], { type: file.file.type });
+    const relativePath = file.folderPath + file.content.name + (file.type ? '.' + file.type : '');
+    const content = new Blob([file.content], { type: file.type });
 
     const fileId = await network.uploadFile(bucketId, {
       filepath: relativePath,
-      filesize: file.file.size,
+      filesize: file.size,
       filecontent: content,
       progressCallback: updateProgressCallback,
     });
 
-    const name = encryptFilename(file.file.name, file.file.parentFolderId);
-
+    const name = encryptFilename(file.name, file.parentFolderId);
     const folder_id = file.parentFolderId;
-    const { size, type } = file.file;
     const encrypt_version = '03-aes';
-    // TODO: fix mismatched fileId fields in server and remove file_id here
-    const fileEntry = { fileId, file_id: fileId, type, bucket: bucketId, size, folder_id, name, encrypt_version };
+    const fileEntry = {
+      fileId,
+      file_id: fileId,
+      type: file.type,
+      bucket: bucketId,
+      size: file.size,
+      folder_id,
+      name,
+      encrypt_version,
+    };
     const headers = getHeaders(true, true, isTeam);
 
     const createFileEntry = () => {
@@ -77,7 +84,7 @@ export async function uploadItem(
     };
 
     let res;
-    const data = await createFileEntry().then((response) => {
+    const data: DriveFileData = await createFileEntry().then((response) => {
       res = response;
       return res.json();
     });
@@ -89,7 +96,11 @@ export async function uploadItem(
       email: userEmail,
     });
 
-    return { res, data };
+    if (res.status === 402) {
+      throw new Error('Rate limited');
+    }
+
+    return data;
   } catch (err: unknown) {
     const castedError = errorService.castError(err);
 
@@ -102,7 +113,7 @@ export async function uploadItem(
       platform: DevicePlatform.Web,
     });
 
-    throw castedError;
+    throw err;
   }
 }
 

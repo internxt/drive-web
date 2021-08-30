@@ -40,6 +40,8 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
     name: root.name,
     isFolder: true,
   };
+  let alreadyUploaded = 0;
+  const itemsUnderRoot = countItemsUnderRoot(root);
 
   options = Object.assign({ withNotification: true }, options || {});
 
@@ -54,14 +56,28 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
       const level: IRoot = levels.shift() as IRoot;
       const folderUploaded = await folderService.createFolder(level.folderId as number, level.name);
 
-      await dispatch(
-        uploadItemsThunk({
-          files: level.childrenFiles || [],
-          parentFolderId: folderUploaded.id,
-          folderPath: level.fullPathEdited,
-          options: { withNotifications: false },
-        }),
-      );
+      if (level.childrenFiles) {
+        for (const childrenFile of level.childrenFiles) {
+          await dispatch(
+            uploadItemsThunk({
+              files: [childrenFile],
+              parentFolderId: folderUploaded.id,
+              folderPath: level.fullPathEdited,
+              options: { withNotifications: false },
+            }),
+          );
+
+          dispatch(
+            tasksActions.updateNotification({
+              uuid: notification.uuid,
+              merge: {
+                status: TaskStatus.InProcess,
+                progress: ++alreadyUploaded / itemsUnderRoot,
+              },
+            }),
+          );
+        }
+      }
 
       for (const child of level.childrenFolders) {
         child.folderId = folderUploaded.id;
@@ -96,6 +112,22 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
     throw errorService.castError(err);
   }
 });
+
+function countItemsUnderRoot(root: IRoot): number {
+  let count = 0;
+
+  const queueOfFolders: Array<IRoot> = [root];
+
+  while (queueOfFolders.length) {
+    const folder = queueOfFolders.shift() as IRoot;
+
+    count += folder.childrenFiles?.length ?? 0;
+
+    queueOfFolders.push(...folder.childrenFolders);
+  }
+
+  return count;
+}
 
 export const createFolderTreeStructureThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder

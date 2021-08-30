@@ -111,16 +111,23 @@ export const storageSlice = createSlice({
     },
     pushItems(
       state: StorageState,
-      action: PayloadAction<{ list: StorageItemList; items: DriveItemData | DriveItemData[] }>,
+      action: PayloadAction<{ lists?: StorageItemList[]; items: DriveItemData | DriveItemData[] }>,
     ) {
       action.payload.items = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
+      const listsToUpdate = action.payload.lists || Object.values(StorageItemList);
       const folders = action.payload.items.filter((item) => item.isFolder);
       const files = action.payload.items.filter((item) => !item.isFolder);
-      const lastFolderIndex = state.lists[action.payload.list].filter((item) => item.isFolder).length;
 
-      arrayService.insertAt(state.lists[action.payload.list], lastFolderIndex, folders);
-      state.lists[action.payload.list].push(...files);
+      listsToUpdate.forEach((listKey) => {
+        const lastFolderIndex = state.lists[listKey].filter((item) => item.isFolder).length;
+
+        arrayService.insertAt(state.lists[listKey], lastFolderIndex, folders);
+
+        const firstFileIndex = state.lists[listKey].findIndex((item) => !item.isFolder);
+
+        arrayService.insertAt(state.lists[listKey], firstFileIndex, files);
+      });
     },
     popItems(
       state: StorageState,

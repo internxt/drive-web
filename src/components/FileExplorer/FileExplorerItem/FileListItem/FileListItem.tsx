@@ -10,9 +10,9 @@ import dateService from '../../../../services/date.service';
 import { storageActions } from '../../../../store/slices/storage';
 import iconService from '../../../../services/icon.service';
 import { ItemAction } from '../../../../models/enums';
-import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
 import { FileExplorerItemViewProps } from '../fileExplorerItemComposition';
 import fileExplorerItemComposition from '../fileExplorerItemComposition';
+import { items } from '@internxt/lib';
 
 class FileListItem extends React.Component<FileExplorerItemViewProps> {
   get nameNode(): JSX.Element {
@@ -50,7 +50,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={onNameDoubleClicked}
         >
-          {getItemFullName(item.name, item.type)}
+          {items.getItemDisplayName(item)}
         </span>
       </Fragment>
     );

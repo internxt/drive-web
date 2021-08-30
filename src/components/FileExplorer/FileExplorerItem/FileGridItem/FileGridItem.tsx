@@ -7,9 +7,9 @@ import { ItemAction } from '../../../../models/enums';
 
 import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
-import { getItemFullName } from '../../../../services/storage.service/storage-name.service';
 import { FileExplorerItemViewProps } from '../fileExplorerItemComposition';
 import fileExplorerItemComposition from '../fileExplorerItemComposition';
+import { items } from '@internxt/lib';
 
 interface FileGridItemState {
   itemRef: React.RefObject<HTMLDivElement>;
@@ -73,7 +73,7 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={onNameDoubleClicked}
         >
-          {getItemFullName(item.name, item.type)}
+          {items.getItemDisplayName(item)}
         </span>
       </Fragment>
     );

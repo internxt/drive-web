@@ -1,4 +1,3 @@
-import copy from 'copy-to-clipboard';
 import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../models/interfaces';
 import { aes, items as itemUtils } from '@internxt/lib';
@@ -9,12 +8,8 @@ interface PassObjectInterface {
   password: string;
 }
 
-function copyToClipboard(text: string): void {
-  copy(text);
-}
-
 // Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
-function passToHash(passObject: PassObjectInterface) {
+function passToHash(passObject: PassObjectInterface): { salt: string; hash: string } {
   const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
   const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
   const hashedObjetc = {
@@ -55,7 +50,7 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string
   return bytes.toString(CryptoJS.enc.Utf8);
 }
 
-function encryptFilename(filename: string, folderId: string) {
+function encryptFilename(filename: string, folderId: number): string {
   const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
 
   if (!CRYPTO_KEY) {
@@ -69,8 +64,11 @@ function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
   return items.filter((item) => !itemUtils.isHiddenItem(item));
 }
 
+function renameFile(file: File, newName: string): File {
+  return new File([file], newName);
+}
+
 export {
-  copyToClipboard,
   passToHash,
   encryptText,
   decryptText,
@@ -78,4 +76,5 @@ export {
   encryptTextWithKey,
   decryptTextWithKey,
   excludeHiddenItems,
+  renameFile,
 };

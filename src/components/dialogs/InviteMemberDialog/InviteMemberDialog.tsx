@@ -13,6 +13,7 @@ import { getMembers, removeMember, sendEmailTeamsMember } from '../../../service
 import { uiActions } from '../../../store/slices/ui';
 import i18n from '../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../services/notifications.service';
+import errorService from '../../../services/error.service';
 
 interface InviteMemberCreateDialogProps {
   team: TeamsSettings | undefined | null;
@@ -55,8 +56,9 @@ const InviteMemberCreateDialog = ({ team }: InviteMemberCreateDialogProps) => {
           });
         }
       }
-    } catch {
-      notificationsService.show(i18n.get('error.teamInvitation'), ToastType.Error);
+    } catch (err: unknown) {
+      const castedError = errorService.castError(err);
+      notificationsService.show(castedError.message, ToastType.Error);
     }
   };
 
