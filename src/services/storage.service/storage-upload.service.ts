@@ -7,24 +7,37 @@ import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';
 import { DevicePlatform } from '../../models/enums';
+import errorService from '../error.service';
 
 export interface UploadItemPayload {
-  file: any,
-  size: number,
+  file: any;
+  size: number;
   type: string;
-  parentFolderId: number
-  folderPath: string | undefined
-  isTeam: boolean
-  name: string
+  parentFolderId: number;
+  folderPath: string | undefined;
+  isTeam: boolean;
+  name: string;
 }
 
-export async function uploadItem(userEmail: string, file: UploadItemPayload, path: string, isTeam: boolean, updateProgressCallback: (progress: number) => void): Promise<any> {
+export async function uploadItem(
+  userEmail: string,
+  file: UploadItemPayload,
+  path: string,
+  isTeam: boolean,
+  updateProgressCallback: (progress: number) => void,
+): Promise<any> {
   if (!file.parentFolderId) {
     throw new Error('No folder ID provided');
   }
 
   try {
-    analyticsService.trackFileUploadStart({ file_size: file.size, file_type: file.type, folder_id: file.parentFolderId, email: userEmail, platform: DevicePlatform.Web });
+    analyticsService.trackFileUploadStart({
+      file_size: file.size,
+      file_type: file.type,
+      folder_id: file.parentFolderId,
+      email: userEmail,
+      platform: DevicePlatform.Web,
+    });
     const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
     if (!bucketId) {
@@ -44,7 +57,7 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
       filepath: relativePath,
       filesize: file.file.size,
       filecontent: content,
-      progressCallback: updateProgressCallback
+      progressCallback: updateProgressCallback,
     });
 
     const name = encryptFilename(file.file.name, file.file.parentFolderId);
@@ -60,28 +73,41 @@ export async function uploadItem(userEmail: string, file: UploadItemPayload, pat
       const body = JSON.stringify({ file: fileEntry });
       const params = { method: 'post', headers, body };
 
-      return fetch('/api/storage/file', params);
+      return fetch(`${process.env.REACT_APP_API_URL}/api/storage/file`, params);
     };
 
     let res;
-    const data = await createFileEntry().then(response => {
+    const data = await createFileEntry().then((response) => {
       res = response;
       return res.json();
     });
 
-    analyticsService.trackFileUploadFinished({ file_size: file.size, file_id: data.id, file_type: file.type, email: userEmail });
+    analyticsService.trackFileUploadFinished({
+      file_size: file.size,
+      file_id: data.id,
+      file_type: file.type,
+      email: userEmail,
+    });
 
     return { res, data };
+  } catch (err: unknown) {
+    const castedError = errorService.castError(err);
 
-  } catch (err) {
-    analyticsService.trackFileUploadError({ file_size: file.size, file_type: file.type, folder_id: file.parentFolderId, email: userEmail, msg: err.message, platform: DevicePlatform.Web });
+    analyticsService.trackFileUploadError({
+      file_size: file.size,
+      file_type: file.type,
+      folder_id: file.parentFolderId,
+      email: userEmail,
+      msg: castedError.message,
+      platform: DevicePlatform.Web,
+    });
 
-    throw err;
+    throw castedError;
   }
 }
 
 const uploadService = {
-  uploadItem
+  uploadItem,
 };
 
 export default uploadService;

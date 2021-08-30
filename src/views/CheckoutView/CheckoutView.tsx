@@ -1,10 +1,11 @@
 import React, { ReactNode } from 'react';
+import { match } from 'react-router-dom';
 
 interface CheckoutViewProps {
-    match?: any
+  match?: match<{ sessionId: string }>;
 }
 interface CheckoutViewState {
-    sessionId: any
+  sessionId: string;
 }
 
 class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState> {
@@ -12,11 +13,11 @@ class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState>
     super(props);
 
     this.state = {
-      sessionId: this.props.match.params.sessionId
+      sessionId: this.props.match?.params.sessionId || '',
     };
   }
 
-  checkSessionId(sessionId): RegExpExecArray | null {
+  checkSessionId(sessionId: string): RegExpExecArray | null {
     const pattern = /^cs_(test|live)_[a-zA-Z0-9]+$/;
 
     return pattern.exec(sessionId);
@@ -27,18 +28,23 @@ class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState>
 
     if (match) {
       if (this.state.sessionId) {
-        const stripe = new window.Stripe(match[1] === 'test' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+        const stripe = new window.Stripe(
+          match[1] === 'test' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK,
+        );
 
-        stripe.redirectToCheckout({ sessionId: this.state.sessionId }).then(result => {
-          console.log(result);
-        }).catch(err => {
-          console.log(err);
-        });
+        stripe
+          .redirectToCheckout({ sessionId: this.state.sessionId })
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     }
   }
 
-  render(): JSX.Element {
+  render(): ReactNode {
     if (!this.checkSessionId(this.state.sessionId)) {
       if (this.state.sessionId === 'ok' || this.state.sessionId === 'cancel') {
         return <div>{this.state.sessionId}</div>;

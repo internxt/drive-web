@@ -2,7 +2,12 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../..';
 import { IStripePlan, IStripeProduct } from '../../../models/interfaces';
-import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts } from '../../../services/products.service';
+import {
+  loadAvailablePlans,
+  loadAvailableProducts,
+  loadAvailableTeamsPlans,
+  loadAvailableTeamsProducts,
+} from '../../../services/products.service';
 
 interface ProductsState {
   isLoadingIndividualProducts: boolean;
@@ -19,7 +24,7 @@ const initialState: ProductsState = {
   individualProducts: [],
   individualProductsPlans: [],
   teamProducts: [],
-  teamProductsPlans: []
+  teamProductsPlans: [],
 };
 
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
@@ -34,36 +39,38 @@ export const initializeThunk = createAsyncThunk<void, void, { state: RootState }
     }
 
     await Promise.all(promises);
-  }
+  },
 );
 
-export const fetchIndividualProductsThunk = createAsyncThunk<{ products: IStripeProduct[], plans: IStripePlan[][] }, void, { state: RootState }>(
-  'products/fetchIndividualProductsThunk',
-  async (payload: void, { dispatch, getState }) => {
-    const products = await loadAvailableProducts();
-    const plans: IStripePlan[][] = [];
+export const fetchIndividualProductsThunk = createAsyncThunk<
+  { products: IStripeProduct[]; plans: IStripePlan[][] },
+  void,
+  { state: RootState }
+>('products/fetchIndividualProductsThunk', async () => {
+  const products = await loadAvailableProducts();
+  const plans: IStripePlan[][] = [];
 
-    for (const product of products) {
-      plans.push(await loadAvailablePlans(product));
-    }
-
-    return { products, plans };
+  for (const product of products) {
+    plans.push(await loadAvailablePlans(product));
   }
-);
 
-export const fetchTeamProductsThunk = createAsyncThunk<{ products: IStripeProduct[], plans: IStripePlan[][] }, void, { state: RootState }>(
-  'products/fetchTeamProductsThunk',
-  async (payload: void, { dispatch, getState }) => {
-    const products = await loadAvailableTeamsProducts();
-    const plans: IStripePlan[][] = [];
+  return { products, plans };
+});
 
-    for (const product of products) {
-      plans.push(await loadAvailableTeamsPlans(product));
-    }
+export const fetchTeamProductsThunk = createAsyncThunk<
+  { products: IStripeProduct[]; plans: IStripePlan[][] },
+  void,
+  { state: RootState }
+>('products/fetchTeamProductsThunk', async () => {
+  const products = await loadAvailableTeamsProducts();
+  const plans: IStripePlan[][] = [];
 
-    return { products, plans };
+  for (const product of products) {
+    plans.push(await loadAvailableTeamsPlans(product));
   }
-);
+
+  return { products, plans };
+});
 
 export const productsSlice = createSlice({
   name: 'products',
@@ -71,12 +78,12 @@ export const productsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(initializeThunk.pending, (state, action) => { })
-      .addCase(initializeThunk.fulfilled, (state, action) => { })
-      .addCase(initializeThunk.rejected, (state, action) => { });
+      .addCase(initializeThunk.pending, () => undefined)
+      .addCase(initializeThunk.fulfilled, () => undefined)
+      .addCase(initializeThunk.rejected, () => undefined);
 
     builder
-      .addCase(fetchIndividualProductsThunk.pending, (state, action) => {
+      .addCase(fetchIndividualProductsThunk.pending, (state) => {
         state.isLoadingIndividualProducts = true;
       })
       .addCase(fetchIndividualProductsThunk.fulfilled, (state, action) => {
@@ -84,12 +91,12 @@ export const productsSlice = createSlice({
         state.individualProducts = action.payload.products;
         state.individualProductsPlans = action.payload.plans;
       })
-      .addCase(fetchIndividualProductsThunk.rejected, (state, action) => {
+      .addCase(fetchIndividualProductsThunk.rejected, (state) => {
         state.isLoadingIndividualProducts = false;
       });
 
     builder
-      .addCase(fetchTeamProductsThunk.pending, (state, action) => {
+      .addCase(fetchTeamProductsThunk.pending, (state) => {
         state.isLoadingTeamProducts = true;
       })
       .addCase(fetchTeamProductsThunk.fulfilled, (state, action) => {
@@ -97,10 +104,10 @@ export const productsSlice = createSlice({
         state.teamProducts = action.payload.products;
         state.teamProductsPlans = action.payload.plans;
       })
-      .addCase(fetchTeamProductsThunk.rejected, (state, action) => {
+      .addCase(fetchTeamProductsThunk.rejected, (state) => {
         state.isLoadingTeamProducts = false;
       });
-  }
+  },
 });
 
 export const productsActions = productsSlice.actions;
@@ -108,7 +115,7 @@ export const productsActions = productsSlice.actions;
 export const productsThunks = {
   initializeThunk,
   fetchIndividualProductsThunk,
-  fetchTeamProductsThunk
+  fetchTeamProductsThunk,
 };
 
 export const productsSelectors = {};

@@ -1,15 +1,15 @@
-import AesUtil from '../lib/AesUtil';
 import { isValidBase64 } from '../lib/utilspgp';
+import { aes } from '@internxt/lib';
 
 export async function validateFormat(privateKey: string, password: string) {
   let privkeyDecrypted, newPrivKey;
   let update = false;
 
   try {
-    privkeyDecrypted = AesUtil.decrypt(privateKey, password);
+    privkeyDecrypted = aes.decrypt(privateKey, password);
   } catch {
-    privkeyDecrypted = AesUtil.decrypt(privateKey, password, 9999);
-    newPrivKey = AesUtil.encrypt(privkeyDecrypted, password);
+    privkeyDecrypted = aes.decrypt(privateKey, password, 9999);
+    newPrivKey = aes.encrypt(privkeyDecrypted, password, getAesInitFromEnv());
     update = true;
   }
 
@@ -17,8 +17,14 @@ export async function validateFormat(privateKey: string, password: string) {
 
   if (isBase64) {
     privkeyDecrypted = Buffer.from(privkeyDecrypted, 'base64').toString();
-    newPrivKey = AesUtil.encrypt(privkeyDecrypted, password);
+    newPrivKey = aes.encrypt(privkeyDecrypted, password, getAesInitFromEnv());
     update = true;
   }
   return { update, newPrivKey, privkeyDecrypted };
+}
+
+export function getAesInitFromEnv(): { iv: string; salt: string } {
+  const { REACT_APP_MAGIC_IV: MAGIC_IV, REACT_APP_MAGIC_SALT: MAGIC_SALT } = process.env;
+
+  return { iv: MAGIC_IV as string, salt: MAGIC_SALT as string };
 }

@@ -6,7 +6,6 @@ import queryString from 'query-string';
 import SideInfo from '../Authentication/SideInfo';
 import { IFormValues, UserSettings } from '../../models/interfaces';
 import localStorageService from '../../services/local-storage.service';
-import validationService, { emailRegexPattern } from '../../services/validation.service';
 import analyticsService from '../../services/analytics.service';
 import { readReferalCookie } from '../../services/auth.service';
 import BaseInput from '../../components/Inputs/BaseInput';
@@ -16,15 +15,18 @@ import { useAppDispatch } from '../../store/hooks';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
 import { setUser, userActions, userThunks } from '../../store/slices/user';
 import { getHeaders } from '../../lib/auth';
-import AesUtils from '../../lib/AesUtil';
 import { generateNewKeys } from '../../services/pgp.service';
 import history from '../../lib/history';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope, UilUser } from '@iconscout/react-unicons';
 import { Link } from 'react-router-dom';
 import { planThunks } from '../../store/slices/plan';
+import { getAesInitFromEnv } from '../../services/keys.service';
+import { aes, auth } from '@internxt/lib';
+import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
+import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
+import errorService from '../../services/error.service';
 
 interface SignUpProps {
-  match: any;
   location: {
     search: string;
   };
@@ -33,17 +35,20 @@ interface SignUpProps {
 
 const SignUp = (props: SignUpProps): JSX.Element => {
   const qs = queryString.parse(history.location.search);
-  const hasEmailParam = qs.email && validationService.validateEmail(qs.email as string) || false;
+  const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const hasTokenParam = qs.token;
   // const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
-  const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>(
-    {
-      mode: 'onChange',
-      defaultValues: {
-        email: hasEmailParam ? qs.email as string : ''
-      }
-    }
-  );
+  const {
+    register,
+    formState: { errors, isValid },
+    handleSubmit,
+    control,
+  } = useForm<IFormValues>({
+    mode: 'onChange',
+    defaultValues: {
+      email: hasEmailParam ? (qs.email as string) : '',
+    },
+  });
   const dispatch = useAppDispatch();
 
   const password = useWatch({ control, name: 'password', defaultValue: '' });
@@ -56,22 +61,19 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const strongPasswordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).+$/;
-
   const formInputError = Object.values(errors)[0];
 
   let bottomInfoError: null | string = null;
 
-  if (formInputError?.message){
+  if (formInputError?.message) {
     bottomInfoError = formInputError.message;
-  } else if (showError && signupError){
+  } else if (showError && signupError) {
     bottomInfoError = signupError.toString();
   }
 
   if (hasTokenParam && typeof hasTokenParam === 'string') {
     localStorageService.clear();
     localStorageService.set('xToken', hasTokenParam);
-
   }
 
   const updateInfo = (name: string, lastname: string, email: string, password: string) => {
@@ -92,7 +94,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       password: encPass,
       mnemonic: encMnemonic,
       salt: encSalt,
-      referral: readReferalCookie()
+      referral: readReferalCookie(),
     };
 
     const fetchHandler = async (res: Response) => {
@@ -107,29 +109,32 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       }
     };
 
-    return fetch('/api/appsumo/update', {
+    return fetch(`${process.env.REACT_APP_API_URL}/api/appsumo/update`, {
       method: 'POST',
       headers: getHeaders(true, false),
-      body: JSON.stringify(body)
-    }).then(fetchHandler).then(({ res, body }) => {
-      if (res.status !== 200) {
-        throw Error(body.error || 'Internal Server Error');
-      } else {
-        return body;
-      }
-    }).then(res => {
-      const xToken = res.token;
-      const xUser = res.user;
+      body: JSON.stringify(body),
+    })
+      .then(fetchHandler)
+      .then(({ res, body }) => {
+        if (res.status !== 200) {
+          throw Error(body.error || 'Internal Server Error');
+        } else {
+          return body;
+        }
+      })
+      .then((res) => {
+        const xToken = res.token;
+        const xUser = res.user;
 
-      xUser.mnemonic = mnemonic;
-      dispatch(userActions.setUser(xUser));
+        xUser.mnemonic = mnemonic;
+        dispatch(userActions.setUser(xUser));
 
-      return dispatch(userThunks.initializeUserThunk()).then((rootFolderInfo) => {
-        localStorageService.set('xToken', xToken);
-        localStorageService.set('xMnemonic', mnemonic);
-        dispatch(setUser(xUser));
+        return dispatch(userThunks.initializeUserThunk()).then(() => {
+          localStorageService.set('xToken', xToken);
+          localStorageService.set('xMnemonic', mnemonic);
+          dispatch(setUser(xUser));
+        });
       });
-    });
   };
 
   const doRegister = async (name: string, lastname: string, email: string, password: string) => {
@@ -139,11 +144,15 @@ const SignUp = (props: SignUpProps): JSX.Element => {
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithKey(mnemonic, password);
 
-    const { privateKeyArmored, publicKeyArmored: codpublicKey, revocationCertificate: codrevocationKey } = await generateNewKeys();
+    const {
+      privateKeyArmored,
+      publicKeyArmored: codpublicKey,
+      revocationCertificate: codrevocationKey,
+    } = await generateNewKeys();
 
-    const encPrivateKey = AesUtils.encrypt(privateKeyArmored, password, false);
+    const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
 
-    return fetch('/api/register', {
+    return fetch(`${process.env.REACT_APP_API_URL}/api/register`, {
       method: 'post',
       headers: getHeaders(true, true),
       body: JSON.stringify({
@@ -157,50 +166,52 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         privateKey: encPrivateKey,
         publicKey: codpublicKey,
         revocationKey: codrevocationKey,
-        referrer: referrer
+        referrer: referrer,
+      }),
+    })
+      .then(async (response) => {
+        if (response.status === 200) {
+          const body = await response.json();
+          const { token, uuid } = body;
+          const user: UserSettings = body.user;
+
+          user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
+
+          window.analytics.identify(uuid, { email: email, member_tier: 'free' });
+          analyticsService.trackSignUp({
+            properties: {
+              userId: uuid,
+              email: email,
+            },
+          });
+
+          localStorageService.set('xToken', token);
+          user.mnemonic = decryptTextWithKey(user.mnemonic, password);
+          dispatch(setUser({ ...user }));
+          localStorageService.set('xMnemonic', user.mnemonic);
+
+          dispatch(planThunks.initializeThunk());
+          dispatch(userThunks.initializeUserThunk()).then(() => {
+            history.push('/app');
+          });
+        } else {
+          return response.json().then((body) => {
+            if (body.error) {
+              throw new Error(body.error);
+            } else {
+              throw new Error('Internal Server Error');
+            }
+          });
+        }
       })
-    }).then(async (response) => {
-      if (response.status === 200) {
-        const body = await response.json();
-        const { token, uuid } = body;
-        const user: UserSettings = body.user;
-
-        user.privateKey = Buffer.from(AesUtils.decrypt(user.privateKey, password)).toString('base64');
-
-        window.analytics.identify(uuid, { email: email, member_tier: 'free' });
-        analyticsService.trackSignUp({
-          properties: {
-            userId: uuid,
-            email: email
-          }
-        });
-
-        localStorageService.set('xToken', token);
-        user.mnemonic = decryptTextWithKey(user.mnemonic, password);
-        dispatch(setUser({ ...user }));
-        localStorageService.set('xMnemonic', user.mnemonic);
-
-        dispatch(planThunks.initializeThunk());
-        dispatch(userThunks.initializeUserThunk()).then(() => {
-          history.push('/app');
-        });
-      } else {
-        return response.json().then((body) => {
-          if (body.error) {
-            throw new Error(body.error);
-          } else {
-            throw new Error('Internal Server Error');
-          }
-        });
-      }
-    }).catch(err => {
-      console.error('Register error', err);
-      setSignupError(err.message || err);
-      setShowError(true);
-    });
+      .catch((err) => {
+        console.error('Register error', err);
+        setSignupError(err.message || err);
+        setShowError(true);
+      });
   };
 
-  const onSubmit: SubmitHandler<IFormValues> = async formData => {
+  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoading(true);
     try {
       const { name, lastname, email, password, confirmPassword } = formData;
@@ -210,17 +221,21 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       }
 
       if (!props.isNewUser) {
-        await updateInfo(name, lastname, email, password).then(() => {
-          history.push('/login');
-        }).catch(err => {
-          console.log('ERR', err);
-          throw new Error(err.message + ', please contact us');
-        });
+        await updateInfo(name, lastname, email, password)
+          .then(() => {
+            history.push('/login');
+          })
+          .catch((err) => {
+            console.log('ERR', err);
+            throw new Error(err.message + ', please contact us');
+          });
       } else {
         await doRegister(name, lastname, email, password);
       }
-    } catch (err) {
-      setSignupError(err.message || err);
+    } catch (err: unknown) {
+      const castedError = errorService.castError(err);
+
+      setSignupError(castedError.message);
     } finally {
       setShowError(true);
       setIsLoading(false);
@@ -228,18 +243,18 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   };
 
   return (
-    <div className='flex h-full w-full'>
+    <div className="flex h-full w-full">
       <SideInfo title="" subtitle="" />
 
-      <div className='flex flex-col items-center justify-center w-full'>
-        <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>
-          <span className='text-base font-semibold text-neutral-900 mt-1.5 mb-6'>Create an Internxt account</span>
+      <div className="flex flex-col items-center justify-center w-full">
+        <form className="flex flex-col w-72" onSubmit={handleSubmit(onSubmit)}>
+          <span className="text-base font-semibold text-neutral-900 mt-1.5 mb-6">Create an Internxt account</span>
 
           <BaseInput
-            placeholder='Name'
-            label='name'
-            type='text'
-            icon={<UilUser className='w-4' />}
+            placeholder="Name"
+            label="name"
+            type="text"
+            icon={<UilUser className="w-4" />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Name must not be empty' }}
@@ -247,10 +262,10 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
-            placeholder='Lastname'
-            label='lastname'
-            type='text'
-            icon={<UilUser className='w-4' />}
+            placeholder="Lastname"
+            label="lastname"
+            type="text"
+            icon={<UilUser className="w-4" />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Lastname must not be empty' }}
@@ -258,11 +273,11 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
-            placeholder='Email'
-            label='email'
-            type='email'
+            placeholder="Email"
+            label="email"
+            type="email"
             disabled={hasEmailParam}
-            icon={<UilEnvelope className='w-4' />}
+            icon={<UilEnvelope className="w-4" />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -271,32 +286,44 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
-            placeholder='Password'
-            label='password'
+            placeholder="Password"
+            label="password"
             type={showPassword ? 'text' : 'password'}
-            icon={password ?
-              (showPassword ?
-                <UilEyeSlash className='w-4' onClick={() => setShowPassword(false)} />
-                :
-                <UilEye className='w-4' onClick={() => setShowPassword(true)} />) :
-              <UilLock className='w-4' />
+            icon={
+              password ? (
+                showPassword ? (
+                  <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
+                ) : (
+                  <UilEye className="w-4" onClick={() => setShowPassword(true)} />
+                )
+              ) : (
+                <UilLock className="w-4" />
+              )
             }
             register={register}
             required={true}
             minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
             error={errors.password}
-            pattern={{ value: strongPasswordRegex, message: 'The password must contain lowercase/uppercase letters and at least a number' }}
+            pattern={{
+              value: isValidPasswordRegex,
+              message: 'The password must contain lowercase/uppercase letters and at least a number',
+            }}
           />
 
           <BaseInput
-            placeholder='Confirm new password'
-            label='confirmPassword'
+            placeholder="Confirm new password"
+            label="confirmPassword"
             type={showConfirmPassword ? 'text' : 'password'}
-            icon={confirmPassword ?
-              (showConfirmPassword ?
-                <UilEyeSlash className='w-4' onClick={() => setShowConfirmPassword(false)} />
-                : <UilEye className='w-4' onClick={() => setShowConfirmPassword(true)} />) :
-              <UilLock className='w-4' />
+            icon={
+              confirmPassword ? (
+                showConfirmPassword ? (
+                  <UilEyeSlash className="w-4" onClick={() => setShowConfirmPassword(false)} />
+                ) : (
+                  <UilEye className="w-4" onClick={() => setShowConfirmPassword(true)} />
+                )
+              ) : (
+                <UilLock className="w-4" />
+              )
             }
             register={register}
             required={true}
@@ -304,23 +331,34 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             error={errors.confirmPassword}
           />
 
-          <div className='mt-1 mb-2'>
-            <span className='text-red-60 text-sm font-medium'>{bottomInfoError}</span>
+          <div className="mt-1 mb-2">
+            <span className="text-red-60 text-sm font-medium">{bottomInfoError}</span>
           </div>
 
-          <span className='text-xs font-normal text-neutral-500 text-justify mb-3'>
-            Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we don't know your password.
-            That means that if you forget it, your files will be gone. With us, you're the only owner of your files.
+          <span className="text-xs font-normal text-neutral-500 text-justify mb-3">
+            Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we
+            don't know your password. That means that if you forget it, your files will be gone. With us, you're the
+            only owner of your files.
           </span>
 
-          <CheckboxPrimary label='acceptTerms' text='Accept terms, conditions and privacy policy' required={true} register={register} additionalStyling='mt-2 -mb-0' />
+          <CheckboxPrimary
+            label="acceptTerms"
+            text="Accept terms, conditions and privacy policy"
+            required={true}
+            register={register}
+            additionalStyling="mt-2 -mb-0"
+          />
 
-          <div className='mt-3' />
-          <AuthButton isDisabled={isLoading || !isValid} text='Create an account' textWhenDisabled={isValid ? 'Encrypting...' : 'Create an account'} />
+          <div className="mt-3" />
+          <AuthButton
+            isDisabled={isLoading || !isValid}
+            text="Create an account"
+            textWhenDisabled={isValid ? 'Encrypting...' : 'Create an account'}
+          />
         </form>
 
-        <div className='flex justify-center items-center w-full mt-2'>
-          <span className='text-sm text-neutral-500 ml-3 select-none mr-2'>Already registered?</span>
+        <div className="flex justify-center items-center w-full mt-2">
+          <span className="text-sm text-neutral-500 ml-3 select-none mr-2">Already registered?</span>
           <Link to="/login">Log in </Link>
         </div>
       </div>

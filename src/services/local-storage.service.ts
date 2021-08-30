@@ -51,7 +51,7 @@ const localStorageService = {
   getWorkspace,
   removeItem,
   exists,
-  clear
+  clear,
 };
 
 export default localStorageService;

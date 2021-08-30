@@ -1,144 +1,65 @@
-import { useState, useEffect } from 'react';
-import { IBillingPlan, IStripePlan, IStripeProduct } from '../../../../models/interfaces';
-import { loadAvailablePlans, loadAvailableProducts, loadAvailableTeamsPlans, loadAvailableTeamsProducts, payStripePlan } from '../../../../services/products.service';
-import notify, { ToastType } from '../../../../components/Notifications';
-import analyticsService from '../../../../services/analytics.service';
-import BillingPlanItem from './BillingPlanItem';
+import { useState, Fragment } from 'react';
 import { generateMnemonic } from 'bip39';
-import { decryptPGP, encryptPGP } from '../../../../lib/utilspgp';
-import { getHeaders } from '../../../../lib/auth';
-import './AccountPlansTab.scss';
-import { useAppDispatch } from '../../../../store/hooks';
-import { setUserPlan, userActions } from '../../../../store/slices/user';
-import { fetchUserPlan } from '../../../../services/user.service';
 import { UilBuilding, UilHome } from '@iconscout/react-unicons';
+
+import analyticsService from '../../../../services/analytics.service';
+import ProductItem from './ProductItem';
+import { encryptPGP } from '../../../../lib/utilspgp';
+import { getHeaders } from '../../../../lib/auth';
 import BillingCardSkeletton from '../../../../components/skinSkeleton/BillingCardSkeletton';
 import { Workspace } from '../../../../models/enums';
 import i18n from '../../../../services/i18n.service';
+import envService from '../../../../services/env.service';
+import { payStripePlan } from '../../../../services/products.service';
+import { useAppSelector } from '../../../../store/hooks';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
-const Option = ({ text, currentOption, isBusiness, onClick }: { text: string, currentOption: Workspace, isBusiness: boolean, onClick: () => void }) => {
-  const Body = () => {
-    switch (true) {
-      case isBusiness && currentOption === Workspace.Business:
-        return (
-          <div className='option border-b-2 border-blue-60' onClick={onClick}>
-            <UilBuilding className='text-blue-60 active' />
-            <span>{text}</span>
-          </div>
-        );
+import configService from '../../../../services/config.service';
 
-      case isBusiness && currentOption === Workspace.Personal:
-        return (
-          <div className='option' onClick={onClick}>
-            <UilBuilding />
-            <span>{text}</span>
-          </div>
-        );
+import './AccountPlansTab.scss';
+import errorService from '../../../../services/error.service';
 
-      case !isBusiness && currentOption === Workspace.Personal:
-        return (
-          <div className='option border-b-2 border-blue-60' onClick={onClick}>
-            <UilHome className='text-blue-60 active' />
-            <span>{text}</span>
-          </div>
-        );
-
-      case !isBusiness && currentOption === Workspace.Business:
-        return (
-          <div className='option' onClick={onClick}>
-            <UilHome />
-            <span>{text}</span>
-          </div>
-        );
-
-      default: return null;
-    }
-  };
-
-  return (
-    <Body />
-  );
-};
-
-const objectMap = (obj: Record<any, any>, fn): Record<any, any> => Object.fromEntries(Object.entries(obj).map(([key, value], i) => [key, fn(value, key, i)]));
-
-const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: string[] }): JSX.Element => {
+const AccountPlansTab = (): JSX.Element => {
   const [currentOption, setCurrentOption] = useState<Workspace.Personal | Workspace.Business>(Workspace.Personal);
-  const [isLoading, setIsLoading] = useState(true);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('');
   const [isPaying, setIsPaying] = useState(false);
-  const [products, setProducts] = useState<IBillingPlan>({});
-  const [teamsProducts, setTeamsProducts] = useState<IBillingPlan>({});
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const getProducts = async () => {
-      const userPlan = await fetchUserPlan();
-
-      try {
-        const products = await loadAvailableProducts();
-        const teamsProducts = await loadAvailableTeamsProducts();
-
-        if (userPlan) {
-          dispatch(setUserPlan(userPlan));
-        }
-        dispatch(userActions.setIsLoadingStripePlan(false));
-
-        const productsWithPlans = products.map(async product => ({
-          product: product,
-          plans: await loadAvailablePlans(product) || [],
-          selected: '',
-          currentPlan: userPlan?.planId || ''
-        }));
-        const teamsProductsWithPlans = teamsProducts.map(async product => ({
-          product: product,
-          plans: await loadAvailableTeamsPlans(product) || [],
-          selected: '',
-          currentPlan: userPlan?.planId || ''
-        }));
-
-        const finalProducts = await Promise.all(productsWithPlans);
-        const keyedProducts: IBillingPlan = finalProducts.reduce((acc, prod) => ({ ...acc, [prod.product.id]: prod }), {});
-
-        const finalTeamsProducts = await Promise.all(teamsProductsWithPlans);
-        const keyedTeamsProducts: IBillingPlan = finalTeamsProducts.reduce((acc, prod) => ({ ...acc, [prod.product.id]: prod }), {});
-
-        setProducts(keyedProducts);
-        setTeamsProducts(keyedTeamsProducts);
-      } catch (err) {
-        //notify(err.message, 'error');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getProducts();
-  }, []);
-
-  const handlePlanSelection = (planId: string, productId: string) => {
-    const newProds = objectMap({ ...products }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
-      return {
-        ...value,
-        selected: productId === value.product.id ? planId : ''
-      };
-    });
-
-    const newTeamsProds = objectMap({ ...teamsProducts }, (value: { plans: IStripePlan[], product: IStripeProduct, selected: boolean }) => {
-      return {
-        ...value,
-        selected: productId === value.product.id ? planId : ''
-      };
-    });
-
-    setProducts(newProds);
-    setTeamsProducts(newTeamsProds);
-  };
-
+  const individualPlan = useAppSelector((state) => state.plan.individualPlan);
+  const teamPlan = useAppSelector((state) => state.plan.teamPlan);
+  const isLoadingIndividualProducts = useAppSelector((state) => state.products.isLoadingIndividualProducts);
+  const individualProducts = useAppSelector((state) => state.products.individualProducts);
+  const individualProductsPlans = useAppSelector((state) => state.products.individualProductsPlans);
+  const isLoadingTeamProducts = useAppSelector((state) => state.products.isLoadingTeamProducts);
+  const teamProducts = useAppSelector((state) => state.products.teamProducts);
+  const teamProductsPlans = useAppSelector((state) => state.products.teamProductsPlans);
+  const tabOptions: { id: string; label: string; icon: JSX.Element; onClick: () => void }[] = [
+    {
+      id: Workspace.Personal,
+      label: 'Individual',
+      icon: <UilHome />,
+      onClick: () => setCurrentOption(Workspace.Personal),
+    },
+    {
+      id: Workspace.Business,
+      label: 'Business',
+      icon: <UilBuilding />,
+      onClick: () => setCurrentOption(Workspace.Business),
+    },
+  ];
+  const loadingSkeleton = Array(3)
+    .fill(1)
+    .map((n, i) => (
+      <div className="flex justify-center" key={i}>
+        <BillingCardSkeletton />
+      </div>
+    ));
   const handlePaymentIndividual = async (selectedPlan: string, productId: string) => {
     setIsPaying(true);
-    const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
-    const body: { plan: string, product: string, test?: boolean} = {
+    const stripe = window.Stripe(
+      !envService.isProduction() ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK,
+    );
+    const body: { plan: string; product: string; test?: boolean } = {
       plan: selectedPlan,
-      product: productId
+      product: productId,
     };
 
     if (/^pk_test_/.exec(stripe._apiKey)) {
@@ -151,93 +72,114 @@ const AccountPlansTab = ({ plansCharacteristics }: { plansCharacteristics: strin
       analyticsService.trackUserEnterPayments();
 
       await stripe.redirectToCheckout({ sessionId: session.id });
-    } catch (err) {
-      notify(i18n.get('error.redirectToStripe', {
-        reason: err.message
-      }), ToastType.Error);
+    } catch (err: unknown) {
+      const castedError = errorService.castError(err);
+
+      notificationsService.show(
+        i18n.get('error.redirectToStripe', {
+          reason: castedError.message,
+        }),
+        ToastType.Error,
+      );
     } finally {
       setIsPaying(false);
     }
   };
-
-  const handlePaymentTeams = async (selectedPlanToBuy, productId: string, totalTeamMembers: number) => {
+  const handlePaymentTeams = async (selectedPlanToBuy: string, productId: string, totalTeamMembers: number) => {
     const mnemonicTeam = generateMnemonic(256);
     const encMnemonicTeam = await encryptPGP(mnemonicTeam);
     const codMnemonicTeam = Buffer.from(encMnemonicTeam.data).toString('base64');
-    const stripe = window.Stripe(process.env.NODE_ENV !== 'production' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK);
+    const stripe = window.Stripe(
+      !envService.isProduction() ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK,
+    );
     const body = {
       plan: selectedPlanToBuy,
       sessionType: 'team',
       quantity: totalTeamMembers,
       mnemonicTeam: codMnemonicTeam,
-      test: process.env.NODE_ENV !== 'production'
+      test: !envService.isProduction(),
     };
 
-    fetch('/api/stripe/teams/session', {
+    fetch(`${process.env.REACT_APP_API_URL}/api/stripe/teams/session`, {
       method: 'POST',
       headers: getHeaders(true, false),
-      body: JSON.stringify(body)
-    }).then(result => result.json()).then(result => {
-      if (result.error) {
-        throw Error(result.error);
-      }
+      body: JSON.stringify(body),
+    })
+      .then((result) => result.json())
+      .then((result) => {
+        if (result.error) {
+          throw Error(result.error);
+        }
 
-      stripe.redirectToCheckout({ sessionId: result.id }).catch(err => {});
-    }).catch(err => {
-      console.error('Error starting Stripe session. Reason: %s', err);
-    });
+        stripe.redirectToCheckout({ sessionId: result.id });
+      })
+      .catch((err) => {
+        console.error('Error starting Stripe session. Reason: %s', err);
+      });
+  };
+  const onPlanSelected = (productId: string, planId: string) => {
+    setSelectedPlanId(planId);
   };
 
   return (
-    <div className='w-full h-fit border border-m-neutral-60 rounded-xl'>
-      <div className='flex justify-evenly items-center h-11'>
-        <Option text='Individuals' currentOption={currentOption} isBusiness={false} onClick={() => {
-          setCurrentOption(Workspace.Personal);
-        }} />
-        <div className='w-px h-1/2 border-r border-m-neutral-60' />
-        <Option text='Business' currentOption={currentOption} isBusiness={true} onClick={() => {
-          setCurrentOption(Workspace.Business);
-        }} />
+    <div className="w-full h-fit border border-m-neutral-60 rounded-xl">
+      <div className="flex justify-evenly items-center h-11">
+        {tabOptions.map((option, index) => {
+          const tabOptionSelectedClassName = 'border-b-2 border-blue-60';
+          const tabOptionIconSelectedClassName = 'text-blue-60 active';
+          const isSelected = option.id === currentOption;
+
+          return (
+            <Fragment key={index}>
+              <div className={`option ${isSelected ? tabOptionSelectedClassName : ''}`} onClick={option.onClick}>
+                <div className={isSelected ? tabOptionIconSelectedClassName : ''}>{option.icon}</div>
+                <span>{option.label}</span>
+              </div>
+
+              {index < tabOptions.length - 1 && <div className="w-px h-1/2 border-r border-m-neutral-60" />}
+            </Fragment>
+          );
+        })}
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 border-t border-m-neutral-60 justify-evenly'>
-        {!isLoading ?
-          currentOption === Workspace.Personal ?
-            Object.values(products).map((product, i) => (
-              <BillingPlanItem
-                key={i}
-                product={product.product}
-                plans={product.plans}
-                selectedPlan={product.selected}
-                currentPlan={product.currentPlan}
-                buttontext='Subscribe'
-                characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-                handlePlanSelection={handlePlanSelection}
-                handlePaymentIndividual={handlePaymentIndividual}
-                isPaying={isPaying}
-                isBusiness={false}
-                handlePaymentTeams={handlePaymentTeams}
-              />)) :
-            Object.values(teamsProducts).map((product, i) => (
-              <BillingPlanItem
-                key={i}
-                product={product.product}
-                plans={product.plans}
-                selectedPlan={product.selected}
-                currentPlan={product.currentPlan}
-                buttontext='Subscribe'
-                characteristics={['Web, Desktop & Mobile apps', 'Unlimited devices', 'Secure file sharing']}
-                handlePlanSelection={handlePlanSelection}
-                handlePaymentIndividual={handlePaymentIndividual}
-                isPaying={isPaying}
-                isBusiness={true}
-                handlePaymentTeams={handlePaymentTeams}
-              />)) :
-          Array(3).fill(1).map((n, i) => (
-            <div className="flex justify-center" key={i}>
-              <BillingCardSkeletton />
-            </div>))
-        }
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 border-t border-m-neutral-60 justify-evenly">
+        {currentOption === Workspace.Personal &&
+          (isLoadingIndividualProducts
+            ? loadingSkeleton
+            : individualProducts.map((product, i) => (
+                <ProductItem
+                  key={i}
+                  product={product}
+                  plans={individualProductsPlans[i]}
+                  selectedPlanId={selectedPlanId}
+                  currentPlanId={individualPlan?.planId}
+                  characteristics={configService.getAppConfig().plan.defaultFeatures}
+                  handlePlanSelection={onPlanSelected}
+                  handlePaymentIndividual={handlePaymentIndividual}
+                  isPaying={isPaying}
+                  isBusiness={false}
+                  handlePaymentTeams={handlePaymentTeams}
+                />
+              )))}
+
+        {currentOption === Workspace.Business &&
+          (isLoadingTeamProducts
+            ? loadingSkeleton
+            : teamProducts.map((product, i) => (
+                <ProductItem
+                  key={i}
+                  product={product}
+                  plans={teamProductsPlans[i]}
+                  selectedPlanId={selectedPlanId}
+                  currentPlanId={teamPlan?.planId}
+                  characteristics={configService.getAppConfig().plan.defaultFeatures}
+                  handlePlanSelection={onPlanSelected}
+                  handlePaymentIndividual={handlePaymentIndividual}
+                  isPaying={isPaying}
+                  isBusiness={true}
+                  handlePaymentTeams={handlePaymentTeams}
+                />
+              )))}
       </div>
     </div>
   );

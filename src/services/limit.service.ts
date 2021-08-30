@@ -1,13 +1,17 @@
-import axios from 'axios';
+import httpService from './http.service';
+
+export interface FetchLimitResponse {
+  maxSpaceBytes: number;
+}
 
 async function fetchLimit(): Promise<number> {
-  const response = await axios.get('/api/limit');
+  const response = await httpService.get<FetchLimitResponse>('/api/limit');
 
-  return response.data.maxSpaceBytes;
+  return response.maxSpaceBytes;
 }
 
 const limitService = {
-  fetchLimit
+  fetchLimit,
 };
 
 export default limitService;

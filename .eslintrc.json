@@ -2,6 +2,7 @@
 {
   "parser": "@typescript-eslint/parser",
   "plugins": [
+    "react",
     "@typescript-eslint",
     "prettier"
   ],
@@ -12,6 +13,7 @@
     "prettier"
   ],
   "rules": {
-    "prettier/prettier": 1
+    "prettier/prettier": 1,
+    "@typescript-eslint/no-implicit-any-catch": ["error"]
   }
 }

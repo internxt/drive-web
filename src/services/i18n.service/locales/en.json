@@ -36,7 +36,8 @@
     "downloadingItems": "Some of the elements could not be downloaded",
     "movingItemInsideItself": "You can't move a folder inside itself",
     "movingItem": "Error when moving item/s",
-    "linkExpired": "This secure link has expired"
+    "linkExpired": "This secure link has expired",
+    "teamInvitation":"The invitation email could not be sent"
   },
   "info": {
     "downloadingFile": "Downloading file {filename}...",

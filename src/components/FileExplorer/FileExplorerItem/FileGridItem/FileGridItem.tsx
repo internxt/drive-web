@@ -20,7 +20,7 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
     super(props);
 
     this.state = {
-      itemRef: React.createRef()
+      itemRef: React.createRef(),
     };
   }
 
@@ -36,10 +36,19 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
 
   updateHeight = () => {
     this.forceUpdate();
-  }
+  };
 
   get nameNode(): JSX.Element {
-    const { item, onNameChanged, onNameBlurred, onNameDoubleClicked, onEnterKeyPressed, isEditingName, dirtyName, nameInputRef } = this.props;
+    const {
+      item,
+      onNameChanged,
+      onNameBlurred,
+      onNameDoubleClicked,
+      onEnterKeyPressed,
+      isEditingName,
+      dirtyName,
+      nameInputRef,
+    } = this.props;
     const ṣpanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
 
     return (
@@ -57,13 +66,15 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
             onKeyPress={onEnterKeyPressed}
             autoFocus
           />
-          <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
+          <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
         </div>
         <span
           className={`${ṣpanDisplayClass} cursor-text file-grid-item-name-span`}
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={onNameDoubleClicked}
-        >{getItemFullName(item.name, item.type)}</span>
+        >
+          {getItemFullName(item.name, item.type)}
+        </span>
       </Fragment>
     );
   }
@@ -84,15 +95,13 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
       onShareButtonClicked,
       onItemRightClicked,
       onItemClicked,
-      onItemDoubleClicked
+      onItemDoubleClicked,
     } = this.props;
     const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
     const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
     const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
     const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
-    const height = this.state.itemRef.current ?
-      this.state.itemRef.current?.clientWidth + 'px' :
-      'auto';
+    const height = this.state.itemRef.current ? this.state.itemRef.current?.clientWidth + 'px' : 'auto';
 
     return connectDragSource(
       connectDropTarget(
@@ -124,12 +133,11 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
             <ItemIconComponent className="file-icon m-auto" />
           </div>
           <div className="text-center mt-3">
-            <div className="mb-1">
-              {this.nameNode}
-            </div>
+            <div className="mb-1">{this.nameNode}</div>
           </div>
-        </div>
-      ));
+        </div>,
+      ),
+    );
   }
 }
 

@@ -6,7 +6,8 @@ import Breadcrumbs, { BreadcrumbItemData } from '../../components/Breadcrumbs/Br
 import FileExplorer from '../../components/FileExplorer/FileExplorer';
 import { DriveItemData, FolderPath } from '../../models/interfaces';
 import { AppDispatch, RootState } from '../../store';
-import { storageSelectors, storageThunks } from '../../store/slices/storage';
+import { storageSelectors } from '../../store/slices/storage';
+import storageThunks from '../../store/slices/storage/storage.thunks';
 
 interface DriveViewProps {
   namePath: FolderPath[];
@@ -15,8 +16,7 @@ interface DriveViewProps {
   dispatch: AppDispatch;
 }
 
-class DriveView extends Component<DriveViewProps, {}> {
-
+class DriveView extends Component<DriveViewProps> {
   componentDidMount(): void {
     const { dispatch } = this.props;
 
@@ -27,8 +27,8 @@ class DriveView extends Component<DriveViewProps, {}> {
   fetchItems = (): void => {
     const { dispatch } = this.props;
 
-    dispatch(storageThunks.fetchFolderContentThunk(-1));
-  }
+    dispatch(storageThunks.fetchFolderContentThunk());
+  };
 
   get breadcrumbItems(): BreadcrumbItemData[] {
     const { namePath, dispatch } = this.props;
@@ -42,7 +42,7 @@ class DriveView extends Component<DriveViewProps, {}> {
         label: 'Drive',
         icon: <Unicons.UilHdd className="w-4 h-4 mr-1" />,
         active: true,
-        onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath))
+        onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath)),
       });
       namePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         items.push({
@@ -50,7 +50,7 @@ class DriveView extends Component<DriveViewProps, {}> {
           label: path.name,
           icon: null,
           active: i < namePath.length - 1,
-          onClick: () => dispatch(storageThunks.goToFolderThunk(path))
+          onClick: () => dispatch(storageThunks.goToFolderThunk(path)),
         });
       });
     }
@@ -79,6 +79,6 @@ export default connect((state: RootState) => {
   return {
     namePath: state.storage.namePath,
     isLoading: state.storage.isLoading,
-    items: filteredItems
+    items: filteredItems,
   };
 })(DriveView);

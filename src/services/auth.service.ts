@@ -1,17 +1,20 @@
+import * as bip39 from 'bip39';
+import { aes } from '@internxt/lib';
+
 import { getHeaders } from '../lib/auth';
 import localStorageService from './local-storage.service';
 import history from '../lib/history';
 import analyticsService from './analytics.service';
 import { generateNewKeys, updateKeys } from './pgp.service';
-import AesUtils from '../lib/AesUtil';
 import { decryptText, decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../lib/utils';
-import { validateFormat } from './keys.service';
+import { getAesInitFromEnv, validateFormat } from './keys.service';
 import { decryptPGP } from '../lib/utilspgp';
-import * as bip39 from 'bip39';
 import userService from './user.service';
-import notify, { ToastType } from '../components/Notifications';
 import i18n from './i18n.service';
 import { UserSettings } from '../models/interfaces';
+import httpService from './http.service';
+import { Workspace } from '../models/enums';
+import notificationsService, { ToastType } from './notifications.service';
 
 export function logOut(): void {
   analyticsService.trackSignOut();
@@ -20,37 +23,31 @@ export function logOut(): void {
 }
 
 export function cancelAccount(): Promise<void> {
-  return fetch('/api/deactivate', {
-    method: 'GET',
-    headers: getHeaders(true, false)
-  })
-    .then(res => res.json())
-    .then(res => {
-      notify(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
-    }).catch(err => {
-      notify(i18n.get('error.deactivatingAccount'), ToastType.Warning);
+  return httpService
+    .get<void>('/api/deactivate', { authWorkspace: Workspace.Personal })
+    .then(() => {
+      notificationsService.show(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
+    })
+    .catch((err) => {
+      notificationsService.show(i18n.get('error.deactivatingAccount'), ToastType.Warning);
       console.log(err);
       throw err;
     });
 }
 
 export const check2FANeeded = async (email: string): Promise<any> => {
-  try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: getHeaders(true, true),
-      body: JSON.stringify({ email })
-    });
-    const data = await response.json();
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
+    method: 'POST',
+    headers: getHeaders(true, true),
+    body: JSON.stringify({ email }),
+  });
+  const data = await response.json();
 
-    if (response.status !== 200) {
-      analyticsService.signInAttempted(email, data.error);
-      throw new Error(data.error ? data.error : 'Login error');
-    }
-    return data;
-  } catch (err) {
-    throw err;
+  if (response.status !== 200) {
+    analyticsService.signInAttempted(email, data.error);
+    throw new Error(data.error ? data.error : 'Login error');
   }
+  return data;
 };
 
 const generateNewKeysWithEncrypted = async (password: string) => {
@@ -58,44 +55,40 @@ const generateNewKeysWithEncrypted = async (password: string) => {
 
   return {
     privateKeyArmored,
-    privateKeyArmoredEncrypted: AesUtils.encrypt(privateKeyArmored, password, false),
+    privateKeyArmoredEncrypted: aes.encrypt(privateKeyArmored, password, getAesInitFromEnv()),
     publicKeyArmored,
-    revocationCertificate
+    revocationCertificate,
   };
 };
 
 export const doLogin = async (email: string, password: string, twoFactorCode: string) => {
-  try {
-    const response = await fetch('/api/login', {
-      method: 'post',
-      headers: getHeaders(false, false),
-      body: JSON.stringify({ email })
-    });
-    const body = await response.json();
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
+    method: 'post',
+    headers: getHeaders(false, false),
+    body: JSON.stringify({ email }),
+  });
+  const body = await response.json();
 
-    if (response.status === 400) {
-      throw new Error(body.error || 'Can not connect to server');
-    }
-    if (response.status !== 200) {
-      throw new Error('This account does not exist');
-    }
-
-    // Manage credentials verification
-    const keys = await generateNewKeysWithEncrypted(password);
-    // Check password
-    const salt = decryptText(body.sKey);
-    const hashObj = passToHash({ password, salt });
-    const encPass = encryptText(hashObj.hash);
-
-    return doAccess(email, password, encPass, twoFactorCode, keys);
-  } catch (err) {
-    throw err;
+  if (response.status === 400) {
+    throw new Error(body.error || 'Can not connect to server');
   }
+  if (response.status !== 200) {
+    throw new Error('This account does not exist');
+  }
+
+  // Manage credentials verification
+  const keys = await generateNewKeysWithEncrypted(password);
+  // Check password
+  const salt = decryptText(body.sKey);
+  const hashObj = passToHash({ password, salt });
+  const encPass = encryptText(hashObj.hash);
+
+  return doAccess(email, password, encPass, twoFactorCode, keys);
 };
 
 export const doAccess = async (email: string, password: string, encPass: string, twoFactorCode: string, keys: any) => {
   try {
-    const response = await fetch('/api/access', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/access`, {
       method: 'post',
       headers: getHeaders(false, false),
       body: JSON.stringify({
@@ -104,8 +97,8 @@ export const doAccess = async (email: string, password: string, encPass: string,
         tfa: twoFactorCode,
         privateKey: keys.privateKeyArmoredEncrypted,
         publicKey: keys.publicKeyArmored,
-        revocateKey: keys.revocationCertificate
-      })
+        revocateKey: keys.revocationCertificate,
+      }),
     });
     const data = await response.json();
 
@@ -127,7 +120,7 @@ export const doAccess = async (email: string, password: string, encPass: string,
       email,
       privateKey: Buffer.from(privkeyDecrypted).toString('base64'),
       publicKey: publicKey,
-      revocationKey: revocateKey
+      revocationKey: revocateKey,
     };
 
     if (data.userTeam) {
@@ -140,7 +133,7 @@ export const doAccess = async (email: string, password: string, encPass: string,
         mnemonic: mnemonicDecrypt.data,
         admin: data.userTeam.admin,
         root_folder_id: data.userTeam.root_folder_id,
-        isAdmin: data.userTeam.isAdmin
+        isAdmin: data.userTeam.isAdmin,
       };
 
       localStorageService.set('xTeam', JSON.stringify(team));
@@ -155,8 +148,8 @@ export const doAccess = async (email: string, password: string, encPass: string,
     }
 
     return { data, user };
-  } catch (err) {
-    throw new Error(`"${err.error ? err.error : err}"`);
+  } catch (err: unknown) {
+    throw err instanceof Error ? err : new Error(err as string);
   }
 };
 
@@ -166,49 +159,55 @@ export const readReferalCookie = () => {
   return cookie ? cookie[2] : null;
 };
 
-export const doRegister = async (name: string, lastname: string, email: string, password: string, referrer?: string) => {
-  try {
-    // Setup hash and salt
-    const hashObj = passToHash({ password });
-    const encPass = encryptText(hashObj.hash);
-    const encSalt = encryptText(hashObj.salt);
-    // Setup mnemonic
-    const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, password);
+export const doRegister = async (
+  name: string,
+  lastname: string,
+  email: string,
+  password: string,
+  referrer?: string,
+) => {
+  // Setup hash and salt
+  const hashObj = passToHash({ password });
+  const encPass = encryptText(hashObj.hash);
+  const encSalt = encryptText(hashObj.salt);
+  // Setup mnemonic
+  const mnemonic = bip39.generateMnemonic(256);
+  const encMnemonic = encryptTextWithKey(mnemonic, password);
 
-    //Generate keys
-    const { privateKeyArmored, publicKeyArmored: codpublicKey, revocationCertificate: codrevocationKey } = await generateNewKeys();
+  //Generate keys
+  const {
+    privateKeyArmored,
+    publicKeyArmored: codpublicKey,
+    revocationCertificate: codrevocationKey,
+  } = await generateNewKeys();
 
-    //Datas
-    const encPrivateKey = AesUtils.encrypt(privateKeyArmored, password, false);
+  //Datas
+  const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
 
-    const response = await fetch('/api/register', {
-      method: 'post',
-      headers: getHeaders(true, true),
-      body: JSON.stringify({
-        name: name,
-        lastname: lastname,
-        email: email,
-        password: encPass,
-        mnemonic: encMnemonic,
-        salt: encSalt,
-        referral: readReferalCookie(),
-        privateKey: encPrivateKey,
-        publicKey: codpublicKey,
-        revocationKey: codrevocationKey,
-        referrer: referrer
-      })
-    });
-    const body = await response.json();
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register`, {
+    method: 'post',
+    headers: getHeaders(true, true),
+    body: JSON.stringify({
+      name: name,
+      lastname: lastname,
+      email: email,
+      password: encPass,
+      mnemonic: encMnemonic,
+      salt: encSalt,
+      referral: readReferalCookie(),
+      privateKey: encPrivateKey,
+      publicKey: codpublicKey,
+      revocationKey: codrevocationKey,
+      referrer: referrer,
+    }),
+  });
+  const body = await response.json();
 
-    if (response.status !== 200) {
-      throw new Error(body.error ? body.error : 'Internal server error');
-    }
-
-    return body;
-  } catch (err) {
-    throw err;
+  if (response.status !== 200) {
+    throw new Error(body.error ? body.error : 'Internal server error');
   }
+
+  return body;
 };
 
 export const updateInfo = async (name: string, lastname: string, email: string, password: string) => {
@@ -229,7 +228,7 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
     password: encPass,
     mnemonic: encMnemonic,
     salt: encSalt,
-    referral: readReferalCookie()
+    referral: readReferalCookie(),
   };
 
   const fetchHandler = async (res: Response) => {
@@ -244,10 +243,10 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
     }
   };
 
-  const response = await fetch('/api/appsumo/update', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appsumo/update`, {
     method: 'POST',
     headers: getHeaders(true, false),
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   });
   const { res, data } = await fetchHandler(response);
 
@@ -271,10 +270,10 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
 export const getSalt = async (): Promise<any> => {
   const email = localStorageService.getUser()?.email;
 
-  const response = await fetch('/api/login', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
     method: 'post',
     headers: getHeaders(false, false),
-    body: JSON.stringify({ email })
+    body: JSON.stringify({ email }),
   });
   const data = await response.json();
   const salt = decryptText(data.sKey);
@@ -302,9 +301,9 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   // Encrypt the mnemonic
   const encryptedMnemonic = encryptTextWithKey(localStorage.xMnemonic, newPassword);
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
-  const privateKeyEncrypted = AesUtils.encrypt(privateKey, newPassword);
+  const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
-  const response = await fetch('/api/user/password', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/password`, {
     method: 'PATCH',
     headers: getHeaders(true, true),
     body: JSON.stringify({
@@ -312,8 +311,8 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       newPassword: encryptedNewPassword,
       newSalt: encryptedNewSalt,
       mnemonic: encryptedMnemonic,
-      privateKey: privateKeyEncrypted
-    })
+      privateKey: privateKeyEncrypted,
+    }),
   });
 
   const data = await response.json();
@@ -332,10 +331,10 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 };
 
 export const userHas2FAStored = async (): Promise<any> => {
-  const response = await fetch('/api/login', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
     method: 'POST',
     headers: getHeaders(true, false),
-    body: JSON.stringify({ email: JSON.parse(localStorage.xUser).email })
+    body: JSON.stringify({ email: JSON.parse(localStorage.xUser).email }),
   });
   const data = await response.json();
   const has2FA = typeof data.tfa == 'boolean' ? data : false;
@@ -344,9 +343,9 @@ export const userHas2FAStored = async (): Promise<any> => {
 };
 
 export const generateNew2FA = async (): Promise<any> => {
-  const response = await fetch('/api/tfa', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
     method: 'GET',
-    headers: getHeaders(true, false)
+    headers: getHeaders(true, false),
   });
   const data = await response.json();
 
@@ -356,18 +355,22 @@ export const generateNew2FA = async (): Promise<any> => {
   return data;
 };
 
-export const deactivate2FA = async (passwordSalt: string, deactivationPassword: string, deactivationCode: string): Promise<void> => {
+export const deactivate2FA = async (
+  passwordSalt: string,
+  deactivationPassword: string,
+  deactivationCode: string,
+): Promise<void> => {
   const salt = decryptText(passwordSalt);
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
 
-  const response = await fetch('/api/tfa', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
     method: 'DELETE',
     headers: getHeaders(true, false),
     body: JSON.stringify({
       pass: encPass,
-      code: deactivationCode
-    })
+      code: deactivationCode,
+    }),
   });
   const data = await response.json();
 
@@ -377,13 +380,13 @@ export const deactivate2FA = async (passwordSalt: string, deactivationPassword: 
 };
 
 export const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const response = await fetch('/api/tfa', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
     method: 'PUT',
     headers: getHeaders(true, false),
     body: JSON.stringify({
       key: code,
-      code: twoFactorCode
-    })
+      code: twoFactorCode,
+    }),
   });
   const data = await response.json();
 
@@ -399,7 +402,7 @@ const authService = {
   doRegister,
   check2FANeeded,
   readReferalCookie,
-  cancelAccount
+  cancelAccount,
 };
 
 export default authService;

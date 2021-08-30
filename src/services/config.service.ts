@@ -6,15 +6,16 @@ export function getAppConfig(): AppConfig {
 }
 
 export function getViewConfig(filter: any): AppViewConfig | undefined {
-  return APP_CONFIG.views.find(v => Object.keys(filter).reduce((t: boolean, key: string) => {
-    return v[key] === filter[key] && t;
-  }, true)
+  return APP_CONFIG.views.find((v) =>
+    Object.keys(filter).reduce((t: boolean, key: string) => {
+      return v[key] === filter[key] && t;
+    }, true),
   );
 }
 
 const configService = {
   getAppConfig,
-  getViewConfig
+  getViewConfig,
 };
 
 export default configService;

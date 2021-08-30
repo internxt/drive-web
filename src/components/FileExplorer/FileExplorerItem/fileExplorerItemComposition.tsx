@@ -1,16 +1,33 @@
 import React, { Component, ComponentClass, Fragment, ReactNode } from 'react';
-import { ConnectDragSource, ConnectDropTarget, DndComponentClass, DragSource, DragSourceCollector, DragSourceSpec, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
+import {
+  ConnectDragSource,
+  ConnectDropTarget,
+  DndComponentClass,
+  DragSource,
+  DragSourceCollector,
+  DragSourceSpec,
+  DropTarget,
+  DropTargetCollector,
+  DropTargetSpec,
+} from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 
 import { DragAndDropType, Workspace } from '../../../models/enums';
-import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../models/interfaces';
+import {
+  DriveFileMetadataPayload,
+  DriveFolderMetadataPayload,
+  DriveItemData,
+  FolderPath,
+  UserSettings,
+} from '../../../models/interfaces';
 import { getAllItems } from '../../../services/drag-and-drop.service';
 import { getItemFullName } from '../../../services/storage.service/storage-name.service';
 import { AppDispatch, RootState } from '../../../store';
-import { storageActions, storageThunks } from '../../../store/slices/storage';
-import storageSelectors from '../../../store/slices/storage/storageSelectors';
+import { storageActions } from '../../../store/slices/storage';
+import storageSelectors from '../../../store/slices/storage/storage.selectors';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../store/slices/ui';
 import FileListItem from './FileListItem/FileListItem';
 
@@ -24,8 +41,8 @@ interface FileExplorerItemProps {
   isSomeItemSelected: boolean;
   isSidenavCollapsed: boolean;
   isDriveItemInfoMenuOpen: boolean;
-  dispatch: AppDispatch
-  workspace: Workspace,
+  dispatch: AppDispatch;
+  workspace: Workspace;
   isDraggingThisItem: boolean;
   isDraggingOverThisItem: boolean;
   connectDragSource: ConnectDragSource;
@@ -71,8 +88,8 @@ export interface DragSourceCollectorProps {
   isDraggingThisItem: boolean;
 }
 export interface DropTargetCollectorProps {
-  isDraggingOverThisItem: boolean,
-  connectDropTarget: ConnectDropTarget
+  isDraggingOverThisItem: boolean;
+  connectDropTarget: ConnectDropTarget;
 }
 
 export const getDragSourceType = (props: FileExplorerItemViewProps): string => DragAndDropType.DriveItem;
@@ -80,19 +97,22 @@ export const getDragSourceType = (props: FileExplorerItemViewProps): string => D
 export const dragSourceSpec: DragSourceSpec<FileExplorerItemViewProps> = {
   beginDrag: (props, monitor, component) => {
     return props.item;
-  }
+  },
 };
 
-export const dragSourceCollect: DragSourceCollector<DragSourceCollectorProps, FileExplorerItemViewProps> = (connect, monitor, props) => {
+export const dragSourceCollect: DragSourceCollector<DragSourceCollectorProps, FileExplorerItemViewProps> = (
+  connect,
+  monitor,
+  props,
+) => {
   return {
     isDraggingThisItem: monitor.isDragging(),
-    connectDragSource: connect.dragSource()
+    connectDragSource: connect.dragSource(),
   };
 };
 
-export const getDropTargetType = (props: FileExplorerItemViewProps): string | string[] => props.item.isFolder && !props.isDraggingThisItem ?
-  [NativeTypes.FILE, DragAndDropType.DriveItem] :
-  [];
+export const getDropTargetType = (props: FileExplorerItemViewProps): string | string[] =>
+  props.item.isFolder && !props.isDraggingThisItem ? [NativeTypes.FILE, DragAndDropType.DriveItem] : [];
 
 export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
   drop: (props, monitor, component) => {
@@ -105,12 +125,14 @@ export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
     }
 
     if (droppedType === DragAndDropType.DriveItem) {
-      dispatch(storageThunks.moveItemsThunk({
-        items: [droppedData],
-        destinationFolderId: item.id
-      }));
+      dispatch(
+        storageThunks.moveItemsThunk({
+          items: [droppedData],
+          destinationFolderId: item.id,
+        }),
+      );
     } else if (droppedType === NativeTypes.FILE) {
-      const namePathDestinationArray = namePath.map(level => level.name);
+      const namePathDestinationArray = namePath.map((level) => level.name);
 
       namePathDestinationArray[0] = '';
 
@@ -119,10 +141,12 @@ export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
       folderPath = folderPath + '/' + item.name;
 
       getAllItems(droppedData, folderPath).then(async ({ rootList, files }) => {
-        if (files) { // Only files
+        if (files) {
+          // Only files
           await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id, folderPath }));
         }
-        if (rootList) { // Directory tree
+        if (rootList) {
+          // Directory tree
           for (const root of rootList) {
             const currentFolderId = item.id;
 
@@ -131,208 +155,206 @@ export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
         }
       });
     }
-  }
+  },
 };
 
-export const dropTargetCollect: DropTargetCollector<DropTargetCollectorProps, FileExplorerItemViewProps> = (connect, monitor, props) => {
+export const dropTargetCollect: DropTargetCollector<DropTargetCollectorProps, FileExplorerItemViewProps> = (
+  connect,
+  monitor,
+  props,
+) => {
   const isDraggingOverThisItem = monitor.isOver() && props.item.isFolder;
 
   return {
     isDraggingOverThisItem,
-    connectDropTarget: connect.dropTarget()
+    connectDropTarget: connect.dropTarget(),
   };
 };
 
-const fileExplorerItemWrapper =
-  (ViewComponent: DndComponentClass<typeof FileListItem, DropTargetCollectorProps>): ComponentClass<FileExplorerItemProps, FileExplorerItemState> =>
-    class extends Component<FileExplorerItemProps, FileExplorerItemState> {
-      constructor(props: FileExplorerItemProps) {
-        super(props);
+const fileExplorerItemWrapper = (
+  ViewComponent: DndComponentClass<typeof FileListItem, DropTargetCollectorProps>,
+): ComponentClass<FileExplorerItemProps, FileExplorerItemState> =>
+  class extends Component<FileExplorerItemProps, FileExplorerItemState> {
+    constructor(props: FileExplorerItemProps) {
+      super(props);
 
-        this.state = {
-          isEditingName: false,
-          dirtyName: '',
-          nameInputRef: React.createRef()
-        };
-      }
+      this.state = {
+        isEditingName: false,
+        dirtyName: '',
+        nameInputRef: React.createRef(),
+      };
+    }
 
-      get nameNode(): JSX.Element {
-        const { item } = this.props;
-        const { isEditingName, dirtyName, nameInputRef } = this.state;
-        const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
+    get nameNode(): JSX.Element {
+      const { item } = this.props;
+      const { isEditingName, dirtyName, nameInputRef } = this.state;
+      const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
 
-        return (
-          <Fragment>
-            <div className={isEditingName ? 'block' : 'hidden'}>
-              <input
-                className="dense border border-white no-ring rect"
-                onClick={(e) => e.stopPropagation()}
-                ref={nameInputRef}
-                type="text"
-                value={dirtyName}
-                placeholder="Name"
-                onChange={this.onNameChanged}
-                onBlur={this.onNameBlurred}
-                onKeyPress={this.onEnterKeyPressed}
-                autoFocus
-              />
-              <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
-            </div>
-            <span
-              className={`${spanDisplayClass} file-list-item-name-span`}
+      return (
+        <Fragment>
+          <div className={isEditingName ? 'block' : 'hidden'}>
+            <input
+              className="dense border border-white no-ring rect"
               onClick={(e) => e.stopPropagation()}
-              onDoubleClick={this.onNameDoubleClicked}
-            >{getItemFullName(item.name, item.type)}</span>
-          </Fragment>
-        );
+              ref={nameInputRef}
+              type="text"
+              value={dirtyName}
+              placeholder="Name"
+              onChange={this.onNameChanged}
+              onBlur={this.onNameBlurred}
+              onKeyPress={this.onEnterKeyPressed}
+              autoFocus
+            />
+            <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
+          </div>
+          <span
+            className={`${spanDisplayClass} file-list-item-name-span`}
+            onClick={(e) => e.stopPropagation()}
+            onDoubleClick={this.onNameDoubleClicked}
+          >
+            {getItemFullName(item.name, item.type)}
+          </span>
+        </Fragment>
+      );
+    }
+
+    async confirmNameChange() {
+      const { item, dispatch } = this.props;
+      const { dirtyName, nameInputRef } = this.state;
+      const metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
+
+      if (item.name !== dirtyName) {
+        await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }));
       }
 
-      async confirmNameChange() {
-        const { item, dispatch } = this.props;
-        const { dirtyName, nameInputRef } = this.state;
-        const metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
+      nameInputRef.current?.blur();
+    }
 
-        if (item.name !== dirtyName) {
-          await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }));
-        }
+    onNameDoubleClicked = (e: React.MouseEvent): void => {
+      const { item } = this.props;
+      const { nameInputRef } = this.state;
 
-        nameInputRef.current?.blur();
-      }
+      e.stopPropagation();
 
-      onNameDoubleClicked = (e: React.MouseEvent): void => {
-        const { item } = this.props;
-        const { nameInputRef } = this.state;
+      this.setState({ isEditingName: true, dirtyName: item.name }, () => nameInputRef.current?.focus());
+    };
 
-        e.stopPropagation();
+    onNameBlurred = (): void => {
+      this.setState({ isEditingName: false });
+    };
 
-        this.setState(
-          { isEditingName: true, dirtyName: item.name },
-          () => nameInputRef.current?.focus()
-        );
-      }
+    onNameChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
+      this.setState({ dirtyName: e.target.value });
+    };
 
-      onNameBlurred = (): void => {
-        this.setState({ isEditingName: false });
-      }
-
-      onNameChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        this.setState({ dirtyName: e.target.value });
-      }
-
-      onEnterKeyPressed = (e: React.KeyboardEvent): void => {
-        if (e.key === 'Enter') {
-          this.confirmNameChange();
-        }
-      }
-
-      onItemClicked = (): void => {
-        const { item, dispatch, isItemSelected } = this.props;
-
-        if (!item.isFolder) {
-          isItemSelected(item) ?
-            dispatch(storageActions.deselectItems([item])) :
-            dispatch(storageActions.selectItems([item]));
-        }
-      }
-
-      onItemRightClicked = (e: React.MouseEvent): void => {
-        e.preventDefault();
-      }
-
-      onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const { item, dispatch } = this.props;
-
-        e.target.checked ?
-          dispatch(storageActions.selectItems([item])) :
-          dispatch(storageActions.deselectItems([item]));
-      }
-
-      onRenameButtonClicked = (e: React.MouseEvent): void => {
-        const { item } = this.props;
-        const { nameInputRef } = this.state;
-
-        e.stopPropagation();
-
-        this.setState(
-          { isEditingName: true, dirtyName: item.name },
-          () => setTimeout(() => nameInputRef.current?.focus(), 0)
-        );
-      }
-
-      onDownloadButtonClicked = (e: React.MouseEvent): void => {
-        const { item, dispatch } = this.props;
-
-        e.stopPropagation();
-
-        dispatch(storageThunks.downloadItemsThunk([item]));
-      }
-
-      onShareButtonClicked = (e: React.MouseEvent): void => {
-        const { dispatch, item } = this.props;
-
-        e.stopPropagation();
-
-        dispatch(storageActions.setItemToShare(item));
-        dispatch(uiActions.setIsShareItemDialogOpen(true));
-      }
-
-      onInfoButtonClicked = (e: React.MouseEvent): void => {
-        e.stopPropagation();
-        this.props.dispatch(storageActions.setInfoItem(this.props.item));
-        this.props.dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
-      }
-
-      onDeleteButtonClicked = (e: React.MouseEvent): void => {
-        const { dispatch, item } = this.props;
-
-        e.stopPropagation();
-
-        dispatch(storageActions.setItemsToDelete([item]));
-        dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
-      }
-
-      onItemDoubleClicked = (): void => {
-        const { dispatch, item } = this.props;
-
-        if (item.isFolder) {
-          dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
-        }
-      }
-
-      render(): ReactNode {
-        const viewProps: FileExplorerItemViewProps = {
-          ...this.state,
-          ...this.props,
-          ...this
-        };
-
-        return (
-          <ViewComponent {...viewProps} />
-        );
+    onEnterKeyPressed = (e: React.KeyboardEvent): void => {
+      if (e.key === 'Enter') {
+        this.confirmNameChange();
       }
     };
 
-const fileExplorerItemComposition = compose(
-  connect(
-    (state: RootState) => {
-      const isItemSelected = storageSelectors.isItemSelected(state);
-      const isSomeItemSelected = storageSelectors.isSomeItemSelected(state);
-      const currentFolderId = storageSelectors.currentFolderId(state);
+    onItemClicked = (): void => {
+      const { item, dispatch, isItemSelected } = this.props;
 
-      return {
-        isSomeItemSelected,
-        selectedItems: state.storage.selectedItems,
-        namePath: state.storage.namePath,
-        currentFolderId,
-        isItemSelected,
-        workspace: state.team.workspace,
-        isSidenavCollapsed: state.ui.isSidenavCollapsed,
-        isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen
+      if (!item.isFolder) {
+        isItemSelected(item)
+          ? dispatch(storageActions.deselectItems([item]))
+          : dispatch(storageActions.selectItems([item]));
+      }
+    };
+
+    onItemRightClicked = (e: React.MouseEvent): void => {
+      e.preventDefault();
+    };
+
+    onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
+      const { item, dispatch } = this.props;
+
+      e.target.checked ? dispatch(storageActions.selectItems([item])) : dispatch(storageActions.deselectItems([item]));
+    };
+
+    onRenameButtonClicked = (e: React.MouseEvent): void => {
+      const { item } = this.props;
+      const { nameInputRef } = this.state;
+
+      e.stopPropagation();
+
+      this.setState({ isEditingName: true, dirtyName: item.name }, () =>
+        setTimeout(() => nameInputRef.current?.focus(), 0),
+      );
+    };
+
+    onDownloadButtonClicked = (e: React.MouseEvent): void => {
+      const { item, dispatch } = this.props;
+
+      e.stopPropagation();
+
+      dispatch(storageThunks.downloadItemsThunk([item]));
+    };
+
+    onShareButtonClicked = (e: React.MouseEvent): void => {
+      const { dispatch, item } = this.props;
+
+      e.stopPropagation();
+
+      dispatch(storageActions.setItemToShare(item));
+      dispatch(uiActions.setIsShareItemDialogOpen(true));
+    };
+
+    onInfoButtonClicked = (e: React.MouseEvent): void => {
+      e.stopPropagation();
+      this.props.dispatch(storageActions.setInfoItem(this.props.item));
+      this.props.dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
+    };
+
+    onDeleteButtonClicked = (e: React.MouseEvent): void => {
+      const { dispatch, item } = this.props;
+
+      e.stopPropagation();
+
+      dispatch(storageActions.setItemsToDelete([item]));
+      dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    };
+
+    onItemDoubleClicked = (): void => {
+      const { dispatch, item } = this.props;
+
+      if (item.isFolder) {
+        dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+      }
+    };
+
+    render(): ReactNode {
+      const viewProps: FileExplorerItemViewProps = {
+        ...this.state,
+        ...this.props,
+        ...this,
       };
-    }),
+
+      return <ViewComponent {...viewProps} />;
+    }
+  };
+
+const fileExplorerItemComposition = compose(
+  connect((state: RootState) => {
+    const isItemSelected = storageSelectors.isItemSelected(state);
+    const isSomeItemSelected = storageSelectors.isSomeItemSelected(state);
+    const currentFolderId = storageSelectors.currentFolderId(state);
+
+    return {
+      isSomeItemSelected,
+      selectedItems: state.storage.selectedItems,
+      namePath: state.storage.namePath,
+      currentFolderId,
+      isItemSelected,
+      workspace: state.session.workspace,
+      isSidenavCollapsed: state.ui.isSidenavCollapsed,
+      isDriveItemInfoMenuOpen: state.ui.isDriveItemInfoMenuOpen,
+    };
+  }),
   DragSource(getDragSourceType, dragSourceSpec, dragSourceCollect),
   DropTarget(getDropTargetType, dropTargetSpec, dropTargetCollect),
-  fileExplorerItemWrapper
+  fileExplorerItemWrapper,
 );
 
 export default fileExplorerItemComposition;

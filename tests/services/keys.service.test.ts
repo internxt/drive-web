@@ -1,12 +1,14 @@
-import AesUtils from '../../src/lib/AesUtil';
+import { aes } from '@internxt/lib';
 import { isValid } from '../../src/lib/utilspgp';
 import { generateNewKeys } from '../../src/services/pgp.service';
-import { validateFormat } from '../../src/services/keys.service';
+import { getAesInitFromEnv, validateFormat } from '../../src/services/keys.service';
 
 import { config } from 'dotenv';
 config();
 
 describe('# keys service tests', () => {
+  const aesInit = getAesInitFromEnv();
+
   it('Should not update private key if encryption & encoding is fine', async () => {
     const keys = await generateNewKeys();
     const plainPrivateKey = keys.privateKeyArmored;
@@ -14,7 +16,7 @@ describe('# keys service tests', () => {
     expect(isValid(plainPrivateKey)).toBeTruthy();
 
     const password = '1234';
-    const encryptedPrivateKey = AesUtils.encrypt(plainPrivateKey, password);
+    const encryptedPrivateKey = aes.encrypt(plainPrivateKey, password, aesInit);
 
     const { update, newPrivKey, privkeyDecrypted } = await validateFormat(encryptedPrivateKey, password);
 
@@ -31,8 +33,8 @@ describe('# keys service tests', () => {
 
     const password = '1234';
 
-    const oldEncryptionPrivateKey = AesUtils.encrypt(plainPrivateKey, password, false, 9999);
-    const newEncryptionPrivateKey = AesUtils.encrypt(plainPrivateKey, password);
+    const oldEncryptionPrivateKey = aes.encrypt(plainPrivateKey, password, aesInit, 9999);
+    const newEncryptionPrivateKey = aes.encrypt(plainPrivateKey, password, aesInit);
 
     const { update, newPrivKey, privkeyDecrypted } = await validateFormat(oldEncryptionPrivateKey, password);
 
@@ -46,10 +48,10 @@ describe('# keys service tests', () => {
     const password = '1234';
 
     const plainPrivateKey = keys.privateKeyArmored;
-    const encryptedPrivateKeyUtf8 = AesUtils.encrypt(plainPrivateKey, password);
+    const encryptedPrivateKeyUtf8 = aes.encrypt(plainPrivateKey, password, aesInit);
 
     const base64PrivateKey = Buffer.from(plainPrivateKey).toString('base64');
-    const encryptedPrivateKeyBase64 = AesUtils.encrypt(base64PrivateKey, password);
+    const encryptedPrivateKeyBase64 = aes.encrypt(base64PrivateKey, password, aesInit);
 
     const { update, newPrivKey, privkeyDecrypted } = await validateFormat(encryptedPrivateKeyBase64, password);
 
@@ -63,10 +65,11 @@ describe('# keys service tests', () => {
     const password = '1234';
 
     const plainPrivateKey = keys.privateKeyArmored;
-    const encryptedPrivateKeyUtf8 = AesUtils.encrypt(plainPrivateKey, password);
+    const encryptedPrivateKeyUtf8 = aes.encrypt(plainPrivateKey, password, aesInit);
 
     const base64PrivateKey = Buffer.from(plainPrivateKey).toString('base64');
-    const encryptedPrivateKeyBase64 = AesUtils.encrypt(base64PrivateKey, password, false, 9999);
+
+    const encryptedPrivateKeyBase64 = aes.encrypt(base64PrivateKey, password, aesInit, 9999);
     const { update, newPrivKey, privkeyDecrypted } = await validateFormat(encryptedPrivateKeyBase64, password);
 
     expect(update).toBeTruthy();

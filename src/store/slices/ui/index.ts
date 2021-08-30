@@ -11,7 +11,7 @@ interface UISliceState {
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
-  currentAccountTab: string
+  currentAccountTab: string;
 }
 
 const initialState: UISliceState = {
@@ -23,7 +23,7 @@ const initialState: UISliceState = {
   isShareItemDialogOpen: false,
   isInviteMemberDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
-  currentAccountTab: 'billing'
+  currentAccountTab: 'billing',
 };
 
 export const uiSlice = createSlice({
@@ -58,7 +58,7 @@ export const uiSlice = createSlice({
       const currentQueryParams = queryString.parse(history.location.search);
       const newQueryParams = {
         ...currentQueryParams,
-        tab: action.payload
+        tab: action.payload,
       };
       const newQueryString = queryString.stringify(newQueryParams);
 
@@ -66,13 +66,13 @@ export const uiSlice = createSlice({
 
       history.push({
         pathname: history.location.pathname,
-        search: newQueryString && `?${newQueryString}`
+        search: newQueryString && `?${newQueryString}`,
       });
     },
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -83,7 +83,7 @@ export const {
   setIsShareItemDialogOpen,
   setIsInviteMemberDialogOpen,
   setIsDriveItemInfoMenuOpen,
-  setCurrentAccountTab
+  setCurrentAccountTab,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

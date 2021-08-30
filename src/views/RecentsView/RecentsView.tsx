@@ -4,8 +4,9 @@ import { connect } from 'react-redux';
 import FileExplorer from '../../components/FileExplorer/FileExplorer';
 import { DriveItemData } from '../../models/interfaces';
 import { AppDispatch, RootState } from '../../store';
-import { storageSelectors, storageThunks } from '../../store/slices/storage';
+import { storageSelectors } from '../../store/slices/storage';
 import history from '../../lib/history';
+import storageThunks from '../../store/slices/storage/storage.thunks';
 
 interface RecentsViewProps {
   isLoadingRecents: boolean;
@@ -13,8 +14,7 @@ interface RecentsViewProps {
   dispatch: AppDispatch;
 }
 
-class RecentsView extends Component<RecentsViewProps, {}> {
-
+class RecentsView extends Component<RecentsViewProps> {
   componentDidMount(): void {
     this.props.dispatch(storageThunks.resetNamePathThunk());
     this.refreshRecents();
@@ -24,11 +24,11 @@ class RecentsView extends Component<RecentsViewProps, {}> {
     const { dispatch } = this.props;
 
     dispatch(storageThunks.fetchRecentsThunk());
-  }
+  };
 
   redirectToDrive = () => {
     history.push('/app');
-  }
+  };
 
   render(): ReactNode {
     const { items, isLoadingRecents } = this.props;
@@ -52,6 +52,6 @@ export default connect((state: RootState) => {
 
   return {
     isLoadingRecents: state.storage.isLoadingRecents,
-    items: filteredItems
+    items: filteredItems,
   };
 })(RecentsView);

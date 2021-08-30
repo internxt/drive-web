@@ -2,23 +2,19 @@ import { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { storageThunks } from '../../../store/slices/storage';
 import { UserSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
 import BaseButton from '../../Buttons/BaseButton';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
   user: UserSettings | undefined;
 }
 
-const CreateFolderDialog = ({
-  onFolderCreated,
-  user
-}: CreateFolderDialogProps
-) => {
+const CreateFolderDialog = ({ onFolderCreated, user }: CreateFolderDialogProps) => {
   const [folderName, setFolderName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -28,7 +24,8 @@ const CreateFolderDialog = ({
   };
   const createFolder = async () => {
     setIsLoading(true);
-    await dispatch(storageThunks.createFolderThunk(folderName)).unwrap()
+    await dispatch(storageThunks.createFolderThunk(folderName))
+      .unwrap()
       .then(() => {
         onClose();
         onFolderCreated && onFolderCreated();
@@ -41,25 +38,21 @@ const CreateFolderDialog = ({
   };
 
   return (
-    <BaseDialog
-      isOpen={isOpen}
-      title='Create folder'
-      onClose={onClose}
-    >
-      <div className='w-64 self-center mt-4'>
+    <BaseDialog isOpen={isOpen} title="Create folder" onClose={onClose}>
+      <div className="w-64 self-center mt-4">
         <input
           autoFocus
           type="text"
-          placeholder='Enter folder name'
+          placeholder="Enter folder name"
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
           className="w-full py-2 px-2.5"
         />
       </div>
 
-      <div className='flex justify-center items-center bg-l-neutral-20 py-6 mt-6'>
-        <div className='flex w-64'>
-          <BaseButton classes='cancel w-full mr-4' onClick={onClose}>
+      <div className="flex justify-center items-center bg-l-neutral-20 py-6 mt-6">
+        <div className="flex w-64">
+          <BaseButton classes="cancel w-full mr-4" onClick={onClose}>
             Cancel
           </BaseButton>
           <BaseButton classes="w-full primary border" disabled={isLoading} onClick={onCreateButtonClicked}>
@@ -71,7 +64,6 @@ const CreateFolderDialog = ({
   );
 };
 
-export default connect(
-  (state: RootState) => ({
-    user: state.user.user
-  }))(CreateFolderDialog);
+export default connect((state: RootState) => ({
+  user: state.user.user,
+}))(CreateFolderDialog);

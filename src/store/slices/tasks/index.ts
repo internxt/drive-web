@@ -4,11 +4,11 @@ import { TaskStatus } from '../../../models/enums';
 import { NotificationData, UpdateNotificationPayload } from '../../../models/interfaces';
 
 interface TasksState {
-  notifications: NotificationData[],
+  notifications: NotificationData[];
 }
 
 const initialState: TasksState = {
-  notifications: []
+  notifications: [],
 };
 
 export const tasksSlice = createSlice({
@@ -20,8 +20,8 @@ export const tasksSlice = createSlice({
     },
     updateNotification: (state: TasksState, action: PayloadAction<UpdateNotificationPayload>) => {
       Object.assign(
-        state.notifications.find(n => n.uuid === action.payload.uuid),
-        action.payload.merge
+        state.notifications.find((n) => n.uuid === action.payload.uuid),
+        action.payload.merge,
       );
     },
     clearNotifications: (state: TasksState) => {
@@ -29,22 +29,18 @@ export const tasksSlice = createSlice({
     },
     resetState: (state: TasksState) => {
       Object.assign(state, initialState);
-    }
-  }
+    },
+  },
 });
 
 export const tasksSelectors = {
   getSuccessfulNotifications: (state: RootState): NotificationData[] =>
-    state.tasks.notifications.filter(n => n.status === TaskStatus.Success),
+    state.tasks.notifications.filter((n) => n.status === TaskStatus.Success),
   getFinishedNotifications: (state: RootState): NotificationData[] =>
-    state.tasks.notifications.filter(n => n.status === TaskStatus.Success || n.status === TaskStatus.Error)
+    state.tasks.notifications.filter((n) => n.status === TaskStatus.Success || n.status === TaskStatus.Error),
 };
 
-export const {
-  addNotification,
-  updateNotification,
-  clearNotifications
-} = tasksSlice.actions;
+export const { addNotification, updateNotification, clearNotifications } = tasksSlice.actions;
 
 export const tasksActions = tasksSlice.actions;
 

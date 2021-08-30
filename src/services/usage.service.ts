@@ -1,4 +1,5 @@
-import { getHeaders } from '../lib/auth';
+import httpService from './http.service';
+
 import { bytesToString } from './size.service';
 
 export interface UsageResponse {
@@ -6,19 +7,15 @@ export interface UsageResponse {
   total: number;
 }
 
-export async function fetchUsage(isTeam: boolean): Promise<UsageResponse> {
-  const response: Response = await fetch('/api/usage', { headers: getHeaders(true, false, isTeam) });
-
-  return response.json();
+export async function fetchUsage(): Promise<UsageResponse> {
+  return httpService.get('/api/usage');
 }
 
 export const getUserLimitString = (limit: number): string => {
   let result = '...';
 
   if (limit > 0) {
-    limit < 108851651149824 ?
-      result = bytesToString(limit) :
-      result = '\u221E';
+    limit < 108851651149824 ? (result = bytesToString(limit)) : (result = '\u221E');
   }
 
   return result;
@@ -26,7 +23,7 @@ export const getUserLimitString = (limit: number): string => {
 
 const usageService = {
   fetchUsage,
-  getUserLimitString
+  getUserLimitString,
 };
 
 export default usageService;

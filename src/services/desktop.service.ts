@@ -23,7 +23,7 @@ function getDownloadAppUrl(): string {
 }
 
 const desktopService = {
-  getDownloadAppUrl
+  getDownloadAppUrl,
 };
 
 export default desktopService;

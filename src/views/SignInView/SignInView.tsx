@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
+import { auth } from '@internxt/lib';
 
 import { initializeUserThunk, setUser } from '../../store/slices/user';
 import { RootState } from '../../store';
@@ -7,7 +9,7 @@ import { useAppDispatch } from '../../store/hooks';
 import BaseInput from '../../components/Inputs/BaseInput';
 import SideInfo from '../Authentication/SideInfo';
 import AuthButton from '../../components/Buttons/AuthButton';
-import validationService, { emailRegexPattern, twoFactorRegexPattern } from '../../services/validation.service';
+import { twoFactorRegexPattern } from '../../services/validation.service';
 import { check2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from '../../services/local-storage.service';
 import analyticsService from '../../services/analytics.service';
@@ -18,20 +20,22 @@ import { IFormValues, UserSettings } from '../../models/interfaces';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope } from '@iconscout/react-unicons';
 import { Link } from 'react-router-dom';
 import { planThunks } from '../../store/slices/plan';
-
-interface SignInProps {
-  email?: string,
-  password?: string,
-}
+import { productsThunks } from '../../store/slices/products';
+import errorService from '../../services/error.service';
 
 export const texts = {
   label: 'INTERNXT',
-  sublabel: 'BE LIMITLESS'
+  sublabel: 'BE LIMITLESS',
 };
 
-export default function SignInView(props: SignInProps): JSX.Element {
+export default function SignInView(): JSX.Element {
   const dispatch = useAppDispatch();
-  const { register, formState: { errors, isValid }, handleSubmit, control } = useForm<IFormValues>({ mode: 'onChange' });
+  const {
+    register,
+    formState: { errors, isValid },
+    handleSubmit,
+    control,
+  } = useForm<IFormValues>({ mode: 'onChange' });
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const twoFactorCode = useWatch({ control, name: 'twoFactorCode', defaultValue: '' });
@@ -47,7 +51,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
   const [showTwoFactorCode, setShowTwoFactorCode] = useState(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
-  const onSubmit: SubmitHandler<IFormValues> = async formData => {
+  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoggingIn(true);
     const { email, password } = formData;
 
@@ -62,9 +66,10 @@ export default function SignInView(props: SignInProps): JSX.Element {
         analyticsService.trackSignIn({ email, userId: data.user.uuid });
 
         try {
+          dispatch(productsThunks.initializeThunk());
           dispatch(planThunks.initializeThunk());
           await dispatch(initializeUserThunk()).unwrap();
-        } catch (e) {
+        } catch (e: unknown) {
           console.log(e);
         }
 
@@ -75,17 +80,18 @@ export default function SignInView(props: SignInProps): JSX.Element {
       } else {
         setShowTwoFactor(true);
       }
-    } catch (err) {
-      console.error('Login error. ' + err.message);
+    } catch (err: unknown) {
+      const castedError = errorService.castError(err);
 
-      if (err.message.includes('not activated') && validationService.validateEmail(email)) {
+      console.error('Login error. ' + castedError.message);
+
+      if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         history.push(`/activate/${email}`);
       } else {
-        analyticsService.signInAttempted(email, err);
+        analyticsService.signInAttempted(email, castedError);
       }
-      const error = err.message ? err.message : err;
 
-      setLoginError(error);
+      setLoginError([castedError.message]);
       setShowErrors(true);
     } finally {
       setIsLoggingIn(false);
@@ -115,19 +121,19 @@ export default function SignInView(props: SignInProps): JSX.Element {
   }, [isAuthenticated, token, user, registerCompleted]);
 
   return (
-    <div className='flex h-full w-full'>
+    <div className="flex h-full w-full">
       <SideInfo title="" subtitle="" />
 
-      <div className='flex flex-col items-center justify-center w-full'>
-        <form className='flex flex-col w-72' onSubmit={handleSubmit(onSubmit)}>
-          <img src={bigLogo} width='110' alt="" />
-          <span className='text-sm text-neutral-500 mt-1.5 mb-6' />
+      <div className="flex flex-col items-center justify-center w-full">
+        <form className="flex flex-col w-72" onSubmit={handleSubmit(onSubmit)}>
+          <img src={bigLogo} width="110" alt="" />
+          <span className="text-sm text-neutral-500 mt-1.5 mb-6" />
 
           <BaseInput
-            placeholder='Email'
-            label='email'
-            type='email'
-            icon={<UilEnvelope className='w-4'/>}
+            placeholder="Email"
+            label="email"
+            type="email"
+            icon={<UilEnvelope className="w-4" />}
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -136,14 +142,19 @@ export default function SignInView(props: SignInProps): JSX.Element {
           />
 
           <BaseInput
-            placeholder='Password'
+            placeholder="Password"
             label={'password'}
             type={showPassword ? 'text' : 'password'}
-            icon={password ?
-              (showPassword ?
-                <UilEyeSlash className='w-4' onClick={() => setShowPassword(false)}/>
-                : <UilEye className='w-4' onClick={() => setShowPassword(true)}/>) :
-              <UilLock className='w-4'/>
+            icon={
+              password ? (
+                showPassword ? (
+                  <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
+                ) : (
+                  <UilEye className="w-4" onClick={() => setShowPassword(true)} />
+                )
+              ) : (
+                <UilLock className="w-4" />
+              )
             }
             register={register}
             required={true}
@@ -151,52 +162,57 @@ export default function SignInView(props: SignInProps): JSX.Element {
             error={errors.password}
           />
 
-          {
-            showTwoFactor && (
-              <BaseInput
-                label='twoFactorCode'
-                placeholder='Two factor authentication code'
-                type={showTwoFactorCode ? 'text' :'password'}
-                error={errors.twoFactorCode}
-                register={register}
-                required={true}
-                icon={twoFactorCode ?
-                  (showTwoFactorCode ?
-                    <UilEyeSlash className='w-4' onClick={() => setShowTwoFactorCode(false)}/>
-                    :
-                    <UilEye className='w-4' onClick={() => setShowTwoFactorCode(true)}/>) :
-                  <UilLock className='w-4'/>
-                }
-                minLength={1}
-                pattern={twoFactorRegexPattern} />
+          {showTwoFactor && (
+            <BaseInput
+              label="twoFactorCode"
+              placeholder="Two factor authentication code"
+              type={showTwoFactorCode ? 'text' : 'password'}
+              error={errors.twoFactorCode}
+              register={register}
+              required={true}
+              icon={
+                twoFactorCode ? (
+                  showTwoFactorCode ? (
+                    <UilEyeSlash className="w-4" onClick={() => setShowTwoFactorCode(false)} />
+                  ) : (
+                    <UilEye className="w-4" onClick={() => setShowTwoFactorCode(true)} />
+                  )
+                ) : (
+                  <UilLock className="w-4" />
+                )
+              }
+              minLength={1}
+              pattern={twoFactorRegexPattern}
+            />
+          )}
 
-            )
-          }
-
-          {
-            loginError && showErrors &&
-            <div className='flex my-1'>
-              <span className='text-red-60 text-sm w-56 font-medium'>{loginError}</span>
+          {loginError && showErrors && (
+            <div className="flex my-1">
+              <span className="text-red-60 text-sm w-56 font-medium">{loginError}</span>
             </div>
-          }
+          )}
 
-          <div className='mt-2'>
-            <AuthButton isDisabled={isLoggingIn || !isValid} text='Sign in' textWhenDisabled={isValid ? 'Decrypting...' : 'Sign in'} />
+          <div className="mt-2">
+            <AuthButton
+              isDisabled={isLoggingIn || !isValid}
+              text="Sign in"
+              textWhenDisabled={isValid ? 'Decrypting...' : 'Sign in'}
+            />
           </div>
         </form>
 
-        <div className='flex flex-col items-center w-72'>
+        <div className="flex flex-col items-center w-72">
           <span
-            onClick={(e: any) => {
+            onClick={(): void => {
               analyticsService.trackUserResetPasswordRequest();
               history.push('/remove');
             }}
-            className='cursor-pointer text-sm text-center text-blue-60 hover:text-blue-80 mt-3.5'
+            className="cursor-pointer text-sm text-center text-blue-60 hover:text-blue-80 mt-3.5"
           >
             Forgot your password?
           </span>
 
-          <div className='flex w-full justify-center text-sm mt-3'>
+          <div className="flex w-full justify-center text-sm mt-3">
             <span className="mr-2">Don't have an account?</span>
             <Link to="/new">Get started</Link>
           </div>
