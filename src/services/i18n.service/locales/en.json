@@ -57,7 +57,7 @@
     "upload-folder": {
       "pending": "Pending to upload",
       "encrypting": "Encrypting files",
-      "in-process": "Uploading folder",
+      "in-process": "{progress}% Uploading folder",
       "success": "Folder uploaded",
       "error": "Error during upload"
     },
