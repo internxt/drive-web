@@ -185,36 +185,38 @@ const fileExplorerItemWrapper = (
       };
     }
 
-      get nameNode(): JSX.Element {
-        const { item } = this.props;
-        const { isEditingName, dirtyName, nameInputRef } = this.state;
-        const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
+    get nameNode(): JSX.Element {
+      const { item } = this.props;
+      const { isEditingName, dirtyName, nameInputRef } = this.state;
+      const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
 
-        return (
-          <Fragment>
-            <div className={isEditingName ? 'block' : 'hidden'}>
-              <input
-                className="dense border border-white no-ring rect"
-                onClick={(e) => e.stopPropagation()}
-                ref={nameInputRef}
-                type="text"
-                value={dirtyName}
-                placeholder="Name"
-                onChange={this.onNameChanged}
-                onBlur={this.onNameBlurred}
-                onKeyPress={this.onEnterKeyPressed}
-                autoFocus
-              />
-              <span className="ml-1">{item.type ? ('.' + item.type) : ''}</span>
-            </div>
-            <span
-              className={`${spanDisplayClass} file-list-item-name-span`}
+      return (
+        <Fragment>
+          <div className={isEditingName ? 'block' : 'hidden'}>
+            <input
+              className="dense border border-white no-ring rect"
               onClick={(e) => e.stopPropagation()}
-              onDoubleClick={this.onNameDoubleClicked}
-            >{items.getItemDisplayName(item)}</span>
-          </Fragment>
-        );
-      }
+              ref={nameInputRef}
+              type="text"
+              value={dirtyName}
+              placeholder="Name"
+              onChange={this.onNameChanged}
+              onBlur={this.onNameBlurred}
+              onKeyPress={this.onEnterKeyPressed}
+              autoFocus
+            />
+            <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
+          </div>
+          <span
+            className={`${spanDisplayClass} file-list-item-name-span`}
+            onClick={(e) => e.stopPropagation()}
+            onDoubleClick={this.onNameDoubleClicked}
+          >
+            {items.getItemDisplayName(item)}
+          </span>
+        </Fragment>
+      );
+    }
 
     async confirmNameChange() {
       const { item, dispatch } = this.props;
