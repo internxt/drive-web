@@ -21,7 +21,6 @@
     "jsx": "react-jsx",
     "noImplicitAny": false,
     "downlevelIteration": true,
-    "useUnknownInCatchVariables": false
   },
   "types": [
     "filesystem"
