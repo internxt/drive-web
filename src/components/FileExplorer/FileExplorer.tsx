@@ -162,7 +162,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     const { user } = this.props;
 
     return new Promise((resolve, reject) => {
-      fetch(`${process.env.REACT_APP_API_URL}/api/teams-members/${user.email}`, {
+      fetch(`${process.env.REACT_APP_API_URL}/api/teams-members/${user?.email}`, {
         method: 'get',
         headers: getHeaders(true, false)
       }).then((result) => {
