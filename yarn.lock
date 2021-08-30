@@ -1403,10 +1403,10 @@
     streamsaver "^2.0.4"
     winston "^3.3.3"
 
-"@internxt/lib@^1.0.5":
-  version "1.0.5"
-  resolved "https://npm.pkg.github.com/download/@internxt/lib/1.0.5/dc7bb1b3b89fad2ad119997f37ceaedd63946f059dabb71950590c2f16fcb8e2#766189757663f4cfc21419b0eeb7a498414e3c6f"
-  integrity sha512-FC3ko/DZ7JSITcSx4dVhnk0SmrMsMj0XuUBweIuIvuNlGgGa/iAWjuZWvpIjIRWO/TW/xHWd4PObvuYXULCnvw==
+"@internxt/lib@1.1.0":
+  version "1.1.0"
+  resolved "https://npm.pkg.github.com/download/@internxt/lib/1.1.0/51fed0ed320e96f95d02858057908834ee504d9d0547edddf9ec33a275f0a645#4e5f10bc0a904b94b56f763b323d97aee95d4e5e"
+  integrity sha512-+FN7Dx0+N5qxmrsZq7JZcuVX4YEZcrSX0b0qYygiB5edZKxtf0CFrpCN8MFKH4vWNm5OFj8dG3ehcTrYNIT0KA==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"

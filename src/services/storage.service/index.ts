@@ -1,7 +1,6 @@
 import fileService from '../file.service';
 import folderService from '../folder.service';
 import upload from './storage-upload.service';
-import name from './storage-name.service';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../../models/interfaces';
 
 export function deleteItems(items: DriveItemData[], isTeam: boolean): Promise<any> {
@@ -27,8 +26,7 @@ export function moveItem(item: DriveItemData, destinationFolderId: number): Prom
 const storageService = {
   deleteItems,
   moveItem,
-  upload,
-  name
+  upload
 };
 
 export default storageService;
