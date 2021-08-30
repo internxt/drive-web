@@ -8,10 +8,13 @@ import { store } from './store';
 import { userActions } from './store/slices/user';
 import { teamActions } from './store/slices/team';
 
-import './index.scss';
-import { storageThunks } from './store/slices/storage';
-import { planThunks } from './store/slices/plan';
 import plugins from './plugins';
+import { planThunks } from './store/slices/plan';
+import { productsThunks } from './store/slices/products';
+import storageThunks from './store/slices/storage/storage.thunks';
+import { sessionActions } from './store/slices/session';
+
+import './index.scss';
 
 // Installs plugins
 plugins.forEach(plugin => plugin.install(store));
@@ -19,8 +22,10 @@ plugins.forEach(plugin => plugin.install(store));
 // Initializes store
 store.dispatch(userActions.initialize());
 store.dispatch(teamActions.initialize());
+store.dispatch(sessionActions.initialize());
 store.dispatch(storageThunks.initializeThunk());
 store.dispatch(planThunks.initializeThunk());
+store.dispatch(productsThunks.initializeThunk());
 
 ReactDOM.render(
   <React.StrictMode>

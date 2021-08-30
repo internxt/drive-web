@@ -8,7 +8,7 @@ import { getHeaders } from '../../lib/auth';
 import { DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
 import { Workspace } from '../../models/enums';
 
-import { storageThunks, storageActions, storageSelectors, StorageFilters } from '../../store/slices/storage';
+import { storageActions, storageSelectors } from '../../store/slices/storage';
 import { AppDispatch, RootState } from '../../store';
 
 import DriveItemInfoMenu from '../DriveItemInfoMenu/DriveItemInfoMenu';
@@ -29,6 +29,9 @@ import { getAllItems } from '../../services/drag-and-drop.service';
 import DeleteItemsDialog from '../dialogs/DeleteItemsDialog/DeleteItemsDialog';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
+import { StorageFilters } from '../../store/slices/storage/storage.model';
+import storageThunks from '../../store/slices/storage/storage.thunks';
+import { planThunks } from '../../store/slices/plan';
 
 interface FileExplorerProps {
   title: JSX.Element | string;
@@ -51,6 +54,7 @@ interface FileExplorerProps {
   dispatch: AppDispatch;
   workspace: Workspace;
   planLimit: number;
+  planUsage: number;
   isOver: boolean;
   connectDropTarget: ConnectDropTarget;
 }
@@ -103,13 +107,12 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   }
 
   onUploadInputChanged = async (e) => {
-    const { planLimit } = this.props;
-    const isTeam = this.props.workspace === Workspace.Business;
+    const { dispatch, planLimit } = this.props;
 
     try {
-      const usage: UsageResponse = await usageService.fetchUsage(isTeam);
+      const planUsage: number = await dispatch(planThunks.fetchUsageThunk()).unwrap();
 
-      if (planLimit && usage.total >= planLimit) {
+      if (planLimit && planUsage >= planLimit) {
         this.props.dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
       } else {
         this.dispatchUpload(e);
@@ -156,34 +159,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   }
 
   onNextPageButtonClicked = (): void => {
-  }
-
-  getTeamByUser = () => {
-    const { user } = this.props;
-
-    return new Promise((resolve, reject) => {
-      fetch(`${process.env.REACT_APP_API_URL}/api/teams-members/${user?.email}`, {
-        method: 'get',
-        headers: getHeaders(true, false)
-      }).then((result) => {
-        if (result.status !== 200) {
-          return;
-        }
-        return result.json();
-      }).then(result => {
-        if (result.admin === user?.email) {
-          result.rol = 'admin';
-          this.setState({ isAdmin: true, isMember: false });
-        } else {
-          result.rol = 'member';
-          this.setState({ isAdmin: false, isMember: true });
-        }
-        resolve(result);
-      }).catch(err => {
-        console.log(err);
-        reject(err);
-      });
-    });
   }
 
   render(): ReactNode {
@@ -384,7 +359,8 @@ export default connect(
       infoItem: state.storage.infoItem,
       viewMode: state.storage.viewMode,
       namePath: state.storage.namePath,
-      workspace: state.team.workspace,
-      planLimit: state.plan.limit
+      workspace: state.session.workspace,
+      planLimit: state.plan.planLimit,
+      planUsage: state.plan.planUsage
     };
   })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(FileExplorer));

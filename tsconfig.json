@@ -20,7 +20,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "noImplicitAny": false,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "useUnknownInCatchVariables": false
   },
   "types": [
     "filesystem"

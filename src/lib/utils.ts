@@ -1,7 +1,8 @@
 import copy from 'copy-to-clipboard';
 import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../models/interfaces';
-import AesUtil from './AesUtil';
+import { aes, items as itemUtils } from '@internxt/lib';
+import { getAesInitFromEnv } from '../services/keys.service';
 
 interface PassObjectInterface {
   salt?: string | null
@@ -100,15 +101,11 @@ function encryptFilename(filename:string, folderId: number): string {
     throw new Error('Cannot encrypt filename due to missing encryption key');
   }
 
-  return AesUtil.encrypt(filename, `${CRYPTO_KEY}-${folderId}`);
+  return aes.encrypt(filename, `${CRYPTO_KEY}-${folderId}`, getAesInitFromEnv());
 }
 
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[]{
-  return items.filter((item) => !isHiddenItem(item));
-}
-
-function isHiddenItem(item: DriveItemData): boolean{
-  return !!item.name.match(/^\..*$/);
+  return items.filter((item) => !itemUtils.isHiddenItem(item));
 }
 
 function renameFile(file: File, newName: string): File {
@@ -124,7 +121,6 @@ export {
   encryptTextWithKey,
   decryptTextWithKey,
   getFilenameAndExt,
-  excludeHiddenItems,
-  isHiddenItem,
-  renameFile
+  renameFile,
+  excludeHiddenItems
 };

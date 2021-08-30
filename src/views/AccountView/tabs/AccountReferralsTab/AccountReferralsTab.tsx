@@ -4,13 +4,13 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import localStorageService from '../../../../services/local-storage.service';
 import { IFormValues } from '../../../../models/interfaces';
 import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../../services/referral.service';
-import { emailRegexPattern } from '../../../../services/validation.service';
+import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import BaseInput from '../../../../components/Inputs/BaseInput';
-import notify, { ToastType } from '../../../../components/Notifications';
 import BaseButton from '../../../../components/Buttons/BaseButton';
 import { UilEnvelope, UilPaperclip } from '@iconscout/react-unicons';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 const AccountReferralsTab = (): JSX.Element => {
   const { register, formState: { errors, isValid }, handleSubmit, control, reset } = useForm<IFormValues>({ mode: 'onChange' });
@@ -29,10 +29,10 @@ const AccountReferralsTab = (): JSX.Element => {
       }
       setIsLoadingInvite(true);
       await sendInvitationEmail(formData.email);
-      notify(i18n.get('success.referralInvitationSent'), ToastType.Success);
+      notificationsService.show(i18n.get('success.referralInvitationSent'), ToastType.Success);
       reset();
     } catch (err) {
-      notify(err.message || i18n.get('error.sendReferralInvitation'), ToastType.Error);
+      notificationsService.show(err.message || i18n.get('error.sendReferralInvitation'), ToastType.Error);
 
     } finally {
       setIsLoadingInvite(false);
@@ -41,15 +41,15 @@ const AccountReferralsTab = (): JSX.Element => {
 
   const onClaim = async () => {
     if (credit <= 0) {
-      notify(i18n.get('error.anyReferralCredit'), ToastType.Info);
+      notificationsService.show(i18n.get('error.anyReferralCredit'), ToastType.Info);
       return;
     }
     try {
       setIsLoadingClaim(true);
       await sendClaimEmail(email);
-      notify(i18n.get('success.claimEmailSent'), ToastType.Success);
+      notificationsService.show(i18n.get('success.claimEmailSent'), ToastType.Success);
     } catch (err) {
-      notify(i18n.get('error.sendClaimEmail'), ToastType.Error);
+      notificationsService.show(i18n.get('error.sendClaimEmail'), ToastType.Error);
     } finally {
       setIsLoadingClaim(false);
     }
@@ -108,7 +108,7 @@ const AccountReferralsTab = (): JSX.Element => {
         <div className='w-full bg-l-neutral-20 flex items-center p-3 justify-between rounded-md cursor-pointer'
           onClick={() => {
             navigator.clipboard.writeText(linkToCopy);
-            notify(i18n.get('success.linkCopied'), ToastType.Info);
+            notificationsService.show(i18n.get('success.linkCopied'), ToastType.Info);
           }}>
           <span className='text-neutral-700 text-sm truncate mr-3'>{linkToCopy}</span>
           <UilPaperclip className="text-blue-60 w-4" />

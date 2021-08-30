@@ -1,13 +1,12 @@
 import { RootState } from '../..';
 import { DriveItemData } from '../../../models/interfaces';
-import { selectorIsTeam } from '../team';
+import { sessionSelectors } from '../session/session.selectors';
 
 const storageSelectors = {
   rootFolderId(state: RootState): number {
     const { team } = state.team;
     const { user } = state.user;
-
-    const isTeam: boolean = selectorIsTeam(state);
+    const isTeam: boolean = sessionSelectors.isTeam(state);
 
     return (isTeam ?
       team?.root_folder_id :

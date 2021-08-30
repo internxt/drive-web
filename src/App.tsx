@@ -7,7 +7,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 
 import { initializeUserThunk } from './store/slices/user';
-import { setHasConnection } from './store/slices/network';
+import { sessionActions } from './store/slices/session';
 import { AppViewConfig, UserSettings } from './models/interfaces';
 import configService from './services/config.service';
 import analyticsService, { PATH_NAMES } from './services/analytics.service';
@@ -37,10 +37,10 @@ class App extends Component<AppProps, AppState> {
     const dispatch: AppDispatch = this.props.dispatch;
 
     window.addEventListener('offline', () => {
-      dispatch(setHasConnection(false));
+      dispatch(sessionActions.setHasConnection(false));
     });
     window.addEventListener('online', () => {
-      dispatch(setHasConnection(true));
+      dispatch(sessionActions.setHasConnection(true));
     });
 
     try {

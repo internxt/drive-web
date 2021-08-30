@@ -8,11 +8,11 @@ import { IFormValues, InfoInvitationsMembers, TeamsSettings } from '../../../mod
 import { RootState } from '../../../store';
 import BaseInput from '../../Inputs/BaseInput';
 import AuthButton from '../../Buttons/AuthButton';
-import notify, { ToastType } from '../../Notifications';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { getMembers, removeMember, sendEmailTeamsMember } from '../../../services/teams.service';
 import { uiActions } from '../../../store/slices/ui';
 import i18n from '../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../services/notifications.service';
 
 interface InviteMemberCreateDialogProps {
   team: TeamsSettings | undefined | null
@@ -42,7 +42,7 @@ const InviteMemberCreateDialog = ({
     try {
       if (team && team.isAdmin) {
         await sendEmailTeamsMember(formData.email);
-        notify(
+        notificationsService.show(
           i18n.get('success.teamInvitationSent', { email: formData.email }),
           ToastType.Success
         );
@@ -57,8 +57,8 @@ const InviteMemberCreateDialog = ({
         }
 
       }
-    } catch (error) {
-      notify(error.message || error, ToastType.Error);
+    } catch (error: any) {
+      notificationsService.show(error.message || error, ToastType.Error);
     }
 
   };
@@ -71,9 +71,9 @@ const InviteMemberCreateDialog = ({
       const filterRemovedMember = members.filter(member => member.user !== memberToDelete.user);
 
       setMembers(filterRemovedMember);
-      notify(i18n.get('success.deletedTeamMember', { resource }), ToastType.Success);
+      notificationsService.show(i18n.get('success.deletedTeamMember', { resource }), ToastType.Success);
     } catch (error) {
-      notify(i18n.get('error.deleteTeamMember'), ToastType.Error);
+      notificationsService.show(i18n.get('error.deleteTeamMember'), ToastType.Error);
     }
   };
 

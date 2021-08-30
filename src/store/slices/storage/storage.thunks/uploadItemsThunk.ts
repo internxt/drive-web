@@ -1,18 +1,20 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
+import { items as itemUtils } from '@internxt/lib';
 
-import notify, { ToastType } from '../../../../components/Notifications';
 import i18n from '../../../../services/i18n.service';
-import { selectorIsTeam } from '../../team';
 import folderService from '../../../../services/folder.service';
 import { getFilenameAndExt, renameFile } from '../../../../lib/utils';
 import storageService from '../../../../services/storage.service';
 import { TaskType, TaskStatus } from '../../../../models/enums';
 import { DriveFileData, DriveItemData, NotificationData, UserSettings } from '../../../../models/interfaces';
 import { tasksActions } from '../../tasks';
-import { storageActions, StorageState } from '..';
-import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../lib/constants';
+import { storageActions } from '..';
 import { ItemToUpload } from '../../../../services/storage.service/storage-upload.service';
 import { RootState } from '../../..';
+import { StorageState } from '../storage.model';
+import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../lib/constants';
+import { sessionSelectors } from '../../session/session.selectors';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 interface UploadItemsPayload {
   files: File[];
@@ -36,7 +38,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const { namePath } = getState().storage;
 
     const showSizeWarning = files.some(file => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
-    const isTeam: boolean = selectorIsTeam(getState());
+    const isTeam: boolean = sessionSelectors.isTeam(getState());
     const relativePath = namePath.map((pathLevel) => pathLevel.name).slice(1).join('/');
     const filesToUpload: ItemToUpload[] = [];
     const uploadErrors: any[] = [];
@@ -45,7 +47,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     options = Object.assign({ withNotifications: true }, options || {});
 
     if (showSizeWarning) {
-      notify(
+      notificationsService.show(
         'File too large.\nYou can only upload or download files of up to 1GB through the web app',
         ToastType.Warning
       );
@@ -53,9 +55,9 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     }
 
     for (const [index, file] of files.entries()) {
-      const { filename, extension } = getFilenameAndExt(file.name);
-      const parentFolderContent = await folderService.fetchFolderContent(parentFolderId, isTeam);
-      const [filenameExist, filenameIndex, finalFilename] = storageService.name.checkFileNameExists(parentFolderContent.newCommanderFiles, filename, extension);
+      const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
+      const parentFolderContent = await folderService.fetchFolderContent(parentFolderId);
+      const [filenameExist, filenameIndex, finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
       const fileContent = renameFile(file, finalFilename);
       const notification: NotificationData = {
         uuid: `${requestId}-${index}`,
@@ -152,7 +154,7 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsThunk.pending, (state, action) => { })
     .addCase(uploadItemsThunk.fulfilled, (state, action) => { })
     .addCase(uploadItemsThunk.rejected, (state, action) => {
-      notify(
+      notificationsService.show(
         i18n.get('error.uploadingFile', { reason: action.error.message || '' }),
         ToastType.Error
       );

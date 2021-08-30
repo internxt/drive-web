@@ -7,12 +7,12 @@ import { store2FA } from '../../../../services/auth.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import BaseInput from '../../../../components/Inputs/BaseInput';
 import { twoFactorRegexPattern } from '../../../../services/validation.service';
-import notify, { ToastType } from '../../../../components/Notifications';
 import googleAuthenticatorIcon from '../../../../assets/icons/google-authenticator.svg';
 import appStoreIcon from '../../../../assets/icons/app-store.svg';
 import playStoreIcon from '../../../../assets/icons/play-store.svg';
 import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 interface StepsProps {
   currentStep: number,
@@ -38,11 +38,11 @@ const Steps = ({ currentStep, qr, backupKey, setHas2FA }: StepsProps): JSX.Eleme
       setIsLoading(true);
 
       await store2FA(backupKey, formData.twoFactorCode);
-      notify(i18n.get('success.twoFactorAuthActivated'), ToastType.Success);
+      notificationsService.show(i18n.get('success.twoFactorAuthActivated'), ToastType.Success);
       setHas2FA(true);
       reset();
     } catch (err) {
-      notify(err.message || i18n.get('error.serverError'), ToastType.Error);
+      notificationsService.show(err.message || i18n.get('error.serverError'), ToastType.Error);
     } finally {
       setIsLoading(false);
     }

@@ -3,39 +3,40 @@ import { toast } from 'react-toastify';
 import { RootState } from '../..';
 
 import history from '../../../lib/history';
-import { IUserPlan, UserSettings } from '../../../models/interfaces';
-import { Workspace } from '../../../models/enums';
+import { UserSettings } from '../../../models/interfaces';
 import localStorageService from '../../../services/local-storage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
-import { selectorIsTeam, setWorkspace, teamActions } from '../team';
+import { teamActions } from '../team';
 import authService from '../../../services/auth.service';
 import { tasksActions } from '../tasks';
 import { uiActions } from '../ui';
-import { planThunks } from '../plan';
+import { sessionActions } from '../session';
+import { storageActions } from '../storage';
 
 interface UserState {
   isInitializing: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;
-  user?: UserSettings,
-  currentPlan: null | IUserPlan,
-  isLoadingStripe: boolean
+  user?: UserSettings
 }
 
 const initialState: UserState = {
   isInitializing: false,
   isAuthenticated: false,
   isInitialized: false,
-  user: undefined,
-  currentPlan: null,
-  isLoadingStripe: true
+  user: undefined
 };
 
-export const initializeUserThunk = createAsyncThunk(
+export const initializeUserThunk = createAsyncThunk<void, {redirectToLogin: boolean } | undefined, { state: RootState }>(
   'user/initialize',
-  async (payload: { redirectToLogin: boolean } = { redirectToLogin: true }, { dispatch, getState }: any) => {
+  async (payload: { redirectToLogin?: boolean } = {}, { dispatch, getState }) => {
+    const defaultPayload = {
+      redirectToLogin: true
+    };
     const { user, isAuthenticated } = getState().user;
+
+    payload = { ...defaultPayload, ...payload };
 
     if (user && isAuthenticated) {
       if (!user.root_folder_id) {
@@ -64,26 +65,15 @@ export const initializeUserThunk = createAsyncThunk(
   }
 );
 
-export const changeWorkspaceThunk = createAsyncThunk<void, void, { state: RootState }>(
-  'user/changeWorkspace',
-  async (payload: void, { dispatch, getState }) => {
-    const isTeam: boolean = selectorIsTeam(getState());
-    const newWorkspace = isTeam ? Workspace.Personal : Workspace.Business;
-
-    dispatch(setWorkspace(newWorkspace));
-    localStorageService.set('workspace', newWorkspace);
-
-    dispatch(planThunks.initializeThunk());
-  }
-);
-
 export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
   'user/logout',
   async (payload: void, { dispatch, getState }) => {
     authService.logOut();
 
-    dispatch(teamActions.resetState());
+    dispatch(sessionActions.resetState());
     dispatch(userActions.resetState());
+    dispatch(teamActions.resetState());
+    dispatch(storageActions.resetState());
     dispatch(uiActions.resetState());
     dispatch(tasksActions.resetState());
   }
@@ -93,9 +83,6 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    resetState: (state: UserState) => {
-      Object.assign(state, initialState);
-    },
     initialize: (state: UserState) => {
       state.user = localStorageService.getUser() || undefined;
       state.isAuthenticated = !!state.user;
@@ -109,11 +96,8 @@ export const userSlice = createSlice({
 
       localStorageService.set('xUser', JSON.stringify(action.payload));
     },
-    setUserPlan: (state: UserState, action: PayloadAction<IUserPlan>) => {
-      state.currentPlan = action.payload;
-    },
-    setIsLoadingStripePlan: (state: UserState, action: PayloadAction<boolean>) => {
-      state.isLoadingStripe = action.payload;
+    resetState: (state: UserState) => {
+      Object.assign(state, initialState);
     }
   },
   extraReducers: (builder) => {
@@ -144,22 +128,13 @@ export const {
   initialize,
   resetState,
   setIsUserInitialized,
-  setUser,
-  setUserPlan
+  setUser
 } = userSlice.actions;
 export const userActions = userSlice.actions;
 
-export const selectUserPlan = (state: RootState): IUserPlan | null => state.user.currentPlan;
-export const setIsLoadingStripePlan = (state: RootState): boolean => state.user.isLoadingStripe;
 export const userThunks = {
   initializeUserThunk,
-  logoutThunk,
-  changeWorkspaceThunk
-};
-
-export const userSelectors = {
-  selectUserPlan,
-  setIsLoadingStripePlan
+  logoutThunk
 };
 
 export default userSlice.reducer;

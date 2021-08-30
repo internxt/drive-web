@@ -6,7 +6,8 @@ import Breadcrumbs, { BreadcrumbItemData } from '../../components/Breadcrumbs/Br
 import FileExplorer from '../../components/FileExplorer/FileExplorer';
 import { DriveItemData, FolderPath } from '../../models/interfaces';
 import { AppDispatch, RootState } from '../../store';
-import { storageSelectors, storageThunks } from '../../store/slices/storage';
+import { storageSelectors } from '../../store/slices/storage';
+import storageThunks from '../../store/slices/storage/storage.thunks';
 
 interface DriveViewProps {
   namePath: FolderPath[];
@@ -27,7 +28,7 @@ class DriveView extends Component<DriveViewProps, {}> {
   fetchItems = (): void => {
     const { dispatch } = this.props;
 
-    dispatch(storageThunks.fetchFolderContentThunk(-1));
+    dispatch(storageThunks.fetchFolderContentThunk());
   }
 
   get breadcrumbItems(): BreadcrumbItemData[] {

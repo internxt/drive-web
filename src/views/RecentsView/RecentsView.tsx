@@ -4,8 +4,9 @@ import { connect } from 'react-redux';
 import FileExplorer from '../../components/FileExplorer/FileExplorer';
 import { DriveItemData } from '../../models/interfaces';
 import { AppDispatch, RootState } from '../../store';
-import { storageSelectors, storageThunks } from '../../store/slices/storage';
+import { storageSelectors } from '../../store/slices/storage';
 import history from '../../lib/history';
+import storageThunks from '../../store/slices/storage/storage.thunks';
 
 interface RecentsViewProps {
   isLoadingRecents: boolean;

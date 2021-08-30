@@ -2,7 +2,6 @@ import { useSelector } from 'react-redux';
 import { DriveItemData } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { storageThunks } from '../../../store/slices/storage';
 import { setItemsToDelete } from '../../../store/slices/storage';
 import BaseDialog from '../BaseDialog/BaseDialog';
 
@@ -10,6 +9,7 @@ import './DeleteItemsDialog.scss';
 import { useState } from 'react';
 import { uiActions } from '../../../store/slices/ui';
 import BaseButton from '../../Buttons/BaseButton';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
 
 interface DeleteItemsDialogProps {
   onItemsDeleted?: () => void;

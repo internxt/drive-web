@@ -1,14 +1,14 @@
-import React, { SetStateAction } from 'react';
-import { useState } from 'react';
+import React, { SetStateAction, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
+
 import { IFormValues } from '../../../../models/interfaces';
 import { deactivate2FA } from '../../../../services/auth.service';
 import { twoFactorRegexPattern } from '../../../../services/validation.service';
 import AuthButton from '../../../../components/Buttons/AuthButton';
 import BaseInput from '../../../../components/Inputs/BaseInput';
-import notify, { ToastType } from '../../../../components/Notifications';
-import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
 import i18n from '../../../../services/i18n.service';
+import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
 interface Deactivate2FAProps {
   passwordSalt: string,
@@ -29,12 +29,12 @@ const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Ele
       setIsLoading(true);
       await deactivate2FA(passwordSalt, formData.password, formData.twoFactorCode);
 
-      notify(i18n.get('success.twoFactorAuthDisabled'), ToastType.Success);
+      notificationsService.show(i18n.get('success.twoFactorAuthDisabled'), ToastType.Success);
       setHas2FA(false);
       reset();
     } catch (err) {
       console.log(err);
-      notify(err.message || i18n.get('error.serverError'), ToastType.Error);
+      notificationsService.show(err.message || i18n.get('error.serverError'), ToastType.Error);
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,12 @@
 {
   "plan": {
     "freePlanStorageLimit": 2147483648,
-    "maxStorageLimit": 108851651149824
+    "maxStorageLimit": 108851651149824,
+    "defaultFeatures": [
+      "Web, Desktop & Mobile apps",
+      "Unlimited devices",
+      "Secure file sharing"
+    ]
   },
   "fileExplorer": {
     "recentsLimit": 10
@@ -14,7 +19,7 @@
       "exact": true
     },
     {
-      "id":  "appsumo",
+      "id": "appsumo",
       "layout": "empty",
       "path": "/appsumo",
       "exact": true
