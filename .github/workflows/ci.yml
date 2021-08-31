@@ -36,18 +36,19 @@ jobs:
       # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
       - run: echo "always-auth=true" >> .npmrc
-      - run: yarn
+
+      - name: Install
+        run: yarn
+      - name: Build
+        run: yarn build
 
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          build: yarn build 
           start: yarn start
       # - run: yarn run test
       #   env:
       #     CI: true # TODO: UNDO ASAP
-      - name: Build
-        run: yarn build
       - name: Install netlify
         run: npm install -g netlify
       - name: Deploy build
