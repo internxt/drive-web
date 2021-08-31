@@ -28,8 +28,6 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
     } = this.props;
     const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
 
-    console.log(items);
-
     return (
       <Fragment>
         <div className={isEditingName ? 'flex' : 'hidden'}>
@@ -126,7 +124,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
           <div className="pl-3 w-2/12 items-center hidden xl:flex">
             <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
               {!item.isFolder ?
-                <button onClick={onDownloadButtonClicked} className="hover-action mr-4">
+                <button onClick={onDownloadButtonClicked} className="hover-action mr-4" data-test="download-file-button">
                   <Unicons.UilCloudDownload className="h-5" />
                 </button> : null
               }

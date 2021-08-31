@@ -27,3 +27,5 @@ debug.log
 .eslintcache
 
 .npmrc
+
+cypress/downloads
