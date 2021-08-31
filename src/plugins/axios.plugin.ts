@@ -23,10 +23,6 @@ const axiosPlugin: AppPlugin = {
         (localStorageService.get(LocalStorageItem.Workspace) as Workspace) ||
         Workspace.Personal;
 
-      console.log('axios.plugin url: ', requestConfig.url);
-      console.log('axios.plugin workspace: ', workspace);
-      console.log('axios.plugin token: ', tokenByWorkspace[workspace]);
-
       requestConfig.headers = {
         'content-type': 'application/json; charset=utf-8',
         'internxt-version': '1.0.0',
