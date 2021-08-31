@@ -1,28 +1,27 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import FileLoggerItem from './FileLoggerItem/FileLoggerItem';
 import './FileLogger.scss';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { useEffect } from 'react';
 import spinnerIcon from '../../assets/icons/spinner.svg';
-import { tasksActions, tasksSelectors } from '../../store/slices/tasks';
-import { TaskStatus, TaskType } from '../../models/enums';
+import { taskManagerActions, taskManagerSelectors } from '../../store/slices/task-manager';
+import { TaskStatus } from '../../services/task-manager.service';
 
 const FileLogger = (): JSX.Element => {
-  const notifications = useAppSelector((state) => state.tasks.notifications);
   const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinized] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const finishedNotifications = useAppSelector(tasksSelectors.getFinishedNotifications);
-  const items: JSX.Element[] = notifications.map((n) => <FileLoggerItem item={n} key={n.uuid} />);
+  const allNotifications = useAppSelector(taskManagerSelectors.getNotifications());
+  const finishedNotifications = useAppSelector(
+    taskManagerSelectors.getNotifications({ status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled] }),
+  );
+  const items: JSX.Element[] = allNotifications.map((n) => <FileLoggerItem notification={n} key={n.taskId} />);
   const handleClose = () => {
     if (hasFinished) {
       setIsOpen(false);
-      dispatch(tasksActions.clearNotifications());
+      dispatch(taskManagerActions.clearTasks());
     }
   };
   const handleLeavePage = (e) => {
@@ -33,19 +32,10 @@ const FileLogger = (): JSX.Element => {
   };
 
   useEffect(() => {
-    if (Object.values(notifications).length) {
+    if (Object.values(allNotifications).length) {
       setIsOpen(true);
 
-      for (const notification of notifications) {
-        if (notification.action === TaskType.DownloadFile || notification.action === TaskType.DownloadFolder) {
-          setIsDownloading(true);
-        }
-        if (notification.action === TaskType.UploadFile || notification.action === TaskType.UploadFolder) {
-          setIsUploading(true);
-        }
-      }
-
-      const processingItems = notifications.findIndex(
+      const processingItems = allNotifications.findIndex(
         (item) => item.status !== TaskStatus.Success && item.status !== TaskStatus.Error,
       );
 
@@ -53,11 +43,9 @@ const FileLogger = (): JSX.Element => {
         setHasFinished(false);
       } else {
         setHasFinished(true);
-        setIsDownloading(false);
-        setIsUploading(false);
       }
     }
-  }, [notifications]);
+  }, [allNotifications]);
 
   useEffect(() => {
     if (!hasFinished) {
@@ -75,22 +63,14 @@ const FileLogger = (): JSX.Element => {
     >
       <div className="flex justify-between bg-neutral-900 px-4 py-2.5 rounded-t-md select-none">
         <div className="flex items-center w-max text-sm text-white font-semibold">
-          {!hasFinished ? (
+          {hasFinished ? (
+            <span>All processes were finished</span>
+          ) : (
             <Fragment>
               <img className="animate-spin mr-2" src={spinnerIcon} alt="" />
 
-              {isDownloading && isUploading ? (
-                'Multiple processes running'
-              ) : (
-                <Fragment>
-                  {!isDownloading
-                    ? `Uploading ${Object.values(finishedNotifications).length} of ${notifications.length}`
-                    : `Downloading ${Object.values(finishedNotifications).length} of ${notifications.length}`}
-                </Fragment>
-              )}
+              <span>{`Processing ${Object.values(finishedNotifications).length} of ${allNotifications.length}`}</span>
             </Fragment>
-          ) : (
-            'All processes were finished'
           )}
         </div>
 

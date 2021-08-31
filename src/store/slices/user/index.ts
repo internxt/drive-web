@@ -9,7 +9,7 @@ import { storeTeamsInfo } from '../../../services/teams.service';
 import userService from '../../../services/user.service';
 import { teamActions } from '../team';
 import authService from '../../../services/auth.service';
-import { tasksActions } from '../tasks';
+import { taskManagerActions } from '../task-manager';
 import { uiActions } from '../ui';
 import { sessionActions } from '../session';
 import { storageActions } from '../storage';
@@ -78,7 +78,7 @@ export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
     dispatch(teamActions.resetState());
     dispatch(storageActions.resetState());
     dispatch(uiActions.resetState());
-    dispatch(tasksActions.resetState());
+    dispatch(taskManagerActions.resetState());
   },
 );
 

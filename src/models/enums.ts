@@ -3,24 +3,6 @@ export enum AppViewLayout {
   HeaderAndSidenav = 'header-and-sidenav',
 }
 
-export enum TaskStatus {
-  Pending = 'pending',
-  Encrypting = 'encrypting',
-  Decrypting = 'decrypting',
-  InProcess = 'in-process',
-  Error = 'error',
-  Success = 'success',
-}
-
-export enum TaskType {
-  DownloadFile = 'download-file',
-  DownloadFolder = 'download-folder',
-  UploadFile = 'upload-file',
-  UploadFolder = 'upload-folder',
-  MoveFile = 'move-file',
-  MoveFolder = 'move-folder',
-}
-
 export enum ItemAction {
   Rename,
   Download,
@@ -79,20 +61,6 @@ export enum StripeMemberTiers {
   'infinite',
   'lifetime',
   'premium',
-}
-
-export enum StripeSimpleNames {
-  'infinite',
-  '20TB',
-  '2TB',
-  '200GB',
-  '20GB',
-}
-
-export enum StripeProductNames {
-  'Drive 20GB',
-  'Drive 200GB',
-  'Drive 2 TB',
 }
 
 export enum TimeInterval {

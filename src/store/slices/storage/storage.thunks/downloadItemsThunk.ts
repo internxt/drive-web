@@ -2,43 +2,43 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
-import { TaskType, TaskStatus } from '../../../../models/enums';
-import { DriveItemData, NotificationData } from '../../../../models/interfaces';
+import { DriveItemData } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { tasksActions } from '../../tasks';
+import { taskManagerActions } from '../../task-manager';
 import { sessionSelectors } from '../../session/session.selectors';
 import errorService from '../../../../services/error.service';
+import { DownloadFileTask, TaskStatus, TaskType } from '../../../../services/task-manager.service';
 
 export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
   'storage/downloadItems',
   async (items: DriveItemData[], { getState, dispatch, requestId, rejectWithValue }) => {
     const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const notificationsUuids: string[] = [];
+    const tasksIds: string[] = [];
     const errors: unknown[] = [];
 
     items.forEach((item, i) => {
-      const uuid = `${requestId}-${i}`;
-      const notification: NotificationData = {
-        uuid,
+      const taskId = `${requestId}-${i}`;
+      const task: DownloadFileTask = {
+        id: taskId,
         action: TaskType.DownloadFile,
         status: TaskStatus.Pending,
-        name: item.name,
-        type: item.type,
-        isFolder: item.isFolder,
+        file: item,
+        progress: 0,
+        showNotification: true,
       };
 
-      notificationsUuids.push(uuid);
-      dispatch(tasksActions.addNotification(notification));
+      tasksIds.push(taskId);
+      dispatch(taskManagerActions.addTask(task));
     });
 
     for (const [index, item] of items.entries()) {
       try {
         const updateProgressCallback = (progress: number) =>
           dispatch(
-            tasksActions.updateNotification({
-              uuid: notificationsUuids[index],
+            taskManagerActions.updateTask({
+              taskId: tasksIds[index],
               merge: {
                 status: TaskStatus.InProcess,
                 progress,
@@ -47,16 +47,16 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
           );
 
         dispatch(
-          tasksActions.updateNotification({
-            uuid: notificationsUuids[index],
+          taskManagerActions.updateTask({
+            taskId: tasksIds[index],
             merge: { status: TaskStatus.Decrypting },
           }),
         );
 
         await downloadService.downloadFile(item, isTeam, updateProgressCallback).then(() => {
           dispatch(
-            tasksActions.updateNotification({
-              uuid: notificationsUuids[index],
+            taskManagerActions.updateTask({
+              taskId: tasksIds[index],
               merge: {
                 status: TaskStatus.Success,
               },
@@ -67,8 +67,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
         const castedError = errorService.castError(err);
 
         dispatch(
-          tasksActions.updateNotification({
-            uuid: notificationsUuids[index],
+          taskManagerActions.updateTask({
+            taskId: tasksIds[index],
             merge: {
               status: TaskStatus.Error,
             },

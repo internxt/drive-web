@@ -1,7 +1,10 @@
 import { isValidBase64 } from '../lib/utilspgp';
 import { aes } from '@internxt/lib';
 
-export async function validateFormat(privateKey: string, password: string) {
+export async function validateFormat(
+  privateKey: string,
+  password: string,
+): Promise<{ update: boolean; newPrivKey: string; privkeyDecrypted: string }> {
   let privkeyDecrypted, newPrivKey;
   let update = false;
 
@@ -20,6 +23,7 @@ export async function validateFormat(privateKey: string, password: string) {
     newPrivKey = aes.encrypt(privkeyDecrypted, password, getAesInitFromEnv());
     update = true;
   }
+
   return { update, newPrivKey, privkeyDecrypted };
 }
 

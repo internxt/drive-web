@@ -3,12 +3,13 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { StorageItemList, TaskStatus, TaskType } from '../../../../models/enums';
-import { DriveItemData, NotificationData } from '../../../../models/interfaces';
+import { StorageItemList } from '../../../../models/enums';
+import { DriveItemData } from '../../../../models/interfaces';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import storageService from '../../../../services/storage.service';
-import { tasksActions } from '../../tasks';
+import { taskManagerActions } from '../../task-manager';
+import { MoveFileTask, MoveFolderTask, TaskStatus, TaskType } from '../../../../services/task-manager.service';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
@@ -26,23 +27,34 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
     }
 
     for (const [index, item] of items.entries()) {
-      const notification: NotificationData = {
-        uuid: `${requestId}-${index}`,
-        action: item.isFolder ? TaskType.MoveFolder : TaskType.MoveFile,
-        status: TaskStatus.InProcess,
-        name: item.name,
-        type: item.type,
-        isFolder: item.isFolder,
-      };
+      const task: MoveFileTask | MoveFolderTask = item.isFolder
+        ? {
+            id: `${requestId}-${index}`,
+            action: TaskType.MoveFolder,
+            status: TaskStatus.InProcess,
+            progress: 0,
+            showNotification: true,
+            folder: item,
+            destinationFolderId,
+          }
+        : {
+            id: `${requestId}-${index}`,
+            action: TaskType.MoveFile,
+            status: TaskStatus.InProcess,
+            progress: 0,
+            showNotification: true,
+            file: item,
+            destinationFolderId,
+          };
 
-      dispatch(tasksActions.addNotification(notification));
+      dispatch(taskManagerActions.addTask(task));
       promises.push(storageService.moveItem(item, destinationFolderId));
 
       promises[index]
         .then(() => {
           dispatch(
-            tasksActions.updateNotification({
-              uuid: notification.uuid,
+            taskManagerActions.updateTask({
+              taskId: task.id,
               merge: {
                 status: TaskStatus.Success,
               },
@@ -58,8 +70,8 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         })
         .catch(() => {
           dispatch(
-            tasksActions.updateNotification({
-              uuid: notification.uuid,
+            taskManagerActions.updateTask({
+              taskId: task.id,
               merge: {
                 status: TaskStatus.Error,
               },
