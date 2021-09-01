@@ -1,6 +1,6 @@
 import path from 'path';
 
-describe('upload/download flows', () => {
+describe('share flow', () => {
   const filename = 'example.txt';
   const downloadsFolder = Cypress.config('downloadsFolder');
   const fixturesFolder = Cypress.config('fixturesFolder');
@@ -8,18 +8,22 @@ describe('upload/download flows', () => {
   afterEach(() => {
     cy.readFile(path.join(fixturesFolder, filename)).then((originalFile) => {
       cy.readFile(path.join(downloadsFolder, filename)).should('eq', originalFile);
+      cy.visit('/');
     });
     cy.get('[data-test=file-list-file] [data-test=delete-file-button]').click({ force: true });
     cy.get('button.primary:contains(Delete)').click();
   });
 
-  it('upload/download flow (with drag and drop)', () => {
-    cy.get('[data-test=drag-and-drop-area]').attachFile(filename, { subjectType: 'drag-n-drop' });
-
-    cy.get('[data-test=download-file-button]').click({ force: true });
-  });
-  it('upload/download flow', () => {
+  it('should upload, share and download', () => {
     cy.get('input[type=file]').attachFile(filename);
-    cy.get('[data-test=download-file-button]').click({ force: true });
+    cy.get('[data-test=file-list-file] [data-test=share-file-button]').click({ force: true });
+
+    cy.contains('http')
+      .invoke('text')
+      .then((urlText) => {
+        cy.visit(urlText.toString());
+        cy.contains('Access File').click();
+        cy.contains('Download').click();
+      });
   });
 });
