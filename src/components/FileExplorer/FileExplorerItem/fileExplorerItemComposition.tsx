@@ -6,7 +6,7 @@ import { compose } from 'redux';
 
 import { DragAndDropType, Workspace } from '../../../models/enums';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData, FolderPath, UserSettings } from '../../../models/interfaces';
-import { getAllItems } from '../../../services/drag-and-drop.service';
+import { transformDraggedItems } from '../../../services/drag-and-drop.service';
 import { AppDispatch, RootState } from '../../../store';
 import { storageActions } from '../../../store/slices/storage';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
@@ -119,11 +119,11 @@ export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
 
       folderPath = folderPath + '/' + item.name;
 
-      getAllItems(droppedData, folderPath).then(async ({ rootList, files }) => {
-        if (files) { // Only files
+      transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
+        if (files.length) { // Only files
           await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id, folderPath }));
         }
-        if (rootList) { // Directory tree
+        if (rootList.length) { // Directory tree
           for (const root of rootList) {
             const currentFolderId = item.id;
 

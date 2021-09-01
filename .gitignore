@@ -29,3 +29,4 @@ debug.log
 .npmrc
 
 cypress/downloads
+cypress/videos

@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Unicons from '@iconscout/react-unicons';
 
-import { getHeaders } from '../../lib/auth';
-
 import { DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
 import { Workspace } from '../../models/enums';
 
@@ -20,12 +18,11 @@ import noResultsSearchImage from '../../assets/images/no-results-search.png';
 import { uiActions } from '../../store/slices/ui';
 
 import './FileExplorer.scss';
-import usageService, { UsageResponse } from '../../services/usage.service';
 import deviceService from '../../services/device.service';
 import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
 import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
 
-import { getAllItems } from '../../services/drag-and-drop.service';
+import { transformDraggedItems } from '../../services/drag-and-drop.service';
 import DeleteItemsDialog from '../dialogs/DeleteItemsDialog/DeleteItemsDialog';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
@@ -188,7 +185,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 
     return (
       connectDropTarget(
-        <div className="flex flex-column flex-grow h-1">
+        <div className="flex flex-column flex-grow h-1" data-test="drag-and-drop-area">
           {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
           {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
@@ -312,8 +309,8 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
 
     const folderPath = namePathDestinationArray.join('/');
 
-    getAllItems(droppedData, folderPath).then(async ({ rootList, files }) => {
-      if (files) {
+    transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
+      if (files.length) {
         // files where dragged directly
         await dispatch(storageThunks.uploadItemsThunk({
           files, parentFolderId: currentFolderId, folderPath: folderPath, options: {
@@ -322,10 +319,10 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
         }));
       }
 
-      if (rootList) {
+      if (rootList.length) {
         for (const root of rootList) {
           await dispatch(storageThunks.createFolderTreeStructureThunk({
-            root, currentFolderId: currentFolderId, options: {
+            root, currentFolderId, options: {
               onSuccess: onDragAndDropEnd
             }
           }));

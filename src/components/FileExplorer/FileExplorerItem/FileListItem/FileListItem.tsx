@@ -93,6 +93,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
           onContextMenu={onItemRightClicked}
           onClick={onItemClicked}
           onDoubleClick={onItemDoubleClicked}
+          data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
         >
 
           {/* SELECTION */}
@@ -133,7 +134,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps, {}> {
                   <Unicons.UilShareAlt className="h-5" />
                 </button> : null
               }
-              <button onClick={onDeleteButtonClicked} className="hover-action">
+              <button onClick={onDeleteButtonClicked} className="hover-action" data-test="delete-file-button">
                 <Unicons.UilTrashAlt className="h-5" />
               </button>
             </div>

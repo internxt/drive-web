@@ -10,7 +10,8 @@ import notificationsService, { ToastType } from '../../../../services/notificati
 import { tasksActions } from '../../tasks';
 import { uploadItemsThunk } from './uploadItemsThunk';
 
-interface IRoot extends DirectoryEntry {
+export interface IRoot {
+  name: string;
   folderId: number | null;
   childrenFiles: File[],
   childrenFolders: IRoot[],

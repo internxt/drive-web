@@ -45,9 +45,15 @@ before(() => {
   cy.get('#app-header-dropdown').click();
   cy.contains('Log out').click();
 
+});
+
+beforeEach(() => {
+  cy.visit('/');
   cy.get('input[name=email]').type(Cypress.env('inxtUser'));
   cy.get('input[name=password]').type(Cypress.env('inxtPassword'));
 
   cy.get('button[type=submit]').click();
+
+  cy.url().should('include', '/app');
 
 });
