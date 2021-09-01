@@ -8,7 +8,7 @@ export interface StorageFilters {
 export interface StorageState {
   isLoading: boolean;
   isDeletingItems: boolean;
-  lists: { [key in StorageItemList]: DriveItemData[] }
+  lists: { [key in StorageItemList]: DriveItemData[] };
   isLoadingRecents: boolean;
   filters: StorageFilters;
   selectedItems: DriveItemData[];
@@ -25,6 +25,6 @@ export interface StorageSetFiltersPayload {
 
 export function filtersFactory(): StorageFilters {
   return {
-    text: ''
+    text: '',
   };
 }

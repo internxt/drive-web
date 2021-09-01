@@ -5,22 +5,22 @@ import { match } from 'react-router';
 import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import i18n from '../../services/i18n.service';
-import { AppDispatch, RootState } from '../../store';
+import { AppDispatch } from '../../store';
 import { userThunks } from '../../store/slices/user';
 import notificationsService, { ToastType } from '../../services/notifications.service';
 
-import './JoinTeamView.scss';
+import errorService from '../../services/error.service';
 
 interface JoinTeamProps {
   dispatch: AppDispatch;
-  match: match<{token: string}>;
+  match: match<{ token: string }>;
 }
 
 interface JoinTeamState {
-  isTeamActivated: boolean | null
-  isTeamError: boolean
-  member?: string,
-  teamPassword?: string
+  isTeamActivated: boolean | null;
+  isTeamError: boolean;
+  member?: string;
+  teamPassword?: string;
 }
 
 class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
@@ -30,8 +30,7 @@ class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
       isTeamActivated: null,
       isTeamError: false,
       member: '',
-      teamPassword: ''
-
+      teamPassword: '',
     };
   }
 
@@ -47,30 +46,34 @@ class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
       headers: getHeaders(false, false),
       body: JSON.stringify({
         member: this.state.member,
-        teamPassword: this.state.teamPassword
+        teamPassword: this.state.teamPassword,
+      }),
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          this.setState({ isTeamActivated: true });
+          localStorage.setItem('teamActivation', 'true');
+          notificationsService.show(i18n.get('success.joinedToTheTeam'), ToastType.Success);
+          history.push('/');
+
+          dispatch(userThunks.initializeUserThunk());
+        } else {
+          // Wrong activation
+          this.setState({ isTeamActivated: false });
+          notificationsService.show(i18n.get('error.invalidActivationCode'), ToastType.Error);
+        }
       })
-    }).then(response => {
-      if (response.status === 200) {
-        this.setState({ isTeamActivated: true });
-        localStorage.setItem('teamActivation', 'true');
-        notificationsService.show(i18n.get('success.joinedToTheTeam'), ToastType.Success);
-        history.push('/');
+      .catch((err: unknown) => {
+        const castedError = errorService.castError(err);
 
-        dispatch(userThunks.initializeUserThunk());
-      } else {
-        // Wrong activation
+        console.error(castedError.message);
         this.setState({ isTeamActivated: false });
-        notificationsService.show(i18n.get('error.invalidActivationCode'), ToastType.Error);
-      }
-
-    }).catch(error => {
-      this.setState({ isTeamActivated: false });
-    });
-  }
+      });
+  };
 
   render(): JSX.Element {
-    return (<div />);
+    return <div />;
   }
 }
 
-export default connect((state: RootState) => ({}))(JoinTeamView);
+export default connect()(JoinTeamView);

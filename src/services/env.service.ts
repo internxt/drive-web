@@ -3,7 +3,7 @@ function isProduction(): boolean {
 }
 
 const envService = {
-  isProduction
+  isProduction,
 };
 
 export default envService;

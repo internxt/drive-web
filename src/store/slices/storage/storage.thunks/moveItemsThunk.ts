@@ -17,7 +17,7 @@ export interface MoveItemsPayload {
 
 export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: RootState }>(
   'storage/moveItems',
-  async (payload: MoveItemsPayload, { getState, dispatch, requestId }) => {
+  async (payload: MoveItemsPayload, { dispatch, requestId }) => {
     const { items, destinationFolderId } = payload;
     const promises: Promise<void>[] = [];
 
@@ -32,7 +32,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         status: TaskStatus.InProcess,
         name: item.name,
         type: item.type,
-        isFolder: item.isFolder
+        isFolder: item.isFolder,
       };
 
       dispatch(tasksActions.addNotification(notification));
@@ -40,37 +40,43 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
 
       promises[index]
         .then(() => {
-          dispatch(tasksActions.updateNotification({
-            uuid: notification.uuid,
-            merge: {
-              status: TaskStatus.Success
-            }
-          }));
+          dispatch(
+            tasksActions.updateNotification({
+              uuid: notification.uuid,
+              merge: {
+                status: TaskStatus.Success,
+              },
+            }),
+          );
 
-          dispatch(storageActions.popItems({
-            lists: [StorageItemList.Drive],
-            items: item
-          }));
+          dispatch(
+            storageActions.popItems({
+              lists: [StorageItemList.Drive],
+              items: item,
+            }),
+          );
         })
-        .catch(error => {
-          dispatch(tasksActions.updateNotification({
-            uuid: notification.uuid,
-            merge: {
-              status: TaskStatus.Error
-            }
-          }));
+        .catch(() => {
+          dispatch(
+            tasksActions.updateNotification({
+              uuid: notification.uuid,
+              merge: {
+                status: TaskStatus.Error,
+              },
+            }),
+          );
         });
     }
 
-    return Promise.all(promises).then(() => { });
-  }
+    return Promise.all(promises).then();
+  },
 );
 
 export const moveItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(moveItemsThunk.pending, (state, action) => { })
-    .addCase(moveItemsThunk.fulfilled, (state, action) => { })
-    .addCase(moveItemsThunk.rejected, (state, action) => {
+    .addCase(moveItemsThunk.pending, () => undefined)
+    .addCase(moveItemsThunk.fulfilled, () => undefined)
+    .addCase(moveItemsThunk.rejected, () => {
       notificationsService.show(i18n.get('error.movingItem'), ToastType.Error);
     });
 };

@@ -12,22 +12,23 @@ import { userThunks } from '../../store/slices/user';
 import httpService from '../../services/http.service';
 import notificationsService, { ToastType } from '../../services/notifications.service';
 
-import './DeactivationView.scss';
+import { match } from 'react-router-dom';
+
 interface DeactivationProps {
-  match?: any;
+  match?: match<{ token: string }>;
   dispatch: AppDispatch;
 }
 
 class DeactivationView extends React.Component<DeactivationProps> {
   state = {
-    token: this.props.match.params.token,
+    token: this.props.match?.params.token || '',
     result: this.confirmDeactivation(),
-    errorReason: ''
-  }
+    errorReason: '',
+  };
 
   IsValidToken = (token: string) => {
     return /^[a-z0-9]{512}$/.test(token);
-  }
+  };
 
   ClearAndRedirect = () => {
     this.props.dispatch(userThunks.logoutThunk());
@@ -38,26 +39,28 @@ class DeactivationView extends React.Component<DeactivationProps> {
     } else {
       this.setState({ result: this.confirmDeactivation() });
     }
-  }
+  };
 
   ConfirmDeactivateUser = (token: string) => {
-    return httpService.get<void>('/api/confirmDeactivation/' + token).then(response => {
-      this.ClearAndRedirect();
-    }).catch(err => {
-      if (!isMobile) {
-        toast.warn('Invalid token');
-        history.push('/');
-      } else {
-        this.setState({ result: this.invalidDeactivationToken() });
-      }
-    });
-  }
+    return httpService
+      .get<void>('/api/confirmDeactivation/' + token)
+      .then(() => {
+        this.ClearAndRedirect();
+      })
+      .catch(() => {
+        if (!isMobile) {
+          toast.warn('Invalid token');
+          history.push('/');
+        } else {
+          this.setState({ result: this.invalidDeactivationToken() });
+        }
+      });
+  };
 
   componentDidMount(): void {
     if (this.IsValidToken(this.state.token)) {
       this.ConfirmDeactivateUser(this.state.token);
     } else {
-
       if (!isMobile) {
         toast.warn('Invalid token');
         history.push('/');
@@ -71,9 +74,11 @@ class DeactivationView extends React.Component<DeactivationProps> {
     if (!isMobile) {
       return <div></div>;
     } else {
-      return <Container>
-        <Alert variant="danger">{this.state.result}</Alert>
-      </Container>;
+      return (
+        <Container>
+          <Alert variant="danger">{this.state.result}</Alert>
+        </Container>
+      );
     }
   }
 
@@ -82,9 +87,11 @@ class DeactivationView extends React.Component<DeactivationProps> {
   }
 
   invalidDeactivationToken(): JSX.Element {
-    return <div>
-      <p>Invalid token</p>
-    </div>;
+    return (
+      <div>
+        <p>Invalid token</p>
+      </div>
+    );
   }
 }
 

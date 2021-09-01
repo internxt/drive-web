@@ -18,7 +18,7 @@ function getOperatingSystem(): string {
 }
 
 const operatingSystemService = {
-  getOperatingSystem
+  getOperatingSystem,
 };
 
 export default operatingSystemService;

@@ -9,33 +9,42 @@ import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
-export const updateItemMetadataThunk = createAsyncThunk<void, { item: DriveItemData, metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload }, { state: RootState }>(
+export const updateItemMetadataThunk = createAsyncThunk<
+  void,
+  { item: DriveItemData; metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload },
+  { state: RootState }
+>(
   'storage/updateItemMetadata',
-  async (payload: { item: DriveItemData, metadata: DriveFileMetadataPayload
-     | DriveFolderMetadataPayload }, { getState, dispatch }) => {
+  async (
+    payload: { item: DriveItemData; metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload },
+    { dispatch },
+  ) => {
     const { item, metadata } = payload;
 
-    item.isFolder ?
-      await folderService.updateMetaData(item.id, metadata) :
-      await fileService.updateMetaData(item.fileId, metadata);
+    item.isFolder
+      ? await folderService.updateMetaData(item.id, metadata)
+      : await fileService.updateMetaData(item.fileId, metadata);
 
-    dispatch(storageActions.patchItem({
-      id: item.id,
-      isFolder: item.isFolder,
-      patch: {
-        name: payload.metadata.metadata.itemName
-      }
-    }));
-  });
+    dispatch(
+      storageActions.patchItem({
+        id: item.id,
+        isFolder: item.isFolder,
+        patch: {
+          name: payload.metadata.metadata.itemName,
+        },
+      }),
+    );
+  },
+);
 
 export const updateItemMetadataThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(updateItemMetadataThunk.pending, (state, action) => { })
-    .addCase(updateItemMetadataThunk.fulfilled, (state, action) => { })
+    .addCase(updateItemMetadataThunk.pending, () => undefined)
+    .addCase(updateItemMetadataThunk.fulfilled, () => undefined)
     .addCase(updateItemMetadataThunk.rejected, (state, action) => {
-      const errorMessage = (action.error?.message || '').includes('this name exists') ?
-        i18n.get('error.fileAlreadyExists') :
-        i18n.get('error.changingName');
+      const errorMessage = (action.error?.message || '').includes('this name exists')
+        ? i18n.get('error.fileAlreadyExists')
+        : i18n.get('error.changingName');
 
       notificationsService.show(errorMessage, ToastType.Error);
     });

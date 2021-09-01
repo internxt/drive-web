@@ -6,8 +6,8 @@ export async function initializeUser(email: string, mnemonic: string): Promise<a
     headers: getHeaders(true, true),
     body: JSON.stringify({
       email,
-      mnemonic
-    })
+      mnemonic,
+    }),
   });
 
   if (response.status === 200) {
@@ -20,13 +20,13 @@ export async function initializeUser(email: string, mnemonic: string): Promise<a
 export const sendDeactivationEmail = (email: string): Promise<Response> => {
   return fetch(`${process.env.REACT_APP_API_URL}/api/reset/${email}`, {
     method: 'GET',
-    headers: getHeaders(false, false)
+    headers: getHeaders(false, false),
   });
 };
 
 const userService = {
   initializeUser,
-  sendDeactivationEmail
+  sendDeactivationEmail,
 };
 
 export default userService;

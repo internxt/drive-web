@@ -18,8 +18,8 @@ export const store = configureStore({
     ui: uiReducer,
     tasks: tasksReducer,
     plan: planReducer,
-    products: productsReducer
-  }
+    products: productsReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

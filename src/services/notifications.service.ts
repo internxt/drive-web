@@ -9,32 +9,32 @@ export enum ToastType {
   Success = 'success',
   Error = 'error',
   Warning = 'warning',
-  Info = 'info'
+  Info = 'info',
 }
 
 const notificationsService = {
-  show: (text: string, type: ToastType, duration: number = 3000): void => {
+  show: (text: string, type: ToastType, duration = 3000): void => {
     const configByType = {
       success: {
-        icon: Unicons.UilCheckCircle
+        icon: Unicons.UilCheckCircle,
       },
       error: {
-        icon: Unicons.UilTimesCircle
+        icon: Unicons.UilTimesCircle,
       },
       warning: {
-        icon: Unicons.UilExclamationTriangle
+        icon: Unicons.UilExclamationTriangle,
       },
       info: {
-        icon: Unicons.UilInfoCircle
-      }
+        icon: Unicons.UilInfoCircle,
+      },
     };
 
     toast(
       createElement(NotificationToast, {
         text,
-        IconComponent: configByType[type].icon
-      })
-      , {
+        IconComponent: configByType[type].icon,
+      }),
+      {
         toastId: uniqueId(),
         autoClose: duration,
         position: 'bottom-right',
@@ -42,10 +42,11 @@ const notificationsService = {
         hideProgressBar: true,
         type,
         style: {
-          height: 'auto'
-        }
-      });
-  }
+          height: 'auto',
+        },
+      },
+    );
+  },
 };
 
 export default notificationsService;

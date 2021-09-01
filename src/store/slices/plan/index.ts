@@ -29,7 +29,7 @@ const initialState: PlanState = {
   individualPlan: null,
   teamPlan: null,
   planLimit: 0,
-  planUsage: 0
+  planUsage: 0,
 };
 
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
@@ -45,12 +45,12 @@ export const initializeThunk = createAsyncThunk<void, void, { state: RootState }
     }
 
     await Promise.all(promises);
-  }
+  },
 );
 
 export const fetchPlans = createAsyncThunk<FetchPlansResult, void, { state: RootState }>(
   'plan/fetchPlans',
-  async (payload: void, { dispatch, getState }) => {
+  async (payload: void, { getState }) => {
     const user = getState().user.user;
     const promises: Promise<StoragePlan | null>[] = [];
 
@@ -62,12 +62,12 @@ export const fetchPlans = createAsyncThunk<FetchPlansResult, void, { state: Root
     const [individualPlan, teamPlan] = await Promise.all(promises);
 
     return { individualPlan, teamPlan };
-  }
+  },
 );
 
 export const fetchLimitThunk = createAsyncThunk<number, void, { state: RootState }>(
   'plan/fetchLimit',
-  async (payload: void, { dispatch, getState }) => {
+  async (payload: void, { getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
     let limit = 0;
 
@@ -76,12 +76,12 @@ export const fetchLimitThunk = createAsyncThunk<number, void, { state: RootState
     }
 
     return limit;
-  }
+  },
 );
 
 export const fetchUsageThunk = createAsyncThunk<number, void, { state: RootState }>(
   'plan/fetchUsage',
-  async (payload: void, { dispatch, getState }) => {
+  async (payload: void, { getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
     let usage = 0;
 
@@ -92,7 +92,7 @@ export const fetchUsageThunk = createAsyncThunk<number, void, { state: RootState
     }
 
     return usage;
-  }
+  },
 );
 
 export const planSlice = createSlice({
@@ -101,12 +101,12 @@ export const planSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(initializeThunk.pending, (state, action) => { })
-      .addCase(initializeThunk.fulfilled, (state, action) => { })
-      .addCase(initializeThunk.rejected, (state, action) => { });
+      .addCase(initializeThunk.pending, () => undefined)
+      .addCase(initializeThunk.fulfilled, () => undefined)
+      .addCase(initializeThunk.rejected, () => undefined);
 
     builder
-      .addCase(fetchPlans.pending, (state, action) => {
+      .addCase(fetchPlans.pending, (state) => {
         state.isLoadingPlans = true;
       })
       .addCase(fetchPlans.fulfilled, (state, action) => {
@@ -114,34 +114,34 @@ export const planSlice = createSlice({
         state.individualPlan = action.payload.individualPlan;
         state.teamPlan = action.payload.teamPlan;
       })
-      .addCase(fetchPlans.rejected, (state, action) => {
+      .addCase(fetchPlans.rejected, (state) => {
         state.isLoadingPlans = false;
       });
 
     builder
-      .addCase(fetchLimitThunk.pending, (state, action) => {
+      .addCase(fetchLimitThunk.pending, (state) => {
         state.isLoadingPlanLimit = true;
       })
       .addCase(fetchLimitThunk.fulfilled, (state, action) => {
         state.isLoadingPlanLimit = false;
         state.planLimit = action.payload;
       })
-      .addCase(fetchLimitThunk.rejected, (state, action) => {
+      .addCase(fetchLimitThunk.rejected, (state) => {
         state.isLoadingPlanLimit = false;
       });
 
     builder
-      .addCase(fetchUsageThunk.pending, (state, action) => {
+      .addCase(fetchUsageThunk.pending, (state) => {
         state.isLoadingPlanUsage = true;
       })
       .addCase(fetchUsageThunk.fulfilled, (state, action) => {
         state.isLoadingPlanUsage = false;
         state.planUsage = action.payload;
       })
-      .addCase(fetchUsageThunk.rejected, (state, action) => {
+      .addCase(fetchUsageThunk.rejected, (state) => {
         state.isLoadingPlanUsage = false;
       });
-  }
+  },
 });
 
 const currentPlanSelector = (state: RootState): StoragePlan | null => {
@@ -156,7 +156,14 @@ export const planSelectors = {
     const currentPlan = currentPlanSelector(state);
 
     return currentPlan !== null && currentPlan.isLifetime;
-  }
+  },
+  planLimitToShow: (state: RootState): number => {
+    const isTeam = sessionSelectors.isTeam(state);
+    const team = state.team.team;
+    const limit = isTeam ? state.plan.planLimit / (team?.total_members || 1) : state.plan.planLimit;
+
+    return limit;
+  },
 };
 
 export const planActions = planSlice.actions;
@@ -165,7 +172,7 @@ export const planThunks = {
   initializeThunk,
   fetchPlans,
   fetchLimitThunk,
-  fetchUsageThunk
+  fetchUsageThunk,
 };
 
 export default planSlice.reducer;

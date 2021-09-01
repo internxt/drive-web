@@ -1,3 +1,3 @@
 export enum Locale {
-  English = 'en'
+  English = 'en',
 }

@@ -10,7 +10,7 @@ export function fromNow(date: Date | string): string {
 
 const dateService = {
   format,
-  fromNow
+  fromNow,
 };
 
 export default dateService;

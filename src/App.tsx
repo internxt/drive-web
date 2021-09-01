@@ -15,6 +15,7 @@ import layouts from './layouts';
 import views from './views';
 import history from './lib/history';
 import { AppDispatch, RootState } from './store';
+import errorService from './services/error.service';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -23,17 +24,15 @@ interface AppProps {
   dispatch: AppDispatch;
 }
 
-interface AppState { }
-
-class App extends Component<AppProps, AppState> {
+class App extends Component<AppProps> {
   constructor(props: AppProps) {
     super(props);
-
-    this.state = {};
   }
 
   async componentDidMount(): Promise<void> {
-    const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({ path: history.location.pathname });
+    const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
+      path: history.location.pathname,
+    });
     const dispatch: AppDispatch = this.props.dispatch;
 
     window.addEventListener('offline', () => {
@@ -44,39 +43,36 @@ class App extends Component<AppProps, AppState> {
     });
 
     try {
-      await this.props.dispatch(initializeUserThunk({
-        redirectToLogin: !!currentRouteConfig?.auth
-      }));
-    } catch (e) {
-      console.log(e);
+      await this.props.dispatch(
+        initializeUserThunk({
+          redirectToLogin: !!currentRouteConfig?.auth,
+        }),
+      );
+    } catch (err: unknown) {
+      const castedError = errorService.castError(err);
+
+      console.log(castedError.message);
     }
   }
 
   get routes(): JSX.Element[] {
-    const routes: JSX.Element[] = views.map(v => {
+    const routes: JSX.Element[] = views.map((v) => {
       const viewConfig: AppViewConfig | undefined = configService.getViewConfig({ id: v.id });
-      const layoutConfig = layouts.find(l => l.id === viewConfig?.layout) || layouts[0];
+      const layoutConfig = layouts.find((l) => l.id === viewConfig?.layout) || layouts[0];
       const componentProps: {
-        key: string, exact: boolean; path: string; render: any
+        key: string;
+        exact: boolean;
+        path: string;
+        render: any;
       } = {
         key: v.id,
         exact: !!viewConfig?.exact,
         path: viewConfig?.path || '',
-        render: (props: any) => createElement(
-          layoutConfig.component,
-          {},
-          createElement(
-            v.component,
-            { ...props, ...v.componentProps }
-          )
-        )
+        render: (props: any) =>
+          createElement(layoutConfig.component, {}, createElement(v.component, { ...props, ...v.componentProps })),
       };
 
-      return (
-        <Route
-          {...componentProps}
-        />
-      );
+      return <Route {...componentProps} />;
     });
 
     return routes;
@@ -98,8 +94,8 @@ class App extends Component<AppProps, AppState> {
         <DndProvider backend={HTML5Backend}>
           <Router history={history}>
             <Switch>
-              <Redirect from='//*' to='/*' />
-              <Route exact path='/'>
+              <Redirect from="//*" to="/*" />
+              <Route exact path="/">
                 <Redirect to="/login" />
               </Route>
               {this.routes}
@@ -118,5 +114,5 @@ class App extends Component<AppProps, AppState> {
 export default connect((state: RootState) => ({
   isAuthenticated: state.user.isAuthenticated,
   isInitialized: state.user.isInitialized,
-  user: state.user.user
+  user: state.user.user,
 }))(App);

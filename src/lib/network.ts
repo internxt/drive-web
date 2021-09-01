@@ -6,9 +6,9 @@ import { TeamsSettings, UserSettings } from '../models/interfaces';
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 
 interface IUploadParams {
-  filesize: number,
-  filepath: string,
-  filecontent: Blob,
+  filesize: number;
+  filepath: string;
+  filecontent: Blob;
   progressCallback: ProgressCallback;
 }
 
@@ -19,10 +19,10 @@ interface IDownloadParams {
 }
 
 interface EnvironmentConfig {
-  bridgeUser: string,
-  bridgePass: string,
-  encryptionKey: string,
-  bucketId: string
+  bridgeUser: string;
+  bridgePass: string;
+  encryptionKey: string;
+  bucketId: string;
 }
 
 export class Network {
@@ -74,7 +74,7 @@ export class Network {
           }
 
           resolve(fileId);
-        }
+        },
       });
     });
   }
@@ -109,7 +109,7 @@ export class Network {
           }
 
           resolve(filecontent);
-        }
+        },
       });
     });
   }
@@ -136,7 +136,7 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
       bridgeUser: team.bridge_user,
       bridgePass: team.bridge_password,
       encryptionKey: team.bridge_mnemonic,
-      bucketId: team.bucket
+      bucketId: team.bucket,
     };
   }
 
@@ -146,7 +146,7 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
     bridgeUser: user.email,
     bridgePass: user.userId,
     encryptionKey: user.mnemonic,
-    bucketId: user.bucket
+    bucketId: user.bucket,
   };
 }
 

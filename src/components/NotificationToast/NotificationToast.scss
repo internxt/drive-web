@@ -2,12 +2,15 @@
   .Toastify__toast--success {
     @apply text-white bg-green-40 #{!important};
   }
+
   .Toastify__toast--info {
     @apply text-white bg-blue-40 #{!important};
   }
+
   .Toastify__toast--warning {
     @apply text-white bg-yellow-30 #{!important};
   }
+
   .Toastify__toast--error {
     @apply text-white bg-red-60 #{!important};
   }

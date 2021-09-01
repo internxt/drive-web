@@ -4,7 +4,7 @@ import LoadingFileExplorer from '../../components/LoadingFileExplorer/LoadingFil
 import history from '../../lib/history';
 import teamsService from '../../services/teams.service';
 
-export default function Success(props: { match: match<{sessionId: string}>}): JSX.Element {
+export default function Success(props: { match: match<{ sessionId: string }> }): JSX.Element {
   teamsService.checkSessionStripe(props.match.params.sessionId).then(() => history.push('/'));
 
   return (

@@ -12,7 +12,7 @@ const initialState: StorageState = {
   isDeletingItems: false,
   lists: {
     [StorageItemList.Drive]: [],
-    [StorageItemList.Recents]: []
+    [StorageItemList.Recents]: [],
   },
   isLoadingRecents: false,
   filters: filtersFactory(),
@@ -21,7 +21,7 @@ const initialState: StorageState = {
   itemsToDelete: [],
   infoItem: null,
   viewMode: FileViewMode.List,
-  namePath: []
+  namePath: [],
 };
 
 export const storageSlice = createSlice({
@@ -47,16 +47,17 @@ export const storageSlice = createSlice({
       state.filters = filtersFactory();
     },
     selectItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
-      const itemsToSelect = action.payload
-        .filter(item => {
-          return !state.selectedItems.some(i => item.id === i.id && item.isFolder === i.isFolder);
-        });
+      const itemsToSelect = action.payload.filter((item) => {
+        return !state.selectedItems.some((i) => item.id === i.id && item.isFolder === i.isFolder);
+      });
 
       state.selectedItems.push(...itemsToSelect);
     },
     deselectItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
-      action.payload.forEach(itemToDeselect => {
-        const index: number = state.selectedItems.findIndex((item) => item.id === itemToDeselect.id && item.isFolder === itemToDeselect.isFolder);
+      action.payload.forEach((itemToDeselect) => {
+        const index: number = state.selectedItems.findIndex(
+          (item) => item.id === itemToDeselect.id && item.isFolder === itemToDeselect.isFolder,
+        );
 
         state.selectedItems.splice(index, 1);
       });
@@ -80,23 +81,26 @@ export const storageSlice = createSlice({
       state.namePath = [];
     },
     popNamePathUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
-      const folderIndex: number = state.namePath.map(path => path.id).indexOf(action.payload.id);
+      const folderIndex: number = state.namePath.map((path) => path.id).indexOf(action.payload.id);
 
       state.namePath = state.namePath.slice(0, folderIndex + 1);
     },
     pushNamePath: (state: StorageState, action: PayloadAction<FolderPath>) => {
-      if (!state.namePath.map(path => path.id).includes(action.payload.id)) {
+      if (!state.namePath.map((path) => path.id).includes(action.payload.id)) {
         state.namePath.push(action.payload);
       }
     },
     pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
       state.namePath = [action.payload];
     },
-    patchItem: (state: StorageState, action: PayloadAction<{ id: number, isFolder: boolean, patch: DriveItemPatch }>) => {
+    patchItem: (
+      state: StorageState,
+      action: PayloadAction<{ id: number; isFolder: boolean; patch: DriveItemPatch }>,
+    ) => {
       const { id, isFolder, patch } = action.payload;
 
-      Object.values(state.lists).forEach(list => {
-        const item = list.find(i => i.id === id && i.isFolder === isFolder);
+      Object.values(state.lists).forEach((list) => {
+        const item = list.find((i) => i.id === id && i.isFolder === isFolder);
 
         item && Object.assign(item, patch);
       });
@@ -105,44 +109,44 @@ export const storageSlice = createSlice({
         Object.assign(state.infoItem, patch);
       }
     },
-    pushItems(state: StorageState, action: PayloadAction<{ lists?: StorageItemList[], items: DriveItemData | DriveItemData[] }>) {
+    pushItems(
+      state: StorageState,
+      action: PayloadAction<{ lists?: StorageItemList[]; items: DriveItemData | DriveItemData[] }>,
+    ) {
       action.payload.items = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
       const listsToUpdate = action.payload.lists || Object.values(StorageItemList);
-      const folders = action.payload.items.filter(item => item.isFolder);
-      const files = action.payload.items.filter(item => !item.isFolder);
+      const folders = action.payload.items.filter((item) => item.isFolder);
+      const files = action.payload.items.filter((item) => !item.isFolder);
 
-      listsToUpdate.forEach(listKey => {
-        const lastFolderIndex = state.lists[listKey].filter(item => item.isFolder).length;
+      listsToUpdate.forEach((listKey) => {
+        const lastFolderIndex = state.lists[listKey].filter((item) => item.isFolder).length;
 
-        arrayService.insertAt(
-          state.lists[listKey],
-          lastFolderIndex,
-          folders
-        );
+        arrayService.insertAt(state.lists[listKey], lastFolderIndex, folders);
 
-        const firstFileIndex = state.lists[listKey].findIndex(item => !item.isFolder);
+        const firstFileIndex = state.lists[listKey].findIndex((item) => !item.isFolder);
 
-        arrayService.insertAt(
-          state.lists[listKey],
-          firstFileIndex,
-          files
-        );
+        arrayService.insertAt(state.lists[listKey], firstFileIndex, files);
       });
     },
-    popItems(state: StorageState, action: PayloadAction<{ lists?: StorageItemList[], items: DriveItemData | DriveItemData[] }>) {
+    popItems(
+      state: StorageState,
+      action: PayloadAction<{ lists?: StorageItemList[]; items: DriveItemData | DriveItemData[] }>,
+    ) {
       const listsToUpdate = action.payload.lists || Object.values(StorageItemList);
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
-      listsToUpdate.forEach(listKey => {
-        state.lists[listKey] = state.lists[listKey].filter((item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id));
+      listsToUpdate.forEach((listKey) => {
+        state.lists[listKey] = state.lists[listKey].filter(
+          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id),
+        );
       });
     },
     resetState(state: StorageState) {
       Object.assign(state, initialState);
-    }
+    },
   },
-  extraReducers: storageExtraReducers
+  extraReducers: storageExtraReducers,
 });
 
 export const {
@@ -164,7 +168,7 @@ export const {
   popNamePathUpTo,
   pathChangeWorkSpace,
   patchItem,
-  pushItems
+  pushItems,
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

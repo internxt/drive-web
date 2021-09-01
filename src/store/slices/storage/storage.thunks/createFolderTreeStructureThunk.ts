@@ -9,102 +9,110 @@ import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import { tasksActions } from '../../tasks';
 import { uploadItemsThunk } from './uploadItemsThunk';
+import errorService from '../../../../services/error.service';
 
 export interface IRoot {
   name: string;
   folderId: number | null;
-  childrenFiles: File[],
-  childrenFolders: IRoot[],
-  fullPathEdited: string
+  childrenFiles: File[];
+  childrenFolders: IRoot[];
+  fullPathEdited: string;
 }
 
 interface CreateFolderTreeStructurePayload {
-  root: IRoot,
-  currentFolderId: number,
+  root: IRoot;
+  currentFolderId: number;
   options?: {
     withNotification?: boolean;
     onSuccess?: () => void;
-  }
+  };
 }
 
-export const createFolderTreeStructureThunk = createAsyncThunk<void, CreateFolderTreeStructurePayload, { state: RootState }>(
-  'storage/createFolderStructure',
-  async ({ root, currentFolderId, options }, { getState, dispatch, requestId }) => {
+export const createFolderTreeStructureThunk = createAsyncThunk<
+  void,
+  CreateFolderTreeStructurePayload,
+  { state: RootState }
+>('storage/createFolderStructure', async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
+  const levels = [root];
+  const notification: NotificationData = {
+    uuid: requestId,
+    action: TaskType.UploadFolder,
+    status: TaskStatus.Pending,
+    name: root.name,
+    isFolder: true,
+  };
+  let alreadyUploaded = 0;
+  const itemsUnderRoot = countItemsUnderRoot(root);
 
-    let alreadyUploaded = 0;
-    const itemsUnderRoot = countItemsUnderRoot(root);
+  options = Object.assign({ withNotification: true }, options || {});
 
-    const levels = [root];
-    const notification: NotificationData = {
-      uuid: requestId,
-      action: TaskType.UploadFolder,
-      status: TaskStatus.Pending,
-      name: root.name,
-      isFolder: true
-    };
+  if (options?.withNotification) {
+    dispatch(tasksActions.addNotification(notification));
+  }
 
-    options = Object.assign({ withNotification: true }, options || {});
+  try {
+    root.folderId = currentFolderId;
 
-    if (options?.withNotification) {
-      dispatch(tasksActions.addNotification(notification));
-    }
+    while (levels.length > 0) {
+      const level: IRoot = levels.shift() as IRoot;
+      const folderUploaded = await folderService.createFolder(level.folderId as number, level.name);
 
-    try {
-      root.folderId = currentFolderId;
-
-      while (levels.length > 0) {
-        const level: IRoot = levels.shift() as IRoot;
-        const folderUploaded = await folderService.createFolder(level.folderId as number, level.name);
-
-        if (level.childrenFiles){
-          for (const childrenFile of level.childrenFiles){
-            await dispatch(uploadItemsThunk({
+      if (level.childrenFiles) {
+        for (const childrenFile of level.childrenFiles) {
+          await dispatch(
+            uploadItemsThunk({
               files: [childrenFile],
               parentFolderId: folderUploaded.id,
               folderPath: level.fullPathEdited,
-              options: { withNotifications: false }
-            }));
+              options: { withNotifications: false },
+            }),
+          );
 
-            dispatch(tasksActions.updateNotification({
+          dispatch(
+            tasksActions.updateNotification({
               uuid: notification.uuid,
               merge: {
                 status: TaskStatus.InProcess,
-                progress: ++alreadyUploaded / itemsUnderRoot
-              }
-            }));
-
-          }
+                progress: ++alreadyUploaded / itemsUnderRoot,
+              },
+            }),
+          );
         }
-
-        for (const child of level.childrenFolders) {
-          child.folderId = folderUploaded.id;
-        }
-
-        levels.push(...level.childrenFolders);
       }
 
-      if (options?.withNotification) {
-        dispatch(tasksActions.updateNotification({
+      for (const child of level.childrenFolders) {
+        child.folderId = folderUploaded.id;
+      }
+
+      levels.push(...level.childrenFolders);
+    }
+
+    if (options?.withNotification) {
+      dispatch(
+        tasksActions.updateNotification({
           uuid: notification.uuid,
           merge: {
-            status: TaskStatus.Success
-          }
-        }));
-      }
-
-      options.onSuccess?.();
-    } catch (error) {
-      options?.withNotification && dispatch(tasksActions.updateNotification({
-        uuid: notification.uuid,
-        merge: {
-          status: TaskStatus.Error
-        }
-      }));
-
-      throw error;
+            status: TaskStatus.Success,
+          },
+        }),
+      );
     }
+
+    options.onSuccess?.();
+  } catch (err: unknown) {
+    options?.withNotification &&
+      dispatch(
+        tasksActions.updateNotification({
+          uuid: notification.uuid,
+          merge: {
+            status: TaskStatus.Error,
+          },
+        }),
+      );
+
+    throw errorService.castError(err);
   }
-);
+});
 
 function countItemsUnderRoot(root: IRoot): number {
   let count = 0;
@@ -112,13 +120,11 @@ function countItemsUnderRoot(root: IRoot): number {
   const queueOfFolders: Array<IRoot> = [root];
 
   while (queueOfFolders.length) {
-
     const folder = queueOfFolders.shift() as IRoot;
 
     count += folder.childrenFiles?.length ?? 0;
 
     queueOfFolders.push(...folder.childrenFolders);
-
   }
 
   return count;
@@ -126,8 +132,8 @@ function countItemsUnderRoot(root: IRoot): number {
 
 export const createFolderTreeStructureThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(createFolderTreeStructureThunk.pending, (state, action) => { })
-    .addCase(createFolderTreeStructureThunk.fulfilled, (state, action) => { })
+    .addCase(createFolderTreeStructureThunk.pending, () => undefined)
+    .addCase(createFolderTreeStructureThunk.fulfilled, () => undefined)
     .addCase(createFolderTreeStructureThunk.rejected, (state, action) => {
       let errorMessage = i18n.get('error.uploadingFolder');
 

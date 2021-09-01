@@ -14,8 +14,7 @@ interface RecentsViewProps {
   dispatch: AppDispatch;
 }
 
-class RecentsView extends Component<RecentsViewProps, {}> {
-
+class RecentsView extends Component<RecentsViewProps> {
   componentDidMount(): void {
     this.props.dispatch(storageThunks.resetNamePathThunk());
     this.refreshRecents();
@@ -25,11 +24,11 @@ class RecentsView extends Component<RecentsViewProps, {}> {
     const { dispatch } = this.props;
 
     dispatch(storageThunks.fetchRecentsThunk());
-  }
+  };
 
   redirectToDrive = () => {
     history.push('/app');
-  }
+  };
 
   render(): ReactNode {
     const { items, isLoadingRecents } = this.props;
@@ -51,6 +50,6 @@ export default connect((state: RootState) => {
 
   return {
     isLoadingRecents: state.storage.isLoadingRecents,
-    items: filteredItems
+    items: filteredItems,
   };
 })(RecentsView);

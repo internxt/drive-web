@@ -4,11 +4,11 @@ import { TeamsSettings } from '../../../models/interfaces';
 import localStorageService from '../../../services/local-storage.service';
 
 interface TeamState {
-  team?: TeamsSettings | null
+  team?: TeamsSettings | null;
 }
 
 const initialState: TeamState = {
-  team: undefined
+  team: undefined,
 };
 
 export const teamSlice = createSlice({
@@ -20,13 +20,11 @@ export const teamSlice = createSlice({
     },
     resetState: (state: TeamState) => {
       Object.assign(state, initialState);
-    }
-  }
+    },
+  },
 });
 
-export const {
-  initialize
-} = teamSlice.actions;
+export const { initialize } = teamSlice.actions;
 export const teamActions = teamSlice.actions;
 
 export default teamSlice.reducer;
