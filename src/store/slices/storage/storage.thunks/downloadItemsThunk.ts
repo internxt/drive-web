@@ -6,7 +6,7 @@ import { DriveItemData } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { taskManagerActions } from '../../task-manager';
+import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
 import { sessionSelectors } from '../../session/session.selectors';
 import errorService from '../../../../services/error.service';
 import { DownloadFileTask, TaskStatus, TaskType } from '../../../../services/task-manager.service';
@@ -34,8 +34,12 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
     });
 
     for (const [index, item] of items.entries()) {
-      try {
-        const updateProgressCallback = (progress: number) =>
+      const taskId = tasksIds[index];
+
+      const updateProgressCallback = (progress: number) => {
+        const task = taskManagerSelectors.findTaskById(getState())(tasksIds[index]);
+
+        if (task?.status !== TaskStatus.Cancelled) {
           dispatch(
             taskManagerActions.updateTask({
               taskId: tasksIds[index],
@@ -45,38 +49,45 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
               },
             }),
           );
+        }
+      };
+      const [downloadPromise, actionState] = downloadService.downloadFile(item, isTeam, updateProgressCallback);
 
-        dispatch(
-          taskManagerActions.updateTask({
-            taskId: tasksIds[index],
-            merge: { status: TaskStatus.Decrypting },
-          }),
-        );
+      dispatch(
+        taskManagerActions.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Decrypting,
+            stop: async () => actionState.stop(),
+          },
+        }),
+      );
 
-        await downloadService.downloadFile(item, isTeam, updateProgressCallback).then(() => {
+      downloadPromise
+        .then(() => {
           dispatch(
             taskManagerActions.updateTask({
-              taskId: tasksIds[index],
+              taskId,
               merge: {
                 status: TaskStatus.Success,
               },
             }),
           );
+        })
+        .catch((err: unknown) => {
+          const castedError = errorService.castError(err);
+
+          dispatch(
+            taskManagerActions.updateTask({
+              taskId,
+              merge: {
+                status: TaskStatus.Error,
+              },
+            }),
+          );
+
+          errors.push({ ...castedError });
         });
-      } catch (err: unknown) {
-        const castedError = errorService.castError(err);
-
-        dispatch(
-          taskManagerActions.updateTask({
-            taskId: tasksIds[index],
-            merge: {
-              status: TaskStatus.Error,
-            },
-          }),
-        );
-
-        errors.push({ ...castedError });
-      }
     }
 
     if (errors.length > 0) {

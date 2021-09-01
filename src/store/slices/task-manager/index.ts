@@ -8,10 +8,7 @@ interface TaskManagerState {
 
 export interface UpdateTaskPayload {
   taskId: string;
-  merge: {
-    status?: TaskStatus;
-    progress?: number;
-  };
+  merge: Partial<TaskData>;
 }
 
 const initialState: TaskManagerState = {
@@ -20,21 +17,40 @@ const initialState: TaskManagerState = {
 
 export const taskManagerSelectors = {
   getNotifications:
-    (filter: { status?: TaskStatus[] } = {}) =>
-    (state: RootState): NotificationData[] => {
+    (state: RootState) =>
+    (filter: { status?: TaskStatus[] } = {}): NotificationData[] => {
       return state.taskManager.tasks
         .filter((task) => {
           const meetsTheStatus = !filter.status || filter.status.includes(task.status);
           return meetsTheStatus;
         })
-        .map((task) => taskManagerService.getNotification(task));
+        .map((task) => taskManagerService.getNotification(task))
+        .reverse();
     },
+  findTaskById:
+    (state: RootState) =>
+    (taskId: string): TaskData | undefined =>
+      state.taskManager.tasks.find((task) => task.id === taskId),
+  isTaskFinished:
+    (state: RootState) =>
+    (taskId: string): boolean =>
+      [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled].includes(
+        state.taskManager.tasks.find((task) => task.id === taskId)?.status || TaskStatus.Pending,
+      ),
 };
 
 const cancelTaskThunk = createAsyncThunk<void, string, { state: RootState }>(
   'tasks/cancelTask',
-  async (taskId: string, { dispatch }) => {
-    // TODO: cancel task by type
+  async (taskId: string, { getState, dispatch }) => {
+    dispatch(
+      taskManagerActions.updateTask({
+        taskId: taskId,
+        merge: {
+          status: TaskStatus.Cancelled,
+        },
+      }),
+    );
+    await (taskManagerSelectors.findTaskById(getState())(taskId)?.stop || (() => undefined))();
   },
 );
 

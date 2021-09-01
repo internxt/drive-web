@@ -79,15 +79,16 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
 
       this.setState({ progress: MIN_PROGRESS });
 
-      const file = await network.downloadFile(info.bucket, info.file, {
+      const [fileBlobPromise] = network.downloadFile(info.bucket, info.file, {
         fileEncryptionKey: Buffer.from(info.encryptionKey, 'hex'),
         fileToken: info.fileToken,
         progressCallback: (progress) => {
           this.setState({ ...this.state, progress: Math.max(MIN_PROGRESS, progress * 100) });
         },
       });
+      const fileBlob = await fileBlobPromise;
 
-      fileDownload(file, info.decryptedName as string);
+      fileDownload(fileBlob, info.decryptedName as string);
     }
   };
 

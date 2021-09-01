@@ -20,6 +20,7 @@ export const store = configureStore({
     plan: planReducer,
     products: productsReducer,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

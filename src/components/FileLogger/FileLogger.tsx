@@ -13,10 +13,12 @@ const FileLogger = (): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinized] = useState(false);
-  const allNotifications = useAppSelector(taskManagerSelectors.getNotifications());
-  const finishedNotifications = useAppSelector(
-    taskManagerSelectors.getNotifications({ status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled] }),
-  );
+  const getNotifications = useAppSelector(taskManagerSelectors.getNotifications);
+  const isTaskFinished = useAppSelector(taskManagerSelectors.isTaskFinished);
+  const allNotifications = getNotifications();
+  const finishedNotifications = getNotifications({
+    status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled],
+  });
   const items: JSX.Element[] = allNotifications.map((n) => <FileLoggerItem notification={n} key={n.taskId} />);
   const handleClose = () => {
     if (hasFinished) {
@@ -35,9 +37,7 @@ const FileLogger = (): JSX.Element => {
     if (Object.values(allNotifications).length) {
       setIsOpen(true);
 
-      const processingItems = allNotifications.findIndex(
-        (item) => item.status !== TaskStatus.Success && item.status !== TaskStatus.Error,
-      );
+      const processingItems = allNotifications.findIndex((notification) => !isTaskFinished(notification.taskId));
 
       if (processingItems !== -1) {
         setHasFinished(false);

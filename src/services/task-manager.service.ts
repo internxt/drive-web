@@ -28,6 +28,7 @@ interface BaseTask {
   status: TaskStatus;
   progress: number;
   showNotification: boolean;
+  stop?: () => Promise<void>;
 }
 
 export interface DownloadFileTask extends BaseTask {

@@ -5,36 +5,40 @@ import analyticsService from './analytics.service';
 import { DevicePlatform } from '../models/enums';
 import { getEnvironmentConfig, Network } from '../lib/network';
 import { DriveItemData } from '../models/interfaces';
+import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
-export async function downloadFile(
+export function downloadFile(
   itemData: DriveItemData,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-): Promise<void> {
+): [Promise<void>, ActionState] {
   const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
 
-  try {
-    trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
+  trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
 
-    const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
-    const network = new Network(bridgeUser, bridgePass, encryptionKey);
+  const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
+  const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
-    const fileBlob = await network.downloadFile(bucketId, fileId, {
-      progressCallback: updateProgressCallback,
+  const [fileBlobPromise, actionState] = network.downloadFile(bucketId, fileId, {
+    progressCallback: updateProgressCallback,
+  });
+
+  fileBlobPromise
+    .then((fileBlob) => {
+      fileDownload(fileBlob, completeFilename);
+      trackFileDownloadFinished(userEmail, fileId, itemData.size);
+    })
+    .catch((err) => {
+      const errMessage = err instanceof Error ? err.message : (err as string);
+
+      trackFileDownloadError(userEmail, fileId, errMessage);
+
+      return new Error(errMessage);
     });
 
-    fileDownload(fileBlob, completeFilename);
-
-    trackFileDownloadFinished(userEmail, fileId, itemData.size);
-  } catch (err: unknown) {
-    const errMessage = err instanceof Error ? err.message : (err as string);
-
-    trackFileDownloadError(userEmail, fileId, errMessage);
-
-    throw new Error(errMessage);
-  }
+  return [fileBlobPromise.then(), actionState];
 }
 
 const trackFileDownloadStart = (
