@@ -44,7 +44,6 @@ before(() => {
 
   cy.get('#app-header-dropdown').click();
   cy.contains('Log out').click();
-
 });
 
 beforeEach(() => {
@@ -55,5 +54,4 @@ beforeEach(() => {
   cy.get('button[type=submit]').click();
 
   cy.url().should('include', '/app');
-
 });
