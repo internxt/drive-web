@@ -1,7 +1,7 @@
 name: Drive Web CI
 on:
   push:
-    branches: [master, chore/add-e2e-tests]
+    branches: [master]
   pull_request:
     branches: [master]
 env:
