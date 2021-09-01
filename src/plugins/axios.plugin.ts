@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { Workspace } from '../models/enums';
+import { LocalStorageItem, Workspace } from '../models/enums';
 import { AppPlugin } from '../models/interfaces';
 import localStorageService from '../services/local-storage.service';
 import { userThunks } from '../store/slices/user';
@@ -18,15 +18,17 @@ const axiosPlugin: AppPlugin = {
         [Workspace.Personal]: localStorageService.get('xMnemonic') || '',
         [Workspace.Business]: localStorageService.getTeams()?.bridge_mnemonic || '',
       };
-      const currentWorkspace =
-        requestConfig.authWorkspace || (localStorageService.get('workspace') as Workspace) || Workspace.Personal;
+      const workspace =
+        requestConfig.authWorkspace ||
+        (localStorageService.get(LocalStorageItem.Workspace) as Workspace) ||
+        Workspace.Personal;
 
       requestConfig.headers = {
         'content-type': 'application/json; charset=utf-8',
         'internxt-version': '1.0.0',
         'internxt-client': 'drive-web',
-        Authorization: `Bearer ${tokenByWorkspace[currentWorkspace]}`,
-        'internxt-mnemonic': mnemonicByWorkspace[currentWorkspace],
+        Authorization: `Bearer ${tokenByWorkspace[workspace]}`,
+        'internxt-mnemonic': mnemonicByWorkspace[workspace],
       };
 
       return requestConfig;

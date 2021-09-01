@@ -27,7 +27,7 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { StorageFilters } from '../../store/slices/storage/storage.model';
 import storageThunks from '../../store/slices/storage/storage.thunks';
-import { planThunks } from '../../store/slices/plan';
+import { planSelectors, planThunks } from '../../store/slices/plan';
 
 import './FileExplorer.scss';
 
@@ -285,7 +285,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 }
 
 const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
-  drop: (props, monitor, component) => {
+  drop: (props, monitor) => {
     const { dispatch, currentFolderId, onDragAndDropEnd } = props;
     const droppedData: { files: File[]; items: DataTransferItemList } = monitor.getItem();
     const isAlreadyDropped = monitor.didDrop();
@@ -334,7 +334,7 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
 const dropTargetCollect: DropTargetCollector<
   { isOver: boolean; connectDropTarget: ConnectDropTarget },
   FileExplorerProps
-> = (connect, monitor, props) => {
+> = (connect, monitor) => {
   const isOver = monitor.isOver({ shallow: true });
 
   return {
@@ -358,7 +358,7 @@ export default connect((state: RootState) => {
     viewMode: state.storage.viewMode,
     namePath: state.storage.namePath,
     workspace: state.session.workspace,
-    planLimit: state.plan.planLimit,
+    planLimit: planSelectors.planLimitToShow(state),
     planUsage: state.plan.planUsage,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(FileExplorer));

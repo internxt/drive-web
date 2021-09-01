@@ -2,7 +2,7 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { sessionActions } from '..';
 import { RootState } from '../../..';
 
-import { Workspace } from '../../../../models/enums';
+import { LocalStorageItem, Workspace } from '../../../../models/enums';
 import localStorageService from '../../../../services/local-storage.service';
 import { planThunks } from '../../plan';
 import { SessionState } from '../session.model';
@@ -15,7 +15,7 @@ const changeWorkspaceThunk = createAsyncThunk<void, void, { state: RootState }>(
     const newWorkspace = isTeam ? Workspace.Personal : Workspace.Business;
 
     dispatch(sessionActions.setWorkspace(newWorkspace));
-    localStorageService.set('workspace', newWorkspace);
+    localStorageService.set(LocalStorageItem.Workspace, newWorkspace);
 
     // TODO: encapsulate reset storage logic
 
