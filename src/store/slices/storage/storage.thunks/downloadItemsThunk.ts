@@ -16,6 +16,7 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
   async (items: DriveItemData[], { getState, dispatch, requestId, rejectWithValue }) => {
     const isTeam: boolean = sessionSelectors.isTeam(getState());
     const tasksIds: string[] = [];
+    const promises: Promise<void>[] = [];
     const errors: unknown[] = [];
 
     items.forEach((item, i) => {
@@ -76,19 +77,26 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
         })
         .catch((err: unknown) => {
           const castedError = errorService.castError(err);
+          const task = taskManagerSelectors.findTaskById(getState())(tasksIds[index]);
 
-          dispatch(
-            taskManagerActions.updateTask({
-              taskId,
-              merge: {
-                status: TaskStatus.Error,
-              },
-            }),
-          );
+          if (task?.status !== TaskStatus.Cancelled) {
+            dispatch(
+              taskManagerActions.updateTask({
+                taskId,
+                merge: {
+                  status: TaskStatus.Error,
+                },
+              }),
+            );
 
-          errors.push({ ...castedError });
+            errors.push({ ...castedError });
+          }
         });
+
+      promises.push(downloadPromise);
     }
+
+    await Promise.allSettled(promises);
 
     if (errors.length > 0) {
       return rejectWithValue(errors);

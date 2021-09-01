@@ -50,6 +50,7 @@ const cancelTaskThunk = createAsyncThunk<void, string, { state: RootState }>(
         },
       }),
     );
+
     await (taskManagerSelectors.findTaskById(getState())(taskId)?.stop || (() => undefined))();
   },
 );
