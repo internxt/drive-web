@@ -9,11 +9,15 @@ import folderService, { CreateFolderResponse } from '../../../../services/folder
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
-export const createFolderThunk = createAsyncThunk<void, string, { state: RootState }>(
+interface CreateFolderPayload {
+  parentId: number;
+  folderName: string;
+}
+
+export const createFolderThunk = createAsyncThunk<CreateFolderResponse, CreateFolderPayload, { state: RootState }>(
   'storage/createFolder',
-  async (folderName: string, { getState, dispatch }) => {
-    const currentFolderId: number = storageSelectors.currentFolderId(getState());
-    const createdFolder: CreateFolderResponse = await folderService.createFolder(currentFolderId, folderName);
+  async ({ folderName, parentId }: CreateFolderPayload, { getState, dispatch }) => {
+    const createdFolder: CreateFolderResponse = await folderService.createFolder(parentId, folderName);
     const createdFolderNormalized: DriveFolderData = {
       ...createdFolder,
       name: folderName,
@@ -27,12 +31,15 @@ export const createFolderThunk = createAsyncThunk<void, string, { state: RootSta
       encrypt_version: null,
     };
 
-    dispatch(
-      storageActions.pushItems({
-        lists: [StorageItemList.Drive],
-        items: createdFolderNormalized as DriveItemData,
-      }),
-    );
+    if (storageSelectors.currentFolderId(getState()) === parentId)
+      dispatch(
+        storageActions.pushItems({
+          lists: [StorageItemList.Drive],
+          items: createdFolderNormalized as DriveItemData,
+        }),
+      );
+
+    return createdFolder;
   },
 );
 
