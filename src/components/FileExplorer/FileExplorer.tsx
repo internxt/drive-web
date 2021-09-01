@@ -17,11 +17,12 @@ import folderEmptyImage from '../../assets/images/folder-empty.png';
 import noResultsSearchImage from '../../assets/images/no-results-search.png';
 import { uiActions } from '../../store/slices/ui';
 
+import './FileExplorer.scss';
 import deviceService from '../../services/device.service';
 import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
 import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
 
-import { getAllItems } from '../../services/drag-and-drop.service';
+import { transformDraggedItems } from '../../services/drag-and-drop.service';
 import DeleteItemsDialog from '../dialogs/DeleteItemsDialog/DeleteItemsDialog';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
@@ -179,7 +180,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     const ViewModeComponent = viewModes[viewMode];
 
     return connectDropTarget(
-      <div className="flex flex-column flex-grow h-1">
+      <div className="flex flex-column flex-grow h-1" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
@@ -299,8 +300,8 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
 
     const folderPath = namePathDestinationArray.join('/');
 
-    getAllItems(droppedData, folderPath).then(async ({ rootList, files }) => {
-      if (files) {
+    transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
+      if (files.length) {
         // files where dragged directly
         await dispatch(
           storageThunks.uploadItemsThunk({
@@ -314,12 +315,12 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
         );
       }
 
-      if (rootList) {
+      if (rootList.length) {
         for (const root of rootList) {
           await dispatch(
             storageThunks.createFolderTreeStructureThunk({
               root,
-              currentFolderId: currentFolderId,
+              currentFolderId,
               options: {
                 onSuccess: onDragAndDropEnd,
               },

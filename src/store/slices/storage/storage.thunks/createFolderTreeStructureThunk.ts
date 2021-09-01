@@ -11,7 +11,8 @@ import { tasksActions } from '../../tasks';
 import { uploadItemsThunk } from './uploadItemsThunk';
 import errorService from '../../../../services/error.service';
 
-interface IRoot extends DirectoryEntry {
+export interface IRoot {
+  name: string;
   folderId: number | null;
   childrenFiles: File[];
   childrenFolders: IRoot[];

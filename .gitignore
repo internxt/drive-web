@@ -27,3 +27,6 @@ debug.log
 .eslintcache
 
 .npmrc
+
+cypress/downloads
+cypress/videos

@@ -93,6 +93,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
           onContextMenu={onItemRightClicked}
           onClick={onItemClicked}
           onDoubleClick={onItemDoubleClicked}
+          data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
         >
           {/* SELECTION */}
           <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
@@ -120,7 +121,11 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
           <div className="pl-3 w-2/12 items-center hidden xl:flex">
             <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
               {!item.isFolder ? (
-                <button onClick={onDownloadButtonClicked} className="hover-action mr-4">
+                <button
+                  onClick={onDownloadButtonClicked}
+                  className="hover-action mr-4"
+                  data-test="download-file-button"
+                >
                   <Unicons.UilCloudDownload className="h-5" />
                 </button>
               ) : null}
@@ -129,7 +134,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
                   <Unicons.UilShareAlt className="h-5" />
                 </button>
               ) : null}
-              <button onClick={onDeleteButtonClicked} className="hover-action">
+              <button onClick={onDeleteButtonClicked} className="hover-action" data-test="delete-file-button">
                 <Unicons.UilTrashAlt className="h-5" />
               </button>
             </div>

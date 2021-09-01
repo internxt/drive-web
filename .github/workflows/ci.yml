@@ -4,9 +4,20 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+env:
+  REACT_APP_CRYPTO_SECRET: ${{ secrets.REACT_APP_CRYPTO_SECRET }}
+  REACT_APP_STRIPE_PK: ${{ secrets.REACT_APP_STRIPE_PK }}
+  REACT_APP_STRIPE_TEST_PK: ${{ secrets.REACT_APP_STRIPE_TEST_PK }}
+  REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+  REACT_APP_SEGMENT_KEY: ${{ secrets.REACT_APP_SEGMENT_KEY }}
+  REACT_APP_MAGIC_IV: ${{ secrets.REACT_APP_MAGIC_IV }}
+  REACT_APP_MAGIC_SALT: ${{ secrets.REACT_APP_MAGIC_SALT }}
+  REACT_APP_CRYPTO_SECRET2: ${{ secrets.REACT_APP_CRYPTO_SECRET2 }}
+  GENERATE_SOURCEMAP: ${{ secrets.GENERATE_SOURCEMAP }}
+  CI: false
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -19,33 +30,27 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://npm.pkg.github.com'
 
-      # - name: Remove inxt-js private link
-      #   run: yarn remove inxt-js
       - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
       # You cannot read packages from other private repos with GITHUB_TOKEN
       # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
       - run: echo "always-auth=true" >> .npmrc
-      # - name: Add inxt-js package link
-      #   run: yarn add @internxt/inxt-js
-      - run: yarn
+
+      - name: Install
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Install httpserver
+        run: npm i -g http-server
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          start: http-server build -p 3000
+          wait-on: http://localhost:3000
       # - run: yarn run test
       #   env:
       #     CI: true # TODO: UNDO ASAP
-      - name: Build
-        env:
-          REACT_APP_CRYPTO_SECRET: ${{ secrets.REACT_APP_CRYPTO_SECRET }}
-          REACT_APP_STRIPE_PK: ${{ secrets.REACT_APP_STRIPE_PK }}
-          REACT_APP_STRIPE_TEST_PK: ${{ secrets.REACT_APP_STRIPE_TEST_PK }}
-          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-          REACT_APP_SEGMENT_KEY: ${{ secrets.REACT_APP_SEGMENT_KEY }}
-          REACT_APP_MAGIC_IV: ${{ secrets.REACT_APP_MAGIC_IV }}
-          REACT_APP_MAGIC_SALT: ${{ secrets.REACT_APP_MAGIC_SALT }}
-          REACT_APP_CRYPTO_SECRET2: ${{ secrets.REACT_APP_CRYPTO_SECRET2 }}
-          GENERATE_SOURCEMAP: ${{ secrets.GENERATE_SOURCEMAP }}
-          CI: false
-        run: yarn build
       - name: Install netlify
         run: npm install -g netlify
       - name: Deploy build
