@@ -5,6 +5,11 @@ describe('upload/download flows', () => {
   const downloadsFolder = Cypress.config('downloadsFolder');
   const fixturesFolder = Cypress.config('fixturesFolder');
 
+  beforeEach(() => {
+    cy.clearLocalStorage();
+    cy.login();
+  });
+
   afterEach(() => {
     cy.readFile(path.join(fixturesFolder, filename)).then((originalFile) => {
       cy.readFile(path.join(downloadsFolder, filename)).should('eq', originalFile);
@@ -18,6 +23,7 @@ describe('upload/download flows', () => {
 
     cy.get('[data-test=download-file-button]').click({ force: true });
   });
+
   it('upload/download flow', () => {
     cy.get('input[type=file]').attachFile(filename);
     cy.get('[data-test=download-file-button]').click({ force: true });

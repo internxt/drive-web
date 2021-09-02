@@ -5,6 +5,10 @@ describe('share flow', () => {
   const downloadsFolder = Cypress.config('downloadsFolder');
   const fixturesFolder = Cypress.config('fixturesFolder');
 
+  beforeEach(() => {
+    cy.login();
+  });
+
   afterEach(() => {
     cy.readFile(path.join(fixturesFolder, filename)).then((originalFile) => {
       cy.readFile(path.join(downloadsFolder, filename)).should('eq', originalFile);
