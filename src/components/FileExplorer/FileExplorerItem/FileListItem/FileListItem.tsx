@@ -130,7 +130,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
                 </button>
               ) : null}
               {!item.isFolder ? (
-                <button onClick={onShareButtonClicked} className="hover-action mr-4">
+                <button onClick={onShareButtonClicked} className="hover-action mr-4" data-test="share-file-button">
                   <Unicons.UilShareAlt className="h-5" />
                 </button>
               ) : null}
