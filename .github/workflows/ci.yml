@@ -46,7 +46,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: http-server build -p 3000
+          start: http-server build -p 3000 --proxy http://localhost:3000?
           wait-on: http://localhost:3000
       # - run: yarn run test
       #   env:
