@@ -14,6 +14,7 @@ env:
   REACT_APP_MAGIC_SALT: ${{ secrets.REACT_APP_MAGIC_SALT }}
   REACT_APP_CRYPTO_SECRET2: ${{ secrets.REACT_APP_CRYPTO_SECRET2 }}
   GENERATE_SOURCEMAP: ${{ secrets.GENERATE_SOURCEMAP }}
+  USE_PROD_USER_CYPRESS: true
   CI: false
 
 jobs:
@@ -36,21 +37,18 @@ jobs:
       # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
       - run: echo "always-auth=true" >> .npmrc
-
       - name: Install
         run: yarn
-      - name: Build
-        run: yarn build
-      - name: Install httpserver
-        run: npm i -g http-server
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: http-server build -p 3000
+          start: yarn start
           wait-on: http://localhost:3000
-      # - run: yarn run test
-      #   env:
-      #     CI: true # TODO: UNDO ASAP
+      - run: yarn run test
+      - name: Build
+        run: yarn build
+        env:
+          CI: false
       - name: Install netlify
         run: npm install -g netlify
       - name: Deploy build

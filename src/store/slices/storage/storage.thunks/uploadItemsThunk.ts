@@ -7,7 +7,7 @@ import { renameFile } from '../../../../lib/utils';
 import storageService from '../../../../services/storage.service';
 import { DriveFileData, DriveItemData, UserSettings } from '../../../../models/interfaces';
 import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
-import { storageActions } from '..';
+import { storageActions, storageSelectors } from '..';
 import { ItemToUpload } from '../../../../services/storage.service/storage-upload.service';
 import { StorageState } from '../storage.model';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../lib/constants';
@@ -139,7 +139,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
       await task()
         .then((uploadedFile) => {
-          dispatch(storageActions.pushItems({ items: uploadedFile as DriveItemData }));
+          if (uploadedFile.folderId === storageSelectors.currentFolderId(getState())) {
+            dispatch(storageActions.pushItems({ items: uploadedFile as DriveItemData }));
+          }
+
           dispatch(
             taskManagerActions.updateTask({
               taskId: taskId,

@@ -2,16 +2,25 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
+<<<<<<< HEAD
 import folderService from '../../../../services/folder.service';
+=======
+import { TaskType, TaskStatus } from '../../../../models/enums';
+import { NotificationData } from '../../../../models/interfaces';
+>>>>>>> master
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
 import { uploadItemsThunk } from './uploadItemsThunk';
 import errorService from '../../../../services/error.service';
+<<<<<<< HEAD
 import { TaskStatus, TaskType, UploadFolderTask } from '../../../../services/task-manager.service';
 import { CancelTokenSource } from 'axios';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
+=======
+import storageThunks from '.';
+>>>>>>> master
 
 export interface IRoot {
   name: string;
@@ -76,6 +85,7 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
 
     while (levels.length > 0) {
       const level: IRoot = levels.shift() as IRoot;
+<<<<<<< HEAD
       const [folderUploadedPromise, cancelTokenSource] = folderService.createFolder(
         level.folderId as number,
         level.name,
@@ -96,6 +106,11 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
         color: null,
         encrypt_version: null,
       };
+=======
+      const folderUploaded = await dispatch(
+        storageThunks.createFolderThunk({ parentId: level.folderId as number, folderName: level.name }),
+      ).unwrap();
+>>>>>>> master
 
       if (level.childrenFiles) {
         for (const childrenFile of level.childrenFiles) {

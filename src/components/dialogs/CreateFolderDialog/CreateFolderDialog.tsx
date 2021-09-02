@@ -2,19 +2,19 @@ import { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { UserSettings } from '../../../models/interfaces';
 import { RootState } from '../../../store';
 
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
 import BaseButton from '../../Buttons/BaseButton';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
+import storageSelectors from '../../../store/slices/storage/storage.selectors';
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
-  user: UserSettings | undefined;
+  currentFolderId: number;
 }
 
-const CreateFolderDialog = ({ onFolderCreated, user }: CreateFolderDialogProps) => {
+const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDialogProps) => {
   const [folderName, setFolderName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -24,7 +24,7 @@ const CreateFolderDialog = ({ onFolderCreated, user }: CreateFolderDialogProps) 
   };
   const createFolder = async () => {
     setIsLoading(true);
-    await dispatch(storageThunks.createFolderThunk(folderName))
+    await dispatch(storageThunks.createFolderThunk({ folderName, parentId: currentFolderId }))
       .unwrap()
       .then(() => {
         onClose();
@@ -66,4 +66,5 @@ const CreateFolderDialog = ({ onFolderCreated, user }: CreateFolderDialogProps) 
 
 export default connect((state: RootState) => ({
   user: state.user.user,
+  currentFolderId: storageSelectors.currentFolderId(state),
 }))(CreateFolderDialog);

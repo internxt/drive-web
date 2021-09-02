@@ -30,3 +30,4 @@ debug.log
 
 cypress/downloads
 cypress/videos
+cypress/screenshots
