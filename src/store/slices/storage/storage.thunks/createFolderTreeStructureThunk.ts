@@ -13,7 +13,8 @@ import { CancelTokenSource } from 'axios';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
 
-interface IRoot extends DirectoryEntry {
+export interface IRoot {
+  name: string;
   folderId: number | null;
   childrenFiles: File[];
   childrenFolders: IRoot[];

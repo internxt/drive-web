@@ -51,18 +51,18 @@ export const initializeUserThunk = createAsyncThunk<
           bucket: initializeUserBody.user.bucket,
         }),
       );
+    }
 
-      dispatch(setIsUserInitialized(true));
-    } else {
+    if (user.teams) {
       try {
         await storeTeamsInfo();
         dispatch(teamActions.initialize());
       } catch (err: unknown) {
         localStorageService.removeItem('xTeam');
       }
-
-      dispatch(setIsUserInitialized(true));
     }
+
+    dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
     history.push('/login');
   }

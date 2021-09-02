@@ -1,147 +1,71 @@
-/* eslint-disable */
-// @ts-nocheck
-import { MAX_ALLOWED_UPLOAD_SIZE } from '../lib/constants';
+import { IRoot } from '../store/slices/storage/storage.thunks/createFolderTreeStructureThunk';
 
-export async function getAllItems(dataTransfer, pathToDrop) {
-  const entries = await getEntries(dataTransfer.items, pathToDrop);
-  const levels: Array<[]> = [];
+interface FileSystemFileEntry extends FileSystemEntry{
+  file: (successCallback: (file:File) => void) => void
+}
 
-  //There is always a root ?
-  // levels.push();
+/**
+ *
+ * @param items Items that were dragged
+ * @params topLevelPath Path where it was dropped at
+ * @returns rootList: List of directories that were dropped at top level
+ * @returns files: List of files that were dropped at top level
+ */
+export async function transformDraggedItems(items: DataTransferItemList, topLevelPath:string): Promise<{rootList: Array<IRoot>, files: Array<File>}> {
+  const topLevelFiles: Array<File> = [];
+  const topLevelDirectories: Array<FileSystemDirectoryEntry> = [];
 
-  entries.directoryEntryList.map(directory => {
-    const level = directory.fullPath.split('/').length - 2;
+  for (let i = 0 ; i < items.length ; i++){
+    const item = items[i];
 
-    directory.childrenFiles = entries.childrenIndex[directory.fullPath];
-    // directory.childrenFolders =
-    // console.log(level);
+    const entry: FileSystemEntry | null = item.webkitGetAsEntry();
 
-    if (levels[level]) {
-      // insert level
-      levels[level].push(directory);
+    if (entry){
+      if (entry.isFile){
+        topLevelFiles.push(item.getAsFile() as File);
+      } else {
+        topLevelDirectories.push(entry as FileSystemDirectoryEntry);
+      }
+    // Fallback in case webkitGetAsEntry is not supported
     } else {
-      // create level
-      levels.push([directory]);
+      topLevelFiles.push(item.getAsFile() as File);
     }
-  });
-  // console.log(levels);
+  }
 
-  // entries.levels = levels;
-  const items = {
-    numberOfItems: entries.entryList.length,
-    rootList: levels[0],
-    files: entries.childrenIndex['']
+  const rootList = await Promise.all(topLevelDirectories.map(directory => transformEntryToRoot(directory, topLevelPath)));
+
+  return { rootList, files: topLevelFiles };
+
+}
+
+// Transforms FileSystemDirectoryEntry to IRoot type
+async function transformEntryToRoot(entry: FileSystemDirectoryEntry, currentPath:string): Promise<IRoot>{
+  const entries = await getEntriesFromDirectory(entry);
+
+  const fullPathEdited = `${currentPath}/${entry.name}`;
+
+  const childrenFilesPromises = Promise.all(entries.filter(entry => entry.isFile).map((entry: FileSystemEntry) => getFileFromEntry(entry as FileSystemFileEntry)));
+  const childrenFoldersPromises = Promise.all(entries.filter(entry => entry.isDirectory).map(entry => transformEntryToRoot(entry as FileSystemDirectoryEntry, fullPathEdited)));
+
+  const [childrenFiles, childrenFolders] = await Promise.all([childrenFilesPromises, childrenFoldersPromises]);
+
+  return {
+    name: entry.name,
+    childrenFiles,
+    childrenFolders,
+    folderId: null,
+    fullPathEdited
   };
-
-  return items;// entries;
 }
 
-function parentFullPath(filePath) {
-  const arrayPath = filePath.split('/');
-
-  arrayPath.pop();
-  const parentPath = arrayPath.join('/');
-
-  return parentPath;
+function getEntriesFromDirectory(entry: FileSystemDirectoryEntry): Promise<FileSystemEntry[]> {
+  return new Promise((resolve, reject) => {
+    entry.createReader().readEntries(resolve, reject);
+  });
 }
 
-async function getEntries(dataTransferItemList: DataTransferItemList, pathToDrop) {
-  const entryList: DataTransferItem[] = [];
-  const fileEntryList: File[] = [];
-  const directoryEntryList: DataTransferItem[] = [];
-  let totalSize = 0;
-  const filesAboveMaxSize = [];
-  const childrenIndex = {};
-
-  // Use BFS to traverse entire directory/file structure
-  const queue: unknown[] = [];
-
-  // dataTransferItemList is not iterable i.e. no forEach
-  for (let i = 0; i < dataTransferItemList.length; i++) {
-    queue.push(dataTransferItemList[i].webkitGetAsEntry());
-  }
-  while (queue.length > 0) {
-    const entry = queue.shift();
-
-    if (entry.isFile) {
-      // eslint-disable-next-line no-loop-func
-      const indexKey = parentFullPath(entry.fullPath);
-
-      if (!childrenIndex[indexKey]) {
-        childrenIndex[indexKey] = [];
-      }
-
-      await getFile(entry).then(fileEntry => {
-        fileEntry.fullPathEdited = pathToDrop + '/' + fileEntry.webkitRelativePath;
-        fileEntryList.push(fileEntry);
-        totalSize += fileEntry.size;
-        childrenIndex[indexKey].push(fileEntry);
-        if (fileEntry.size >= MAX_ALLOWED_UPLOAD_SIZE) {
-          filesAboveMaxSize.push(entry.name);
-        }
-      });
-      entryList.push(entry);
-    } else if (entry.isDirectory) {
-      //console.log(entry);
-      // entry.children = [];
-      entry.fullPathEdited = pathToDrop + entry.fullPath;
-      entryList.push(entry);
-      directoryEntryList.push(entry);
-      const reader = entry.createReader();
-      const directChildren = await readAllDirectoryEntries(reader);
-
-      entry.childrenFiles = [];
-      entry.childrenFolders = [];
-
-      for (const childEntry of directChildren) {
-        // TODO
-        if (childEntry.isFile) {
-          entry.childrenFiles.push(childEntry);
-        } else {
-          entry.childrenFolders.push(childEntry);
-        }
-      }
-
-      queue.push(...directChildren);
-    }
-  }
-  return { entryList, fileEntryList, totalSize, filesAboveMaxSize, directoryEntryList, childrenIndex };
+function getFileFromEntry(entry: FileSystemFileEntry): Promise<File> {
+  return new Promise(resolve => {
+    entry.file(resolve);
+  });
 }
-
-// Get all the entries (files or sub-directories) in a directory by calling readEntries until it returns empty array
-async function readAllDirectoryEntries(directoryReader, level = 0) {
-  const entries = [];
-  let readEntries = await readEntriesPromise(directoryReader);
-
-  while (readEntries.length > 0) {
-    entries.push(...readEntries);
-    readEntries = await readEntriesPromise(directoryReader);
-  }
-  return entries;
-}
-
-// Wrap readEntries in a promise to make working with readEntries easier
-async function readEntriesPromise(directoryReader) {
-  try {
-    return await new Promise((resolve, reject) => {
-      directoryReader.readEntries(resolve, reject);
-    });
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-// get File from FileEntry
-async function getFile(fileEntry) {
-  try {
-    return await new Promise((resolve, reject) => fileEntry.file(resolve, reject));
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-const dragAndDropService = {
-  getAllItems
-};
-
-export default dragAndDropService;

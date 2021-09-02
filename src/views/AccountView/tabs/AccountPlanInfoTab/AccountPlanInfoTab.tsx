@@ -18,7 +18,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
   const user = useAppSelector((state) => state.user.user);
   const isLoadingPlanLimit = useAppSelector((state) => state.plan.isLoadingPlanLimit);
   const planUsage = useAppSelector((state) => state.plan.planUsage);
-  const planLimit = useAppSelector((state) => state.plan.planLimit);
+  const planLimit = useAppSelector(planSelectors.planLimitToShow);
   const isLoadingPlans = useAppSelector((state) => state.plan.isLoadingPlans);
   const currentPlan = useAppSelector(planSelectors.currentPlan);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
@@ -30,8 +30,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
   const onDeletePermanentlyAccountClicked = (): void => {
     setIsDeleteAccountDialogOpen(true);
   };
-
-  const planName = () => {
+  const getPlanName = () => {
     let planName;
 
     if (currentPlan) {
@@ -42,6 +41,8 @@ const AccountPlanInfoTab = (): JSX.Element => {
 
     return planName;
   };
+  const progressBarFillWidth = isLoadingPlans || isLoadingPlanLimit ? 0 : (planUsage / planLimit) * 100 + '%';
+  const progressBarFillStyle = { width: progressBarFillWidth };
 
   return (
     <Fragment>
@@ -95,7 +96,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
               <h2 className="account_config_title mt-0.5 mb-2">Usage</h2>
               <div className="flex flex-col items-start justify-center w-60 bg-l-neutral-20 rounded-md py-3 px-6">
                 {isLoadingPlans || isLoadingPlanLimit ? (
-                  <span>Loading...</span>
+                  <span className="text-center w-full">Loading...</span>
                 ) : (
                   <span className="account_config_description w-full m-0">
                     {bytesToString(planUsage) || '0'} of {getUserLimitString(planLimit)}
@@ -103,10 +104,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
                 )}
 
                 <div className="flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-3">
-                  <div
-                    className="h-full bg-blue-70"
-                    style={{ width: isLoadingPlans || isLoadingPlanLimit ? 0 : (planUsage / planLimit) * 100 }}
-                  />
+                  <div className="h-full bg-blue-70" style={progressBarFillStyle} />
                 </div>
               </div>
             </div>

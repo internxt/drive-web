@@ -185,6 +185,19 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             },
           });
 
+          // adtrack script
+          window._adftrack = Array.isArray(window._adftrack)
+            ? window._adftrack
+            : window._adftrack
+            ? [window._adftrack]
+            : [];
+          window._adftrack.push({
+            HttpHost: 'track.adform.net',
+            pm: 2370627,
+            divider: encodeURIComponent('|'),
+            pagename: encodeURIComponent('New'),
+          });
+
           localStorageService.set('xToken', token);
           user.mnemonic = decryptTextWithKey(user.mnemonic, password);
           dispatch(setUser({ ...user }));

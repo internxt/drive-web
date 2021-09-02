@@ -73,3 +73,12 @@ export enum RenewalPeriod {
   Semiannually = 'Semiannually',
   Annually = 'Annually',
 }
+
+export enum LocalStorageItem {
+  Workspace = 'workspace',
+  User = 'xUser',
+  UserMnemonic = 'xMnemonic',
+  UserToken = 'xToken',
+  Team = 'xTeam',
+  TeamToken = 'xTokenTeam',
+}

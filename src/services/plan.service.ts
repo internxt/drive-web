@@ -3,7 +3,7 @@ import { StoragePlan } from '../models/interfaces';
 import httpService from './http.service';
 
 const fetchIndividualPlan = async (): Promise<StoragePlan | null> => {
-  const response = await httpService.get<StoragePlan | null>('/api/plan/individual');
+  const response = await httpService.get<StoragePlan | null>('/api/plan/individual', { authWorkspace: Workspace.Personal });
 
   return response;
 };
