@@ -47,6 +47,8 @@ jobs:
       - run: yarn run test
       - name: Build
         run: yarn build
+        env:
+          CI: false
       - name: Install netlify
         run: npm install -g netlify
       - name: Deploy build
