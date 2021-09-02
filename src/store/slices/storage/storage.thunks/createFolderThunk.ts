@@ -5,7 +5,7 @@ import { storageActions, storageSelectors } from '..';
 import { RootState } from '../../..';
 import { StorageItemList } from '../../../../models/enums';
 import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
-import folderService, { CreateFolderResponse } from '../../../../services/folder.service';
+import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
@@ -13,7 +13,8 @@ export const createFolderThunk = createAsyncThunk<void, string, { state: RootSta
   'storage/createFolder',
   async (folderName: string, { getState, dispatch }) => {
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
-    const createdFolder: CreateFolderResponse = await folderService.createFolder(currentFolderId, folderName);
+    const [createdFolderPromise] = folderService.createFolder(currentFolderId, folderName);
+    const createdFolder = await createdFolderPromise;
     const createdFolderNormalized: DriveFolderData = {
       ...createdFolder,
       name: folderName,

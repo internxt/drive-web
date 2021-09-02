@@ -24,6 +24,7 @@ export enum TaskType {
 
 interface BaseTask {
   id: string;
+  relatedTaskId?: string;
   action: TaskType;
   status: TaskStatus;
   progress: number;

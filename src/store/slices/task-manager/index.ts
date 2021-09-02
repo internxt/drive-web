@@ -6,6 +6,11 @@ interface TaskManagerState {
   tasks: TaskData[];
 }
 
+export interface TaskFilter {
+  relatedTaskId?: string;
+  status?: TaskStatus[];
+}
+
 export interface UpdateTaskPayload {
   taskId: string;
   merge: Partial<TaskData>;
@@ -16,14 +21,20 @@ const initialState: TaskManagerState = {
 };
 
 export const taskManagerSelectors = {
+  getTasks:
+    (state: RootState) =>
+    (filter: TaskFilter = {}): TaskData[] =>
+      state.taskManager.tasks.filter((task) => {
+        const meetsTheStatus = !filter.status || filter.status.includes(task.status);
+        const meetsTheRelatedTaskId = !filter.relatedTaskId || task.relatedTaskId === filter.relatedTaskId;
+
+        return task.showNotification && meetsTheStatus && meetsTheRelatedTaskId;
+      }),
   getNotifications:
     (state: RootState) =>
-    (filter: { status?: TaskStatus[] } = {}): NotificationData[] => {
-      return state.taskManager.tasks
-        .filter((task) => {
-          const meetsTheStatus = !filter.status || filter.status.includes(task.status);
-          return meetsTheStatus;
-        })
+    (filter: TaskFilter = {}): NotificationData[] => {
+      return taskManagerSelectors
+        .getTasks(state)(filter)
         .map((task) => taskManagerService.getNotification(task))
         .reverse();
     },

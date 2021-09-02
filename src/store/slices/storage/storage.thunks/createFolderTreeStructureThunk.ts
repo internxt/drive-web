@@ -5,10 +5,13 @@ import { RootState } from '../../..';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { taskManagerActions } from '../../task-manager';
+import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
 import { uploadItemsThunk } from './uploadItemsThunk';
 import errorService from '../../../../services/error.service';
 import { TaskStatus, TaskType, UploadFolderTask } from '../../../../services/task-manager.service';
+import { CancelTokenSource } from 'axios';
+import { deleteItemsThunk } from './deleteItemsThunk';
+import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
 
 interface IRoot extends DirectoryEntry {
   folderId: number | null;
@@ -30,10 +33,13 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
   void,
   CreateFolderTreeStructurePayload,
   { state: RootState }
->('storage/createFolderStructure', async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
+>('storage/createFolderStructure', async ({ root, currentFolderId, options }, { getState, dispatch, requestId }) => {
   options = Object.assign({ withNotification: true }, options || {});
-
+  let alreadyUploaded = 0;
+  let rootFolderItem: DriveFolderData | undefined;
   const levels = [root];
+  const itemsUnderRoot = countItemsUnderRoot(root);
+  const cancelTokenSources: CancelTokenSource[] = [];
   const task: UploadFolderTask = {
     id: requestId,
     action: TaskType.UploadFolder,
@@ -42,9 +48,25 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
     folderName: root.name,
     showNotification: !!options.withNotification,
     cancellable: true,
+    stop: async () => {
+      const uploadFileTasks = taskManagerSelectors.getTasks(getState())({ relatedTaskId: requestId });
+
+      // Cancels folders creation
+      for (const cancelTokenSource of cancelTokenSources) {
+        cancelTokenSource.cancel();
+      }
+
+      // Cancels files upload
+      for (const uploadFileTask of uploadFileTasks) {
+        await uploadFileTask.stop?.();
+      }
+
+      // Deletes the root folder
+      if (rootFolderItem) {
+        await dispatch(deleteItemsThunk([rootFolderItem as DriveItemData]));
+      }
+    },
   };
-  let alreadyUploaded = 0;
-  const itemsUnderRoot = countItemsUnderRoot(root);
 
   dispatch(taskManagerActions.addTask(task));
 
@@ -53,18 +75,37 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
 
     while (levels.length > 0) {
       const level: IRoot = levels.shift() as IRoot;
-      const folderUploaded = await folderService.createFolder(level.folderId as number, level.name);
+      const [folderUploadedPromise, cancelTokenSource] = folderService.createFolder(
+        level.folderId as number,
+        level.name,
+      );
+
+      cancelTokenSources.push(cancelTokenSource);
+
+      const createdFolder = await folderUploadedPromise;
+      rootFolderItem = {
+        ...createdFolder,
+        name: level.name,
+        parent_id: createdFolder.parentId,
+        user_id: createdFolder.userId,
+        icon: null,
+        iconId: null,
+        icon_id: null,
+        isFolder: true,
+        color: null,
+        encrypt_version: null,
+      };
 
       if (level.childrenFiles) {
         for (const childrenFile of level.childrenFiles) {
           await dispatch(
             uploadItemsThunk({
               files: [childrenFile],
-              parentFolderId: folderUploaded.id,
+              parentFolderId: createdFolder.id,
               folderPath: level.fullPathEdited,
-              options: { withNotifications: false },
+              options: { showNotifications: false },
             }),
-          );
+          ).unwrap();
 
           dispatch(
             taskManagerActions.updateTask({
@@ -79,7 +120,7 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
       }
 
       for (const child of level.childrenFolders) {
-        child.folderId = folderUploaded.id;
+        child.folderId = createdFolder.id;
       }
 
       levels.push(...level.childrenFolders);
@@ -96,16 +137,22 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
 
     options.onSuccess?.();
   } catch (err: unknown) {
-    dispatch(
-      taskManagerActions.updateTask({
-        taskId: task.id,
-        merge: {
-          status: TaskStatus.Error,
-        },
-      }),
-    );
+    const castedError = errorService.castError(err);
 
-    throw errorService.castError(err);
+    console.log('createFolderTreeStructureThunk catch: ', castedError);
+
+    if (task.status !== TaskStatus.Cancelled) {
+      dispatch(
+        taskManagerActions.updateTask({
+          taskId: task.id,
+          merge: {
+            status: TaskStatus.Error,
+          },
+        }),
+      );
+    }
+
+    throw castedError;
   }
 });
 

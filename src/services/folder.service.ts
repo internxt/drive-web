@@ -1,3 +1,6 @@
+import axios, { CancelTokenSource } from 'axios';
+const CancelToken = axios.CancelToken;
+
 import localStorageService from './local-storage.service';
 import analyticsService from './analytics.service';
 import {
@@ -110,26 +113,34 @@ export async function fetchFolderContent(folderId: number): Promise<FetchFolderC
   return result;
 }
 
-export async function createFolder(currentFolderId: number, folderName: string): Promise<CreateFolderResponse> {
-  try {
-    const user = localStorageService.getUser() as UserSettings;
-    const data: CreateFolderPayload = {
-      parentFolderId: currentFolderId,
-      folderName,
-    };
-    const response = await httpService.post<CreateFolderPayload, CreateFolderResponse>('/api/storage/folder', data);
+export function createFolder(
+  currentFolderId: number,
+  folderName: string,
+): [Promise<CreateFolderResponse>, CancelTokenSource] {
+  const cancelTokenSource = CancelToken.source();
+  const fn = async () => {
+    try {
+      const user = localStorageService.getUser() as UserSettings;
+      const data: CreateFolderPayload = {
+        parentFolderId: currentFolderId,
+        folderName,
+      };
+      const response = await httpService.post<CreateFolderPayload, CreateFolderResponse>('/api/storage/folder', data);
 
-    analyticsService.trackFolderCreated({
-      email: user.email,
-      platform: DevicePlatform.Web,
-    });
+      analyticsService.trackFolderCreated({
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
 
-    return response;
-  } catch (err: unknown) {
-    const castedError = errorService.castError(err);
+      return response;
+    } catch (err: unknown) {
+      const castedError = errorService.castError(err);
 
-    throw castedError;
-  }
+      throw castedError;
+    }
+  };
+
+  return [fn(), cancelTokenSource];
 }
 
 export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload): Promise<void> {

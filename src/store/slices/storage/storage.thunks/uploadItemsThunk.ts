@@ -22,7 +22,8 @@ interface UploadItemsPayload {
   parentFolderId: number;
   folderPath: string;
   options?: {
-    withNotifications?: boolean;
+    relatedTaskId?: string;
+    showNotifications?: boolean;
     onSuccess?: () => void;
   };
 }
@@ -48,7 +49,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const errors: Error[] = [];
     const tasksIds: string[] = [];
 
-    options = Object.assign({ withNotifications: true }, options || {});
+    options = Object.assign({ showNotifications: true }, options || {});
 
     if (showSizeWarning) {
       notificationsService.show(
@@ -65,12 +66,13 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       const fileContent = renameFile(file, finalFilename);
       const task: UploadFileTask = {
         id: `${requestId}-${index}`,
+        relatedTaskId: options?.relatedTaskId,
         action: TaskType.UploadFile,
         status: TaskStatus.Pending,
         progress: 0,
         fileName: finalFilename,
         fileType: extension,
-        showNotification: !!options?.withNotifications,
+        showNotification: !!options?.showNotifications,
         cancellable: true,
       };
 
