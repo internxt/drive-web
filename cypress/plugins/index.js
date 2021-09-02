@@ -22,7 +22,7 @@ module.exports = (on, config) => {
 
   config.env = {};
 
-  config.env.NODE_ENV = process.env.NODE_ENV;
+  config.env.USE_PROD_USER_CYPRESS = process.env.USE_PROD_USER_CYPRESS;
 
   return config;
 };

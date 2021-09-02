@@ -14,7 +14,7 @@ env:
   REACT_APP_MAGIC_SALT: ${{ secrets.REACT_APP_MAGIC_SALT }}
   REACT_APP_CRYPTO_SECRET2: ${{ secrets.REACT_APP_CRYPTO_SECRET2 }}
   GENERATE_SOURCEMAP: ${{ secrets.GENERATE_SOURCEMAP }}
-  NODE_ENV: production
+  USE_PROD_USER_CYPRESS: true
   CI: false
 
 jobs:
