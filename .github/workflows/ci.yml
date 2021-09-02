@@ -1,7 +1,5 @@
 name: Drive Web CI
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
 env:
