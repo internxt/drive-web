@@ -4,12 +4,12 @@ import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
 import { TaskType, TaskStatus } from '../../../../models/enums';
 import { NotificationData } from '../../../../models/interfaces';
-import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import { tasksActions } from '../../tasks';
 import { uploadItemsThunk } from './uploadItemsThunk';
 import errorService from '../../../../services/error.service';
+import storageThunks from '.';
 
 export interface IRoot {
   name: string;
@@ -55,7 +55,9 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
 
     while (levels.length > 0) {
       const level: IRoot = levels.shift() as IRoot;
-      const folderUploaded = await folderService.createFolder(level.folderId as number, level.name);
+      const folderUploaded = await dispatch(
+        storageThunks.createFolderThunk({ parentId: level.folderId as number, folderName: level.name }),
+      ).unwrap();
 
       if (level.childrenFiles) {
         for (const childrenFile of level.childrenFiles) {
