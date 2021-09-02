@@ -10,6 +10,7 @@ interface FileLoggerItemProps {
 const FileLoggerItem = ({ notification }: FileLoggerItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isTaskFinished = useAppSelector(taskManagerSelectors.isTaskFinished)(notification.taskId);
+  const isTaskProgressCompleted = useAppSelector(taskManagerSelectors.isTaskProgressCompleted)(notification.taskId);
   const statusClassName = isTaskFinished ? '' : 'opacity-50';
   const messageClassName = [TaskStatus.Error, TaskStatus.Cancelled].includes(notification.status)
     ? 'text-red-50'
@@ -28,7 +29,7 @@ const FileLoggerItem = ({ notification }: FileLoggerItemProps): JSX.Element => {
         <span className={`text-xs ${messageClassName}`}>{notification.subtitle}</span>
       </div>
 
-      {!isTaskFinished && (
+      {notification.isTaskCancellable && !isTaskProgressCompleted && !isTaskFinished && (
         <div className="text-red-60 ml-auto cursor-pointer" onClick={onCancelButtonClicked}>
           <Unicons.UilTimes />
         </div>

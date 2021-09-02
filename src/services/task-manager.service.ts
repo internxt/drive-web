@@ -27,34 +27,40 @@ interface BaseTask {
   action: TaskType;
   status: TaskStatus;
   progress: number;
+  cancellable: boolean;
   showNotification: boolean;
   stop?: () => Promise<void>;
 }
 
 export interface DownloadFileTask extends BaseTask {
   action: TaskType.DownloadFile;
+  cancellable: true;
   file: DriveFileData;
 }
 
 export interface UploadFileTask extends BaseTask {
   action: TaskType.UploadFile;
+  cancellable: true;
   fileName: string;
   fileType: string;
 }
 
 export interface UploadFolderTask extends BaseTask {
   action: TaskType.UploadFolder;
+  cancellable: true;
   folderName: string;
 }
 
 export interface MoveFileTask extends BaseTask {
   action: TaskType.MoveFile;
+  cancellable: false;
   file: DriveFileData;
   destinationFolderId: number;
 }
 
 export interface MoveFolderTask extends BaseTask {
   action: TaskType.MoveFolder;
+  cancellable: false;
   folder: DriveFolderData;
   destinationFolderId: number;
 }
@@ -68,6 +74,7 @@ export interface NotificationData {
   subtitle: string;
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   progress: number;
+  isTaskCancellable: boolean;
 }
 
 const getTaskNotificationTitle = (task: TaskData): string => {
@@ -143,6 +150,7 @@ const taskManagerService = {
       subtitle: getTaskNotificationSubtitle(task),
       icon: getTaskNotificationIcon(task),
       progress: task.progress,
+      isTaskCancellable: task.cancellable,
     };
   },
 };

@@ -28,6 +28,7 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
         file: item,
         progress: 0,
         showNotification: true,
+        cancellable: true,
       };
 
       tasksIds.push(taskId);
@@ -36,9 +37,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
 
     for (const [index, item] of items.entries()) {
       const taskId = tasksIds[index];
-
       const updateProgressCallback = (progress: number) => {
-        const task = taskManagerSelectors.findTaskById(getState())(tasksIds[index]);
+        const task = taskManagerSelectors.findTaskById(getState())(taskId);
 
         if (task?.status !== TaskStatus.Cancelled) {
           dispatch(
@@ -59,7 +59,7 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
           taskId,
           merge: {
             status: TaskStatus.Decrypting,
-            stop: async () => actionState.stop(),
+            stop: async () => actionState?.stop(),
           },
         }),
       );

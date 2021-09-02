@@ -36,6 +36,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
             showNotification: true,
             folder: item,
             destinationFolderId,
+            cancellable: false,
           }
         : {
             id: `${requestId}-${index}`,
@@ -45,6 +46,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
             showNotification: true,
             file: item,
             destinationFolderId,
+            cancellable: false,
           };
 
       dispatch(taskManagerActions.addTask(task));

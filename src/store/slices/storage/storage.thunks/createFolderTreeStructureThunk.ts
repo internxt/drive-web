@@ -8,7 +8,7 @@ import notificationsService, { ToastType } from '../../../../services/notificati
 import { taskManagerActions } from '../../task-manager';
 import { uploadItemsThunk } from './uploadItemsThunk';
 import errorService from '../../../../services/error.service';
-import { TaskData, TaskStatus, TaskType } from '../../../../services/task-manager.service';
+import { TaskStatus, TaskType, UploadFolderTask } from '../../../../services/task-manager.service';
 
 interface IRoot extends DirectoryEntry {
   folderId: number | null;
@@ -34,13 +34,14 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
   options = Object.assign({ withNotification: true }, options || {});
 
   const levels = [root];
-  const task: TaskData = {
+  const task: UploadFolderTask = {
     id: requestId,
     action: TaskType.UploadFolder,
     status: TaskStatus.Pending,
     progress: 0,
     folderName: root.name,
     showNotification: !!options.withNotification,
+    cancellable: true,
   };
   let alreadyUploaded = 0;
   const itemsUnderRoot = countItemsUnderRoot(root);

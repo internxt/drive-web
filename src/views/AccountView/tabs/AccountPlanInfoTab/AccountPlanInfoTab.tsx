@@ -120,7 +120,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
               {!isLoadingPlans ? (
                 <div className="flex flex-col w-full">
                   <Fragment>
-                    <span className="text-neutral-700 font-semibold text-sm">{planName()}</span>
+                    <span className="text-neutral-700 font-semibold text-sm">{currentPlan?.simpleName}</span>
 
                     <div className="flex w-full items-end justify-center rounded border border-blue-60 text-neutral-500 px-4 py-1 my-3">
                       {currentPlan?.planId ? (

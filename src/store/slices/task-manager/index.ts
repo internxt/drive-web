@@ -37,6 +37,10 @@ export const taskManagerSelectors = {
       [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled].includes(
         state.taskManager.tasks.find((task) => task.id === taskId)?.status || TaskStatus.Pending,
       ),
+  isTaskProgressCompleted:
+    (state: RootState) =>
+    (taskId: string): boolean =>
+      state.taskManager.tasks.find((task) => task.id === taskId)?.progress === 1,
 };
 
 const cancelTaskThunk = createAsyncThunk<void, string, { state: RootState }>(

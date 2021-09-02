@@ -6,7 +6,7 @@ import folderService from '../../../../services/folder.service';
 import { renameFile } from '../../../../lib/utils';
 import storageService from '../../../../services/storage.service';
 import { DriveFileData, DriveItemData, UserSettings } from '../../../../models/interfaces';
-import { taskManagerActions } from '../../task-manager';
+import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
 import { storageActions } from '..';
 import { ItemToUpload } from '../../../../services/storage.service/storage-upload.service';
 import { StorageState } from '../storage.model';
@@ -45,7 +45,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       .slice(1)
       .join('/');
     const filesToUpload: ItemToUpload[] = [];
-    const uploadErrors: Error[] = [];
+    const errors: Error[] = [];
     const tasksIds: string[] = [];
 
     options = Object.assign({ withNotifications: true }, options || {});
@@ -71,6 +71,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         fileName: finalFilename,
         fileType: extension,
         showNotification: !!options?.withNotifications,
+        cancellable: true,
       };
 
       filesToUpload.push({
@@ -92,33 +93,40 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       const path = relativePath + '/' + file.name + '.' + type;
       const taskId = tasksIds[index];
       const updateProgressCallback = (progress) => {
-        dispatch(
-          taskManagerActions.updateTask({
-            taskId: taskId,
-            merge: {
-              status: TaskStatus.InProcess,
-              progress,
-            },
-          }),
-        );
+        const task = taskManagerSelectors.findTaskById(getState())(taskId);
+
+        if (task?.status !== TaskStatus.Cancelled) {
+          dispatch(
+            taskManagerActions.updateTask({
+              taskId: taskId,
+              merge: {
+                status: TaskStatus.InProcess,
+                progress,
+              },
+            }),
+          );
+        }
       };
       const task = async (): Promise<DriveFileData> => {
-        dispatch(
-          taskManagerActions.updateTask({
-            taskId: taskId,
-            merge: {
-              status: TaskStatus.Encrypting,
-            },
-          }),
-        );
-
-        const uploadedFile = await storageService.upload.uploadItem(
+        const [uploadFilePromise, actionState] = storageService.upload.uploadFile(
           user.email,
           file,
           path,
           isTeam,
           updateProgressCallback,
         );
+
+        dispatch(
+          taskManagerActions.updateTask({
+            taskId,
+            merge: {
+              status: TaskStatus.Encrypting,
+              stop: async () => actionState?.stop(),
+            },
+          }),
+        );
+
+        const uploadedFile = await uploadFilePromise;
 
         uploadedFile.name = file.name;
 
@@ -139,22 +147,24 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         })
         .catch((err: unknown) => {
           const castedError = errorService.castError(err);
+          const task = taskManagerSelectors.findTaskById(getState())(tasksIds[index]);
 
-          dispatch(
-            taskManagerActions.updateTask({
-              taskId: taskId,
-              merge: { status: TaskStatus.Error },
-            }),
-          );
+          if (task?.status !== TaskStatus.Cancelled) {
+            dispatch(
+              taskManagerActions.updateTask({
+                taskId: taskId,
+                merge: { status: TaskStatus.Error },
+              }),
+            );
 
-          uploadErrors.push(castedError);
-          console.error(castedError);
+            errors.push(castedError);
+          }
         });
     }
 
     options.onSuccess?.();
 
-    if (uploadErrors.length > 0) {
+    if (errors.length > 0) {
       throw new Error('There were some errors during upload');
     }
   },

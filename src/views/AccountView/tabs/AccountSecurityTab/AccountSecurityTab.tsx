@@ -56,7 +56,7 @@ const AccountSecurityTab = (): JSX.Element => {
   }, [has2FA]);
 
   return (
-    <div className="account-security-tab flex flex-col items-center justify-center">
+    <div className="account-security-tab flex flex-col items-center">
       <h1 className="account_config_title mt-16">Two-factor authentication</h1>
 
       <p className="account_config_description">

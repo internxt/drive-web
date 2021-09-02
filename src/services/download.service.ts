@@ -11,7 +11,7 @@ export function downloadFile(
   itemData: DriveItemData,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-): [Promise<void>, ActionState] {
+): [Promise<void>, ActionState | undefined] {
   const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;

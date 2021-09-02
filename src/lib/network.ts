@@ -53,15 +53,16 @@ export class Network {
    * @param params Required params for uploading a file
    * @returns Id of the created file
    */
-  uploadFile(bucketId: string, params: IUploadParams): Promise<string> {
+  uploadFile(bucketId: string, params: IUploadParams): [Promise<string>, ActionState | undefined] {
+    let actionState: ActionState | undefined;
+
     if (!bucketId) {
       throw new Error('Bucket id not provided');
     }
 
     const hashName = createHash('ripemd160').update(params.filepath).digest('hex');
-
-    return new Promise((resolve: (fileId: string) => void, reject) => {
-      this.environment.uploadFile(bucketId, {
+    const promise = new Promise((resolve: (fileId: string) => void, reject) => {
+      actionState = this.environment.uploadFile(bucketId, {
         filename: hashName,
         fileSize: params.filesize,
         fileContent: params.filecontent,
@@ -79,6 +80,8 @@ export class Network {
         },
       });
     });
+
+    return [promise, actionState];
   }
 
   /**
@@ -88,8 +91,8 @@ export class Network {
    * @param params Required params for downloading a file
    * @returns
    */
-  downloadFile(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Blob>, ActionState] {
-    let actionState;
+  downloadFile(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Blob>, ActionState | undefined] {
+    let actionState: ActionState | undefined;
 
     if (!bucketId) {
       throw new Error('Bucket id not provided');
