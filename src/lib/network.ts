@@ -2,6 +2,8 @@ import { Environment } from '@internxt/inxt-js';
 import { createHash } from 'crypto';
 import localStorageService from '../services/local-storage.service';
 import { TeamsSettings, UserSettings } from '../models/interfaces';
+import { FileInfo } from '@internxt/inxt-js/build/api/fileinfo';
+import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 
@@ -51,15 +53,16 @@ export class Network {
    * @param params Required params for uploading a file
    * @returns Id of the created file
    */
-  uploadFile(bucketId: string, params: IUploadParams): Promise<string> {
+  uploadFile(bucketId: string, params: IUploadParams): [Promise<string>, ActionState | undefined] {
+    let actionState: ActionState | undefined;
+
     if (!bucketId) {
       throw new Error('Bucket id not provided');
     }
 
     const hashName = createHash('ripemd160').update(params.filepath).digest('hex');
-
-    return new Promise((resolve: (fileId: string) => void, reject) => {
-      this.environment.uploadFile(bucketId, {
+    const promise = new Promise((resolve: (fileId: string) => void, reject) => {
+      actionState = this.environment.uploadFile(bucketId, {
         filename: hashName,
         fileSize: params.filesize,
         fileContent: params.filecontent,
@@ -77,6 +80,8 @@ export class Network {
         },
       });
     });
+
+    return [promise, actionState];
   }
 
   /**
@@ -86,7 +91,9 @@ export class Network {
    * @param params Required params for downloading a file
    * @returns
    */
-  downloadFile(bucketId: string, fileId: string, params: IDownloadParams): Promise<Blob> {
+  downloadFile(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Blob>, ActionState | undefined] {
+    let actionState: ActionState | undefined;
+
     if (!bucketId) {
       throw new Error('Bucket id not provided');
     }
@@ -95,8 +102,8 @@ export class Network {
       throw new Error('File id not provided');
     }
 
-    return new Promise((resolve, reject) => {
-      this.environment.downloadFile(bucketId, fileId, {
+    const promise = new Promise<Blob>((resolve, reject) => {
+      actionState = this.environment.downloadFile(bucketId, fileId, {
         ...params,
         finishedCallback: (err: Error | null, filecontent: Blob | null) => {
           if (err) {
@@ -104,7 +111,7 @@ export class Network {
             return reject(err);
           }
 
-          if (!filecontent) {
+          if (!filecontent || filecontent.size === 0) {
             return reject(Error('Downloaded file is empty'));
           }
 
@@ -112,9 +119,11 @@ export class Network {
         },
       });
     });
+
+    return [promise, actionState];
   }
 
-  getFileInfo(bucketId: string, fileId: string) {
+  getFileInfo(bucketId: string, fileId: string): Promise<FileInfo> {
     return this.environment.getFileInfo(bucketId, fileId);
   }
 

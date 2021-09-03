@@ -36,7 +36,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
       .then(() => {
         this.ClearAndRedirect();
       })
-      .catch((err) => {
+      .catch(() => {
         notificationsService.show('Invalid token', ToastType.Warning);
         history.push('/');
       });

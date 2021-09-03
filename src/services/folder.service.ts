@@ -1,3 +1,6 @@
+import axios, { CancelTokenSource } from 'axios';
+const CancelToken = axios.CancelToken;
+
 import localStorageService from './local-storage.service';
 import analyticsService from './analytics.service';
 import {
@@ -17,8 +20,8 @@ export interface IFolders {
   createdAt: Date;
   encrypt_version: string;
   icon: string;
-  iconId: any;
-  icon_id: any;
+  iconId: number | null;
+  icon_id: number | null;
   id: number;
   name: string;
   parentId: number;
@@ -34,8 +37,8 @@ export interface FolderChild {
   createdAt: string;
   encrypt_version: string;
   icon: string;
-  iconId: any;
-  icon_id: any;
+  iconId: number | null;
+  icon_id: number | null;
   id: number;
   name: string;
   parentId: number;
@@ -95,41 +98,63 @@ export interface MoveFolderResponse {
   moved: boolean;
 }
 
-export async function fetchFolderContent(folderId: number): Promise<FetchFolderContentResponse> {
-  const response = await httpService.get<IContentFolder>(`/api/storage/folder/${folderId}`);
-  const result: FetchFolderContentResponse = {
-    folders: [],
-    files: [],
+export function fetchFolderContent(folderId: number): [Promise<FetchFolderContentResponse>, CancelTokenSource] {
+  const cancelTokenSource = CancelToken.source();
+  const fn = async () => {
+    try {
+      const response = await httpService.get<IContentFolder>(`/api/storage/folder/${folderId}`, {
+        cancelToken: cancelTokenSource.token,
+      });
+      const result: FetchFolderContentResponse = {
+        folders: [],
+        files: [],
+      };
+
+      if (response) {
+        result.folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
+        result.files = response.files;
+      }
+
+      return result;
+    } catch (err) {
+      const castedError = errorService.castError(err);
+      throw castedError;
+    }
   };
 
-  if (response) {
-    result.folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
-    result.files = response.files;
-  }
-
-  return result;
+  return [fn(), cancelTokenSource];
 }
 
-export async function createFolder(currentFolderId: number, folderName: string): Promise<CreateFolderResponse> {
-  try {
-    const user = localStorageService.getUser() as UserSettings;
-    const data: CreateFolderPayload = {
-      parentFolderId: currentFolderId,
-      folderName,
-    };
-    const response = await httpService.post<CreateFolderPayload, CreateFolderResponse>('/api/storage/folder', data);
+export function createFolder(
+  currentFolderId: number,
+  folderName: string,
+): [Promise<CreateFolderResponse>, CancelTokenSource] {
+  const cancelTokenSource = CancelToken.source();
+  const fn = async () => {
+    try {
+      const user = localStorageService.getUser() as UserSettings;
+      const data: CreateFolderPayload = {
+        parentFolderId: currentFolderId,
+        folderName,
+      };
+      const response = await httpService.post<CreateFolderPayload, CreateFolderResponse>('/api/storage/folder', data, {
+        cancelToken: cancelTokenSource.token,
+      });
 
-    analyticsService.trackFolderCreated({
-      email: user.email,
-      platform: DevicePlatform.Web,
-    });
+      analyticsService.trackFolderCreated({
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
 
-    return response;
-  } catch (err: unknown) {
-    const castedError = errorService.castError(err);
+      return response;
+    } catch (err: unknown) {
+      const castedError = errorService.castError(err);
 
-    throw castedError;
-  }
+      throw castedError;
+    }
+  };
+
+  return [fn(), cancelTokenSource];
 }
 
 export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload): Promise<void> {

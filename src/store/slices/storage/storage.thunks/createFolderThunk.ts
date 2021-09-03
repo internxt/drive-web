@@ -5,41 +5,88 @@ import { storageActions, storageSelectors } from '..';
 import { RootState } from '../../..';
 import { StorageItemList } from '../../../../models/enums';
 import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
-import folderService, { CreateFolderResponse } from '../../../../services/folder.service';
+import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
+import { CreateFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service';
+import { taskManagerActions } from '../../task-manager';
+import errorService from '../../../../services/error.service';
 
+interface CreateFolderThunkOptions {
+  relatedTaskId: string;
+  showErrors: boolean;
+}
 interface CreateFolderPayload {
-  parentId: number;
+  parentFolderId: number;
   folderName: string;
+  options?: Partial<CreateFolderThunkOptions>;
 }
 
-export const createFolderThunk = createAsyncThunk<CreateFolderResponse, CreateFolderPayload, { state: RootState }>(
+export const createFolderThunk = createAsyncThunk<
+  [DriveFolderData, CreateFolderTask],
+  CreateFolderPayload,
+  { state: RootState }
+>(
   'storage/createFolder',
-  async ({ folderName, parentId }: CreateFolderPayload, { getState, dispatch }) => {
-    const createdFolder: CreateFolderResponse = await folderService.createFolder(parentId, folderName);
-    const createdFolderNormalized: DriveFolderData = {
-      ...createdFolder,
-      name: folderName,
-      parent_id: createdFolder.parentId,
-      user_id: createdFolder.userId,
-      icon: null,
-      iconId: null,
-      icon_id: null,
-      isFolder: true,
-      color: null,
-      encrypt_version: null,
-    };
+  async ({ folderName, parentFolderId, options }: CreateFolderPayload, { requestId, getState, dispatch }) => {
+    options = Object.assign({ showErrors: true }, options || {});
 
-    if (storageSelectors.currentFolderId(getState()) === parentId)
+    try {
+      const [createdFolderPromise, cancelTokenSource] = folderService.createFolder(parentFolderId, folderName);
+      const task: CreateFolderTask = {
+        id: requestId,
+        relatedTaskId: options.relatedTaskId,
+        action: TaskType.CreateFolder,
+        status: TaskStatus.InProcess,
+        progress: TaskProgress.Min,
+        folderName: folderName,
+        parentFolderId: parentFolderId,
+        showNotification: false,
+        cancellable: false,
+        stop: async () => cancelTokenSource.cancel(),
+      };
+
+      dispatch(taskManagerActions.addTask(task));
+
+      const createdFolder = await createdFolderPromise;
+      const createdFolderNormalized: DriveFolderData = {
+        ...createdFolder,
+        name: folderName,
+        parent_id: createdFolder.parentId,
+        user_id: createdFolder.userId,
+        icon: null,
+        iconId: null,
+        icon_id: null,
+        isFolder: true,
+        color: null,
+        encrypt_version: null,
+      };
+
       dispatch(
-        storageActions.pushItems({
-          lists: [StorageItemList.Drive],
-          items: createdFolderNormalized as DriveItemData,
+        taskManagerActions.updateTask({
+          taskId: task.id,
+          merge: {
+            status: TaskStatus.Success,
+            progress: TaskProgress.Max,
+          },
         }),
       );
 
-    return createdFolder;
+      if (storageSelectors.currentFolderId(getState()) === parentFolderId) {
+        dispatch(
+          storageActions.pushItems({
+            lists: [StorageItemList.Drive],
+            items: createdFolderNormalized as DriveItemData,
+          }),
+        );
+      }
+
+      return [createdFolderNormalized, task];
+    } catch (err: unknown) {
+      const castedError = errorService.castError(err);
+
+      throw castedError;
+    }
   },
 );
 
@@ -48,10 +95,14 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
     .addCase(createFolderThunk.pending, () => undefined)
     .addCase(createFolderThunk.fulfilled, () => undefined)
     .addCase(createFolderThunk.rejected, (state, action) => {
-      const errorMessage = action.error.message?.includes('already exists')
-        ? i18n.get('error.folderAlreadyExists')
-        : i18n.get('error.creatingFolder');
+      const requestOptions = action.meta.arg.options;
 
-      notificationsService.show(errorMessage, ToastType.Error);
+      if (requestOptions?.showErrors) {
+        const errorMessage = action.error.message?.includes('already exists')
+          ? i18n.get('error.folderAlreadyExists')
+          : i18n.get('error.creatingFolder');
+
+        notificationsService.show(errorMessage, ToastType.Error);
+      }
     });
 };

@@ -1,13 +1,5 @@
 import { store as storeInstance } from '../store';
-import {
-  AppViewLayout,
-  TaskType,
-  TaskStatus,
-  StripeMemberTiers,
-  RenewalPeriod,
-  TimeInterval,
-  StripeProductNames,
-} from './enums';
+import { AppViewLayout, StripeMemberTiers, RenewalPeriod, TimeInterval } from './enums';
 
 export interface AppConfig {
   plan: AppPlanConfig;
@@ -119,24 +111,6 @@ export interface DriveItemPatch {
   name?: string;
 }
 
-export interface NotificationData {
-  uuid: string;
-  isFolder: boolean;
-  type?: string;
-  name: string;
-  action: TaskType;
-  status: TaskStatus;
-  progress?: number;
-}
-
-export interface UpdateNotificationPayload {
-  uuid: string;
-  merge: {
-    status?: TaskStatus;
-    progress?: number;
-  };
-}
-
 export interface IFormValues {
   name: string;
   lastname: string;
@@ -154,7 +128,7 @@ export interface IFormValues {
 export type IStripeProduct = {
   id: string;
   metadata: StripeProductMetadata;
-  name: StripeProductNames;
+  name: string;
   test?: boolean;
 };
 
@@ -182,7 +156,7 @@ export type IStripePlan = {
 export type StoragePlan = {
   planId: string;
   productId: string;
-  name: StripeProductNames;
+  name: string;
   simpleName: string;
   paymentInterval: RenewalPeriod;
   price: string;
@@ -190,14 +164,6 @@ export type StoragePlan = {
   isLifetime: boolean;
   storageLimit: number;
 };
-
-export interface IActionUpdateFileLoggerEntry {
-  filePath: string;
-  action?: TaskType;
-  status?: TaskStatus;
-  progress?: number;
-  errorMessage?: string;
-}
 
 export interface FolderPath {
   name: string;

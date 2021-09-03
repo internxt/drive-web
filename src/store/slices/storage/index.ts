@@ -126,7 +126,11 @@ export const storageSlice = createSlice({
 
         const firstFileIndex = state.lists[listKey].findIndex((item) => !item.isFolder);
 
-        arrayService.insertAt(state.lists[listKey], firstFileIndex, files);
+        arrayService.insertAt(
+          state.lists[listKey],
+          ~firstFileIndex ? firstFileIndex : state.lists[listKey].length,
+          files,
+        );
       });
     },
     popItems(

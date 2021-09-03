@@ -9,6 +9,7 @@ import analyticsService from '../analytics.service';
 import { DevicePlatform } from '../../models/enums';
 import { DriveFileData } from '../../models/interfaces';
 import errorService from '../error.service';
+import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 export interface ItemToUpload {
   name: string;
@@ -19,16 +20,15 @@ export interface ItemToUpload {
   folderPath: string;
 }
 
-export async function uploadItem(
+export function uploadFile(
   userEmail: string,
   file: ItemToUpload,
   path: string,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-): Promise<DriveFileData> {
-  if (!file.parentFolderId) {
-    throw new Error('No folder ID provided');
-  }
+): [Promise<DriveFileData>, ActionState | undefined] {
+  let promise: Promise<DriveFileData>;
+  let actionState: ActionState | undefined;
 
   try {
     analyticsService.trackFileUploadStart({
@@ -50,57 +50,53 @@ export async function uploadItem(
     }
 
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
-
     const relativePath = file.folderPath + file.content.name + (file.type ? '.' + file.type : '');
     const content = new Blob([file.content], { type: file.type });
-
-    const fileId = await network.uploadFile(bucketId, {
+    const [uploadFilePromise, uploadFileActionState] = network.uploadFile(bucketId, {
       filepath: relativePath,
       filesize: file.size,
       filecontent: content,
       progressCallback: updateProgressCallback,
     });
 
-    const name = encryptFilename(file.name, file.parentFolderId);
-    const folder_id = file.parentFolderId;
-    const encrypt_version = '03-aes';
-    const fileEntry = {
-      fileId,
-      file_id: fileId,
-      type: file.type,
-      bucket: bucketId,
-      size: file.size,
-      folder_id,
-      name,
-      encrypt_version,
-    };
-    const headers = getHeaders(true, true, isTeam);
+    promise = uploadFilePromise.then(async (fileId) => {
+      const name = encryptFilename(file.name, file.parentFolderId);
+      const folder_id = file.parentFolderId;
+      const encrypt_version = '03-aes';
+      const fileEntry = {
+        fileId,
+        file_id: fileId,
+        type: file.type,
+        bucket: bucketId,
+        size: file.size,
+        folder_id,
+        name,
+        encrypt_version,
+      };
+      const headers = getHeaders(true, true, isTeam);
+      const createFileEntry = () => {
+        const body = JSON.stringify({ file: fileEntry });
+        const params = { method: 'post', headers, body };
 
-    const createFileEntry = () => {
-      const body = JSON.stringify({ file: fileEntry });
-      const params = { method: 'post', headers, body };
+        return fetch(`${process.env.REACT_APP_API_URL}/api/storage/file`, params);
+      };
+      const response: Response = await createFileEntry();
+      const data: DriveFileData = await response.json();
 
-      return fetch(`${process.env.REACT_APP_API_URL}/api/storage/file`, params);
-    };
+      analyticsService.trackFileUploadFinished({
+        file_size: file.size,
+        file_id: data.id,
+        file_type: file.type,
+        email: userEmail,
+      });
 
-    let res;
-    const data: DriveFileData = await createFileEntry().then((response) => {
-      res = response;
-      return res.json();
+      if (response.status === 402) {
+        throw new Error('Rate limited');
+      }
+
+      return data;
     });
-
-    analyticsService.trackFileUploadFinished({
-      file_size: file.size,
-      file_id: data.id,
-      file_type: file.type,
-      email: userEmail,
-    });
-
-    if (res.status === 402) {
-      throw new Error('Rate limited');
-    }
-
-    return data;
+    actionState = uploadFileActionState;
   } catch (err: unknown) {
     const castedError = errorService.castError(err);
 
@@ -115,10 +111,12 @@ export async function uploadItem(
 
     throw err;
   }
+
+  return [promise, actionState];
 }
 
 const uploadService = {
-  uploadItem,
+  uploadFile,
 };
 
 export default uploadService;

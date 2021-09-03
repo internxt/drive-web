@@ -1,7 +1,7 @@
 import fileExtensionGroups, { FileExtensionGroup } from '../models/file-types';
 
-function computeExtensionsLists(): FileExtensionGroup {
-  const extensionsLists: any = {};
+function computeExtensionsLists(): Record<FileExtensionGroup, string[]> {
+  const extensionsLists: Partial<Record<FileExtensionGroup, string[]>> = {};
 
   Object.values(FileExtensionGroup)
     .filter((groupId) => isNaN(Number(groupId)))
@@ -9,11 +9,11 @@ function computeExtensionsLists(): FileExtensionGroup {
       extensionsLists[groupId as FileExtensionGroup] = computeExtensionsList(FileExtensionGroup[groupId]);
     });
 
-  return extensionsLists;
+  return extensionsLists as Record<FileExtensionGroup, string[]>;
 }
 
 function computeExtensionsList(groupId: FileExtensionGroup): string[] {
-  return Object.entries(fileExtensionGroups[groupId]).reduce((t, [formatKey, formatExtensions]): string[] => {
+  return Object.entries(fileExtensionGroups[groupId]).reduce((t, [, formatExtensions]): string[] => {
     return t.concat(formatExtensions);
   }, [] as string[]);
 }

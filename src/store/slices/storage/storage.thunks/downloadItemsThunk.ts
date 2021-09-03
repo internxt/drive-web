@@ -2,82 +2,101 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
-import { TaskType, TaskStatus } from '../../../../models/enums';
-import { DriveItemData, NotificationData } from '../../../../models/interfaces';
+import { DriveItemData } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { tasksActions } from '../../tasks';
+import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
 import { sessionSelectors } from '../../session/session.selectors';
 import errorService from '../../../../services/error.service';
+import { DownloadFileTask, TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service';
 
 export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
   'storage/downloadItems',
   async (items: DriveItemData[], { getState, dispatch, requestId, rejectWithValue }) => {
     const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const notificationsUuids: string[] = [];
+    const tasksIds: string[] = [];
+    const promises: Promise<void>[] = [];
     const errors: unknown[] = [];
 
     items.forEach((item, i) => {
-      const uuid = `${requestId}-${i}`;
-      const notification: NotificationData = {
-        uuid,
+      const taskId = `${requestId}-${i}`;
+      const task: DownloadFileTask = {
+        id: taskId,
         action: TaskType.DownloadFile,
         status: TaskStatus.Pending,
-        name: item.name,
-        type: item.type,
-        isFolder: item.isFolder,
+        progress: TaskProgress.Min,
+        file: item,
+        showNotification: true,
+        cancellable: true,
       };
 
-      notificationsUuids.push(uuid);
-      dispatch(tasksActions.addNotification(notification));
+      tasksIds.push(taskId);
+      dispatch(taskManagerActions.addTask(task));
     });
 
     for (const [index, item] of items.entries()) {
-      try {
-        const updateProgressCallback = (progress: number) =>
+      const taskId = tasksIds[index];
+      const updateProgressCallback = (progress: number) => {
+        const task = taskManagerSelectors.findTaskById(getState())(taskId);
+
+        if (task?.status !== TaskStatus.Cancelled) {
           dispatch(
-            tasksActions.updateNotification({
-              uuid: notificationsUuids[index],
+            taskManagerActions.updateTask({
+              taskId: tasksIds[index],
               merge: {
                 status: TaskStatus.InProcess,
                 progress,
               },
             }),
           );
+        }
+      };
+      const [downloadPromise, actionState] = downloadService.downloadFile(item, isTeam, updateProgressCallback);
 
-        dispatch(
-          tasksActions.updateNotification({
-            uuid: notificationsUuids[index],
-            merge: { status: TaskStatus.Decrypting },
-          }),
-        );
+      dispatch(
+        taskManagerActions.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Decrypting,
+            stop: async () => actionState?.stop(),
+          },
+        }),
+      );
 
-        await downloadService.downloadFile(item, isTeam, updateProgressCallback).then(() => {
+      downloadPromise
+        .then(() => {
           dispatch(
-            tasksActions.updateNotification({
-              uuid: notificationsUuids[index],
+            taskManagerActions.updateTask({
+              taskId,
               merge: {
                 status: TaskStatus.Success,
               },
             }),
           );
+        })
+        .catch((err: unknown) => {
+          const castedError = errorService.castError(err);
+          const task = taskManagerSelectors.findTaskById(getState())(tasksIds[index]);
+
+          if (task?.status !== TaskStatus.Cancelled) {
+            dispatch(
+              taskManagerActions.updateTask({
+                taskId,
+                merge: {
+                  status: TaskStatus.Error,
+                },
+              }),
+            );
+
+            errors.push({ ...castedError });
+          }
         });
-      } catch (err: unknown) {
-        const castedError = errorService.castError(err);
 
-        dispatch(
-          tasksActions.updateNotification({
-            uuid: notificationsUuids[index],
-            merge: {
-              status: TaskStatus.Error,
-            },
-          }),
-        );
-
-        errors.push({ ...castedError });
-      }
+      promises.push(downloadPromise);
     }
+
+    await Promise.allSettled(promises);
 
     if (errors.length > 0) {
       return rejectWithValue(errors);

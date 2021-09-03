@@ -1,32 +1,39 @@
-import { TaskStatus } from '../../../models/enums';
-import { NotificationData } from '../../../models/interfaces';
-import i18n from '../../../services/i18n.service';
-import iconService from '../../../services/icon.service';
-import { items } from '@internxt/lib';
+import * as Unicons from '@iconscout/react-unicons';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { taskManagerSelectors, taskManagerThunks } from '../../../store/slices/task-manager';
+import { NotificationData, TaskStatus } from '../../../services/task-manager.service';
 
-interface ItemProps {
-  item: NotificationData;
+interface FileLoggerItemProps {
+  notification: NotificationData;
 }
 
-const FileLoggerItem = ({ item }: ItemProps): JSX.Element => {
-  const IconComponent = iconService.getItemIcon(item.isFolder, item.type || '');
-  const fullName = items.getItemDisplayName(item);
-  const icon: JSX.Element = <IconComponent className="flex items-center justify-center mr-2.5 w-6" />;
-  const statusClassName = [TaskStatus.Success, TaskStatus.Error].includes(item.status) ? '' : 'opacity-50';
-  const message: string = i18n.get(`tasks.${item.action}.${item.status}`, {
-    progress: item.progress ? (item.progress * 100).toFixed(2) : 0,
-  });
-  const messageClassName = item.status === TaskStatus.Error ? 'text-red-50' : 'text-neutral-500';
+const FileLoggerItem = ({ notification }: FileLoggerItemProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const isTaskFinished = useAppSelector(taskManagerSelectors.isTaskFinished)(notification.taskId);
+  const isTaskProgressCompleted = useAppSelector(taskManagerSelectors.isTaskProgressCompleted)(notification.taskId);
+  const statusClassName = isTaskFinished ? '' : 'opacity-50';
+  const messageClassName = [TaskStatus.Error, TaskStatus.Cancelled].includes(notification.status)
+    ? 'text-red-50'
+    : 'text-neutral-500';
+  const onCancelButtonClicked = () => {
+    dispatch(taskManagerThunks.cancelTaskThunk(notification.taskId));
+  };
 
   return (
-    <div className={`${statusClassName} flex items-center px-4`}>
-      {icon}
+    <div className={`${statusClassName} flex items-center pl-4`}>
+      <notification.icon className="flex items-center justify-center mr-2.5 w-6" />
 
       <div className="flex flex-col text-left w-40">
-        <span className="text-sm text-neutral-900 truncate">{fullName}</span>
+        <span className="text-sm text-neutral-900 truncate">{notification.title}</span>
 
-        <span className={`text-xs ${messageClassName}`}>{message}</span>
+        <span className={`text-xs ${messageClassName}`}>{notification.subtitle}</span>
       </div>
+
+      {notification.isTaskCancellable && !isTaskProgressCompleted && !isTaskFinished && (
+        <div className="text-red-60 ml-auto cursor-pointer" onClick={onCancelButtonClicked}>
+          <Unicons.UilTimes />
+        </div>
+      )}
     </div>
   );
 };

@@ -2,13 +2,14 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
-import { TaskType, TaskStatus } from '../../../../models/enums';
-import { NotificationData } from '../../../../models/interfaces';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { tasksActions } from '../../tasks';
+import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
 import { uploadItemsThunk } from './uploadItemsThunk';
 import errorService from '../../../../services/error.service';
+import { TaskProgress, TaskStatus, TaskType, UploadFolderTask } from '../../../../services/task-manager.service';
+import { deleteItemsThunk } from './deleteItemsThunk';
+import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
 import storageThunks from '.';
 
 export interface IRoot {
@@ -32,47 +33,70 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
   void,
   CreateFolderTreeStructurePayload,
   { state: RootState }
->('storage/createFolderStructure', async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
-  const levels = [root];
-  const notification: NotificationData = {
-    uuid: requestId,
-    action: TaskType.UploadFolder,
-    status: TaskStatus.Pending,
-    name: root.name,
-    isFolder: true,
-  };
-  let alreadyUploaded = 0;
-  const itemsUnderRoot = countItemsUnderRoot(root);
-
+>('storage/createFolderStructure', async ({ root, currentFolderId, options }, { getState, dispatch, requestId }) => {
   options = Object.assign({ withNotification: true }, options || {});
 
-  if (options?.withNotification) {
-    dispatch(tasksActions.addNotification(notification));
-  }
+  let alreadyUploaded = 0;
+  let rootFolderItem: DriveFolderData | undefined;
+  const levels = [root];
+  const itemsUnderRoot = countItemsUnderRoot(root);
+  const task: UploadFolderTask = {
+    id: requestId,
+    action: TaskType.UploadFolder,
+    status: TaskStatus.Pending,
+    progress: TaskProgress.Min,
+    folderName: root.name,
+    showNotification: !!options.withNotification,
+    cancellable: true,
+    stop: async () => {
+      const relatedTasks = taskManagerSelectors.getTasks(getState())({ relatedTaskId: requestId });
+      const promises: Promise<void>[] = [];
+
+      // Cancels related tasks
+      promises.push(
+        ...(relatedTasks.map((task) => task.stop?.()).filter((promise) => promise !== undefined) as Promise<void>[]),
+      );
+
+      // Deletes the root folder
+      if (rootFolderItem) {
+        promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
+      }
+
+      await Promise.all(promises);
+    },
+  };
+
+  dispatch(taskManagerActions.addTask(task));
 
   try {
     root.folderId = currentFolderId;
 
     while (levels.length > 0) {
       const level: IRoot = levels.shift() as IRoot;
-      const folderUploaded = await dispatch(
-        storageThunks.createFolderThunk({ parentId: level.folderId as number, folderName: level.name }),
+      const [createdFolder] = await dispatch(
+        storageThunks.createFolderThunk({
+          parentFolderId: level.folderId as number,
+          folderName: level.name,
+          options: { relatedTaskId: task.id, showErrors: false },
+        }),
       ).unwrap();
+
+      rootFolderItem = createdFolder;
 
       if (level.childrenFiles) {
         for (const childrenFile of level.childrenFiles) {
           await dispatch(
             uploadItemsThunk({
               files: [childrenFile],
-              parentFolderId: folderUploaded.id,
+              parentFolderId: createdFolder.id,
               folderPath: level.fullPathEdited,
-              options: { withNotifications: false },
+              options: { relatedTaskId: task.id, showNotifications: false, showErrors: false },
             }),
-          );
+          ).unwrap();
 
           dispatch(
-            tasksActions.updateNotification({
-              uuid: notification.uuid,
+            taskManagerActions.updateTask({
+              taskId: task.id,
               merge: {
                 status: TaskStatus.InProcess,
                 progress: ++alreadyUploaded / itemsUnderRoot,
@@ -83,36 +107,38 @@ export const createFolderTreeStructureThunk = createAsyncThunk<
       }
 
       for (const child of level.childrenFolders) {
-        child.folderId = folderUploaded.id;
+        child.folderId = createdFolder.id;
       }
 
       levels.push(...level.childrenFolders);
     }
 
-    if (options?.withNotification) {
-      dispatch(
-        tasksActions.updateNotification({
-          uuid: notification.uuid,
-          merge: {
-            status: TaskStatus.Success,
-          },
-        }),
-      );
-    }
+    dispatch(
+      taskManagerActions.updateTask({
+        taskId: task.id,
+        merge: {
+          status: TaskStatus.Success,
+        },
+      }),
+    );
 
     options.onSuccess?.();
   } catch (err: unknown) {
-    options?.withNotification &&
+    const castedError = errorService.castError(err);
+    const updatedTask = taskManagerSelectors.findTaskById(getState())(task.id);
+
+    if (updatedTask?.status !== TaskStatus.Cancelled) {
       dispatch(
-        tasksActions.updateNotification({
-          uuid: notification.uuid,
+        taskManagerActions.updateTask({
+          taskId: task.id,
           merge: {
             status: TaskStatus.Error,
           },
         }),
       );
 
-    throw errorService.castError(err);
+      throw castedError;
+    }
   }
 });
 

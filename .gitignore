@@ -28,6 +28,6 @@ debug.log
 
 .npmrc
 
-cypress/downloads
-cypress/videos
-cypress/screenshots
+**/cypress/downloads
+**/cypress/videos
+**/cypress/screenshots

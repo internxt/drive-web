@@ -16,6 +16,7 @@ import iconService from '../../services/icon.service';
 import BaseButton from '../../components/Buttons/BaseButton';
 import sizeService from '../../services/size.service';
 import { aes } from '@internxt/lib';
+import { TaskProgress } from '../../services/task-manager.service';
 
 interface ShareViewProps {
   match: match<{ token: string }>;
@@ -36,7 +37,7 @@ interface ShareViewState {
 class ShareView extends Component<ShareViewProps, ShareViewState> {
   state = {
     token: this.props.match.params.token,
-    progress: 0,
+    progress: TaskProgress.Min,
     info: null,
     linkExpired: false,
     accessedFile: false,
@@ -79,15 +80,16 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
 
       this.setState({ progress: MIN_PROGRESS });
 
-      const file = await network.downloadFile(info.bucket, info.file, {
+      const [fileBlobPromise] = network.downloadFile(info.bucket, info.file, {
         fileEncryptionKey: Buffer.from(info.encryptionKey, 'hex'),
         fileToken: info.fileToken,
         progressCallback: (progress) => {
           this.setState({ ...this.state, progress: Math.max(MIN_PROGRESS, progress * 100) });
         },
       });
+      const fileBlob = await fileBlobPromise;
 
-      fileDownload(file, info.decryptedName as string);
+      fileDownload(fileBlob, info.decryptedName as string);
     }
   };
 

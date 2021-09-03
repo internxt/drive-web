@@ -17,7 +17,7 @@ import RemoveAccountView from './RemoveAccountView/RemoveAccountView';
 const views: Array<{
   id: string;
   component: string | FunctionComponent<any> | ComponentClass<any>;
-  componentProps?: any;
+  componentProps?: Record<string, unknown>;
 }> = [
   { id: 'signup', component: SignUpView, componentProps: { isNewUser: true } },
   { id: 'appsumo', component: SignUpView, componentProps: { isNewUser: false } },
