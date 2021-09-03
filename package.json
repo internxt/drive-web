@@ -49,7 +49,7 @@
     "preinstall": "node ./scripts/use-yarn.js",
     "start": "craco start",
     "build": "craco build",
-    "test": "jest tests/",
+    "test": "jest test/unit/",
     "test:e2e": "cypress run --project test/e2e",
     "eject": "react-scripts eject",
     "format": "prettier {src,tests}/**/*.{ts,tsx} --write",
