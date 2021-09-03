@@ -126,7 +126,6 @@ export const storageSlice = createSlice({
 
         const firstFileIndex = state.lists[listKey].findIndex((item) => !item.isFolder);
 
-        console.log('firstFileIndex:', firstFileIndex);
         arrayService.insertAt(
           state.lists[listKey],
           ~firstFileIndex ? firstFileIndex : state.lists[listKey].length,

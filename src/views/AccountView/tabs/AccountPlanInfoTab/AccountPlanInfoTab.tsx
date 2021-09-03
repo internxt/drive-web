@@ -30,17 +30,6 @@ const AccountPlanInfoTab = (): JSX.Element => {
   const onDeletePermanentlyAccountClicked = (): void => {
     setIsDeleteAccountDialogOpen(true);
   };
-  const getPlanName = () => {
-    let planName;
-
-    if (currentPlan) {
-      planName = currentPlan.name;
-    } else {
-      planName = getUserLimitString(planLimit);
-    }
-
-    return planName;
-  };
   const progressBarFillWidth = isLoadingPlans || isLoadingPlanLimit ? 0 : (planUsage / planLimit) * 100 + '%';
   const progressBarFillStyle = { width: progressBarFillWidth };
 

@@ -16,6 +16,7 @@ import iconService from '../../services/icon.service';
 import BaseButton from '../../components/Buttons/BaseButton';
 import sizeService from '../../services/size.service';
 import { aes } from '@internxt/lib';
+import { TaskProgress } from '../../services/task-manager.service';
 
 interface ShareViewProps {
   match: match<{ token: string }>;
@@ -36,7 +37,7 @@ interface ShareViewState {
 class ShareView extends Component<ShareViewProps, ShareViewState> {
   state = {
     token: this.props.match.params.token,
-    progress: 0,
+    progress: TaskProgress.Min,
     info: null,
     linkExpired: false,
     accessedFile: false,

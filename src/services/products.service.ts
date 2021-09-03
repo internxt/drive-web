@@ -1,5 +1,5 @@
 import { getHeaders } from '../lib/auth';
-import { IStripeCustomer, IStripePlan, IStripeProduct } from '../models/interfaces';
+import { IStripePlan, IStripeProduct } from '../models/interfaces';
 import envService from './env.service';
 
 export const loadAvailableProducts = async (): Promise<IStripeProduct[]> => {
@@ -53,15 +53,6 @@ export const loadAvailableTeamsPlans = async (product: IStripeProduct): Promise<
     method: 'post',
     headers: getHeaders(true, false),
     body: JSON.stringify(body),
-  });
-  const data = await response.json();
-
-  return data;
-};
-
-export const loadAllStripeCustomers = async (email: string): Promise<IStripeCustomer> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/stripe/v1/customers/${email}`, {
-    headers: getHeaders(true, false),
   });
   const data = await response.json();
 

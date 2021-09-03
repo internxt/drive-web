@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios';
+import { string } from 'prop-types';
 
 const errorService = {
   castError(error: unknown): Error {
@@ -10,6 +11,9 @@ const errorService = {
       castedError = new Error(error);
     } else if (error instanceof Error) {
       castedError = error;
+    } else {
+      const map = error as Record<string, unknown>;
+      castedError = map.message ? new Error(map.message as string) : castedError;
     }
 
     return castedError;

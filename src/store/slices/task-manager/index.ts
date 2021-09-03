@@ -28,13 +28,14 @@ export const taskManagerSelectors = {
         const meetsTheStatus = !filter.status || filter.status.includes(task.status);
         const meetsTheRelatedTaskId = !filter.relatedTaskId || task.relatedTaskId === filter.relatedTaskId;
 
-        return task.showNotification && meetsTheStatus && meetsTheRelatedTaskId;
+        return meetsTheStatus && meetsTheRelatedTaskId;
       }),
   getNotifications:
     (state: RootState) =>
     (filter: TaskFilter = {}): NotificationData[] => {
       return taskManagerSelectors
         .getTasks(state)(filter)
+        .filter((task) => task.showNotification)
         .map((task) => taskManagerService.getNotification(task))
         .reverse();
     },

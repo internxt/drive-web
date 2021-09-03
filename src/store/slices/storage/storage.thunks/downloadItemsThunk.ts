@@ -9,7 +9,7 @@ import notificationsService, { ToastType } from '../../../../services/notificati
 import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
 import { sessionSelectors } from '../../session/session.selectors';
 import errorService from '../../../../services/error.service';
-import { DownloadFileTask, TaskStatus, TaskType } from '../../../../services/task-manager.service';
+import { DownloadFileTask, TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service';
 
 export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
   'storage/downloadItems',
@@ -25,8 +25,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
         id: taskId,
         action: TaskType.DownloadFile,
         status: TaskStatus.Pending,
+        progress: TaskProgress.Min,
         file: item,
-        progress: 0,
         showNotification: true,
         cancellable: true,
       };

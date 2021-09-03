@@ -9,7 +9,13 @@ import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import storageService from '../../../../services/storage.service';
 import { taskManagerActions } from '../../task-manager';
-import { MoveFileTask, MoveFolderTask, TaskStatus, TaskType } from '../../../../services/task-manager.service';
+import {
+  MoveFileTask,
+  MoveFolderTask,
+  TaskProgress,
+  TaskStatus,
+  TaskType,
+} from '../../../../services/task-manager.service';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
@@ -32,7 +38,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
             id: `${requestId}-${index}`,
             action: TaskType.MoveFolder,
             status: TaskStatus.InProcess,
-            progress: 0,
+            progress: TaskProgress.Min,
             showNotification: true,
             folder: item,
             destinationFolderId,
@@ -42,7 +48,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
             id: `${requestId}-${index}`,
             action: TaskType.MoveFile,
             status: TaskStatus.InProcess,
-            progress: 0,
+            progress: TaskProgress.Min,
             showNotification: true,
             file: item,
             destinationFolderId,

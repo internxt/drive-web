@@ -20,8 +20,8 @@ export interface IFolders {
   createdAt: Date;
   encrypt_version: string;
   icon: string;
-  iconId: any;
-  icon_id: any;
+  iconId: number | null;
+  icon_id: number | null;
   id: number;
   name: string;
   parentId: number;
@@ -37,8 +37,8 @@ export interface FolderChild {
   createdAt: string;
   encrypt_version: string;
   icon: string;
-  iconId: any;
-  icon_id: any;
+  iconId: number | null;
+  icon_id: number | null;
   id: number;
   name: string;
   parentId: number;
@@ -98,19 +98,31 @@ export interface MoveFolderResponse {
   moved: boolean;
 }
 
-export async function fetchFolderContent(folderId: number): Promise<FetchFolderContentResponse> {
-  const response = await httpService.get<IContentFolder>(`/api/storage/folder/${folderId}`);
-  const result: FetchFolderContentResponse = {
-    folders: [],
-    files: [],
+export function fetchFolderContent(folderId: number): [Promise<FetchFolderContentResponse>, CancelTokenSource] {
+  const cancelTokenSource = CancelToken.source();
+  const fn = async () => {
+    try {
+      const response = await httpService.get<IContentFolder>(`/api/storage/folder/${folderId}`, {
+        cancelToken: cancelTokenSource.token,
+      });
+      const result: FetchFolderContentResponse = {
+        folders: [],
+        files: [],
+      };
+
+      if (response) {
+        result.folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
+        result.files = response.files;
+      }
+
+      return result;
+    } catch (err) {
+      const castedError = errorService.castError(err);
+      throw castedError;
+    }
   };
 
-  if (response) {
-    result.folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
-    result.files = response.files;
-  }
-
-  return result;
+  return [fn(), cancelTokenSource];
 }
 
 export function createFolder(
@@ -125,7 +137,9 @@ export function createFolder(
         parentFolderId: currentFolderId,
         folderName,
       };
-      const response = await httpService.post<CreateFolderPayload, CreateFolderResponse>('/api/storage/folder', data);
+      const response = await httpService.post<CreateFolderPayload, CreateFolderResponse>('/api/storage/folder', data, {
+        cancelToken: cancelTokenSource.token,
+      });
 
       analyticsService.trackFolderCreated({
         email: user.email,

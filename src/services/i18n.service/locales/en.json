@@ -32,6 +32,7 @@
     "fetchingFolderContent": "Error fetching folder content",
     "uploadingFolder": "Error uploading folder",
     "uploadingFile": "Error uploading file: {reason}",
+    "uploadingItems": "There were some errors during upload",
     "downloadingFile": "Error downloading file: Reason is {reason}",
     "downloadingItems": "Some of the elements could not be downloaded",
     "movingItemInsideItself": "You can't move a folder inside itself",
@@ -48,13 +49,20 @@
     "accessFile": "Access File"
   },
   "tasks": {
+    "create-folder": {
+      "pending": "Pending to create folder",
+      "in-process": "Creating folder",
+      "success": "Folder created",
+      "error": "Error during folder creation",
+      "cancelled": "Folder creation cancelled"
+    },
     "upload-file": {
       "pending": "Pending to upload",
       "encrypting": "Encrypting file",
       "in-process": "{progress}% Uploading file",
       "success": "File uploaded",
       "error": "Error during upload",
-      "cancelled": "Cancelled upload"
+      "cancelled": "Upload cancelled"
     },
     "upload-folder": {
       "pending": "Pending to upload",
@@ -62,7 +70,7 @@
       "in-process": "{progress}% Uploading folder",
       "success": "Folder uploaded",
       "error": "Error during upload",
-      "cancelled": "Cancelled upload"
+      "cancelled": "Upload cancelled"
     },
     "download-file": {
       "pending": "Pending to download",
@@ -70,7 +78,7 @@
       "in-process": "{progress}% Downloading file",
       "success": "File downloaded",
       "error": "Error during download",
-      "cancelled": "Cancelled download"
+      "cancelled": "Download cancelled"
     },
     "download-folder": {
       "pending": "Pending to download",
@@ -78,7 +86,7 @@
       "in-process": "Downloading folder",
       "success": "Folder downloaded",
       "error": "Error during download",
-      "cancelled": "Cancelled download"
+      "cancelled": "Download cancelled"
     },
     "move-file": {
       "pending": "Pending to move",

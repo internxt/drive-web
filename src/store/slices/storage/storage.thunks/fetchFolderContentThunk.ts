@@ -14,8 +14,8 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number | undefined
   'storage/fetchFolderContent',
   async (folderId = -1, { getState, dispatch }) => {
     const currentFolderId: number = storageSelectors.currentFolderId(getState());
-    const content = await folderService.fetchFolderContent(~folderId ? folderId : currentFolderId);
-
+    const [responsePromise] = await folderService.fetchFolderContent(~folderId ? folderId : currentFolderId);
+    const content = await responsePromise;
     dispatch(storageActions.clearSelectedItems());
 
     dispatch(storageActions.setItems(_.concat(content.folders as DriveItemData[], content.files as DriveItemData[])));

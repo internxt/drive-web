@@ -15,6 +15,7 @@ export enum TaskStatus {
 }
 
 export enum TaskType {
+  CreateFolder = 'create-folder',
   DownloadFile = 'download-file',
   UploadFile = 'upload-file',
   UploadFolder = 'upload-folder',
@@ -22,6 +23,10 @@ export enum TaskType {
   MoveFolder = 'move-folder',
 }
 
+export enum TaskProgress {
+  Min = 0.0,
+  Max = 1.0,
+}
 interface BaseTask {
   id: string;
   relatedTaskId?: string;
@@ -31,6 +36,13 @@ interface BaseTask {
   cancellable: boolean;
   showNotification: boolean;
   stop?: () => Promise<void>;
+}
+
+export interface CreateFolderTask extends BaseTask {
+  action: TaskType.CreateFolder;
+  cancellable: false;
+  folderName: string;
+  parentFolderId: number;
 }
 
 export interface DownloadFileTask extends BaseTask {
@@ -44,6 +56,7 @@ export interface UploadFileTask extends BaseTask {
   cancellable: true;
   fileName: string;
   fileType: string;
+  isFileNameValidated: boolean;
 }
 
 export interface UploadFolderTask extends BaseTask {
@@ -66,7 +79,13 @@ export interface MoveFolderTask extends BaseTask {
   destinationFolderId: number;
 }
 
-export type TaskData = DownloadFileTask | UploadFileTask | UploadFolderTask | MoveFileTask | MoveFolderTask;
+export type TaskData =
+  | CreateFolderTask
+  | DownloadFileTask
+  | UploadFileTask
+  | UploadFolderTask
+  | MoveFileTask
+  | MoveFolderTask;
 
 export interface NotificationData {
   taskId: string;
@@ -82,6 +101,10 @@ const getTaskNotificationTitle = (task: TaskData): string => {
   let title = '';
 
   switch (task.action) {
+    case TaskType.CreateFolder: {
+      title = '';
+      break;
+    }
     case TaskType.DownloadFile: {
       title = itemsLib.getItemDisplayName(task.file);
       break;
@@ -117,6 +140,10 @@ const getTaskNotificationIcon = (task: TaskData): FunctionComponent<SVGProps<SVG
   let icon;
 
   switch (task.action) {
+    case TaskType.CreateFolder: {
+      icon = iconService.getItemIcon(true, '');
+      break;
+    }
     case TaskType.DownloadFile: {
       icon = iconService.getItemIcon(false, task.file.type);
       break;
