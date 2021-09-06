@@ -25,6 +25,7 @@ import { aes, auth } from '@internxt/lib';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 import errorService from '../../services/error.service';
+import { AppView } from '../../models/enums';
 
 interface SignUpProps {
   location: {
@@ -205,7 +206,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
           dispatch(planThunks.initializeThunk());
           dispatch(userThunks.initializeUserThunk()).then(() => {
-            history.push('/app');
+            history.push(AppView.Drive);
           });
         } else {
           return response.json().then((body) => {

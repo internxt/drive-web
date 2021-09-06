@@ -20,7 +20,7 @@ it('should signup an user correctly', () => {
   cy.get('input[name=acceptTerms]').click();
   cy.get('button[type=submit]').click();
 
-  cy.url().should('include', '/app');
+  cy.url().should('include', '/drive');
 
   cy.contains('Upload');
   cy.contains('Usage');

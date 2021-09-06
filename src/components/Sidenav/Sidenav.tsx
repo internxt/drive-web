@@ -6,7 +6,6 @@ import { RootState } from '../../store';
 import { UserSettings } from '../../models/interfaces';
 import smallLogo from '../../assets/icons/small-logo.svg';
 import { ReactComponent as ReactLogo } from '../../assets/icons/big-logo.svg';
-import history from '../../lib/history';
 import SidenavItem from './SidenavItem/SidenavItem';
 import desktopService from '../../services/desktop.service';
 
@@ -14,6 +13,8 @@ import './Sidenav.scss';
 import PlanUsage from '../PlanUsage';
 import { Link } from 'react-router-dom';
 import { planSelectors } from '../../store/slices/plan';
+import { AppView } from '../../models/enums';
+import navigationService from '../../services/navigation.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -35,7 +36,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps> {
   };
 
   onLogoClicked = (): void => {
-    history.push('/app');
+    navigationService.push(AppView.Drive);
   };
 
   render(): JSX.Element {
