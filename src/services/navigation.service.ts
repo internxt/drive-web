@@ -1,6 +1,7 @@
 import { createBrowserHistory } from 'history';
-import { AppView } from '../models/enums';
+import queryString from 'query-string';
 
+import { AppView } from '../models/enums';
 import { PATH_NAMES } from './analytics.service';
 import configService from './config.service';
 
@@ -18,14 +19,16 @@ instance.listen((nav) => {
 });
 
 const navigationService = {
-  push(viewId: AppView, queryMap: Record<string, unknown>): void {
-    const viewConfig = configService.getViewConfig(viewId);
+  history: instance,
+  push(viewId: AppView, queryMap: Record<string, unknown> = {}): void {
+    const viewConfig = configService.getViewConfig({ id: viewId });
+    const viewSearch = queryString.stringify(queryMap);
 
     if (!viewConfig) {
       console.warn(`(NavigationService) View with ID ${viewId} not found`);
     }
 
-    instance.push({ pathname: viewConfig?.id || 'view-not-found' });
+    instance.push({ pathname: viewConfig?.path || 'view-not-found', search: viewSearch });
   },
 };
 

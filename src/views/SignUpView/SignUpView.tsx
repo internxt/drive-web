@@ -16,7 +16,6 @@ import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 
 import { setUser, userActions, userThunks } from '../../store/slices/user';
 import { getHeaders } from '../../lib/auth';
 import { generateNewKeys } from '../../services/pgp.service';
-import history from '../../lib/history';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope, UilUser } from '@iconscout/react-unicons';
 import { Link } from 'react-router-dom';
 import { planThunks } from '../../store/slices/plan';
@@ -26,6 +25,7 @@ import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 import errorService from '../../services/error.service';
 import { AppView } from '../../models/enums';
+import navigationService from '../../services/navigation.service';
 
 interface SignUpProps {
   location: {
@@ -35,7 +35,7 @@ interface SignUpProps {
 }
 
 const SignUp = (props: SignUpProps): JSX.Element => {
-  const qs = queryString.parse(history.location.search);
+  const qs = queryString.parse(navigationService.history.location.search);
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const hasTokenParam = qs.token;
   // const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
@@ -206,7 +206,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
           dispatch(planThunks.initializeThunk());
           dispatch(userThunks.initializeUserThunk()).then(() => {
-            history.push(AppView.Drive);
+            navigationService.push(AppView.Drive);
           });
         } else {
           return response.json().then((body) => {
@@ -237,7 +237,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       if (!props.isNewUser) {
         await updateInfo(name, lastname, email, password)
           .then(() => {
-            history.push('/login');
+            navigationService.push(AppView.Login);
           })
           .catch((err) => {
             console.log('ERR', err);

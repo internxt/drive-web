@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { RootState } from '../..';
 
-import history from '../../../lib/history';
 import { UserSettings } from '../../../models/interfaces';
 import localStorageService from '../../../services/local-storage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
@@ -13,6 +12,8 @@ import { taskManagerActions } from '../task-manager';
 import { uiActions } from '../ui';
 import { sessionActions } from '../session';
 import { storageActions } from '../storage';
+import navigationService from '../../../services/navigation.service';
+import { AppView } from '../../../models/enums';
 
 interface UserState {
   isInitializing: boolean;
@@ -64,7 +65,7 @@ export const initializeUserThunk = createAsyncThunk<
 
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
-    history.push('/login');
+    navigationService.push(AppView.Login);
   }
 });
 
@@ -117,7 +118,7 @@ export const userSlice = createSlice({
         state.isInitializing = false;
 
         toast.warn('User initialization error ' + errorMsg);
-        history.push('/login');
+        navigationService.push(AppView.Login);
       });
 
     builder

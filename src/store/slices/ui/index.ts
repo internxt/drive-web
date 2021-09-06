@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import queryString from 'query-string';
+import navigationService from '../../../services/navigation.service';
 
-import history from '../../../lib/history';
 interface UISliceState {
   isSidenavCollapsed: boolean;
   showFileLogger: boolean;
@@ -55,7 +55,7 @@ export const uiSlice = createSlice({
       state.isDriveItemInfoMenuOpen = action.payload;
     },
     setCurrentAccountTab: (state: UISliceState, action: PayloadAction<string>) => {
-      const currentQueryParams = queryString.parse(history.location.search);
+      const currentQueryParams = queryString.parse(navigationService.history.location.search);
       const newQueryParams = {
         ...currentQueryParams,
         tab: action.payload,
@@ -64,8 +64,8 @@ export const uiSlice = createSlice({
 
       state.currentAccountTab = action.payload;
 
-      history.push({
-        pathname: history.location.pathname,
+      navigationService.history.push({
+        pathname: navigationService.history.location.pathname,
         search: newQueryString && `?${newQueryString}`,
       });
     },

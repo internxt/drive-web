@@ -26,7 +26,7 @@ interface SidenavProps {
   isLoadingPlanUsage: boolean;
 }
 
-class SideNavigatorItemSideNavigator extends React.Component<SidenavProps> {
+class Sidenav extends React.Component<SidenavProps> {
   constructor(props: SidenavProps) {
     super(props);
   }
@@ -62,7 +62,7 @@ class SideNavigatorItemSideNavigator extends React.Component<SidenavProps> {
                 <div
                   className="w-28 h-auto flex items-center"
                   onClick={() => {
-                    history.push('/');
+                    navigationService.history.push('/');
                   }}
                 >
                   <ReactLogo className="sidenav-logo w-full" />
@@ -113,4 +113,4 @@ export default connect((state: RootState) => ({
   planLimit: planSelectors.planLimitToShow(state),
   isLoadingPlanLimit: state.plan.isLoadingPlanLimit,
   isLoadingPlanUsage: state.plan.isLoadingPlanUsage,
-}))(SideNavigatorItemSideNavigator);
+}))(Sidenav);

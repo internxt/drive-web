@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import history from '../../lib/history';
 
 import AppHeader from '../../components/AppHeader/AppHeader';
 import Sidenav from '../../components/Sidenav/Sidenav';
@@ -9,6 +8,8 @@ import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDia
 import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
 import InviteMemberDialog from '../../components/dialogs/InviteMemberDialog/InviteMemberDialog';
 import FileLogger from '../../components/FileLogger/FileLogger';
+import navigationService from '../../services/navigation.service';
+import { AppView } from '../../models/enums';
 
 interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
@@ -26,7 +27,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isInviteMemberDialogOpen = useAppSelector((state) => state.ui.isInviteMemberDialogOpen);
 
   if (!isAuthenticated) {
-    history.push('/');
+    navigationService.push(AppView.Login);
   }
 
   return isAuthenticated ? (
