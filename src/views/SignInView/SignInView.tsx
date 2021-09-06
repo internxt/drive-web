@@ -22,6 +22,7 @@ import { Link } from 'react-router-dom';
 import { planThunks } from '../../store/slices/plan';
 import { productsThunks } from '../../store/slices/products';
 import errorService from '../../services/error.service';
+import { AppView } from '../../models/enums';
 
 export const texts = {
   label: 'INTERNXT',
@@ -101,7 +102,7 @@ export default function SignInView(): JSX.Element {
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(setUser(user));
-      history.push('/app');
+      history.push(AppView.Drive);
     }
     if (user && user.registerCompleted === false) {
       history.push('/appsumo/' + user.email);
@@ -115,7 +116,7 @@ export default function SignInView(): JSX.Element {
       if (!registerCompleted) {
         history.push('/appsumo/' + email);
       } else if (mnemonic) {
-        history.push('/app');
+        history.push(AppView.Drive);
       }
     }
   }, [isAuthenticated, token, user, registerCompleted]);

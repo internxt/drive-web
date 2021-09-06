@@ -33,7 +33,7 @@
     {
       "id": "drive",
       "layout": "header-and-sidenav",
-      "path": "/app",
+      "path": "/drive",
       "exact": true,
       "auth": true
     },

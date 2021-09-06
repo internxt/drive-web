@@ -39,6 +39,6 @@ Cypress.Commands.add('login', () => {
 
     cy.get('button[type=submit]').click();
 
-    cy.url().should('include', '/app');
+    cy.url().should('include', '/drive');
   });
 });
