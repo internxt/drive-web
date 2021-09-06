@@ -16,6 +16,7 @@ import sizeService from '../../services/size.service';
 import { aes } from '@internxt/lib';
 import { TaskProgress } from '../../services/task-manager.service';
 import deviceService from '../../services/device.service';
+import navigationService from '../../services/navigation.service';
 
 interface ShareViewProps {
   match: match<{ token: string }>;
@@ -41,6 +42,10 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     linkExpired: false,
     accessedFile: false,
   };
+
+  componentDidMount() {
+    console.log('history: ', navigationService.history.location);
+  }
 
   loadInfo = async (): Promise<void> => {
     this.setState({

@@ -12,7 +12,7 @@ export enum AppView {
   Account = 'account',
   TeamsJoin = 'teams-join',
   Deactivation = 'deactivation',
-  TeamsDeactivation = 'teams-deactivtaion',
+  TeamsDeactivation = 'teams-deactivation',
   TeamSuccess = 'team-success',
   Checkout = 'checkout',
   Remove = 'remove',
