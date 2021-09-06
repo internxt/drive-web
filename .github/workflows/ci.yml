@@ -44,7 +44,7 @@ jobs:
           command: yarn test:e2e
           wait-on: http://localhost:3000
       - name: Unit test run
-      - run: yarn run test:unit
+        run: yarn test:unit
       - name: Build
         run: yarn build
         env:
