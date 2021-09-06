@@ -2,10 +2,9 @@ import React, { ReactNode } from 'react';
 import { connect } from 'react-redux';
 
 import FileGridItem from '../FileExplorerItem/FileGridItem/FileGridItem';
-
-import './FilesGrid.scss';
 import { DriveItemData } from '../../../models/interfaces';
 import DriveGridItemSkeleton from '../../skinSkeleton/DriveGridItemSkeleton';
+import './FilesGrid.scss';
 
 interface FilesGridProps {
   isLoading: boolean;

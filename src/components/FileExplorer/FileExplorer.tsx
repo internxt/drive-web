@@ -180,7 +180,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     const ViewModeComponent = viewModes[viewMode];
 
     return connectDropTarget(
-      <div className="flex flex-column flex-grow h-1" data-test="drag-and-drop-area">
+      <div className="flex flex-col flex-grow h-1" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
@@ -218,7 +218,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
             </div>
 
             <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden">
-              <div className="flex flex-col justify-between flex-grow overflow-y-auto overflow-x-hidden">
+              <div className="flex flex-col justify-between flex-grow overflow-hidden">
                 <ViewModeComponent items={items} isLoading={isLoading} />
               </div>
 

@@ -4,7 +4,7 @@ import { decryptPGP, encryptPGPInvitations } from '../lib/utilspgp';
 import { InfoInvitationsMembers, TeamsSettings } from '../models/interfaces';
 import envService from './env.service';
 
-export async function getTeamsInfo(): Promise<any> {
+export async function getTeamsInfo(): Promise<{ userTeam: TeamsSettings; tokenTeams: string }> {
   return fetch(`${process.env.REACT_APP_API_URL}/api/teams/info`, {
     method: 'get',
     headers: getHeaders(true, false, false),
@@ -145,7 +145,9 @@ function getTeamInfoStripeSuccess() {
     });
 }
 
-export async function checkSessionStripe(sessionId: string): Promise<any> {
+export async function checkSessionStripe(
+  sessionId: string,
+): Promise<void | { userTeams: TeamsSettings; tokenTeams: string }> {
   const userTeam = await getTeamInfoStripeSuccess();
 
   const mnemonic = await decryptPGP(Buffer.from(userTeam.bridge_mnemonic, 'base64').toString());
