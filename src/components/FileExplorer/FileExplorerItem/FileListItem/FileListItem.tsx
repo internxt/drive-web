@@ -86,94 +86,90 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
     const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
     return connectDragSource(
-      connectDropTarget(
-        <div
-          className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
-          draggable={false}
-          onContextMenu={onItemRightClicked}
-          onClick={onItemClicked}
-          onDoubleClick={onItemDoubleClicked}
-          data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
-        >
-          {/* SELECTION */}
-          <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
+      <div
+        className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
+        draggable={false}
+        onContextMenu={onItemRightClicked}
+        onClick={onItemClicked}
+        onDoubleClick={onItemDoubleClicked}
+        data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
+      >
+        {connectDropTarget(<div className="absolute h-full w-1/2 top-0"></div>)}
+
+        {/* SELECTION */}
+        <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
+          {!item.isFolder ? (
+            <input
+              onClick={(e) => e.stopPropagation()}
+              type="checkbox"
+              checked={isItemSelected(item)}
+              onChange={this.onSelectCheckboxChanged}
+            />
+          ) : null}
+        </div>
+
+        {/* ICON */}
+        <div className="w-0.5/12 flex items-center px-3 box-content">
+          <div className="h-8 w-8 flex justify-center">
+            <ItemIconComponent className="h-full" />
+          </div>
+        </div>
+
+        {/* NAME */}
+        <div className="flex-grow flex items-center w-1">{this.nameNode}</div>
+
+        {/* HOVER ACTIONS */}
+        <div className="pl-3 w-2/12 items-center hidden xl:flex">
+          <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
             {!item.isFolder ? (
-              <input
-                onClick={(e) => e.stopPropagation()}
-                type="checkbox"
-                checked={isItemSelected(item)}
-                onChange={this.onSelectCheckboxChanged}
-              />
-            ) : null}
-          </div>
-
-          {/* ICON */}
-          <div className="w-0.5/12 flex items-center px-3 box-content">
-            <div className="h-8 w-8 flex justify-center">
-              <ItemIconComponent className="h-full" />
-            </div>
-          </div>
-
-          {/* NAME */}
-          <div className="flex-grow flex items-center w-1">{this.nameNode}</div>
-
-          {/* HOVER ACTIONS */}
-          <div className="pl-3 w-2/12 items-center hidden xl:flex">
-            <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
-              {!item.isFolder ? (
-                <button
-                  onClick={onDownloadButtonClicked}
-                  className="hover-action mr-4"
-                  data-test="download-file-button"
-                >
-                  <Unicons.UilCloudDownload className="h-5" />
-                </button>
-              ) : null}
-              {!item.isFolder ? (
-                <button onClick={onShareButtonClicked} className="hover-action mr-4" data-test="share-file-button">
-                  <Unicons.UilShareAlt className="h-5" />
-                </button>
-              ) : null}
-              <button onClick={onDeleteButtonClicked} className="hover-action" data-test="delete-file-button">
-                <Unicons.UilTrashAlt className="h-5" />
+              <button onClick={onDownloadButtonClicked} className="hover-action mr-4" data-test="download-file-button">
+                <Unicons.UilCloudDownload className="h-5" />
               </button>
-            </div>
+            ) : null}
+            {!item.isFolder ? (
+              <button onClick={onShareButtonClicked} className="hover-action mr-4" data-test="share-file-button">
+                <Unicons.UilShareAlt className="h-5" />
+              </button>
+            ) : null}
+            <button onClick={onDeleteButtonClicked} className="hover-action" data-test="delete-file-button">
+              <Unicons.UilTrashAlt className="h-5" />
+            </button>
           </div>
+        </div>
 
-          {/* DATE */}
-          <div className="hidden lg:flex items-center w-3/12 whitespace-nowrap overflow-ellipsis">
-            {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
-          </div>
+        {/* DATE */}
+        <div className="hidden lg:flex items-center w-3/12 whitespace-nowrap overflow-ellipsis">
+          {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
+        </div>
 
-          {/* SIZE */}
-          <div className="flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">
-            {sizeService.bytesToString(item.size, false)}
-          </div>
+        {/* SIZE */}
+        <div className="flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">
+          {sizeService.bytesToString(item.size, false)}
+        </div>
 
-          {/* ACTIONS BUTTON */}
-          <div className="flex items-center w-1/12">
-            <Dropdown>
-              <Dropdown.Toggle
-                variant="success"
-                id="dropdown-basic"
-                className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold"
-              >
-                <Unicons.UilEllipsisH className="w-full h-full" />
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <FileDropdownActions
-                  hiddenActions={item.isFolder ? [ItemAction.Download, ItemAction.Share] : []}
-                  onRenameButtonClicked={onRenameButtonClicked}
-                  onDownloadButtonClicked={onDownloadButtonClicked}
-                  onShareButtonClicked={onShareButtonClicked}
-                  onInfoButtonClicked={onInfoButtonClicked}
-                  onDeleteButtonClicked={onDeleteButtonClicked}
-                />
-              </Dropdown.Menu>
-            </Dropdown>
-          </div>
-        </div>,
-      ),
+        {/* ACTIONS BUTTON */}
+        <div className="flex items-center w-1/12">
+          <Dropdown>
+            <Dropdown.Toggle
+              variant="success"
+              id="dropdown-basic"
+              className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold"
+            >
+              <Unicons.UilEllipsisH className="w-full h-full" />
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <FileDropdownActions
+                hiddenActions={item.isFolder ? [ItemAction.Download, ItemAction.Share] : []}
+                onRenameButtonClicked={onRenameButtonClicked}
+                onDownloadButtonClicked={onDownloadButtonClicked}
+                onShareButtonClicked={onShareButtonClicked}
+                onInfoButtonClicked={onInfoButtonClicked}
+                onDeleteButtonClicked={onDeleteButtonClicked}
+              />
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
+      </div>,
     );
   }
 }

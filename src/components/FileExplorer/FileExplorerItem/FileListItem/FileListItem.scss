@@ -3,7 +3,7 @@
   .file-list-item {
     background-color: white;
 
-    @apply py-3.5 border-b border-l-neutral-30 text-base w-full flex;
+    @apply relative py-3.5 border-b border-l-neutral-30 text-base w-full flex;
 
     &:hover,
     &.selected {
@@ -16,7 +16,7 @@
   }
 
   .hover-action {
-    @apply transition opacity-0 group-hover:opacity-100 text-blue-60;
+    @apply transition invisible group-hover:visible text-blue-60;
 
     img {
       width: 14px;
