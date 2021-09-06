@@ -13,26 +13,27 @@ import ShareView from './ShareView/ShareView';
 import SignInView from './SignInView/SignInView';
 import SignUpView from './SignUpView/SignUpView';
 import RemoveAccountView from './RemoveAccountView/RemoveAccountView';
+import { AppView } from '../models/enums';
 
 const views: Array<{
   id: string;
   component: string | FunctionComponent<any> | ComponentClass<any>;
   componentProps?: Record<string, unknown>;
 }> = [
-  { id: 'signup', component: SignUpView, componentProps: { isNewUser: true } },
-  { id: 'appsumo', component: SignUpView, componentProps: { isNewUser: false } },
-  { id: 'login', component: SignInView },
-  { id: 'drive', component: DriveView },
-  { id: 'recents', component: RecentsView },
-  { id: 'account', component: AccountView },
-  { id: 'teams-join', component: JoinTeamView },
-  { id: 'deactivation', component: DeactivationView },
-  { id: 'teams-deactivation', component: DeactivationTeamsView },
-  { id: 'team-success', component: TeamSuccessView },
-  { id: 'checkout', component: CheckoutView },
-  { id: 'remove', component: RemoveAccountView },
-  { id: 'share-token', component: ShareView },
-  { id: 'not-found', component: NotFoundView },
+  { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
+  { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
+  { id: AppView.Login, component: SignInView },
+  { id: AppView.Drive, component: DriveView },
+  { id: AppView.Recents, component: RecentsView },
+  { id: AppView.Account, component: AccountView },
+  { id: AppView.TeamsJoin, component: JoinTeamView },
+  { id: AppView.Deactivation, component: DeactivationView },
+  { id: AppView.TeamsDeactivation, component: DeactivationTeamsView },
+  { id: AppView.TeamSuccess, component: TeamSuccessView },
+  { id: AppView.Checkout, component: CheckoutView },
+  { id: AppView.Remove, component: RemoveAccountView },
+  { id: AppView.ShareToken, component: ShareView },
+  { id: AppView.NotFound, component: NotFoundView },
 ];
 
 export default views;

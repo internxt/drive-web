@@ -2,10 +2,11 @@ import { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 
 import FileExplorer from '../../components/FileExplorer/FileExplorer';
+import { AppView } from '../../models/enums';
 import { DriveItemData } from '../../models/interfaces';
+import navigationService from '../../services/navigation.service';
 import { AppDispatch, RootState } from '../../store';
 import { storageSelectors } from '../../store/slices/storage';
-import history from '../../lib/history';
 import storageThunks from '../../store/slices/storage/storage.thunks';
 
 interface RecentsViewProps {
@@ -27,7 +28,7 @@ class RecentsView extends Component<RecentsViewProps> {
   };
 
   redirectToDrive = () => {
-    history.push('/app');
+    navigationService.push(AppView.Drive);
   };
 
   render(): ReactNode {

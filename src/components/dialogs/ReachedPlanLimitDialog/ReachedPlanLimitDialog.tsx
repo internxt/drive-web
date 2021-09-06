@@ -1,9 +1,10 @@
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import BaseDialog from '../BaseDialog/BaseDialog';
-import history from '../../../lib/history';
 
 import './ReachedPlanLimitDialog.scss';
 import { setCurrentAccountTab, uiActions } from '../../../store/slices/ui';
+import navigationService from '../../../services/navigation.service';
+import { AppView } from '../../../models/enums';
 
 const ReachedPlanLimitDialog = (): JSX.Element => {
   const isOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
@@ -17,7 +18,7 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
     try {
       dispatch(setCurrentAccountTab('plans'));
       dispatch(uiActions.setIsReachedPlanLimitDialogOpen(false));
-      history.push('/account');
+      navigationService.push(AppView.Account);
     } catch (e: unknown) {
       console.log(e);
     }

@@ -3,6 +3,23 @@ export enum AppViewLayout {
   HeaderAndSidenav = 'header-and-sidenav',
 }
 
+export enum AppView {
+  Signup = 'signup',
+  AppSumo = 'appsumo',
+  Login = 'login',
+  Drive = 'drive',
+  Recents = 'recents',
+  Account = 'account',
+  TeamsJoin = 'teams-join',
+  Deactivation = 'deactivation',
+  TeamsDeactivation = 'teams-deactivation',
+  TeamSuccess = 'team-success',
+  Checkout = 'checkout',
+  Remove = 'remove',
+  ShareToken = 'share-token',
+  NotFound = 'not-found',
+}
+
 export enum ItemAction {
   Rename,
   Download,

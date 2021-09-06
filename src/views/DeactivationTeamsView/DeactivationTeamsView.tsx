@@ -1,9 +1,10 @@
 import { Component, ReactNode } from 'react';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
+import { AppView } from '../../models/enums';
 
-import history from '../../lib/history';
 import httpService from '../../services/http.service';
+import navigationService from '../../services/navigation.service';
 import notificationsService, { ToastType } from '../../services/notifications.service';
 
 interface DeactivationTeamsViewProps {
@@ -25,7 +26,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
     localStorage.clear();
 
     notificationsService.show('Your account has been deactivated', ToastType.Info);
-    history.push('/');
+    navigationService.push(AppView.Login);
   };
 
   confirmDeactivation = (token: string): Promise<void> => {
@@ -38,7 +39,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
       })
       .catch(() => {
         notificationsService.show('Invalid token', ToastType.Warning);
-        history.push('/');
+        navigationService.push(AppView.Login);
       });
   };
 
@@ -48,7 +49,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
       this.confirmDeactivation(this.state.token);
     } else {
       notificationsService.show('Invalid token', ToastType.Warning);
-      history.push('/');
+      navigationService.push(AppView.Login);
     }
   }
 
