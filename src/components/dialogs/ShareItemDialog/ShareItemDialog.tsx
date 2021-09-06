@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 
 import { generateFileKey, Network } from '../../../lib/network';
 import { DriveItemData } from '../../../models/interfaces';
-import history from '../../../lib/history';
 import { uiActions } from '../../../store/slices/ui';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import shareService from '../../../services/share.service';
@@ -16,6 +15,8 @@ import { userThunks } from '../../../store/slices/user';
 import i18n from '../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../services/notifications.service';
 import { items } from '@internxt/lib';
+import navigationService from '../../../services/navigation.service';
+import { AppView } from '../../../models/enums';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
@@ -46,7 +47,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       const fileId = item.fileId;
 
       if (!user) {
-        return history.push('/login');
+        return navigationService.push(AppView.Login);
       }
 
       const { bucket, mnemonic, userId, email } = user;
@@ -79,7 +80,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       const errorMessage: string = err instanceof Error ? err.message : (err as string);
 
       if (err instanceof Error && err.message === 'unauthenticated') {
-        return history.push('/login');
+        return navigationService.push(AppView.Login);
       }
       notificationsService.show(errorMessage, ToastType.Error);
       setLinkToCopy(i18n.get('error.unavailableLink'));

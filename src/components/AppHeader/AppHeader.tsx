@@ -2,11 +2,10 @@ import React, { Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { TeamsSettings, UserSettings } from '../../models/interfaces';
 import { AppDispatch, RootState } from '../../store';
-import history from '../../lib/history';
 import * as Unicons from '@iconscout/react-unicons';
 
 import { Dropdown } from 'react-bootstrap';
-import { Workspace } from '../../models/enums';
+import { AppView, Workspace } from '../../models/enums';
 import { userThunks } from '../../store/slices/user';
 import { uiActions } from '../../store/slices/ui';
 import { storageActions } from '../../store/slices/storage';
@@ -15,6 +14,7 @@ import { StorageFilters } from '../../store/slices/storage/storage.model';
 import { sessionSelectors } from '../../store/slices/session/session.selectors';
 import sessionThunks from '../../store/slices/session/session.thunks';
 import storageThunks from '../../store/slices/storage/storage.thunks';
+import navigationService from '../../services/navigation.service';
 
 interface AppHeaderProps {
   user: UserSettings | undefined;
@@ -35,7 +35,7 @@ class AppHeader extends React.Component<AppHeaderProps> {
   };
 
   onAccountButtonClicked = (): void => {
-    history.push('/account');
+    navigationService.push(AppView.Account);
   };
 
   onSupportButtonClicked = (): void => {

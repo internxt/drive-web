@@ -5,7 +5,7 @@ export function getAppConfig(): AppConfig {
   return APP_CONFIG;
 }
 
-export function getViewConfig(filter: any): AppViewConfig | undefined {
+export function getViewConfig(filter: Partial<AppViewConfig>): AppViewConfig | undefined {
   return APP_CONFIG.views.find((v) =>
     Object.keys(filter).reduce((t: boolean, key: string) => {
       return v[key] === filter[key] && t;

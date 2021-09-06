@@ -13,9 +13,10 @@ import configService from './services/config.service';
 import analyticsService, { PATH_NAMES } from './services/analytics.service';
 import layouts from './layouts';
 import views from './views';
-import history from './lib/history';
 import { AppDispatch, RootState } from './store';
 import errorService from './services/error.service';
+import navigationService from './services/navigation.service';
+import { AppView } from './models/enums';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -31,7 +32,7 @@ class App extends Component<AppProps> {
 
   async componentDidMount(): Promise<void> {
     const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
-      path: history.location.pathname,
+      path: navigationService.history.location.pathname,
     });
     const dispatch: AppDispatch = this.props.dispatch;
 
@@ -92,7 +93,7 @@ class App extends Component<AppProps> {
     if (!isAuthenticated || isInitialized) {
       template = (
         <DndProvider backend={HTML5Backend}>
-          <Router history={history}>
+          <Router history={navigationService.history}>
             <Switch>
               <Redirect from="//*" to="/*" />
               <Route exact path="/">

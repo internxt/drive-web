@@ -5,7 +5,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { isMobile } from 'react-device-detect';
 import { toast } from 'react-toastify';
 
-import history from '../../lib/history';
 import { AppDispatch } from '../../store';
 import { userThunks } from '../../store/slices/user';
 
@@ -13,6 +12,8 @@ import httpService from '../../services/http.service';
 import notificationsService, { ToastType } from '../../services/notifications.service';
 
 import { match } from 'react-router-dom';
+import navigationService from '../../services/navigation.service';
+import { AppView } from '../../models/enums';
 
 interface DeactivationProps {
   match?: match<{ token: string }>;
@@ -35,7 +36,7 @@ class DeactivationView extends React.Component<DeactivationProps> {
 
     if (!isMobile) {
       notificationsService.show('Your account has been deactivated', ToastType.Info);
-      history.push('/');
+      navigationService.push(AppView.Login);
     } else {
       this.setState({ result: this.confirmDeactivation() });
     }
@@ -50,7 +51,7 @@ class DeactivationView extends React.Component<DeactivationProps> {
       .catch(() => {
         if (!isMobile) {
           toast.warn('Invalid token');
-          history.push('/');
+          navigationService.push(AppView.Login);
         } else {
           this.setState({ result: this.invalidDeactivationToken() });
         }
@@ -63,7 +64,7 @@ class DeactivationView extends React.Component<DeactivationProps> {
     } else {
       if (!isMobile) {
         toast.warn('Invalid token');
-        history.push('/');
+        navigationService.push(AppView.Login);
       } else {
         this.setState({ result: this.invalidDeactivationToken() });
       }

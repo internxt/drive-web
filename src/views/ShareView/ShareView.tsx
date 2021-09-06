@@ -1,10 +1,8 @@
 import { Component } from 'react';
 import fileDownload from 'js-file-download';
 import { match } from 'react-router';
-
 import 'react-toastify/dist/ReactToastify.css';
 import * as Unicons from '@iconscout/react-unicons';
-import { isMobile } from 'react-device-detect';
 
 import './ShareView.scss';
 import { getShareInfo, GetShareInfoResponse } from '../../services/share.service';
@@ -17,6 +15,8 @@ import BaseButton from '../../components/Buttons/BaseButton';
 import sizeService from '../../services/size.service';
 import { aes } from '@internxt/lib';
 import { TaskProgress } from '../../services/task-manager.service';
+import deviceService from '../../services/device.service';
+import navigationService from '../../services/navigation.service';
 
 interface ShareViewProps {
   match: match<{ token: string }>;
@@ -43,10 +43,8 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     accessedFile: false,
   };
 
-  componentDidMount(): void {
-    if (isMobile) {
-      window.location.href = `https://api.internxt.com:8081/https://drive.internxt.com/api/storage/share/${this.state.token}`;
-    }
+  componentDidMount() {
+    console.log('history: ', navigationService.history.location);
   }
 
   loadInfo = async (): Promise<void> => {

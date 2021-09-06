@@ -3,13 +3,13 @@ import { toast } from 'react-toastify';
 import { encryptFilename } from '../../lib/utils';
 import { getEnvironmentConfig, Network } from '../../lib/network';
 import localStorageService from '../local-storage.service';
-import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import analyticsService from '../analytics.service';
-import { DevicePlatform } from '../../models/enums';
+import { AppView, DevicePlatform } from '../../models/enums';
 import { DriveFileData } from '../../models/interfaces';
 import errorService from '../error.service';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
+import navigationService from '../navigation.service';
 
 export interface ItemToUpload {
   name: string;
@@ -44,7 +44,7 @@ export function uploadFile(
       analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
       toast.warn('Login again to start uploading files');
       localStorageService.clear();
-      history.push('/login');
+      navigationService.push(AppView.Login);
 
       throw new Error('Bucket not found!');
     }

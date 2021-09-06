@@ -1,12 +1,14 @@
 import React from 'react';
-import './PayForm.scss';
 import { Form, Col, Button, Container, Row } from 'react-bootstrap';
-import history from '../../lib/history';
+
+import './PayForm.scss';
 import Finish from './finish/Finish';
 import { getTokenInfo } from '../../services/token.service';
 import localStorageService from '../../services/local-storage.service';
 import { getHeaders } from '../../lib/auth';
 import { match } from 'react-router-dom';
+import navigationService from '../../services/navigation.service';
+import { AppView } from '../../models/enums';
 
 interface PayTokenProps {
   match: match<{ token: string }>;
@@ -52,9 +54,9 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
     return !!localStorage.xToken;
   };
 
-  componentDidMount() {
+  componentDidMount(): void {
     if (!this.isLoggedIn()) {
-      history.push('/login');
+      navigationService.push(AppView.Login);
     }
 
     const user = localStorageService.getUser();
@@ -81,7 +83,7 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
     this.setState(changes);
   };
 
-  parseSubmit = (e) => {
+  parseSubmit = (e): Promise<void> => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
@@ -117,7 +119,7 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
         }
         this.setState({ finish: true, error: false });
       })
-      .catch((err) => {
+      .catch(() => {
         this.setState({ finish: true, error: true });
       });
   };

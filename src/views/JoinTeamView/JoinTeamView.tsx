@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { match } from 'react-router';
 
-import history from '../../lib/history';
 import { getHeaders } from '../../lib/auth';
 import i18n from '../../services/i18n.service';
 import { AppDispatch } from '../../store';
@@ -10,6 +9,8 @@ import { userThunks } from '../../store/slices/user';
 import notificationsService, { ToastType } from '../../services/notifications.service';
 
 import errorService from '../../services/error.service';
+import navigationService from '../../services/navigation.service';
+import { AppView } from '../../models/enums';
 
 interface JoinTeamProps {
   dispatch: AppDispatch;
@@ -54,7 +55,7 @@ class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
           this.setState({ isTeamActivated: true });
           localStorage.setItem('teamActivation', 'true');
           notificationsService.show(i18n.get('success.joinedToTheTeam'), ToastType.Success);
-          history.push('/');
+          navigationService.push(AppView.Login);
 
           dispatch(userThunks.initializeUserThunk());
         } else {

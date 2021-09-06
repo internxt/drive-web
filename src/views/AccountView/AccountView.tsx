@@ -11,9 +11,9 @@ import AccountPlanInfoTab from './tabs/AccountPlanInfoTab/AccountPlanInfoTab';
 import { AppDispatch, RootState } from '../../store';
 import { connect } from 'react-redux';
 import { uiActions } from '../../store/slices/ui';
-import history from '../../lib/history';
 
 import './AccountView.scss';
+import navigationService from '../../services/navigation.service';
 
 export enum AccountViewTab {
   Billing = 'billing',
@@ -31,7 +31,7 @@ class AccountView extends Component<AccountViewProps> {
   }
 
   componentDidMount() {
-    const locationQueryParams = queryString.parse(history.location.search);
+    const locationQueryParams = queryString.parse(navigationService.history.location.search);
     const queryTab = locationQueryParams.tab;
 
     if (

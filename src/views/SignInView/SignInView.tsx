@@ -13,7 +13,6 @@ import { twoFactorRegexPattern } from '../../services/validation.service';
 import { check2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from '../../services/local-storage.service';
 import analyticsService from '../../services/analytics.service';
-import history from '../../lib/history';
 import bigLogo from '../../assets/icons/big-logo.svg';
 import { useSelector } from 'react-redux';
 import { IFormValues, UserSettings } from '../../models/interfaces';
@@ -22,6 +21,8 @@ import { Link } from 'react-router-dom';
 import { planThunks } from '../../store/slices/plan';
 import { productsThunks } from '../../store/slices/products';
 import errorService from '../../services/error.service';
+import { AppView } from '../../models/enums';
+import navigationService from '../../services/navigation.service';
 
 export const texts = {
   label: 'INTERNXT',
@@ -86,7 +87,7 @@ export default function SignInView(): JSX.Element {
       console.error('Login error. ' + castedError.message);
 
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
-        history.push(`/activate/${email}`);
+        navigationService.history.push(`/activate/${email}`);
       } else {
         analyticsService.signInAttempted(email, castedError);
       }
@@ -101,10 +102,10 @@ export default function SignInView(): JSX.Element {
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(setUser(user));
-      history.push('/app');
+      navigationService.push(AppView.Drive);
     }
     if (user && user.registerCompleted === false) {
-      history.push('/appsumo/' + user.email);
+      navigationService.history.push('/appsumo/' + user.email);
     }
   }, []);
 
@@ -113,9 +114,9 @@ export default function SignInView(): JSX.Element {
       const mnemonic = localStorageService.get('xMnemonic');
 
       if (!registerCompleted) {
-        history.push('/appsumo/' + email);
+        navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
-        history.push('/app');
+        navigationService.push(AppView.Drive);
       }
     }
   }, [isAuthenticated, token, user, registerCompleted]);
@@ -205,7 +206,7 @@ export default function SignInView(): JSX.Element {
           <span
             onClick={(): void => {
               analyticsService.trackUserResetPasswordRequest();
-              history.push('/remove');
+              navigationService.push(AppView.Remove);
             }}
             className="cursor-pointer text-sm text-center text-blue-60 hover:text-blue-80 mt-3.5"
           >

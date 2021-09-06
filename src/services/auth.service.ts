@@ -3,7 +3,6 @@ import { aes } from '@internxt/lib';
 
 import { getHeaders } from '../lib/auth';
 import localStorageService from './local-storage.service';
-import history from '../lib/history';
 import analyticsService from './analytics.service';
 import { generateNewKeys, updateKeys } from './pgp.service';
 import { decryptText, decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../lib/utils';
@@ -13,13 +12,14 @@ import userService from './user.service';
 import i18n from './i18n.service';
 import { UserSettings } from '../models/interfaces';
 import httpService from './http.service';
-import { Workspace } from '../models/enums';
+import { AppView, Workspace } from '../models/enums';
 import notificationsService, { ToastType } from './notifications.service';
+import navigationService from './navigation.service';
 
 export function logOut(): void {
   analyticsService.trackSignOut();
   localStorageService.clear();
-  history.push('/login');
+  navigationService.push(AppView.Login);
 }
 
 export function cancelAccount(): Promise<void> {
@@ -61,7 +61,11 @@ const generateNewKeysWithEncrypted = async (password: string) => {
   };
 };
 
-export const doLogin = async (email: string, password: string, twoFactorCode: string) => {
+export const doLogin = async (
+  email: string,
+  password: string,
+  twoFactorCode: string,
+): Promise<{ data: any; user: any }> => {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
     method: 'post',
     headers: getHeaders(false, false),
