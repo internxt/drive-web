@@ -1,4 +1,6 @@
 import { getHeaders } from '../lib/auth';
+import errorService from './error.service';
+import httpService from './http.service';
 
 interface GenerateShareLinkResponse {
   token: string;
@@ -46,9 +48,12 @@ export function generateShareLink(fileId: string, params: GenerateShareLinkReque
 }
 
 export function getShareInfo(token: string): Promise<GetShareInfoResponse> {
-  return fetch(`${process.env.REACT_APP_API_URL}/api/storage/share/${token}`).then<GetShareInfoResponse>((res) =>
-    res.json(),
-  );
+  try {
+    return httpService.get(`${process.env.REACT_APP_API_URL}/api/storage/share/${token}`);
+  } catch (err: unknown) {
+    const castedError = errorService.castError(err);
+    throw castedError;
+  }
 }
 
 const shareService = {
