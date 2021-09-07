@@ -52,6 +52,16 @@ export enum AnalyticsTrack {
   ShareLinkBucketIdUndefined = 'share-link-bucketid-undefined',
 }
 
+export enum SignupDeviceSource {
+  Macintosh = 'MacOs',
+  Android = 'Android',
+  Iphone = 'Iphone',
+  Windows = 'Windows',
+  Linux = 'Linux',
+  iPad = 'iPad',
+  Other = 'Other',
+}
+
 export enum DevicePlatform {
   Web = 'web',
 }
