@@ -97,7 +97,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
         {connectDropTarget(<div className="absolute h-full w-1/2 top-0"></div>)}
 
         {/* SELECTION */}
-        <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
+        <div className="w-0.5/12 pl-3 flex items-center justify-start box-content">
           {!item.isFolder ? (
             <input
               onClick={(e) => e.stopPropagation()}
@@ -150,11 +150,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
         {/* ACTIONS BUTTON */}
         <div className="flex items-center w-1/12">
           <Dropdown>
-            <Dropdown.Toggle
-              variant="success"
-              id="dropdown-basic"
-              className="file-list-item-actions-button text-blue-60 bg-l-neutral-20 font-bold"
-            >
+            <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
               <Unicons.UilEllipsisH className="w-full h-full" />
             </Dropdown.Toggle>
             <Dropdown.Menu>

@@ -72,36 +72,32 @@ class AppHeader extends React.Component<AppHeaderProps> {
   render(): ReactNode {
     const { user, isTeam, storageFilters, team } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
+    const nameLetters: string = isTeam
+      ? 'B'
+      : (user as UserSettings).name[0] + ((user as UserSettings).lastname[0] || '');
 
     return (
-      <div className="flex items-center justify-between w-full py-3 mb-2">
+      <div className="flex items-center justify-between w-full py-2.5 border-b border-l-neutral-30 px-8">
         <div className="flex">
           <input
             value={storageFilters.text}
             onChange={this.onSearchInputChange}
             type="text"
             placeholder="Search files"
-            className="w-72 transform duration-200 no-ring"
+            className="dense w-72 transform duration-200 no-ring bg-l-neutral-10"
           />
           <Unicons.UilSearch
             onClick={this.onSearchButtonClicked}
-            className="text-blue-60 cursor-pointer right-7 relative w-5 top-1.5"
+            className="text-blue-60 cursor-pointer right-7 relative w-4 top-0.5"
           />
         </div>
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">
             <div className="flex items-center cursor-pointer">
-              {isTeam ? (
-                <Fragment>
-                  <Unicons.UilBuilding className="h-6 w6 rounded-2xl mr-1 bg-l-neutral-30 p-1 text-blue-60" />
-                  <span className="text-neutral-500 text-base">Business</span>
-                </Fragment>
-              ) : (
-                <Fragment>
-                  <Unicons.UilUser className="h-6 w6 rounded-2xl mr-1 bg-l-neutral-30 p-1 text-blue-60" />
-                  <span className="text-neutral-500 text-base whitespace-nowrap">{userFullName}</span>
-                </Fragment>
-              )}
+              <div className="h-6 w6 rounded-2xl mr-2 bg-l-neutral-20 p-1 flex justify-center items-center text-neutral-700 text-sm">
+                {nameLetters}
+              </div>
+              <span className="text-neutral-500 text-base whitespace-nowrap">{isTeam ? 'Business' : userFullName}</span>
             </div>
           </Dropdown.Toggle>
           <Dropdown.Menu>

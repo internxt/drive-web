@@ -53,8 +53,8 @@ class FilesList extends React.Component<FilesListProps> {
 
     return (
       <div className="flex flex-col flex-grow bg-white h-full">
-        <div className="files-list font-semibold flex border-b border-l-neutral-30 bg-white text-neutral-500 py-2 text-sm">
-          <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
+        <div className="files-list font-semibold flex border-b border-l-neutral-30 bg-white text-neutral-500 py-3 text-sm">
+          <div className="w-0.5/12 pl-3 flex items-center justify-start box-content">
             <input
               disabled={!this.hasItems}
               readOnly
