@@ -84,7 +84,7 @@ class AppHeader extends React.Component<AppHeaderProps> {
             onChange={this.onSearchInputChange}
             type="text"
             placeholder="Search files"
-            className="semi-dense w-72 transform duration-200 no-ring bg-l-neutral-10 focus:w-full"
+            className="semi-dense w-72 transform duration-200 no-ring bg-l-neutral-10 focus:w-full max-w-xl"
           />
           <Unicons.UilSearch
             onClick={this.onSearchButtonClicked}
