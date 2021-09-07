@@ -6,7 +6,7 @@ import queryString from 'query-string';
 import SideInfo from '../Authentication/SideInfo';
 import { IFormValues, UserSettings } from '../../models/interfaces';
 import localStorageService from '../../services/local-storage.service';
-import analyticsService from '../../services/analytics.service';
+import analyticsService, { signupDevicesource, signupCampaignSource } from '../../services/analytics.service';
 import { readReferalCookie } from '../../services/auth.service';
 import BaseInput from '../../components/Inputs/BaseInput';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
@@ -178,11 +178,19 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
           user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
 
-          window.analytics.identify(uuid, { email: email, member_tier: 'free' });
           analyticsService.trackSignUp({
             properties: {
               userId: uuid,
+              source: signupCampaignSource(window.location.search),
+            },
+            traits: {
+              member_tier: 'free', // take care of case that the user has paid before registering this account
               email: email,
+              first_name: name,
+              last_name: lastname,
+              usage: 0,
+              createdAt: new Date().toISOString(),
+              signup_device_source: signupDevicesource(window.navigator.userAgent),
             },
           });
 
