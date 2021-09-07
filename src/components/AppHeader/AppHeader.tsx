@@ -78,13 +78,13 @@ class AppHeader extends React.Component<AppHeaderProps> {
 
     return (
       <div className="flex items-center justify-between w-full py-2.5 border-b border-l-neutral-30 px-8">
-        <div className="flex">
+        <div className="pl-3 flex w-full">
           <input
             value={storageFilters.text}
             onChange={this.onSearchInputChange}
             type="text"
             placeholder="Search files"
-            className="dense w-72 transform duration-200 no-ring bg-l-neutral-10"
+            className="semi-dense w-72 transform duration-200 no-ring bg-l-neutral-10 focus:w-full"
           />
           <Unicons.UilSearch
             onClick={this.onSearchButtonClicked}

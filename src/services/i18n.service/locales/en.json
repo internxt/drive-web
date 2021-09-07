@@ -46,7 +46,8 @@
   },
   "action": {
     "download": "Download",
-    "accessFile": "Access File"
+    "accessFile": "Access File",
+    "upgrade": "Upgrade now!"
   },
   "tasks": {
     "create-folder": {

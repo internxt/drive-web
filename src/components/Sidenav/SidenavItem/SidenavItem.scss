@@ -4,7 +4,7 @@
   }
 
   .side-navigator-item {
-    @apply relative cursor-pointer hover:text-blue-60 mb-3;
+    @apply relative cursor-pointer hover:text-blue-60 mb-1;
 
     &.collapsed {
       @apply hover:shadow-b;

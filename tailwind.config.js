@@ -29,7 +29,7 @@ module.exports = {
         fit: 'fit-content',
       },
       width: {
-        'sidenav-1280': '180px',
+        'sidenav-1280': '200px',
         'sidenav-1280-collapsed': '64px',
         'activity-1280': '296px',
         '0.5/12': '4.166667%',
@@ -44,8 +44,7 @@ module.exports = {
         'activity-1280': '296px',
       },
       padding: {
-        '42px': '42px',
-        '24px': '24px',
+        '42px': '42px'
       },
       borderWidth: {
         3: '3px',
@@ -186,6 +185,7 @@ module.exports = {
       borderRadius: ['responsive', 'focus'],
       backgroundColor: ['active'],
       visibility: ['group-hover'],
+      width: ['focus']
     },
   },
   plugins: [

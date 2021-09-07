@@ -212,8 +212,12 @@ code {
       @apply border-l-8 focus:ring-pink-60 border-pink-60 ring-pink-60 bg-pink-10;
     }
 
-    &.dense {
+    &.semi-dense {
       @apply px-2 py-0.5;
+    }
+
+    &.dense {
+      @apply px-1 py-0;
     }
 
     &.right-icon {

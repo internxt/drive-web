@@ -180,14 +180,14 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     const ViewModeComponent = viewModes[viewMode];
 
     return connectDropTarget(
-      <div className="flex flex-col flex-grow h-1 pl-8" data-test="drag-and-drop-area">
+      <div className="flex flex-col flex-grow h-1 px-8" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
         <div className="flex flex-grow h-full max-w-full w-full">
           <div className="flex-grow flex flex-col w-1 pt-6">
             <div className="flex justify-between pb-4">
-              <div className="text-lg">{title}</div>
+              <div className="flex items-center px-3 text-lg">{title}</div>
 
               <div className="flex">
                 {this.hasAnyItemSelected ? (
@@ -217,7 +217,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
               </div>
             </div>
 
-            <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden">
+            <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden mb-5">
               <div className="flex flex-col justify-between flex-grow overflow-hidden">
                 <ViewModeComponent items={items} isLoading={isLoading} />
               </div>

@@ -51,7 +51,7 @@ class DriveItemInfoMenu extends React.Component<DriveItemInfoMenuProps> {
       const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
       template = (
-        <div className="w-activity-1280 min-w-activity-1280 bg-white ml-6 rounded-4px px-6 border-l border-l-neutral-30 pt-6">
+        <div className="w-activity-1280 min-w-activity-1280 bg-white ml-6 rounded-4px pl-6 border-l border-l-neutral-30 pt-6">
           {/* HEADER */}
           <div className="flex items-center mb-4">
             <div className="flex items-center min-w-9 w-9 h-9">

@@ -94,8 +94,6 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
         onDoubleClick={onItemDoubleClicked}
         data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
       >
-        {connectDropTarget(<div className="absolute h-full w-1/2 top-0"></div>)}
-
         {/* SELECTION */}
         <div className="w-0.5/12 pl-3 flex items-center justify-start box-content">
           {!item.isFolder ? (
@@ -136,6 +134,12 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
             </button>
           </div>
         </div>
+
+        {
+          /* DROPPABLE ZONE */ connectDropTarget(
+            <div className="group-hover:invisible absolute h-full w-1/2 top-0"></div>,
+          )
+        }
 
         {/* DATE */}
         <div className="hidden lg:flex items-center w-3/12 whitespace-nowrap overflow-ellipsis">
