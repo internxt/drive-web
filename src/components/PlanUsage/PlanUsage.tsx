@@ -1,5 +1,5 @@
-import { bytesToString } from '../services/size.service';
-import { getUserLimitString } from '../services/usage.service';
+import { bytesToString } from '../../services/size.service';
+import { getUserLimitString } from '../../services/usage.service';
 import * as Unicons from '@iconscout/react-unicons';
 
 export default function PlanUsage({

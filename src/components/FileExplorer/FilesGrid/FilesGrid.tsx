@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import FileGridItem from '../FileExplorerItem/FileGridItem/FileGridItem';
 import { DriveItemData } from '../../../models/interfaces';
-import DriveGridItemSkeleton from '../../skinSkeleton/DriveGridItemSkeleton';
+import DriveGridItemSkeleton from '../../loaders/DriveGridItemSkeleton';
 import './FilesGrid.scss';
 
 interface FilesGridProps {

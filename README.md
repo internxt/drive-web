@@ -40,3 +40,21 @@ If you aren’t satisfied with the build tool and configuration choices, you can
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+
+## Config Tailwind CSS purge option
+
+It is important to add in the tailwind.config.js file, within the purge property, the list of classes that we are overriding within a Tailwind layer (components, utilities or base) for third-party packages (such as react-bootstrap)
+
+For example, with this snippet we are telling to purge that we are overriding the react-bootstrap Dropdown and Tabs classes:
+
+```javascript
+  purge: {
+    content: ["./src/**/*.tsx"],
+    options: {
+      safelist: [
+        'dropdown-menu', 'dropdown-item',
+        'nav-item', 'nav-link', 'tab-content', 'tab-pane'
+      ]
+    }
+  }
+```

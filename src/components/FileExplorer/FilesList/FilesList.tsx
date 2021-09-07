@@ -6,7 +6,7 @@ import { AppDispatch, RootState } from '../../../store';
 import { connect } from 'react-redux';
 import { storageActions } from '../../../store/slices/storage';
 import { DriveItemData } from '../../../models/interfaces';
-import DriveListItemSkeleton from '../../skinSkeleton/DriveListItemSkeleton';
+import DriveListItemSkeleton from '../../loaders/DriveListItemSkeleton';
 
 interface FilesListProps {
   isLoading: boolean;

@@ -6,7 +6,7 @@ import analyticsService from '../../../../services/analytics.service';
 import ProductItem from './ProductItem';
 import { encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
-import BillingCardSkeletton from '../../../../components/skinSkeleton/BillingCardSkeletton';
+import BillingCardSkeletton from '../../../../components/loaders/BillingCardSkeletton';
 import { Workspace } from '../../../../models/enums';
 import i18n from '../../../../services/i18n.service';
 import envService from '../../../../services/env.service';

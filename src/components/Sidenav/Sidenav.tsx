@@ -10,7 +10,7 @@ import SidenavItem from './SidenavItem/SidenavItem';
 import desktopService from '../../services/desktop.service';
 
 import './Sidenav.scss';
-import PlanUsage from '../PlanUsage';
+import PlanUsage from '../PlanUsage/PlanUsage';
 import { Link } from 'react-router-dom';
 import { planSelectors } from '../../store/slices/plan';
 import { AppView } from '../../models/enums';

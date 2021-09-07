@@ -1,5 +1,4 @@
 import { AxiosError } from 'axios';
-import { string } from 'prop-types';
 
 const errorService = {
   castError(error: unknown): Error {
