@@ -15,8 +15,6 @@ import BaseButton from '../../components/Buttons/BaseButton';
 import sizeService from '../../services/size.service';
 import { aes } from '@internxt/lib';
 import { TaskProgress } from '../../services/task-manager.service';
-import deviceService from '../../services/device.service';
-import navigationService from '../../services/navigation.service';
 
 interface ShareViewProps {
   match: match<{ token: string }>;
@@ -43,10 +41,6 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     accessedFile: false,
   };
 
-  componentDidMount() {
-    console.log('history: ', navigationService.history.location);
-  }
-
   loadInfo = async (): Promise<void> => {
     this.setState({
       accessedFile: true,
@@ -54,16 +48,18 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
 
     const token = this.state.token;
 
-    const info: any = await getShareInfo(token);
+    try {
+      const info = await getShareInfo(token);
 
-    if (info.error) {
+      this.setState({
+        info: {
+          ...info,
+          decryptedName: this.getDecryptedName(info),
+        },
+      });
+    } catch (err) {
       this.setState({
         linkExpired: true,
-      });
-    } else {
-      info.decryptedName = this.getDecryptedName(info);
-      this.setState({
-        info,
       });
     }
   };
@@ -91,7 +87,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     }
   };
 
-  getDecryptedName(info: GetShareInfoWithDecryptedName): string {
+  getDecryptedName(info: GetShareInfoResponse): string {
     const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.fileMeta.folderId.toString()}`;
     const decryptedFilename = aes.decrypt(info.fileMeta.name, salt);
     const type = info.fileMeta.type;
