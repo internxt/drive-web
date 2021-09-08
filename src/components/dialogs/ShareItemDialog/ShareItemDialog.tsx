@@ -50,7 +50,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         return navigationService.push(AppView.Login);
       }
 
-      const { bucket, mnemonic, userId, email } = user;
+      const { bucket, mnemonic, userId, bridgeUser: email } = user;
 
       if (!bucket) {
         trackShareLinkBucketIdUndefined({ email });

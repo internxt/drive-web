@@ -46,6 +46,8 @@ export interface UserSettings {
   userId: string;
   uuid: string;
   teams?: boolean;
+  username: string;
+  bridgeUser: string;
 }
 
 export interface TeamsSettings {
