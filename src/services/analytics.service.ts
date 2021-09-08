@@ -35,9 +35,9 @@ export function signupCampaignSource(locationSearch: string) {
   const parameters = new URLSearchParams(locationSearch);
   const partner = parameters.get('internxt_partner');
   const campaign = parameters.get('utm_campaign');
-  const other= 'organic';
+  const other = 'organic';
 
-  const source= [partner, campaign, other].find(o => typeof (o) !== 'undefined' && o !== null);
+  const source = [partner, campaign, other].find((o) => typeof o !== 'undefined' && o !== null);
 
   return source;
 }
@@ -96,6 +96,7 @@ export function trackSignUp(payload: {
     usage: number;
     createdAt: string;
     signup_device_source: string;
+    acquisition_channel;
   };
 }): void {
   window.analytics.identify(

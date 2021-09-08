@@ -191,6 +191,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
               usage: 0,
               createdAt: new Date().toISOString(),
               signup_device_source: signupDevicesource(window.navigator.userAgent),
+              acquisition_channel: signupCampaignSource(window.location.search),
             },
           });
 
