@@ -1,4 +1,33 @@
 {
+  "views": {
+    "account": {
+      "title": "Account",
+      "tabs": {
+        "info": {
+          "title": "Personal",
+          "description": "Check your payments, receipts, coupons, gift vouchers and taxes",
+          "advice1": {
+            "title": "What data can be edited?",
+            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."},
+          "advice2": {
+            "title": "Security account",
+            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."}
+        },
+        "plans": {
+          "title": "Plans",
+          "description": "Find End-to-end encrypted privacy solutions for collaboration"
+        },
+        "password": {
+          "title": "Password",
+          "description": "Check your payments, receipts, coupons, gift vouchers and taxes"
+        },
+        "security": {
+          "title": "Security",
+          "description": "Check your payments, receipts, coupons, gift vouchers and taxes"
+        }
+      }
+    }
+  },
   "success": {
     "passwordChanged": "Password changed successfully",
     "teamInvitationSent": "Invitation email sent to {email}",
@@ -47,7 +76,8 @@
   "action": {
     "download": "Download",
     "accessFile": "Access File",
-    "upgrade": "Upgrade now!"
+    "upgrade": "Upgrade now!",
+    "deleteAccount": "Permanently delete account"
   },
   "tasks": {
     "create-folder": {

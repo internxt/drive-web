@@ -1,29 +1,19 @@
-import Tabs from 'react-bootstrap/Tabs';
-import Tab from 'react-bootstrap/Tab';
+import * as Unicons from '@iconscout/react-unicons';
 import { Component } from 'react';
 import queryString from 'query-string';
-import { SelectCallback } from 'react-bootstrap/esm/helpers';
 
-import AccountPlansTab from './tabs/AccountPlansTab/AccountPlansTab';
-import AccountPasswordTab from './tabs/AccountPasswordTab/AccountPasswordTab';
-import AccountSecurityTab from './tabs/AccountSecurityTab/AccountSecurityTab';
-import AccountPlanInfoTab from './tabs/AccountPlanInfoTab/AccountPlanInfoTab';
+import tabs, { AccountViewTab, AccountViewTabData } from './tabs';
 import { AppDispatch, RootState } from '../../store';
 import { connect } from 'react-redux';
 import { uiActions } from '../../store/slices/ui';
 
 import './AccountView.scss';
 import navigationService from '../../services/navigation.service';
+import i18n from '../../services/i18n.service';
 
-export enum AccountViewTab {
-  Billing = 'billing',
-  Plans = 'plans',
-  Password = 'password',
-  Security = 'security',
-}
 interface AccountViewProps {
   dispatch: AppDispatch;
-  currentTab: string;
+  currentTab: AccountViewTab;
 }
 class AccountView extends Component<AccountViewProps> {
   constructor(props: AccountViewProps) {
@@ -39,34 +29,43 @@ class AccountView extends Component<AccountViewProps> {
       Object.values(AccountViewTab).includes(queryTab as AccountViewTab) &&
       this.props.currentTab !== queryTab
     ) {
-      this.props.dispatch(uiActions.setCurrentAccountTab(queryTab as string));
+      this.props.dispatch(uiActions.setCurrentAccountTab(queryTab as AccountViewTab));
     }
   }
 
-  onTabSelected: SelectCallback = (tabKey) => {
+  onTabSelected = (tabKey: AccountViewTab): void => {
     tabKey && this.props.dispatch(uiActions.setCurrentAccountTab(tabKey));
   };
 
   render(): JSX.Element {
+    const { currentTab } = this.props;
+    const CurrentTabComponent = tabs.find((tab) => tab.id === currentTab)?.component as () => JSX.Element;
+    const tabItemFactory = (tab: AccountViewTabData) => (
+      <div
+        key={tab.id}
+        onClick={() => this.onTabSelected(tab.id)}
+        className={`tab-item ${tab.id === currentTab ? 'active' : ''}`}
+      >
+        <div className="flex mb-2">
+          <tab.icon className="text-blue-40 mr-2" />
+          <span className="font-semibold mr-3 text-base">{tab.title}</span>
+          <Unicons.UilAngleDoubleRight className="" />
+        </div>
+        <p className="text-sm">{tab.description}</p>
+      </div>
+    );
+    const tabsList = tabs.map((tab) => tabItemFactory(tab));
+
     return (
-      <div className="account-view h-full rounded-md bg-white pb-16 mt-2 ">
-        <Tabs activeKey={this.props.currentTab} onSelect={this.onTabSelected} className="flex px-8 pt-3.5 account-tabs">
-          <Tab title="Billing" eventKey={AccountViewTab.Billing}>
-            <AccountPlanInfoTab />
-          </Tab>
+      <div className="account-view">
+        {/* TABS */}
+        <div className="mr-8">
+          <h1 className="mb-4 pl-3 text-neutral-700 font-semibold">{i18n.get('views.account.title')}</h1>
+          <div className="tabs-container">{tabsList}</div>
+        </div>
 
-          <Tab title="Plans" eventKey={AccountViewTab.Plans}>
-            <AccountPlansTab />
-          </Tab>
-
-          <Tab title="Password" eventKey={AccountViewTab.Password}>
-            <AccountPasswordTab />
-          </Tab>
-
-          <Tab title="Security" eventKey={AccountViewTab.Security}>
-            <AccountSecurityTab />
-          </Tab>
-        </Tabs>
+        {/* CURRENT TAB */}
+        <CurrentTabComponent />
       </div>
     );
   }

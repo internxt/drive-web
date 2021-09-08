@@ -97,28 +97,30 @@ class AppHeader extends React.Component<AppHeaderProps> {
               <div className="h-6 w6 rounded-2xl mr-2 bg-l-neutral-20 p-1 flex justify-center items-center text-neutral-700 text-sm">
                 {nameLetters}
               </div>
-              <span className="text-neutral-500 text-base whitespace-nowrap">{isTeam ? 'Business' : userFullName}</span>
+              <span className="hidden md:block text-neutral-500 text-base whitespace-nowrap">
+                {isTeam ? 'Business' : userFullName}
+              </span>
             </div>
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item id="account" onClick={this.onAccountButtonClicked}>
-              <Unicons.UilUserCircle className="text-blue-60 h-5 mr-1" />
+              <Unicons.UilUserCircle className="h-5 mr-1" />
               <span>Account</span>
             </Dropdown.Item>
             <Dropdown.Item id="info" onClick={this.onSupportButtonClicked}>
-              <Unicons.UilChatBubbleUser className="text-blue-60 h-5 mr-1" />
+              <Unicons.UilChatBubbleUser className="h-5 mr-1" />
               <span>Support</span>
             </Dropdown.Item>
             {team && (
               <Dropdown.Item id="business" onClick={this.onChangeWorkspaceButtonClicked}>
                 {!isTeam ? (
                   <Fragment>
-                    <Unicons.UilBuilding className="text-blue-60 h-5 mr-1" />
+                    <Unicons.UilBuilding className="h-5 mr-1" />
                     <span>Business</span>
                   </Fragment>
                 ) : (
                   <Fragment>
-                    <Unicons.UilUser className="text-blue-60 h-5 mr-1" />
+                    <Unicons.UilUser className="h-5 mr-1" />
                     <span>Personal</span>
                   </Fragment>
                 )}
@@ -126,14 +128,14 @@ class AppHeader extends React.Component<AppHeaderProps> {
             )}
             {team?.isAdmin && isTeam && (
               <Fragment>
-                <hr className="text-l-neutral-30 my-1.5 -mx-3"></hr>
+                <hr className="text-l-neutral-30 my-1.5"></hr>
                 <Dropdown.Item onClick={this.onInviteMemberClick}>
                   <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
                   <span>Invite members</span>
                 </Dropdown.Item>
               </Fragment>
             )}
-            <hr className="text-l-neutral-30 my-1.5 -mx-3"></hr>
+            <hr className="text-l-neutral-30 my-1.5"></hr>
             <Dropdown.Item id="logout" className="text-red-60 hover:text-red-60" onClick={this.onLogoutButtonClicked}>
               <Unicons.UilSignout className="h-5 mr-1" />
               <span>Log out</span>

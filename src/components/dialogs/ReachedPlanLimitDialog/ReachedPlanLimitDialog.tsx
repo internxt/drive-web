@@ -5,6 +5,7 @@ import './ReachedPlanLimitDialog.scss';
 import { setCurrentAccountTab, uiActions } from '../../../store/slices/ui';
 import navigationService from '../../../services/navigation.service';
 import { AppView } from '../../../models/enums';
+import { AccountViewTab } from '../../../views/AccountView/tabs';
 
 const ReachedPlanLimitDialog = (): JSX.Element => {
   const isOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
@@ -16,7 +17,7 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
 
   const onAccept = async (): Promise<void> => {
     try {
-      dispatch(setCurrentAccountTab('plans'));
+      dispatch(setCurrentAccountTab(AccountViewTab.Plans));
       dispatch(uiActions.setIsReachedPlanLimitDialogOpen(false));
       navigationService.push(AppView.Account);
     } catch (e: unknown) {

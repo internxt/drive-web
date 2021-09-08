@@ -80,7 +80,7 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
             <span>Info</span>
           </Dropdown.Item>
         ) : null}
-        <hr className="text-l-neutral-30 my-1.5 -mx-3"></hr>
+        <hr className="text-l-neutral-30 my-1.5"></hr>
         {!hiddenActions.includes(ItemAction.Delete) ? (
           <Dropdown.Item id="delete" className="text-red-60 hover:text-red-60" onClick={this.onDeleteButtonClicked}>
             <Unicons.UilTrashAlt className="h-5 mr-1" />

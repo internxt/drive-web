@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import queryString from 'query-string';
 import navigationService from '../../../services/navigation.service';
+import { AccountViewTab } from '../../../views/AccountView/tabs';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -11,7 +12,7 @@ interface UISliceState {
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
-  currentAccountTab: string;
+  currentAccountTab: AccountViewTab;
 }
 
 const initialState: UISliceState = {
@@ -23,7 +24,7 @@ const initialState: UISliceState = {
   isShareItemDialogOpen: false,
   isInviteMemberDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
-  currentAccountTab: 'billing',
+  currentAccountTab: AccountViewTab.Info,
 };
 
 export const uiSlice = createSlice({
@@ -54,7 +55,7 @@ export const uiSlice = createSlice({
     setIsDriveItemInfoMenuOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDriveItemInfoMenuOpen = action.payload;
     },
-    setCurrentAccountTab: (state: UISliceState, action: PayloadAction<string>) => {
+    setCurrentAccountTab: (state: UISliceState, action: PayloadAction<AccountViewTab>) => {
       const currentQueryParams = queryString.parse(navigationService.history.location.search);
       const newQueryParams = {
         ...currentQueryParams,

@@ -14,6 +14,7 @@ import { sessionActions } from '../session';
 import { storageActions } from '../storage';
 import navigationService from '../../../services/navigation.service';
 import { AppView } from '../../../models/enums';
+import { sessionSelectors } from '../session/session.selectors';
 
 interface UserState {
   isInitializing: boolean;
@@ -127,6 +128,23 @@ export const userSlice = createSlice({
       .addCase(logoutThunk.rejected, () => undefined);
   },
 });
+
+export const userSelectors = {
+  userFullName: (state: RootState): string => {
+    const { user } = state.user;
+
+    return user ? `${user?.name} ${user?.lastname}` : '';
+  },
+  nameLetters: (state: RootState): string => {
+    const { user } = state.user;
+    const isTeam = sessionSelectors.isTeam(state);
+    const nameLetters: string = isTeam
+      ? 'B'
+      : (user as UserSettings).name[0] + ((user as UserSettings).lastname[0] || '');
+
+    return nameLetters;
+  },
+};
 
 export const { initialize, resetState, setIsUserInitialized, setUser } = userSlice.actions;
 export const userActions = userSlice.actions;
