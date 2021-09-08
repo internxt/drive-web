@@ -129,6 +129,21 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
         xUser.mnemonic = mnemonic;
         dispatch(userActions.setUser(xUser));
+        analyticsService.trackSignUp({
+          properties: {
+            userId: xUser.uuid,
+            signup_source: signupCampaignSource(window.location.search),
+          },
+          traits: {
+            email: xUser.uuid,
+            first_name: name,
+            last_name: lastname,
+            usage: 0,
+            createdAt: new Date().toISOString(),
+            signup_device_source: signupDevicesource(window.navigator.userAgent),
+            acquisition_channel: signupCampaignSource(window.location.search),
+          },
+        });
 
         return dispatch(userThunks.initializeUserThunk()).then(() => {
           localStorageService.set('xToken', xToken);
