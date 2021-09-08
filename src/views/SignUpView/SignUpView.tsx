@@ -24,7 +24,7 @@ import { aes, auth } from '@internxt/lib';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 import errorService from '../../services/error.service';
-import { AppView } from '../../models/enums';
+import { AnalyticsTrack, AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
 
 interface SignUpProps {
@@ -195,11 +195,11 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
           analyticsService.trackSignUp({
             properties: {
-              userId: uuid,
-              source: signupCampaignSource(window.location.search),
+              userId: user.uuid,
+              signup_source: signupCampaignSource(window.location.search),
             },
             traits: {
-              member_tier: 'free', // take care of case that the user has paid before registering this account
+              member_tier: 'free',
               email: email,
               first_name: name,
               last_name: lastname,
