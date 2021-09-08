@@ -87,7 +87,7 @@ export function signInAttempted(email: string, error: string | Error): void {
 }
 
 export function trackSignUp(payload: {
-  properties: { userId: string; signup_source };
+  properties: { signup_source };
   traits: {
     member_tier?: string;
     email: string;
@@ -98,9 +98,10 @@ export function trackSignUp(payload: {
     signup_device_source: string;
     acquisition_channel;
   };
+  userId: string;
 }): void {
-  window.analytics.identify(payload.properties.userId, payload.traits);
-  window.analytics.track(AnalyticsTrack.SignUp, payload.properties.userId);
+  window.analytics.identify(payload.userId, payload.traits);
+  window.analytics.track(AnalyticsTrack.SignUp, payload.properties);
 }
 
 export function trackUserEnterPayments(): void {
