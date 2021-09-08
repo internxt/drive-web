@@ -130,8 +130,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         xUser.mnemonic = mnemonic;
         dispatch(userActions.setUser(xUser));
         analyticsService.trackSignUp({
+          userId: xUser.uuid,
           properties: {
-            userId: xUser.uuid,
             signup_source: signupCampaignSource(window.location.search),
           },
           traits: {
@@ -194,8 +194,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
 
           analyticsService.trackSignUp({
+            userId: uuid,
             properties: {
-              userId: user.uuid,
               signup_source: signupCampaignSource(window.location.search),
             },
             traits: {
