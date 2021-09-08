@@ -55,10 +55,10 @@ export enum AnalyticsTrack {
 export enum SignupDeviceSource {
   Macintosh = 'MacOs',
   Android = 'Android',
-  Iphone = 'Iphone',
+  Iphone = 'iPhone',
   Windows = 'Windows',
   Linux = 'Linux',
-  iPad = 'iPad',
+  Ipad = 'iPad',
   Other = 'Other',
 }
 
