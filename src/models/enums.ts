@@ -32,7 +32,7 @@ export enum AnalyticsTrack {
   SignOut = 'user-signout',
   SignIn = 'user-signin',
   SignInAttempted = 'user-signin-attempted',
-  SignUp = 'user-signup',
+  SignUp = 'User Signup',
   UserEnterPayments = 'user-enter-payments',
   PlanSubscriptionSelected = 'plan-subscription-selected',
   FolderCreated = 'folder-created',
@@ -50,6 +50,16 @@ export enum AnalyticsTrack {
   UserResetPasswordRequest = 'user-reset-password-request',
   FileUploadBucketIdUndefined = 'file-upload-bucketid-undefined',
   ShareLinkBucketIdUndefined = 'share-link-bucketid-undefined',
+}
+
+export enum SignupDeviceSource {
+  Macintosh = 'MacOs',
+  Android = 'Android',
+  Iphone = 'iPhone',
+  Windows = 'Windows',
+  Linux = 'Linux',
+  Ipad = 'iPad',
+  Other = 'Other',
 }
 
 export enum DevicePlatform {
