@@ -48,6 +48,7 @@ export interface UserSettings {
   teams?: boolean;
   username: string;
   bridgeUser: string;
+  sharedWorkspace: boolean;
 }
 
 export interface TeamsSettings {
