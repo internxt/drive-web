@@ -6,7 +6,7 @@ import queryString from 'query-string';
 import SideInfo from '../Authentication/SideInfo';
 import { IFormValues, UserSettings } from '../../models/interfaces';
 import localStorageService from '../../services/local-storage.service';
-import analyticsService from '../../services/analytics.service';
+import analyticsService, { signupDevicesource, signupCampaignSource } from '../../services/analytics.service';
 import { readReferalCookie } from '../../services/auth.service';
 import BaseInput from '../../components/Inputs/BaseInput';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
@@ -24,7 +24,7 @@ import { aes, auth } from '@internxt/lib';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 import errorService from '../../services/error.service';
-import { AppView } from '../../models/enums';
+import { AnalyticsTrack, AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
 
 interface SignUpProps {
@@ -129,6 +129,21 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
         xUser.mnemonic = mnemonic;
         dispatch(userActions.setUser(xUser));
+        analyticsService.trackSignUp({
+          userId: xUser.uuid,
+          properties: {
+            signup_source: signupCampaignSource(window.location.search),
+          },
+          traits: {
+            email: xUser.uuid,
+            first_name: name,
+            last_name: lastname,
+            usage: 0,
+            createdAt: new Date().toISOString(),
+            signup_device_source: signupDevicesource(window.navigator.userAgent),
+            acquisition_channel: signupCampaignSource(window.location.search),
+          },
+        });
 
         return dispatch(userThunks.initializeUserThunk()).then(() => {
           localStorageService.set('xToken', xToken);
@@ -178,11 +193,20 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
           user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
 
-          window.analytics.identify(uuid, { email: email, member_tier: 'free' });
           analyticsService.trackSignUp({
+            userId: uuid,
             properties: {
-              userId: uuid,
+              signup_source: signupCampaignSource(window.location.search),
+            },
+            traits: {
+              member_tier: 'free',
               email: email,
+              first_name: name,
+              last_name: lastname,
+              usage: 0,
+              createdAt: new Date().toISOString(),
+              signup_device_source: signupDevicesource(window.navigator.userAgent),
+              acquisition_channel: signupCampaignSource(window.location.search),
             },
           });
 
