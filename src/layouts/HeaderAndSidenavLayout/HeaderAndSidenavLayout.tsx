@@ -10,6 +10,7 @@ import InviteMemberDialog from '../../components/dialogs/InviteMemberDialog/Invi
 import FileLogger from '../../components/FileLogger/FileLogger';
 import navigationService from '../../services/navigation.service';
 import { AppView } from '../../models/enums';
+import GuestDialog from '../../components/dialogs/GuestDialog/GuestDialog';
 
 interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
@@ -25,6 +26,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const isInviteMemberDialogOpen = useAppSelector((state) => state.ui.isInviteMemberDialogOpen);
+  const isGuestInviteDialogOpen = useAppSelector((state) => state.ui.isGuestInviteDialogOpen);
 
   if (!isAuthenticated) {
     navigationService.push(AppView.Login);
@@ -35,6 +37,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog item={itemToShare} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
       {isInviteMemberDialogOpen && <InviteMemberDialog />}
+      {isGuestInviteDialogOpen && <GuestDialog />}
 
       <div className="flex-grow flex">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />

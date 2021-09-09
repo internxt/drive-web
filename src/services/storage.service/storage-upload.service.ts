@@ -38,6 +38,7 @@ export function uploadFile(
       email: userEmail,
       platform: DevicePlatform.Web,
     });
+
     const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
     if (!bucketId) {

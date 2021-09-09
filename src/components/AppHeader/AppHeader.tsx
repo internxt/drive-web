@@ -69,6 +69,10 @@ class AppHeader extends React.Component<AppHeaderProps> {
     }
   };
 
+  onGuestInviteCliked = (): void => {
+    this.props.dispatch(uiActions.setIsGuestInvitationDialogOpen(true));
+  };
+
   render(): ReactNode {
     const { user, isTeam, storageFilters, team } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
@@ -109,6 +113,12 @@ class AppHeader extends React.Component<AppHeaderProps> {
               <Unicons.UilUserCircle className="text-blue-60 h-5 mr-1" />
               <span>Account</span>
             </Dropdown.Item>
+            {user && user.sharedWorkspace &&
+              <Dropdown.Item id="guest-invite" onClick={this.onGuestInviteCliked}>
+                <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
+                <span>Guest</span>
+              </Dropdown.Item>
+            }
             <Dropdown.Item id="info" onClick={this.onSupportButtonClicked}>
               <Unicons.UilChatBubbleUser className="text-blue-60 h-5 mr-1" />
               <span>Support</span>
