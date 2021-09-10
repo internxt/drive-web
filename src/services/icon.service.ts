@@ -37,7 +37,7 @@ export const getItemIcon = (isFolder: boolean, itemExtension: string): FunctionC
   let groupId: FileExtensionGroup = FileExtensionGroup.Default;
 
   Object.entries(extensionsList).every(([key, list]) => {
-    const matched = list.includes(itemExtension);
+    const matched = list.includes(itemExtension.toLowerCase());
 
     if (matched) {
       groupId = FileExtensionGroup[key];
