@@ -22,7 +22,7 @@ function getTeams(): TeamsSettings | null {
 }
 
 function getWorkspace(): string {
-  return localStorage.getItem('workspace') || Workspace.Personal;
+  return localStorage.getItem('workspace') || Workspace.Individuals;
 }
 
 function removeItem(key: string): void {

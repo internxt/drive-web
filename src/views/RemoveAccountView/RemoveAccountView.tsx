@@ -78,6 +78,7 @@ const RemoveAccount = (): JSX.Element => {
 
             <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
               <BaseInput
+                className="mb-2.5"
                 placeholder="Email"
                 label="email"
                 type="email"

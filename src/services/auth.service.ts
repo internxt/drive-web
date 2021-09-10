@@ -24,7 +24,7 @@ export function logOut(): void {
 
 export function cancelAccount(): Promise<void> {
   return httpService
-    .get<void>('/api/deactivate', { authWorkspace: Workspace.Personal })
+    .get<void>('/api/deactivate', { authWorkspace: Workspace.Individuals })
     .then(() => {
       notificationsService.show(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
     })
@@ -383,7 +383,7 @@ export const deactivate2FA = async (
   }
 };
 
-export const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
+const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
     method: 'PUT',
     headers: getHeaders(true, false),
@@ -407,6 +407,7 @@ const authService = {
   check2FANeeded,
   readReferalCookie,
   cancelAccount,
+  store2FA,
 };
 
 export default authService;

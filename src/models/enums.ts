@@ -61,7 +61,7 @@ export enum FileViewMode {
   Grid = 'grid',
 }
 export enum Workspace {
-  Personal = 'personal',
+  Individuals = 'personal',
   Business = 'business',
 }
 
@@ -98,4 +98,11 @@ export enum LocalStorageItem {
   UserToken = 'xToken',
   Team = 'xTeam',
   TeamToken = 'xTokenTeam',
+}
+
+export enum TwoFactorAuthStep {
+  Download = 'download',
+  QR = 'qr',
+  BackupKey = 'backup-key',
+  Enable = 'enable',
 }

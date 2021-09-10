@@ -7,7 +7,7 @@ import { sessionExtraReducers } from './session.thunks';
 
 const initialState: SessionState = {
   hasConnection: true,
-  workspace: Workspace.Personal,
+  workspace: Workspace.Individuals,
 };
 
 export const sessionSlice = createSlice({
@@ -15,7 +15,7 @@ export const sessionSlice = createSlice({
   initialState,
   reducers: {
     initialize: (state: SessionState) => {
-      state.workspace = (localStorageService.getWorkspace() as Workspace) || Workspace.Personal;
+      state.workspace = (localStorageService.getWorkspace() as Workspace) || Workspace.Individuals;
       localStorageService.set(LocalStorageItem.Workspace, state.workspace);
     },
     setHasConnection: (state: SessionState, action: PayloadAction<boolean>) => {

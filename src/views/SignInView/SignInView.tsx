@@ -131,6 +131,7 @@ export default function SignInView(): JSX.Element {
           <span className="text-sm text-neutral-500 mt-1.5 mb-6" />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Email"
             label="email"
             type="email"
@@ -143,6 +144,7 @@ export default function SignInView(): JSX.Element {
           />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Password"
             label={'password'}
             type={showPassword ? 'text' : 'password'}

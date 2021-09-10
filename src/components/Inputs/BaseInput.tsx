@@ -3,6 +3,7 @@ import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-fo
 import { IFormValues } from '../../models/interfaces';
 
 interface InputProps {
+  className?: string;
   label: Path<IFormValues>;
   type: string;
   disabled?: boolean;
@@ -19,6 +20,7 @@ interface InputProps {
 }
 
 const InputPrimary = ({
+  className,
   label,
   disabled,
   type,
@@ -33,7 +35,7 @@ const InputPrimary = ({
   error,
   onClick,
 }: InputProps): JSX.Element => (
-  <div className="relative flex-1">
+  <div className={`${className || ''} relative flex-1`}>
     <input
       type={type}
       disabled={disabled}
@@ -47,12 +49,12 @@ const InputPrimary = ({
         maxLength,
         pattern,
       })}
-      className={`py-2 w-full transform duration-200 mb-2.5 ${error ? 'error' : ''}`}
+      className={`py-2 w-full transform duration-200 ${error ? 'error' : ''}`}
     />
 
     <div
       className={`text-m-neutral-100 absolute ${
-        label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-4 cursor-pointer' : 'right-3 bottom-4'
+        label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-2 cursor-pointer' : 'right-3 bottom-2'
       } flex items-center justify-center`}
       onClick={() =>
         label === 'password' || label === 'confirmPassword' || label === 'currentPassword' ? onClick && onClick() : null

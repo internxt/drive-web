@@ -15,11 +15,11 @@ import i18n from '../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../services/notifications.service';
 import errorService from '../../../services/error.service';
 
-interface InviteMemberCreateDialogProps {
+interface InviteTeamMemberDialogProps {
   team: TeamsSettings | undefined | null;
 }
 
-const InviteMemberCreateDialog = ({ team }: InviteMemberCreateDialogProps) => {
+const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
   const {
     register,
     formState: { errors, isValid },
@@ -131,4 +131,4 @@ const InviteMemberCreateDialog = ({ team }: InviteMemberCreateDialogProps) => {
 
 export default connect((state: RootState) => ({
   team: state.team.team,
-}))(InviteMemberCreateDialog);
+}))(InviteTeamMemberDialog);

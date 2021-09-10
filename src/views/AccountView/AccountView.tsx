@@ -65,7 +65,9 @@ class AccountView extends Component<AccountViewProps> {
         </div>
 
         {/* CURRENT TAB */}
-        <CurrentTabComponent />
+        <div className="max-w-4xl w-full h-full pl-6 flex flex-col overflow-y-auto">
+          <CurrentTabComponent />
+        </div>
       </div>
     );
   }

@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
-import { UilCheck } from '@iconscout/react-unicons';
+import { useState } from 'react';
 
 import BaseButton from '../../../../components/Buttons/BaseButton';
 import { IStripePlan, IStripeProduct } from '../../../../models/interfaces';
 import { ProductPlanItem } from './ProductPlanItem';
+import i18n from '../../../../services/i18n.service';
 
 interface ProductItemProps {
   product: IStripeProduct;
   plans: IStripePlan[];
   selectedPlanId: string;
   currentPlanId: string | undefined;
-  characteristics: string[];
   isPaying: boolean;
   isBusiness: boolean;
   handlePlanSelection: (productId: string, planId: string) => void;
@@ -21,7 +20,6 @@ interface ProductItemProps {
 const ProductItem = ({
   product,
   plans,
-  characteristics,
   handlePlanSelection,
   handlePaymentIndividual,
   selectedPlanId,
@@ -31,8 +29,7 @@ const ProductItem = ({
   handlePaymentTeams,
 }: ProductItemProps): JSX.Element => {
   const [totalTeamMembers, setTotalTeamMembers] = useState(1);
-  const aPlanIsSelected = plans.reduce((t, x) => t || x.id === selectedPlanId, false);
-  const buttonLabel = isPaying ? 'Redirecting to Stripe...' : aPlanIsSelected ? 'Subscribe' : 'Choose your payment';
+  const buttonLabel = isPaying ? 'Redirecting to Stripe...' : i18n.get('action.buy');
   const onBuyButtonClicked = () => {
     if (isBusiness) {
       handlePaymentTeams(selectedPlanId, product.id, totalTeamMembers);
@@ -47,10 +44,11 @@ const ProductItem = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-center text-neutral-700 p-7">
-      <h2 className="text-2xl font-bold text-left">{product.metadata.simple_name}</h2>
-
-      <p className="text-sm font-semibold text-neutral-700 mt-4 mb-2">Choose subscription</p>
+    <div className="w-full h-full flex flex-col justify-center text-neutral-700 p-6 border border-l-neutral-30 rounded-lg">
+      {/* SIMPLE NAME */}
+      <h4 className="m-auto rounded-3xl px-4 py-1 bg-l-neutral-20 text-m-neutral-80 font-semibold mb-4 w-min">
+        {product.metadata.simple_name}
+      </h4>
 
       {plans.map((plan) => (
         <ProductPlanItem
@@ -92,21 +90,8 @@ const ProductItem = ({
         </div>
       )}
 
-      <p className="text-sm font-semibold text-neutral-700 my-3.5">Everything in this plan</p>
-
-      {characteristics.map((text, index) => (
-        <div key={index} className="flex justify-start items-center mb-2">
-          <UilCheck className="text-blue-60" />
-          <p className="text-xs ml-2.5">{text}</p>
-        </div>
-      ))}
-
       <div className="mt-4" />
-      <BaseButton
-        classes="w-full primary"
-        disabled={isPaying || !aPlanIsSelected || totalTeamMembers < 1}
-        onClick={onBuyButtonClicked}
-      >
+      <BaseButton classes="w-full primary font-semibold" disabled={isPaying} onClick={onBuyButtonClicked}>
         {buttonLabel}
       </BaseButton>
     </div>

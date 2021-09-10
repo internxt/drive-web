@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { uiActions } from '../../store/slices/ui';
 import ReachedPlanLimitDialog from '../../components/dialogs/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
-import InviteMemberDialog from '../../components/dialogs/InviteMemberDialog/InviteMemberDialog';
+import InviteTeamMemberDialog from '../../components/dialogs/InviteTeamMemberDialog/InviteTeamMemberDialog';
 import FileLogger from '../../components/FileLogger/FileLogger';
 import navigationService from '../../services/navigation.service';
 import { AppView } from '../../models/enums';
@@ -34,9 +34,9 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
     <div className="h-auto min-h-full flex flex-col">
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog item={itemToShare} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
-      {isInviteMemberDialogOpen && <InviteMemberDialog />}
+      {isInviteMemberDialogOpen && <InviteTeamMemberDialog />}
 
-      <div className="flex-grow flex">
+      <div className="flex-grow flex h-1">
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />
 
         <div className="flex flex-col flex-grow bg-white w-1">

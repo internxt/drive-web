@@ -12,7 +12,7 @@ const changeWorkspaceThunk = createAsyncThunk<void, void, { state: RootState }>(
   'session/changeWorkspace',
   async (payload: void, { dispatch, getState }) => {
     const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const newWorkspace = isTeam ? Workspace.Personal : Workspace.Business;
+    const newWorkspace = isTeam ? Workspace.Individuals : Workspace.Business;
 
     dispatch(sessionActions.setWorkspace(newWorkspace));
     localStorageService.set(LocalStorageItem.Workspace, newWorkspace);

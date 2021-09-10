@@ -12,6 +12,7 @@ import DeleteAccountDialog from '../../../../components/dialogs/DeleteAccountDia
 import { bytesToString } from '../../../../services/size.service';
 import i18n from '../../../../services/i18n.service';
 import { userSelectors } from '../../../../store/slices/user';
+import AccountAdvice from '../../../../components/AccountAdvice/AccountAdvice';
 
 const AccountPlanInfoTab = (): JSX.Element => {
   const [isDeleteAccountDialogOpen, setIsDeleteAccountDialogOpen] = useState(false);
@@ -39,7 +40,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
     <Fragment>
       <DeleteAccountDialog isOpen={isDeleteAccountDialogOpen} onClose={() => setIsDeleteAccountDialogOpen(false)} />
 
-      <div className="w-full h-full pl-6 pt-10 flex flex-col">
+      <div className="pt-10">
         {/* ACCOUNT INFO */}
         <div className="max-w-sm mb-20">
           {/* PERSONAL */}
@@ -58,7 +59,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
             <h4 className="mb-1">Usage</h4>
             <div className="text-sm text-m-neutral-70">
               {isLoadingPlans || isLoadingPlanLimit ? (
-                <span className="text-center w-full">Loading...</span>
+                <span className="text-center w-full">{i18n.get('general.loading') + '...'}</span>
               ) : (
                 <span className="w-full m-0">
                   {bytesToString(planUsage) || '0'} of {getUserLimitString(planLimit)}
@@ -95,28 +96,24 @@ const AccountPlanInfoTab = (): JSX.Element => {
                 </button>
               </div>
             ) : (
-              <span className="">Loading plan...</span>
+              <span className="">{i18n.get('general.loading') + '...'}</span>
             )}
           </div>
         </div>
 
         {/* MORE INFO & DELETE ACCOUNT */}
         <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 w-full justify-around mb-14">
-            <div className="mr-7">
-              <div className="mb-2 flex">
-                <Unicons.UilShieldPlus className="text-blue-40 mr-2" />
-                {i18n.get('views.account.tabs.info.advice1.title')}
-              </div>
-              <span className="text-m-neutral-100">{i18n.get('views.account.tabs.info.advice1.description')}</span>
-            </div>
-            <div className="ml-7">
-              <div className="flex mb-2">
-                <Unicons.UilShieldPlus className="text-blue-40 mr-2" />
-                {i18n.get('views.account.tabs.info.advice2.title')}
-              </div>
-              <span className="text-m-neutral-100">{i18n.get('views.account.tabs.info.advice2.description')}</span>
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 w-full justify-around mb-14">
+            <AccountAdvice
+              icon={Unicons.UilShieldPlus}
+              title={i18n.get('views.account.tabs.info.advice1.title')}
+              description={i18n.get('views.account.tabs.info.advice1.description')}
+            />
+            <AccountAdvice
+              icon={Unicons.UilShieldPlus}
+              title={i18n.get('views.account.tabs.info.advice2.title')}
+              description={i18n.get('views.account.tabs.info.advice2.description')}
+            />
           </div>
           <span
             className="block text-center text-m-neutral-80 cursor-pointer mt-10"

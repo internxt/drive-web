@@ -15,17 +15,21 @@ import storageThunks from './store/slices/storage/storage.thunks';
 import { sessionActions } from './store/slices/session';
 
 import './index.scss';
+import { screenActions } from './store/slices/screen';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
 
 // Initializes store
+store.dispatch(screenActions.initialize());
 store.dispatch(userActions.initialize());
 store.dispatch(teamActions.initialize());
 store.dispatch(sessionActions.initialize());
 store.dispatch(storageThunks.initializeThunk());
 store.dispatch(planThunks.initializeThunk());
 store.dispatch(productsThunks.initializeThunk());
+
+window.onresize = () => store.dispatch(screenActions.updateInnerSize());
 
 ReactDOM.render(
   <React.StrictMode>

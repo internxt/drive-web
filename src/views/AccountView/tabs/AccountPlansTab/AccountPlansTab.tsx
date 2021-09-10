@@ -1,26 +1,25 @@
-import { useState, Fragment } from 'react';
+import { useState } from 'react';
 import { generateMnemonic } from 'bip39';
-import { UilBuilding, UilHome } from '@iconscout/react-unicons';
+import * as Unicons from '@iconscout/react-unicons';
 
 import analyticsService from '../../../../services/analytics.service';
 import ProductItem from './ProductItem';
 import { encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
 import BillingCardSkeletton from '../../../../components/loaders/BillingCardSkeletton';
-import { Workspace } from '../../../../models/enums';
+import { RenewalPeriod, Workspace } from '../../../../models/enums';
 import i18n from '../../../../services/i18n.service';
 import envService from '../../../../services/env.service';
 import { payStripePlan } from '../../../../services/products.service';
 import { useAppSelector } from '../../../../store/hooks';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 
-import configService from '../../../../services/config.service';
-
 import './AccountPlansTab.scss';
 import errorService from '../../../../services/error.service';
 
 const AccountPlansTab = (): JSX.Element => {
-  const [currentOption, setCurrentOption] = useState<Workspace.Personal | Workspace.Business>(Workspace.Personal);
+  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace>(Workspace.Individuals);
+  const [currentRenewalPeriod, setCurrentRenewalPeriod] = useState<RenewalPeriod>(RenewalPeriod.Semiannually);
   const [selectedPlanId, setSelectedPlanId] = useState<string>('');
   const [isPaying, setIsPaying] = useState(false);
   const individualPlan = useAppSelector((state) => state.plan.individualPlan);
@@ -31,20 +30,6 @@ const AccountPlansTab = (): JSX.Element => {
   const isLoadingTeamProducts = useAppSelector((state) => state.products.isLoadingTeamProducts);
   const teamProducts = useAppSelector((state) => state.products.teamProducts);
   const teamProductsPlans = useAppSelector((state) => state.products.teamProductsPlans);
-  const tabOptions: { id: string; label: string; icon: JSX.Element; onClick: () => void }[] = [
-    {
-      id: Workspace.Personal,
-      label: 'Individual',
-      icon: <UilHome />,
-      onClick: () => setCurrentOption(Workspace.Personal),
-    },
-    {
-      id: Workspace.Business,
-      label: 'Business',
-      icon: <UilBuilding />,
-      onClick: () => setCurrentOption(Workspace.Business),
-    },
-  ];
   const loadingSkeleton = Array(3)
     .fill(1)
     .map((n, i) => (
@@ -120,67 +105,110 @@ const AccountPlansTab = (): JSX.Element => {
   const onPlanSelected = (productId: string, planId: string) => {
     setSelectedPlanId(planId);
   };
+  const onRenewalPeriodItemClicked = (key: RenewalPeriod) => {
+    setCurrentRenewalPeriod(key);
+  };
+  const renewalPeriodList = Object.values(RenewalPeriod).map((key) => (
+    <div
+      onClick={() => onRenewalPeriodItemClicked(key)}
+      key={key}
+      className={`${key === currentRenewalPeriod ? 'active' : ''} account-plans-renewal-period-item`}
+    >
+      {i18n.get(`general.renewalPeriod.${key}`)}
+    </div>
+  ));
+  const changePlansWorkspaceLabel = i18n.get(`views.account.tabs.plans.changeWorkspace.${currentWorkspace}`);
+  const onChangePlansWorkspaceClicked = () => {
+    const workspaceKeys = Object.values(Workspace);
+    const currentWorkspaceIndex = workspaceKeys.findIndex((key) => key === currentWorkspace);
+    const nextWorkspace = workspaceKeys[(currentWorkspaceIndex + 1) % workspaceKeys.length];
+
+    setCurrentWorkspace(nextWorkspace);
+  };
+  const features = [
+    {
+      icon: Unicons.UilShieldPlus,
+      title: i18n.get('views.account.tabs.plans.features.0.title'),
+      description: i18n.get('views.account.tabs.plans.features.0.description'),
+    },
+    {
+      icon: Unicons.UilShieldPlus,
+      title: i18n.get('views.account.tabs.plans.features.1.title'),
+      description: i18n.get('views.account.tabs.plans.features.1.description'),
+    },
+    {
+      icon: Unicons.UilShieldPlus,
+      title: i18n.get('views.account.tabs.plans.features.2.title'),
+      description: i18n.get('views.account.tabs.plans.features.2.description'),
+    },
+  ];
+  const featuresList = features.map((feature, index) => (
+    <div
+      key={index}
+      className="square flex flex-col justify-center items-center border border-l-neutral-30 rounded-lg text-center p-3"
+    >
+      <feature.icon className="text-blue-40 mb-2" />
+      <span className="block text-neutral-900 mb-2">{feature.title}</span>
+      <span className="block text-m-neutral-100 text-sm">{feature.description}</span>
+    </div>
+  ));
 
   return (
-    <div className="w-full h-fit border border-m-neutral-60 rounded-xl">
-      <div className="flex justify-evenly items-center h-11">
-        {tabOptions.map((option, index) => {
-          const tabOptionSelectedClassName = 'border-b-2 border-blue-60';
-          const tabOptionIconSelectedClassName = 'text-blue-60 active';
-          const isSelected = option.id === currentOption;
+    <div className="group w-full h-fit">
+      {/* PERIOD SELECTOR */}
+      <div className="mx-auto mb-6 rounded-lg bg-l-neutral-20 h-10 w-96 flex py-1 px-0.5">{renewalPeriodList}</div>
 
-          return (
-            <Fragment key={index}>
-              <div className={`option ${isSelected ? tabOptionSelectedClassName : ''}`} onClick={option.onClick}>
-                <div className={isSelected ? tabOptionIconSelectedClassName : ''}>{option.icon}</div>
-                <span>{option.label}</span>
-              </div>
+      {/* CHANGE PLANS WORKSPACE */}
+      <span
+        className="block mx-auto w-max text-center text-blue-60 font-semibold mb-6 cursor-pointer"
+        onClick={onChangePlansWorkspaceClicked}
+      >
+        {changePlansWorkspaceLabel}
+      </span>
 
-              {index < tabOptions.length - 1 && <div className="w-px h-1/2 border-r border-m-neutral-60" />}
-            </Fragment>
-          );
-        })}
-      </div>
+      {isLoadingIndividualProducts || isLoadingTeamProducts ? (
+        <span className="block w-full text-center">{i18n.get('general.loading')}</span>
+      ) : (
+        <div className="gap-4 grid grid-cols-1 lg:grid-cols-3 justify-center">
+          {currentWorkspace === Workspace.Individuals &&
+            individualProducts.map((product, i) => (
+              <ProductItem
+                key={i}
+                product={product}
+                plans={individualProductsPlans[i]}
+                selectedPlanId={selectedPlanId}
+                currentPlanId={individualPlan?.planId}
+                handlePlanSelection={onPlanSelected}
+                handlePaymentIndividual={handlePaymentIndividual}
+                isPaying={isPaying}
+                isBusiness={false}
+                handlePaymentTeams={handlePaymentTeams}
+              />
+            ))}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 border-t border-m-neutral-60 justify-evenly">
-        {currentOption === Workspace.Personal &&
-          (isLoadingIndividualProducts
-            ? loadingSkeleton
-            : individualProducts.map((product, i) => (
-                <ProductItem
-                  key={i}
-                  product={product}
-                  plans={individualProductsPlans[i]}
-                  selectedPlanId={selectedPlanId}
-                  currentPlanId={individualPlan?.planId}
-                  characteristics={configService.getAppConfig().plan.defaultFeatures}
-                  handlePlanSelection={onPlanSelected}
-                  handlePaymentIndividual={handlePaymentIndividual}
-                  isPaying={isPaying}
-                  isBusiness={false}
-                  handlePaymentTeams={handlePaymentTeams}
-                />
-              )))}
+          {currentWorkspace === Workspace.Business &&
+            teamProducts.map((product, i) => (
+              <ProductItem
+                key={i}
+                product={product}
+                plans={teamProductsPlans[i]}
+                selectedPlanId={selectedPlanId}
+                currentPlanId={teamPlan?.planId}
+                handlePlanSelection={onPlanSelected}
+                handlePaymentIndividual={handlePaymentIndividual}
+                isPaying={isPaying}
+                isBusiness={true}
+                handlePaymentTeams={handlePaymentTeams}
+              />
+            ))}
+        </div>
+      )}
 
-        {currentOption === Workspace.Business &&
-          (isLoadingTeamProducts
-            ? loadingSkeleton
-            : teamProducts.map((product, i) => (
-                <ProductItem
-                  key={i}
-                  product={product}
-                  plans={teamProductsPlans[i]}
-                  selectedPlanId={selectedPlanId}
-                  currentPlanId={teamPlan?.planId}
-                  characteristics={configService.getAppConfig().plan.defaultFeatures}
-                  handlePlanSelection={onPlanSelected}
-                  handlePaymentIndividual={handlePaymentIndividual}
-                  isPaying={isPaying}
-                  isBusiness={true}
-                  handlePaymentTeams={handlePaymentTeams}
-                />
-              )))}
-      </div>
+      {/* FEATURES */}
+      <span className="block mx-auto w-max text-center text-neutral-500 my-6">
+        {i18n.get('views.account.tabs.plans.viewAllFeatures')}
+      </span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">{featuresList}</div>
     </div>
   );
 };

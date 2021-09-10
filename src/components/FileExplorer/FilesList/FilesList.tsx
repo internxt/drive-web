@@ -71,7 +71,7 @@ class FilesList extends React.Component<FilesListProps> {
           <div className="w-2/12 flex items-center">Size</div>
           <div className="w-1/12 flex items-center rounded-tr-4px">Actions</div>
         </div>
-        <div className="h-full overflow-y-scroll">{isLoading ? this.loadingSkeleton : this.itemsList}</div>
+        <div className="h-full overflow-y-auto">{isLoading ? this.loadingSkeleton : this.itemsList}</div>
       </div>
     );
   }

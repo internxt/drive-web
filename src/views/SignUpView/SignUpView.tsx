@@ -265,6 +265,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           <span className="text-base font-semibold text-neutral-900 mt-1.5 mb-6">Create an Internxt account</span>
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Name"
             label="name"
             type="text"
@@ -276,6 +277,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Lastname"
             label="lastname"
             type="text"
@@ -287,6 +289,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Email"
             label="email"
             type="email"
@@ -300,6 +303,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Password"
             label="password"
             type={showPassword ? 'text' : 'password'}
@@ -325,6 +329,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Confirm new password"
             label="confirmPassword"
             type={showConfirmPassword ? 'text' : 'password'}

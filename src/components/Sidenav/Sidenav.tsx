@@ -11,15 +11,16 @@ import desktopService from '../../services/desktop.service';
 
 import './Sidenav.scss';
 import PlanUsage from '../PlanUsage/PlanUsage';
-import { Link } from 'react-router-dom';
 import { planSelectors } from '../../store/slices/plan';
 import { AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
+import { screenSelectors } from '../../store/slices/screen';
 
 interface SidenavProps {
   user: UserSettings | undefined;
   collapsed: boolean;
   onCollapseButtonClicked: () => void;
+  isLgScreen: boolean;
   planUsage: number;
   planLimit: number;
   isLoadingPlanLimit: boolean;
@@ -40,20 +41,28 @@ class Sidenav extends React.Component<SidenavProps> {
   };
 
   render(): JSX.Element {
-    const { collapsed, onCollapseButtonClicked, planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } =
-      this.props;
+    const {
+      collapsed,
+      onCollapseButtonClicked,
+      planUsage,
+      planLimit,
+      isLoadingPlanLimit,
+      isLoadingPlanUsage,
+      isLgScreen,
+    } = this.props;
+    const isCollapsed = collapsed || !isLgScreen;
 
     return (
-      <div className={`${collapsed ? 'collapsed' : ''} side-nav`}>
+      <div className={`${isCollapsed ? 'collapsed' : ''} side-nav`}>
         <button
-          className="p-2 collapse-button cursor-pointer flex items-center z-40 absolute transform"
+          className="hidden lg:flex items-center p-2 collapse-button cursor-pointer z-40 absolute transform"
           onClick={onCollapseButtonClicked}
         >
-          {collapsed ? <Unicons.UilAngleDoubleRight /> : <Unicons.UilAngleDoubleLeft />}
+          {isCollapsed ? <Unicons.UilAngleDoubleRight /> : <Unicons.UilAngleDoubleLeft />}
         </button>
 
         <div className="pl-6 py-1.5 cursor-pointer border-b border-l-neutral-30" onClick={this.onLogoClicked}>
-          {collapsed ? (
+          {isCollapsed ? (
             <img className="opacity-0 w-6 h-9" src={smallLogo} alt="" />
           ) : (
             <div
@@ -69,7 +78,7 @@ class Sidenav extends React.Component<SidenavProps> {
 
         <div
           className={`${
-            collapsed ? '' : 'px-6'
+            isCollapsed ? '' : 'px-6'
           } pt-7 border-r border-l-neutral-30 h-full flex flex-col justify-between`}
         >
           <div>
@@ -77,23 +86,23 @@ class Sidenav extends React.Component<SidenavProps> {
               label="Drive"
               to="/app"
               icon={<Unicons.UilFolderMedical className="w-5" />}
-              isOpen={!collapsed}
+              isOpen={!isCollapsed}
             />
             <SidenavItem
               label="Recents"
               to="/app/recents"
               icon={<Unicons.UilClockEight className="w-5" />}
-              isOpen={!collapsed}
+              isOpen={!isCollapsed}
             />
             <SidenavItem
               label="Download App"
               icon={<Unicons.UilDesktop className="w-5" />}
-              isOpen={!collapsed}
+              isOpen={!isCollapsed}
               onClick={this.onDownloadAppButtonClicked}
             />
           </div>
 
-          {!collapsed && (
+          {!isCollapsed && (
             <div className="mb-12">
               <PlanUsage
                 limit={planLimit}
@@ -109,6 +118,7 @@ class Sidenav extends React.Component<SidenavProps> {
 }
 
 export default connect((state: RootState) => ({
+  isLgScreen: screenSelectors.isLg(state),
   user: state.user.user,
   planUsage: state.plan.planUsage,
   planLimit: planSelectors.planLimitToShow(state),
