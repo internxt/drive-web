@@ -21,6 +21,7 @@ const audioExtensions: FileExtensionMap = {
   m4a: ['m4a'],
   m4b: ['m4b'],
   m4p: ['m4p'],
+  midi: ['mid', 'midi'],
   mmf: ['mmf'],
   mp3: ['mp3'],
   mpc: ['mpc'],
@@ -55,7 +56,7 @@ const codeExtensions: FileExtensionMap = {
   scss: ['scss'],
   fortran: ['f', 'for', 'f77', 'f90'],
   'asp.net': ['aspx'],
-  html: ['html', 'hmn'],
+  html: ['html', 'hmn', 'xhtml', 'shtml', 'htm'],
   java: ['java'],
   jsp: ['jsp'],
   javascript: ['js'],
@@ -70,16 +71,23 @@ const codeExtensions: FileExtensionMap = {
   sql: ['sql'],
   vue: ['vue'],
   yaml: ['yaml', 'yml'],
+  go: ['go'],
+  rust: ['rust'],
+  sh: ['sh'],
 };
 
 const imageExtensions: FileExtensionMap = {
   tiff: ['tif', 'tiff'],
   bmp: ['bmp'],
-  jpg: ['jpg', 'jpeg'],
+  jpg: ['jpg', 'jpeg', 'jpe'],
   gif: ['gif'],
   png: ['png'],
   eps: ['eps'],
   raw: ['raw', 'cr2', 'nef', 'orf', 'sr2'],
+  xbm: ['xbm'],
+  xpm: ['xpm'],
+  ico: ['ico'],
+
 };
 
 const pdfExtensions: FileExtensionMap = {
@@ -136,7 +144,7 @@ const xmlExtensions: FileExtensionMap = {
 };
 
 const zipExtensions: FileExtensionMap = {
-  zip: ['zip', 'zipx'],
+  zip: ['zip', 'zipx', '7z'],
 };
 
 const defaultExtensions: FileExtensionMap = {};
