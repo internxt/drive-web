@@ -1,3 +1,4 @@
+import React from 'react';
 import { TwoFactorAuthStep } from '../../../../../../models/enums';
 import TwoFactorAuthBackupKeyStep from './TwoFactorAuthBackupKeyStep';
 import TwoFactorAuthDownloadStep from './TwoFactorAuthDownloadStep';
@@ -7,7 +8,7 @@ import TwoFactorAuthQRStep from './TwoFactorAuthQRStep';
 export interface TwoFactorAuthStepProps {
   qr: string;
   backupKey: string;
-  setHas2FA: any;
+  setHas2FA: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const activateTwoFactorAuthSteps = [

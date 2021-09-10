@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Fragment } from 'react';
 
 import { generateNew2FA, userHas2FAStored } from '../../../../services/auth.service';
 import Deactivate2FA from './DeactivateTwoFactorAuth/DeactivateTwoFactorAuth';
-import Steps from './ActivateTwoFactorAuth/steps';
 import Skeleton from 'react-loading-skeleton';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
@@ -12,9 +10,10 @@ import { TwoFactorAuthStep } from '../../../../models/enums';
 import activateSteps from './ActivateTwoFactorAuth/steps';
 
 import './AccountSecurityTab.scss';
+import ActivateTwoFactorAuthSkeleton from '../../../../components/loaders/ActivateTwoFactorAuthSkeleton';
 
 const AccountSecurityTab = (): JSX.Element => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
   const [has2FA, setHas2FA] = useState(false);
   const [qr, setQr] = useState('');
   const [backupKey, setBackupKey] = useState('');
@@ -47,13 +46,16 @@ const AccountSecurityTab = (): JSX.Element => {
     }
   };
   const stepButtons = Object.values(TwoFactorAuthStep).map((stepKey, index) => (
-    <button
+    <div
+      key={stepKey}
       onClick={() => pickStep(index)}
       className={`${currentStep === index ? 'active' : ''} two-factor-step-button square`}
     >
-      <span className="block">{index + 1}</span>
-      <span className="block">{i18n.get(`views.account.tabs.security.two-factor-auth.steps.${stepKey}.title`)}</span>
-    </button>
+      <span className="block text-2xl">{index + 1}</span>
+      <span className="block flex-1">
+        {i18n.get(`views.account.tabs.security.two-factor-auth.steps.${stepKey}.title`)}
+      </span>
+    </div>
   ));
   const CurrentActivateStepComponent = activateSteps[currentStep].component;
   const currentActivateStepProps = {
@@ -61,7 +63,11 @@ const AccountSecurityTab = (): JSX.Element => {
     backupKey,
     setHas2FA,
   };
-  const currentActivateStep = <CurrentActivateStepComponent {...currentActivateStepProps} />;
+  const currentActivateStep = (
+    <div className="border border-l-neutral-30 rounded-lg">
+      <CurrentActivateStepComponent {...currentActivateStepProps} />
+    </div>
+  );
 
   useEffect(() => {
     if (!has2FA) {
@@ -70,17 +76,17 @@ const AccountSecurityTab = (): JSX.Element => {
   }, [has2FA]);
 
   return (
-    <div className="w-full flex flex-col border">
+    <div className="w-full flex flex-col">
       <h3 className="font-semibold mb-4">{i18n.get('views.account.tabs.security.advice.title')}</h3>
       <p className="mb-8">{i18n.get('views.account.tabs.security.advice.description')}</p>
 
       {isLoading ? (
-        <Skeleton width={400} height={50} />
+        <ActivateTwoFactorAuthSkeleton />
       ) : (
-        <Fragment>
-          <div className={`${has2FA ? 'hidden' : 'flex'} border`}>{stepButtons}</div>
+        <div className="mx-auto max-w-xl w-full">
+          <div className={`${has2FA ? 'hidden' : 'flex'} mb-2`}>{stepButtons}</div>
           {has2FA ? <Deactivate2FA passwordSalt={passwordSalt} setHas2FA={setHas2FA} /> : currentActivateStep}
-        </Fragment>
+        </div>
       )}
     </div>
   );

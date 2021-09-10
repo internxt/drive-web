@@ -6,7 +6,6 @@ import analyticsService from '../../../../services/analytics.service';
 import ProductItem from './ProductItem';
 import { encryptPGP } from '../../../../lib/utilspgp';
 import { getHeaders } from '../../../../lib/auth';
-import BillingCardSkeletton from '../../../../components/loaders/BillingCardSkeletton';
 import { RenewalPeriod, Workspace } from '../../../../models/enums';
 import i18n from '../../../../services/i18n.service';
 import envService from '../../../../services/env.service';
@@ -30,13 +29,6 @@ const AccountPlansTab = (): JSX.Element => {
   const isLoadingTeamProducts = useAppSelector((state) => state.products.isLoadingTeamProducts);
   const teamProducts = useAppSelector((state) => state.products.teamProducts);
   const teamProductsPlans = useAppSelector((state) => state.products.teamProductsPlans);
-  const loadingSkeleton = Array(3)
-    .fill(1)
-    .map((n, i) => (
-      <div className="flex justify-center" key={i}>
-        <BillingCardSkeletton />
-      </div>
-    ));
   const handlePaymentIndividual = async (selectedPlan: string, productId: string) => {
     setIsPaying(true);
     const stripe = window.Stripe(

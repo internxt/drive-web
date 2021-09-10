@@ -66,7 +66,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
                 </span>
               )}
 
-              <div className="flex justify-start h-1.5 w-full bg-blue-20 rounded-lg overflow-hidden mt-0.5">
+              <div className="flex justify-start h-1.5 w-full bg-l-neutral-30 rounded-lg overflow-hidden mt-0.5">
                 <div className="h-full bg-blue-70" style={progressBarFillStyle} />
               </div>
             </div>

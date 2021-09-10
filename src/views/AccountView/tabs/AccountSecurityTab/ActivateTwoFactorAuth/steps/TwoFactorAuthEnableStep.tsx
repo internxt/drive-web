@@ -46,13 +46,17 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
   };
 
   return (
-    <form className="flex w-full flex-col" onSubmit={handleSubmit(onSubmit)}>
-      <span className="security-info_texts mb-4">
+    <form
+      className="text-center square flex justify-center w-full flex-col py-8 px-16"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <span className="security-info_texts mb-8">
         Finally, to enable Two-Factor Authentication, fill the fields below.
       </span>
 
-      <div className="flex justify-between">
+      <div>
         <BaseInput
+          className="mb-4"
           label="backupKey"
           placeholder="Backup key"
           type="text"
@@ -65,6 +69,7 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
         <div className="mx-2" />
 
         <BaseInput
+          className="mb-4"
           label="twoFactorCode"
           placeholder="Two-Factor authentication code"
           type={showTwoFactorCode ? 'text' : 'password'}
@@ -74,12 +79,12 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
           icon={
             twoFactorCode ? (
               showTwoFactorCode ? (
-                <Unicons.UilEyeSlash className="w-4" onClick={() => setShowTwoFactorCode(false)} />
+                <Unicons.UilEyeSlash className="w-4 text-blue-40" onClick={() => setShowTwoFactorCode(false)} />
               ) : (
-                <Unicons.UilEye className="w-4" onClick={() => setShowTwoFactorCode(true)} />
+                <Unicons.UilEye className="w-4 text-blue-40" onClick={() => setShowTwoFactorCode(true)} />
               )
             ) : (
-              <Unicons.UilLock className="w-4" />
+              <Unicons.UilLock className="w-4 text-blue-40" />
             )
           }
           minLength={1}
@@ -93,7 +98,7 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
         </div>
       )}
 
-      <BaseButton disabled={isLoading || !isValid}>
+      <BaseButton classes="primary" disabled={isLoading || !isValid}>
         {isLoading || !isValid
           ? isValid
             ? 'Configuring Two-Factor Authenticator...'
