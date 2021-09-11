@@ -1,0 +1,106 @@
+{
+    "success": {
+      "passwordChanged": "Passwort erfolgreich geändert",
+      "teamInvitationSent": "Einladungs-E-Mail gesendet an {email}",
+      "referralInvitationSent": "Einladungs-E-Mail gesendet an {email}",
+      "deletedTeamMember": "Die {ressource} wurde erfolgreich gelöscht",
+      "accountDeactivationEmailSent": "Deaktivierungs-E-Mail gesendet!",
+      "claimEmailSent": "Anspruchs-E-Mail gesendet!",
+      "linkCopied": "Link kopiert!",
+      "twoFactorAuthActivated": "Ihre Zwei-Faktor-Authentifizierung wurde aktiviert!",
+      "twoFactorAuthDisabled": "Ihre Zwei-Faktoren-Authentifizierung wurde deaktiviert",
+      "joinedToTheTeam": "Sie haben sich erfolgreich dem Team angeschlossen",
+      "done": "Erledigt"
+    },
+    "error": {
+      "genericError": "Es ist ein Fehler aufgetreten: {reason}",
+      "serverError": "Interner Serverfehler. Versuchen Sie es später erneut",
+      "deleteTeamMember": "Fehler beim Löschen eines Teammitglieds",
+      "changingName": "Fehler bei Namensänderung",
+      "fileAlreadyExists": "Datei mit demselben Namen existiert bereits",
+      "folderAlreadyExists": "Ordner mit demselben Namen existiert bereits",
+      "creatingFolder": "Fehler bei der Ordnererstellung",
+      "sendReferralInvitation": "Konnte keine Einladungs-E-Mail senden",
+      "sendClaimEmail": "Konnte keine Anspruchs-E-Mail senden",
+      "anyReferralCredit": "Sie haben kein Guthaben auf Ihrem Konto",
+      "backupKeyDontMatch": "Der eingegebene Sicherungsschlüssel stimmt nicht mit Ihrem eindeutigen Sicherungsschlüssel überein",
+      "shareLinkMissingBucket": "Freigabelink kann aufgrund eines fehlenden Buckets nicht erstellt werden",
+      "unavailableLink": "Nicht verfügbarer Link",
+      "invalidActivationCode": "Ihr Aktivierungscode ist ungültig. Möglicherweise haben Sie diesen Link bereits verwendet und Ihr Konto ist bereits aktiviert",
+      "redirectToStripe": "Die Weiterleitung zu Stripe ist fehlgeschlagen. Bitte kontaktieren Sie uns. Reason: {reason}",
+      "deactivatingAccount": "Fehler beim Deaktivieren des Kontos. Please contact us.",
+      "fetchingFolderContent": "Fehler beim Abrufen des Ordnerinhalts",
+      "uploadingFolder": "Fehler beim Hochladen des Ordners",
+      "uploadingFile": "Fehler beim Hochladen der Datei: {reason}",
+      "uploadingItems": "Es gab einige Fehler beim Hochladen",
+      "downloadingFile": "Fehler beim Herunterladen der Datei: Grund ist {reason}",
+      "downloadingItems": "Einige der Elemente konnten nicht heruntergeladen werden",
+      "movingItemInsideItself": "Sie können einen Ordner nicht in sich selbst verschieben",
+      "movingItem": "Fehler beim Verschieben von Elementen",
+      "linkExpired": "Dieser sichere Link ist abgelaufen",
+      "teamInvitation":"Die Einladungs-E-Mail konnte nicht gesendet werden"
+    },
+    "info": {
+      "downloadingFile": "Datei {filename} herunderladen...",
+      "retrievingFile": "Sicheres Abrufen von Datei..."
+    },
+    "action": {
+      "download": "Herunterladen",
+      "accessFile": "Datei aufrufen"
+    },
+    "tasks": {
+      "create-folder": {
+        "pending": "Ausstehend, um Ordner zu erstellen",
+        "in-process": "Ordner erstellen",
+        "success": "Ordner erstellt",
+        "error": "Fehler bei der Ordnererstellung",
+        "cancelled": "Ordnererstellung abgebrochen"
+      },
+      "upload-file": {
+        "pending": "Zum Hochladen anstehend",
+        "encrypting": "Datei wird verschlüsselt",
+        "in-process": "{progress}% Datei hochladen",
+        "success": "Datei hochgelade",
+        "error": "Fehler beim Hochladen",
+        "cancelled": "Upload abgebrochen"
+      },
+      "upload-folder": {
+        "pending": "Zum Hochladen anstehend",
+        "encrypting": "Dateien verschlüsseln",
+        "in-process": "{progress}% Ordner hochladen",
+        "success": "Ordner hochgeladen",
+        "error": "Fehler beim Hochladen",
+        "cancelled": "Upload abgebrochen"
+      },
+      "download-file": {
+        "pending": "Zum Herunterladen anstehend",
+        "decrypting": "Datei wird entschlüsselt",
+        "in-process": "{progress}% Datei wird heruntergeladen",
+        "success": "Datei heruntergeladen",
+        "error": "Fehler beim Herunterladen",
+        "cancelled": "Download abgebrochen"
+      },
+      "download-folder": {
+        "pending": "Zum Herunterladen anstehend",
+        "decrypting": "Dateien werden entschlüsselt",
+        "in-process": "Ordner wird heruntergeladen",
+        "success": "Ordner heruntergeladen",
+        "error": "Fehler beim Herunterladen",
+        "cancelled": "Download abgebrochen"
+      },
+      "move-file": {
+        "pending": "Zum Verschieben anstehend",
+        "in-process": "Datei verschieben",
+        "success": "Datei verschoben",
+        "error": "Fehler beim Verschieben",
+        "cancelled": "Bewegung abgebrochen"
+      },
+      "move-folder": {
+        "pending": "Zur Verschiebung anstehend",
+        "in-process": "Ordner verschieben",
+        "success": "Ordner verschoben",
+        "error": "Fehler beim Verschieben",
+        "cancelled": "Bewegung abgebrochen"
+      }
+    }
+  }

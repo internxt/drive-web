@@ -5,10 +5,24 @@ import { Locale } from './enums';
 import locales from './locales';
 
 class I18nService {
-  currentLocale: string = Locale.English;
+  defaultLocale: string = Locale.English;
 
   get(key: string, values = {}): string {
-    const messageTemplate = _.get(locales[this.currentLocale], key) || key;
+
+    let lang = this.defaultLocale;
+
+    switch(navigator.language){
+      case 'de':
+      case 'de-AT':
+      case 'de-CH':
+      case 'de-DE':
+      case 'de-LI':
+      case 'de-LU':
+        lang = Locale.German;
+      break;
+    }
+
+    const messageTemplate = _.get(locales[lang], key) || key;
     const result = format(messageTemplate, values);
 
     return result;
