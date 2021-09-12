@@ -285,10 +285,8 @@ export const getSalt = async (): Promise<any> => {
   return salt;
 };
 
-export const changePassword = async (newPassword: string, currentPassword: string, email: string) => {
+export const getPasswordDetails = async (currentPassword: string) => {
   const salt = await getSalt();
-  const user = localStorageService.getUser() as UserSettings;
-
   if (!salt) {
     throw new Error('Internal server error. Please reload.');
   }
@@ -296,6 +294,15 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   // Encrypt the password
   const hashedCurrentPassword = passToHash({ password: currentPassword, salt }).hash;
   const encryptedCurrentPassword = encryptText(hashedCurrentPassword);
+
+
+  return { salt, hashedCurrentPassword, encryptedCurrentPassword }
+}
+
+export const changePassword = async (newPassword: string, currentPassword: string, email: string) => {
+  const user = localStorageService.getUser() as UserSettings;
+
+  const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
 
   // Encrypt the new password
   const hashedNewPassword = passToHash({ password: newPassword });
