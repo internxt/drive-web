@@ -14,6 +14,7 @@ import SignInView from './SignInView/SignInView';
 import SignUpView from './SignUpView/SignUpView';
 import RemoveAccountView from './RemoveAccountView/RemoveAccountView';
 import { AppView } from '../models/enums';
+import GuestAcceptInvitationView from './GuesAcceptInviteView/GuestAcceptInviteView';
 
 const views: Array<{
   id: string;
@@ -27,6 +28,7 @@ const views: Array<{
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Account, component: AccountView },
   { id: AppView.TeamsJoin, component: JoinTeamView },
+  { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },
   { id: AppView.TeamsDeactivation, component: DeactivationTeamsView },
   { id: AppView.TeamSuccess, component: TeamSuccessView },
