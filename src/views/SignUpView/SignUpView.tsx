@@ -62,8 +62,6 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [reCaptchaToken, setRecaptchaToken] = useState('');
-
   const formInputError = Object.values(errors)[0];
 
   let bottomInfoError: null | string = null;
@@ -255,7 +253,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoading(true);
     try {
-      const { name, lastname, email, password, confirmPassword } = formData;
+      const { name, lastname, email, password, confirmPassword, token } = formData;
 
       if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
@@ -271,7 +269,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             throw new Error(err.message + ', please contact us');
           });
       } else {
-        await doRegister(name, lastname, email, password, reCaptchaToken);
+        await doRegister(name, lastname, email, password, token);
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -287,12 +285,9 @@ const SignUp = (props: SignUpProps): JSX.Element => {
     const grecaptcha = window.grecaptcha;
 
     grecaptcha.ready(() => {
-      grecaptcha
-        .execute(process.env.REACT_APP_RECAPTCHA_V3, {
-          action: 'register',
-        })
-        .then((token) => {
-          setRecaptchaToken(token);
+      grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
+        // Can't wait or token will expire
+        formValues.token = token;
           onSubmit(formValues);
         });
     });
