@@ -113,12 +113,12 @@ class AppHeader extends React.Component<AppHeaderProps> {
               <Unicons.UilUserCircle className="text-blue-60 h-5 mr-1" />
               <span>Account</span>
             </Dropdown.Item>
-            {user && user.sharedWorkspace &&
+            {user && user.sharedWorkspace && (
               <Dropdown.Item id="guest-invite" onClick={this.onGuestInviteCliked}>
                 <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
                 <span>Guest</span>
               </Dropdown.Item>
-            }
+            )}
             <Dropdown.Item id="info" onClick={this.onSupportButtonClicked}>
               <Unicons.UilChatBubbleUser className="text-blue-60 h-5 mr-1" />
               <span>Support</span>
