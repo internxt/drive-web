@@ -27,4 +27,8 @@ interface Window {
   Stripe: any;
   analytics: SegmentAnalytics;
   _adftrack: any;
+  grecaptcha: {
+    ready: (cb: () => void) => void,
+    execute: (siteKey: string, { action: string }) => Promise<string>;
+  };
 }
