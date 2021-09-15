@@ -24,7 +24,7 @@ import { aes, auth } from '@internxt/lib';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 import errorService from '../../services/error.service';
-import { AnalyticsTrack, AppView } from '../../models/enums';
+import { AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
 
 interface SignUpProps {
@@ -153,7 +153,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       });
   };
 
-  const doRegister = async (name: string, lastname: string, email: string, password: string) => {
+  const doRegister = async (name: string, lastname: string, email: string, password: string, captcha: string) => {
     const hashObj = passToHash({ password: password });
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
@@ -183,6 +183,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         publicKey: codpublicKey,
         revocationKey: codrevocationKey,
         referrer: referrer,
+        captcha: captcha,
       }),
     })
       .then(async (response) => {
@@ -252,7 +253,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoading(true);
     try {
-      const { name, lastname, email, password, confirmPassword } = formData;
+      const { name, lastname, email, password, confirmPassword, token } = formData;
 
       if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
@@ -268,7 +269,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             throw new Error(err.message + ', please contact us');
           });
       } else {
-        await doRegister(name, lastname, email, password);
+        await doRegister(name, lastname, email, password, token);
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -280,12 +281,24 @@ const SignUp = (props: SignUpProps): JSX.Element => {
     }
   };
 
+  async function getReCaptcha(formValues: IFormValues) {
+    const grecaptcha = window.grecaptcha;
+
+    grecaptcha.ready(() => {
+      grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
+        // Can't wait or token will expire
+        formValues.token = token;
+          onSubmit(formValues);
+        });
+    });
+  }
+
   return (
     <div className="flex h-full w-full">
       <SideInfo title="" subtitle="" />
 
       <div className="flex flex-col items-center justify-center w-full">
-        <form className="flex flex-col w-72" onSubmit={handleSubmit(onSubmit)}>
+        <form className="flex flex-col w-72" onSubmit={handleSubmit(getReCaptcha)}>
           <span className="text-base font-semibold text-neutral-900 mt-1.5 mb-6">Create an Internxt account</span>
 
           <BaseInput

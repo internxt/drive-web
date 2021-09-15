@@ -126,6 +126,7 @@ export interface IFormValues {
   backupKey: string;
   createFolder: string;
   teamMembers: number;
+  token: string;
 }
 
 export type IStripeProduct = {
