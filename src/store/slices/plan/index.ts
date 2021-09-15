@@ -164,6 +164,10 @@ export const planSelectors = {
 
     return limit;
   },
+  isPlanActive:
+    (state: RootState) =>
+    (priceId: string): boolean =>
+      state.plan.individualPlan?.planId === priceId || state.plan.teamPlan?.planId === priceId,
 };
 
 export const planActions = planSlice.actions;

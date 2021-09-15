@@ -3,7 +3,11 @@
     @apply m-3;
 
     &.desktop {
-      @apply w-56 flex flex-col justify-center text-neutral-700 p-6 border border-l-neutral-30 rounded-lg;
+      @apply w-56;
+
+      &.active {
+        @apply bg-blue-60 ring-2 ring-blue-60;
+      }
     }
 
     &.tablet {

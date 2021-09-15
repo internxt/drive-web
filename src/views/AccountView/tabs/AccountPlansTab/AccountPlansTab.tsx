@@ -76,7 +76,7 @@ const AccountPlansTab = (): JSX.Element => {
 
       {/* CHANGE PLANS WORKSPACE */}
       <span
-        className="block mx-auto w-max text-center text-blue-60 font-semibold mb-6 cursor-pointer"
+        className="block mx-auto w-max text-center text-blue-60 font-semibold mb-4 cursor-pointer"
         onClick={onChangePlansWorkspaceClicked}
       >
         {changePlansWorkspaceLabelMap[currentWorkspace]}
@@ -85,7 +85,7 @@ const AccountPlansTab = (): JSX.Element => {
       {isLoadingProducts ? (
         <span className="block w-full text-center">{i18n.get('general.loading.default')}</span>
       ) : (
-        <div className="flex flex-wrap justify-center items-center">
+        <div className="flex flex-wrap justify-center items-end">
           {currentWorkspace === Workspace.Individuals &&
             individualProducts.map((product, i) => (
               <ProductItem
