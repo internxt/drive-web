@@ -156,7 +156,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
         <NumberInput initialValue={teamMembersCount} min={2} unitLabel="users" onChange={setTeamMembersCount} />
       )}
 
-      <BaseButton className="primary font-semibold w-36" disabled={isBuyButtonDisabled}>
+      <BaseButton onClick={onBuyButtonClicked} className="primary font-semibold w-36" disabled={isBuyButtonDisabled}>
         {tabletBuyButtonLabel}
       </BaseButton>
     </div>
