@@ -29,7 +29,7 @@ export default function PlanUsage({
         </p>
       )}
       <div className="flex justify-start h-1.5 w-full bg-l-neutral-30 rounded-lg overflow-hidden mb-1.5">
-        <div className="h-full bg-blue-60" style={{ width: isLoading ? 0 : (usage / limit) * 100 }} />
+        <div className="h-full bg-blue-60" style={{ width: isLoading ? 0 : Math.ceil((usage / limit) * 100) }} />
       </div>
       <p onClick={onUpgradeButtonClicked} className="font-semibold text-blue-60 cursor-pointer">
         {i18n.get('action.upgrade')}

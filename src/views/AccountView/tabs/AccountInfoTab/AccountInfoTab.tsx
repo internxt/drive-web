@@ -13,6 +13,7 @@ import { bytesToString } from '../../../../services/size.service';
 import i18n from '../../../../services/i18n.service';
 import { userSelectors } from '../../../../store/slices/user';
 import AccountAdvice from '../../../../components/AccountAdvice/AccountAdvice';
+import BaseButton from '../../../../components/Buttons/BaseButton';
 
 const AccountPlanInfoTab = (): JSX.Element => {
   const [isDeleteAccountDialogOpen, setIsDeleteAccountDialogOpen] = useState(false);
@@ -56,10 +57,10 @@ const AccountPlanInfoTab = (): JSX.Element => {
 
           {/* USAGE */}
           <div className="mb-12">
-            <h4 className="mb-1">Usage</h4>
+            <h4 className="mb-1">{i18n.get('drive.usage')}</h4>
             <div className="text-sm text-m-neutral-70">
               {isLoadingPlans || isLoadingPlanLimit ? (
-                <span className="text-center w-full">{i18n.get('general.loading') + '...'}</span>
+                <span className="text-center w-full">{i18n.get('general.loading.default')}</span>
               ) : (
                 <span className="w-full m-0">
                   {bytesToString(planUsage) || '0'} of {getUserLimitString(planLimit)}
@@ -74,7 +75,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
 
           {/* CURRENT PLAN */}
           <div>
-            <h4 className="mb-1">Current plan</h4>
+            <h4 className="mb-1">{i18n.get('drive.currentPlan')}</h4>
             {!isLoadingPlans ? (
               <div className="flex justify-between w-full">
                 <div>
@@ -91,12 +92,15 @@ const AccountPlanInfoTab = (): JSX.Element => {
                     )}
                   </div>
                 </div>
-                <button className={`${isCurrentPlanLifetime ? 'hidden' : ''} primary`} onClick={onUpgradeButtonClicked}>
+                <BaseButton
+                  className={`${isCurrentPlanLifetime ? 'hidden' : ''} primary`}
+                  onClick={onUpgradeButtonClicked}
+                >
                   {i18n.get('action.upgrade')}
-                </button>
+                </BaseButton>
               </div>
             ) : (
-              <span className="">{i18n.get('general.loading') + '...'}</span>
+              <span className="">{i18n.get('general.loading.default')}</span>
             )}
           </div>
         </div>

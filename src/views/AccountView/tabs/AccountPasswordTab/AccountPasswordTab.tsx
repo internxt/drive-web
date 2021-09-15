@@ -121,7 +121,7 @@ const AccountPasswordTab = (): JSX.Element => {
           </div>
         )}
 
-        <BaseButton classes="primary" disabled={isLoading || !isValid}>
+        <BaseButton className="primary" disabled={isLoading || !isValid}>
           {isLoading || !isValid ? (isValid ? 'Changing password...' : 'Change password') : 'Change password'}
         </BaseButton>
       </form>

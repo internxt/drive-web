@@ -1,97 +1,123 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { Fragment, useState } from 'react';
 
 import BaseButton from '../../../../components/Buttons/BaseButton';
-import { IStripePlan, IStripeProduct } from '../../../../models/interfaces';
-import { ProductPlanItem } from './ProductPlanItem';
+import { RenewalPeriod } from '../../../../models/enums';
+import { ProductData } from '../../../../models/interfaces';
 import i18n from '../../../../services/i18n.service';
+import moneyService from '../../../../services/money.service';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { paymentThunks } from '../../../../store/slices/payment';
 
 interface ProductItemProps {
-  product: IStripeProduct;
-  plans: IStripePlan[];
-  selectedPlanId: string;
+  product: ProductData;
   currentPlanId: string | undefined;
-  isPaying: boolean;
+  isBuyButtonDisabled: boolean;
   isBusiness: boolean;
-  handlePlanSelection: (productId: string, planId: string) => void;
-  handlePaymentIndividual: (selectedPlanId: string, productId: string) => void;
-  handlePaymentTeams: (selectedPlanId: string, productId: string, totalMembers: number) => void;
 }
 
-const ProductItem = ({
-  product,
-  plans,
-  handlePlanSelection,
-  handlePaymentIndividual,
-  selectedPlanId,
-  currentPlanId,
-  isPaying,
-  isBusiness,
-  handlePaymentTeams,
-}: ProductItemProps): JSX.Element => {
-  const [totalTeamMembers, setTotalTeamMembers] = useState(1);
-  const buttonLabel = isPaying ? 'Redirecting to Stripe...' : i18n.get('action.buy');
-  const onBuyButtonClicked = () => {
-    if (isBusiness) {
-      handlePaymentTeams(selectedPlanId, product.id, totalTeamMembers);
+const ProductItem = ({ product, isBuyButtonDisabled }: ProductItemProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const [teamMembersCount, setTeamMembersCount] = useState(2);
+  const currentPriceId = useAppSelector((state) => state.payment.currentPriceId);
+  const priceMultiplier = !teamMembersCount ? 1 : teamMembersCount * 0.5;
+  const buttonLabel =
+    isBuyButtonDisabled && currentPriceId === product.price.id
+      ? i18n.get('general.loading.redirecting')
+      : i18n.get('action.buy');
+  const monthlyAmountFormatted =
+    (product.price.monthlyAmount * priceMultiplier).toFixed(2) + moneyService.getCurrencySymbol(product.price.currency);
+  const totalAmount = product.price.amount * priceMultiplier;
+  const totalAmountFormatted = totalAmount.toFixed(2) + moneyService.getCurrencySymbol(product.price.currency);
+  const onBuyButtonClicked = async () => {
+    if (product.metadata.is_drive) {
+      dispatch(
+        paymentThunks.checkoutThunk({
+          product,
+        }),
+      );
     } else {
-      handlePaymentIndividual(selectedPlanId, product.id);
+      dispatch(paymentThunks.teamsCheckoutThunk({ product, teamMembersCount }));
     }
   };
-  const onProductPlanClicked = (plan: IStripePlan) => {
-    if (!isPaying) {
-      handlePlanSelection(product.id, plan.id);
-    }
-  };
+  const isLifetime = product.renewalPeriod === RenewalPeriod.Lifetime;
+  const sizeClassName = product.metadata.is_drive ? 'square' : '';
+
+  // teamMembersCount validation
+  useEffect(() => {
+    setTeamMembersCount(!teamMembersCount || teamMembersCount < 2 ? 2 : teamMembersCount);
+  }, [teamMembersCount]);
 
   return (
-    <div className="w-full h-full flex flex-col justify-center text-neutral-700 p-6 border border-l-neutral-30 rounded-lg">
+    <div
+      className={`${sizeClassName} flex flex-col justify-center text-neutral-700 p-6 border border-l-neutral-30 rounded-lg`}
+    >
       {/* SIMPLE NAME */}
-      <h4 className="m-auto rounded-3xl px-4 py-1 bg-l-neutral-20 text-m-neutral-80 font-semibold mb-4 w-min">
+      <h4 className="mx-auto rounded-3xl px-4 py-1 bg-l-neutral-20 text-m-neutral-80 font-semibold mb-4 w-min">
         {product.metadata.simple_name}
       </h4>
 
-      {plans.map((plan) => (
-        <ProductPlanItem
-          key={plan.id}
-          plan={plan}
-          isSelected={selectedPlanId === plan.id}
-          isCurrentPlan={currentPlanId === plan.id}
-          totalTeamMembers={totalTeamMembers}
-          onClick={() => onProductPlanClicked(plan)}
-        />
-      ))}
+      {/* MONTHLY AMOUNT */}
+      <div className="flex justify-center items-center">
+        <span className="text-3xl font-bold mr-2">{monthlyAmountFormatted}</span>
+        {!isLifetime && <span className="h-fit">/{i18n.get('general.time.month')}</span>}
+      </div>
 
-      {isBusiness && (
-        <div className="relative flex h-11 items-center rounded border border-m-neutral-60 overflow-hidden">
-          <span className="text-neutral-500 flex-1 ml-4">Business members</span>
-
-          <input
-            type="number"
-            min={2}
-            className="w-14 h-full border-l bg-white pr-2.5"
-            value={totalTeamMembers}
-            onChange={(e) => setTotalTeamMembers(parseInt(e.target.value))}
-          />
-
-          <div className="absolute right-0 flex flex-col items-center justify-center">
+      {/* TOTAL AMOUNT */}
+      {product.metadata.is_teams ? (
+        <div className="bg-l-neutral-10 border border-l-neutral-20 rounded-lg mt-6 mb-2 p-4">
+          <div className="relative flex items-center bg-white border border-l-neutral-30 rounded-lg mb-2">
             <button
-              className="flex items-center justify-center text-blue-60 font-semibold hover:bg-blue-20 w-5 h-5"
-              onClick={() => setTotalTeamMembers(!totalTeamMembers ? 1 : totalTeamMembers + 1)}
-            >
-              +
-            </button>
-            <button
-              className="flex items-center justify-center text-blue-60 font-semibold hover:bg-blue-20 w-5 h-5"
-              onClick={() => setTotalTeamMembers(totalTeamMembers > 1 ? totalTeamMembers - 1 : totalTeamMembers)}
+              disabled={teamMembersCount <= 2}
+              className="w-10 primary flex items-center justify-center font-semibold rounded-l-lg"
+              onClick={() => setTeamMembersCount(teamMembersCount - 1)}
             >
               -
             </button>
+            <div className="flex-grow flex justify-center py-2 px-3">
+              <input
+                type="number"
+                min={2}
+                className="w-6 mr-1 bg-white"
+                value={teamMembersCount}
+                onChange={(e) => setTeamMembersCount(parseInt(e.target.value))}
+              />
+              <span className="text-neutral-500">users</span>
+            </div>
+            <button
+              className="w-10 primary flex items-center justify-center font-semibold rounded-r-lg"
+              onClick={() => setTeamMembersCount(teamMembersCount + 1)}
+            >
+              +
+            </button>
+          </div>
+
+          <div className="w-full flex justify-center items-center">
+            {isLifetime ? (
+              <span className="text-xs text-m-neutral-100">{i18n.get('general.billing.oneTimePayment')}</span>
+            ) : (
+              <Fragment>
+                <span className="text-xs mr-1">{moneyService.getCurrencySymbol(product.price.currency)}</span>
+                <span className="mr-1">{totalAmount.toFixed()}</span>
+                <span className="text-xs text-m-neutral-100">
+                  /{i18n.get('general.renewalPeriod.annually').toLowerCase()}
+                </span>
+              </Fragment>
+            )}
           </div>
         </div>
+      ) : (
+        <span className="text-center text-xs text-m-neutral-80 mt-2 mb-4">
+          {isLifetime
+            ? i18n.get('general.billing.oneTimePayment')
+            : i18n.get('general.billing.billedEachPeriod', {
+                price: totalAmountFormatted,
+                period: i18n.get(`general.renewalPeriod.${product.renewalPeriod}`).toLowerCase(),
+              })}
+        </span>
       )}
-
-      <div className="mt-4" />
-      <BaseButton classes="w-full primary font-semibold" disabled={isPaying} onClick={onBuyButtonClicked}>
+      <div />
+      <BaseButton className="w-full primary font-semibold" disabled={isBuyButtonDisabled} onClick={onBuyButtonClicked}>
         {buttonLabel}
       </BaseButton>
     </div>

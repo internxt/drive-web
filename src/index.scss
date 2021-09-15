@@ -235,7 +235,7 @@ code {
   }
 
   input[type="number"] {
-    @apply appearance-none flex items-center justify-center border-m-neutral-60 text-center text-blue-60 outline-none;
+    @apply appearance-none flex items-center justify-center border-m-neutral-60 text-center outline-none;
 
     -moz-appearance: textfield;
   }
@@ -247,31 +247,41 @@ code {
   }
 
   /* BUTTONS */
-  button.primary,
-  button.secondary,
-  button.cancel {
+  .base-button,
+  button {
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .base-button.primary,
+  .base-button.secondary,
+  .base-button.cancel {
     height: 40px;
 
     @apply rounded-lg px-4 py-2 transition duration-200 ease-in-out;
   }
 
-  button.primary {
+  button.primary,
+  .base-button.primary {
     @apply bg-blue-60 hover:bg-blue-80 py-2 text-white;
 
     &:disabled {
-      @apply bg-blue-30;
+      @apply bg-l-neutral-30 text-m-neutral-80;
     }
   }
 
-  button.secondary {
+  button.secondary,
+  .base-button.secondary {
     @apply bg-white text-blue-60 hover:bg-blue-60 hover:text-white;
   }
 
-  button.cancel {
+  button.cancel,
+  .base-button.cancel {
     @apply bg-opacity-0 text-red-60;
   }
 
-  button.square {
+  .base-button.square {
     @apply px-2 py-0 flex justify-center items-center box-content;
   }
 

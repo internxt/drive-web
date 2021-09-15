@@ -98,7 +98,7 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
         </div>
       )}
 
-      <BaseButton classes="primary" disabled={isLoading || !isValid}>
+      <BaseButton className="primary" disabled={isLoading || !isValid}>
         {isLoading || !isValid
           ? isValid
             ? 'Configuring Two-Factor Authenticator...'

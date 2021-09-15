@@ -24,7 +24,7 @@ interface SegmentAnalytics {
 }
 
 interface Window {
-  Stripe: any;
+  Stripe: stripe.StripeStatic;
   analytics: SegmentAnalytics;
   _adftrack: any;
 }

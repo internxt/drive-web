@@ -133,7 +133,7 @@ const AccountReferralsTab = (): JSX.Element => {
 
         <span className="my-5 text-neutral-900 font-semibold">You have accumulated {credit}€</span>
 
-        <BaseButton disabled={isLoadingClaim} onClick={onClaim} classes="primary w-1/2">
+        <BaseButton disabled={isLoadingClaim} onClick={onClaim} className="primary w-1/2">
           {isLoadingClaim ? 'Claiming bonus...' : 'Claim'}
         </BaseButton>
       </div>

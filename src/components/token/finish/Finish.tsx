@@ -1,11 +1,10 @@
-import React from 'react';
 import { Container } from 'react-bootstrap';
 import CheckIcon from '../../../assets/check.svg';
 import CancelIcon from '../../../assets/token-icons/cancel.svg';
 
 import './Finish.scss';
 
-function Finish({ error }) {
+function Finish({ error }: { error: unknown }): JSX.Element {
   return (
     <Container className="finish-container-box pay-finish-box">
       {error ? (

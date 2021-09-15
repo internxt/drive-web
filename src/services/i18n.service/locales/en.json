@@ -1,14 +1,28 @@
 {
   "general": {
-    "loading": "Loading",
+    "stage": {
+      "development": "Development",
+      "production": "Production"
+    },
+    "loading": {
+      "default": "Loading...",
+      "redirecting": "Redirecting..."
+    },
     "renewalPeriod": {
-      "Monthly": "Monthly",
-      "Semiannually": "Semiannually",
-      "Annually": "Annually"
+      "monthly": "Monthly",
+      "annually": "Annually",
+      "lifetime": "Lifetime"
     },
     "workspaces": {
       "personal": "Individuals",
       "business": "Business"
+    },
+    "time": {
+      "month": "month"
+    },
+    "billing": {
+      "billedEachPeriod": "{price} billed {period}",
+      "oneTimePayment": "One-time payment"
     }
   },
   "views": {
@@ -208,5 +222,9 @@
       "error": "Error during movement",
       "cancelled": "Cancelled movement"
     }
+  },
+  "drive": {
+    "usage": "Usage",
+    "currentPlan": "Current plan"
   }
 }

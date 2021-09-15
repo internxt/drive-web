@@ -31,6 +31,7 @@ import storageThunks from '../../store/slices/storage/storage.thunks';
 import { planSelectors, planThunks } from '../../store/slices/plan';
 
 import './FileExplorer.scss';
+import BaseButton from '../Buttons/BaseButton';
 
 interface FileExplorerProps {
   title: JSX.Element | string;
@@ -191,29 +192,29 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
 
               <div className="flex">
                 {this.hasAnyItemSelected ? (
-                  <button className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
+                  <BaseButton className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
                     <Unicons.UilCloudDownload className="h-5 mr-1.5" />
                     <span>Download</span>
-                  </button>
+                  </BaseButton>
                 ) : (
-                  <button className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
+                  <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
                     <Unicons.UilCloudUpload className="h-5 mr-1.5" />
                     <span>Upload</span>
-                  </button>
+                  </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
-                  <button className="w-8 secondary square mr-2" onClick={this.onCreateFolderButtonClicked}>
+                  <BaseButton className="w-8 secondary square mr-2" onClick={this.onCreateFolderButtonClicked}>
                     <Unicons.UilFolderPlus />
-                  </button>
+                  </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
-                  <button className="w-8 secondary square mr-2" onClick={this.onBulkDeleteButtonClicked}>
+                  <BaseButton className="w-8 secondary square mr-2" onClick={this.onBulkDeleteButtonClicked}>
                     <Unicons.UilTrashAlt />
-                  </button>
+                  </BaseButton>
                 ) : null}
-                <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
+                <BaseButton className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
                   {viewModesIcons[viewMode]}
-                </button>
+                </BaseButton>
               </div>
             </div>
 

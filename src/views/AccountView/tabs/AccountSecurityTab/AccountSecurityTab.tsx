@@ -2,15 +2,14 @@ import { useEffect, useState } from 'react';
 
 import { generateNew2FA, userHas2FAStored } from '../../../../services/auth.service';
 import Deactivate2FA from './DeactivateTwoFactorAuth/DeactivateTwoFactorAuth';
-import Skeleton from 'react-loading-skeleton';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import errorService from '../../../../services/error.service';
 import { TwoFactorAuthStep } from '../../../../models/enums';
 import activateSteps from './ActivateTwoFactorAuth/steps';
+import ActivateTwoFactorAuthSkeleton from '../../../../components/loaders/ActivateTwoFactorAuthSkeleton';
 
 import './AccountSecurityTab.scss';
-import ActivateTwoFactorAuthSkeleton from '../../../../components/loaders/ActivateTwoFactorAuthSkeleton';
 
 const AccountSecurityTab = (): JSX.Element => {
   const [currentStep, setCurrentStep] = useState(0);
