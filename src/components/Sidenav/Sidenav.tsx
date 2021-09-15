@@ -14,23 +14,43 @@ import PlanUsage from '../PlanUsage/PlanUsage';
 import { planSelectors } from '../../store/slices/plan';
 import { AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
-import { screenSelectors } from '../../store/slices/screen';
+import screenService from '../../services/screen.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
   collapsed: boolean;
   onCollapseButtonClicked: () => void;
-  isLgScreen: boolean;
   planUsage: number;
   planLimit: number;
   isLoadingPlanLimit: boolean;
   isLoadingPlanUsage: boolean;
 }
 
-class Sidenav extends React.Component<SidenavProps> {
+interface SidenavState {
+  isLgScreen: boolean;
+}
+class Sidenav extends React.Component<SidenavProps, SidenavState> {
   constructor(props: SidenavProps) {
     super(props);
+
+    this.state = {
+      isLgScreen: screenService.isLg(),
+    };
   }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.onWindowResized);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onWindowResized);
+  }
+
+  onWindowResized = () => {
+    this.setState({
+      isLgScreen: screenService.isLg(),
+    });
+  };
 
   onDownloadAppButtonClicked = (): void => {
     window.open(desktopService.getDownloadAppUrl(), '_blank');
@@ -41,16 +61,9 @@ class Sidenav extends React.Component<SidenavProps> {
   };
 
   render(): JSX.Element {
-    const {
-      collapsed,
-      onCollapseButtonClicked,
-      planUsage,
-      planLimit,
-      isLoadingPlanLimit,
-      isLoadingPlanUsage,
-      isLgScreen,
-    } = this.props;
-    const isCollapsed = collapsed || !isLgScreen;
+    const { collapsed, onCollapseButtonClicked, planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } =
+      this.props;
+    const isCollapsed = collapsed || !screenService.isLg();
 
     return (
       <div className={`${isCollapsed ? 'collapsed' : ''} side-nav`}>
@@ -118,7 +131,6 @@ class Sidenav extends React.Component<SidenavProps> {
 }
 
 export default connect((state: RootState) => ({
-  isLgScreen: screenSelectors.isLg(state),
   user: state.user.user,
   planUsage: state.plan.planUsage,
   planLimit: planSelectors.planLimitToShow(state),

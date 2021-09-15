@@ -1,0 +1,13 @@
+@layer components {
+  .product-item {
+    @apply m-3;
+
+    &.desktop {
+      @apply w-56 flex flex-col justify-center text-neutral-700 p-6 border border-l-neutral-30 rounded-lg;
+    }
+
+    &.tablet {
+      @apply max-w-2xl w-full flex justify-between items-center;
+    }
+  }
+}

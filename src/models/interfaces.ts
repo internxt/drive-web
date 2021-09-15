@@ -166,9 +166,12 @@ export type StoragePlan = {
   name: string;
   simpleName: string;
   paymentInterval: RenewalPeriod;
-  price: string;
+  price: number;
+  monthlyPrice: number;
+  currency: string;
   isTeam: boolean;
   isLifetime: boolean;
+  renewalPeriod: RenewalPeriod;
   storageLimit: number;
 };
 

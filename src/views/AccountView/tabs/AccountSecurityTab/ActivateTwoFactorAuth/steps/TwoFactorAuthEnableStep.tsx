@@ -3,7 +3,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import * as Unicons from '@iconscout/react-unicons';
 
 import BaseButton from '../../../../../../components/Buttons/BaseButton';
-import BaseInput from '../../../../../../components/Inputs/BaseInput';
+import BaseInput from '../../../../../../components/forms/inputs/BaseInput';
 import { IFormValues } from '../../../../../../models/interfaces';
 import authService from '../../../../../../services/auth.service';
 import errorService from '../../../../../../services/error.service';

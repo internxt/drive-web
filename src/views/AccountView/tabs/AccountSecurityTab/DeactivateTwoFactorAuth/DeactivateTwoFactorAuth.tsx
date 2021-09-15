@@ -6,7 +6,7 @@ import { IFormValues } from '../../../../../models/interfaces';
 import { deactivate2FA } from '../../../../../services/auth.service';
 import { twoFactorRegexPattern } from '../../../../../services/validation.service';
 import AuthButton from '../../../../../components/Buttons/AuthButton';
-import BaseInput from '../../../../../components/Inputs/BaseInput';
+import BaseInput from '../../../../../components/forms/inputs/BaseInput';
 import i18n from '../../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../../services/notifications.service';
 import errorService from '../../../../../services/error.service';

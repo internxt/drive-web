@@ -10,8 +10,10 @@ import activateSteps from './ActivateTwoFactorAuth/steps';
 import ActivateTwoFactorAuthSkeleton from '../../../../components/loaders/ActivateTwoFactorAuthSkeleton';
 
 import './AccountSecurityTab.scss';
+import screenService from '../../../../services/screen.service';
 
 const AccountSecurityTab = (): JSX.Element => {
+  const [isLgScreen, setIsLgScreen] = useState(screenService.isLg());
   const [currentStep, setCurrentStep] = useState(0);
   const [has2FA, setHas2FA] = useState(false);
   const [qr, setQr] = useState('');
@@ -74,6 +76,10 @@ const AccountSecurityTab = (): JSX.Element => {
     }
   }, [has2FA]);
 
+  useEffect(() => {
+    setIsLgScreen(screenService.isLg());
+  });
+
   return (
     <div className="w-full flex flex-col">
       <h3 className="font-semibold mb-4">{i18n.get('views.account.tabs.security.advice.title')}</h3>
@@ -82,7 +88,7 @@ const AccountSecurityTab = (): JSX.Element => {
       {isLoading ? (
         <ActivateTwoFactorAuthSkeleton />
       ) : (
-        <div className="mx-auto max-w-xl w-full">
+        <div className={`${isLgScreen ? 'max-w-xl' : 'max-w-lg'} mx-auto w-full`}>
           <div className={`${has2FA ? 'hidden' : 'flex'} mb-2`}>{stepButtons}</div>
           {has2FA ? <Deactivate2FA passwordSalt={passwordSalt} setHas2FA={setHas2FA} /> : currentActivateStep}
         </div>

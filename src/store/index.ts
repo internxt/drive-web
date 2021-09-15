@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import screenReducer from './slices/screen';
 import userReducer from './slices/user';
 import teamReducer from './slices/team';
 import storageReducer from './slices/storage';
@@ -13,7 +12,6 @@ import paymentReducer from './slices/payment';
 
 export const store = configureStore({
   reducer: {
-    screen: screenReducer,
     user: userReducer,
     team: teamReducer,
     storage: storageReducer,

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
-import ProductItem from './ProductItem';
+import ProductItem from '../../../../components/ProductItem/ProductItem';
 import { RenewalPeriod, Workspace } from '../../../../models/enums';
 import i18n from '../../../../services/i18n.service';
 import { useAppSelector } from '../../../../store/hooks';
@@ -61,7 +61,7 @@ const AccountPlansTab = (): JSX.Element => {
   const featuresList = features.map((feature, index) => (
     <div
       key={index}
-      className="square flex flex-col justify-center items-center border border-l-neutral-30 rounded-lg text-center p-3"
+      className="w-56 h-56 flex flex-col justify-center items-center border border-l-neutral-30 rounded-lg text-center p-6 m-3"
     >
       <feature.icon className="text-blue-40 mb-2" />
       <span className="block text-neutral-900 mb-2">{feature.title}</span>
@@ -85,7 +85,7 @@ const AccountPlansTab = (): JSX.Element => {
       {isLoadingProducts ? (
         <span className="block w-full text-center">{i18n.get('general.loading.default')}</span>
       ) : (
-        <div className="gap-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 justify-center items-center">
+        <div className="flex flex-wrap justify-center items-center">
           {currentWorkspace === Workspace.Individuals &&
             individualProducts.map((product, i) => (
               <ProductItem
@@ -114,9 +114,7 @@ const AccountPlansTab = (): JSX.Element => {
       <span className="block mx-auto w-max text-center text-neutral-500 my-6">
         {i18n.get('views.account.tabs.plans.viewAllFeatures')}
       </span>
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 justify-center content-center">
-        {featuresList}
-      </div>
+      <div className="flex flex-wrap justify-center content-center">{featuresList}</div>
     </div>
   );
 };

@@ -8,7 +8,7 @@ import { IFormValues, UserSettings } from '../../models/interfaces';
 import localStorageService from '../../services/local-storage.service';
 import analyticsService from '../../services/analytics.service';
 import { readReferalCookie } from '../../services/auth.service';
-import BaseInput from '../../components/Inputs/BaseInput';
+import BaseInput from '../../components/forms/inputs/BaseInput';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
 import AuthButton from '../../components/Buttons/AuthButton';
 import { useAppDispatch } from '../../store/hooks';

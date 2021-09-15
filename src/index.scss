@@ -235,7 +235,7 @@ code {
   }
 
   input[type="number"] {
-    @apply appearance-none flex items-center justify-center border-m-neutral-60 text-center outline-none;
+    @apply appearance-none border-m-neutral-60 outline-none text-center;
 
     -moz-appearance: textfield;
   }

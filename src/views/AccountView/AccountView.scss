@@ -1,6 +1,6 @@
 @layer components {
   .account-view {
-    @apply flex h-full rounded-md bg-white px-8 pt-6 pb-16;
+    @apply block lg:flex h-full rounded-md bg-white px-8 pt-6 pb-16;
 
     .tabs-container {
       width: 25vw;
@@ -8,7 +8,15 @@
     }
 
     .tab-item {
-      @apply rounded-lg cursor-pointer text-sm text-neutral-500 p-4;
+      @apply rounded-lg cursor-pointer text-sm text-neutral-500 ;
+
+      &.desktop {
+        @apply p-4;
+      }
+
+      &.tablet {
+        @apply w-28 py-3 px-4 border border-l-neutral-30;
+      }
 
       &:hover {
         @apply bg-l-neutral-10;
@@ -19,8 +27,12 @@
       }
     }
 
-    .tab-item + .tab-item {
+    .tab-item.desktop + .tab-item.desktop {
       @apply mt-6;
+    }
+
+    .tab-item.tablet + .tab-item.tablet {
+      @apply ml-4;
     }
 
     .tab-content {
@@ -34,9 +46,5 @@
         @apply flex px-8 justify-center;
       }
     }
-  }
-
-  .account_config_description {
-    @apply text-center font-normal text-base text-neutral-700 mt-2;
   }
 }

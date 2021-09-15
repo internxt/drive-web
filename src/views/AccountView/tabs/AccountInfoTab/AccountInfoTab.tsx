@@ -14,8 +14,12 @@ import i18n from '../../../../services/i18n.service';
 import { userSelectors } from '../../../../store/slices/user';
 import AccountAdvice from '../../../../components/AccountAdvice/AccountAdvice';
 import BaseButton from '../../../../components/Buttons/BaseButton';
+import moneyService from '../../../../services/money.service';
+import { useEffect } from 'react';
+import screenService from '../../../../services/screen.service';
 
 const AccountPlanInfoTab = (): JSX.Element => {
+  const [isLgScreen, setIsLgScreen] = useState(screenService.isLg());
   const [isDeleteAccountDialogOpen, setIsDeleteAccountDialogOpen] = useState(false);
   const user = useAppSelector((state) => state.user.user);
   const fullName = useAppSelector(userSelectors.userFullName);
@@ -36,6 +40,12 @@ const AccountPlanInfoTab = (): JSX.Element => {
   };
   const progressBarFillWidth = isLoadingPlans || isLoadingPlanLimit ? 0 : (planUsage / planLimit) * 100 + '%';
   const progressBarFillStyle = { width: progressBarFillWidth };
+  const totalAmountFormatted =
+    currentPlan?.price.toFixed(2) + moneyService.getCurrencySymbol(currentPlan?.currency || '');
+
+  useEffect(() => {
+    setIsLgScreen(screenService.isLg());
+  });
 
   return (
     <Fragment>
@@ -43,9 +53,9 @@ const AccountPlanInfoTab = (): JSX.Element => {
 
       <div className="pt-10">
         {/* ACCOUNT INFO */}
-        <div className="max-w-sm mb-20">
+        <div className={`${isLgScreen ? '' : 'mx-auto'} max-w-sm mb-20`}>
           {/* PERSONAL */}
-          <div className="flex mb-12">
+          <div className={`${isLgScreen ? '' : 'justify-center'} flex mb-12`}>
             <div className="w-12 h-12 bg-blue-20 text-blue-60 rounded-1/2 flex justify-center items-center mr-4">
               {nameLetters}
             </div>
@@ -57,12 +67,12 @@ const AccountPlanInfoTab = (): JSX.Element => {
 
           {/* USAGE */}
           <div className="mb-12">
-            <h4 className="mb-1">{i18n.get('drive.usage')}</h4>
+            <h4 className={`${isLgScreen ? '' : 'text-center'} mb-1`}>{i18n.get('drive.usage')}</h4>
             <div className="text-sm text-m-neutral-70">
               {isLoadingPlans || isLoadingPlanLimit ? (
                 <span className="text-center w-full">{i18n.get('general.loading.default')}</span>
               ) : (
-                <span className="w-full m-0">
+                <span className={`${isLgScreen ? '' : 'text-center'} block w-full m-0`}>
                   {bytesToString(planUsage) || '0'} of {getUserLimitString(planLimit)}
                 </span>
               )}
@@ -75,7 +85,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
 
           {/* CURRENT PLAN */}
           <div>
-            <h4 className="mb-1">{i18n.get('drive.currentPlan')}</h4>
+            <h4 className={`${isLgScreen ? '' : 'text-center'} mb-1`}>{i18n.get('drive.currentPlan')}</h4>
             {!isLoadingPlans ? (
               <div className="flex justify-between w-full">
                 <div>
@@ -84,11 +94,17 @@ const AccountPlanInfoTab = (): JSX.Element => {
                   <div className="flex w-full items-end justify-center text-neutral-500 text-xs">
                     {currentPlan?.planId ? (
                       <Fragment>
-                        <span>{currentPlan?.price}€</span>
-                        <span>/{currentPlan?.paymentInterval}</span>
+                        <span>
+                          {i18n.get('general.billing.billedEachPeriod', {
+                            price: totalAmountFormatted,
+                            period: i18n.get(`general.renewalPeriod.${currentPlan?.renewalPeriod}`).toLowerCase(),
+                          })}
+                        </span>
                       </Fragment>
                     ) : (
-                      <span className="font-bold">{!isCurrentPlanLifetime ? 'Free plan' : 'Lifetime'}</span>
+                      <span className="font-bold">
+                        {!isCurrentPlanLifetime ? 'Free plan' : i18n.get('general.billing.oneTimePayment')}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -107,7 +123,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
 
         {/* MORE INFO & DELETE ACCOUNT */}
         <div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 w-full justify-around mb-14">
+          <div className="grid grid-cols-2 gap-14 w-full justify-around mb-14">
             <AccountAdvice
               icon={Unicons.UilShieldPlus}
               title={i18n.get('views.account.tabs.info.advice1.title')}

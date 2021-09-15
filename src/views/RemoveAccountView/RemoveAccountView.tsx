@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import BaseInput from '../../components/Inputs/BaseInput';
+import BaseInput from '../../components/forms/inputs/BaseInput';
 import { IFormValues } from '../../models/interfaces';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 

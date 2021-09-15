@@ -3,7 +3,7 @@ import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
 import * as Unicons from '@iconscout/react-unicons';
 
 import { IFormValues } from '../../../../models/interfaces';
-import BaseInput from '../../../../components/Inputs/BaseInput';
+import BaseInput from '../../../../components/forms/inputs/BaseInput';
 import { useState } from 'react';
 import { changePassword } from '../../../../services/auth.service';
 import i18n from '../../../../services/i18n.service';
@@ -53,78 +53,80 @@ const AccountPasswordTab = (): JSX.Element => {
       <h2 className="mb-6 font-semibold">{i18n.get('views.account.tabs.password.advice1.title')}</h2>
       <p className="mb-11">{i18n.get('views.account.tabs.password.advice1.description')}</p>
 
-      <form className="max-w-sm grid grid-cols-1 gap-6 mb-14" onSubmit={handleSubmit(onSubmit)}>
-        <BaseInput
-          placeholder="Current password"
-          label="currentPassword"
-          type={showCurrentPassword ? 'text' : 'password'}
-          icon={
-            currentPassword ? (
-              showCurrentPassword ? (
-                <UilEyeSlash className="w-4 text-blue-40" onClick={() => setShowCurrentPassword(false)} />
+      <div className="flex justify-center">
+        <form className="w-full max-w-sm grid grid-cols-1 gap-6 mb-14" onSubmit={handleSubmit(onSubmit)}>
+          <BaseInput
+            placeholder="Current password"
+            label="currentPassword"
+            type={showCurrentPassword ? 'text' : 'password'}
+            icon={
+              currentPassword ? (
+                showCurrentPassword ? (
+                  <UilEyeSlash className="w-4 text-blue-40" onClick={() => setShowCurrentPassword(false)} />
+                ) : (
+                  <UilEye className="w-4 text-blue-40" onClick={() => setShowCurrentPassword(true)} />
+                )
               ) : (
-                <UilEye className="w-4 text-blue-40" onClick={() => setShowCurrentPassword(true)} />
+                <UilLock className="w-4 text-blue-40" />
               )
-            ) : (
-              <UilLock className="w-4 text-blue-40" />
-            )
-          }
-          register={register}
-          required={true}
-          minLength={1}
-          error={errors.currentPassword}
-        />
-        <BaseInput
-          placeholder="New password"
-          label="password"
-          type={showNewPassword ? 'text' : 'password'}
-          icon={
-            password ? (
-              showNewPassword ? (
-                <UilEyeSlash className="w-4 text-blue-40" onClick={() => setShowNewPassword(false)} />
+            }
+            register={register}
+            required={true}
+            minLength={1}
+            error={errors.currentPassword}
+          />
+          <BaseInput
+            placeholder="New password"
+            label="password"
+            type={showNewPassword ? 'text' : 'password'}
+            icon={
+              password ? (
+                showNewPassword ? (
+                  <UilEyeSlash className="w-4 text-blue-40" onClick={() => setShowNewPassword(false)} />
+                ) : (
+                  <UilEye className="w-4 text-blue-40" onClick={() => setShowNewPassword(true)} />
+                )
               ) : (
-                <UilEye className="w-4 text-blue-40" onClick={() => setShowNewPassword(true)} />
+                <UilLock className="w-4 text-blue-40" />
               )
-            ) : (
-              <UilLock className="w-4 text-blue-40" />
-            )
-          }
-          register={register}
-          required={true}
-          minLength={1}
-          error={errors.password}
-        />
-        <BaseInput
-          placeholder="Confirm new password"
-          label="confirmPassword"
-          type={showConfirmPassword ? 'text' : 'password'}
-          icon={
-            confirmPassword ? (
-              showConfirmPassword ? (
-                <UilEyeSlash className="w-4 text-blue-40" onClick={() => setShowConfirmPassword(false)} />
+            }
+            register={register}
+            required={true}
+            minLength={1}
+            error={errors.password}
+          />
+          <BaseInput
+            placeholder="Confirm new password"
+            label="confirmPassword"
+            type={showConfirmPassword ? 'text' : 'password'}
+            icon={
+              confirmPassword ? (
+                showConfirmPassword ? (
+                  <UilEyeSlash className="w-4 text-blue-40" onClick={() => setShowConfirmPassword(false)} />
+                ) : (
+                  <UilEye className="w-4 text-blue-40" onClick={() => setShowConfirmPassword(true)} />
+                )
               ) : (
-                <UilEye className="w-4 text-blue-40" onClick={() => setShowConfirmPassword(true)} />
+                <UilLock className="w-4 text-blue-40" />
               )
-            ) : (
-              <UilLock className="w-4 text-blue-40" />
-            )
-          }
-          register={register}
-          required={true}
-          minLength={{ value: 1, message: 'Password must not be empty' }}
-          error={errors.confirmPassword}
-        />
+            }
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Password must not be empty' }}
+            error={errors.confirmPassword}
+          />
 
-        {error && (
-          <div className="flex mt-1 mb-4">
-            <span className="text-red-60 text-sm w-56 font-medium">{error}</span>
-          </div>
-        )}
+          {error && (
+            <div className="flex mt-1 mb-4">
+              <span className="text-red-60 text-sm w-56 font-medium">{error}</span>
+            </div>
+          )}
 
-        <BaseButton className="primary" disabled={isLoading || !isValid}>
-          {isLoading || !isValid ? (isValid ? 'Changing password...' : 'Change password') : 'Change password'}
-        </BaseButton>
-      </form>
+          <BaseButton className="primary" disabled={isLoading || !isValid}>
+            {isLoading || !isValid ? (isValid ? 'Changing password...' : 'Change password') : 'Change password'}
+          </BaseButton>
+        </form>
+      </div>
 
       <span className="mb-9">{i18n.get('views.account.tabs.password.advice2.title')}</span>
 

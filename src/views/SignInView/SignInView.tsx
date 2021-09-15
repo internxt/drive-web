@@ -6,7 +6,7 @@ import { auth } from '@internxt/lib';
 import { initializeUserThunk, setUser } from '../../store/slices/user';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
-import BaseInput from '../../components/Inputs/BaseInput';
+import BaseInput from '../../components/forms/inputs/BaseInput';
 import SideInfo from '../Authentication/SideInfo';
 import AuthButton from '../../components/Buttons/AuthButton';
 import { twoFactorRegexPattern } from '../../services/validation.service';
