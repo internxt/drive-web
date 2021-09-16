@@ -16,7 +16,8 @@ import views from './views';
 import { AppDispatch, RootState } from './store';
 import errorService from './services/error.service';
 import navigationService from './services/navigation.service';
-import { AppView } from './models/enums';
+import envService from './services/env.service';
+import i18n from './services/i18n.service';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -80,6 +81,7 @@ class App extends Component<AppProps> {
   }
 
   render(): JSX.Element {
+    const isDev = !envService.isProduction();
     const { isInitialized, isAuthenticated } = this.props;
     const pathName = window.location.pathname.split('/')[1];
     let template: JSX.Element = <div></div>;
@@ -94,6 +96,12 @@ class App extends Component<AppProps> {
       template = (
         <DndProvider backend={HTML5Backend}>
           <Router history={navigationService.history}>
+            {isDev && (
+              <span className="absolute text-supporting-2 font-bold text-white text-center bg-red-50 w-28 px-3.5 py-1 top-5 -right-7 tracking-wider opacity-80 transform rotate-45 z-50 pointer-events-none drop-shadow-2xl">
+                {i18n.get('general.stage.development')}
+              </span>
+            )}
+
             <Switch>
               <Redirect from="//*" to="/*" />
               <Route exact path="/">

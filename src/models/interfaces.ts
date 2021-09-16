@@ -1,5 +1,5 @@
 import { store as storeInstance } from '../store';
-import { AppViewLayout, StripeMemberTiers, RenewalPeriod, TimeInterval } from './enums';
+import { AppViewLayout, StripeMemberTiers, RenewalPeriod, ProductPriceType, LifetimeTier } from './enums';
 
 export interface AppConfig {
   plan: AppPlanConfig;
@@ -129,33 +129,41 @@ export interface IFormValues {
   token: string;
 }
 
-export type IStripeProduct = {
-  id: string;
-  metadata: StripeProductMetadata;
-  name: string;
-  test?: boolean;
-};
-
-export type IStripeCustomer = {
-  product: string;
-  payment_frequency: RenewalPeriod;
-};
-
-export type StripeProductMetadata = {
-  is_drive: string;
+export interface ProductMetadata {
+  is_drive: boolean;
+  is_teams: boolean;
+  show: boolean;
+  lifetime_tier: LifetimeTier;
   member_tier: keyof typeof StripeMemberTiers;
-  price_eur: string;
   simple_name: keyof typeof RenewalPeriod;
   size_bytes: string;
-};
+}
 
-export type IStripePlan = {
+export interface ProductPriceData {
   id: string;
-  interval: keyof typeof TimeInterval;
+  name: string | null;
+  amount: number;
+  monthlyAmount: number;
+  type: ProductPriceType;
+  currency: string;
+  recurring: ProductPriceRecurringData | null;
+}
+
+export interface ProductPriceRecurringData {
+  aggregate_usage: string | null;
+  interval: string;
   interval_count: number;
-  name: keyof typeof RenewalPeriod;
-  price: number;
-};
+  trial_period_days: number;
+  usage_type: string;
+}
+
+export interface ProductData {
+  id: string;
+  name: string;
+  metadata: ProductMetadata;
+  price: ProductPriceData;
+  renewalPeriod: RenewalPeriod;
+}
 
 export type StoragePlan = {
   planId: string;
@@ -163,9 +171,12 @@ export type StoragePlan = {
   name: string;
   simpleName: string;
   paymentInterval: RenewalPeriod;
-  price: string;
+  price: number;
+  monthlyPrice: number;
+  currency: string;
   isTeam: boolean;
   isLifetime: boolean;
+  renewalPeriod: RenewalPeriod;
   storageLimit: number;
 };
 

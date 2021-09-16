@@ -1,20 +1,11 @@
-import { TimeInterval } from '../models/enums';
-
-function getMonthCount(intervalCount: number, timeInterval: TimeInterval) {
-  const byTimeIntervalCalculator: { [key in TimeInterval]: () => number } = {
-    [TimeInterval.Month]: () => intervalCount,
-    [TimeInterval.Year]: () => intervalCount * 12,
-  };
-
-  return byTimeIntervalCalculator[timeInterval]();
+enum CurrencySymbol {
+  EUR = '€',
+  USD = '$',
 }
 
 const moneyService = {
-  getMonthlyPrice(totalPrice: number, intervalCount: number, timeInterval: TimeInterval): number {
-    const monthCount = getMonthCount(intervalCount, timeInterval);
-    const monthlyPrice = totalPrice / monthCount;
-
-    return monthlyPrice;
+  getCurrencySymbol(currency: string): string {
+    return currency ? CurrencySymbol[currency.toUpperCase()] : CurrencySymbol.EUR;
   },
 };
 

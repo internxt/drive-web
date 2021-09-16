@@ -23,7 +23,8 @@
     "downlevelIteration": true,
   },
   "types": [
-    "filesystem"
+    "filesystem",
+    "@types/stripe-v3"
   ],
   "include": [
     "src"

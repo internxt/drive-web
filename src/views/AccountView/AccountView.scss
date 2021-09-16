@@ -1,19 +1,38 @@
 @layer components {
   .account-view {
-    .nav-item {
-      @apply flex h-10 items-start justify-center text-sm text-m-neutral-100;
+    @apply block lg:flex h-full rounded-md bg-white px-8 pt-6 pb-16;
+
+    .tabs-container {
+      width: 25vw;
+      max-width: 300px;
+    }
+
+    .tab-item {
+      @apply rounded-lg cursor-pointer text-sm text-neutral-500 ;
+
+      &.desktop {
+        @apply p-4;
+      }
+
+      &.tablet {
+        @apply w-28 py-3 px-4 border border-l-neutral-30;
+      }
+
+      &:hover {
+        @apply bg-l-neutral-10;
+      }
 
       &.active {
-        @apply border-b border-blue-60;
+        @apply bg-l-neutral-20;
       }
     }
 
-    a.nav-item.nav-link:nth-child(6) {
-      @apply w-full;
+    .tab-item.desktop + .tab-item.desktop {
+      @apply mt-6;
     }
 
-    .nav-link {
-      @apply px-6 border-b border-l-neutral-50;
+    .tab-item.tablet + .tab-item.tablet {
+      @apply ml-4;
     }
 
     .tab-content {
@@ -22,18 +41,10 @@
 
     .tab-pane {
       @apply min-h-full h-1 hidden;
+
+      &.active {
+        @apply flex px-8 justify-center;
+      }
     }
-
-    .tab-pane.show {
-      @apply flex px-8 justify-center;
-    }
-  }
-
-  .account_config_title {
-    @apply font-semibold text-base text-neutral-900;
-  }
-
-  .account_config_description {
-    @apply text-center font-normal text-base text-neutral-700 mt-2;
   }
 }

@@ -54,10 +54,10 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
 
       <div className="flex justify-center items-center bg-l-neutral-20 py-6 mt-6">
         <div className="flex w-64">
-          <BaseButton onClick={() => onClose()} classes="cancel w-full mr-2">
+          <BaseButton onClick={() => onClose()} className="cancel w-full mr-2">
             Cancel
           </BaseButton>
-          <BaseButton classes="primary w-11/12 ml-2" disabled={isLoading} onClick={() => onAccept()}>
+          <BaseButton className="primary w-11/12 ml-2" disabled={isLoading} onClick={() => onAccept()}>
             {isLoading ? 'Deleting...' : 'Delete'}
           </BaseButton>
         </div>

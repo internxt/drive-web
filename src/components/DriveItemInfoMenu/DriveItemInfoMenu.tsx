@@ -51,30 +51,33 @@ class DriveItemInfoMenu extends React.Component<DriveItemInfoMenuProps> {
       const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
       template = (
-        <div className="w-activity-1280 min-w-activity-1280 bg-white ml-24px rounded-4px p-24px">
+        <div className="w-activity-1280 min-w-activity-1280 bg-white ml-6 rounded-4px pl-6 border-l border-l-neutral-30 pt-6">
           {/* HEADER */}
-          <div className="flex items-center mb-6">
+          <div className="flex items-center mb-4">
             <div className="flex items-center min-w-9 w-9 h-9">
               <ItemIconComponent className="h-full" />
             </div>
-            <span className="mx-2 overflow-hidden whitespace-nowrap overflow-ellipsis block font-semibold text-neutral-700 text-sm w-full max-w-full">
+            <span className="mx-3 overflow-hidden whitespace-nowrap overflow-ellipsis block text-neutral-700 text-sm flex-grow">
               {this.itemFullName}
             </span>
-            <div className="w-6 cursor-pointer" onClick={this.onCloseButtonClicked}>
-              <Unicons.UilTimes className="text-blue-40" />
+            <div
+              className="w-8 h-8 rounded-1/2 bg-l-neutral-20 cursor-pointer justify-center items-center flex"
+              onClick={this.onCloseButtonClicked}
+            >
+              <Unicons.UilTimes className="text-blue-60" />
             </div>
           </div>
 
           {/* TABS */}
-          <div className="border-b border-l-neutral-50 text-center text-sm mb-4">
+          <div className="border-b border-l-neutral-50 text-center mb-4">
             <div className="file-activity-tabs-inner-container">
-              <div className="border-b border-blue-60 text-blue-60 w-1/2">Info</div>
+              <div className="border-b border-blue-60 text-neutral-700 w-1/2 py-3">Info</div>
             </div>
           </div>
 
           {/* INFO TAB CONTENT */}
           <div className="relative border-l border-dashed border-l-neutral-50 pl-4">
-            <div className="w-3 absolute bg-white -left-1.5">
+            <div className="w-4 absolute bg-white -left-2 text-neutral-500">
               <Unicons.UilFolderNetwork className="w-full" />
             </div>
             <div className="file-activity-info-item">

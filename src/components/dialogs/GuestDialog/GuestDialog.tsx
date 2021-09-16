@@ -2,9 +2,9 @@ import { connect } from 'react-redux';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { IFormValues, TeamsSettings } from '../../../models/interfaces';
+import { IFormValues } from '../../../models/interfaces';
 import { RootState } from '../../../store';
-import BaseInput from '../../Inputs/BaseInput';
+import BaseInput from '../../forms/inputs/BaseInput';
 import AuthButton from '../../Buttons/AuthButton';
 import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';

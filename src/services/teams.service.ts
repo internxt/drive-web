@@ -3,6 +3,8 @@ import localStorageService from './local-storage.service';
 import { decryptPGP, encryptPGPInvitations } from '../lib/utilspgp';
 import { InfoInvitationsMembers, TeamsSettings } from '../models/interfaces';
 import envService from './env.service';
+import httpService from './http.service';
+import { Workspace } from '../models/enums';
 
 export async function getTeamsInfo(): Promise<{ userTeam: TeamsSettings; tokenTeams: string }> {
   return fetch(`${process.env.REACT_APP_API_URL}/api/teams/info`, {
@@ -130,43 +132,25 @@ const fetchInvitation = (email: string, bridgePass: string, mnemonicTeam: string
 };
 
 function getTeamInfoStripeSuccess() {
-  return fetch('/api/teams/team/info', {
-    method: 'get',
-    headers: getHeaders(true, false, false),
-  })
-    .then((res) => {
-      if (res.status !== 200) {
-        throw Error();
-      }
-      return res.json();
-    })
-    .catch(() => {
-      return {};
-    });
+  return httpService.get<TeamsSettings>('/api/teams/team/info', { authWorkspace: Workspace.Individuals });
 }
 
 export async function checkSessionStripe(
   sessionId: string,
 ): Promise<void | { userTeams: TeamsSettings; tokenTeams: string }> {
   const userTeam = await getTeamInfoStripeSuccess();
-
   const mnemonic = await decryptPGP(Buffer.from(userTeam.bridge_mnemonic, 'base64').toString());
 
-  return fetch('/api/teams/checkout/session', {
-    method: 'post',
-    headers: getHeaders(true, false),
-    body: JSON.stringify({
-      checkoutSessionId: sessionId,
-      test: !envService.isProduction(),
-      mnemonic: mnemonic.data,
-    }),
-  })
-    .then((res) => {
-      if (res.status !== 200) {
-        throw Error(res.statusText);
-      }
-      return res.json();
-    })
+  return httpService
+    .post<{ checkoutSessionId: string; test: boolean; mnemonic: string }, void>(
+      '/api/teams/checkout/session',
+      {
+        checkoutSessionId: sessionId,
+        test: !envService.isProduction(),
+        mnemonic: mnemonic.data,
+      },
+      { authWorkspace: Workspace.Individuals },
+    )
     .then(() => storeTeamsInfo());
 }
 

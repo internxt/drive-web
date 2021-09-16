@@ -11,17 +11,17 @@ const axiosPlugin: AppPlugin = {
 
     axios.interceptors.request.use((requestConfig) => {
       const tokenByWorkspace: { [key in Workspace]: string } = {
-        [Workspace.Personal]: localStorageService.get('xToken') || '',
+        [Workspace.Individuals]: localStorageService.get('xToken') || '',
         [Workspace.Business]: localStorageService.get('xTokenTeam') || '',
       };
       const mnemonicByWorkspace: { [key in Workspace]: string } = {
-        [Workspace.Personal]: localStorageService.get('xMnemonic') || '',
+        [Workspace.Individuals]: localStorageService.get('xMnemonic') || '',
         [Workspace.Business]: localStorageService.getTeams()?.bridge_mnemonic || '',
       };
       const workspace =
         requestConfig.authWorkspace ||
         (localStorageService.get(LocalStorageItem.Workspace) as Workspace) ||
-        Workspace.Personal;
+        Workspace.Individuals;
 
       requestConfig.headers = {
         'content-type': 'application/json; charset=utf-8',

@@ -72,7 +72,7 @@ export enum FileViewMode {
   Grid = 'grid',
 }
 export enum Workspace {
-  Personal = 'personal',
+  Individuals = 'personal',
   Business = 'business',
 }
 
@@ -97,9 +97,9 @@ export enum TimeInterval {
 }
 
 export enum RenewalPeriod {
-  Monthly = 'Monthly',
-  Semiannually = 'Semiannually',
-  Annually = 'Annually',
+  Monthly = 'monthly',
+  Annually = 'annually',
+  Lifetime = 'lifetime',
 }
 
 export enum LocalStorageItem {
@@ -109,4 +109,28 @@ export enum LocalStorageItem {
   UserToken = 'xToken',
   Team = 'xTeam',
   TeamToken = 'xTokenTeam',
+}
+
+export enum TwoFactorAuthStep {
+  Download = 'download',
+  QR = 'qr',
+  BackupKey = 'backup-key',
+  Enable = 'enable',
+}
+
+export enum ProductPriceType {
+  Recurring = 'recurring',
+  OneTime = 'one_time',
+}
+
+export enum StripeSessionMode {
+  Payment = 'payment',
+  Setup = 'setup',
+  Subscription = 'subscription',
+}
+
+export enum LifetimeTier {
+  Lifetime = 'lifetime',
+  Exclusive = 'exclusive-lifetime',
+  Infinite = 'infinite',
 }

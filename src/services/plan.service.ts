@@ -4,14 +4,16 @@ import httpService from './http.service';
 
 const fetchIndividualPlan = async (): Promise<StoragePlan | null> => {
   const response = await httpService.get<StoragePlan | null>('/api/plan/individual', {
-    authWorkspace: Workspace.Personal,
+    authWorkspace: Workspace.Individuals,
   });
 
   return response;
 };
 
 const fetchTeamPlan = async (): Promise<StoragePlan | null> => {
-  const response = await httpService.get<StoragePlan | null>('/api/plan/team', { authWorkspace: Workspace.Personal });
+  const response = await httpService.get<StoragePlan | null>('/api/plan/team', {
+    authWorkspace: Workspace.Individuals,
+  });
 
   return response;
 };

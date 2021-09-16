@@ -13,8 +13,8 @@ import DriveItemInfoMenu from '../DriveItemInfoMenu/DriveItemInfoMenu';
 import { FileViewMode } from '../../models/enums';
 import FilesList from './FilesList/FilesList';
 import FilesGrid from './FilesGrid/FilesGrid';
-import folderEmptyImage from '../../assets/images/folder-empty.png';
-import noResultsSearchImage from '../../assets/images/no-results-search.png';
+import folderEmptyImage from '../../assets/images/folder-empty.svg';
+import noResultsSearchImage from '../../assets/images/no-results-search.svg';
 import { uiActions } from '../../store/slices/ui';
 
 import './FileExplorer.scss';
@@ -31,6 +31,7 @@ import storageThunks from '../../store/slices/storage/storage.thunks';
 import { planSelectors, planThunks } from '../../store/slices/plan';
 
 import './FileExplorer.scss';
+import BaseButton from '../Buttons/BaseButton';
 
 interface FileExplorerProps {
   title: JSX.Element | string;
@@ -170,7 +171,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     } = this.props;
     const { fileInputRef } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: <Unicons.UilGrid />,
+      [FileViewMode.List]: <Unicons.UilTable />,
       [FileViewMode.Grid]: <Unicons.UilListUiAlt />,
     };
     const viewModes = {
@@ -180,44 +181,44 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     const ViewModeComponent = viewModes[viewMode];
 
     return connectDropTarget(
-      <div className="flex flex-col flex-grow h-1" data-test="drag-and-drop-area">
+      <div className="flex flex-col flex-grow h-1 px-8" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
         <div className="flex flex-grow h-full max-w-full w-full">
-          <div className="flex-grow flex flex-col w-1">
+          <div className="flex-grow flex flex-col w-1 pt-6">
             <div className="flex justify-between pb-4">
-              <div className="text-lg">{title}</div>
+              <div className="flex items-center px-3 text-lg">{title}</div>
 
               <div className="flex">
                 {this.hasAnyItemSelected ? (
-                  <button className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
+                  <BaseButton className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
                     <Unicons.UilCloudDownload className="h-5 mr-1.5" />
                     <span>Download</span>
-                  </button>
+                  </BaseButton>
                 ) : (
-                  <button className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
+                  <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
                     <Unicons.UilCloudUpload className="h-5 mr-1.5" />
                     <span>Upload</span>
-                  </button>
+                  </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
-                  <button className="w-8 secondary square mr-2" onClick={this.onCreateFolderButtonClicked}>
+                  <BaseButton className="w-8 secondary square mr-2" onClick={this.onCreateFolderButtonClicked}>
                     <Unicons.UilFolderPlus />
-                  </button>
+                  </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
-                  <button className="w-8 secondary square mr-2" onClick={this.onBulkDeleteButtonClicked}>
+                  <BaseButton className="w-8 secondary square mr-2" onClick={this.onBulkDeleteButtonClicked}>
                     <Unicons.UilTrashAlt />
-                  </button>
+                  </BaseButton>
                 ) : null}
-                <button className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
+                <BaseButton className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
                   {viewModesIcons[viewMode]}
-                </button>
+                </BaseButton>
               </div>
             </div>
 
-            <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden">
+            <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden mb-5">
               <div className="flex flex-col justify-between flex-grow overflow-hidden">
                 <ViewModeComponent items={items} isLoading={isLoading} />
               </div>

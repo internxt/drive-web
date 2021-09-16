@@ -8,7 +8,7 @@ import { IFormValues, UserSettings } from '../../models/interfaces';
 import localStorageService from '../../services/local-storage.service';
 import analyticsService, { signupDevicesource, signupCampaignSource } from '../../services/analytics.service';
 import { readReferalCookie } from '../../services/auth.service';
-import BaseInput from '../../components/Inputs/BaseInput';
+import BaseInput from '../../components/forms/inputs/BaseInput';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
 import AuthButton from '../../components/Buttons/AuthButton';
 import { useAppDispatch } from '../../store/hooks';
@@ -26,6 +26,7 @@ import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPasswor
 import errorService from '../../services/error.service';
 import { AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
+import { productsThunks } from '../../store/slices/products';
 
 interface SignUpProps {
   location: {
@@ -229,6 +230,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           dispatch(setUser({ ...user }));
           localStorageService.set('xMnemonic', user.mnemonic);
 
+          dispatch(productsThunks.initializeThunk());
           dispatch(planThunks.initializeThunk());
           dispatch(userThunks.initializeUserThunk()).then(() => {
             navigationService.push(AppView.Drive);
@@ -302,6 +304,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           <span className="text-base font-semibold text-neutral-900 mt-1.5 mb-6">Create an Internxt account</span>
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Name"
             label="name"
             type="text"
@@ -313,6 +316,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Lastname"
             label="lastname"
             type="text"
@@ -324,6 +328,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Email"
             label="email"
             type="email"
@@ -337,6 +342,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Password"
             label="password"
             type={showPassword ? 'text' : 'password'}
@@ -362,6 +368,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Confirm new password"
             label="confirmPassword"
             type={showConfirmPassword ? 'text' : 'password'}

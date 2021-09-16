@@ -100,7 +100,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
 
     if (!this.state.accessedFile) {
       body = (
-        <BaseButton onClick={this.loadInfo} classes="bg-blue-60 text-white font-bold p-5">
+        <BaseButton onClick={this.loadInfo} className="primary font-bold p-5">
           {i18n.get('action.accessFile')}
         </BaseButton>
       );
@@ -131,7 +131,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
         );
 
       const DownloadButton = (
-        <BaseButton onClick={this.download} classes="bg-blue-60 text-white font-bold p-5">
+        <BaseButton onClick={this.download} className="primary font-bold p-5">
           {i18n.get('action.download')}
         </BaseButton>
       );

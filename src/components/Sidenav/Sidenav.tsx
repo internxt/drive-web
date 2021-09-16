@@ -5,16 +5,16 @@ import { connect } from 'react-redux';
 import { RootState } from '../../store';
 import { UserSettings } from '../../models/interfaces';
 import smallLogo from '../../assets/icons/small-logo.svg';
-import { ReactComponent as ReactLogo } from '../../assets/icons/big-logo.svg';
+import { ReactComponent as InternxtLogo } from '../../assets/icons/big-logo.svg';
 import SidenavItem from './SidenavItem/SidenavItem';
 import desktopService from '../../services/desktop.service';
 
 import './Sidenav.scss';
-import PlanUsage from '../PlanUsage';
-import { Link } from 'react-router-dom';
+import PlanUsage from '../PlanUsage/PlanUsage';
 import { planSelectors } from '../../store/slices/plan';
 import { AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
+import screenService from '../../services/screen.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -26,10 +26,31 @@ interface SidenavProps {
   isLoadingPlanUsage: boolean;
 }
 
-class Sidenav extends React.Component<SidenavProps> {
+interface SidenavState {
+  isLgScreen: boolean;
+}
+class Sidenav extends React.Component<SidenavProps, SidenavState> {
   constructor(props: SidenavProps) {
     super(props);
+
+    this.state = {
+      isLgScreen: screenService.isLg(),
+    };
   }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.onWindowResized);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onWindowResized);
+  }
+
+  onWindowResized = () => {
+    this.setState({
+      isLgScreen: screenService.isLg(),
+    });
+  };
 
   onDownloadAppButtonClicked = (): void => {
     window.open(desktopService.getDownloadAppUrl(), '_blank');
@@ -42,64 +63,66 @@ class Sidenav extends React.Component<SidenavProps> {
   render(): JSX.Element {
     const { collapsed, onCollapseButtonClicked, planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } =
       this.props;
+    const isCollapsed = collapsed || !screenService.isLg();
 
     return (
-      <div className={`${collapsed ? 'collapsed' : ''} side-nav`}>
-        {/* LOGO & ITEMS */}
-        <div>
-          <button
-            className="p-2 collapse-button cursor-pointer flex items-center z-40 absolute transform"
-            onClick={onCollapseButtonClicked}
-          >
-            {collapsed ? <Unicons.UilAngleDoubleRight /> : <Unicons.UilAngleDoubleLeft />}
-          </button>
+      <div className={`${isCollapsed ? 'collapsed' : ''} side-nav`}>
+        <button
+          className="hidden lg:flex items-center p-2 collapse-button cursor-pointer z-40 absolute transform"
+          onClick={onCollapseButtonClicked}
+        >
+          {isCollapsed ? <Unicons.UilAngleDoubleRight /> : <Unicons.UilAngleDoubleLeft />}
+        </button>
 
+        <div className="pl-6 py-1.5 cursor-pointer border-b border-l-neutral-30" onClick={this.onLogoClicked}>
+          {isCollapsed ? (
+            <img className="opacity-0 w-6 h-9" src={smallLogo} alt="" />
+          ) : (
+            <div
+              className="w-28 h-auto flex items-center"
+              onClick={() => {
+                navigationService.history.push('/');
+              }}
+            >
+              <InternxtLogo className="h-9 w-full" />
+            </div>
+          )}
+        </div>
+
+        <div
+          className={`${
+            isCollapsed ? '' : 'px-6'
+          } pt-7 border-r border-l-neutral-30 h-full flex flex-col justify-between`}
+        >
           <div>
-            <div className="py-3 mb-1.5 cursor-pointer" onClick={this.onLogoClicked}>
-              {collapsed ? (
-                <img className="opacity-0 w-6 sidenav-logo" src={smallLogo} alt="" />
-              ) : (
-                <div
-                  className="w-28 h-auto flex items-center"
-                  onClick={() => {
-                    navigationService.history.push('/');
-                  }}
-                >
-                  <ReactLogo className="sidenav-logo w-full" />
-                </div>
-              )}
-            </div>
-
-            <div className={`${!collapsed ? 'mb-10' : ''}`}>
-              <SidenavItem
-                label="Drive"
-                to="/app"
-                icon={<Unicons.UilFolderMedical className="w-5" />}
-                isOpen={!collapsed}
-              />
-              <SidenavItem
-                label="Recents"
-                to="/app/recents"
-                icon={<Unicons.UilClockEight className="w-5" />}
-                isOpen={!collapsed}
-              />
-              <SidenavItem
-                label="Download App"
-                icon={<Unicons.UilDesktop className="w-5" />}
-                isOpen={!collapsed}
-                onClick={this.onDownloadAppButtonClicked}
-              />
-            </div>
+            <SidenavItem
+              label="Drive"
+              to="/app"
+              icon={<Unicons.UilFolderMedical className="w-5" />}
+              isOpen={!isCollapsed}
+            />
+            <SidenavItem
+              label="Recents"
+              to="/app/recents"
+              icon={<Unicons.UilClockEight className="w-5" />}
+              isOpen={!isCollapsed}
+            />
+            <SidenavItem
+              label="Download App"
+              icon={<Unicons.UilDesktop className="w-5" />}
+              isOpen={!isCollapsed}
+              onClick={this.onDownloadAppButtonClicked}
+            />
           </div>
-          {!collapsed && (
-            <Link to="/account">
+
+          {!isCollapsed && (
+            <div className="mb-12">
               <PlanUsage
-                className="absolute bottom-0 left-0 px-6 pb-4"
                 limit={planLimit}
                 usage={planUsage}
                 isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
               ></PlanUsage>
-            </Link>
+            </div>
           )}
         </div>
       </div>

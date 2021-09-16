@@ -6,7 +6,7 @@ import { AppDispatch, RootState } from '../../../store';
 import { connect } from 'react-redux';
 import { storageActions } from '../../../store/slices/storage';
 import { DriveItemData } from '../../../models/interfaces';
-import DriveListItemSkeleton from '../../skinSkeleton/DriveListItemSkeleton';
+import DriveListItemSkeleton from '../../loaders/DriveListItemSkeleton';
 
 interface FilesListProps {
   isLoading: boolean;
@@ -53,8 +53,8 @@ class FilesList extends React.Component<FilesListProps> {
 
     return (
       <div className="flex flex-col flex-grow bg-white h-full">
-        <div className="files-list font-semibold flex border-b border-l-neutral-30 bg-white text-neutral-500 py-2 text-sm">
-          <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
+        <div className="files-list font-semibold flex border-b border-l-neutral-30 bg-white text-neutral-500 py-3 text-sm">
+          <div className="w-0.5/12 pl-3 flex items-center justify-start box-content">
             <input
               disabled={!this.hasItems}
               readOnly
@@ -71,7 +71,7 @@ class FilesList extends React.Component<FilesListProps> {
           <div className="w-2/12 flex items-center">Size</div>
           <div className="w-1/12 flex items-center rounded-tr-4px">Actions</div>
         </div>
-        <div className="h-full overflow-y-scroll">{isLoading ? this.loadingSkeleton : this.itemsList}</div>
+        <div className="h-full overflow-y-auto">{isLoading ? this.loadingSkeleton : this.itemsList}</div>
       </div>
     );
   }

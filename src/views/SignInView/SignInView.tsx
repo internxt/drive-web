@@ -6,7 +6,7 @@ import { auth } from '@internxt/lib';
 import { initializeUserThunk, setUser } from '../../store/slices/user';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
-import BaseInput from '../../components/Inputs/BaseInput';
+import BaseInput from '../../components/forms/inputs/BaseInput';
 import SideInfo from '../Authentication/SideInfo';
 import AuthButton from '../../components/Buttons/AuthButton';
 import { twoFactorRegexPattern } from '../../services/validation.service';
@@ -131,6 +131,7 @@ export default function SignInView(): JSX.Element {
           <span className="text-sm text-neutral-500 mt-1.5 mb-6" />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Email"
             label="email"
             type="email"
@@ -143,6 +144,7 @@ export default function SignInView(): JSX.Element {
           />
 
           <BaseInput
+            className="mb-2.5"
             placeholder="Password"
             label={'password'}
             type={showPassword ? 'text' : 'password'}

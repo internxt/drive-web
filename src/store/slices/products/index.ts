@@ -1,76 +1,39 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../..';
-import { IStripePlan, IStripeProduct } from '../../../models/interfaces';
-import {
-  loadAvailablePlans,
-  loadAvailableProducts,
-  loadAvailableTeamsPlans,
-  loadAvailableTeamsProducts,
-} from '../../../services/products.service';
+import { RenewalPeriod } from '../../../models/enums';
+import { ProductData } from '../../../models/interfaces';
+import { fetchProducts } from '../../../services/products.service';
 
 interface ProductsState {
-  isLoadingIndividualProducts: boolean;
-  isLoadingTeamProducts: boolean;
-  individualProducts: IStripeProduct[];
-  individualProductsPlans: IStripePlan[][];
-  teamProducts: IStripeProduct[];
-  teamProductsPlans: IStripePlan[][];
+  isLoading: boolean;
+  allProducts: ProductData[];
 }
 
 const initialState: ProductsState = {
-  isLoadingIndividualProducts: false,
-  isLoadingTeamProducts: false,
-  individualProducts: [],
-  individualProductsPlans: [],
-  teamProducts: [],
-  teamProductsPlans: [],
+  isLoading: false,
+  allProducts: [],
 };
 
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
   'products/initialize',
   async (payload: void, { dispatch, getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
-    const promises: Promise<void>[] = [];
 
     if (isAuthenticated) {
-      promises.push(dispatch(fetchIndividualProductsThunk()).then());
-      promises.push(dispatch(fetchTeamProductsThunk()).then());
+      await dispatch(fetchProductsThunk());
     }
-
-    await Promise.all(promises);
   },
 );
 
-export const fetchIndividualProductsThunk = createAsyncThunk<
-  { products: IStripeProduct[]; plans: IStripePlan[][] },
-  void,
-  { state: RootState }
->('products/fetchIndividualProductsThunk', async () => {
-  const products = await loadAvailableProducts();
-  const plans: IStripePlan[][] = [];
+export const fetchProductsThunk = createAsyncThunk<{ products: ProductData[] }, void, { state: RootState }>(
+  'products/fetchProducts',
+  async () => {
+    const products = await fetchProducts();
 
-  for (const product of products) {
-    plans.push(await loadAvailablePlans(product));
-  }
-
-  return { products, plans };
-});
-
-export const fetchTeamProductsThunk = createAsyncThunk<
-  { products: IStripeProduct[]; plans: IStripePlan[][] },
-  void,
-  { state: RootState }
->('products/fetchTeamProductsThunk', async () => {
-  const products = await loadAvailableTeamsProducts();
-  const plans: IStripePlan[][] = [];
-
-  for (const product of products) {
-    plans.push(await loadAvailableTeamsPlans(product));
-  }
-
-  return { products, plans };
-});
+    return { products };
+  },
+);
 
 export const productsSlice = createSlice({
   name: 'products',
@@ -83,29 +46,15 @@ export const productsSlice = createSlice({
       .addCase(initializeThunk.rejected, () => undefined);
 
     builder
-      .addCase(fetchIndividualProductsThunk.pending, (state) => {
-        state.isLoadingIndividualProducts = true;
+      .addCase(fetchProductsThunk.pending, (state) => {
+        state.isLoading = true;
       })
-      .addCase(fetchIndividualProductsThunk.fulfilled, (state, action) => {
-        state.isLoadingIndividualProducts = false;
-        state.individualProducts = action.payload.products;
-        state.individualProductsPlans = action.payload.plans;
+      .addCase(fetchProductsThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.allProducts = action.payload.products;
       })
-      .addCase(fetchIndividualProductsThunk.rejected, (state) => {
-        state.isLoadingIndividualProducts = false;
-      });
-
-    builder
-      .addCase(fetchTeamProductsThunk.pending, (state) => {
-        state.isLoadingTeamProducts = true;
-      })
-      .addCase(fetchTeamProductsThunk.fulfilled, (state, action) => {
-        state.isLoadingTeamProducts = false;
-        state.teamProducts = action.payload.products;
-        state.teamProductsPlans = action.payload.plans;
-      })
-      .addCase(fetchTeamProductsThunk.rejected, (state) => {
-        state.isLoadingTeamProducts = false;
+      .addCase(fetchProductsThunk.rejected, (state) => {
+        state.isLoading = false;
       });
   },
 });
@@ -114,10 +63,22 @@ export const productsActions = productsSlice.actions;
 
 export const productsThunks = {
   initializeThunk,
-  fetchIndividualProductsThunk,
-  fetchTeamProductsThunk,
+  fetchProductsThunk,
 };
 
-export const productsSelectors = {};
+export const productsSelectors = {
+  individualProducts(state: RootState): (renewalPeriod: RenewalPeriod) => ProductData[] {
+    return (renewalPeriod) =>
+      state.products.allProducts.filter(
+        (product) => product.metadata.is_drive && product.renewalPeriod === renewalPeriod,
+      );
+  },
+  teamProducts(state: RootState): (renewalPeriod: RenewalPeriod) => ProductData[] {
+    return (renewalPeriod) =>
+      state.products.allProducts.filter(
+        (product) => product.metadata.is_teams && product.renewalPeriod === renewalPeriod,
+      );
+  },
+};
 
 export default productsSlice.reducer;

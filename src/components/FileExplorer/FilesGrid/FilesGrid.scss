@@ -2,6 +2,6 @@
   .files-grid {
     max-width: fit-content;
 
-    @apply overflow-y-scroll min-w-full grid grid-cols-2 xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 auto-rows-min gap-2 mb-2;
+    @apply overflow-x-hidden overflow-y-auto min-w-full grid grid-cols-2 xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 auto-rows-min gap-2 mb-2;
   }
 }

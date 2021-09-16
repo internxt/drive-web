@@ -6,7 +6,7 @@ import { IFormValues } from '../../../../models/interfaces';
 import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../../services/referral.service';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import AuthButton from '../../../../components/Buttons/AuthButton';
-import BaseInput from '../../../../components/Inputs/BaseInput';
+import BaseInput from '../../../../components/forms/inputs/BaseInput';
 import BaseButton from '../../../../components/Buttons/BaseButton';
 import { UilEnvelope, UilPaperclip } from '@iconscout/react-unicons';
 import i18n from '../../../../services/i18n.service';
@@ -92,7 +92,7 @@ const AccountReferralsTab = (): JSX.Element => {
       <div className="flex w-96 mt-16 flex-col items-center justify-center text-center">
         <span className="account_config_title">Earn money by referring friends</span>
 
-        <span className="account_config_description">
+        <span className="text-center font-normal text-base text-neutral-700 mt-2">
           Invite friends who aren't on Internxt yet. You'll both get €5 of Internxt credit as soon as they activate
           their account. You can redeem that credit for a premium Internxt membership, or exclusive Internxt merch.
           Start earning money today!
@@ -133,7 +133,7 @@ const AccountReferralsTab = (): JSX.Element => {
 
         <span className="my-5 text-neutral-900 font-semibold">You have accumulated {credit}€</span>
 
-        <BaseButton disabled={isLoadingClaim} onClick={onClaim} classes="primary w-1/2">
+        <BaseButton disabled={isLoadingClaim} onClick={onClaim} className="primary w-1/2">
           {isLoadingClaim ? 'Claiming bonus...' : 'Claim'}
         </BaseButton>
       </div>

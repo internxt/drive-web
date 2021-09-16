@@ -28,7 +28,7 @@ class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState>
 
     if (match) {
       if (this.state.sessionId) {
-        const stripe = new window.Stripe(
+        const stripe = window.Stripe(
           match[1] === 'test' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK,
         );
 

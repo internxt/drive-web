@@ -6,7 +6,7 @@
   }
 
   .file-activity-info-item {
-    @apply mb-3;
+    @apply mb-6;
 
     span {
       @apply block;
@@ -20,8 +20,4 @@
       @apply text-sm;
     }
   }
-}
-
-.file-info-container {
-  margin-top: 32px;
 }

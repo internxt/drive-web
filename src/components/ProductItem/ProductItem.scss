@@ -1,0 +1,17 @@
+@layer components {
+  .product-item {
+    @apply m-3;
+
+    &.desktop {
+      @apply w-56;
+
+      &.active {
+        @apply bg-blue-60 ring-2 ring-blue-60;
+      }
+    }
+
+    &.tablet {
+      @apply max-w-2xl w-full flex justify-between items-center;
+    }
+  }
+}

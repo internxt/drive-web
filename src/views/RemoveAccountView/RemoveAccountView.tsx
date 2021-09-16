@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import BaseInput from '../../components/Inputs/BaseInput';
+import BaseInput from '../../components/forms/inputs/BaseInput';
 import { IFormValues } from '../../models/interfaces';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 
@@ -78,6 +78,7 @@ const RemoveAccount = (): JSX.Element => {
 
             <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
               <BaseInput
+                className="mb-2.5"
                 placeholder="Email"
                 label="email"
                 type="email"
@@ -89,7 +90,7 @@ const RemoveAccount = (): JSX.Element => {
                 error={errors.email}
               />
 
-              <BaseButton disabled={isLoading || !isValid} classes="primary w-full">
+              <BaseButton disabled={isLoading || !isValid} className="primary w-full">
                 {isLoading ? 'Sending email...' : 'Send email'}
               </BaseButton>
             </form>
@@ -107,7 +108,7 @@ const RemoveAccount = (): JSX.Element => {
               your files on the cloud. With great power there must also come great responsibility.
             </p>
 
-            <BaseButton classes="primary w-full" disabled={isLoading} onClick={() => sendEmail(getValues().email)}>
+            <BaseButton className="primary w-full" disabled={isLoading} onClick={() => sendEmail(getValues().email)}>
               Re-send deactivation email
             </BaseButton>
             <Link className="mt-4" to="/login">
