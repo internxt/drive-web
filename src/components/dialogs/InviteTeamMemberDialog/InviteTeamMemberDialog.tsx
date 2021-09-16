@@ -82,7 +82,7 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
         <span>Welcome to your Business Drive Account. Here you can add and remove team members and invitations</span>
       </div>
 
-      <div className="flex flex-col self-center mt-6 items-start w-96">
+      <div className="flex flex-col self-center my-6 items-start w-96">
         <form className="flex w-full m" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex-1">
             <BaseInput

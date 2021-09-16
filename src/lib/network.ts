@@ -152,7 +152,7 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
   const user = localStorageService.getUser() as UserSettings;
 
   return {
-    bridgeUser: user.email,
+    bridgeUser: user.bridgeUser,
     bridgePass: user.userId,
     encryptionKey: user.mnemonic,
     bucketId: user.bucket,

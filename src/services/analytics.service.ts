@@ -1,5 +1,5 @@
 import * as prettySize from 'prettysize';
-import { AnalyticsTrack, DevicePlatform } from '../models/enums';
+import { AnalyticsTrack, DevicePlatform, SignupDeviceSource } from '../models/enums';
 import { UserSettings } from '../models/interfaces';
 import localStorageService from './local-storage.service';
 
@@ -20,6 +20,26 @@ const payload = {
 
 export function page(pageName: string): void {
   window.analytics.page(pageName);
+}
+
+export function signupDevicesource(userAgent: string): string {
+  for (const device in SignupDeviceSource) {
+    if (new RegExp(device).test(userAgent)) {
+      return device;
+    }
+  }
+  return SignupDeviceSource.Other;
+}
+
+export function signupCampaignSource(locationSearch: string) {
+  const parameters = new URLSearchParams(locationSearch);
+  const partner = parameters.get('internxt_partner');
+  const campaign = parameters.get('utm_campaign');
+  const other = 'organic';
+
+  const source = [partner, campaign, other].find((o) => typeof o !== 'undefined' && o !== null);
+
+  return source;
 }
 
 function getUser(): UserSettings {
@@ -66,8 +86,22 @@ export function signInAttempted(email: string, error: string | Error): void {
   });
 }
 
-export function trackSignUp(payload: { properties: { userId: string; email: string } }): void {
-  window.analytics.track(AnalyticsTrack.SignUp, payload);
+export function trackSignUp(payload: {
+  properties: { signup_source };
+  traits: {
+    member_tier?: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    usage: number;
+    createdAt: string;
+    signup_device_source: string;
+    acquisition_channel;
+  };
+  userId: string;
+}): void {
+  window.analytics.identify(payload.userId, payload.traits);
+  window.analytics.track(AnalyticsTrack.SignUp, payload.properties);
 }
 
 export function trackUserEnterPayments(): void {

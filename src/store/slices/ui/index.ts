@@ -6,25 +6,27 @@ import { AccountViewTab } from '../../../views/AccountView/tabs';
 interface UISliceState {
   isSidenavCollapsed: boolean;
   showFileLogger: boolean;
+  currentAccountTab: AccountViewTab;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
-  currentAccountTab: AccountViewTab;
+  isGuestInviteDialogOpen: boolean;
 }
 
 const initialState: UISliceState = {
   isSidenavCollapsed: false,
   showFileLogger: false,
+  currentAccountTab: AccountViewTab.Info,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
   isShareItemDialogOpen: false,
   isInviteMemberDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
-  currentAccountTab: AccountViewTab.Info,
+  isGuestInviteDialogOpen: false,
 };
 
 export const uiSlice = createSlice({
@@ -51,6 +53,9 @@ export const uiSlice = createSlice({
     },
     setIsInviteMemberDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isInviteMemberDialogOpen = action.payload;
+    },
+    setIsGuestInvitationDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isGuestInviteDialogOpen = action.payload;
     },
     setIsDriveItemInfoMenuOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDriveItemInfoMenuOpen = action.payload;
@@ -85,6 +90,7 @@ export const {
   setIsInviteMemberDialogOpen,
   setIsDriveItemInfoMenuOpen,
   setCurrentAccountTab,
+  setIsGuestInvitationDialogOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

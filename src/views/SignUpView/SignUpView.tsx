@@ -6,7 +6,7 @@ import queryString from 'query-string';
 import SideInfo from '../Authentication/SideInfo';
 import { IFormValues, UserSettings } from '../../models/interfaces';
 import localStorageService from '../../services/local-storage.service';
-import analyticsService from '../../services/analytics.service';
+import analyticsService, { signupDevicesource, signupCampaignSource } from '../../services/analytics.service';
 import { readReferalCookie } from '../../services/auth.service';
 import BaseInput from '../../components/forms/inputs/BaseInput';
 import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
@@ -130,6 +130,21 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
         xUser.mnemonic = mnemonic;
         dispatch(userActions.setUser(xUser));
+        analyticsService.trackSignUp({
+          userId: xUser.uuid,
+          properties: {
+            signup_source: signupCampaignSource(window.location.search),
+          },
+          traits: {
+            email: xUser.uuid,
+            first_name: name,
+            last_name: lastname,
+            usage: 0,
+            createdAt: new Date().toISOString(),
+            signup_device_source: signupDevicesource(window.navigator.userAgent),
+            acquisition_channel: signupCampaignSource(window.location.search),
+          },
+        });
 
         return dispatch(userThunks.initializeUserThunk()).then(() => {
           localStorageService.set('xToken', xToken);
@@ -139,7 +154,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       });
   };
 
-  const doRegister = async (name: string, lastname: string, email: string, password: string) => {
+  const doRegister = async (name: string, lastname: string, email: string, password: string, captcha: string) => {
     const hashObj = passToHash({ password: password });
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
@@ -169,6 +184,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         publicKey: codpublicKey,
         revocationKey: codrevocationKey,
         referrer: referrer,
+        captcha: captcha,
       }),
     })
       .then(async (response) => {
@@ -179,11 +195,20 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
           user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
 
-          window.analytics.identify(uuid, { email: email, member_tier: 'free' });
           analyticsService.trackSignUp({
+            userId: uuid,
             properties: {
-              userId: uuid,
+              signup_source: signupCampaignSource(window.location.search),
+            },
+            traits: {
+              member_tier: 'free',
               email: email,
+              first_name: name,
+              last_name: lastname,
+              usage: 0,
+              createdAt: new Date().toISOString(),
+              signup_device_source: signupDevicesource(window.navigator.userAgent),
+              acquisition_channel: signupCampaignSource(window.location.search),
             },
           });
 
@@ -230,7 +255,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoading(true);
     try {
-      const { name, lastname, email, password, confirmPassword } = formData;
+      const { name, lastname, email, password, confirmPassword, token } = formData;
 
       if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
@@ -246,7 +271,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             throw new Error(err.message + ', please contact us');
           });
       } else {
-        await doRegister(name, lastname, email, password);
+        await doRegister(name, lastname, email, password, token);
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -258,12 +283,24 @@ const SignUp = (props: SignUpProps): JSX.Element => {
     }
   };
 
+  async function getReCaptcha(formValues: IFormValues) {
+    const grecaptcha = window.grecaptcha;
+
+    grecaptcha.ready(() => {
+      grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
+        // Can't wait or token will expire
+        formValues.token = token;
+          onSubmit(formValues);
+        });
+    });
+  }
+
   return (
     <div className="flex h-full w-full">
       <SideInfo title="" subtitle="" />
 
       <div className="flex flex-col items-center justify-center w-full">
-        <form className="flex flex-col w-72" onSubmit={handleSubmit(onSubmit)}>
+        <form className="flex flex-col w-72" onSubmit={handleSubmit(getReCaptcha)}>
           <span className="text-base font-semibold text-neutral-900 mt-1.5 mb-6">Create an Internxt account</span>
 
           <BaseInput
