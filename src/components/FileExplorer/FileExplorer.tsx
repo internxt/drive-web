@@ -13,8 +13,8 @@ import DriveItemInfoMenu from '../DriveItemInfoMenu/DriveItemInfoMenu';
 import { FileViewMode } from '../../models/enums';
 import FilesList from './FilesList/FilesList';
 import FilesGrid from './FilesGrid/FilesGrid';
-import folderEmptyImage from '../../assets/images/folder-empty.png';
-import noResultsSearchImage from '../../assets/images/no-results-search.png';
+import folderEmptyImage from '../../assets/images/folder-empty.svg';
+import noResultsSearchImage from '../../assets/images/no-results-search.svg';
 import { uiActions } from '../../store/slices/ui';
 
 import './FileExplorer.scss';

@@ -264,7 +264,7 @@ code {
 
   button.primary,
   .base-button.primary {
-    @apply bg-blue-60 hover:bg-blue-80 py-2 text-white;
+    @apply bg-blue-60 hover:bg-blue-80 text-white;
 
     &:disabled {
       @apply bg-l-neutral-30 text-m-neutral-80;
