@@ -19,6 +19,7 @@ export enum AppView {
   ShareToken = 'share-token',
   GuestAcceptInvite = 'guest-accept-invite',
   NotFound = 'not-found',
+  Plans = 'account?tab=plans',
 }
 
 export enum ItemAction {

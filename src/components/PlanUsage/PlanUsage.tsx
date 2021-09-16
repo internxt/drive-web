@@ -16,7 +16,7 @@ export default function PlanUsage({
   className?: string;
 }): JSX.Element {
   const onUpgradeButtonClicked = () => {
-    navigationService.push(AppView.Account);
+    navigationService.push(AppView.Plans);
   };
 
   return (
