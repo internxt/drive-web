@@ -20,7 +20,8 @@ export default function PlanUsage({
 }): JSX.Element {
   const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
-    dispatch(setCurrentAccountTab(AccountViewTab.Plans));;
+    navigationService.push(AppView.Account);
+    dispatch(setCurrentAccountTab(AccountViewTab.Plans));
   };
 
   return (
