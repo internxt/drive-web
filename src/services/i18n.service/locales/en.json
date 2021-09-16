@@ -38,7 +38,7 @@
           },
           "advice2": {
             "title": "Security account",
-            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."
+            "description": "Your files are encrypted before leaving your device, so only you can access your files, no tricks, no hidden things, just privacy, that’s Internxt."
           }
         },
         "plans": {
@@ -51,16 +51,16 @@
           "viewAllFeatures": "View all features",
           "features": [
             {
-              "title": "30 days guarantee",
-              "description": "For strict security reasons and to protect your data at Internxt we do not allow"
+              "title": "Premium support",
+              "description": "You will always have the best treatment from our customer service, for us you are part of the family."
             },
             {
-              "title": "30 days guarantee",
-              "description": "For strict security reasons and to protect your data at Internxt we do not allow"
+              "title": "Private",
+              "description": "Internxt is not just another cloud storage solution, we don’t share or sell your data."
             },
             {
-              "title": "30 days guarantee",
-              "description": "For strict security reasons and to protect your data at Internxt we do not allow"
+              "title": "Secure",
+              "description": "We use zero-knowledge to ensure that your data remains private by client-side encrypting it."
             }
           ]
         },
@@ -76,8 +76,8 @@
             "description": ""
           },
           "advice3": {
-            "title": "What data can be edited?",
-            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."
+            "title": "New encryption key",
+            "description": "By changing your password you will be given a new encryption key and you will be able to use your Internxt account from 0 losing all your data. This action cannot be undone."
           },
           "advice4": {
             "title": "What data can be edited?",
