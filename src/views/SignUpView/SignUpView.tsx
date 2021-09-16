@@ -26,6 +26,7 @@ import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPasswor
 import errorService from '../../services/error.service';
 import { AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
+import { productsThunks } from '../../store/slices/products';
 
 interface SignUpProps {
   location: {
@@ -204,6 +205,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
           dispatch(setUser({ ...user }));
           localStorageService.set('xMnemonic', user.mnemonic);
 
+          dispatch(productsThunks.initializeThunk());
           dispatch(planThunks.initializeThunk());
           dispatch(userThunks.initializeUserThunk()).then(() => {
             navigationService.push(AppView.Drive);
