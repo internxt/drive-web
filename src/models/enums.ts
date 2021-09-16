@@ -117,3 +117,9 @@ export enum StripeSessionMode {
   Setup = 'setup',
   Subscription = 'subscription',
 }
+
+export enum LifetimeTier {
+  Lifetime = 'lifetime',
+  Exclusive = 'exclusive-lifetime',
+  Infinite = 'infinite',
+}

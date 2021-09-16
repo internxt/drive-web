@@ -1,12 +1,13 @@
 import { generateMnemonic } from 'bip39';
 import { getHeaders } from '../lib/auth';
 import { encryptPGP } from '../lib/utilspgp';
-import { StripeSessionMode, Workspace } from '../models/enums';
+import { LifetimeTier, StripeSessionMode, Workspace } from '../models/enums';
 import envService from './env.service';
 import httpService from './http.service';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;
+  lifetime_tier?: LifetimeTier;
   mode: StripeSessionMode;
   priceId: string;
   successUrl?: string;

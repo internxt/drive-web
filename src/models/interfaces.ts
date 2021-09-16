@@ -1,5 +1,5 @@
 import { store as storeInstance } from '../store';
-import { AppViewLayout, StripeMemberTiers, RenewalPeriod, TimeInterval, Workspace, ProductPriceType } from './enums';
+import { AppViewLayout, StripeMemberTiers, RenewalPeriod, ProductPriceType, LifetimeTier } from './enums';
 
 export interface AppConfig {
   plan: AppPlanConfig;
@@ -129,6 +129,7 @@ export interface ProductMetadata {
   is_drive: boolean;
   is_teams: boolean;
   show: boolean;
+  lifetime_tier: LifetimeTier;
   member_tier: keyof typeof StripeMemberTiers;
   simple_name: keyof typeof RenewalPeriod;
   size_bytes: string;

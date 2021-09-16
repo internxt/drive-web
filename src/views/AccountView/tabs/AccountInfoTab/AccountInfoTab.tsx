@@ -102,9 +102,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
                         </span>
                       </Fragment>
                     ) : (
-                      <span className="font-bold">
-                        {!isCurrentPlanLifetime ? 'Free plan' : i18n.get('general.billing.oneTimePayment')}
-                      </span>
+                      <span>{!isCurrentPlanLifetime ? 'Free plan' : i18n.get('general.billing.oneTimePayment')}</span>
                     )}
                   </div>
                 </div>

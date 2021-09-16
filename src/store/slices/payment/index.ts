@@ -40,6 +40,7 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
           : StripeSessionMode.Subscription,
       priceId: payload.product.price.id,
     };
+    body.lifetime_tier = payload.product.metadata.lifetime_tier;
 
     try {
       const session = await paymentService.createSession(body);
