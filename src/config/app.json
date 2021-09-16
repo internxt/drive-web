@@ -112,7 +112,8 @@
       "id": "guest-accept-invite",
       "layout": "empty",
       "path": "/guest/invite",
-      "exact": true
+      "exact": true,
+      "auth": true
     }
   ]
 }
