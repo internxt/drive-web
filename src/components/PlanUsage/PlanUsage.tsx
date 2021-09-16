@@ -3,6 +3,9 @@ import i18n from '../../services/i18n.service';
 import navigationService from '../../services/navigation.service';
 import { bytesToString } from '../../services/size.service';
 import { getUserLimitString } from '../../services/usage.service';
+import { AccountViewTab } from '../../views/AccountView/tabs';
+import { setCurrentAccountTab } from '../../store/slices/ui';
+import { useAppDispatch } from '../../store/hooks';
 
 export default function PlanUsage({
   limit,
@@ -15,8 +18,9 @@ export default function PlanUsage({
   isLoading: boolean;
   className?: string;
 }): JSX.Element {
+  const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
-    navigationService.push(AppView.Account);
+    dispatch(setCurrentAccountTab(AccountViewTab.Plans));;
   };
 
   return (
