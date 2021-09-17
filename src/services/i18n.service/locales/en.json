@@ -77,7 +77,7 @@
           },
           "advice3": {
             "title": "New encryption key",
-            "description": "By changing your password you will be given a new encryption key and you will be able to use your Internxt account from 0 losing all your data. This action cannot be undone."
+            "description": "By changing your password, all your files will be un-encrypted with your old password, and then re-encrypted using your new password, and thus you won't lose access to them! This action cannot be undone."
           },
           "advice4": {
             "title": "What data can be edited?",

@@ -290,8 +290,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
         // Can't wait or token will expire
         formValues.token = token;
-          onSubmit(formValues);
-        });
+        onSubmit(formValues);
+      });
     });
   }
 

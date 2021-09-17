@@ -30,7 +30,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
   const currentPriceId = useAppSelector((state) => state.payment.currentPriceId);
   const isCurrentProduct = currentPriceId === props.product.price.id;
   const isLifetime = props.product.renewalPeriod === RenewalPeriod.Lifetime;
-  const priceMultiplier = !teamMembersCount ? 1 : teamMembersCount * 0.5;
+  const priceMultiplier = !teamMembersCount ? 1 : teamMembersCount;
   const isPlanActive = useAppSelector(planSelectors.isPlanActive)(props.product.price.id);
   const isBuyButtonDisabled = props.isBuyButtonDisabled || isPlanActive;
   const monthlyAmountMultiplied = props.product.price.monthlyAmount * priceMultiplier;
@@ -105,7 +105,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
               ) : (
                 <Fragment>
                   <span className="text-xs mr-1">{moneyService.getCurrencySymbol(props.product.price.currency)}</span>
-                  <span className="mr-1">{totalAmount.toFixed()}</span>
+                  <span className="mr-1">{totalAmount}</span>
                   <span className="text-xs text-m-neutral-100">
                     /{i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase()}
                   </span>
