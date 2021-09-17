@@ -203,16 +203,16 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
-                  <BaseButton className="w-8 secondary square mr-2" onClick={this.onCreateFolderButtonClicked}>
+                  <BaseButton className="dark w-8 square mr-2" onClick={this.onCreateFolderButtonClicked}>
                     <Unicons.UilFolderPlus />
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
-                  <BaseButton className="w-8 secondary square mr-2" onClick={this.onBulkDeleteButtonClicked}>
+                  <BaseButton className="dark w-8 square mr-2" onClick={this.onBulkDeleteButtonClicked}>
                     <Unicons.UilTrashAlt />
                   </BaseButton>
                 ) : null}
-                <BaseButton className="secondary square w-8" onClick={this.onViewModeButtonClicked}>
+                <BaseButton className="dark square w-8" onClick={this.onViewModeButtonClicked}>
                   {viewModesIcons[viewMode]}
                 </BaseButton>
               </div>

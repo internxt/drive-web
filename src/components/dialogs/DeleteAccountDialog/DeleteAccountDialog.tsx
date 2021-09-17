@@ -2,6 +2,7 @@ import BaseDialog from '../BaseDialog/BaseDialog';
 
 import authService from '../../../services/auth.service';
 import errorService from '../../../services/error.service';
+import BaseButton from '../../Buttons/BaseButton';
 
 const DeleteAccountDialog = (props: { isOpen: boolean; onClose: () => void }): JSX.Element => {
   const onClose = (): void => {
@@ -27,12 +28,12 @@ const DeleteAccountDialog = (props: { isOpen: boolean; onClose: () => void }): J
 
       <div className="flex justify-center items-center w-full bg-l-neutral-20 py-6">
         <div className="flex w-64 px-8">
-          <button onClick={() => onClose()} className="transparent w-11/12 mr-2">
+          <BaseButton onClick={() => onClose()} className="transparent w-11/12 mr-2">
             Cancel
-          </button>
-          <button className="primary w-11/12 ml-2" onClick={() => onAccept()}>
+          </BaseButton>
+          <BaseButton className="primary w-11/12 ml-2" onClick={() => onAccept()}>
             Confirm
-          </button>
+          </BaseButton>
         </div>
       </div>
     </BaseDialog>

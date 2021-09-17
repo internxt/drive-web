@@ -276,6 +276,11 @@ code {
     @apply bg-white text-blue-60 hover:bg-blue-60 hover:text-white;
   }
 
+  button.dark,
+  .base-button.dark {
+    @apply bg-white text-neutral-500 hover:bg-neutral-500 hover:text-white;
+  }
+
   button.cancel,
   .base-button.cancel {
     @apply bg-opacity-0 text-red-60;
@@ -307,4 +312,8 @@ code {
 
     @apply bg-opacity-30 bg-blue-50 rounded-6px;
   }
+}
+
+.grecaptcha-badge {
+  visibility: hidden;
 }

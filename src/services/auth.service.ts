@@ -295,9 +295,8 @@ export const getPasswordDetails = async (currentPassword: string) => {
   const hashedCurrentPassword = passToHash({ password: currentPassword, salt }).hash;
   const encryptedCurrentPassword = encryptText(hashedCurrentPassword);
 
-
-  return { salt, hashedCurrentPassword, encryptedCurrentPassword }
-}
+  return { salt, hashedCurrentPassword, encryptedCurrentPassword };
+};
 
 export const changePassword = async (newPassword: string, currentPassword: string, email: string) => {
   const user = localStorageService.getUser() as UserSettings;
