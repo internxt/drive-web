@@ -308,3 +308,7 @@ code {
     @apply bg-opacity-30 bg-blue-50 rounded-6px;
   }
 }
+
+.grecaptcha-badge {
+  visibility: hidden;
+}
