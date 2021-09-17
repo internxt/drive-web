@@ -30,7 +30,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
   const currentPriceId = useAppSelector((state) => state.payment.currentPriceId);
   const isCurrentProduct = currentPriceId === props.product.price.id;
   const isLifetime = props.product.renewalPeriod === RenewalPeriod.Lifetime;
-  const priceMultiplier = !teamMembersCount ? 1 : teamMembersCount;
+  const priceMultiplier = props.product.metadata.is_drive ? 1 : teamMembersCount;
   const isPlanActive = useAppSelector(planSelectors.isPlanActive)(props.product.price.id);
   const isBuyButtonDisabled = props.isBuyButtonDisabled || isPlanActive;
   const monthlyAmountMultiplied = props.product.price.monthlyAmount * priceMultiplier;
