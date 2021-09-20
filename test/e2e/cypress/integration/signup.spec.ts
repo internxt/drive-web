@@ -1,10 +1,10 @@
 import * as crypto from 'crypto';
 
-describe('Signup flow', () => {
+describe('Signup user', () => {
   const username = `${crypto.randomBytes(8).toString('hex')}@inxt.com`;
   const password = `Pw4${crypto.randomBytes(4).toString('hex')}`;
 
-  it('should signup an user correctly', () => {
+  it('Should signup an user correctly', () => {
     cy.visit('/new');
 
     cy.contains('Create an Internxt account');
@@ -21,7 +21,7 @@ describe('Signup flow', () => {
     cy.get('button[type=submit]').click();
   });
 
-  it('should redirect new users to /app', () => {
+  it('Should redirect new users to /app', () => {
     cy.url().should('include', '/app');
 
     cy.writeFile(

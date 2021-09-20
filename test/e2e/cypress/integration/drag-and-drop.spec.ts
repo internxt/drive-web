@@ -9,7 +9,7 @@ describe('Drag and drop', () => {
     cy.login();
   });
 
-  it('Upload a single file to the root folder', () => {
+  it('Should upload a single file to the root folder', () => {
     cy.get('[data-test=drag-and-drop-area]').attachFile(filename, { subjectType: 'drag-n-drop' });
 
     cy.get('[data-test=download-file-button]').click({ force: true });
