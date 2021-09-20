@@ -92,10 +92,10 @@ export interface DropTargetCollectorProps {
   connectDropTarget: ConnectDropTarget;
 }
 
-export const getDragSourceType = (props: FileExplorerItemViewProps): string => DragAndDropType.DriveItem;
+export const getDragSourceType = (): string => DragAndDropType.DriveItem;
 
 export const dragSourceSpec: DragSourceSpec<FileExplorerItemViewProps> = {
-  beginDrag: (props, monitor, component) => {
+  beginDrag: (props) => {
     return props.item;
   },
 };
@@ -103,7 +103,6 @@ export const dragSourceSpec: DragSourceSpec<FileExplorerItemViewProps> = {
 export const dragSourceCollect: DragSourceCollector<DragSourceCollectorProps, FileExplorerItemViewProps> = (
   connect,
   monitor,
-  props,
 ) => {
   return {
     isDraggingThisItem: monitor.isDragging(),
@@ -115,7 +114,7 @@ export const getDropTargetType = (props: FileExplorerItemViewProps): string | st
   props.item.isFolder && !props.isDraggingThisItem ? [NativeTypes.FILE, DragAndDropType.DriveItem] : [];
 
 export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
-  drop: (props, monitor, component) => {
+  drop: (props, monitor) => {
     const { dispatch, namePath, item } = props;
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();

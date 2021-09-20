@@ -1,5 +1,13 @@
 {
 	"baseUrl": "http://localhost:3000",
 	"chromeWebSecurity": false,
-	"defaultCommandTimeout": 60000
+	"defaultCommandTimeout": 60000,
+	"testFiles": [
+		"signup.spec.ts",
+		"upload-file.spec.ts",
+		"download-file.spec.ts",
+		"share-file.spec.ts",
+		"delete-file.spec.ts",
+		"drag-and-drop.spec.ts"
+	]
 }

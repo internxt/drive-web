@@ -31,3 +31,4 @@ debug.log
 **/cypress/downloads
 **/cypress/videos
 **/cypress/screenshots
+**/cypress/fixtures/test-user.json

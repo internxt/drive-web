@@ -29,7 +29,6 @@ interface EnvironmentConfig {
 
 export class Network {
   private environment: Environment;
-  private bridgeUrl = 'https://api.internxt.com';
 
   constructor(bridgeUser: string, bridgePass: string, encryptionKey: string) {
     if (!bridgeUser) {
@@ -44,7 +43,12 @@ export class Network {
       throw new Error('Mnemonic not provided');
     }
 
-    this.environment = new Environment({ bridgePass, bridgeUser, encryptionKey, bridgeUrl: this.bridgeUrl });
+    this.environment = new Environment({
+      bridgePass,
+      bridgeUser,
+      encryptionKey,
+      bridgeUrl: process.env.REACT_APP_STORJ_BRIDGE,
+    });
   }
 
   /**

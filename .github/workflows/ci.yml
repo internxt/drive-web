@@ -3,6 +3,7 @@ on:
   pull_request:
     branches: [master]
 env:
+  REACT_APP_STORJ_BRIDGE: ${{ secrets.REACT_APP_STORJ_BRIDGE }}
   REACT_APP_CRYPTO_SECRET: ${{ secrets.REACT_APP_CRYPTO_SECRET }}
   REACT_APP_STRIPE_PK: ${{ secrets.REACT_APP_STRIPE_PK }}
   REACT_APP_STRIPE_TEST_PK: ${{ secrets.REACT_APP_STRIPE_TEST_PK }}
@@ -13,7 +14,6 @@ env:
   REACT_APP_CRYPTO_SECRET2: ${{ secrets.REACT_APP_CRYPTO_SECRET2 }}
   REACT_APP_RECAPTCHA_V3: ${{ secrets.REACT_APP_RECAPTCHA_V3 }}
   GENERATE_SOURCEMAP: ${{ secrets.GENERATE_SOURCEMAP }}
-  USE_PROD_USER_CYPRESS: true
   CI: false
 
 jobs:
@@ -40,12 +40,12 @@ jobs:
         run: yarn
       - name: Unit test run
         run: yarn test:unit
-      # - name: Cypress run
-      #  uses: cypress-io/github-action@v2
-      #  with:
-      #    start: yarn start
-      #    command: yarn test:e2e
-      #    wait-on: http://localhost:3000
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          start: yarn start
+          command: yarn test:e2e
+          wait-on: http://localhost:3000
       - name: Build
         run: yarn build
         env:

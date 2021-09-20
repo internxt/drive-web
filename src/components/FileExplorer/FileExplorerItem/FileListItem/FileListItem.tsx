@@ -46,6 +46,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
           <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
         </div>
         <span
+          data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
           className={`${spanDisplayClass} cursor-text file-list-item-name-span`}
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={onNameDoubleClicked}

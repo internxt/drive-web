@@ -25,20 +25,21 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import 'cypress-file-upload';
-import path from 'path';
+import * as path from 'path';
 
 Cypress.Commands.add('login', () => {
   const fixturesFolder = Cypress.config('fixturesFolder');
-  // You cannot have the same bridge user in both prod and dev
-  const userFilename = Cypress.env('USE_PROD_USER_CYPRESS') === 'true' ? 'test-user.json' : 'test-user-dev.json';
+  const userFilename = 'test-user.json';
 
-  cy.readFile(path.join(fixturesFolder, userFilename)).then((user) => {
-    cy.visit('/');
-    cy.get('input[name=email]').type(user.username);
-    cy.get('input[name=password]').type(user.password);
+  cy.readFile<{ username: string; password: string }>(path.join(fixturesFolder as string, userFilename)).then(
+    (user) => {
+      cy.visit('/login');
+      cy.get('input[name=email]').type(user.username);
+      cy.get('input[name=password]').type(user.password);
 
-    cy.get('button[type=submit]').click();
+      cy.get('button[type=submit]').click();
 
-    cy.url().should('include', '/app');
-  });
+      cy.url().should('include', '/app');
+    },
+  );
 });
