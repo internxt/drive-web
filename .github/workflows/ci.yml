@@ -55,13 +55,13 @@ jobs:
         if: failure()
         with:
           name: cypress-screenshots
-          path: cypress/screenshots
+          path: test/e2e/cypress/screenshots
       # Test run video was always captured, so this action uses "always()" condition
       - uses: actions/upload-artifact@v2
         if: always()
         with:
           name: cypress-videos
-          path: cypress/videos
+          path: test/e2e/cypress/videos
       - name: Build
         run: yarn build
         env:
