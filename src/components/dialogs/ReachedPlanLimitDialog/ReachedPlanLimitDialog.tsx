@@ -19,7 +19,7 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
     try {
       dispatch(setCurrentAccountTab(AccountViewTab.Plans));
       dispatch(uiActions.setIsReachedPlanLimitDialogOpen(false));
-      navigationService.push(AppView.Account);
+      navigationService.push(AppView.Account, { tab: AccountViewTab.Plans });
     } catch (e: unknown) {
       console.log(e);
     }

@@ -3,8 +3,11 @@
 	"chromeWebSecurity": false,
 	"defaultCommandTimeout": 60000,
 	"testFiles": [
-		"signup.spec.js",
-		"upload-download.spec.js",
-		"share.spec.js"
+		"signup.spec.ts",
+		"upload-file.spec.ts",
+		"download-file.spec.ts",
+		"share-file.spec.ts",
+		"delete-file.spec.ts",
+		"drag-and-drop.spec.ts"
 	]
 }
