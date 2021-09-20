@@ -31,7 +31,6 @@ export class Network {
   private environment: Environment;
 
   constructor(bridgeUser: string, bridgePass: string, encryptionKey: string) {
-    console.log(bridgeUser, bridgePass, encryptionKey);
     if (!bridgeUser) {
       throw new Error('Bridge user not provided');
     }
@@ -61,8 +60,6 @@ export class Network {
   uploadFile(bucketId: string, params: IUploadParams): [Promise<string>, ActionState | undefined] {
     let actionState: ActionState | undefined;
 
-    console.log(JSON.stringify(params));
-
     if (!bucketId) {
       throw new Error('Bucket id not provided');
     }
@@ -76,8 +73,6 @@ export class Network {
         progressCallback: params.progressCallback,
         finishedCallback: (err, fileId) => {
           if (err) {
-            console.log(err.name);
-            console.log(err.message);
             return reject(err);
           }
 
