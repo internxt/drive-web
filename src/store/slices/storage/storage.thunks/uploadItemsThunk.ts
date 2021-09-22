@@ -31,6 +31,8 @@ interface UploadItemsPayload {
   options?: Partial<UploadItemsThunkOptions>;
 }
 
+const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = { showNotifications: true, showErrors: true };
+
 /**
  * @description
  *  1. Prepare files to upload
@@ -52,7 +54,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const errors: Error[] = [];
     const tasksIds: string[] = [];
 
-    options = Object.assign({ showNotifications: true, showErrors: true }, options || {});
+    options = Object.assign(DEFAULT_OPTIONS, options || {});
 
     if (showSizeWarning) {
       notificationsService.show(
@@ -185,6 +187,8 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
               }),
             );
 
+            console.error(castedError);
+
             errors.push(castedError);
           }
         });
@@ -193,6 +197,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     options.onSuccess?.();
 
     if (errors.length > 0) {
+      for (const error of errors) {
+        notificationsService.show(error.message, ToastType.Error);
+      }
+
       throw new Error(i18n.get('error.uploadingItems'));
     }
   },
@@ -203,7 +211,7 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsThunk.pending, () => undefined)
     .addCase(uploadItemsThunk.fulfilled, () => undefined)
     .addCase(uploadItemsThunk.rejected, (state, action) => {
-      const requestOptions = action.meta.arg.options;
+      const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options || {});
 
       if (requestOptions?.showErrors) {
         notificationsService.show(
