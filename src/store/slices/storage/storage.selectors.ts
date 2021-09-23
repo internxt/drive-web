@@ -2,20 +2,19 @@ import { RootState } from '../..';
 import { DriveItemData } from '../../../models/interfaces';
 import { sessionSelectors } from '../session/session.selectors';
 
+const rootFolderId = (state: RootState): number => {
+  const { team } = state.team;
+  const { user } = state.user;
+  const isTeam: boolean = sessionSelectors.isTeam(state);
+
+  return (isTeam ? team?.root_folder_id : user?.root_folder_id) || 0;
+};
+
 const storageSelectors = {
-  rootFolderId(state: RootState): number {
-    const { team } = state.team;
-    const { user } = state.user;
-    const isTeam: boolean = sessionSelectors.isTeam(state);
-
-    return (isTeam ? team?.root_folder_id : user?.root_folder_id) || 0;
-  },
-
+  rootFolderId,
   currentFolderId(state: RootState): number {
     const { namePath } = state.storage;
-    const rootFolderId: number = this.rootFolderId(state);
-
-    return namePath.length > 0 ? namePath[namePath.length - 1].id : rootFolderId;
+    return namePath.length > 0 ? namePath[namePath.length - 1].id : rootFolderId(state);
   },
 
   currentFolderPath(state: RootState): string {
