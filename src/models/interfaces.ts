@@ -1,5 +1,12 @@
 import { store as storeInstance } from '../store';
-import { AppViewLayout, StripeMemberTiers, RenewalPeriod, ProductPriceType, LifetimeTier } from './enums';
+import {
+  AppViewLayout,
+  StripeMemberTiers,
+  RenewalPeriod,
+  ProductPriceType,
+  LifetimeTier,
+  OrderDirection,
+} from './enums';
 
 export interface AppConfig {
   plan: AppPlanConfig;
@@ -189,4 +196,9 @@ export interface InfoInvitationsMembers {
   isMember: boolean;
   isInvitation: boolean;
   user: string;
+}
+
+export interface OrderSettings {
+  by: string;
+  direction: OrderDirection;
 }

@@ -225,6 +225,15 @@
   },
   "drive": {
     "usage": "Usage",
-    "currentPlan": "Current plan"
+    "currentPlan": "Current plan",
+    "list": {
+      "columns": {
+        "type": "Type",
+        "name": "Name",
+        "modified": "Modified",
+        "size": "Size",
+        "actions": "Actions"
+      }
+    }
   }
 }

@@ -134,3 +134,8 @@ export enum LifetimeTier {
   Exclusive = 'exclusive-lifetime',
   Infinite = 'infinite',
 }
+
+export enum OrderDirection {
+  Asc = 'ASC',
+  Desc = 'DESC',
+}

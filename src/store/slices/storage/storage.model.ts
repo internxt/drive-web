@@ -1,5 +1,5 @@
-import { FileViewMode, StorageItemList } from '../../../models/enums';
-import { DriveItemData, FolderPath } from '../../../models/interfaces';
+import { FileViewMode, OrderDirection, StorageItemList } from '../../../models/enums';
+import { DriveItemData, FolderPath, OrderSettings } from '../../../models/interfaces';
 
 export interface StorageFilters {
   text: string;
@@ -11,6 +11,7 @@ export interface StorageState {
   lists: { [key in StorageItemList]: DriveItemData[] };
   isLoadingRecents: boolean;
   filters: StorageFilters;
+  order: OrderSettings;
   selectedItems: DriveItemData[];
   itemToShare: DriveItemData | null;
   itemsToDelete: DriveItemData[];
@@ -26,5 +27,12 @@ export interface StorageSetFiltersPayload {
 export function filtersFactory(): StorageFilters {
   return {
     text: '',
+  };
+}
+
+export function orderFactory(by: string, direction: OrderDirection): OrderSettings {
+  return {
+    by,
+    direction,
   };
 }
