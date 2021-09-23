@@ -21,22 +21,20 @@ export function downloadFile(
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
-  const [fileBlobPromise, actionState] = network.downloadFile(bucketId, fileId, {
-    progressCallback: updateProgressCallback,
+  const [blobPromise, actionState] = network.downloadFileV2(bucketId, fileId, {
+    progressCallback: updateProgressCallback
   });
 
-  fileBlobPromise
-    .then((fileBlob) => {
-      fileDownload(fileBlob, completeFilename);
-      trackFileDownloadFinished(userEmail, fileId, itemData.size);
-    })
-    .catch((err) => {
-      const errMessage = err instanceof Error ? err.message : (err as string);
+  const fileBlobPromise = blobPromise.then((fileBlob) => {
+    fileDownload(fileBlob, completeFilename);
+    trackFileDownloadFinished(userEmail, fileId, itemData.size);
+  }).catch((err) => {
+    const errMessage = err instanceof Error ? err.message : (err as string);
 
-      trackFileDownloadError(userEmail, fileId, errMessage);
+    trackFileDownloadError(userEmail, fileId, errMessage);
 
-      return new Error(errMessage);
-    });
+    return new Error(errMessage);
+  });
 
   return [fileBlobPromise.then(), actionState];
 }

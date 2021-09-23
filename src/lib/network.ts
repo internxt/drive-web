@@ -127,6 +127,60 @@ export class Network {
     return [promise, actionState];
   }
 
+  downloadFileV2(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Blob>, ActionState | undefined] {
+    console.time('download');
+
+    let actionState: ActionState | undefined;
+
+    if (!bucketId) {
+      throw new Error('Bucket id not provided');
+    }
+
+    if (!fileId) {
+      throw new Error('File id not provided');
+    }
+
+    let errored = false;
+
+    const promise = new Promise<Blob>((resolve, reject) => {
+      actionState = this.environment.download(bucketId, fileId, {
+        ...params,
+        finishedCallback: (err, downloadStream) => {
+          if (err) {
+            //STATUS: ERROR DOWNLOAD FILE
+            return reject(err);
+          }
+
+          if (!downloadStream) {
+            return reject(Error('Download stream is empty'));
+          }
+
+          const chunks: Buffer[] = []
+          downloadStream.on('data', (chunk: Buffer) => {
+            chunks.push(chunk);
+          }).once('error', (err) => {
+            errored = true;
+            reject(err);
+          }).once('end', () => {
+            if (errored) {
+              return;
+            }
+            const uploadedBytes = chunks.reduce((acumm, chunk) => acumm + chunk.length, 0);
+
+            params.progressCallback(1, uploadedBytes, uploadedBytes);
+            console.timeEnd('download');
+            resolve(new Blob(chunks, { type: 'application/octet-stream' }))
+          }).once('error', reject);
+        },
+      }, {
+        label: 'MultipleStreams',
+        params: {}
+      });
+    });
+
+    return [promise, actionState];
+  }
+
   getFileInfo(bucketId: string, fileId: string): Promise<FileInfo> {
     return this.environment.getFileInfo(bucketId, fileId);
   }
