@@ -35,22 +35,14 @@ class RecentsView extends Component<RecentsViewProps> {
     const { items, isLoadingRecents } = this.props;
 
     return (
-      <FileExplorer
-        title="Recents"
-        isLoading={isLoadingRecents}
-        items={items}
-        onItemsDeleted={this.refreshRecents}
-        onFolderCreated={this.redirectToDrive}
-      />
+      <FileExplorer title="Recents" isLoading={isLoadingRecents} items={items} onFolderCreated={this.redirectToDrive} />
     );
   }
 }
 
 export default connect((state: RootState) => {
-  const filteredItems = storageSelectors.filteredItems(state)(state.storage.lists.recents);
-
   return {
     isLoadingRecents: state.storage.isLoadingRecents,
-    items: filteredItems,
+    items: storageSelectors.filteredItems(state)(state.storage.recents),
   };
 })(RecentsView);

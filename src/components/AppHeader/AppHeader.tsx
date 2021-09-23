@@ -8,7 +8,7 @@ import { Dropdown } from 'react-bootstrap';
 import { AppView, Workspace } from '../../models/enums';
 import { userThunks } from '../../store/slices/user';
 import { uiActions } from '../../store/slices/ui';
-import { storageActions } from '../../store/slices/storage';
+import { storageActions, storageSelectors } from '../../store/slices/storage';
 import validationService from '../../services/validation.service';
 import { StorageFilters } from '../../store/slices/storage/storage.model';
 import { sessionSelectors } from '../../store/slices/session/session.selectors';
@@ -22,6 +22,7 @@ interface AppHeaderProps {
   workspace: Workspace;
   isTeam: boolean;
   storageFilters: StorageFilters;
+  currentFolderId: number;
   dispatch: AppDispatch;
 }
 
@@ -43,11 +44,11 @@ class AppHeader extends React.Component<AppHeaderProps> {
   };
 
   onChangeWorkspaceButtonClicked = (): void => {
-    const { dispatch } = this.props;
+    const { dispatch, currentFolderId } = this.props;
 
     dispatch(sessionThunks.changeWorkspaceThunk());
     dispatch(storageThunks.resetNamePathThunk());
-    dispatch(storageThunks.fetchFolderContentThunk());
+    dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
     dispatch(storageThunks.fetchRecentsThunk());
   };
 
@@ -166,5 +167,6 @@ export default connect((state: RootState) => {
     workspace: state.session.workspace,
     isTeam,
     storageFilters: state.storage.filters,
+    currentFolderId: storageSelectors.currentFolderId(state),
   };
 })(AppHeader);

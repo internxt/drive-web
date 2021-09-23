@@ -164,8 +164,16 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
       await taskFn()
         .then((uploadedFile) => {
-          if (uploadedFile.folderId === storageSelectors.currentFolderId(getState())) {
-            dispatch(storageActions.pushItems({ items: uploadedFile as DriveItemData }));
+          const currentFolderId = storageSelectors.currentFolderId(getState());
+
+          if (uploadedFile.folderId === currentFolderId) {
+            dispatch(
+              storageActions.pushItems({
+                updateRecents: true,
+                folderIds: [currentFolderId],
+                items: uploadedFile as DriveItemData,
+              }),
+            );
           }
 
           dispatch(

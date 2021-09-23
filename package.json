@@ -18,6 +18,7 @@
     "copy-to-clipboard": "^3.3.1",
     "crypto-js": "^4.0.0",
     "history": "^4.10.1",
+    "idb": "^6.1.4",
     "js-file-download": "^0.4.12",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
@@ -45,6 +46,7 @@
   },
   "scripts": {
     "preinstall": "node ./scripts/use-yarn.js",
+    "dev": "craco start",
     "start": "craco start",
     "build": "craco build",
     "test:unit": "jest test/unit/",
