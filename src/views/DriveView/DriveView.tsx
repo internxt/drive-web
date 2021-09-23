@@ -13,6 +13,7 @@ interface DriveViewProps {
   namePath: FolderPath[];
   isLoading: boolean;
   items: DriveItemData[];
+  currentFolderId: number;
   dispatch: AppDispatch;
 }
 
@@ -25,9 +26,9 @@ class DriveView extends Component<DriveViewProps> {
   }
 
   fetchItems = (): void => {
-    const { dispatch } = this.props;
+    const { dispatch, currentFolderId } = this.props;
 
-    dispatch(storageThunks.fetchFolderContentThunk());
+    dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
   };
 
   get breadcrumbItems(): BreadcrumbItemData[] {
@@ -66,11 +67,13 @@ class DriveView extends Component<DriveViewProps> {
 }
 
 export default connect((state: RootState) => {
-  const filteredItems = storageSelectors.filteredItems(state)(state.storage.lists.drive);
+  const currentFolderId = storageSelectors.currentFolderId(state);
+  const items = storageSelectors.filteredItems(state)(storageSelectors.currentFolderItems(state));
 
   return {
     namePath: state.storage.namePath,
-    isLoading: state.storage.isLoading,
-    items: filteredItems,
+    isLoading: state.storage.loadingFolders[currentFolderId],
+    currentFolderId,
+    items,
   };
 })(DriveView);

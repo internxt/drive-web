@@ -27,20 +27,21 @@ const storageSelectors = {
   },
 
   isCurrentFolderEmpty(state: RootState): boolean {
-    return state.storage.lists.drive.length === 0;
+    const currentFolderId = this.currentFolderId(state);
+    return this.levelItems(state)(currentFolderId).length === 0;
   },
 
-  getInfoItem(state: RootState): DriveItemData | undefined {
-    return state.storage.lists.drive.find((item) => item.id === state.storage.infoItem?.id);
-  },
-
-  isItemSelected(state: RootState): (item: DriveItemData) => boolean {
-    return (item) => state.storage.selectedItems.some((i) => item.id === i.id && item.isFolder === i.isFolder);
-  },
-
-  isSomeItemSelected: (state: RootState): boolean => state.storage.selectedItems.length > 0,
   isFolderInNamePath(state: RootState): (folderId: number) => boolean {
     return (folderId) => state.storage.namePath.map((p) => p.id).includes(folderId);
+  },
+
+  currentFolderItems(state: RootState): DriveItemData[] {
+    const currentFolderId = this.currentFolderId(state);
+    return this.levelItems(state)(currentFolderId);
+  },
+
+  levelItems(state: RootState): (folderId: number) => DriveItemData[] {
+    return (folderId) => state.storage.levels[folderId] || [];
   },
 
   filteredItems(state: RootState): (items: DriveItemData[]) => DriveItemData[] {
@@ -52,6 +53,12 @@ const storageSelectors = {
         return fullName.toLowerCase().match(filters.text.toLowerCase());
       });
   },
+
+  isItemSelected(state: RootState): (item: DriveItemData) => boolean {
+    return (item) => state.storage.selectedItems.some((i) => item.id === i.id && item.isFolder === i.isFolder);
+  },
+
+  isSomeItemSelected: (state: RootState): boolean => state.storage.selectedItems.length > 0,
 };
 
 export default storageSelectors;

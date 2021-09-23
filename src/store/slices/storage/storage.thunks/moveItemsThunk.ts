@@ -3,7 +3,6 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { StorageItemList } from '../../../../models/enums';
 import { DriveItemData } from '../../../../models/interfaces';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
@@ -33,6 +32,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
     }
 
     for (const [index, item] of items.entries()) {
+      const fromFolderId = item.parentId || item.folderId;
       const task: MoveFileTask | MoveFolderTask = item.isFolder
         ? {
             id: `${requestId}-${index}`,
@@ -71,7 +71,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
 
           dispatch(
             storageActions.popItems({
-              lists: [StorageItemList.Drive],
+              folderIds: [fromFolderId],
               items: item,
             }),
           );

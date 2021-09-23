@@ -4,11 +4,10 @@ import { Provider } from 'react-redux';
 
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import plugins from './plugins';
 import { store } from './store';
 import { userActions } from './store/slices/user';
 import { teamActions } from './store/slices/team';
-
-import plugins from './plugins';
 import { planThunks } from './store/slices/plan';
 import { productsThunks } from './store/slices/products';
 import storageThunks from './store/slices/storage/storage.thunks';
