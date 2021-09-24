@@ -70,7 +70,7 @@ export function identifyPlan(newValue: number) {
 
 export function trackSignOut() {
   window.analytics.track(AnalyticsTrack.SignOut, {
-    email: getUser().email,
+    email: getUser()?.email,
   });
 }
 

@@ -3,7 +3,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { auth } from '@internxt/lib';
 
-import { initializeUserThunk, setUser } from '../../store/slices/user';
+import { initializeUserThunk, userActions } from '../../store/slices/user';
 import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
 import BaseInput from '../../components/forms/inputs/BaseInput';
@@ -62,7 +62,7 @@ export default function SignInView(): JSX.Element {
       if (!res.tfa || showTwoFactor) {
         const { data, user } = await doLogin(email, password, twoFactorCode);
 
-        dispatch(setUser(user));
+        dispatch(userActions.setUser(user));
         analyticsService.identify(data.user, email);
         analyticsService.trackSignIn({ email, userId: data.user.uuid });
 
@@ -76,7 +76,7 @@ export default function SignInView(): JSX.Element {
 
         setIsAuthenticated(true);
         setToken(data.token);
-        setUser(user);
+        userActions.setUser(user);
         setRegisterCompleted(data.user.registerCompleted);
       } else {
         setShowTwoFactor(true);
@@ -101,7 +101,7 @@ export default function SignInView(): JSX.Element {
 
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
-      dispatch(setUser(user));
+      dispatch(userActions.setUser(user));
       navigationService.push(AppView.Drive);
     }
     if (user && user.registerCompleted === false) {

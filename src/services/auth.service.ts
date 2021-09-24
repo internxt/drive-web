@@ -19,8 +19,8 @@ import databaseService from './database.service';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
-  localStorageService.clear();
   await databaseService.clear();
+  localStorageService.clear();
   navigationService.push(AppView.Login);
 }
 
