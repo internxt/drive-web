@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import * as bip39 from 'bip39';
 import queryString from 'query-string';
@@ -73,10 +73,14 @@ const SignUp = (props: SignUpProps): JSX.Element => {
     bottomInfoError = signupError.toString();
   }
 
-  if (tokenParam && typeof tokenParam === 'string') {
-    localStorageService.clear();
-    localStorageService.set('xToken', tokenParam);
-  }
+  useEffect(() => {
+    const isAppSumo = navigationService.getCurrentView()?.id === AppView.AppSumo;
+
+    if (isAppSumo && tokenParam && typeof tokenParam === 'string') {
+      localStorageService.clear();
+      localStorageService.set('xToken', tokenParam);
+    }
+  }, []);
 
   const updateInfo = (name: string, lastname: string, email: string, password: string) => {
     // Setup hash and salt
@@ -263,6 +267,8 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       if (!props.isNewUser) {
         await updateInfo(name, lastname, email, password)
           .then(() => {
+            dispatch(productsThunks.initializeThunk());
+            dispatch(planThunks.initializeThunk());
             navigationService.push(AppView.Drive);
           })
           .catch((err) => {
