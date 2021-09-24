@@ -226,5 +226,18 @@
   "drive": {
     "usage": "Usage",
     "currentPlan": "Current plan"
+  },
+  "appSumo": {
+    "plans": {
+      "advice": "FROM APP SUMO"
+    },
+    "tiers": {
+      "internxt_free1": "Internxt Free 1",
+      "internxt_tier1": "Internxt Tier 1",
+      "internxt_tier2": "Internxt Tier 2",
+      "internxt_tier3": "Internxt Tier 3",
+      "internxt_tier4": "Internxt Tier 4",
+      "internxt_tier5": "Internxt Tier 5"
+    }
   }
 }

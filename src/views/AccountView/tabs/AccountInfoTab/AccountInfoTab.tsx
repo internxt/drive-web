@@ -31,6 +31,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
   const isLoadingPlans = useAppSelector((state) => state.plan.isLoadingPlans);
   const currentPlan = useAppSelector(planSelectors.currentPlan);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const isUserFromAppSumo = useAppSelector(userSelectors.isFromAppSumo);
   const isCurrentPlanLifetime = useAppSelector(planSelectors.isCurrentPlanLifetime);
   const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
@@ -91,9 +92,13 @@ const AccountPlanInfoTab = (): JSX.Element => {
             {!isLoadingPlans ? (
               <div className="flex justify-between w-full">
                 <div>
-                  <span className="text-neutral-700 font-bold text-xl">{currentPlan?.simpleName}</span>
+                  <span className="text-neutral-700 font-bold text-xl">
+                    {isUserFromAppSumo
+                      ? i18n.get(`appSumo.tiers.${user?.appSumoDetails?.planId as string}`)
+                      : currentPlan?.simpleName}
+                  </span>
 
-                  <div className="flex w-full items-end justify-center text-neutral-500 text-xs">
+                  <div className="flex w-full items-end text-neutral-500 text-xs">
                     {currentPlan?.planId ? (
                       <Fragment>
                         <span>
