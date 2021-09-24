@@ -33,7 +33,7 @@ export function downloadFile(
 
     trackFileDownloadError(userEmail, fileId, errMessage);
 
-    return new Error(errMessage);
+    throw new Error(errMessage);
   });
 
   return [fileBlobPromise.then(), actionState];
