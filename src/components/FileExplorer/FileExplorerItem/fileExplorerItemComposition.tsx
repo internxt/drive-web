@@ -123,7 +123,11 @@ export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
     }
 
     if (droppedType === DragAndDropType.DriveItem) {
-      const itemsToMove = isSomeItemSelected ? [...new Set([...selectedItems, droppedData])] : [droppedData];
+      const itemsToMove = isSomeItemSelected
+        ? [...selectedItems, droppedData as DriveItemData].filter(
+            (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
+          )
+        : [droppedData];
 
       dispatch(
         storageThunks.moveItemsThunk({

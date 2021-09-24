@@ -103,7 +103,9 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         });
     }
 
-    return Promise.all(promises).then();
+    return Promise.all(promises).then(() => {
+      dispatch(storageActions.clearSelectedItems());
+    });
   },
 );
 
