@@ -142,11 +142,11 @@ export const userSelectors = {
       ? 'B'
       : (user as UserSettings).name[0] + ((user as UserSettings).lastname[0] || '');
 
-    return nameLetters;
+    return nameLetters.toUpperCase();
   },
 };
 
-export const { initialize, resetState, setIsUserInitialized, setUser } = userSlice.actions;
+export const { initialize, resetState, setIsUserInitialized } = userSlice.actions;
 export const userActions = userSlice.actions;
 
 export const userThunks = {
