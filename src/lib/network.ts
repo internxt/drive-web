@@ -128,8 +128,6 @@ export class Network {
   }
 
   downloadFileV2(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Blob>, ActionState | undefined] {
-    console.time('download');
-
     let actionState: ActionState | undefined;
 
     if (!bucketId) {
@@ -168,9 +166,8 @@ export class Network {
             const uploadedBytes = chunks.reduce((acumm, chunk) => acumm + chunk.length, 0);
 
             params.progressCallback(1, uploadedBytes, uploadedBytes);
-            console.timeEnd('download');
             resolve(new Blob(chunks, { type: 'application/octet-stream' }))
-          }).once('error', reject);
+          });
         },
       }, {
         label: 'MultipleStreams',
