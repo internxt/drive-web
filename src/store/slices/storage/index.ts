@@ -7,6 +7,7 @@ import selectors from './storage.selectors';
 import { storageExtraReducers } from '../storage/storage.thunks';
 import { StorageState, StorageSetFiltersPayload, filtersFactory } from './storage.model';
 import databaseService, { DatabaseCollection } from '../../../services/database.service';
+import itemsListService from '../../../services/items-list.service';
 
 const initialState: StorageState = {
   loadingFolders: {},
@@ -125,23 +126,11 @@ export const storageSlice = createSlice({
       state: StorageState,
       action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
     ) {
-      action.payload.items = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
-
+      const itemsToPush = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
       const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
-      const folders = action.payload.items.filter((item) => item.isFolder);
-      const files = action.payload.items.filter((item) => !item.isFolder);
-      const pushFn = (itemsList: DriveItemData[]): DriveItemData[] => {
-        const lastFolderIndex = itemsList.filter((item) => item.isFolder).length;
-        const itemsCopy = [...itemsList];
-
-        arrayService.insertAt(itemsCopy, lastFolderIndex, folders);
-        itemsCopy.push(...files);
-
-        return itemsCopy;
-      };
 
       folderIds.forEach((folderId) => {
-        const items = pushFn(state.levels[folderId]);
+        const items = itemsListService.pushItems(itemsToPush, state.levels[folderId]);
 
         state.levels[folderId] = items;
 
@@ -149,7 +138,7 @@ export const storageSlice = createSlice({
       });
 
       if (action.payload.updateRecents) {
-        state.recents = [...files, ...state.recents];
+        state.recents = [...itemsToPush.filter((item) => !item.isFolder), ...state.recents];
       }
     },
     popItems(
