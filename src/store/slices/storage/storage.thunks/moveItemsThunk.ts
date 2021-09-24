@@ -15,6 +15,8 @@ import {
   TaskStatus,
   TaskType,
 } from '../../../../services/task-manager.service';
+import databaseService, { DatabaseCollection } from '../../../../services/database.service';
+import itemsListService from '../../../../services/items-list.service';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
@@ -59,7 +61,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
       promises.push(storageService.moveItem(item, destinationFolderId));
 
       promises[index]
-        .then(() => {
+        .then(async () => {
           dispatch(
             taskManagerActions.updateTask({
               taskId: task.id,
@@ -75,6 +77,19 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
               items: item,
             }),
           );
+
+          // Updates destination folder content in local database
+          const destinationLevelDatabaseContent = await databaseService.get(
+            DatabaseCollection.Levels,
+            destinationFolderId,
+          );
+          if (destinationLevelDatabaseContent) {
+            databaseService.put(
+              DatabaseCollection.Levels,
+              destinationFolderId,
+              itemsListService.pushItems(items, destinationLevelDatabaseContent),
+            );
+          }
         })
         .catch(() => {
           dispatch(
