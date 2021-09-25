@@ -1423,8 +1423,8 @@
 
 "@internxt/inxt-js@^1.2.3-1":
   version "1.2.3-1"
-  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.3-1/b19d48587f616ea427bbf0f2ade30051046fde58bbf6e1c5157e24f323d19da0#b64798a192ebc1c000d5e08fb2950dce85e651fb"
-  integrity sha512-GjUSe1/+Q0ycYM+37YW5aBY6DDdWmYKHnZQEEbJEK0mEbWLt7nhjgQwrhW0wMPNBI7ZTmlWKZkrVeBR+pUy2Og==
+  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.3-1/6eba9fc2c6f4f883f92818587752795b92c6eea0746bf1d970089f1a1259f64c#066cc1778a0b181d65a4c3356dc8158159ac15e0"
+  integrity sha512-9LzcvKNPNziTaI2m3/LLxpqQMKDGtUSkkBuEL6URDLFkLEJgQW5EcVa3sY19H7tii/8I+w9UII/8HeKb0pfGSA==
   dependencies:
     "@types/progress-stream" "^2.0.2"
     abort-controller "^3.0.0"
