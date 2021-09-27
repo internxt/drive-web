@@ -1,0 +1,28 @@
+import { Device } from '../../models/interfaces';
+import * as Unicons from '@iconscout/react-unicons';
+import dateService from '../../services/date.service';
+
+export default function DeviceListItem({
+  device,
+  onClick,
+}: {
+  device: Device;
+  onClick: (clickedDevice: Device) => void;
+}): JSX.Element {
+  return (
+    <div
+      className="py-3.5 border-b border-l-neutral-30 flex items-center hover:bg-blue-20"
+      onDoubleClick={() => onClick(device)}
+    >
+      <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
+        <Unicons.UilDesktop />
+      </div>
+      <p className="flex-grow pr-3">{device.name}</p>
+      <div className="w-2/12 hidden items-center xl:flex"></div>
+      <div className="w-3/12 hidden items-center lg:flex">
+        {dateService.format(device.updatedAt, 'DD MMMM YYYY. HH:mm')}
+      </div>
+      <div className="w-2/12 flex items-center">1GB</div>
+    </div>
+  );
+}

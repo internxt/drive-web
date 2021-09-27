@@ -102,6 +102,12 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
               isOpen={!isCollapsed}
             />
             <SidenavItem
+              label="Backups"
+              to="/app/backups"
+              icon={<Unicons.UilHdd className="w-5" />}
+              isOpen={!isCollapsed}
+            />
+            <SidenavItem
               label="Recents"
               to="/app/recents"
               icon={<Unicons.UilClockEight className="w-5" />}

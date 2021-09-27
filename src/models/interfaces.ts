@@ -190,3 +190,29 @@ export interface InfoInvitationsMembers {
   isInvitation: boolean;
   user: string;
 }
+
+export interface Device {
+  id: number;
+  name: string;
+  mac: string;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Backup {
+  id: number;
+  path: string;
+  fileId: string;
+  deviceId: number;
+  userId: number;
+  interval: number;
+  size: number;
+  bucket: string;
+  createdAt: string;
+  updatedAt: string;
+  encrypt_version: string;
+  hash: string;
+  enabled: boolean;
+  lastBackupAt: string;
+}
