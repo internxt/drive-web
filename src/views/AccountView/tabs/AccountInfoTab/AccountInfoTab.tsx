@@ -113,14 +113,12 @@ const AccountPlanInfoTab = (): JSX.Element => {
                     )}
                   </div>
                 </div>
-                {!isUserFromAppSumo && (
-                  <BaseButton
-                    className={`${isCurrentPlanLifetime ? 'hidden' : ''} primary`}
-                    onClick={onUpgradeButtonClicked}
-                  >
-                    {i18n.get('action.upgrade')}
-                  </BaseButton>
-                )}
+                <BaseButton
+                  className={`${isCurrentPlanLifetime ? 'hidden' : ''} primary`}
+                  onClick={onUpgradeButtonClicked}
+                >
+                  {i18n.get('action.upgrade')}
+                </BaseButton>
               </div>
             ) : (
               <span className="">{i18n.get('general.loading.default')}</span>
@@ -142,12 +140,14 @@ const AccountPlanInfoTab = (): JSX.Element => {
               description={i18n.get('views.account.tabs.info.advice2.description')}
             />
           </div>
-          <span
-            className="block text-center text-m-neutral-80 cursor-pointer mt-10"
-            onClick={onDeletePermanentlyAccountClicked}
-          >
-            {i18n.get('action.deleteAccount')}
-          </span>
+          {!isUserFromAppSumo && (
+            <span
+              className="block text-center text-m-neutral-80 cursor-pointer mt-10"
+              onClick={onDeletePermanentlyAccountClicked}
+            >
+              {i18n.get('action.deleteAccount')}
+            </span>
+          )}
         </div>
       </div>
     </Fragment>
