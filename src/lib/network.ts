@@ -106,39 +106,10 @@ export class Network {
       throw new Error('File id not provided');
     }
 
-    const promise = new Promise<Blob>((resolve, reject) => {
-      actionState = this.environment.downloadFile(bucketId, fileId, {
-        ...params,
-        finishedCallback: (err: Error | null, filecontent: Blob | null) => {
-          if (err) {
-            //STATUS: ERROR DOWNLOAD FILE
-            return reject(err);
-          }
-
-          if (!filecontent || filecontent.size === 0) {
-            return reject(Error('Downloaded file is empty'));
-          }
-
-          resolve(filecontent);
-        },
-      });
-    });
-
-    return [promise, actionState];
-  }
-
-  downloadFileV2(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Blob>, ActionState | undefined] {
-    let actionState: ActionState | undefined;
-
-    if (!bucketId) {
-      throw new Error('Bucket id not provided');
-    }
-
-    if (!fileId) {
-      throw new Error('File id not provided');
-    }
-
     let errored = false;
+
+    this.environment.config.download = { concurrency: 6 };
+    this.environment.config.useProxy = true;
 
     const promise = new Promise<Blob>((resolve, reject) => {
       actionState = this.environment.download(bucketId, fileId, {
@@ -170,7 +141,7 @@ export class Network {
           });
         },
       }, {
-        label: 'MultipleStreams',
+        label: 'OneStreamOnly',
         params: {}
       });
     });

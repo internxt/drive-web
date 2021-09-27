@@ -21,7 +21,7 @@ export function downloadFile(
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
-  const [blobPromise, actionState] = network.downloadFileV2(bucketId, fileId, {
+  const [blobPromise, actionState] = network.downloadFile(bucketId, fileId, {
     progressCallback: updateProgressCallback
   });
 
