@@ -1,16 +1,71 @@
 import React, { ReactNode } from 'react';
 import { Backup } from '../../models/interfaces';
+import { downloadBackup } from '../../services/download.service';
 import DriveListItemSkeleton from '../loaders/DriveListItemSkeleton';
 import BackupsListItem from './BackupsListItem';
+import { connect } from 'react-redux';
+import { AppDispatch } from '../../store';
+import { uniqueId } from 'lodash';
+import { DownloadFileTask, TaskProgress, TaskStatus, TaskType } from '../../services/task-manager.service';
+import { taskManagerActions } from '../../store/slices/task-manager';
 
 interface Props {
   items: Backup[] | null;
   isLoading: boolean;
+  dispatch: AppDispatch;
 }
 
-export default class BackupsList extends React.Component<Props> {
+class BackupsList extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
+  }
+
+  async onDownload(backup: Backup): Promise<void> {
+    const taskId = uniqueId();
+    const task: DownloadFileTask = {
+      id: taskId,
+      action: TaskType.DownloadFile,
+      status: TaskStatus.Pending,
+      progress: TaskProgress.Min,
+      file: { name: backup.name, type: 'zip' },
+      showNotification: true,
+      cancellable: true,
+    };
+
+    const onProgress = (progress) => {
+      this.props.dispatch(
+        taskManagerActions.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.InProcess,
+            progress,
+          },
+        }),
+      );
+    };
+
+    const onFinished = () => {
+      this.props.dispatch(
+        taskManagerActions.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Success,
+          },
+        }),
+      );
+    };
+
+    const actionState = await downloadBackup(backup, onProgress, onFinished);
+    this.props.dispatch(taskManagerActions.addTask(task));
+
+    this.props.dispatch(
+      taskManagerActions.updateTask({
+        taskId,
+        merge: {
+          stop: async () => actionState?.stop(),
+        },
+      }),
+    );
   }
 
   get hasItems(): boolean {
@@ -19,7 +74,9 @@ export default class BackupsList extends React.Component<Props> {
 
   get itemsList(): JSX.Element[] {
     if (this.props.items === null) return [];
-    return this.props.items.map((item: Backup) => <BackupsListItem key={item.id} backup={item} />);
+    return this.props.items.map((item: Backup) => (
+      <BackupsListItem key={item.id} backup={item} onDownload={(backup) => this.onDownload(backup)} />
+    ));
   }
 
   get loadingSkeleton(): JSX.Element[] {
@@ -46,3 +103,7 @@ export default class BackupsList extends React.Component<Props> {
     );
   }
 }
+
+export default connect(() => {
+  return {};
+})(BackupsList);

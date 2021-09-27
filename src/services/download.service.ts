@@ -4,7 +4,7 @@ import localStorageService from './local-storage.service';
 import analyticsService from './analytics.service';
 import { DevicePlatform } from '../models/enums';
 import { getEnvironmentConfig, Network } from '../lib/network';
-import { DriveItemData } from '../models/interfaces';
+import { Backup, DriveItemData } from '../models/interfaces';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 export function downloadFile(
@@ -22,21 +22,64 @@ export function downloadFile(
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
   const [blobPromise, actionState] = network.downloadFile(bucketId, fileId, {
-    progressCallback: updateProgressCallback
+    progressCallback: updateProgressCallback,
   });
 
-  const fileBlobPromise = blobPromise.then((fileBlob) => {
-    fileDownload(fileBlob, completeFilename);
-    trackFileDownloadFinished(userEmail, fileId, itemData.size);
-  }).catch((err) => {
-    const errMessage = err instanceof Error ? err.message : (err as string);
+  const fileBlobPromise = blobPromise
+    .then((fileBlob) => {
+      fileDownload(fileBlob, completeFilename);
+      trackFileDownloadFinished(userEmail, fileId, itemData.size);
+    })
+    .catch((err) => {
+      const errMessage = err instanceof Error ? err.message : (err as string);
 
-    trackFileDownloadError(userEmail, fileId, errMessage);
+      trackFileDownloadError(userEmail, fileId, errMessage);
 
-    throw new Error(errMessage);
-  });
+      throw new Error(errMessage);
+    });
 
   return [fileBlobPromise.then(), actionState];
+}
+
+export async function downloadBackup(
+  backup: Backup,
+  progressCallback: (progress: number) => void,
+  finishedCallback: () => void,
+): Promise<ActionState | undefined> {
+  if (!('showSaveFilePicker' in window)) {
+    throw new Error('File System Access API not available');
+  }
+
+  if (!backup.fileId) {
+    throw new Error('This backup has not been uploaded yet');
+  }
+
+  const handle = await window.showSaveFilePicker({
+    suggestedName: backup.name,
+    types: [{ accept: { 'application/zip': ['.zip'] } }],
+  });
+
+  let actionState: ActionState | undefined;
+
+  if (handle) {
+    const writable = await handle.createWritable();
+    const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig();
+    const network = new Network(bridgeUser, bridgePass, encryptionKey);
+    const [downloadStreamPromise, _actionState] = network.getFileDownloadStream(backup.bucket, backup.fileId, {
+      progressCallback,
+    });
+    actionState = _actionState;
+    const downloadStream = await downloadStreamPromise;
+    downloadStream.on('data', (chunk: Buffer) => {
+      writable.write(chunk);
+    });
+    downloadStream.on('end', () => {
+      writable.close();
+      finishedCallback();
+    });
+  }
+
+  return actionState;
 }
 
 const trackFileDownloadStart = (

@@ -4,6 +4,7 @@ import localStorageService from '../services/local-storage.service';
 import { TeamsSettings, UserSettings } from '../models/interfaces';
 import { FileInfo } from '@internxt/inxt-js/build/api/fileinfo';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
+import { Readable } from 'stream';
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 
@@ -96,6 +97,41 @@ export class Network {
    * @returns
    */
   downloadFile(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Blob>, ActionState | undefined] {
+    const [downloadStreamPromise, actionState] = this.getFileDownloadStream(bucketId, fileId, params);
+
+    let errored = false;
+
+    const promise = new Promise<Blob>((resolve, reject) => {
+      downloadStreamPromise.then((downloadStream) => {
+        const chunks: Buffer[] = [];
+        downloadStream
+          .on('data', (chunk: Buffer) => {
+            chunks.push(chunk);
+          })
+          .once('error', (err) => {
+            errored = true;
+            reject(err);
+          })
+          .once('end', () => {
+            if (errored) {
+              return;
+            }
+            const uploadedBytes = chunks.reduce((acumm, chunk) => acumm + chunk.length, 0);
+
+            params.progressCallback(1, uploadedBytes, uploadedBytes);
+            resolve(new Blob(chunks, { type: 'application/octet-stream' }));
+          });
+      });
+    });
+
+    return [promise, actionState];
+  }
+
+  getFileDownloadStream(
+    bucketId: string,
+    fileId: string,
+    params: IDownloadParams,
+  ): [Promise<Readable>, ActionState | undefined] {
     let actionState: ActionState | undefined;
 
     if (!bucketId) {
@@ -106,44 +142,33 @@ export class Network {
       throw new Error('File id not provided');
     }
 
-    let errored = false;
-
     this.environment.config.download = { concurrency: 6 };
     this.environment.config.useProxy = true;
 
-    const promise = new Promise<Blob>((resolve, reject) => {
-      actionState = this.environment.download(bucketId, fileId, {
-        ...params,
-        finishedCallback: (err, downloadStream) => {
-          if (err) {
-            //STATUS: ERROR DOWNLOAD FILE
-            return reject(err);
-          }
-
-          if (!downloadStream) {
-            return reject(Error('Download stream is empty'));
-          }
-
-          const chunks: Buffer[] = []
-          downloadStream.on('data', (chunk: Buffer) => {
-            chunks.push(chunk);
-          }).once('error', (err) => {
-            errored = true;
-            reject(err);
-          }).once('end', () => {
-            if (errored) {
-              return;
+    const promise = new Promise<Readable>((resolve, reject) => {
+      actionState = this.environment.download(
+        bucketId,
+        fileId,
+        {
+          ...params,
+          finishedCallback: (err, downloadStream) => {
+            if (err) {
+              //STATUS: ERROR DOWNLOAD FILE
+              return reject(err);
             }
-            const uploadedBytes = chunks.reduce((acumm, chunk) => acumm + chunk.length, 0);
 
-            params.progressCallback(1, uploadedBytes, uploadedBytes);
-            resolve(new Blob(chunks, { type: 'application/octet-stream' }))
-          });
+            if (!downloadStream) {
+              return reject(Error('Download stream is empty'));
+            }
+
+            resolve(downloadStream);
+          },
         },
-      }, {
-        label: 'OneStreamOnly',
-        params: {}
-      });
+        {
+          label: 'OneStreamOnly',
+          params: {},
+        },
+      );
     });
 
     return [promise, actionState];

@@ -209,16 +209,17 @@ export interface Device {
 export interface Backup {
   id: number;
   path: string;
-  fileId: string;
+  name: string;
+  fileId?: string;
   deviceId: number;
   userId: number;
   interval: number;
-  size: number;
+  size?: number;
   bucket: string;
   createdAt: string;
   updatedAt: string;
   encrypt_version: string;
-  hash: string;
+  hash?: string;
   enabled: boolean;
-  lastBackupAt: string;
+  lastBackupAt?: string;
 }

@@ -17,10 +17,15 @@ const backupsService = {
       return res.json();
     });
 
-    return backups.map((backup) => ({
-      ...backup,
-      path: aes.decrypt(backup.path, `${process.env.REACT_APP_CRYPTO_SECRET2}-${backup.bucket}`),
-    }));
+    return backups.map((backup) => {
+      const path = aes.decrypt(backup.path, `${process.env.REACT_APP_CRYPTO_SECRET2}-${backup.bucket}`);
+      const name = path.split(/[/\\]/).pop();
+      return {
+        ...backup,
+        path,
+        name,
+      };
+    });
   },
 };
 

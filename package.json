@@ -87,6 +87,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/socket.io-client": "^1.4.35",
     "@types/stripe-v3": "^3.1.25",
+    "@types/wicg-file-system-access": "^2020.9.4",
     "autoprefixer": "^9",
     "customize-cra": "^1.0.0",
     "cypress": "^8.3.1",

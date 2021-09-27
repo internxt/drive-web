@@ -48,7 +48,7 @@ export interface CreateFolderTask extends BaseTask {
 export interface DownloadFileTask extends BaseTask {
   action: TaskType.DownloadFile;
   cancellable: true;
-  file: DriveFileData;
+  file: { name: string; type: string };
 }
 
 export interface UploadFileTask extends BaseTask {
