@@ -133,10 +133,11 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         analyticsService.trackSignUp({
           userId: xUser.uuid,
           properties: {
+            email: xUser.email,
             signup_source: signupCampaignSource(window.location.search),
           },
           traits: {
-            email: xUser.uuid,
+            email: xUser.email,
             first_name: name,
             last_name: lastname,
             usage: 0,
@@ -199,6 +200,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
             userId: uuid,
             properties: {
               signup_source: signupCampaignSource(window.location.search),
+              email: email,
             },
             traits: {
               member_tier: 'free',

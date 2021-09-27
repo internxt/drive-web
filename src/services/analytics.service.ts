@@ -35,9 +35,10 @@ export function signupCampaignSource(locationSearch: string) {
   const parameters = new URLSearchParams(locationSearch);
   const partner = parameters.get('internxt_partner');
   const campaign = parameters.get('utm_campaign');
+  const impact = parameters.get('irclickid') ? 'impact' : null;
   const other = 'organic';
 
-  const source = [partner, campaign, other].find((o) => typeof o !== 'undefined' && o !== null);
+  const source = [partner, campaign, impact, other].find((o) => typeof o !== 'undefined' && o !== null);
 
   return source;
 }
@@ -87,7 +88,7 @@ export function signInAttempted(email: string, error: string | Error): void {
 }
 
 export function trackSignUp(payload: {
-  properties: { signup_source };
+  properties: { signup_source, email: string };
   traits: {
     member_tier?: string;
     email: string;
