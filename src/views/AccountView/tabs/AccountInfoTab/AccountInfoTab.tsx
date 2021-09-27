@@ -142,14 +142,12 @@ const AccountPlanInfoTab = (): JSX.Element => {
               description={i18n.get('views.account.tabs.info.advice2.description')}
             />
           </div>
-          {!isUserFromAppSumo && (
-            <span
-              className="block text-center text-m-neutral-80 cursor-pointer mt-10"
-              onClick={onDeletePermanentlyAccountClicked}
-            >
-              {i18n.get('action.deleteAccount')}
-            </span>
-          )}
+          <span
+            className="block text-center text-m-neutral-80 cursor-pointer mt-10"
+            onClick={onDeletePermanentlyAccountClicked}
+          >
+            {i18n.get('action.deleteAccount')}
+          </span>
         </div>
       </div>
     </Fragment>
