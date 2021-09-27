@@ -15,9 +15,11 @@ import httpService from './http.service';
 import { AppView, Workspace } from '../models/enums';
 import notificationsService, { ToastType } from './notifications.service';
 import navigationService from './navigation.service';
+import databaseService from './database.service';
 
-export function logOut(): void {
+export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
+  await databaseService.clear();
   localStorageService.clear();
   navigationService.push(AppView.Login);
 }

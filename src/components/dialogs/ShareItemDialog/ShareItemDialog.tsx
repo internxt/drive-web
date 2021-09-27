@@ -17,6 +17,8 @@ import notificationsService, { ToastType } from '../../../services/notifications
 import { items } from '@internxt/lib';
 import navigationService from '../../../services/navigation.service';
 import { AppView } from '../../../models/enums';
+import errorService from '../../../services/error.service';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
@@ -77,12 +79,13 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       window.analytics.track('file-share');
       setLinkToCopy(link);
     } catch (err: unknown) {
-      const errorMessage: string = err instanceof Error ? err.message : (err as string);
+      const castedError = errorService.castError(err);
 
-      if (err instanceof Error && err.message === 'unauthenticated') {
+      if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
       }
-      notificationsService.show(errorMessage, ToastType.Error);
+      notificationsService.show(castedError.message, ToastType.Error);
+
       setLinkToCopy(i18n.get('error.unavailableLink'));
     } finally {
       setIsLoading(false);

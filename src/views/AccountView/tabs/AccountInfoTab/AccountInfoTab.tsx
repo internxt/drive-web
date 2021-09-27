@@ -1,7 +1,6 @@
 import { Fragment, useState } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
-import { getUserLimitString } from '../../../../services/usage.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { setCurrentAccountTab } from '../../../../store/slices/ui';
 import { planSelectors } from '../../../../store/slices/plan';
@@ -17,6 +16,8 @@ import BaseButton from '../../../../components/Buttons/BaseButton';
 import moneyService from '../../../../services/money.service';
 import { useEffect } from 'react';
 import screenService from '../../../../services/screen.service';
+import limitService from '../../../../services/limit.service';
+import usageService from '../../../../services/usage.service';
 
 const AccountPlanInfoTab = (): JSX.Element => {
   const [isLgScreen, setIsLgScreen] = useState(screenService.isLg());
@@ -38,7 +39,8 @@ const AccountPlanInfoTab = (): JSX.Element => {
   const onDeletePermanentlyAccountClicked = (): void => {
     setIsDeleteAccountDialogOpen(true);
   };
-  const progressBarFillWidth = isLoadingPlans || isLoadingPlanLimit ? 0 : (planUsage / planLimit) * 100 + '%';
+  const usagePercent = usageService.getUsagePercent(planUsage, planLimit);
+  const progressBarFillWidth = isLoadingPlans || isLoadingPlanLimit ? 0 : usagePercent + '%';
   const progressBarFillStyle = { width: progressBarFillWidth };
   const totalAmountFormatted =
     currentPlan?.price.toFixed(2) + moneyService.getCurrencySymbol(currentPlan?.currency || '');
@@ -73,7 +75,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
                 <span className="text-center w-full">{i18n.get('general.loading.default')}</span>
               ) : (
                 <span className={`${isLgScreen ? '' : 'text-center'} block w-full m-0`}>
-                  {bytesToString(planUsage) || '0'} of {getUserLimitString(planLimit)}
+                  {bytesToString(planUsage) || '0'} of {limitService.formatLimit(planLimit)}
                 </span>
               )}
 

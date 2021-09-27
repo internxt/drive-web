@@ -81,11 +81,6 @@ export enum DragAndDropType {
   DriveItem = 'drive-item',
 }
 
-export enum StorageItemList {
-  Drive = 'drive',
-  Recents = 'recents',
-}
-
 export enum StripeMemberTiers {
   'infinite',
   'lifetime',

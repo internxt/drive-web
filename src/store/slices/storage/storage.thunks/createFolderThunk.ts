@@ -3,7 +3,6 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { storageActions, storageSelectors } from '..';
 import { RootState } from '../../..';
-import { StorageItemList } from '../../../../models/enums';
 import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
@@ -30,6 +29,7 @@ export const createFolderThunk = createAsyncThunk<
   'storage/createFolder',
   async ({ folderName, parentFolderId, options }: CreateFolderPayload, { requestId, getState, dispatch }) => {
     options = Object.assign({ showErrors: true }, options || {});
+    const currentFolderId = storageSelectors.currentFolderId(getState());
 
     try {
       const [createdFolderPromise, cancelTokenSource] = folderService.createFolder(parentFolderId, folderName);
@@ -72,10 +72,10 @@ export const createFolderThunk = createAsyncThunk<
         }),
       );
 
-      if (storageSelectors.currentFolderId(getState()) === parentFolderId) {
+      if (currentFolderId === parentFolderId) {
         dispatch(
           storageActions.pushItems({
-            lists: [StorageItemList.Drive],
+            folderIds: [currentFolderId],
             items: createdFolderNormalized as DriveItemData,
           }),
         );
@@ -95,7 +95,7 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
     .addCase(createFolderThunk.pending, () => undefined)
     .addCase(createFolderThunk.fulfilled, () => undefined)
     .addCase(createFolderThunk.rejected, (state, action) => {
-      const requestOptions = action.meta.arg.options;
+      const requestOptions = Object.assign({ showErrors: true }, action.meta.arg.options || {});
 
       if (requestOptions?.showErrors) {
         const errorMessage = action.error.message?.includes('already exists')

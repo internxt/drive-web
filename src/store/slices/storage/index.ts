@@ -1,19 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FileViewMode, StorageItemList } from '../../../models/enums';
+import { FileViewMode } from '../../../models/enums';
 import { DriveItemData, DriveItemPatch, FolderPath } from '../../../models/interfaces';
 import arrayService from '../../../services/array.service';
 
 import selectors from './storage.selectors';
 import { storageExtraReducers } from '../storage/storage.thunks';
 import { StorageState, StorageSetFiltersPayload, filtersFactory } from './storage.model';
+import databaseService, { DatabaseCollection } from '../../../services/database.service';
+import itemsListService from '../../../services/items-list.service';
 
 const initialState: StorageState = {
-  isLoading: false,
+  loadingFolders: {},
   isDeletingItems: false,
-  lists: {
-    [StorageItemList.Drive]: [],
-    [StorageItemList.Recents]: [],
-  },
+  levels: {},
+  recents: [],
   isLoadingRecents: false,
   filters: filtersFactory(),
   selectedItems: [],
@@ -28,17 +28,17 @@ export const storageSlice = createSlice({
   name: 'storage',
   initialState,
   reducers: {
-    setIsLoading: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+    setIsLoadingFolder: (state: StorageState, action: PayloadAction<{ folderId: number; value: boolean }>) => {
+      state.loadingFolders[action.payload.folderId] = action.payload.value;
     },
     setIsLoadingRecents: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+      state.isLoadingRecents = action.payload;
     },
-    setItems: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
-      state.lists.drive = action.payload;
+    setItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
+      state.levels[action.payload.folderId] = action.payload.items;
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
-      state.lists.recents = action.payload;
+      state.recents = action.payload;
     },
     setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
       Object.assign(state.filters, action.payload);
@@ -95,56 +95,76 @@ export const storageSlice = createSlice({
     },
     patchItem: (
       state: StorageState,
-      action: PayloadAction<{ id: number; isFolder: boolean; patch: DriveItemPatch }>,
+      action: PayloadAction<{ id: number; folderId: number; isFolder: boolean; patch: DriveItemPatch }>,
     ) => {
-      const { id, isFolder, patch } = action.payload;
+      const { id, folderId, isFolder, patch } = action.payload;
 
-      Object.values(state.lists).forEach((list) => {
-        const item = list.find((i) => i.id === id && i.isFolder === isFolder);
+      if (state.levels[folderId]) {
+        const item = state.levels[folderId].find((i) => i.id === id && i.isFolder === isFolder);
+        const itemIndex = state.levels[folderId].findIndex((i) => i.id === id && i.isFolder === isFolder);
+        const itemsToDatabase = [...state.levels[folderId]];
+        itemsToDatabase[itemIndex] = Object.assign({}, item, patch);
 
-        item && Object.assign(item, patch);
+        state.levels[folderId] = itemsToDatabase;
+
+        databaseService.put(DatabaseCollection.Levels, folderId, itemsToDatabase);
+      }
+
+      state.recents = state.recents.map((item) => {
+        if (item.id === id && item.isFolder === isFolder) {
+          Object.assign(item, patch);
+        }
+
+        return item;
       });
 
-      if (state.infoItem?.id === id) {
+      if (state.infoItem?.id === id && state.infoItem?.isFolder === isFolder) {
         Object.assign(state.infoItem, patch);
       }
     },
     pushItems(
       state: StorageState,
-      action: PayloadAction<{ lists?: StorageItemList[]; items: DriveItemData | DriveItemData[] }>,
+      action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
     ) {
-      action.payload.items = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
+      const itemsToPush = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
+      const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
 
-      const listsToUpdate = action.payload.lists || Object.values(StorageItemList);
-      const folders = action.payload.items.filter((item) => item.isFolder);
-      const files = action.payload.items.filter((item) => !item.isFolder);
+      folderIds.forEach((folderId) => {
+        const items = itemsListService.pushItems(itemsToPush, state.levels[folderId]);
 
-      listsToUpdate.forEach((listKey) => {
-        const lastFolderIndex = state.lists[listKey].filter((item) => item.isFolder).length;
+        state.levels[folderId] = items;
 
-        arrayService.insertAt(state.lists[listKey], lastFolderIndex, folders);
-
-        const firstFileIndex = state.lists[listKey].findIndex((item) => !item.isFolder);
-
-        arrayService.insertAt(
-          state.lists[listKey],
-          ~firstFileIndex ? firstFileIndex : state.lists[listKey].length,
-          files,
-        );
+        databaseService.put(DatabaseCollection.Levels, folderId, items);
       });
+
+      if (action.payload.updateRecents) {
+        state.recents = [...itemsToPush.filter((item) => !item.isFolder), ...state.recents];
+      }
     },
     popItems(
       state: StorageState,
-      action: PayloadAction<{ lists?: StorageItemList[]; items: DriveItemData | DriveItemData[] }>,
+      action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
     ) {
-      const listsToUpdate = action.payload.lists || Object.values(StorageItemList);
+      const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
-      listsToUpdate.forEach((listKey) => {
-        state.lists[listKey] = state.lists[listKey].filter(
-          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id),
+      folderIds.forEach((folderId) => {
+        let items = [...state.levels[folderId]];
+
+        items = items.filter(
+          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && i.isFolder === item.isFolder),
         );
+
+        state.levels[folderId] = items;
+
+        databaseService.put(DatabaseCollection.Levels, folderId, items);
       });
+
+      if (action.payload.updateRecents) {
+        state.recents = state.recents.filter(
+          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && i.isFolder === item.isFolder),
+        );
+      }
     },
     resetState(state: StorageState) {
       Object.assign(state, initialState);
@@ -154,7 +174,7 @@ export const storageSlice = createSlice({
 });
 
 export const {
-  setIsLoading,
+  setIsLoadingFolder,
   setIsLoadingRecents,
   setItems,
   setRecents,

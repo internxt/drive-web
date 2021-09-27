@@ -118,5 +118,10 @@
       "exact": true,
       "auth": true
     }
-  ]
+  ],
+  "database": {
+    "name": "app-database",
+    "version": 1.0,
+    "provider": "indexed-db"
+  }
 }

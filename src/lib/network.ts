@@ -106,21 +106,43 @@ export class Network {
       throw new Error('File id not provided');
     }
 
+    let errored = false;
+
+    this.environment.config.download = { concurrency: 6 };
+    this.environment.config.useProxy = true;
+
     const promise = new Promise<Blob>((resolve, reject) => {
-      actionState = this.environment.downloadFile(bucketId, fileId, {
+      actionState = this.environment.download(bucketId, fileId, {
         ...params,
-        finishedCallback: (err: Error | null, filecontent: Blob | null) => {
+        finishedCallback: (err, downloadStream) => {
           if (err) {
             //STATUS: ERROR DOWNLOAD FILE
             return reject(err);
           }
 
-          if (!filecontent || filecontent.size === 0) {
-            return reject(Error('Downloaded file is empty'));
+          if (!downloadStream) {
+            return reject(Error('Download stream is empty'));
           }
 
-          resolve(filecontent);
+          const chunks: Buffer[] = []
+          downloadStream.on('data', (chunk: Buffer) => {
+            chunks.push(chunk);
+          }).once('error', (err) => {
+            errored = true;
+            reject(err);
+          }).once('end', () => {
+            if (errored) {
+              return;
+            }
+            const uploadedBytes = chunks.reduce((acumm, chunk) => acumm + chunk.length, 0);
+
+            params.progressCallback(1, uploadedBytes, uploadedBytes);
+            resolve(new Blob(chunks, { type: 'application/octet-stream' }))
+          });
         },
+      }, {
+        label: 'OneStreamOnly',
+        params: {}
       });
     });
 
