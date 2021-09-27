@@ -93,13 +93,13 @@ const AccountPlanInfoTab = (): JSX.Element => {
               <div className="flex justify-between w-full">
                 <div>
                   <span className="text-neutral-700 font-bold text-xl">
-                    {isUserFromAppSumo
-                      ? i18n.get(`appSumo.tiers.${user?.appSumoDetails?.planId as string}`)
-                      : currentPlan?.simpleName}
+                    {isUserFromAppSumo ? limitService.formatLimit(planLimit) : currentPlan?.simpleName}
                   </span>
 
                   <div className="flex w-full items-end text-neutral-500 text-xs">
-                    {currentPlan?.planId ? (
+                    {isUserFromAppSumo ? (
+                      <span>{i18n.get(`appSumo.tiers.${user?.appSumoDetails?.planId as string}`)}</span>
+                    ) : currentPlan?.planId ? (
                       <Fragment>
                         <span>
                           {i18n.get('general.billing.billedEachPeriod', {
@@ -113,12 +113,14 @@ const AccountPlanInfoTab = (): JSX.Element => {
                     )}
                   </div>
                 </div>
-                <BaseButton
-                  className={`${isCurrentPlanLifetime ? 'hidden' : ''} primary`}
-                  onClick={onUpgradeButtonClicked}
-                >
-                  {i18n.get('action.upgrade')}
-                </BaseButton>
+                {!isUserFromAppSumo && (
+                  <BaseButton
+                    className={`${isCurrentPlanLifetime ? 'hidden' : ''} primary`}
+                    onClick={onUpgradeButtonClicked}
+                  >
+                    {i18n.get('action.upgrade')}
+                  </BaseButton>
+                )}
               </div>
             ) : (
               <span className="">{i18n.get('general.loading.default')}</span>
@@ -140,12 +142,14 @@ const AccountPlanInfoTab = (): JSX.Element => {
               description={i18n.get('views.account.tabs.info.advice2.description')}
             />
           </div>
-          <span
-            className="block text-center text-m-neutral-80 cursor-pointer mt-10"
-            onClick={onDeletePermanentlyAccountClicked}
-          >
-            {i18n.get('action.deleteAccount')}
-          </span>
+          {!isUserFromAppSumo && (
+            <span
+              className="block text-center text-m-neutral-80 cursor-pointer mt-10"
+              onClick={onDeletePermanentlyAccountClicked}
+            >
+              {i18n.get('action.deleteAccount')}
+            </span>
+          )}
         </div>
       </div>
     </Fragment>
