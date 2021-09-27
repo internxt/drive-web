@@ -10,7 +10,7 @@ export default function BackupsListItem({ backup }: { backup: Backup }): JSX.Ele
   return (
     <div className="py-3.5 border-b border-l-neutral-30 flex items-center hover:bg-blue-20">
       <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
-        <BackupIcon className="w-6 h-6" />
+        <BackupIcon className="w-8 h-8" />
       </div>
       <p className="flex-grow pr-3">{basename}</p>
       <div className="w-2/12 hidden items-center xl:flex"></div>
