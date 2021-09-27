@@ -67,6 +67,7 @@ export interface FileExplorerItemViewProps {
   isDraggingThisItem: boolean;
   isDraggingOverThisItem: boolean;
   isSomeItemSelected: boolean;
+  selectedItems: DriveItemData[];
   isItemSelected: (item: DriveItemData) => boolean;
   onItemRightClicked: (e: React.MouseEvent) => void;
   onItemClicked: (e: React.MouseEvent) => void;
@@ -95,9 +96,7 @@ export interface DropTargetCollectorProps {
 export const getDragSourceType = (): string => DragAndDropType.DriveItem;
 
 export const dragSourceSpec: DragSourceSpec<FileExplorerItemViewProps> = {
-  beginDrag: (props) => {
-    return props.item;
-  },
+  beginDrag: (props) => props.item,
 };
 
 export const dragSourceCollect: DragSourceCollector<DragSourceCollectorProps, FileExplorerItemViewProps> = (
@@ -115,7 +114,7 @@ export const getDropTargetType = (props: FileExplorerItemViewProps): string | st
 
 export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
   drop: (props, monitor) => {
-    const { dispatch, namePath, item } = props;
+    const { dispatch, namePath, item, selectedItems, isSomeItemSelected } = props;
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
 
@@ -124,9 +123,15 @@ export const dropTargetSpec: DropTargetSpec<FileExplorerItemViewProps> = {
     }
 
     if (droppedType === DragAndDropType.DriveItem) {
+      const itemsToMove = isSomeItemSelected
+        ? [...selectedItems, droppedData as DriveItemData].filter(
+            (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
+          )
+        : [droppedData];
+
       dispatch(
         storageThunks.moveItemsThunk({
-          items: [droppedData],
+          items: itemsToMove,
           destinationFolderId: item.id,
         }),
       );

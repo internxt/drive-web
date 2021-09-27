@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@iconscout/react-unicons": "^1.1.6",
-    "@internxt/inxt-js": "^1.0.2",
+    "@internxt/inxt-js": "^1.2.3-1",
     "@internxt/lib": "1.1.0",
     "@reduxjs/toolkit": "^1.6.0",
     "@testing-library/jest-dom": "^5.11.4",
@@ -18,6 +18,7 @@
     "copy-to-clipboard": "^3.3.1",
     "crypto-js": "^4.0.0",
     "history": "^4.10.1",
+    "idb": "^6.1.4",
     "js-file-download": "^0.4.12",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
@@ -40,11 +41,13 @@
     "react-toastify": "^6.2.0",
     "redux-thunk": "^2.3.0",
     "socket.io-client": "^3.1.0",
+    "stream-to-blob": "^2.0.1",
     "string-template": "^1.0.0",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
     "preinstall": "node ./scripts/use-yarn.js",
+    "dev": "craco start",
     "start": "craco start",
     "build": "craco build",
     "test:unit": "jest test/unit/",

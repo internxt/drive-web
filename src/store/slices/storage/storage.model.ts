@@ -1,4 +1,4 @@
-import { FileViewMode, OrderDirection, StorageItemList } from '../../../models/enums';
+import { FileViewMode, OrderDirection } from '../../../models/enums';
 import { DriveItemData, FolderPath, OrderSettings } from '../../../models/interfaces';
 
 export interface StorageFilters {
@@ -6,9 +6,10 @@ export interface StorageFilters {
 }
 
 export interface StorageState {
-  isLoading: boolean;
+  loadingFolders: Record<number, boolean>;
   isDeletingItems: boolean;
-  lists: { [key in StorageItemList]: DriveItemData[] };
+  levels: Record<number, DriveItemData[]>;
+  recents: DriveItemData[];
   isLoadingRecents: boolean;
   filters: StorageFilters;
   order: OrderSettings;

@@ -13,7 +13,9 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
   async (path: FolderPath, { getState, dispatch }) => {
     const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
 
-    await dispatch(fetchFolderContentThunk(path.id)).unwrap();
+    dispatch(storageActions.clearSelectedItems());
+
+    dispatch(fetchFolderContentThunk(path.id)).unwrap();
 
     isInNamePath ? dispatch(storageActions.popNamePathUpTo(path)) : dispatch(storageActions.pushNamePath(path));
 

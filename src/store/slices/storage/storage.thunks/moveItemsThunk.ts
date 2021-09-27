@@ -3,7 +3,6 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { StorageItemList } from '../../../../models/enums';
 import { DriveItemData } from '../../../../models/interfaces';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
@@ -16,6 +15,8 @@ import {
   TaskStatus,
   TaskType,
 } from '../../../../services/task-manager.service';
+import databaseService, { DatabaseCollection } from '../../../../services/database.service';
+import itemsListService from '../../../../services/items-list.service';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
@@ -33,6 +34,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
     }
 
     for (const [index, item] of items.entries()) {
+      const fromFolderId = item.parentId || item.folderId;
       const task: MoveFileTask | MoveFolderTask = item.isFolder
         ? {
             id: `${requestId}-${index}`,
@@ -59,7 +61,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
       promises.push(storageService.moveItem(item, destinationFolderId));
 
       promises[index]
-        .then(() => {
+        .then(async () => {
           dispatch(
             taskManagerActions.updateTask({
               taskId: task.id,
@@ -71,10 +73,23 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
 
           dispatch(
             storageActions.popItems({
-              lists: [StorageItemList.Drive],
+              folderIds: [fromFolderId],
               items: item,
             }),
           );
+
+          // Updates destination folder content in local database
+          const destinationLevelDatabaseContent = await databaseService.get(
+            DatabaseCollection.Levels,
+            destinationFolderId,
+          );
+          if (destinationLevelDatabaseContent) {
+            databaseService.put(
+              DatabaseCollection.Levels,
+              destinationFolderId,
+              itemsListService.pushItems(items, destinationLevelDatabaseContent),
+            );
+          }
         })
         .catch(() => {
           dispatch(
@@ -88,7 +103,9 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         });
     }
 
-    return Promise.all(promises).then();
+    return Promise.all(promises).then(() => {
+      dispatch(storageActions.clearSelectedItems());
+    });
   },
 );
 

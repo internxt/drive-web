@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import * as bip39 from 'bip39';
 import queryString from 'query-string';
@@ -13,7 +13,7 @@ import CheckboxPrimary from '../../components/Checkboxes/CheckboxPrimary';
 import AuthButton from '../../components/Buttons/AuthButton';
 import { useAppDispatch } from '../../store/hooks';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../lib/utils';
-import { setUser, userActions, userThunks } from '../../store/slices/user';
+import { userActions, userThunks } from '../../store/slices/user';
 import { getHeaders } from '../../lib/auth';
 import { generateNewKeys } from '../../services/pgp.service';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope, UilUser } from '@iconscout/react-unicons';
@@ -38,7 +38,7 @@ interface SignUpProps {
 const SignUp = (props: SignUpProps): JSX.Element => {
   const qs = queryString.parse(navigationService.history.location.search);
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
-  const hasTokenParam = qs.token;
+  const tokenParam = qs.token;
   // const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
   const {
     register,
@@ -73,10 +73,14 @@ const SignUp = (props: SignUpProps): JSX.Element => {
     bottomInfoError = signupError.toString();
   }
 
-  if (hasTokenParam && typeof hasTokenParam === 'string') {
-    localStorageService.clear();
-    localStorageService.set('xToken', hasTokenParam);
-  }
+  useEffect(() => {
+    const isAppSumo = navigationService.getCurrentView()?.id === AppView.AppSumo;
+
+    if (isAppSumo && tokenParam && typeof tokenParam === 'string') {
+      localStorageService.clear();
+      localStorageService.set('xToken', tokenParam);
+    }
+  }, []);
 
   const updateInfo = (name: string, lastname: string, email: string, password: string) => {
     // Setup hash and salt
@@ -149,7 +153,6 @@ const SignUp = (props: SignUpProps): JSX.Element => {
         return dispatch(userThunks.initializeUserThunk()).then(() => {
           localStorageService.set('xToken', xToken);
           localStorageService.set('xMnemonic', mnemonic);
-          dispatch(setUser(xUser));
         });
       });
   };
@@ -227,7 +230,7 @@ const SignUp = (props: SignUpProps): JSX.Element => {
 
           localStorageService.set('xToken', token);
           user.mnemonic = decryptTextWithKey(user.mnemonic, password);
-          dispatch(setUser({ ...user }));
+          dispatch(userActions.setUser({ ...user }));
           localStorageService.set('xMnemonic', user.mnemonic);
 
           dispatch(productsThunks.initializeThunk());
@@ -264,7 +267,9 @@ const SignUp = (props: SignUpProps): JSX.Element => {
       if (!props.isNewUser) {
         await updateInfo(name, lastname, email, password)
           .then(() => {
-            navigationService.push(AppView.Login);
+            dispatch(productsThunks.initializeThunk());
+            dispatch(planThunks.initializeThunk());
+            navigationService.push(AppView.Drive);
           })
           .catch((err) => {
             console.log('ERR', err);

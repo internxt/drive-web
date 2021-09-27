@@ -6,9 +6,9 @@ import * as Unicons from '@iconscout/react-unicons';
 
 import { Dropdown } from 'react-bootstrap';
 import { AppView, Workspace } from '../../models/enums';
-import { userThunks } from '../../store/slices/user';
+import { userSelectors, userThunks } from '../../store/slices/user';
 import { uiActions } from '../../store/slices/ui';
-import { storageActions } from '../../store/slices/storage';
+import { storageActions, storageSelectors } from '../../store/slices/storage';
 import validationService from '../../services/validation.service';
 import { StorageFilters } from '../../store/slices/storage/storage.model';
 import { sessionSelectors } from '../../store/slices/session/session.selectors';
@@ -18,10 +18,12 @@ import navigationService from '../../services/navigation.service';
 
 interface AppHeaderProps {
   user: UserSettings | undefined;
+  nameLetters: string;
   team: TeamsSettings | undefined | null;
   workspace: Workspace;
   isTeam: boolean;
   storageFilters: StorageFilters;
+  currentFolderId: number;
   dispatch: AppDispatch;
 }
 
@@ -43,11 +45,11 @@ class AppHeader extends React.Component<AppHeaderProps> {
   };
 
   onChangeWorkspaceButtonClicked = (): void => {
-    const { dispatch } = this.props;
+    const { dispatch, currentFolderId } = this.props;
 
     dispatch(sessionThunks.changeWorkspaceThunk());
     dispatch(storageThunks.resetNamePathThunk());
-    dispatch(storageThunks.fetchFolderContentThunk());
+    dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
     dispatch(storageThunks.fetchRecentsThunk());
   };
 
@@ -74,11 +76,8 @@ class AppHeader extends React.Component<AppHeaderProps> {
   };
 
   render(): ReactNode {
-    const { user, isTeam, storageFilters, team } = this.props;
+    const { user, isTeam, storageFilters, team, nameLetters } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
-    const nameLetters: string = isTeam
-      ? 'B'
-      : (user as UserSettings).name[0] + ((user as UserSettings).lastname[0] || '');
 
     return (
       <div className="flex items-center justify-between w-full py-2.5 border-b border-l-neutral-30 px-8">
@@ -162,9 +161,11 @@ export default connect((state: RootState) => {
 
   return {
     user: state.user.user,
+    nameLetters: userSelectors.nameLetters(state),
     team: state.team.team,
     workspace: state.session.workspace,
     isTeam,
     storageFilters: state.storage.filters,
+    currentFolderId: storageSelectors.currentFolderId(state),
   };
 })(AppHeader);

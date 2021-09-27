@@ -28,6 +28,7 @@ export const updateItemMetadataThunk = createAsyncThunk<
     dispatch(
       storageActions.patchItem({
         id: item.id,
+        folderId: item.isFolder ? item.parentId : item.folderId,
         isFolder: item.isFolder,
         patch: {
           name: payload.metadata.metadata.itemName,

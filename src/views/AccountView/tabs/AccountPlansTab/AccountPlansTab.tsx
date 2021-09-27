@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import ProductItem from '../../../../components/ProductItem/ProductItem';
@@ -8,10 +8,14 @@ import { useAppSelector } from '../../../../store/hooks';
 
 import './AccountPlansTab.scss';
 import { productsSelectors } from '../../../../store/slices/products';
+import { userSelectors } from '../../../../store/slices/user';
+import BaseButton from '../../../../components/Buttons/BaseButton';
 
 const AccountPlansTab = (): JSX.Element => {
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace>(Workspace.Individuals);
   const [currentRenewalPeriod, setCurrentRenewalPeriod] = useState<RenewalPeriod>(RenewalPeriod.Annually);
+  const user = useAppSelector((state) => state.user.user);
+  const isUserFromAppSumo = useAppSelector(userSelectors.isFromAppSumo);
   const isBuying = useAppSelector((state) => state.payment.isBuying);
   const individualPlan = useAppSelector((state) => state.plan.individualPlan);
   const teamPlan = useAppSelector((state) => state.plan.teamPlan);
@@ -40,6 +44,9 @@ const AccountPlansTab = (): JSX.Element => {
     const nextWorkspace = workspaceKeys[(currentWorkspaceIndex + 1) % workspaceKeys.length];
 
     setCurrentWorkspace(nextWorkspace);
+  };
+  const onAppSumoButtonClicked = () => {
+    window.open(`https://appsumo.com/account/redemption/${user?.appSumoDetails?.invoiceItemUuid}`, '_blank');
   };
   const features = [
     {
@@ -71,50 +78,61 @@ const AccountPlansTab = (): JSX.Element => {
 
   return (
     <div className="group w-full h-fit">
-      {/* PERIOD SELECTOR */}
-      <div className="mx-auto mb-6 rounded-lg bg-l-neutral-20 h-10 w-96 flex py-1 px-0.5">{renewalPeriodList}</div>
-
-      {/* CHANGE PLANS WORKSPACE */}
-      <span
-        className="block mx-auto w-max text-center text-blue-60 font-semibold mb-4 cursor-pointer"
-        onClick={onChangePlansWorkspaceClicked}
-      >
-        {changePlansWorkspaceLabelMap[currentWorkspace]}
-      </span>
-
-      {isLoadingProducts ? (
-        <span className="block w-full text-center">{i18n.get('general.loading.default')}</span>
-      ) : (
-        <div className="flex flex-wrap justify-center items-end">
-          {currentWorkspace === Workspace.Individuals &&
-            individualProducts.map((product, i) => (
-              <ProductItem
-                key={i}
-                product={product}
-                currentPlanId={individualPlan?.planId}
-                isBuyButtonDisabled={isBuying}
-                isBusiness={false}
-              />
-            ))}
-
-          {currentWorkspace === Workspace.Business &&
-            teamProducts.map((product, i) => (
-              <ProductItem
-                key={i}
-                product={product}
-                currentPlanId={teamPlan?.planId}
-                isBuyButtonDisabled={isBuying}
-                isBusiness={true}
-              />
-            ))}
+      {isUserFromAppSumo ? (
+        <div>
+          <span className="block w-full text-center">{i18n.get('appSumo.plans.advice')}</span>
+          <BaseButton className="mx-auto mt-5 primary" onClick={onAppSumoButtonClicked}>
+            Change plan
+          </BaseButton>
         </div>
-      )}
+      ) : (
+        <Fragment>
+          {/* PERIOD SELECTOR */}
+          <div className="mx-auto mb-6 rounded-lg bg-l-neutral-20 h-10 w-96 flex py-1 px-0.5">{renewalPeriodList}</div>
 
-      {/* FEATURES */}
-      <span className="block mx-auto w-max text-center text-neutral-500 my-6">
-        {i18n.get('views.account.tabs.plans.viewAllFeatures')}
-      </span>
-      <div className="flex flex-wrap justify-center content-center">{featuresList}</div>
+          {/* CHANGE PLANS WORKSPACE */}
+          <span
+            className="block mx-auto w-max text-center text-blue-60 font-semibold mb-4 cursor-pointer"
+            onClick={onChangePlansWorkspaceClicked}
+          >
+            {changePlansWorkspaceLabelMap[currentWorkspace]}
+          </span>
+
+          {isLoadingProducts ? (
+            <span className="block w-full text-center">{i18n.get('general.loading.default')}</span>
+          ) : (
+            <div className="flex flex-wrap justify-center items-end">
+              {currentWorkspace === Workspace.Individuals &&
+                individualProducts.map((product, i) => (
+                  <ProductItem
+                    key={i}
+                    product={product}
+                    currentPlanId={individualPlan?.planId}
+                    isBuyButtonDisabled={isBuying}
+                    isBusiness={false}
+                  />
+                ))}
+
+              {currentWorkspace === Workspace.Business &&
+                teamProducts.map((product, i) => (
+                  <ProductItem
+                    key={i}
+                    product={product}
+                    currentPlanId={teamPlan?.planId}
+                    isBuyButtonDisabled={isBuying}
+                    isBusiness={true}
+                  />
+                ))}
+            </div>
+          )}
+
+          {/* FEATURES */}
+          <span className="block mx-auto w-max text-center text-neutral-500 my-6">
+            {i18n.get('views.account.tabs.plans.viewAllFeatures')}
+          </span>
+          <div className="flex flex-wrap justify-center content-center">{featuresList}</div>
+        </Fragment>
+      )}
     </div>
   );
 };
