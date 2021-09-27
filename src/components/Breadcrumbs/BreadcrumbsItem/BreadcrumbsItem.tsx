@@ -59,11 +59,18 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       });
     }
   };
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: currentFolderId !== props.item.id ? [NativeTypes.FILE, DragAndDropType.DriveItem] : [],
+  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+    accept: [NativeTypes.FILE, DragAndDropType.DriveItem],
     collect: (monitor) => ({
       isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
     }),
+    canDrop: (item, monitor): boolean => {
+      const droppedType = monitor.getItemType();
+      const droppedDataParentId = item.parentId || item.folderId || -1;
+
+      return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id;
+    },
     drop: onItemDropped,
   }));
   const onItemClicked = (item: BreadcrumbItemData): void => {
@@ -71,7 +78,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       item.onClick && item.onClick();
     }
   };
-  const isDraggingOverClassNames = isOver ? 'drag-over-effect' : '';
+  const isDraggingOverClassNames = isOver && canDrop ? 'drag-over-effect' : '';
 
   return (
     <li
