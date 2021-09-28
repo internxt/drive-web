@@ -35,7 +35,13 @@ class RecentsView extends Component<RecentsViewProps> {
     const { items, isLoadingRecents } = this.props;
 
     return (
-      <FileExplorer title="Recents" isLoading={isLoadingRecents} items={items} onFolderCreated={this.redirectToDrive} />
+      <FileExplorer
+        title="Recents"
+        titleClassName="px-3"
+        isLoading={isLoadingRecents}
+        items={items}
+        onFolderCreated={this.redirectToDrive}
+      />
     );
   }
 }
