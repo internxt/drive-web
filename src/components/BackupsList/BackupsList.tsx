@@ -8,6 +8,7 @@ import { AppDispatch } from '../../store';
 import { uniqueId } from 'lodash';
 import { DownloadFileTask, TaskProgress, TaskStatus, TaskType } from '../../services/task-manager.service';
 import { taskManagerActions } from '../../store/slices/task-manager';
+import notificationsService, { ToastType } from '../../services/notifications.service';
 
 interface Props {
   items: Backup[] | null;
@@ -66,21 +67,35 @@ class BackupsList extends React.Component<Props> {
       );
     };
 
-    const actionState = await downloadBackup(backup, {
-      progressCallback: onProgress,
-      finishedCallback: onFinished,
-      errorCallback: onError,
-    });
-    this.props.dispatch(taskManagerActions.addTask(task));
+    try {
+      const actionState = await downloadBackup(backup, {
+        progressCallback: onProgress,
+        finishedCallback: onFinished,
+        errorCallback: onError,
+      });
+      this.props.dispatch(taskManagerActions.addTask(task));
 
-    this.props.dispatch(
-      taskManagerActions.updateTask({
-        taskId,
-        merge: {
-          stop: async () => actionState?.stop(),
-        },
-      }),
-    );
+      this.props.dispatch(
+        taskManagerActions.updateTask({
+          taskId,
+          merge: {
+            stop: async () => actionState?.stop(),
+          },
+        }),
+      );
+    } catch (err) {
+      if (err instanceof Error && err.name === 'FILE_SYSTEM_API_NOT_AVAILABLE')
+        notificationsService.show(
+          'To download backups you need to use a Chromium based browser (such as Chrome or Edge but not Brave) with a version above 86',
+          ToastType.Error,
+          8000,
+        );
+      else
+        notificationsService.show(
+          'An error has ocurred while trying to download your backup, please try again',
+          ToastType.Error,
+        );
+    }
   }
 
   get hasItems(): boolean {

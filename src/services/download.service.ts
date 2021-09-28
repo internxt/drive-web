@@ -54,7 +54,9 @@ export async function downloadBackup(
   },
 ): Promise<ActionState | undefined> {
   if (!('showSaveFilePicker' in window)) {
-    throw new Error('File System Access API not available');
+    const err = new Error('File System Access API not available');
+    err.name = 'FILE_SYSTEM_API_NOT_AVAILABLE';
+    throw err;
   }
 
   if (!backup.fileId) {
