@@ -204,6 +204,7 @@ export interface Device {
   userId: number;
   createdAt: string;
   updatedAt: string;
+  size: number;
 }
 
 export interface Backup {

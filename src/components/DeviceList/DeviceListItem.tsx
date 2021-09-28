@@ -1,6 +1,7 @@
 import { Device } from '../../models/interfaces';
 import * as Unicons from '@iconscout/react-unicons';
 import dateService from '../../services/date.service';
+import sizeService from '../../services/size.service';
 
 export default function DeviceListItem({
   device,
@@ -22,7 +23,7 @@ export default function DeviceListItem({
       <div className="w-3/12 hidden items-center lg:flex">
         {dateService.format(device.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
-      <div className="w-2/12 flex items-center">1GB</div>
+      <div className="w-2/12 flex items-center">{sizeService.bytesToString(device.size)}</div>
     </div>
   );
 }
