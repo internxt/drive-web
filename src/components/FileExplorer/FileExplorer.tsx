@@ -35,6 +35,7 @@ import BaseButton from '../Buttons/BaseButton';
 
 interface FileExplorerProps {
   title: JSX.Element | string;
+  titleClassName?: string;
   isLoading: boolean;
   items: DriveItemData[];
   onItemsDeleted?: () => void;
@@ -161,6 +162,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       infoItem,
       viewMode,
       title,
+      titleClassName,
       items,
       isDeleteItemsDialogOpen,
       isCreateFolderDialogOpen,
@@ -188,7 +190,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
         <div className="flex flex-grow h-full max-w-full w-full">
           <div className="flex-grow flex flex-col w-1 pt-6">
             <div className="flex justify-between pb-4">
-              <div className="flex items-center px-3 text-lg">{title}</div>
+              <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
 
               <div className="flex">
                 {this.hasAnyItemSelected ? (

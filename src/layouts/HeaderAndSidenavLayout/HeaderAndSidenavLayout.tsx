@@ -19,8 +19,8 @@ interface HeaderAndSidenavLayoutProps {
 export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProps): JSX.Element {
   const dispatch = useAppDispatch();
   const { children } = props;
-  const isAuthenticated: boolean = useAppSelector((state) => state.user.isAuthenticated);
-  const isSidenavCollapsed: boolean = useAppSelector((state) => state.ui.isSidenavCollapsed);
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+  const isSidenavCollapsed = useAppSelector((state) => state.ui.isSidenavCollapsed);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const toggleIsSidenavCollapsed: () => void = () => dispatch(uiActions.setIsSidenavCollapsed(!isSidenavCollapsed));
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
