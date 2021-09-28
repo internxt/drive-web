@@ -1435,10 +1435,10 @@
     needle "^3.0.0"
     winston "^3.3.3"
 
-"@internxt/lib@1.1.0":
-  version "1.1.0"
-  resolved "https://npm.pkg.github.com/download/@internxt/lib/1.1.0/51fed0ed320e96f95d02858057908834ee504d9d0547edddf9ec33a275f0a645#4e5f10bc0a904b94b56f763b323d97aee95d4e5e"
-  integrity sha512-+FN7Dx0+N5qxmrsZq7JZcuVX4YEZcrSX0b0qYygiB5edZKxtf0CFrpCN8MFKH4vWNm5OFj8dG3ehcTrYNIT0KA==
+"@internxt/lib@1.1.2":
+  version "1.1.2"
+  resolved "https://npm.pkg.github.com/download/@internxt/lib/1.1.2/84b10d2de5b8171daecd881a7794ff7e240327a18a297f4453102d03454c206e#864fc4bccaec7d650a241f601a208752702b9063"
+  integrity sha512-7ZXqABYdVheVYW5TxzwuLCMtyeOHEMaGWH5/KC+d+/41YuvBwPyysymtbKnR+kZ46peo/9fyVWVVNB5TIUcNwQ==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
