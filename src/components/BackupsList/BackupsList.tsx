@@ -32,7 +32,7 @@ class BackupsList extends React.Component<Props> {
       cancellable: true,
     };
 
-    const onProgress = (progress) => {
+    const onProgress = (progress: number) => {
       this.props.dispatch(
         taskManagerActions.updateTask({
           taskId,
@@ -55,7 +55,22 @@ class BackupsList extends React.Component<Props> {
       );
     };
 
-    const actionState = await downloadBackup(backup, onProgress, onFinished);
+    const onError = () => {
+      this.props.dispatch(
+        taskManagerActions.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Error,
+          },
+        }),
+      );
+    };
+
+    const actionState = await downloadBackup(backup, {
+      progressCallback: onProgress,
+      finishedCallback: onFinished,
+      errorCallback: onError,
+    });
     this.props.dispatch(taskManagerActions.addTask(task));
 
     this.props.dispatch(

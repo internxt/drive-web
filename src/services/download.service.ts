@@ -43,8 +43,15 @@ export function downloadFile(
 
 export async function downloadBackup(
   backup: Backup,
-  progressCallback: (progress: number) => void,
-  finishedCallback: () => void,
+  {
+    progressCallback,
+    finishedCallback,
+    errorCallback,
+  }: {
+    progressCallback: (progress: number) => void;
+    finishedCallback: () => void;
+    errorCallback: () => void;
+  },
 ): Promise<ActionState | undefined> {
   if (!('showSaveFilePicker' in window)) {
     throw new Error('File System Access API not available');
@@ -70,12 +77,17 @@ export async function downloadBackup(
     });
     actionState = _actionState;
     const downloadStream = await downloadStreamPromise;
+
     downloadStream.on('data', (chunk: Buffer) => {
       writable.write(chunk);
     });
-    downloadStream.on('end', () => {
+    downloadStream.once('end', () => {
       writable.close();
       finishedCallback();
+    });
+    downloadStream.once('error', () => {
+      writable.abort();
+      errorCallback();
     });
   }
 
