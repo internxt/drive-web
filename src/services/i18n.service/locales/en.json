@@ -225,19 +225,28 @@
   },
   "drive": {
     "usage": "Usage",
-    "currentPlan": "Current plan"
-  },
-  "appSumo": {
-    "plans": {
-      "advice": "You will be redirected to your Appsumo account"
+    "currentPlan": "Current plan",
+    "list": {
+      "columns": {
+        "type": "Type",
+        "name": "Name",
+        "modified": "Modified",
+        "size": "Size",
+        "actions": "Actions"
+      }
     },
-    "tiers": {
-      "internxt_free1": "Internxt Free 1",
-      "internxt_tier1": "Internxt Tier 1",
-      "internxt_tier2": "Internxt Tier 2",
-      "internxt_tier3": "Internxt Tier 3",
-      "internxt_tier4": "Internxt Tier 4",
-      "internxt_tier5": "Internxt Tier 5"
+    "appSumo": {
+      "plans": {
+        "advice": "You will be redirected to your Appsumo account"
+      },
+      "tiers": {
+        "internxt_free1": "Internxt Free 1",
+        "internxt_tier1": "Internxt Tier 1",
+        "internxt_tier2": "Internxt Tier 2",
+        "internxt_tier3": "Internxt Tier 3",
+        "internxt_tier4": "Internxt Tier 4",
+        "internxt_tier5": "Internxt Tier 5"
+      }
     }
   }
 }

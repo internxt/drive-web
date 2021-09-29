@@ -1,4 +1,4 @@
-import React, { Component, ComponentProps } from 'react';
+import React, { Component } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
 interface DriveGridItemSkeletonState {

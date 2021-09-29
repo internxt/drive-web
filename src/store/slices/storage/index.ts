@@ -1,11 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FileViewMode } from '../../../models/enums';
-import { DriveItemData, DriveItemPatch, FolderPath } from '../../../models/interfaces';
-import arrayService from '../../../services/array.service';
+import { FileViewMode, OrderDirection } from '../../../models/enums';
+import { DriveItemData, DriveItemPatch, FolderPath, OrderSettings } from '../../../models/interfaces';
 
 import selectors from './storage.selectors';
 import { storageExtraReducers } from '../storage/storage.thunks';
-import { StorageState, StorageSetFiltersPayload, filtersFactory } from './storage.model';
+import { StorageState, StorageSetFiltersPayload, filtersFactory, orderFactory } from './storage.model';
 import databaseService, { DatabaseCollection } from '../../../services/database.service';
 import itemsListService from '../../../services/items-list.service';
 
@@ -16,6 +15,7 @@ const initialState: StorageState = {
   recents: [],
   isLoadingRecents: false,
   filters: filtersFactory(),
+  order: orderFactory('updatedAt', OrderDirection.Desc),
   selectedItems: [],
   itemToShare: null,
   itemsToDelete: [],
@@ -42,6 +42,12 @@ export const storageSlice = createSlice({
     },
     setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
       Object.assign(state.filters, action.payload);
+    },
+    setOrder: (state: StorageState, action: PayloadAction<Partial<OrderSettings>>) => {
+      Object.assign(state.order, action.payload);
+    },
+    resetOrder: (state: StorageState) => {
+      state.order = orderFactory('updatedAt', OrderDirection.Desc);
     },
     resetFilters: (state: StorageState) => {
       state.filters = filtersFactory();

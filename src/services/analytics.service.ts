@@ -88,7 +88,7 @@ export function signInAttempted(email: string, error: string | Error): void {
 }
 
 export function trackSignUp(payload: {
-  properties: { signup_source, email: string };
+  properties: { signup_source; email: string };
   traits: {
     member_tier?: string;
     email: string;

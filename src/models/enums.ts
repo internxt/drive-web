@@ -130,6 +130,11 @@ export enum LifetimeTier {
   Infinite = 'infinite',
 }
 
+export enum OrderDirection {
+  Asc = 'ASC',
+  Desc = 'DESC',
+}
+
 export enum AppSumoTier {
   Free = 'internxt_free1',
   Tier1 = 'internxt_tier1',
