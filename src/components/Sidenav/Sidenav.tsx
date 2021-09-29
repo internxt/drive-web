@@ -15,6 +15,7 @@ import { planSelectors } from '../../store/slices/plan';
 import { AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
 import screenService from '../../services/screen.service';
+import localStorageService from '../../services/local-storage.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -30,12 +31,18 @@ interface SidenavState {
   isLgScreen: boolean;
 }
 class Sidenav extends React.Component<SidenavProps, SidenavState> {
+  private readonly showBackups: boolean;
+
   constructor(props: SidenavProps) {
     super(props);
 
     this.state = {
       isLgScreen: screenService.isLg(),
     };
+
+    const user = localStorageService.getUser();
+
+    this.showBackups = !!user?.backupsBucket;
   }
 
   componentDidMount() {
@@ -101,12 +108,14 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
               icon={<Unicons.UilFolderMedical className="w-5" />}
               isOpen={!isCollapsed}
             />
-            <SidenavItem
-              label="Backups"
-              to="/app/backups"
-              icon={<Unicons.UilHdd className="w-5" />}
-              isOpen={!isCollapsed}
-            />
+            {this.showBackups && (
+              <SidenavItem
+                label="Backups"
+                to="/app/backups"
+                icon={<Unicons.UilHdd className="w-5" />}
+                isOpen={!isCollapsed}
+              />
+            )}
             <SidenavItem
               label="Recents"
               to="/app/recents"

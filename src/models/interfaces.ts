@@ -38,6 +38,7 @@ export interface AppPlugin {
 
 export interface UserSettings {
   bucket: string;
+  backupsBucket: string | null;
   createdAt: Date;
   credit: number;
   email: string;
