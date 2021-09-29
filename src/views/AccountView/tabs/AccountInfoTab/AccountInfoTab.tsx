@@ -101,6 +101,17 @@ const AccountPlanInfoTab = (): JSX.Element => {
                       <>
                         <span>{i18n.get(`appSumo.tiers.${user?.appSumoDetails?.planId as string}`)}</span>
                         <span>{i18n.get(`appSumo.members.${user?.appSumoDetails?.planId as string}`)}</span>
+                        <button
+                          className="base-button flex items-center justify-center py-3 rounded text-base primary mr-1.5 flex items-center mt-4"
+                          onClick={() => {
+                            window.open(
+                              `https://appsumo.com/account/redemption/${user?.appSumoDetails?.invoiceItemUuid}`,
+                              '_blank',
+                            );
+                          }}
+                        >
+                          Change plan
+                        </button>
                       </>
                     ) : currentPlan?.planId ? (
                       <Fragment>

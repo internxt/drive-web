@@ -50,6 +50,7 @@ export interface AppSumoDetails {
   invoiceItemUuid: string;
   planId: AppSumoTier;
   updatedAt: '';
+  uuid: string;
 }
 
 export interface UserSettings {
