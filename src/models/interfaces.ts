@@ -205,6 +205,7 @@ export interface Device {
   createdAt: string;
   updatedAt: string;
   size: number;
+  platform: string | null;
 }
 
 export interface Backup {

@@ -10,13 +10,29 @@ export default function DeviceListItem({
   device: Device;
   onClick: (clickedDevice: Device) => void;
 }): JSX.Element {
+  let Icon;
+
+  switch (device.platform) {
+    case 'darwin':
+      Icon = Unicons.UilApple;
+      break;
+    case 'linux':
+      Icon = Unicons.UilLinux;
+      break;
+    case 'win32':
+      Icon = Unicons.UilWindows;
+      break;
+    default:
+      Icon = Unicons.UilDesktop;
+  }
+
   return (
     <div
       className="py-3.5 border-b border-l-neutral-30 flex items-center hover:bg-blue-20"
       onDoubleClick={() => onClick(device)}
     >
       <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
-        <Unicons.UilDesktop class="h-8 w-8" />
+        <Icon class="h-8 w-8" />
       </div>
       <p className="flex-grow pr-3">{device.name}</p>
       <div className="w-2/12 hidden items-center xl:flex"></div>
