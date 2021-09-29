@@ -17,10 +17,10 @@ export function deleteItems(items: DriveItemData[]): Promise<void> {
   return Promise.all(promises).then();
 }
 
-export function moveItem(item: DriveItemData, destinationFolderId: number): Promise<void> {
+export function moveItem(item: DriveItemData, destinationFolderId: number, bucketId: string): Promise<void> {
   return item.isFolder
     ? folderService.moveFolder({ folderId: item.id, destination: destinationFolderId }).then()
-    : fileService.moveFile({ fileId: item.fileId, destination: destinationFolderId }).then();
+    : fileService.moveFile({ fileId: item.fileId, destination: destinationFolderId, bucketId }).then();
 }
 
 const storageService = {

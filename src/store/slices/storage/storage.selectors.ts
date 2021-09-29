@@ -23,7 +23,10 @@ const storageSelectors = {
   },
 
   bucket(state: RootState): string {
-    return state.user.user?.bucket || '';
+    const { team } = state.team;
+    const isTeam: boolean = sessionSelectors.isTeam(state);
+
+    return (isTeam ? team?.bucket : state.user.user?.bucket) || '';
   },
 
   isCurrentFolderEmpty(state: RootState): boolean {

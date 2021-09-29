@@ -182,7 +182,7 @@ export function deleteFolder(folderData: DriveFolderData): Promise<void> {
 
 export async function moveFolder(data: MoveFolderPayload): Promise<MoveFolderResponse> {
   const user = localStorageService.getUser() as UserSettings;
-  const response = await httpService.post<MoveFolderPayload, MoveFolderResponse>('/api/storage/moveFolder', data);
+  const response = await httpService.post<MoveFolderPayload, MoveFolderResponse>('/api/storage/move/folder', data);
 
   analyticsService.trackMoveItem('folder', {
     file_id: response.item.id,

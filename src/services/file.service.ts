@@ -7,6 +7,7 @@ import localStorageService from './local-storage.service';
 export interface MoveFilePayload {
   fileId: string;
   destination: number;
+  bucketId: string;
 }
 export interface MoveFileResponse {
   item: DriveFileData;
@@ -39,7 +40,7 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
 
 export async function moveFile(data: MoveFilePayload): Promise<MoveFileResponse> {
   const user = localStorageService.getUser() as UserSettings;
-  const response = await httpService.post<MoveFilePayload, MoveFileResponse>('/api/storage/moveFile', data);
+  const response = await httpService.post<MoveFilePayload, MoveFileResponse>('/api/storage/move/file', data);
 
   analyticsService.trackMoveItem('file', {
     file_id: response.item.id,
