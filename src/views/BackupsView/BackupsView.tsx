@@ -3,6 +3,7 @@ import BackupsList from '../../components/BackupsList/BackupsList';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import { Backup, Device } from '../../models/interfaces';
 import backupsService from '../../services/backups.service';
+import i18n from '../../services/i18n.service';
 
 export default function BackupsView(): JSX.Element {
   const [devices, setDevices] = useState<Device[] | null>([]);
@@ -27,10 +28,14 @@ export default function BackupsView(): JSX.Element {
   return (
     <div className="pt-6 px-8">
       <div className="pb-4 flex items-baseline">
-        <p className="text-lg px-3 py-1">{selectedDevice ? `Backups from ${selectedDevice.name}` : 'Your devices'}</p>
+        <p className="text-lg px-3 py-1">
+          {selectedDevice
+            ? i18n.get('backups.backups-from', { deviceName: selectedDevice.name })
+            : i18n.get('backups.your-devices')}
+        </p>
         {selectedDevice && (
           <p className="text-blue-50 cursor-pointer py-1 text-sm" onClick={goBack}>
-            Go back to devices
+            {i18n.get('backups.back-to-devices')}
           </p>
         )}
       </div>

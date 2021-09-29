@@ -115,58 +115,29 @@
       }
     }
   },
-  "success": {
-    "passwordChanged": "Password changed successfully",
-    "teamInvitationSent": "Invitation email sent to {email}",
-    "referralInvitationSent": "Invitation email sent to {email}",
-    "deletedTeamMember": "The {resource} has been successfully deleted",
-    "accountDeactivationEmailSent": "Deactivation email sent!",
-    "claimEmailSent": "Claim email sent!",
-    "linkCopied": "Link copied!",
-    "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
-    "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
-    "joinedToTheTeam": "You have successfully joined to the team",
-    "done": "Done"
+  "drive": {
+    "usage": "Usage",
+    "currentPlan": "Current plan"
   },
-  "error": {
-    "genericError": "There was an error: {reason}",
-    "serverError": "Internal server error. Try again later",
-    "deleteTeamMember": "Error deleting team member",
-    "changingName": "Error during name change",
-    "fileAlreadyExists": "File with the same name already exists",
-    "folderAlreadyExists": "Folder with the same name already exists",
-    "creatingFolder": "Error during folder creation",
-    "sendReferralInvitation": "Could not send invitation email",
-    "sendClaimEmail": "Could not send claim email",
-    "anyReferralCredit": "You don\t have any credit on your account",
-    "backupKeyDontMatch": "The backup key inserted does not match your unique backup key",
-    "shareLinkMissingBucket": "Cannot generate share link due to missing bucket",
-    "unavailableLink": "Unavailable link",
-    "invalidActivationCode": "Your activation code is invalid. Maybe you have used this link before and your account is already activated",
-    "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {reason}",
-    "deactivatingAccount": "Error deactivating account. Please contact us.",
-    "fetchingFolderContent": "Error fetching folder content",
-    "uploadingFolder": "Error uploading folder",
-    "uploadingFile": "Error uploading file: {reason}",
-    "uploadingItems": "Some of the elements could not be uploaded",
-    "downloadingFile": "Error downloading file: Reason is {reason}",
-    "downloadingItems": "Some of the elements could not be downloaded",
-    "movingItemInsideItself": "You can't move a folder inside itself",
-    "movingItem": "Error when moving item/s",
-    "linkExpired": "This secure link has expired",
-    "teamInvitation": "The invitation email could not be sent"
-  },
-  "info": {
-    "downloadingFile": "Downloading file {filename}...",
-    "retrievingFile": "Securely retrieving file..."
-  },
-  "action": {
-    "download": "Download",
-    "accessFile": "Access File",
-    "upgrade": "Upgrade now!",
-    "deleteAccount": "Permanently delete account",
-    "changePassword": "Change password",
-    "buy": "Buy"
+  "backups": {
+    "backups-from": "Backups from {deviceName}",
+    "your-devices": "Your devices",
+    "back-to-devices": "Go back to devices",
+    "devices-list": {
+      "columns": {
+        "name": "Name",
+        "last-update": "Last update",
+        "size": "Size"
+      }
+    },
+    "backups-list": {
+      "columns": {
+        "name": "Name",
+        "last-update": "Last update",
+        "size": "Size",
+        "actions": "Actions"
+      }
+    }
   },
   "tasks": {
     "create-folder": {
@@ -223,8 +194,57 @@
       "cancelled": "Cancelled movement"
     }
   },
-  "drive": {
-    "usage": "Usage",
-    "currentPlan": "Current plan"
+  "success": {
+    "passwordChanged": "Password changed successfully",
+    "teamInvitationSent": "Invitation email sent to {email}",
+    "referralInvitationSent": "Invitation email sent to {email}",
+    "deletedTeamMember": "The {resource} has been successfully deleted",
+    "accountDeactivationEmailSent": "Deactivation email sent!",
+    "claimEmailSent": "Claim email sent!",
+    "linkCopied": "Link copied!",
+    "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
+    "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
+    "joinedToTheTeam": "You have successfully joined to the team",
+    "done": "Done"
+  },
+  "error": {
+    "genericError": "There was an error: {reason}",
+    "serverError": "Internal server error. Try again later",
+    "deleteTeamMember": "Error deleting team member",
+    "changingName": "Error during name change",
+    "fileAlreadyExists": "File with the same name already exists",
+    "folderAlreadyExists": "Folder with the same name already exists",
+    "creatingFolder": "Error during folder creation",
+    "sendReferralInvitation": "Could not send invitation email",
+    "sendClaimEmail": "Could not send claim email",
+    "anyReferralCredit": "You don\t have any credit on your account",
+    "backupKeyDontMatch": "The backup key inserted does not match your unique backup key",
+    "shareLinkMissingBucket": "Cannot generate share link due to missing bucket",
+    "unavailableLink": "Unavailable link",
+    "invalidActivationCode": "Your activation code is invalid. Maybe you have used this link before and your account is already activated",
+    "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {reason}",
+    "deactivatingAccount": "Error deactivating account. Please contact us.",
+    "fetchingFolderContent": "Error fetching folder content",
+    "uploadingFolder": "Error uploading folder",
+    "uploadingFile": "Error uploading file: {reason}",
+    "uploadingItems": "Some of the elements could not be uploaded",
+    "downloadingFile": "Error downloading file: Reason is {reason}",
+    "downloadingItems": "Some of the elements could not be downloaded",
+    "movingItemInsideItself": "You can't move a folder inside itself",
+    "movingItem": "Error when moving item/s",
+    "linkExpired": "This secure link has expired",
+    "teamInvitation": "The invitation email could not be sent"
+  },
+  "info": {
+    "downloadingFile": "Downloading file {filename}...",
+    "retrievingFile": "Securely retrieving file..."
+  },
+  "action": {
+    "download": "Download",
+    "accessFile": "Access File",
+    "upgrade": "Upgrade now!",
+    "deleteAccount": "Permanently delete account",
+    "changePassword": "Change password",
+    "buy": "Buy"
   }
 }

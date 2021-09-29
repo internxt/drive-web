@@ -9,6 +9,7 @@ import { uniqueId } from 'lodash';
 import { DownloadFileTask, TaskProgress, TaskStatus, TaskType } from '../../services/task-manager.service';
 import { taskManagerActions } from '../../store/slices/task-manager';
 import notificationsService, { ToastType } from '../../services/notifications.service';
+import i18n from '../../services/i18n.service';
 
 interface Props {
   items: Backup[] | null;
@@ -122,11 +123,15 @@ class BackupsList extends React.Component<Props> {
       <div className="flex flex-col flex-grow bg-white h-full ">
         <div className="files-list font-semibold flex border-b border-l-neutral-30 bg-white text-neutral-500 py-3 text-sm">
           <div className="w-0.5/12 pl-3 flex items-center justify-start box-content"></div>
-          <div className="flex-grow flex items-center px-3">Name</div>
+          <div className="flex-grow flex items-center px-3">{i18n.get('backups.backups-list.columns.name')}</div>
           <div className="w-2/12 hidden items-center xl:flex"></div>
-          <div className="w-3/12 hidden items-center lg:flex">Last update</div>
-          <div className="w-2/12 flex items-center">Size</div>
-          <div className="w-1/12 flex items-center rounded-tr-4px">Actions</div>
+          <div className="w-3/12 hidden items-center lg:flex">
+            {i18n.get('backups.backups-list.columns.last-update')}
+          </div>
+          <div className="w-2/12 flex items-center">{i18n.get('backups.backups-list.columns.size')}</div>
+          <div className="w-1/12 flex items-center rounded-tr-4px">
+            {i18n.get('backups.backups-list.columns.actions')}
+          </div>
         </div>
         <div className="h-full overflow-y-auto">{isLoading ? this.loadingSkeleton : this.itemsList}</div>
       </div>
