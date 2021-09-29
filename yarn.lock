@@ -1435,10 +1435,10 @@
     needle "^3.0.0"
     winston "^3.3.3"
 
-"@internxt/lib@1.1.0":
-  version "1.1.0"
-  resolved "https://npm.pkg.github.com/download/@internxt/lib/1.1.0/51fed0ed320e96f95d02858057908834ee504d9d0547edddf9ec33a275f0a645#4e5f10bc0a904b94b56f763b323d97aee95d4e5e"
-  integrity sha512-+FN7Dx0+N5qxmrsZq7JZcuVX4YEZcrSX0b0qYygiB5edZKxtf0CFrpCN8MFKH4vWNm5OFj8dG3ehcTrYNIT0KA==
+"@internxt/lib@1.1.2":
+  version "1.1.2"
+  resolved "https://npm.pkg.github.com/download/@internxt/lib/1.1.2/84b10d2de5b8171daecd881a7794ff7e240327a18a297f4453102d03454c206e#864fc4bccaec7d650a241f601a208752702b9063"
+  integrity sha512-7ZXqABYdVheVYW5TxzwuLCMtyeOHEMaGWH5/KC+d+/41YuvBwPyysymtbKnR+kZ46peo/9fyVWVVNB5TIUcNwQ==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -2197,9 +2197,9 @@
     redux "^4.0.0"
 
 "@types/react-router-dom@^5.1.7":
-  version "5.1.9"
-  resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-5.1.9.tgz#e8a8f687351ecc8c68bb4161d7e4b9df4994416e"
-  integrity sha512-Go0vxZSigXTyXx8xPkGiBrrc3YbBs82KE14WENMLS6TSUKcRFSmYVbL19zFOnNFqJhqrPqEs2h5eUpJhSRrwZw==
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-5.3.0.tgz#8c4e0aa0ccaf638ba965829ad29a10ac3cbe2212"
+  integrity sha512-svUzpEpKDwK8nmfV2vpZNSsiijFNKY8+gUqGqvGGOVrXvX58k1JIJubZa5igkwacbq/0umphO5SsQn/BQsnKpw==
   dependencies:
     "@types/history" "*"
     "@types/react" "*"

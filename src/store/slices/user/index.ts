@@ -144,6 +144,7 @@ export const userSelectors = {
 
     return nameLetters.toUpperCase();
   },
+  isFromAppSumo: (state: RootState): boolean => !!state.user.user?.appSumoDetails,
 };
 
 export const { initialize, resetState, setIsUserInitialized } = userSlice.actions;

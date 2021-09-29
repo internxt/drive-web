@@ -16,6 +16,8 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
     const [responsePromise] = folderService.fetchFolderContent(folderId);
     const databaseContent = await databaseService.get<DatabaseCollection.Levels>(DatabaseCollection.Levels, folderId);
 
+    dispatch(storageActions.resetOrder());
+
     if (databaseContent) {
       dispatch(
         storageActions.setItems({

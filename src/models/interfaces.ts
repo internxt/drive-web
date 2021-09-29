@@ -1,6 +1,14 @@
 import { DatabaseProvider } from '../services/database.service';
 import { store as storeInstance } from '../store';
-import { AppViewLayout, StripeMemberTiers, RenewalPeriod, ProductPriceType, LifetimeTier } from './enums';
+import {
+  AppViewLayout,
+  StripeMemberTiers,
+  RenewalPeriod,
+  ProductPriceType,
+  LifetimeTier,
+  OrderDirection,
+  AppSumoTier,
+} from './enums';
 
 export interface AppConfig {
   plan: AppPlanConfig;
@@ -36,6 +44,14 @@ export interface AppPlugin {
   install: (store: StoreType) => void;
 }
 
+export interface AppSumoDetails {
+  createdAt: string;
+  id: number;
+  invoiceItemUuid: string;
+  planId: AppSumoTier;
+  updatedAt: '';
+}
+
 export interface UserSettings {
   bucket: string;
   backupsBucket: string | null;
@@ -56,6 +72,7 @@ export interface UserSettings {
   username: string;
   bridgeUser: string;
   sharedWorkspace: boolean;
+  appSumoDetails: AppSumoDetails | null;
 }
 
 export interface TeamsSettings {
@@ -225,4 +242,8 @@ export interface Backup {
   hash?: string;
   enabled: boolean;
   lastBackupAt?: string;
+}
+export interface OrderSettings {
+  by: string;
+  direction: OrderDirection;
 }

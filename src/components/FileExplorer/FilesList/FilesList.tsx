@@ -1,17 +1,21 @@
 import React, { ReactNode } from 'react';
+import * as Unicons from '@iconscout/react-unicons';
 
 import FileListItem from '../FileExplorerItem/FileListItem/FileListItem';
 
 import { AppDispatch, RootState } from '../../../store';
 import { connect } from 'react-redux';
 import { storageActions } from '../../../store/slices/storage';
-import { DriveItemData } from '../../../models/interfaces';
+import { DriveItemData, OrderSettings } from '../../../models/interfaces';
 import DriveListItemSkeleton from '../../loaders/DriveListItemSkeleton';
+import i18n from '../../../services/i18n.service';
+import { OrderDirection } from '../../../models/enums';
 
 interface FilesListProps {
   isLoading: boolean;
   items: DriveItemData[];
   selectedItems: DriveItemData[];
+  order: OrderSettings;
   dispatch: AppDispatch;
 }
 
@@ -49,7 +53,20 @@ class FilesList extends React.Component<FilesListProps> {
   };
 
   render(): ReactNode {
-    const { isLoading } = this.props;
+    const { dispatch, isLoading, order } = this.props;
+    const sortBy = (orderBy: string) => {
+      const direction =
+        order.by === orderBy
+          ? order.direction === OrderDirection.Desc
+            ? OrderDirection.Asc
+            : OrderDirection.Desc
+          : OrderDirection.Asc;
+      dispatch(storageActions.setOrder({ by: orderBy, direction }));
+    };
+    const sortButtonFactory = () => {
+      const IconComponent = order.direction === OrderDirection.Desc ? Unicons.UilArrowDown : Unicons.UilArrowUp;
+      return <IconComponent className="ml-2" />;
+    };
 
     return (
       <div className="flex flex-col flex-grow bg-white h-full">
@@ -64,12 +81,24 @@ class FilesList extends React.Component<FilesListProps> {
               className="pointer-events-auto"
             />
           </div>
-          <div className="w-0.5/12 px-3 flex items-center box-content">Type</div>
-          <div className="flex-grow flex items-center">Name</div>
+          <div className="w-1/12 px-3 flex items-center box-content cursor-pointer" onClick={() => sortBy('type')}>
+            {i18n.get('drive.list.columns.type')}
+            {order.by === 'type' && sortButtonFactory()}
+          </div>
+          <div className="flex-grow flex items-center cursor-pointer" onClick={() => sortBy('name')}>
+            {i18n.get('drive.list.columns.name')}
+            {order.by === 'name' && sortButtonFactory()}
+          </div>
           <div className="w-2/12 hidden items-center xl:flex"></div>
-          <div className="w-3/12 hidden items-center lg:flex">Modified</div>
-          <div className="w-2/12 flex items-center">Size</div>
-          <div className="w-1/12 flex items-center rounded-tr-4px">Actions</div>
+          <div className="w-3/12 hidden items-center lg:flex cursor-pointer" onClick={() => sortBy('updatedAt')}>
+            {i18n.get('drive.list.columns.modified')}
+            {order.by === 'updatedAt' && sortButtonFactory()}
+          </div>
+          <div className="w-1/12 flex items-center cursor-pointer" onClick={() => sortBy('size')}>
+            {i18n.get('drive.list.columns.size')}
+            {order.by === 'size' && sortButtonFactory()}
+          </div>
+          <div className="w-1/12 flex items-center rounded-tr-4px">{i18n.get('drive.list.columns.actions')}</div>
         </div>
         <div className="h-full overflow-y-auto">{isLoading ? this.loadingSkeleton : this.itemsList}</div>
       </div>
@@ -79,4 +108,5 @@ class FilesList extends React.Component<FilesListProps> {
 
 export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,
+  order: state.storage.order,
 }))(FilesList);

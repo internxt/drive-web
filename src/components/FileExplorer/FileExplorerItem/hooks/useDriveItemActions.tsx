@@ -1,0 +1,130 @@
+import { items } from '@internxt/lib';
+
+import { MouseEvent, ChangeEvent, Fragment, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../models/interfaces';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { storageActions } from '../../../../store/slices/storage';
+import storageSelectors from '../../../../store/slices/storage/storage.selectors';
+import storageThunks from '../../../../store/slices/storage/storage.thunks';
+import { uiActions } from '../../../../store/slices/ui';
+
+interface DriveItemActions {
+  isEditingName: boolean;
+  dirtyName: string;
+  nameInputRef: RefObject<HTMLInputElement>;
+  onRenameButtonClicked: (e: MouseEvent) => void;
+  confirmNameChange: () => Promise<void>;
+  onNameDoubleClicked: (e: MouseEvent) => void;
+  onNameBlurred: () => void;
+  onNameChanged: (e: ChangeEvent<HTMLInputElement>) => void;
+  onNameEnterKeyPressed: KeyboardEventHandler<HTMLInputElement>;
+  onDownloadButtonClicked: (e: MouseEvent) => void;
+  onShareButtonClicked: (e: MouseEvent) => void;
+  onInfoButtonClicked: (e: MouseEvent) => void;
+  onDeleteButtonClicked: (e: MouseEvent) => void;
+  onItemClicked: (e: MouseEvent) => void;
+  onItemDoubleClicked: (e: MouseEvent) => void;
+  onItemRightClicked: (e: MouseEvent) => void;
+}
+
+const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [dirtyName, setDirtyName] = useState('');
+  const [nameInputRef] = useState(createRef<HTMLInputElement>());
+  const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
+  const dispatch = useAppDispatch();
+  const onRenameButtonClicked = (e: MouseEvent): void => {
+    e.stopPropagation();
+
+    setIsEditingName(true);
+    setDirtyName(item.name);
+
+    setTimeout(() => nameInputRef.current?.focus(), 0);
+  };
+  const confirmNameChange = async () => {
+    const metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
+
+    if (item.name !== dirtyName) {
+      await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }));
+    }
+
+    nameInputRef.current?.blur();
+  };
+  const onNameDoubleClicked = (e: MouseEvent): void => {
+    e.stopPropagation();
+
+    setIsEditingName(true);
+    setDirtyName(item.name);
+
+    nameInputRef.current?.focus();
+  };
+  const onNameBlurred = (): void => {
+    setIsEditingName(false);
+  };
+  const onNameChanged = (e: ChangeEvent<HTMLInputElement>): void => {
+    setDirtyName(e.target.value);
+  };
+  const onNameEnterKeyPressed: KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.key === 'Enter') {
+      confirmNameChange();
+    }
+  };
+  const onDownloadButtonClicked = (e: MouseEvent): void => {
+    e.stopPropagation();
+
+    dispatch(storageThunks.downloadItemsThunk([item]));
+  };
+  const onShareButtonClicked = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+
+    dispatch(storageActions.setItemToShare(item));
+    dispatch(uiActions.setIsShareItemDialogOpen(true));
+  };
+  const onInfoButtonClicked = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    dispatch(storageActions.setInfoItem(item));
+    dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
+  };
+  const onDeleteButtonClicked = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+
+    dispatch(storageActions.setItemsToDelete([item]));
+    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+  };
+  const onItemClicked = (): void => {
+    if (!item.isFolder) {
+      isItemSelected(item)
+        ? dispatch(storageActions.deselectItems([item]))
+        : dispatch(storageActions.selectItems([item]));
+    }
+  };
+  const onItemDoubleClicked = (): void => {
+    if (item.isFolder) {
+      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+    }
+  };
+  const onItemRightClicked = (e: React.MouseEvent): void => {
+    e.preventDefault();
+  };
+
+  return {
+    isEditingName,
+    dirtyName,
+    nameInputRef,
+    onRenameButtonClicked,
+    confirmNameChange,
+    onNameDoubleClicked,
+    onNameBlurred,
+    onNameChanged,
+    onNameEnterKeyPressed,
+    onDownloadButtonClicked,
+    onShareButtonClicked,
+    onInfoButtonClicked,
+    onDeleteButtonClicked,
+    onItemClicked,
+    onItemDoubleClicked,
+    onItemRightClicked,
+  };
+};
+
+export default useDriveItemActions;

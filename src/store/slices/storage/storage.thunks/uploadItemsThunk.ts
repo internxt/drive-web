@@ -16,6 +16,7 @@ import notificationsService, { ToastType } from '../../../../services/notificati
 import { RootState } from '../../..';
 import errorService from '../../../../services/error.service';
 import { TaskProgress, TaskStatus, TaskType, UploadFileTask } from '../../../../services/task-manager.service';
+import { planThunks } from '../../plan';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -203,6 +204,8 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     }
 
     options.onSuccess?.();
+
+    dispatch(planThunks.fetchUsageThunk());
 
     if (errors.length > 0) {
       for (const error of errors) {

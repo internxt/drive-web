@@ -31,6 +31,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
   const isLoadingPlans = useAppSelector((state) => state.plan.isLoadingPlans);
   const currentPlan = useAppSelector(planSelectors.currentPlan);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const isUserFromAppSumo = useAppSelector(userSelectors.isFromAppSumo);
   const isCurrentPlanLifetime = useAppSelector(planSelectors.isCurrentPlanLifetime);
   const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
@@ -91,10 +92,14 @@ const AccountPlanInfoTab = (): JSX.Element => {
             {!isLoadingPlans ? (
               <div className="flex justify-between w-full">
                 <div>
-                  <span className="text-neutral-700 font-bold text-xl">{currentPlan?.simpleName}</span>
+                  <span className="text-neutral-700 font-bold text-xl">
+                    {isUserFromAppSumo ? limitService.formatLimit(planLimit) : currentPlan?.simpleName}
+                  </span>
 
-                  <div className="flex w-full items-end justify-center text-neutral-500 text-xs">
-                    {currentPlan?.planId ? (
+                  <div className="flex w-full items-end text-neutral-500 text-xs">
+                    {isUserFromAppSumo ? (
+                      <span>{i18n.get(`appSumo.tiers.${user?.appSumoDetails?.planId as string}`)}</span>
+                    ) : currentPlan?.planId ? (
                       <Fragment>
                         <span>
                           {i18n.get('general.billing.billedEachPeriod', {
@@ -135,12 +140,14 @@ const AccountPlanInfoTab = (): JSX.Element => {
               description={i18n.get('views.account.tabs.info.advice2.description')}
             />
           </div>
-          <span
-            className="block text-center text-m-neutral-80 cursor-pointer mt-10"
-            onClick={onDeletePermanentlyAccountClicked}
-          >
-            {i18n.get('action.deleteAccount')}
-          </span>
+          {!isUserFromAppSumo && (
+            <span
+              className="block text-center text-m-neutral-80 cursor-pointer mt-10"
+              onClick={onDeletePermanentlyAccountClicked}
+            >
+              {i18n.get('action.deleteAccount')}
+            </span>
+          )}
         </div>
       </div>
     </Fragment>

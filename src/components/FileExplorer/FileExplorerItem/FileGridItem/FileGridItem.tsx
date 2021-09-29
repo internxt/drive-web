@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode } from 'react';
+import { Fragment, createRef, useEffect, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import * as Unicons from '@iconscout/react-unicons';
 
@@ -7,48 +7,39 @@ import { ItemAction } from '../../../../models/enums';
 
 import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
-import { FileExplorerItemViewProps } from '../fileExplorerItemComposition';
-import fileExplorerItemComposition from '../fileExplorerItemComposition';
 import { items } from '@internxt/lib';
+import useForceUpdate from '../../../../hooks/useForceUpdate';
+import { DriveItemProps } from '..';
+import useDriveItemActions from '../hooks/useDriveItemActions';
+import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
+import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 
-interface FileGridItemState {
-  itemRef: React.RefObject<HTMLDivElement>;
-}
-
-class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridItemState> {
-  constructor(props: FileExplorerItemViewProps) {
-    super(props);
-
-    this.state = {
-      itemRef: React.createRef(),
-    };
-  }
-
-  componentDidMount() {
-    this.updateHeight();
-
-    window.addEventListener('resize', this.updateHeight);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateHeight);
-  }
-
-  updateHeight = () => {
-    this.forceUpdate();
-  };
-
-  get nameNode(): JSX.Element {
-    const {
-      item,
-      onNameChanged,
-      onNameBlurred,
-      onNameDoubleClicked,
-      onEnterKeyPressed,
-      isEditingName,
-      dirtyName,
-      nameInputRef,
-    } = this.props;
+const FileGridItem = (props: DriveItemProps) => {
+  const [itemRef] = useState(createRef<HTMLDivElement>());
+  const { item } = props;
+  const { isItemSelected } = useDriveItemStoreProps();
+  const {
+    isEditingName,
+    dirtyName,
+    nameInputRef,
+    onNameChanged,
+    onNameBlurred,
+    onNameDoubleClicked,
+    onNameEnterKeyPressed,
+    onDownloadButtonClicked,
+    onRenameButtonClicked,
+    onInfoButtonClicked,
+    onDeleteButtonClicked,
+    onShareButtonClicked,
+    onItemClicked,
+    onItemRightClicked,
+    onItemDoubleClicked,
+  } = useDriveItemActions(item);
+  const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
+  const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
+  const forceUpdate = useForceUpdate();
+  const updateHeight = () => forceUpdate();
+  const nameNodeFactory = () => {
     const ṣpanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
 
     return (
@@ -63,7 +54,7 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
             placeholder="Name"
             onChange={onNameChanged}
             onBlur={onNameBlurred}
-            onKeyPress={onEnterKeyPressed}
+            onKeyPress={onNameEnterKeyPressed}
             autoFocus
           />
           <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
@@ -78,68 +69,58 @@ class FileGridItem extends React.Component<FileExplorerItemViewProps, FileGridIt
         </span>
       </Fragment>
     );
-  }
+  };
+  const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
+  const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
+  const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
+  const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
+  const height = itemRef.current ? itemRef.current?.clientWidth + 'px' : 'auto';
 
-  render(): ReactNode {
-    const { itemRef } = this.state;
-    const {
-      item,
-      isItemSelected,
-      connectDragSource,
-      connectDropTarget,
-      isDraggingThisItem,
-      isDraggingOverThisItem,
-      onRenameButtonClicked,
-      onDownloadButtonClicked,
-      onDeleteButtonClicked,
-      onInfoButtonClicked,
-      onShareButtonClicked,
-      onItemRightClicked,
-      onItemClicked,
-      onItemDoubleClicked,
-    } = this.props;
-    const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
-    const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
-    const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
-    const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
-    const height = this.state.itemRef.current ? this.state.itemRef.current?.clientWidth + 'px' : 'auto';
+  useEffect(() => {
+    updateHeight();
 
-    return connectDragSource(
-      connectDropTarget(
-        <div
-          ref={itemRef}
-          style={{ height }}
-          className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-grid-item`}
-          onContextMenu={onItemRightClicked}
-          onClick={onItemClicked}
-          onDoubleClick={onItemDoubleClicked}
-          draggable={false}
-        >
-          <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
-              <Unicons.UilEllipsisH className="w-full h-full" />
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <FileDropdownActions
-                hiddenActions={item.isFolder ? [ItemAction.Download, ItemAction.Share] : []}
-                onRenameButtonClicked={onRenameButtonClicked}
-                onDownloadButtonClicked={onDownloadButtonClicked}
-                onShareButtonClicked={onShareButtonClicked}
-                onInfoButtonClicked={onInfoButtonClicked}
-                onDeleteButtonClicked={onDeleteButtonClicked}
-              />
-            </Dropdown.Menu>
-          </Dropdown>
-          <div className="file-grid-item-icon-container">
-            <ItemIconComponent className="file-icon m-auto" />
-          </div>
-          <div className="text-center mt-3">
-            <div className="mb-1">{this.nameNode}</div>
-          </div>
-        </div>,
-      ),
-    );
-  }
-}
+    window.addEventListener('resize', updateHeight);
 
-export default fileExplorerItemComposition(FileGridItem);
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, []);
+
+  return connectDragSource(
+    connectDropTarget(
+      <div
+        ref={itemRef}
+        style={{ height }}
+        className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-grid-item`}
+        onContextMenu={onItemRightClicked}
+        onClick={onItemClicked}
+        onDoubleClick={onItemDoubleClicked}
+        draggable={false}
+      >
+        <Dropdown>
+          <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
+            <Unicons.UilEllipsisH className="w-full h-full" />
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <FileDropdownActions
+              hiddenActions={item.isFolder ? [ItemAction.Download, ItemAction.Share] : []}
+              onRenameButtonClicked={onRenameButtonClicked}
+              onDownloadButtonClicked={onDownloadButtonClicked}
+              onShareButtonClicked={onShareButtonClicked}
+              onInfoButtonClicked={onInfoButtonClicked}
+              onDeleteButtonClicked={onDeleteButtonClicked}
+            />
+          </Dropdown.Menu>
+        </Dropdown>
+        <div className="file-grid-item-icon-container">
+          <ItemIconComponent className="file-icon m-auto" />
+        </div>
+        <div className="text-center mt-3">
+          <div className="mb-1">{nameNodeFactory()}</div>
+        </div>
+      </div>,
+    ),
+  );
+};
+
+export default FileGridItem;

@@ -1,10 +1,11 @@
+import packageJson from '../../package.json';
 import localStorageService from '../services/local-storage.service';
 
 function getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam = false): Headers {
   const headers = new Headers();
 
   headers.append('content-type', 'application/json; charset=utf-8');
-  headers.append('internxt-version', '1.0.0');
+  headers.append('internxt-version', packageJson.version);
   headers.append('internxt-client', 'drive-web');
 
   if (withAuth) {
