@@ -112,38 +112,46 @@ export class Network {
     this.environment.config.useProxy = true;
 
     const promise = new Promise<Blob>((resolve, reject) => {
-      actionState = this.environment.download(bucketId, fileId, {
-        ...params,
-        finishedCallback: (err, downloadStream) => {
-          if (err) {
-            //STATUS: ERROR DOWNLOAD FILE
-            return reject(err);
-          }
-
-          if (!downloadStream) {
-            return reject(Error('Download stream is empty'));
-          }
-
-          const chunks: Buffer[] = []
-          downloadStream.on('data', (chunk: Buffer) => {
-            chunks.push(chunk);
-          }).once('error', (err) => {
-            errored = true;
-            reject(err);
-          }).once('end', () => {
-            if (errored) {
-              return;
+      actionState = this.environment.download(
+        bucketId,
+        fileId,
+        {
+          ...params,
+          finishedCallback: (err, downloadStream) => {
+            if (err) {
+              //STATUS: ERROR DOWNLOAD FILE
+              return reject(err);
             }
-            const uploadedBytes = chunks.reduce((acumm, chunk) => acumm + chunk.length, 0);
 
-            params.progressCallback(1, uploadedBytes, uploadedBytes);
-            resolve(new Blob(chunks, { type: 'application/octet-stream' }))
-          });
+            if (!downloadStream) {
+              return reject(Error('Download stream is empty'));
+            }
+
+            const chunks: Buffer[] = [];
+            downloadStream
+              .on('data', (chunk: Buffer) => {
+                chunks.push(chunk);
+              })
+              .once('error', (err) => {
+                errored = true;
+                reject(err);
+              })
+              .once('end', () => {
+                if (errored) {
+                  return;
+                }
+                const uploadedBytes = chunks.reduce((acumm, chunk) => acumm + chunk.length, 0);
+
+                params.progressCallback(1, uploadedBytes, uploadedBytes);
+                resolve(new Blob(chunks, { type: 'application/octet-stream' }));
+              });
+          },
         },
-      }, {
-        label: 'OneStreamOnly',
-        params: {}
-      });
+        {
+          label: 'OneStreamOnly',
+          params: {},
+        },
+      );
     });
 
     return [promise, actionState];
