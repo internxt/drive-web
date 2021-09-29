@@ -9,6 +9,7 @@ import { storageActions } from '../../../store/slices/storage';
 import { DriveItemData, OrderSettings } from '../../../models/interfaces';
 import DriveListItemSkeleton from '../../loaders/DriveListItemSkeleton';
 import i18n from '../../../services/i18n.service';
+import { OrderDirection } from '../../../models/enums';
 
 interface FilesListProps {
   isLoading: boolean;
@@ -54,10 +55,16 @@ class FilesList extends React.Component<FilesListProps> {
   render(): ReactNode {
     const { dispatch, isLoading, order } = this.props;
     const sortBy = (orderBy: string) => {
-      dispatch(storageActions.setOrder({ by: orderBy }));
+      const direction =
+        order.by === orderBy
+          ? order.direction === OrderDirection.Desc
+            ? OrderDirection.Asc
+            : OrderDirection.Desc
+          : OrderDirection.Asc;
+      dispatch(storageActions.setOrder({ by: orderBy, direction }));
     };
     const sortButtonFactory = () => {
-      const IconComponent = Unicons.UilArrowDown;
+      const IconComponent = order.direction === OrderDirection.Desc ? Unicons.UilArrowDown : Unicons.UilArrowUp;
       return <IconComponent className="ml-2" />;
     };
 
@@ -74,7 +81,10 @@ class FilesList extends React.Component<FilesListProps> {
               className="pointer-events-auto"
             />
           </div>
-          <div className="w-0.5/12 px-3 flex items-center box-content">{i18n.get('drive.list.columns.type')}</div>
+          <div className="w-1/12 px-3 flex items-center box-content cursor-pointer" onClick={() => sortBy('type')}>
+            {i18n.get('drive.list.columns.type')}
+            {order.by === 'type' && sortButtonFactory()}
+          </div>
           <div className="flex-grow flex items-center cursor-pointer" onClick={() => sortBy('name')}>
             {i18n.get('drive.list.columns.name')}
             {order.by === 'name' && sortButtonFactory()}
@@ -84,7 +94,7 @@ class FilesList extends React.Component<FilesListProps> {
             {i18n.get('drive.list.columns.modified')}
             {order.by === 'updatedAt' && sortButtonFactory()}
           </div>
-          <div className="w-2/12 flex items-center cursor-pointer" onClick={() => sortBy('size')}>
+          <div className="w-1/12 flex items-center cursor-pointer" onClick={() => sortBy('size')}>
             {i18n.get('drive.list.columns.size')}
             {order.by === 'size' && sortButtonFactory()}
           </div>

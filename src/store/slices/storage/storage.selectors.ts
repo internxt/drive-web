@@ -1,5 +1,6 @@
 import { RootState } from '../..';
 import { DriveItemData } from '../../../models/interfaces';
+import itemsListService from '../../../services/items-list.service';
 import { sessionSelectors } from '../session/session.selectors';
 
 const rootFolderId = (state: RootState): number => {
@@ -44,13 +45,22 @@ const storageSelectors = {
   },
 
   filteredItems(state: RootState): (items: DriveItemData[]) => DriveItemData[] {
-    return (items) =>
-      items.filter((item) => {
+    return (items) => {
+      const filteredItems = items.filter((item) => {
         const filters = state.storage.filters;
         const fullName = item.isFolder ? item.name : item.name + `.${item.type}`;
 
         return fullName.toLowerCase().match(filters.text.toLowerCase());
       });
+
+      itemsListService.sort(
+        filteredItems,
+        state.storage.order.by as 'name' | 'type' | 'updatedAt' | 'size',
+        state.storage.order.direction,
+      );
+
+      return filteredItems;
+    };
   },
 
   isItemSelected(state: RootState): (item: DriveItemData) => boolean {

@@ -108,7 +108,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
         </div>
 
         {/* ICON */}
-        <div className="w-0.5/12 flex items-center px-3 box-content">
+        <div className="w-1/12 flex items-center px-3 box-content">
           <div className="h-8 w-8 flex justify-center">
             <ItemIconComponent className="h-full" />
           </div>
@@ -121,12 +121,12 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
         <div className="pl-3 w-2/12 items-center hidden xl:flex">
           <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
             {!item.isFolder ? (
-              <button onClick={onDownloadButtonClicked} className="hover-action mr-4" data-test="download-file-button">
+              <button onClick={onDownloadButtonClicked} className="hover-action mr-3" data-test="download-file-button">
                 <Unicons.UilCloudDownload className="h-5" />
               </button>
             ) : null}
             {!item.isFolder ? (
-              <button onClick={onShareButtonClicked} className="hover-action mr-4" data-test="share-file-button">
+              <button onClick={onShareButtonClicked} className="hover-action mr-3" data-test="share-file-button">
                 <Unicons.UilShareAlt className="h-5" />
               </button>
             ) : null}
@@ -148,7 +148,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
         </div>
 
         {/* SIZE */}
-        <div className="flex items-center w-2/12 whitespace-nowrap overflow-ellipsis">
+        <div className="flex items-center w-1/12 whitespace-nowrap overflow-ellipsis">
           {sizeService.bytesToString(item.size, false)}
         </div>
 
