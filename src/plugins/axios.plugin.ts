@@ -1,3 +1,4 @@
+import packageJson from '../../package.json';
 import axios from 'axios';
 
 import { LocalStorageItem, Workspace } from '../models/enums';
@@ -25,7 +26,7 @@ const axiosPlugin: AppPlugin = {
 
       requestConfig.headers = {
         'content-type': 'application/json; charset=utf-8',
-        'internxt-version': '1.0.0',
+        'internxt-version': packageJson.version,
         'internxt-client': 'drive-web',
         Authorization: `Bearer ${tokenByWorkspace[workspace]}`,
         'internxt-mnemonic': mnemonicByWorkspace[workspace],
