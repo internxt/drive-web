@@ -248,5 +248,21 @@
         "internxt_tier5": "Internxt Tier 5"
       }
     }
+  },
+  "appSumo": {
+    "tiers": {
+      "internxt_tier1": "AppSumo Lifetime Tier 1",
+      "internxt_tier2": "AppSumo Lifetime Tier 2",
+      "internxt_tier3": "AppSumo Lifetime Tier 3",
+      "internxt_tier4": "AppSumo Lifetime Tier 4",
+      "internxt_tier5": "AppSumo Lifetime Tier 5"
+    },
+    "members": {
+      "internxt_tier1": "Team members: 1",
+      "internxt_tier2": "Team members: 5",
+      "internxt_tier3": "Team members: 10",
+      "internxt_tier4": "Team members: 25",
+      "internxt_tier5": "Team members: 100"
+    }
   }
 }

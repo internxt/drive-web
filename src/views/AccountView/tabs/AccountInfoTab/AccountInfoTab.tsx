@@ -96,9 +96,12 @@ const AccountPlanInfoTab = (): JSX.Element => {
                     {isUserFromAppSumo ? limitService.formatLimit(planLimit) : currentPlan?.simpleName}
                   </span>
 
-                  <div className="flex w-full items-end text-neutral-500 text-xs">
+                  <div className="flex w-full items-start text-neutral-500 text-xs flex-col">
                     {isUserFromAppSumo ? (
-                      <span>{i18n.get(`appSumo.tiers.${user?.appSumoDetails?.planId as string}`)}</span>
+                      <>
+                        <span>{i18n.get(`appSumo.tiers.${user?.appSumoDetails?.planId as string}`)}</span>
+                        <span>{i18n.get(`appSumo.members.${user?.appSumoDetails?.planId as string}`)}</span>
+                      </>
                     ) : currentPlan?.planId ? (
                       <Fragment>
                         <span>
