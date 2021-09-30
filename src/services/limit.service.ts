@@ -18,7 +18,7 @@ const formatLimit = (limit: number): string => {
   let result = '...';
 
   if (limit > 0) {
-    result = limit < INFINITE_LIMIT ? bytesToString(limit) : '\u221E';
+    result = limit === INFINITE_LIMIT ? '\u221E' : bytesToString(limit);
   }
 
   return result;
