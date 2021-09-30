@@ -16,7 +16,6 @@ export interface StorageState {
   selectedItems: DriveItemData[];
   itemToShare: DriveItemData | null;
   itemsToDelete: DriveItemData[];
-  infoItem: DriveItemData | null;
   viewMode: FileViewMode;
   namePath: FolderPath[];
 }

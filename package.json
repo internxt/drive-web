@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@iconscout/react-unicons": "^1.1.6",
-    "@internxt/inxt-js": "^1.2.3-1",
+    "@internxt/inxt-js": "=1.2.3-2",
     "@internxt/lib": "1.1.2",
     "@reduxjs/toolkit": "^1.6.0",
     "@testing-library/jest-dom": "^5.11.4",
@@ -87,6 +87,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/socket.io-client": "^1.4.35",
     "@types/stripe-v3": "^3.1.25",
+    "@types/wicg-file-system-access": "^2020.9.4",
     "autoprefixer": "^9",
     "customize-cra": "^1.0.0",
     "cypress": "^8.3.1",

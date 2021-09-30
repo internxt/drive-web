@@ -17,6 +17,7 @@ export enum TaskStatus {
 export enum TaskType {
   CreateFolder = 'create-folder',
   DownloadFile = 'download-file',
+  DownloadBackup = 'download-backup',
   UploadFile = 'upload-file',
   UploadFolder = 'upload-folder',
   MoveFile = 'move-file',
@@ -48,7 +49,13 @@ export interface CreateFolderTask extends BaseTask {
 export interface DownloadFileTask extends BaseTask {
   action: TaskType.DownloadFile;
   cancellable: true;
-  file: DriveFileData;
+  file: { name: string; type: string };
+}
+
+export interface DownloadBackupTask extends BaseTask {
+  action: TaskType.DownloadBackup;
+  cancellable: true;
+  backup: { name: string; type: string };
 }
 
 export interface UploadFileTask extends BaseTask {
@@ -82,6 +89,7 @@ export interface MoveFolderTask extends BaseTask {
 export type TaskData =
   | CreateFolderTask
   | DownloadFileTask
+  | DownloadBackupTask
   | UploadFileTask
   | UploadFolderTask
   | MoveFileTask
@@ -107,6 +115,10 @@ const getTaskNotificationTitle = (task: TaskData): string => {
     }
     case TaskType.DownloadFile: {
       title = itemsLib.getItemDisplayName(task.file);
+      break;
+    }
+    case TaskType.DownloadBackup: {
+      title = `${task.backup.name}.${task.backup.type}`;
       break;
     }
     case TaskType.UploadFile: {
@@ -146,6 +158,10 @@ const getTaskNotificationIcon = (task: TaskData): FunctionComponent<SVGProps<SVG
     }
     case TaskType.DownloadFile: {
       icon = iconService.getItemIcon(false, task.file.type);
+      break;
+    }
+    case TaskType.DownloadBackup: {
+      icon = iconService.getItemIcon(false, task.backup.type);
       break;
     }
     case TaskType.UploadFile: {

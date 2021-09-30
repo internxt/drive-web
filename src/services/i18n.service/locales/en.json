@@ -115,6 +115,89 @@
       }
     }
   },
+  "backups": {
+    "backups-from": "Backups from {deviceName}",
+    "your-devices": "Your devices",
+    "back-to-devices": "Go back to devices",
+    "devices-list": {
+      "columns": {
+        "name": "Name",
+        "last-update": "Last update",
+        "size": "Size"
+      }
+    },
+    "backups-list": {
+      "columns": {
+        "name": "Name",
+        "last-update": "Last update",
+        "size": "Size",
+        "actions": "Actions"
+      }
+    }
+  },
+  "tasks": {
+    "create-folder": {
+      "pending": "Pending to create folder",
+      "in-process": "Creating folder",
+      "success": "Folder created",
+      "error": "Error during folder creation",
+      "cancelled": "Folder creation cancelled"
+    },
+    "upload-file": {
+      "pending": "Pending to upload",
+      "encrypting": "Encrypting file",
+      "in-process": "{progress}% Uploading file",
+      "success": "File uploaded",
+      "error": "Error during upload",
+      "cancelled": "Upload cancelled"
+    },
+    "upload-folder": {
+      "pending": "Pending to upload",
+      "encrypting": "Encrypting files",
+      "in-process": "{progress}% Uploading folder",
+      "success": "Folder uploaded",
+      "error": "Error during upload",
+      "cancelled": "Upload cancelled"
+    },
+    "download-file": {
+      "pending": "Pending to download",
+      "decrypting": "Fetching file",
+      "in-process": "{progress}% Downloading file",
+      "success": "File downloaded",
+      "error": "Error during download",
+      "cancelled": "Download cancelled"
+    },
+    "download-backup": {
+      "pending": "Pending to download",
+      "decrypting": "Fetching backup",
+      "in-process": "{progress}% Downloading backup",
+      "success": "Backup downloaded",
+      "error": "Error during download",
+      "cancelled": "Download cancelled"
+    },
+    "download-folder": {
+      "pending": "Pending to download",
+      "decrypting": "Fetching files",
+      "in-process": "Downloading folder",
+      "success": "Folder downloaded",
+      "error": "Error during download",
+      "cancelled": "Download cancelled"
+    },
+    "move-file": {
+      "pending": "Pending to move",
+      "in-process": "Moving file",
+      "success": "File moved",
+      "error": "Error during movement",
+      "cancelled": "Cancelled movement"
+    },
+    "move-folder": {
+      "pending": "Pending to move",
+      "in-process": "Moving folder",
+      "success": "Folder moved",
+      "error": "Error during movement",
+      "cancelled": "Cancelled movement"
+    }
+  },
   "success": {
     "passwordChanged": "Password changed successfully",
     "teamInvitationSent": "Invitation email sent to {email}",
@@ -156,10 +239,6 @@
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent"
   },
-  "info": {
-    "downloadingFile": "Downloading file {filename}...",
-    "retrievingFile": "Securely retrieving file..."
-  },
   "action": {
     "download": "Download",
     "accessFile": "Access File",
@@ -167,61 +246,6 @@
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
     "buy": "Buy"
-  },
-  "tasks": {
-    "create-folder": {
-      "pending": "Pending to create folder",
-      "in-process": "Creating folder",
-      "success": "Folder created",
-      "error": "Error during folder creation",
-      "cancelled": "Folder creation cancelled"
-    },
-    "upload-file": {
-      "pending": "Pending to upload",
-      "encrypting": "Encrypting file",
-      "in-process": "{progress}% Uploading file",
-      "success": "File uploaded",
-      "error": "Error during upload",
-      "cancelled": "Upload cancelled"
-    },
-    "upload-folder": {
-      "pending": "Pending to upload",
-      "encrypting": "Encrypting files",
-      "in-process": "{progress}% Uploading folder",
-      "success": "Folder uploaded",
-      "error": "Error during upload",
-      "cancelled": "Upload cancelled"
-    },
-    "download-file": {
-      "pending": "Pending to download",
-      "decrypting": "Fetching file",
-      "in-process": "{progress}% Downloading file",
-      "success": "File downloaded",
-      "error": "Error during download",
-      "cancelled": "Download cancelled"
-    },
-    "download-folder": {
-      "pending": "Pending to download",
-      "decrypting": "Fetching files",
-      "in-process": "Downloading folder",
-      "success": "Folder downloaded",
-      "error": "Error during download",
-      "cancelled": "Download cancelled"
-    },
-    "move-file": {
-      "pending": "Pending to move",
-      "in-process": "Moving file",
-      "success": "File moved",
-      "error": "Error during movement",
-      "cancelled": "Cancelled movement"
-    },
-    "move-folder": {
-      "pending": "Pending to move",
-      "in-process": "Moving folder",
-      "success": "Folder moved",
-      "error": "Error during movement",
-      "cancelled": "Cancelled movement"
-    }
   },
   "drive": {
     "usage": "Usage",

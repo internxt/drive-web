@@ -2,11 +2,11 @@ import React, { MouseEvent, ReactNode } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import Dropdown from 'react-bootstrap/Dropdown';
-import { ItemAction } from '../../../models/enums';
+import { DriveItemAction } from '../../FileExplorer/FileExplorerItem';
 
 interface FileDropdownActionsProps {
   title?: string;
-  hiddenActions: ItemAction[];
+  hiddenActions: DriveItemAction[];
   onRenameButtonClicked: (e: MouseEvent) => void;
   onDownloadButtonClicked: (e: MouseEvent) => void;
   onShareButtonClicked: (e: MouseEvent) => void;
@@ -56,32 +56,32 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
       <div>
         {title ? <span className="text-supporting-2 mb-1">{title}</span> : null}
 
-        {!hiddenActions.includes(ItemAction.Download) ? (
+        {!hiddenActions.includes(DriveItemAction.Download) ? (
           <Dropdown.Item id="download" onClick={this.onDownloadButtonClicked}>
             <Unicons.UilCloudDownload className="text-blue-60 h-5 mr-1" />
             <span>Download</span>
           </Dropdown.Item>
         ) : null}
-        {!hiddenActions.includes(ItemAction.Rename) ? (
+        {!hiddenActions.includes(DriveItemAction.Rename) ? (
           <Dropdown.Item id="rename" onClick={this.onRenameButtonClicked}>
             <Unicons.UilEditAlt className="text-blue-60 h-5 mr-1" />
             <span>Rename</span>
           </Dropdown.Item>
         ) : null}
-        {!hiddenActions.includes(ItemAction.Share) ? (
+        {!hiddenActions.includes(DriveItemAction.Share) ? (
           <Dropdown.Item id="share" onClick={this.onShareButtonClicked}>
             <Unicons.UilShareAlt className="text-blue-60 h-5 mr-1" />
             <span>Share</span>
           </Dropdown.Item>
         ) : null}
-        {!hiddenActions.includes(ItemAction.Info) ? (
+        {!hiddenActions.includes(DriveItemAction.Info) ? (
           <Dropdown.Item id="info" onClick={this.onInfoButtonClicked}>
             <Unicons.UilFileInfoAlt className="text-blue-60 h-5 mr-1" />
             <span>Info</span>
           </Dropdown.Item>
         ) : null}
         <hr className="text-l-neutral-30 my-1.5"></hr>
-        {!hiddenActions.includes(ItemAction.Delete) ? (
+        {!hiddenActions.includes(DriveItemAction.Delete) ? (
           <Dropdown.Item id="delete" className="text-red-60 hover:text-red-60" onClick={this.onDeleteButtonClicked}>
             <Unicons.UilTrashAlt className="h-5 mr-1" />
             <span>Delete</span>

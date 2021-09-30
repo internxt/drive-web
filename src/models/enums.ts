@@ -9,6 +9,7 @@ export enum AppView {
   Login = 'login',
   Drive = 'drive',
   Recents = 'recents',
+  Backups = 'backups',
   Account = 'account',
   TeamsJoin = 'teams-join',
   Deactivation = 'deactivation',
@@ -19,14 +20,6 @@ export enum AppView {
   ShareToken = 'share-token',
   GuestAcceptInvite = 'guest-accept-invite',
   NotFound = 'not-found',
-}
-
-export enum ItemAction {
-  Rename,
-  Download,
-  Share,
-  Info,
-  Delete,
 }
 
 export enum AnalyticsTrack {
