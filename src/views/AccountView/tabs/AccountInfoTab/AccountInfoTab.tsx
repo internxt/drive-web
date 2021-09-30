@@ -31,7 +31,6 @@ const AccountPlanInfoTab = (): JSX.Element => {
   const isLoadingPlans = useAppSelector((state) => state.plan.isLoadingPlans);
   const currentPlan = useAppSelector(planSelectors.currentPlan);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
-  const isUserFromAppSumo = useAppSelector(userSelectors.isFromAppSumo);
   const isCurrentPlanLifetime = useAppSelector(planSelectors.isCurrentPlanLifetime);
   const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
@@ -93,12 +92,15 @@ const AccountPlanInfoTab = (): JSX.Element => {
               <div className="flex justify-between w-full">
                 <div>
                   <span className="text-neutral-700 font-bold text-xl">
-                    {isUserFromAppSumo ? limitService.formatLimit(planLimit) : currentPlan?.simpleName}
+                    {currentPlan?.isAppSumo ? limitService.formatLimit(planLimit) : currentPlan?.simpleName}
                   </span>
 
-                  <div className="flex w-full items-end text-neutral-500 text-xs">
-                    {isUserFromAppSumo ? (
-                      <span>{i18n.get(`appSumo.tiers.${user?.appSumoDetails?.planId as string}`)}</span>
+                  <div className="flex w-full items-start text-neutral-500 text-xs flex-col">
+                    {currentPlan?.isAppSumo ? (
+                      <>
+                        <span>{i18n.get(`appSumo.tiers.${currentPlan.details?.planId as string}`)}</span>
+                        <span>{i18n.get(`appSumo.members.${currentPlan.details?.planId as string}`)}</span>
+                      </>
                     ) : currentPlan?.planId ? (
                       <Fragment>
                         <span>
@@ -140,7 +142,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
               description={i18n.get('views.account.tabs.info.advice2.description')}
             />
           </div>
-          {!isUserFromAppSumo && (
+          {!currentPlan?.isAppSumo && (
             <span
               className="block text-center text-m-neutral-80 cursor-pointer mt-10"
               onClick={onDeletePermanentlyAccountClicked}

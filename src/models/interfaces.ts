@@ -51,6 +51,7 @@ export interface AppSumoDetails {
   invoiceItemUuid: string;
   planId: AppSumoTier;
   updatedAt: '';
+  uuid: string;
 }
 
 export interface UserSettings {
@@ -203,6 +204,8 @@ export type StoragePlan = {
   isLifetime: boolean;
   renewalPeriod: RenewalPeriod;
   storageLimit: number;
+  isAppSumo?: boolean;
+  details?: AppSumoDetails;
 };
 
 export interface FolderPath {
