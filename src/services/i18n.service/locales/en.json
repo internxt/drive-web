@@ -154,11 +154,8 @@
     "movingItemInsideItself": "You can't move a folder inside itself",
     "movingItem": "Error when moving item/s",
     "linkExpired": "This secure link has expired",
-    "teamInvitation": "The invitation email could not be sent"
-  },
-  "info": {
-    "downloadingFile": "Downloading file {filename}...",
-    "retrievingFile": "Securely retrieving file..."
+    "teamInvitation": "The invitation email could not be sent",
+    "noFilePreview": "No file preview available"
   },
   "action": {
     "download": "Download",

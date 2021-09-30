@@ -32,7 +32,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
       <Fragment>
         <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
-            className="dense border border-white no-ring rect"
+            className="dense border border-white no-ring rect select-text"
             onClick={(e) => e.stopPropagation()}
             ref={nameInputRef}
             type="text"
@@ -89,7 +89,6 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
     return connectDragSource(
       <div
         className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
-        draggable={false}
         onContextMenu={onItemRightClicked}
         onClick={onItemClicked}
         onDoubleClick={onItemDoubleClicked}

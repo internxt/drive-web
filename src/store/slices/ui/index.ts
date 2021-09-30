@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import queryString from 'query-string';
+import { DriveFileData } from '../../../models/interfaces';
 import navigationService from '../../../services/navigation.service';
+import { storeTeamsInfo } from '../../../services/teams.service';
 import { AccountViewTab } from '../../../views/AccountView/tabs';
 
 interface UISliceState {
@@ -14,6 +16,8 @@ interface UISliceState {
   isInviteMemberDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
   isGuestInviteDialogOpen: boolean;
+  isFileViewerOpen: boolean;
+  fileViewerItem: DriveFileData | null;
 }
 
 const initialState: UISliceState = {
@@ -27,6 +31,8 @@ const initialState: UISliceState = {
   isInviteMemberDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
   isGuestInviteDialogOpen: false,
+  isFileViewerOpen: false,
+  fileViewerItem: null,
 };
 
 export const uiSlice = createSlice({
@@ -60,6 +66,12 @@ export const uiSlice = createSlice({
     setIsDriveItemInfoMenuOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDriveItemInfoMenuOpen = action.payload;
     },
+    setIsFileViewerOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isFileViewerOpen = action.payload;
+    },
+    setFileViewerItem: (state: UISliceState, action: PayloadAction<DriveFileData>) => {
+      state.fileViewerItem = action.payload;
+    },
     setCurrentAccountTab: (state: UISliceState, action: PayloadAction<AccountViewTab>) => {
       const currentQueryParams = queryString.parse(navigationService.history.location.search);
       const newQueryParams = {
@@ -89,6 +101,8 @@ export const {
   setIsShareItemDialogOpen,
   setIsInviteMemberDialogOpen,
   setIsDriveItemInfoMenuOpen,
+  setIsFileViewerOpen,
+  setFileViewerItem,
   setCurrentAccountTab,
   setIsGuestInvitationDialogOpen,
 } = uiSlice.actions;

@@ -325,6 +325,9 @@ const fileExplorerItemWrapper = (
 
       if (item.isFolder) {
         dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+      } else {
+        dispatch(uiActions.setIsFileViewerOpen(true));
+        dispatch(uiActions.setFileViewerItem(item));
       }
     };
 

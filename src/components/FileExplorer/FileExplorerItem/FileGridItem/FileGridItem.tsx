@@ -46,7 +46,7 @@ const FileGridItem = (props: DriveItemProps) => {
       <Fragment>
         <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
-            className="w-full dense border border-white no-ring rect"
+            className="w-full dense border border-white no-ring rect select-text"
             onClick={(e) => e.stopPropagation()}
             ref={nameInputRef}
             type="text"
@@ -95,7 +95,6 @@ const FileGridItem = (props: DriveItemProps) => {
         onContextMenu={onItemRightClicked}
         onClick={onItemClicked}
         onDoubleClick={onItemDoubleClicked}
-        draggable={false}
       >
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
