@@ -263,6 +263,9 @@
       "internxt_tier3": "Team members: 10",
       "internxt_tier4": "Team members: 25",
       "internxt_tier5": "Team members: 100"
+    },
+    "plans": {
+      "advice": "You will be redirected to your Appsumo account"
     }
   }
 }
