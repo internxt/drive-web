@@ -202,6 +202,8 @@ export type StoragePlan = {
   isLifetime: boolean;
   renewalPeriod: RenewalPeriod;
   storageLimit: number;
+  isAppSumo?: boolean;
+  details?: AppSumoDetails;
 };
 
 export interface FolderPath {
