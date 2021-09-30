@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
+import * as Unicons from '@iconscout/react-unicons';
+
 import BackupsList from '../../components/BackupsList/BackupsList';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import { Device } from '../../models/interfaces';
 import i18n from '../../services/i18n.service';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { backupsActions, backupsThunks } from '../../store/slices/backups';
+import Breadcrumbs, { BreadcrumbItemData } from '../../components/Breadcrumbs/Breadcrumbs';
 
 export default function BackupsView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -13,6 +16,28 @@ export default function BackupsView(): JSX.Element {
   const devices = useAppSelector((state) => state.backups.devices);
   const currentDeviceBackups = useAppSelector((state) => state.backups.backups);
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
+  const breadcrumbsItems: BreadcrumbItemData[] = [
+    {
+      id: -1,
+      label: 'Devices',
+      icon: <Unicons.UilHdd className="w-4 h-4 mr-1" />,
+      active: true,
+      onClick: () => goBack(),
+    },
+  ];
+  breadcrumbsItems.push(
+    ...(currentDevice
+      ? [
+          {
+            id: currentDevice.id,
+            label: currentDevice.name,
+            icon: null,
+            active: false,
+          },
+        ]
+      : []),
+  );
+  const backupsBreadcrumbs = <Breadcrumbs items={breadcrumbsItems} />;
   const onDeviceSelected = (target: Device) => {
     dispatch(backupsActions.setCurrentDevice(target));
     dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
@@ -28,16 +53,7 @@ export default function BackupsView(): JSX.Element {
   return (
     <div className="flex-grow pt-6 px-8">
       <div className="pb-4 flex items-baseline">
-        <p className="text-lg px-3 py-1">
-          {currentDevice
-            ? i18n.get('backups.backups-from', { deviceName: currentDevice.name })
-            : i18n.get('backups.your-devices')}
-        </p>
-        {currentDevice && (
-          <p className="text-blue-50 cursor-pointer py-1 text-sm" onClick={goBack}>
-            {i18n.get('backups.back-to-devices')}
-          </p>
-        )}
+        {currentDevice ? backupsBreadcrumbs : <p className="text-lg px-3 py-1"> {i18n.get('backups.your-devices')}</p>}
       </div>
       {currentDevice ? (
         <BackupsList isLoading={isLoadingDeviceBackups} items={currentDeviceBackups} />
