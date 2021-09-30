@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import queryString from 'query-string';
+import { FileInfoMenuItem } from '../../../models/interfaces';
 import navigationService from '../../../services/navigation.service';
 import { AccountViewTab } from '../../../views/AccountView/tabs';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
-  showFileLogger: boolean;
-  currentAccountTab: AccountViewTab;
+  isFileLoggerOpen: boolean;
+  isFileInfoMenuOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
@@ -14,12 +15,14 @@ interface UISliceState {
   isInviteMemberDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
   isGuestInviteDialogOpen: boolean;
+  currentAccountTab: AccountViewTab;
+  currentFileInfoMenuItem: FileInfoMenuItem | null;
 }
 
 const initialState: UISliceState = {
   isSidenavCollapsed: false,
-  showFileLogger: false,
-  currentAccountTab: AccountViewTab.Info,
+  isFileLoggerOpen: false,
+  isFileInfoMenuOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
@@ -27,6 +30,8 @@ const initialState: UISliceState = {
   isInviteMemberDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
   isGuestInviteDialogOpen: false,
+  currentAccountTab: AccountViewTab.Info,
+  currentFileInfoMenuItem: null,
 };
 
 export const uiSlice = createSlice({
@@ -36,8 +41,11 @@ export const uiSlice = createSlice({
     setIsSidenavCollapsed: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isSidenavCollapsed = action.payload;
     },
-    setShowFileLogger: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.showFileLogger = action.payload;
+    setIsFileLoggerOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isFileLoggerOpen = action.payload;
+    },
+    setIsFileInfoMenuOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isFileInfoMenuOpen = action.payload;
     },
     setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isCreateFolderDialogOpen = action.payload;
@@ -75,6 +83,9 @@ export const uiSlice = createSlice({
         search: newQueryString && `?${newQueryString}`,
       });
     },
+    setFileInfoItem: (state: UISliceState, action: PayloadAction<FileInfoMenuItem | null>) => {
+      state.currentFileInfoMenuItem = action.payload;
+    },
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
     },
@@ -84,12 +95,14 @@ export const uiSlice = createSlice({
 export const {
   setIsCreateFolderDialogOpen,
   setIsDeleteItemsDialogOpen,
-  setShowFileLogger,
+  setIsFileLoggerOpen,
+  setIsFileInfoMenuOpen,
   setIsReachedPlanLimitDialogOpen,
   setIsShareItemDialogOpen,
   setIsInviteMemberDialogOpen,
   setIsDriveItemInfoMenuOpen,
   setCurrentAccountTab,
+  setFileInfoItem,
   setIsGuestInvitationDialogOpen,
 } = uiSlice.actions;
 

@@ -1,17 +1,55 @@
-import { Backup } from '../../models/interfaces';
+import { DeviceBackup } from '../../models/interfaces';
 import * as Unicons from '@iconscout/react-unicons';
 import dateService from '../../services/date.service';
 import { ReactComponent as BackupIcon } from '../../assets/icons/light/folder-backup.svg';
 import sizeService from '../../services/size.service';
+import { Dropdown } from 'react-bootstrap';
+import BackupDropdownActions from '../dropdowns/BackupDropdownActions/BackupDropdownActions';
+import { useAppDispatch } from '../../store/hooks';
+import { uiActions } from '../../store/slices/ui';
 
 export default function BackupsListItem({
   backup,
-  onDownload,
+  onDownloadBackupClicked,
 }: {
-  backup: Backup;
-  onDownload: (backup: Backup) => void;
+  backup: DeviceBackup;
+  onDownloadBackupClicked: (backup: DeviceBackup) => void;
 }): JSX.Element {
+  const dispatch = useAppDispatch();
   const isUploaded = !!backup.fileId;
+  const onDownloadButtonClicked = () => isUploaded && onDownloadBackupClicked(backup);
+  const onInfoButtonClicked = (e: React.MouseEvent) => {
+    const infoMenuFeatures = [
+      {
+        label: 'Device path',
+        value: backup.path,
+      },
+      {
+        label: 'Size',
+        value: sizeService.bytesToString(backup.size || 0, false),
+      },
+      {
+        label: 'Modified',
+        value: dateService.format(backup.updatedAt, 'DD MMMM YYYY'),
+      },
+      {
+        label: 'Created',
+        value: dateService.format(backup.createdAt, 'DD MMMM YYYY'),
+      },
+    ];
+
+    dispatch(
+      uiActions.setFileInfoItem({
+        id: `backup-item-${backup.id}`,
+        icon: BackupIcon,
+        title: backup.name,
+        features: infoMenuFeatures,
+      }),
+    );
+    dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
+
+    e.stopPropagation();
+  };
 
   return (
     <div
@@ -28,8 +66,18 @@ export default function BackupsListItem({
         {backup.lastBackupAt ? dateService.format(backup.lastBackupAt, 'DD MMMM YYYY. HH:mm') : 'Not uploaded yet'}
       </div>
       <div className="w-2/12 flex items-center">{backup.size ? sizeService.bytesToString(backup.size, false) : ''}</div>
-      <div className="w-1/12 flex items-center rounded-tr-4px" onClick={() => isUploaded && onDownload(backup)}>
-        <Unicons.UilCloudDownload className={`w-5 h-5 ${isUploaded ? 'cursor-pointer text-blue-50' : ''}`} />
+      <div className="w-1/12 flex items-center rounded-tr-4px">
+        <Dropdown>
+          <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
+            <Unicons.UilEllipsisH className="w-full h-full" />
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <BackupDropdownActions
+              onDownloadButtonClicked={onDownloadButtonClicked}
+              onInfoButtonClicked={onInfoButtonClicked}
+            />
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     </div>
   );

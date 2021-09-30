@@ -126,19 +126,19 @@
         "size": "Size",
         "actions": "Actions"
       }
+    }
+  },
+  "appSumo": {
+    "plans": {
+      "advice": "You will be redirected to your Appsumo account"
     },
-    "appSumo": {
-      "plans": {
-        "advice": "You will be redirected to your Appsumo account"
-      },
-      "tiers": {
-        "internxt_free1": "Internxt Free 1",
-        "internxt_tier1": "Internxt Tier 1",
-        "internxt_tier2": "Internxt Tier 2",
-        "internxt_tier3": "Internxt Tier 3",
-        "internxt_tier4": "Internxt Tier 4",
-        "internxt_tier5": "Internxt Tier 5"
-      }
+    "tiers": {
+      "internxt_free1": "Internxt Free 1",
+      "internxt_tier1": "Internxt Tier 1",
+      "internxt_tier2": "Internxt Tier 2",
+      "internxt_tier3": "Internxt Tier 3",
+      "internxt_tier4": "Internxt Tier 4",
+      "internxt_tier5": "Internxt Tier 5"
     }
   },
   "backups": {
@@ -190,6 +190,14 @@
       "decrypting": "Fetching file",
       "in-process": "{progress}% Downloading file",
       "success": "File downloaded",
+      "error": "Error during download",
+      "cancelled": "Download cancelled"
+    },
+    "download-backup": {
+      "pending": "Pending to download",
+      "decrypting": "Fetching backup",
+      "in-process": "{progress}% Downloading backup",
+      "success": "Backup downloaded",
       "error": "Error during download",
       "cancelled": "Download cancelled"
     },

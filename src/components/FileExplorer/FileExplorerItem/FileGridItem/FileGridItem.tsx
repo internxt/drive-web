@@ -3,13 +3,12 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import * as Unicons from '@iconscout/react-unicons';
 
 import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
-import { ItemAction } from '../../../../models/enums';
 
 import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
 import { items } from '@internxt/lib';
 import useForceUpdate from '../../../../hooks/useForceUpdate';
-import { DriveItemProps } from '..';
+import { DriveItemAction, DriveItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
@@ -103,7 +102,7 @@ const FileGridItem = (props: DriveItemProps) => {
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <FileDropdownActions
-              hiddenActions={item.isFolder ? [ItemAction.Download, ItemAction.Share] : []}
+              hiddenActions={item.isFolder ? [DriveItemAction.Download, DriveItemAction.Share] : []}
               onRenameButtonClicked={onRenameButtonClicked}
               onDownloadButtonClicked={onDownloadButtonClicked}
               onShareButtonClicked={onShareButtonClicked}

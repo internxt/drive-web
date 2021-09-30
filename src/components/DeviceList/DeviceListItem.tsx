@@ -32,7 +32,7 @@ export default function DeviceListItem({
       onDoubleClick={() => onClick(device)}
     >
       <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
-        <Icon class="h-8 w-8" />
+        <Icon className="h-8 w-8" />
       </div>
       <p className="flex-grow pr-3">{device.name}</p>
       <div className="w-2/12 hidden items-center xl:flex"></div>

@@ -4,7 +4,7 @@ import localStorageService from './local-storage.service';
 import analyticsService from './analytics.service';
 import { DevicePlatform } from '../models/enums';
 import { getEnvironmentConfig, Network } from '../lib/network';
-import { Backup, DriveItemData } from '../models/interfaces';
+import { DeviceBackup, DriveItemData } from '../models/interfaces';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 export function downloadFile(
@@ -42,7 +42,7 @@ export function downloadFile(
 }
 
 export async function downloadBackup(
-  backup: Backup,
+  backup: DeviceBackup,
   {
     progressCallback,
     finishedCallback,

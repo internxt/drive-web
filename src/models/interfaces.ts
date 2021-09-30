@@ -1,3 +1,4 @@
+import { SVGProps } from 'react-router/node_modules/@types/react';
 import { DatabaseProvider } from '../services/database.service';
 import { store as storeInstance } from '../store';
 import {
@@ -226,7 +227,7 @@ export interface Device {
   platform: string | null;
 }
 
-export interface Backup {
+export interface DeviceBackup {
   id: number;
   path: string;
   name: string;
@@ -246,4 +247,11 @@ export interface Backup {
 export interface OrderSettings {
   by: string;
   direction: OrderDirection;
+}
+
+export interface FileInfoMenuItem {
+  id: string;
+  icon: React.FunctionComponent<SVGProps<SVGSVGElement>>;
+  title: string;
+  features: { label: string; value: string }[];
 }

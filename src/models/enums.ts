@@ -22,14 +22,6 @@ export enum AppView {
   NotFound = 'not-found',
 }
 
-export enum ItemAction {
-  Rename,
-  Download,
-  Share,
-  Info,
-  Delete,
-}
-
 export enum AnalyticsTrack {
   SignOut = 'user-signout',
   SignIn = 'user-signin',

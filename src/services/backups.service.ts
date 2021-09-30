@@ -1,5 +1,5 @@
 import { getHeaders } from '../lib/auth';
-import { Backup, Device } from '../models/interfaces';
+import { DeviceBackup, Device } from '../models/interfaces';
 import { aes } from '@internxt/lib';
 
 const backupsService = {
@@ -10,7 +10,7 @@ const backupsService = {
     }).then((res) => res.json());
     return devices.filter((device) => device.id);
   },
-  async getAllBackups(mac: string): Promise<Backup[]> {
+  async getAllBackups(mac: string): Promise<DeviceBackup[]> {
     const backups = await fetch(`${process.env.REACT_APP_API_URL}/api/backup/${mac}`, {
       method: 'GET',
       headers: getHeaders(true, false),
