@@ -251,7 +251,7 @@
   "drive": {
     "usage": "Usage",
     "currentPlan": "Current plan",
-    "downloadingFile": "Downloading file...",
+    "loadingFile": "Loading file...",
     "list": {
       "columns": {
         "type": "Type",

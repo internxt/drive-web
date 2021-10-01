@@ -60,7 +60,7 @@ const FileViewer = (props: FileViewerProps) => {
   }, []);
 
   return (
-    <div className="absolute z-50 top-0 left-0 right-0 bottom-0 bg-black bg-opacity-75 flex flex-col">
+    <div className="absolute z-50 top-0 left-0 right-0 bottom-0 bg-black bg-opacity-80 flex flex-col">
       {/* HEADER */}
       <div className="flex justify-between px-8 py-3">
         <div className="flex text-white">

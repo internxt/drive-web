@@ -44,7 +44,7 @@ const FileImageViewer = (props: FormatFileViewerProps) => {
 
   return (
     <div className="file-image-viewer text-white">
-      {props.isLoading ? <span>{i18n.get('drive.downloadingFile')}</span> : <img src={fileUrl} className="shadow-lg" />}
+      {props.isLoading ? <span>{i18n.get('drive.loadingFile')}</span> : <img src={fileUrl} className="shadow-lg" />}
     </div>
   );
 };

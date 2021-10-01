@@ -54,7 +54,7 @@ const FilePdfViewer = (props: FormatFileViewerProps) => {
   return (
     <div className="flex justify-center items-center">
       {props.isLoading ? (
-        <span>{i18n.get('drive.downloadingFile')}</span>
+        <span>{i18n.get('drive.loadingFile')}</span>
       ) : (
         <Fragment>
           <button onClick={() => setPageNumber(pageNumber - 1)} className="h-12 w-12" disabled={isFirstPage}>
