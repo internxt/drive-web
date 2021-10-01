@@ -23,6 +23,10 @@
     }
   }
 
+  .file-list-item-edit-name-button {
+    @apply ml-1 h-5 w-5 cursor-pointer opacity-0 text-blue-60;
+  }
+
   .file-list-item-name {
     &:hover {
       .file-list-item-edit-name-button {
@@ -32,7 +36,7 @@
   }
 
   .file-list-item-name-span {
-    @apply max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 px-1 border-opacity-0 hover:underline;
+    @apply flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 px-1 cursor-pointer  hover:underline;
   }
 
   .file-list-item-actions-button {
