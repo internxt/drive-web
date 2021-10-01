@@ -17,7 +17,8 @@ interface DriveItemActions {
   nameInputRef: RefObject<HTMLInputElement>;
   onRenameButtonClicked: (e: MouseEvent) => void;
   confirmNameChange: () => Promise<void>;
-  onNameDoubleClicked: (e: MouseEvent) => void;
+  onNameClicked: (e: MouseEvent) => void;
+  onEditNameButtonClicked: (e: MouseEvent) => void;
   onNameBlurred: () => void;
   onNameChanged: (e: ChangeEvent<HTMLInputElement>) => void;
   onNameEnterKeyPressed: KeyboardEventHandler<HTMLInputElement>;
@@ -54,13 +55,14 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
     nameInputRef.current?.blur();
   };
-  const onNameDoubleClicked = (e: MouseEvent): void => {
+  const onEditNameButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
+    e.preventDefault();
 
     setIsEditingName(true);
     setDirtyName(item.name);
 
-    nameInputRef.current?.focus();
+    setTimeout(() => nameInputRef.current?.focus(), 0);
   };
   const onNameBlurred = (): void => {
     setIsEditingName(false);
@@ -140,6 +142,10 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
       dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
     }
   };
+  const onNameClicked = (e: MouseEvent) => {
+    e.stopPropagation();
+    onItemDoubleClicked();
+  };
   const onItemRightClicked = (e: React.MouseEvent): void => {
     e.preventDefault();
   };
@@ -150,7 +156,8 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     nameInputRef,
     onRenameButtonClicked,
     confirmNameChange,
-    onNameDoubleClicked,
+    onNameClicked,
+    onEditNameButtonClicked,
     onNameBlurred,
     onNameChanged,
     onNameEnterKeyPressed,
