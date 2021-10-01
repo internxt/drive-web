@@ -51,7 +51,7 @@ const FileListItem = ({ item }: DriveItemProps) => {
 
     return (
       <Fragment>
-        <div className={isEditingName ? 'flex' : 'invisible absolute'}>
+        <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
             className="dense border border-white no-ring rect"
             onClick={(e) => e.stopPropagation()}
@@ -67,19 +67,16 @@ const FileListItem = ({ item }: DriveItemProps) => {
           />
           <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
         </div>
-        <div className="file-list-item-name flex items-center">
+        <div className="file-list-item-name flex items-center max-w-full">
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-            className={`${spanDisplayClass} cursor-pointer file-list-item-name-span`}
+            className={`${spanDisplayClass} file-list-item-name-span`}
             onClick={onNameClicked}
           >
             {items.getItemDisplayName(item)}
           </span>
           {!isEditingName && (
-            <Unicons.UilPen
-              onClick={onEditNameButtonClicked}
-              className="file-list-item-edit-name-button ml-1 h-5 cursor-pointer opacity-0 text-blue-60"
-            />
+            <Unicons.UilPen onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
           )}
         </div>
       </Fragment>
@@ -113,7 +110,7 @@ const FileListItem = ({ item }: DriveItemProps) => {
       </div>
 
       {/* NAME */}
-      <div className="flex-grow flex items-center w-1">{nameNodefactory()}</div>
+      <div className="flex-grow flex items-center w-1 pr-2">{nameNodefactory()}</div>
 
       {/* HOVER ACTIONS */}
       <div className="pl-3 w-2/12 items-center hidden xl:flex">
