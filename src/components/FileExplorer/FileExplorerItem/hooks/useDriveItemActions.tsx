@@ -2,6 +2,9 @@ import { items } from '@internxt/lib';
 
 import { MouseEvent, ChangeEvent, Fragment, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../models/interfaces';
+import dateService from '../../../../services/date.service';
+import iconService from '../../../../services/icon.service';
+import sizeService from '../../../../services/size.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { storageActions } from '../../../../store/slices/storage';
 import storageSelectors from '../../../../store/slices/storage/storage.selectors';
@@ -32,6 +35,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const [dirtyName, setDirtyName] = useState('');
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
+  const currentFolderPath = useAppSelector(storageSelectors.currentFolderPath);
   const dispatch = useAppDispatch();
   const onRenameButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -81,9 +85,42 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     dispatch(uiActions.setIsShareItemDialogOpen(true));
   };
   const onInfoButtonClicked = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-    dispatch(storageActions.setInfoItem(item));
+    const itemDisplayName = items.getItemDisplayName(item);
+    const itemFullPath = `${currentFolderPath}${itemDisplayName}`;
+    const infoMenuFeatures = [
+      {
+        label: 'Folder path',
+        value: itemFullPath,
+      },
+      {
+        label: 'Type',
+        value: item.type,
+      },
+      {
+        label: 'Size',
+        value: sizeService.bytesToString(item.size, false),
+      },
+      {
+        label: 'Modified',
+        value: dateService.format(item.updatedAt, 'DD MMMM YYYY'),
+      },
+      {
+        label: 'Created',
+        value: dateService.format(item.createdAt, 'DD MMMM YYYY'),
+      },
+    ];
+
+    dispatch(
+      uiActions.setFileInfoItem({
+        id: `drive-item-${item.id}`,
+        icon: iconService.getItemIcon(item.isFolder, item.type),
+        title: itemDisplayName,
+        features: infoMenuFeatures,
+      }),
+    );
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
+
+    e.stopPropagation();
   };
   const onDeleteButtonClicked = (e: React.MouseEvent): void => {
     e.stopPropagation();

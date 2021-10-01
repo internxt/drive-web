@@ -30,12 +30,16 @@ import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../store/slices/ui';
 import FileListItem from './FileListItem/FileListItem';
 import { items } from '@internxt/lib';
+import dateService from '../../../services/date.service';
+import iconService from '../../../services/icon.service';
+import sizeService from '../../../services/size.service';
 
 interface FileExplorerItemProps {
   user: UserSettings | undefined;
   item: DriveItemData;
   selectedItems: DriveItemData[];
   currentFolderId: number;
+  currentFolderPath: string;
   namePath: FolderPath[];
   isItemSelected: (item: DriveItemData) => boolean;
   isSomeItemSelected: boolean;
@@ -306,9 +310,43 @@ const fileExplorerItemWrapper = (
     };
 
     onInfoButtonClicked = (e: React.MouseEvent): void => {
-      e.stopPropagation();
-      this.props.dispatch(storageActions.setInfoItem(this.props.item));
+      const { item, currentFolderPath, dispatch } = this.props;
+      const itemDisplayName = items.getItemDisplayName(item);
+      const itemFullPath = `${currentFolderPath}${itemDisplayName}`;
+      const infoMenuFeatures = [
+        {
+          label: 'Folder path',
+          value: itemFullPath,
+        },
+        {
+          label: 'Type',
+          value: item.type,
+        },
+        {
+          label: 'Size',
+          value: sizeService.bytesToString(item.size, false),
+        },
+        {
+          label: 'Modified',
+          value: dateService.format(item.updatedAt, 'DD MMMM YYYY'),
+        },
+        {
+          label: 'Created',
+          value: dateService.format(item.createdAt, 'DD MMMM YYYY'),
+        },
+      ];
+
+      dispatch(
+        uiActions.setFileInfoItem({
+          id: `drive-item-${item.id}`,
+          icon: iconService.getItemIcon(item.isFolder, item.type),
+          title: itemDisplayName,
+          features: infoMenuFeatures,
+        }),
+      );
       this.props.dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
+
+      e.stopPropagation();
     };
 
     onDeleteButtonClicked = (e: React.MouseEvent): void => {
@@ -347,12 +385,14 @@ const fileExplorerItemComposition = compose(
     const isItemSelected = storageSelectors.isItemSelected(state);
     const isSomeItemSelected = storageSelectors.isSomeItemSelected(state);
     const currentFolderId = storageSelectors.currentFolderId(state);
+    const currentFolderPath = storageSelectors.currentFolderPath(state);
 
     return {
       isSomeItemSelected,
       selectedItems: state.storage.selectedItems,
       namePath: state.storage.namePath,
       currentFolderId,
+      currentFolderPath,
       isItemSelected,
       workspace: state.session.workspace,
       isSidenavCollapsed: state.ui.isSidenavCollapsed,

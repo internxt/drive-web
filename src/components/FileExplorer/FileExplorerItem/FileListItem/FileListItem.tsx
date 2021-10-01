@@ -9,10 +9,10 @@ import './FileListItem.scss';
 import dateService from '../../../../services/date.service';
 import { storageActions } from '../../../../store/slices/storage';
 import iconService from '../../../../services/icon.service';
-import { ItemAction } from '../../../../models/enums';
 import { FileExplorerItemViewProps } from '../fileExplorerItemComposition';
 import fileExplorerItemComposition from '../fileExplorerItemComposition';
 import { items } from '@internxt/lib';
+import { DriveItemAction } from '..';
 
 class FileListItem extends React.Component<FileExplorerItemViewProps> {
   get nameNode(): JSX.Element {
@@ -159,7 +159,7 @@ class FileListItem extends React.Component<FileExplorerItemViewProps> {
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <FileDropdownActions
-                hiddenActions={item.isFolder ? [ItemAction.Download, ItemAction.Share] : []}
+                hiddenActions={item.isFolder ? [DriveItemAction.Download, DriveItemAction.Share] : []}
                 onRenameButtonClicked={onRenameButtonClicked}
                 onDownloadButtonClicked={onDownloadButtonClicked}
                 onShareButtonClicked={onShareButtonClicked}

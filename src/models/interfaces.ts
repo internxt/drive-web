@@ -1,3 +1,4 @@
+import { SVGProps } from 'react-router/node_modules/@types/react';
 import { DatabaseProvider } from '../services/database.service';
 import { store as storeInstance } from '../store';
 import {
@@ -60,6 +61,7 @@ export interface AppSumoDetails {
 
 export interface UserSettings {
   bucket: string;
+  backupsBucket: string | null;
   createdAt: Date;
   credit: number;
   email: string;
@@ -222,7 +224,42 @@ export interface InfoInvitationsMembers {
   user: string;
 }
 
+export interface Device {
+  id: number;
+  name: string;
+  mac: string;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+  size: number;
+  platform: string | null;
+}
+
+export interface DeviceBackup {
+  id: number;
+  path: string;
+  name: string;
+  fileId?: string;
+  deviceId: number;
+  userId: number;
+  interval: number;
+  size?: number;
+  bucket: string;
+  createdAt: string;
+  updatedAt: string;
+  encrypt_version: string;
+  hash?: string;
+  enabled: boolean;
+  lastBackupAt?: string;
+}
 export interface OrderSettings {
   by: string;
   direction: OrderDirection;
+}
+
+export interface FileInfoMenuItem {
+  id: string;
+  icon: React.FunctionComponent<SVGProps<SVGSVGElement>>;
+  title: string;
+  features: { label: string; value: string }[];
 }

@@ -9,7 +9,6 @@ import { Workspace } from '../../models/enums';
 import { storageActions, storageSelectors } from '../../store/slices/storage';
 import { AppDispatch, RootState } from '../../store';
 
-import DriveItemInfoMenu from '../DriveItemInfoMenu/DriveItemInfoMenu';
 import { FileViewMode } from '../../models/enums';
 import FilesList from './FilesList/FilesList';
 import FilesGrid from './FilesGrid/FilesGrid';
@@ -49,7 +48,6 @@ interface FileExplorerProps {
   isAuthenticated: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
-  infoItem: DriveItemData | null;
   viewMode: FileViewMode;
   namePath: FolderPath[];
   dispatch: AppDispatch;
@@ -159,7 +157,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   render(): ReactNode {
     const {
       isLoading,
-      infoItem,
       viewMode,
       title,
       titleClassName,
@@ -183,7 +180,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
     const ViewModeComponent = viewModes[viewMode];
 
     return connectDropTarget(
-      <div className="flex flex-col flex-grow h-1 px-8" data-test="drag-and-drop-area">
+      <div className="flex flex-col flex-grow h-full px-8" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
@@ -280,8 +277,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
               multiple={true}
             />
           </div>
-
-          {infoItem && <DriveItemInfoMenu />}
         </div>
       </div>,
     );
@@ -358,7 +353,6 @@ export default connect((state: RootState) => {
     storageFilters: state.storage.filters,
     isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
     isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
-    infoItem: state.storage.infoItem,
     viewMode: state.storage.viewMode,
     namePath: state.storage.namePath,
     workspace: state.session.workspace,

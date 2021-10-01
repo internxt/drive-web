@@ -9,6 +9,8 @@ import taskManagerReducer from './slices/task-manager';
 import planReducer from './slices/plan';
 import productsReducer from './slices/products';
 import paymentReducer from './slices/payment';
+import backupsReducer from './slices/backups';
+import fileViewerReducer from './slices/fileViewer';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +23,8 @@ export const store = configureStore({
     plan: planReducer,
     products: productsReducer,
     payment: paymentReducer,
+    backups: backupsReducer,
+    fileViewer: fileViewerReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
 });

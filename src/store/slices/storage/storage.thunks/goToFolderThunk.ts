@@ -19,7 +19,7 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
 
     isInNamePath ? dispatch(storageActions.popNamePathUpTo(path)) : dispatch(storageActions.pushNamePath(path));
 
-    dispatch(storageActions.setInfoItem(null));
+    dispatch(uiActions.setFileInfoItem(null));
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
   },
 );

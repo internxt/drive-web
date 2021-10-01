@@ -1,25 +1,43 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
-import { DriveFileData } from '../../models/interfaces';
+import { DriveFileData, DriveItemData } from '../../models/interfaces';
 import i18n from '../../services/i18n.service';
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from '../../models/file-types';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import storageThunks from '../../store/slices/storage/storage.thunks';
+import { fileViewerActions } from '../../store/slices/fileViewer';
 
 interface FileViewerProps {
   file: DriveFileData | null;
   onClose: () => void;
 }
 
+export interface FormatFileViewerProps {
+  file: DriveFileData | null;
+  setIsLoading: (value: boolean) => void;
+  isLoading: boolean;
+}
+
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
 const FileViewer = (props: FileViewerProps) => {
+  const dispatch = useAppDispatch();
+  const isLoading = useAppSelector((state) => state.fileViewer.isLoading);
   const onCloseButtonClicked = () => props.onClose();
+  const onDownloadButtonClicked = () =>
+    props.file && dispatch(storageThunks.downloadItemsThunk([props.file as DriveItemData]));
   const onKeyUp = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       onCloseButtonClicked();
     }
+  };
+  const viewerProps = {
+    isLoading,
+    file: props.file,
+    setIsLoading: (value: boolean) => dispatch(fileViewerActions.setIsLoading(value)),
   };
   let isTypeAllowed = false;
   let fileExtensionGroup: number | null = null;
@@ -32,8 +50,6 @@ const FileViewer = (props: FileViewerProps) => {
       break;
     }
   }
-
-  console.log('fileExtensionGroup: ', fileExtensionGroup);
 
   useEffect(() => {
     document.addEventListener('keyup', onKeyUp, false);
@@ -53,7 +69,7 @@ const FileViewer = (props: FileViewerProps) => {
           </button>
         </div>
         <div className="flex text-white">
-          <button className="h-6 w-6">
+          <button className="h-6 w-6" onClick={onDownloadButtonClicked}>
             <Unicons.UilFileDownload />
           </button>
         </div>
@@ -62,9 +78,11 @@ const FileViewer = (props: FileViewerProps) => {
       {/* CONTENT */}
       <div className="h-full flex justify-center items-center">
         {isTypeAllowed ? (
-          <div className="text-white">{viewers[fileExtensionGroup as FileExtensionGroup]()}</div>
+          <div className="text-white">{viewers[fileExtensionGroup as FileExtensionGroup](viewerProps)}</div>
         ) : (
-          <div className="text-white p-4 rounded-lg bg-m-neutral-400">{i18n.get('error.noFilePreview')}</div>
+          <div className="text-white py-4 px-8 rounded-lg bg-m-neutral-400 shadow-lg">
+            {i18n.get('error.noFilePreview')}
+          </div>
         )}
       </div>
     </div>
