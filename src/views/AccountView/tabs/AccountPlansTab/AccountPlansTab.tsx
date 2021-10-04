@@ -8,20 +8,20 @@ import { useAppSelector } from '../../../../store/hooks';
 
 import './AccountPlansTab.scss';
 import { productsSelectors } from '../../../../store/slices/products';
-import { userSelectors } from '../../../../store/slices/user';
 import BaseButton from '../../../../components/Buttons/BaseButton';
+import { planSelectors } from '../../../../store/slices/plan';
 
 const AccountPlansTab = (): JSX.Element => {
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace>(Workspace.Individuals);
   const [currentRenewalPeriod, setCurrentRenewalPeriod] = useState<RenewalPeriod>(RenewalPeriod.Annually);
-  const user = useAppSelector((state) => state.user.user);
-  const isUserFromAppSumo = useAppSelector(userSelectors.isFromAppSumo);
   const isBuying = useAppSelector((state) => state.payment.isBuying);
   const individualPlan = useAppSelector((state) => state.plan.individualPlan);
   const teamPlan = useAppSelector((state) => state.plan.teamPlan);
   const isLoadingProducts = useAppSelector((state) => state.products.isLoading);
   const individualProducts = useAppSelector(productsSelectors.individualProducts)(currentRenewalPeriod);
   const teamProducts = useAppSelector(productsSelectors.teamProducts)(currentRenewalPeriod);
+  const currentPlan = useAppSelector(planSelectors.currentPlan);
+
   const onRenewalPeriodItemClicked = (key: RenewalPeriod) => {
     setCurrentRenewalPeriod(key);
   };
@@ -46,7 +46,7 @@ const AccountPlansTab = (): JSX.Element => {
     setCurrentWorkspace(nextWorkspace);
   };
   const onAppSumoButtonClicked = () => {
-    window.open(`https://appsumo.com/account/redemption/${user?.appSumoDetails?.invoiceItemUuid}`, '_blank');
+    window.open(`https://appsumo.com/account/redemption/${currentPlan?.details?.invoiceItemUuid}`, '_blank');
   };
   const features = [
     {
@@ -78,7 +78,7 @@ const AccountPlansTab = (): JSX.Element => {
 
   return (
     <div className="group w-full h-fit">
-      {isUserFromAppSumo ? (
+      {currentPlan?.isAppSumo ? (
         <div>
           <span className="block w-full text-center">{i18n.get('appSumo.plans.advice')}</span>
           <BaseButton className="mx-auto mt-5 primary" onClick={onAppSumoButtonClicked}>

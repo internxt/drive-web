@@ -1,12 +1,11 @@
 {
+  "debug": {
+    "enabled": false
+  },
   "plan": {
     "freePlanStorageLimit": 2147483648,
     "maxStorageLimit": 108851651149824,
-    "defaultFeatures": [
-      "Web, Desktop & Mobile apps",
-      "Unlimited devices",
-      "Secure file sharing"
-    ]
+    "defaultFeatures": ["Web, Desktop & Mobile apps", "Unlimited devices", "Secure file sharing"]
   },
   "fileExplorer": {
     "recentsLimit": 10
@@ -41,6 +40,13 @@
       "id": "recents",
       "layout": "header-and-sidenav",
       "path": "/app/recents",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "backups",
+      "layout": "header-and-sidenav",
+      "path": "/app/backups",
       "exact": true,
       "auth": true
     },

@@ -10,6 +10,7 @@ import BaseDialog from '../BaseDialog/BaseDialog';
 import { uiActions } from '../../../store/slices/ui';
 import notificationsService, { ToastType } from '../../../services/notifications.service';
 import httpService from '../../../services/http.service';
+import { AxiosError } from 'axios';
 
 const GuestInviteDialog = () => {
   const {
@@ -27,9 +28,16 @@ const GuestInviteDialog = () => {
   };
 
   const sendGuestInvitation = (guestEmail: string) => {
-    return httpService.post<{ guest: string }, void>('/api/guest/invite', {
-      guest: guestEmail,
-    });
+    return httpService
+      .post<{ guest: string }, void>('/api/guest/invite', {
+        guest: guestEmail,
+      })
+      .catch((err: AxiosError) => {
+        if (err.isAxiosError) {
+          throw Error(err.response?.data.error);
+        }
+        throw err;
+      });
   };
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
@@ -37,7 +45,9 @@ const GuestInviteDialog = () => {
       await sendGuestInvitation(formData.email);
       notificationsService.show('Invitation created for ' + formData.email, ToastType.Success);
       onClose();
-    } catch (err) {
+    } catch (e) {
+      const err = e as Error;
+      notificationsService.show(err.message, ToastType.Error);
       console.error(err);
     }
   };

@@ -115,19 +115,6 @@
       }
     }
   },
-  "success": {
-    "passwordChanged": "Password changed successfully",
-    "teamInvitationSent": "Invitation email sent to {email}",
-    "referralInvitationSent": "Invitation email sent to {email}",
-    "deletedTeamMember": "The {resource} has been successfully deleted",
-    "accountDeactivationEmailSent": "Deactivation email sent!",
-    "claimEmailSent": "Claim email sent!",
-    "linkCopied": "Link copied!",
-    "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
-    "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
-    "joinedToTheTeam": "You have successfully joined to the team",
-    "done": "Done"
-  },
   "error": {
     "genericError": "There was an error: {reason}",
     "serverError": "Internal server error. Try again later",
@@ -154,19 +141,28 @@
     "movingItemInsideItself": "You can't move a folder inside itself",
     "movingItem": "Error when moving item/s",
     "linkExpired": "This secure link has expired",
-    "teamInvitation": "The invitation email could not be sent"
+    "teamInvitation": "The invitation email could not be sent",
+    "noFilePreview": "No file preview available"
   },
-  "info": {
-    "downloadingFile": "Downloading file {filename}...",
-    "retrievingFile": "Securely retrieving file..."
-  },
-  "action": {
-    "download": "Download",
-    "accessFile": "Access File",
-    "upgrade": "Upgrade now!",
-    "deleteAccount": "Permanently delete account",
-    "changePassword": "Change password",
-    "buy": "Buy"
+  "backups": {
+    "backups-from": "Backups from {deviceName}",
+    "your-devices": "Your devices",
+    "back-to-devices": "Go back to devices",
+    "devices-list": {
+      "columns": {
+        "name": "Name",
+        "last-update": "Last update",
+        "size": "Size"
+      }
+    },
+    "backups-list": {
+      "columns": {
+        "name": "Name",
+        "last-update": "Last update",
+        "size": "Size",
+        "actions": "Actions"
+      }
+    }
   },
   "tasks": {
     "create-folder": {
@@ -200,6 +196,14 @@
       "error": "Error during download",
       "cancelled": "Download cancelled"
     },
+    "download-backup": {
+      "pending": "Pending to download",
+      "decrypting": "Fetching backup",
+      "in-process": "{progress}% Downloading backup",
+      "success": "Backup downloaded",
+      "error": "Error during download",
+      "cancelled": "Download cancelled"
+    },
     "download-folder": {
       "pending": "Pending to download",
       "decrypting": "Fetching files",
@@ -223,9 +227,31 @@
       "cancelled": "Cancelled movement"
     }
   },
+  "success": {
+    "passwordChanged": "Password changed successfully",
+    "teamInvitationSent": "Invitation email sent to {email}",
+    "referralInvitationSent": "Invitation email sent to {email}",
+    "deletedTeamMember": "The {resource} has been successfully deleted",
+    "accountDeactivationEmailSent": "Deactivation email sent!",
+    "claimEmailSent": "Claim email sent!",
+    "linkCopied": "Link copied!",
+    "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
+    "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
+    "joinedToTheTeam": "You have successfully joined to the team",
+    "done": "Done"
+  },
+  "action": {
+    "download": "Download",
+    "accessFile": "Access File",
+    "upgrade": "Upgrade now!",
+    "deleteAccount": "Permanently delete account",
+    "changePassword": "Change password",
+    "buy": "Buy"
+  },
   "drive": {
     "usage": "Usage",
     "currentPlan": "Current plan",
+    "loadingFile": "Loading file...",
     "list": {
       "columns": {
         "type": "Type",
@@ -234,19 +260,25 @@
         "size": "Size",
         "actions": "Actions"
       }
+    }
+  },
+  "appSumo": {
+    "tiers": {
+      "internxt_tier1": "AppSumo Lifetime Tier 1",
+      "internxt_tier2": "AppSumo Lifetime Tier 2",
+      "internxt_tier3": "AppSumo Lifetime Tier 3",
+      "internxt_tier4": "AppSumo Lifetime Tier 4",
+      "internxt_tier5": "AppSumo Lifetime Tier 5"
     },
-    "appSumo": {
-      "plans": {
-        "advice": "You will be redirected to your Appsumo account"
-      },
-      "tiers": {
-        "internxt_free1": "Internxt Free 1",
-        "internxt_tier1": "Internxt Tier 1",
-        "internxt_tier2": "Internxt Tier 2",
-        "internxt_tier3": "Internxt Tier 3",
-        "internxt_tier4": "Internxt Tier 4",
-        "internxt_tier5": "Internxt Tier 5"
-      }
+    "members": {
+      "internxt_tier1": "Team members: 1",
+      "internxt_tier2": "Team members: 5",
+      "internxt_tier3": "Team members: 10",
+      "internxt_tier4": "Team members: 25",
+      "internxt_tier5": "Team members: 100"
+    },
+    "plans": {
+      "advice": "You will be redirected to your Appsumo account"
     }
   }
 }

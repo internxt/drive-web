@@ -1,7 +1,10 @@
 import { items } from '@internxt/lib';
 
-import { MouseEvent, ChangeEvent, Fragment, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
+import { MouseEvent, ChangeEvent, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../models/interfaces';
+import dateService from '../../../../services/date.service';
+import iconService from '../../../../services/icon.service';
+import sizeService from '../../../../services/size.service';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { storageActions } from '../../../../store/slices/storage';
 import storageSelectors from '../../../../store/slices/storage/storage.selectors';
@@ -14,7 +17,8 @@ interface DriveItemActions {
   nameInputRef: RefObject<HTMLInputElement>;
   onRenameButtonClicked: (e: MouseEvent) => void;
   confirmNameChange: () => Promise<void>;
-  onNameDoubleClicked: (e: MouseEvent) => void;
+  onNameClicked: (e: MouseEvent) => void;
+  onEditNameButtonClicked: (e: MouseEvent) => void;
   onNameBlurred: () => void;
   onNameChanged: (e: ChangeEvent<HTMLInputElement>) => void;
   onNameEnterKeyPressed: KeyboardEventHandler<HTMLInputElement>;
@@ -32,6 +36,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const [dirtyName, setDirtyName] = useState('');
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
+  const currentFolderPath = useAppSelector(storageSelectors.currentFolderPath);
   const dispatch = useAppDispatch();
   const onRenameButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -50,13 +55,14 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
     nameInputRef.current?.blur();
   };
-  const onNameDoubleClicked = (e: MouseEvent): void => {
+  const onEditNameButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
+    e.preventDefault();
 
     setIsEditingName(true);
     setDirtyName(item.name);
 
-    nameInputRef.current?.focus();
+    setTimeout(() => nameInputRef.current?.focus(), 0);
   };
   const onNameBlurred = (): void => {
     setIsEditingName(false);
@@ -81,9 +87,42 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     dispatch(uiActions.setIsShareItemDialogOpen(true));
   };
   const onInfoButtonClicked = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-    dispatch(storageActions.setInfoItem(item));
+    const itemDisplayName = items.getItemDisplayName(item);
+    const itemFullPath = `${currentFolderPath}${itemDisplayName}`;
+    const infoMenuFeatures = [
+      {
+        label: 'Folder path',
+        value: itemFullPath,
+      },
+      {
+        label: 'Type',
+        value: item.type,
+      },
+      {
+        label: 'Size',
+        value: sizeService.bytesToString(item.size, false),
+      },
+      {
+        label: 'Modified',
+        value: dateService.format(item.updatedAt, 'DD MMMM YYYY'),
+      },
+      {
+        label: 'Created',
+        value: dateService.format(item.createdAt, 'DD MMMM YYYY'),
+      },
+    ];
+
+    dispatch(
+      uiActions.setFileInfoItem({
+        id: `drive-item-${item.id}`,
+        icon: iconService.getItemIcon(item.isFolder, item.type),
+        title: itemDisplayName,
+        features: infoMenuFeatures,
+      }),
+    );
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
+
+    e.stopPropagation();
   };
   const onDeleteButtonClicked = (e: React.MouseEvent): void => {
     e.stopPropagation();
@@ -101,7 +140,14 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const onItemDoubleClicked = (): void => {
     if (item.isFolder) {
       dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+    } else {
+      dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem(item));
     }
+  };
+  const onNameClicked = (e: MouseEvent) => {
+    e.stopPropagation();
+    onItemDoubleClicked();
   };
   const onItemRightClicked = (e: React.MouseEvent): void => {
     e.preventDefault();
@@ -113,7 +159,8 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     nameInputRef,
     onRenameButtonClicked,
     confirmNameChange,
-    onNameDoubleClicked,
+    onNameClicked,
+    onEditNameButtonClicked,
     onNameBlurred,
     onNameChanged,
     onNameEnterKeyPressed,

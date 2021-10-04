@@ -11,6 +11,7 @@ import FileLogger from '../../components/FileLogger/FileLogger';
 import navigationService from '../../services/navigation.service';
 import { AppView } from '../../models/enums';
 import GuestDialog from '../../components/dialogs/GuestDialog/GuestDialog';
+import DriveItemInfoMenu from '../../components/DriveItemInfoMenu/DriveItemInfoMenu';
 
 interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
@@ -27,6 +28,12 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const isInviteMemberDialogOpen = useAppSelector((state) => state.ui.isInviteMemberDialogOpen);
   const isGuestInviteDialogOpen = useAppSelector((state) => state.ui.isGuestInviteDialogOpen);
+  const isDriveItemInfoMenuOpen = useAppSelector((state) => state.ui.isDriveItemInfoMenuOpen);
+  const driveItemInfo = useAppSelector((state) => state.ui.currentFileInfoMenuItem);
+  const onDriveItemInfoMenuClosed = () => {
+    dispatch(uiActions.setFileInfoItem(null));
+    dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
+  };
 
   if (!isAuthenticated) {
     navigationService.push(AppView.Login);
@@ -44,7 +51,13 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
         <div className="flex flex-col flex-grow bg-white w-1">
           <AppHeader />
-          {children}
+          <div className="flex-grow flex w-full h-1">
+            {children}
+
+            {isDriveItemInfoMenuOpen && driveItemInfo && (
+              <DriveItemInfoMenu {...driveItemInfo} onClose={onDriveItemInfoMenuClosed} />
+            )}
+          </div>
           <FileLogger />
         </div>
       </div>

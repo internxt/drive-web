@@ -1,6 +1,7 @@
 import { ComponentClass, FunctionComponent } from 'react';
 
 import DriveView from './DriveView/DriveView';
+import BackupsView from './BackupsView/BackupsView';
 import RecentsView from './RecentsView/RecentsView';
 import NotFoundView from './NotFoundView/NotFoundView';
 import AccountView from './AccountView/AccountView';
@@ -26,6 +27,7 @@ const views: Array<{
   { id: AppView.Login, component: SignInView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
+  { id: AppView.Backups, component: BackupsView },
   { id: AppView.Account, component: AccountView },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
