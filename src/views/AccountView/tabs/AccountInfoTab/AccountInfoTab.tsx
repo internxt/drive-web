@@ -40,7 +40,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
     setIsDeleteAccountDialogOpen(true);
   };
   const usagePercent = usageService.getUsagePercent(planUsage, planLimit);
-  const progressBarFillWidth = isLoadingPlans || isLoadingPlanLimit ? 0 : usagePercent + '%';
+  const progressBarFillWidth = isLoadingPlans || isLoadingPlanLimit ? 0 : `${usagePercent}%`;
   const progressBarFillStyle = { width: progressBarFillWidth };
   const totalAmountFormatted =
     currentPlan?.price.toFixed(2) + moneyService.getCurrencySymbol(currentPlan?.currency || '');
