@@ -119,7 +119,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
                   className={`${isCurrentPlanLifetime ? 'hidden' : ''} primary`}
                   onClick={onUpgradeButtonClicked}
                 >
-                  {i18n.get('action.upgrade')}
+                  {i18n.get('action.upgradeNow')}
                 </BaseButton>
               </div>
             ) : (

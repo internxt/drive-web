@@ -35,7 +35,7 @@ export default function PlanUsage({
         <div className="h-full bg-blue-60" style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
       </div>
       <p onClick={onUpgradeButtonClicked} className="font-semibold text-blue-60 cursor-pointer">
-        {i18n.get('action.upgrade')}
+        {i18n.get('action.upgradeNow')}
       </p>
     </div>
   );

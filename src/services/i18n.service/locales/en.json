@@ -237,15 +237,18 @@
     "movingItemInsideItself": "You can't move a folder inside itself",
     "movingItem": "Error when moving item/s",
     "linkExpired": "This secure link has expired",
-    "teamInvitation": "The invitation email could not be sent"
+    "teamInvitation": "The invitation email could not be sent",
+    "noSpaceAvailable": "Your Internxt Drive is full. Get more space upgrading your account."
   },
   "action": {
     "download": "Download",
     "accessFile": "Access File",
-    "upgrade": "Upgrade now!",
+    "upgradeNow": "Upgrade now!",
+    "upgrade": "Upgrade",
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
-    "buy": "Buy"
+    "buy": "Buy",
+    "cancel": "Cancel"
   },
   "drive": {
     "usage": "Usage",
