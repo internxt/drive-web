@@ -106,22 +106,6 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   };
 
   onUploadInputChanged = async (e) => {
-    const { dispatch, planLimit } = this.props;
-
-    try {
-      const planUsage: number = await dispatch(planThunks.fetchUsageThunk()).unwrap();
-
-      if (planLimit && planUsage >= planLimit) {
-        this.props.dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-      } else {
-        this.dispatchUpload(e);
-      }
-    } catch (err: unknown) {
-      console.error(err);
-    }
-  };
-
-  dispatchUpload = (e) => {
     const { dispatch, onFileUploaded, currentFolderId, namePath } = this.props;
 
     dispatch(

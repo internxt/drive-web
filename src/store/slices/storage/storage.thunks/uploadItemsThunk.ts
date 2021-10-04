@@ -17,6 +17,7 @@ import { RootState } from '../../..';
 import errorService from '../../../../services/error.service';
 import { TaskProgress, TaskStatus, TaskType, UploadFileTask } from '../../../../services/task-manager.service';
 import { planThunks } from '../../plan';
+import { uiActions } from '../../ui';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -56,6 +57,18 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const tasksIds: string[] = [];
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
+
+    try {
+      const planLimit = getState().plan.planLimit;
+      const planUsage = getState().plan.planUsage;
+
+      if (planLimit && planUsage >= planLimit) {
+        dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+        return;
+      }
+    } catch (err: unknown) {
+      console.error(err);
+    }
 
     if (showSizeWarning) {
       notificationsService.show(
