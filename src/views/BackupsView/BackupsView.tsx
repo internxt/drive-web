@@ -51,7 +51,7 @@ export default function BackupsView(): JSX.Element {
   }, []);
 
   return (
-    <div className="flex-grow pt-6 px-8">
+    <div className="flex flex-col flex-grow pt-6 px-8 mb-5">
       <div className="pb-4 flex items-baseline">
         {currentDevice ? backupsBreadcrumbs : <p className="text-lg px-3 py-1"> {i18n.get('backups.your-devices')}</p>}
       </div>
