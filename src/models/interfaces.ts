@@ -12,6 +12,7 @@ import {
 } from './enums';
 
 export interface AppConfig {
+  debug: AppDebugConfig;
   plan: AppPlanConfig;
   fileExplorer: AppFileExplorerConfig;
   views: AppViewConfig[];
@@ -20,6 +21,10 @@ export interface AppConfig {
     version: number;
     provider: DatabaseProvider;
   };
+}
+
+export interface AppDebugConfig {
+  enabled: boolean;
 }
 
 export interface AppPlanConfig {

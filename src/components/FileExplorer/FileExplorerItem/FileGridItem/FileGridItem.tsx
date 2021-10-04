@@ -46,7 +46,7 @@ const FileGridItem = (props: DriveItemProps) => {
       <Fragment>
         <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
-            className="w-full dense border border-white no-ring rect"
+            className="w-full dense border border-white no-ring rect select-text"
             onClick={(e) => e.stopPropagation()}
             ref={nameInputRef}
             type="text"

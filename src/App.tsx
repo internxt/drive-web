@@ -8,7 +8,7 @@ import { DndProvider } from 'react-dnd';
 
 import { initializeUserThunk } from './store/slices/user';
 import { sessionActions } from './store/slices/session';
-import { AppViewConfig, UserSettings } from './models/interfaces';
+import { AppViewConfig, DriveFileData, UserSettings } from './models/interfaces';
 import configService from './services/config.service';
 import analyticsService, { PATH_NAMES } from './services/analytics.service';
 import layouts from './layouts';
@@ -18,10 +18,14 @@ import errorService from './services/error.service';
 import navigationService from './services/navigation.service';
 import envService from './services/env.service';
 import i18n from './services/i18n.service';
+import FileViewer from './components/FileViewer/FileViewer';
+import { uiActions } from './store/slices/ui';
 
 interface AppProps {
   isAuthenticated: boolean;
   isInitialized: boolean;
+  isFileViewerOpen: boolean;
+  fileViewerItem: DriveFileData | null;
   user: UserSettings | undefined;
   dispatch: AppDispatch;
 }
@@ -82,7 +86,7 @@ class App extends Component<AppProps> {
 
   render(): JSX.Element {
     const isDev = !envService.isProduction();
-    const { isInitialized, isAuthenticated } = this.props;
+    const { isInitialized, isAuthenticated, isFileViewerOpen, fileViewerItem, dispatch } = this.props;
     const pathName = window.location.pathname.split('/')[1];
     let template: JSX.Element = <div></div>;
 
@@ -96,7 +100,7 @@ class App extends Component<AppProps> {
       template = (
         <DndProvider backend={HTML5Backend}>
           <Router history={navigationService.history}>
-            {isDev && (
+            {isDev && configService.getAppConfig().debug.enabled && (
               <span className="absolute text-supporting-2 font-bold text-white text-center bg-red-50 w-28 px-3.5 py-1 top-5 -right-7 tracking-wider opacity-80 transform rotate-45 z-50 pointer-events-none drop-shadow-2xl">
                 {i18n.get('general.stage.development')}
               </span>
@@ -111,6 +115,10 @@ class App extends Component<AppProps> {
             </Switch>
 
             <ToastContainer />
+
+            {isFileViewerOpen && (
+              <FileViewer file={fileViewerItem} onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))} />
+            )}
           </Router>
         </DndProvider>
       );
@@ -123,5 +131,7 @@ class App extends Component<AppProps> {
 export default connect((state: RootState) => ({
   isAuthenticated: state.user.isAuthenticated,
   isInitialized: state.user.isInitialized,
+  isFileViewerOpen: state.ui.isFileViewerOpen,
+  fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,
 }))(App);

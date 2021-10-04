@@ -1,6 +1,6 @@
 import { items } from '@internxt/lib';
 
-import { MouseEvent, ChangeEvent, Fragment, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
+import { MouseEvent, ChangeEvent, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../models/interfaces';
 import dateService from '../../../../services/date.service';
 import iconService from '../../../../services/icon.service';
@@ -140,6 +140,9 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const onItemDoubleClicked = (): void => {
     if (item.isFolder) {
       dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+    } else {
+      dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem(item));
     }
   };
   const onNameClicked = (e: MouseEvent) => {

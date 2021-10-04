@@ -1,6 +1,7 @@
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
 import * as Unicons from '@iconscout/react-unicons';
+import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 
 import { IFormValues } from '../../../../models/interfaces';
 import BaseInput from '../../../../components/forms/inputs/BaseInput';
@@ -48,6 +49,13 @@ const AccountPasswordTab = (): JSX.Element => {
     }
   };
 
+  const formInputError = Object.values(errors)[0];
+  let bottomInfoError = '';
+
+  if (formInputError?.message) {
+    bottomInfoError = formInputError.message;
+  }
+
   return (
     <div className="w-full h-full flex flex-col">
       <h2 className="mb-6 font-semibold">{i18n.get('views.account.tabs.password.advice1.title')}</h2>
@@ -94,6 +102,10 @@ const AccountPasswordTab = (): JSX.Element => {
             required={true}
             minLength={1}
             error={errors.password}
+            pattern={{
+              value: isValidPasswordRegex,
+              message: 'The password must contain lowercase/uppercase letters and at least a number',
+            }}
           />
           <BaseInput
             placeholder="Confirm new password"
@@ -114,11 +126,15 @@ const AccountPasswordTab = (): JSX.Element => {
             required={true}
             minLength={{ value: 1, message: 'Password must not be empty' }}
             error={errors.confirmPassword}
+            pattern={{
+              value: isValidPasswordRegex,
+              message: 'The password must contain lowercase/uppercase letters and at least a number',
+            }}
           />
 
-          {error && (
-            <div className="flex mt-1 mb-4">
-              <span className="text-red-60 text-sm w-56 font-medium">{error}</span>
+          {bottomInfoError && (
+            <div className="flex my-1">
+              <span className="block  w-full text-red-60 text-sm font-medium">{bottomInfoError}</span>
             </div>
           )}
 
