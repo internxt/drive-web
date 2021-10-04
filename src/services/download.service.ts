@@ -4,11 +4,23 @@ import localStorageService from './local-storage.service';
 import analyticsService from './analytics.service';
 import { DevicePlatform } from '../models/enums';
 import { getEnvironmentConfig, Network } from '../lib/network';
-import { DeviceBackup, DriveItemData } from '../models/interfaces';
+import { DeviceBackup, DriveFileData } from '../models/interfaces';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
+function fetchFileBlob(
+  fileId: string,
+  options: { updateProgressCallback: (progress: number) => void; isTeam?: boolean },
+) {
+  const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(!!options.isTeam);
+  const network = new Network(bridgeUser, bridgePass, encryptionKey);
+
+  return network.downloadFile(bucketId, fileId, {
+    progressCallback: options.updateProgressCallback,
+  });
+}
+
 export function downloadFile(
-  itemData: DriveItemData,
+  itemData: DriveFileData,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
 ): [Promise<void>, ActionState | undefined] {
@@ -18,13 +30,7 @@ export function downloadFile(
 
   trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
 
-  const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
-  const network = new Network(bridgeUser, bridgePass, encryptionKey);
-
-  const [blobPromise, actionState] = network.downloadFile(bucketId, fileId, {
-    progressCallback: updateProgressCallback,
-  });
-
+  const [blobPromise, actionState] = fetchFileBlob(fileId, { isTeam, updateProgressCallback });
   const fileBlobPromise = blobPromise
     .then((fileBlob) => {
       fileDownload(fileBlob, completeFilename);
@@ -122,7 +128,9 @@ const trackFileDownloadFinished = (userEmail: string, file_id: string, file_size
 };
 
 const downloadService = {
+  fetchFileBlob,
   downloadFile,
+  downloadBackup,
 };
 
 export default downloadService;

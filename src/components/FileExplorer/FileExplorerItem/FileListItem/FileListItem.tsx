@@ -53,7 +53,7 @@ const FileListItem = ({ item }: DriveItemProps) => {
       <Fragment>
         <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
-            className="dense border border-white no-ring rect"
+            className="dense border border-white no-ring rect select-text"
             onClick={(e) => e.stopPropagation()}
             onDoubleClick={(e) => e.stopPropagation()}
             ref={nameInputRef}
