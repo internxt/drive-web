@@ -142,6 +142,7 @@
     "movingItem": "Error when moving item/s",
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent",
+    "noSpaceAvailable": "Your Internxt Drive is full. Get more space upgrading your account.",
     "noFilePreview": "No file preview available"
   },
   "backups": {
@@ -243,10 +244,12 @@
   "action": {
     "download": "Download",
     "accessFile": "Access File",
-    "upgrade": "Upgrade now!",
+    "upgradeNow": "Upgrade now!",
+    "upgrade": "Upgrade",
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
-    "buy": "Buy"
+    "buy": "Buy",
+    "cancel": "Cancel"
   },
   "drive": {
     "usage": "Usage",

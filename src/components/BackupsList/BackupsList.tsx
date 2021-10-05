@@ -31,7 +31,7 @@ const BackupsList = (props: Props) => {
   };
 
   return (
-    <div className="flex flex-col flex-grow bg-white h-full ">
+    <div className="flex flex-col flex-grow bg-white h-1">
       <div className="files-list font-semibold flex border-b border-l-neutral-30 bg-white text-neutral-500 py-3 text-sm">
         <div className="w-0.5/12 pl-3 flex items-center justify-start box-content"></div>
         <div className="flex-grow flex items-center px-3">{i18n.get('backups.backups-list.columns.name')}</div>

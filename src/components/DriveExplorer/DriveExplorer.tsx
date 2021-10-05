@@ -105,22 +105,6 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
   };
 
   onUploadInputChanged = async (e) => {
-    const { dispatch, planLimit } = this.props;
-
-    try {
-      const planUsage: number = await dispatch(planThunks.fetchUsageThunk()).unwrap();
-
-      if (planLimit && planUsage >= planLimit) {
-        this.props.dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-      } else {
-        this.dispatchUpload(e);
-      }
-    } catch (err: unknown) {
-      console.error(err);
-    }
-  };
-
-  dispatchUpload = (e) => {
     const { dispatch, onFileUploaded, currentFolderId, namePath } = this.props;
 
     dispatch(
@@ -216,7 +200,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               </div>
             </div>
 
-            <div className="relative h-full flex flex-col justify-between flex-grow overflow-y-hidden mb-5">
+            <div className="h-full flex flex-col justify-between flex-grow overflow-y-hidden mb-5">
               <div className="flex flex-col justify-between flex-grow overflow-hidden">
                 <ViewModeComponent items={items} isLoading={isLoading} />
               </div>
