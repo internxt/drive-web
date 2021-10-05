@@ -3,7 +3,7 @@ import { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 
 import Breadcrumbs, { BreadcrumbItemData } from '../../components/Breadcrumbs/Breadcrumbs';
-import FileExplorer from '../../components/FileExplorer/FileExplorer';
+import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../models/interfaces';
 import databaseService, { DatabaseCollection } from '../../services/database.service';
 import pollingService from '../../services/polling.service';
@@ -86,7 +86,7 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
     const { items, isLoading } = this.props;
 
     return (
-      <FileExplorer
+      <DriveExplorer
         title={<Breadcrumbs items={this.breadcrumbItems} />}
         isLoading={isLoading}
         titleClassName="px-2"

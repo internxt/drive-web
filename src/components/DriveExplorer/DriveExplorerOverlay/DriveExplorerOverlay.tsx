@@ -1,12 +1,12 @@
-import './FileExplorerOverlay.scss';
+import './DriveExplorerOverlay.scss';
 
-interface FileExplorerOverlayProps {
+interface DriveExplorerOverlayProps {
   icon: JSX.Element;
   title: string;
   subtitle: string;
 }
 
-function FileExplorerOverlay({ icon, title, subtitle }: FileExplorerOverlayProps): JSX.Element {
+function DriveExplorerOverlay({ icon, title, subtitle }: DriveExplorerOverlayProps): JSX.Element {
   return (
     <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
       <div className="h-full flex items-center justify-center rounded-12px">
@@ -22,4 +22,4 @@ function FileExplorerOverlay({ icon, title, subtitle }: FileExplorerOverlayProps
   );
 }
 
-export default FileExplorerOverlay;
+export default DriveExplorerOverlay;

@@ -10,16 +10,15 @@ import { storageActions, storageSelectors } from '../../store/slices/storage';
 import { AppDispatch, RootState } from '../../store';
 
 import { FileViewMode } from '../../models/enums';
-import FilesList from './FilesList/FilesList';
-import FilesGrid from './FilesGrid/FilesGrid';
+import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
+import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import folderEmptyImage from '../../assets/images/folder-empty.svg';
 import noResultsSearchImage from '../../assets/images/no-results-search.svg';
 import { uiActions } from '../../store/slices/ui';
 
-import './FileExplorer.scss';
 import deviceService from '../../services/device.service';
 import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
-import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
+import DriveExplorerOverlay from './DriveExplorerOverlay/DriveExplorerOverlay';
 
 import { transformDraggedItems } from '../../services/drag-and-drop.service';
 import DeleteItemsDialog from '../dialogs/DeleteItemsDialog/DeleteItemsDialog';
@@ -28,11 +27,11 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { StorageFilters } from '../../store/slices/storage/storage.model';
 import storageThunks from '../../store/slices/storage/storage.thunks';
 import { planSelectors, planThunks } from '../../store/slices/plan';
-
-import './FileExplorer.scss';
 import BaseButton from '../Buttons/BaseButton';
 
-interface FileExplorerProps {
+import './DriveExplorer.scss';
+
+interface DriveExplorerProps {
   title: JSX.Element | string;
   titleClassName?: string;
   isLoading: boolean;
@@ -58,7 +57,7 @@ interface FileExplorerProps {
   connectDropTarget: ConnectDropTarget;
 }
 
-interface FileExplorerState {
+interface DriveExplorerState {
   fileInputRef: React.RefObject<HTMLInputElement>;
   email: string;
   token: string;
@@ -66,8 +65,8 @@ interface FileExplorerState {
   isMember: boolean;
 }
 
-class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
-  constructor(props: FileExplorerProps) {
+class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
+  constructor(props: DriveExplorerProps) {
     super(props);
 
     this.state = {
@@ -174,8 +173,8 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       [FileViewMode.Grid]: <Unicons.UilListUiAlt />,
     };
     const viewModes = {
-      [FileViewMode.List]: FilesList,
-      [FileViewMode.Grid]: FilesGrid,
+      [FileViewMode.List]: DriveExplorerList,
+      [FileViewMode.Grid]: DriveExplorerGrid,
     };
     const ViewModeComponent = viewModes[viewMode];
 
@@ -242,7 +241,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
               {
                 /* EMPTY FOLDER */
                 !this.hasFilters && !this.hasItems && !isLoading ? (
-                  <FileExplorerOverlay
+                  <DriveExplorerOverlay
                     icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
                     title="This folder is empty"
                     subtitle="Drag and drop here or click on upload button"
@@ -253,7 +252,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
               {
                 /* NO SEARCH RESULTS */
                 this.hasFilters && !this.hasItems && !isLoading ? (
-                  <FileExplorerOverlay
+                  <DriveExplorerOverlay
                     icon={<img alt="" src={noResultsSearchImage} className="w-full m-auto" />}
                     title="There are no results for this search"
                     subtitle="Drag and drop here or click on upload button"
@@ -283,7 +282,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   }
 }
 
-const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
+const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
   drop: (props, monitor) => {
     const { dispatch, currentFolderId, onDragAndDropEnd } = props;
     const droppedData: { files: File[]; items: DataTransferItemList } = monitor.getItem();
@@ -305,7 +304,7 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
           storageThunks.uploadItemsThunk({
             files,
             parentFolderId: currentFolderId,
-            folderPath: folderPath,
+            folderPath,
             options: {
               onSuccess: onDragAndDropEnd,
             },
@@ -332,7 +331,7 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
 
 const dropTargetCollect: DropTargetCollector<
   { isOver: boolean; connectDropTarget: ConnectDropTarget },
-  FileExplorerProps
+  DriveExplorerProps
 > = (connect, monitor) => {
   const isOver = monitor.isOver({ shallow: true });
 
@@ -359,4 +358,4 @@ export default connect((state: RootState) => {
     planLimit: planSelectors.planLimitToShow(state),
     planUsage: state.plan.planUsage,
   };
-})(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(FileExplorer));
+})(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));

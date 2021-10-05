@@ -8,6 +8,6 @@ export enum DriveItemAction {
   Delete,
 }
 
-export interface DriveItemProps {
+export interface DriveExplorerItemProps {
   item: DriveItemData;
 }

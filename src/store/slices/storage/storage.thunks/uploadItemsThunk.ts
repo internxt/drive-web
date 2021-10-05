@@ -43,14 +43,8 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
   'storage/uploadItems',
   async ({ files, parentFolderId, folderPath, options }: UploadItemsPayload, { getState, dispatch, requestId }) => {
     const user = getState().user.user as UserSettings;
-    const { namePath } = getState().storage;
-
     const showSizeWarning = files.some((file) => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const relativePath = namePath
-      .map((pathLevel) => pathLevel.name)
-      .slice(1)
-      .join('/');
     const filesToUpload: ItemToUpload[] = [];
     const errors: Error[] = [];
     const tasksIds: string[] = [];
@@ -113,8 +107,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     // 2.
     for (const [index, file] of filesToUpload.entries()) {
-      const type = file.type === undefined ? null : file.type;
-      const path = relativePath + '/' + file.name + '.' + type;
       const taskId = tasksIds[index];
       const updateProgressCallback = (progress) => {
         const task = taskManagerSelectors.findTaskById(getState())(taskId);
@@ -136,7 +128,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         const [uploadFilePromise, actionState] = storageService.upload.uploadFile(
           user.email,
           file,
-          path,
           isTeam,
           updateProgressCallback,
         );

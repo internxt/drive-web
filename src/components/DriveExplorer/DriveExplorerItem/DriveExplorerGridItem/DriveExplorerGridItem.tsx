@@ -1,19 +1,19 @@
 import { Fragment, createRef, useEffect, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import * as Unicons from '@iconscout/react-unicons';
+import { items } from '@internxt/lib';
 
 import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
-
-import './FileGridItem.scss';
 import iconService from '../../../../services/icon.service';
-import { items } from '@internxt/lib';
 import useForceUpdate from '../../../../hooks/useForceUpdate';
-import { DriveItemAction, DriveItemProps } from '..';
+import { DriveItemAction, DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 
-const FileGridItem = (props: DriveItemProps) => {
+import './DriveExplorerGridItem.scss';
+
+const DriveExplorerGridItem = (props: DriveExplorerItemProps) => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
   const { item } = props;
   const { isItemSelected } = useDriveItemStoreProps();
@@ -24,7 +24,6 @@ const FileGridItem = (props: DriveItemProps) => {
     onNameChanged,
     onNameBlurred,
     onNameClicked,
-    onEditNameButtonClicked,
     onNameEnterKeyPressed,
     onDownloadButtonClicked,
     onRenameButtonClicked,
@@ -122,4 +121,4 @@ const FileGridItem = (props: DriveItemProps) => {
   return isEditingName ? template : connectDragSource(template);
 };
 
-export default FileGridItem;
+export default DriveExplorerGridItem;
