@@ -23,7 +23,10 @@ class DriveExplorerGrid extends React.Component<DriveExplorerGridProps> {
   }
 
   get itemsList(): JSX.Element[] {
-    return this.props.items.map((item, index) => <DriveExplorerGridItem key={index} item={item} />);
+    return this.props.items.map((item) => {
+      const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}`;
+      return <DriveExplorerGridItem key={itemKey} item={item} />;
+    });
   }
 
   render(): ReactNode {

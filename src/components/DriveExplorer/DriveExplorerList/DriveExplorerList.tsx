@@ -29,9 +29,11 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
   }
 
   get itemsList(): JSX.Element[] {
-    return this.props.items.map((item: DriveItemData, index: number) => (
-      <DriveExplorerListItem key={index} item={item} />
-    ));
+    return this.props.items.map((item: DriveItemData) => {
+      const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}`;
+
+      return <DriveExplorerListItem key={itemKey} item={item} />;
+    });
   }
 
   get isAllSelected(): boolean {

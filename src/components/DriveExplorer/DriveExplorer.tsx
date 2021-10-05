@@ -26,7 +26,7 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { StorageFilters } from '../../store/slices/storage/storage.model';
 import storageThunks from '../../store/slices/storage/storage.thunks';
-import { planSelectors, planThunks } from '../../store/slices/plan';
+import { planSelectors } from '../../store/slices/plan';
 import BaseButton from '../Buttons/BaseButton';
 
 import './DriveExplorer.scss';
