@@ -59,6 +59,7 @@ interface DriveExplorerProps {
 
 interface DriveExplorerState {
   fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputKey: number; //! Changing this forces the invisible file input to render
   email: string;
   token: string;
   isAdmin: boolean;
@@ -71,6 +72,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
     this.state = {
       fileInputRef: createRef(),
+      fileInputKey: Date.now(),
       email: '',
       token: '',
       isAdmin: true,
@@ -114,6 +116,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
         folderPath: namePath.slice(1).reduce((t, path) => `${t}${path.name}/`, ''),
       }),
     ).then(() => onFileUploaded && onFileUploaded());
+
+    this.setState({ fileInputKey: Date.now() });
   };
 
   onViewModeButtonClicked = (): void => {
@@ -151,7 +155,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       isOver,
       connectDropTarget,
     } = this.props;
-    const { fileInputRef } = this.state;
+    const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
       [FileViewMode.List]: <Unicons.UilTable />,
       [FileViewMode.Grid]: <Unicons.UilListUiAlt />,
@@ -253,6 +257,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
             </div>
 
             <input
+              key={fileInputKey}
               className="hidden"
               ref={fileInputRef}
               type="file"
