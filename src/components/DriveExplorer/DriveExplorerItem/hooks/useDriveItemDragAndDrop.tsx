@@ -62,6 +62,10 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
         return;
       }
 
+      const namePathDestinationArray = namePath.map((level) => level.name);
+      namePathDestinationArray[0] = '';
+      const folderPath = namePathDestinationArray.join('/') + '/' + item.name;
+
       if (droppedType === DragAndDropType.DriveItem) {
         const droppedData = monitor.getItem<DriveItemData>();
         const itemsToMove = isSomeItemSelected
@@ -74,17 +78,11 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           storageThunks.moveItemsThunk({
             items: itemsToMove,
             destinationFolderId: item.id,
+            destinationPath: folderPath,
           }),
         );
       } else if (droppedType === NativeTypes.FILE) {
         const droppedData = monitor.getItem<{ items: DataTransferItemList }>();
-        const namePathDestinationArray = namePath.map((level) => level.name);
-
-        namePathDestinationArray[0] = '';
-
-        let folderPath = namePathDestinationArray.join('/');
-
-        folderPath = folderPath + '/' + item.name;
 
         transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
           if (files.length) {

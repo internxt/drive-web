@@ -1,5 +1,5 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import { items as itemUtils } from '@internxt/lib';
+import { items, items as itemUtils } from '@internxt/lib';
 
 import i18n from '../../../../services/i18n.service';
 import folderService from '../../../../services/folder.service';
@@ -95,7 +95,13 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       const parentFolderContent = await parentFolderContentPromise;
       const [, , finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
       const fileContent = renameFile(file, finalFilename);
-
+      const relativePath =
+        folderPath +
+        '/' +
+        items.getItemDisplayName({
+          name: finalFilename,
+          type: extension,
+        });
       dispatch(
         taskManagerActions.updateTask({
           taskId,
@@ -112,7 +118,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         type: extension,
         content: fileContent,
         parentFolderId,
-        folderPath,
+        relativePath,
       });
 
       tasksIds.push(task.id);

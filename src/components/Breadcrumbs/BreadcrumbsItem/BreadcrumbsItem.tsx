@@ -20,6 +20,10 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const onItemDropped = (item, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
+    const breadcrumbIndex = namePath.findIndex((level) => level.id === props.item.id);
+    const namePathDestinationArray = namePath.slice(0, breadcrumbIndex + 1).map((level) => level.name);
+    namePathDestinationArray[0] = '';
+    const folderPath = namePathDestinationArray.join('/');
 
     if (droppedType === DragAndDropType.DriveItem) {
       const itemsToMove = isSomeItemSelected
@@ -32,16 +36,10 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         storageThunks.moveItemsThunk({
           items: itemsToMove as DriveItemData[],
           destinationFolderId: props.item.id,
+          destinationPath: folderPath,
         }),
       );
     } else if (droppedType === NativeTypes.FILE) {
-      const breadcrumbIndex = namePath.findIndex((level) => level.id === props.item.id);
-      const namePathDestinationArray = namePath.slice(0, breadcrumbIndex + 1).map((level) => level.name);
-
-      namePathDestinationArray[0] = '';
-
-      const folderPath = namePathDestinationArray.join('/');
-
       transformDraggedItems((droppedData as any).items, folderPath).then(async ({ rootList, files }) => {
         if (files.length) {
           // Only files

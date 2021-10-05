@@ -8,7 +8,7 @@ interface DriveExplorerOverlayProps {
 
 function DriveExplorerOverlay({ icon, title, subtitle }: DriveExplorerOverlayProps): JSX.Element {
   return (
-    <div className="pointer-events-none p-8 absolute bg-white h-full w-full">
+    <div className="pointer-events-none p-8 bg-white h-full w-full">
       <div className="h-full flex items-center justify-center rounded-12px">
         <div className="mb-28">
           <div className="file-explorer-overlay-icon-container flex m-auto bg-blue-10 rounded-1/2 mb-10">{icon}</div>

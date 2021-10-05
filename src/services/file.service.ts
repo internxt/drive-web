@@ -1,3 +1,5 @@
+import { items } from '@internxt/lib';
+import { createHash } from 'crypto';
 import { DevicePlatform } from '../models/enums';
 import { DriveFileData, DriveFileMetadataPayload, UserSettings } from '../models/interfaces';
 import analyticsService from './analytics.service';
@@ -8,6 +10,7 @@ export interface MoveFilePayload {
   fileId: string;
   destination: number;
   bucketId: string;
+  relativePath: string;
 }
 export interface MoveFileResponse {
   item: DriveFileData;
@@ -38,9 +41,24 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
   });
 }
 
-export async function moveFile(data: MoveFilePayload): Promise<MoveFileResponse> {
+export async function moveFile(
+  file: DriveFileData,
+  destination: number,
+  destinationPath: string,
+  bucketId: string,
+): Promise<MoveFileResponse> {
   const user = localStorageService.getUser() as UserSettings;
-  const response = await httpService.post<MoveFilePayload, MoveFileResponse>('/api/storage/move/file', data);
+  const relativePath = `${destinationPath}/${items.getItemDisplayName(file)}`;
+  const hashedRelativePath = createHash('ripemd160').update(relativePath).digest('hex');
+
+  console.log('moveFile - relativePath: ', relativePath);
+
+  const response = await httpService.post<MoveFilePayload, MoveFileResponse>('/api/storage/move/file', {
+    fileId: file.fileId,
+    destination,
+    relativePath: hashedRelativePath,
+    bucketId,
+  });
 
   analyticsService.trackMoveItem('file', {
     file_id: response.item.id,

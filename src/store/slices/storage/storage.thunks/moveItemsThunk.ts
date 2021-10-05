@@ -22,12 +22,13 @@ import storageSelectors from '../storage.selectors';
 export interface MoveItemsPayload {
   items: DriveItemData[];
   destinationFolderId: number;
+  destinationPath: string;
 }
 
 export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: RootState }>(
   'storage/moveItems',
   async (payload: MoveItemsPayload, { getState, dispatch, requestId }) => {
-    const { items, destinationFolderId } = payload;
+    const { items, destinationFolderId, destinationPath } = payload;
     const promises: Promise<void>[] = [];
 
     if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
@@ -59,7 +60,9 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
           };
 
       dispatch(taskManagerActions.addTask(task));
-      promises.push(storageService.moveItem(item, destinationFolderId, storageSelectors.bucket(getState())));
+      promises.push(
+        storageService.moveItem(item, destinationFolderId, destinationPath, storageSelectors.bucket(getState())),
+      );
 
       promises[index]
         .then(async () => {

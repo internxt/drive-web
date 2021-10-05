@@ -65,6 +65,8 @@ export class Network {
       throw new Error('Bucket id not provided');
     }
 
+    console.log('uploadFile - relativePath: ', params.filepath);
+
     const hashName = createHash('ripemd160').update(params.filepath).digest('hex');
     const promise = new Promise((resolve: (fileId: string) => void, reject) => {
       actionState = this.environment.uploadFile(bucketId, {

@@ -17,7 +17,7 @@ export interface ItemToUpload {
   type: string;
   content: File;
   parentFolderId: number;
-  folderPath: string;
+  relativePath: string;
 }
 
 export function uploadFile(
@@ -50,16 +50,13 @@ export function uploadFile(
     }
 
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
-    const relativePath = `${file.folderPath}/${file.content.name}${file.type ? '.' + file.type : ''}`;
     const content = new Blob([file.content], { type: file.type });
     const [uploadFilePromise, uploadFileActionState] = network.uploadFile(bucketId, {
-      filepath: relativePath,
+      filepath: file.relativePath,
       filesize: file.size,
       filecontent: content,
       progressCallback: updateProgressCallback,
     });
-
-    console.log('storage-upload.service - relativePath: ', relativePath);
 
     promise = uploadFilePromise.then(async (fileId) => {
       const name = encryptFilename(file.name, file.parentFolderId);

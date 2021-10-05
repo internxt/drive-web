@@ -206,9 +206,11 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
             </div>
 
             <div className="h-full flex flex-col justify-between flex-grow overflow-y-hidden mb-5">
-              <div className="flex flex-col justify-between flex-grow overflow-hidden">
-                <ViewModeComponent items={items} isLoading={isLoading} />
-              </div>
+              {this.hasItems && (
+                <div className="flex flex-col justify-between flex-grow overflow-hidden">
+                  <ViewModeComponent items={items} isLoading={isLoading} />
+                </div>
+              )}
 
               {/* PAGINATION */}
               {/* !isLoading ? (
