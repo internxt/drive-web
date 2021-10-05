@@ -1,4 +1,4 @@
-import { ConnectDragSource, ConnectDropTarget, DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
+import { ConnectDragSource, ConnectDropTarget, useDrag, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { DragAndDropType } from '../../../../models/enums';
 import { DriveItemData } from '../../../../models/interfaces';

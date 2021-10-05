@@ -4,7 +4,7 @@ import * as Unicons from '@iconscout/react-unicons';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
-import { Workspace } from '../../models/enums';
+import { DragAndDropType, Workspace } from '../../models/enums';
 
 import { storageActions, storageSelectors } from '../../store/slices/storage';
 import { AppDispatch, RootState } from '../../store';
@@ -30,6 +30,7 @@ import { planSelectors } from '../../store/slices/plan';
 import BaseButton from '../Buttons/BaseButton';
 
 import './DriveExplorer.scss';
+import i18n from '../../services/i18n.service';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -180,12 +181,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
                     <Unicons.UilCloudDownload className="h-5 mr-1.5" />
-                    <span>Download</span>
+                    <span>{i18n.get('action.download')}</span>
                   </BaseButton>
                 ) : (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
                     <Unicons.UilCloudUpload className="h-5 mr-1.5" />
-                    <span>Upload</span>
+                    <span>{i18n.get('action.upload')}</span>
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
@@ -213,7 +214,10 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               {/* !isLoading ? (
                 <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
                   <span className="text-sm w-1/3" />
-                  <div className="flex justify-center w-1/3">
+                  <divconst droppedType = monitor.getItemType();
+      const droppedDataParentId = item.parentId || item.folderId || -1;
+
+      return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id; className="flex justify-center w-1/3">
                     <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
                       <Unicons.UilAngleDoubleLeft />
                     </button>

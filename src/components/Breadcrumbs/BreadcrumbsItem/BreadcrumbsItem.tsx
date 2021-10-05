@@ -14,11 +14,10 @@ interface BreadcrumbsItemProps {
 
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const namePath = useAppSelector((state) => state.storage.namePath);
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const selectedItems = useAppSelector((state) => state.storage.selectedItems);
-  const onItemDropped = (item: any, monitor: DropTargetMonitor) => {
+  const onItemDropped = (item, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
 
@@ -46,14 +45,12 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       transformDraggedItems((droppedData as any).items, folderPath).then(async ({ rootList, files }) => {
         if (files.length) {
           // Only files
-          await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id, folderPath }));
+          await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.id, folderPath }));
         }
         if (rootList.length) {
           // Directory tree
           for (const root of rootList) {
-            const currentFolderId = item.id;
-
-            await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId }));
+            await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: props.item.id }));
           }
         }
       });

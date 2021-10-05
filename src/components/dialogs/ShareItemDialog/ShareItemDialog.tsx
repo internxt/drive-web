@@ -18,7 +18,6 @@ import { items } from '@internxt/lib';
 import navigationService from '../../../services/navigation.service';
 import { AppView } from '../../../models/enums';
 import errorService from '../../../services/error.service';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
 
 interface ShareItemDialogProps {
   item: DriveItemData;

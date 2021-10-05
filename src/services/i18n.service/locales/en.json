@@ -242,6 +242,7 @@
     "done": "Done"
   },
   "action": {
+    "upload": "Upload",
     "download": "Download",
     "accessFile": "Access File",
     "upgradeNow": "Upgrade now!",

@@ -1,9 +1,8 @@
 import { Component, createElement } from 'react';
-import { Switch, Route, Redirect, Router } from 'react-router-dom';
+import { Switch, Route, Redirect, Router, RouteProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-
 import { DndProvider } from 'react-dnd';
 
 import { initializeUserThunk } from './store/slices/user';
@@ -65,20 +64,14 @@ class App extends Component<AppProps> {
     const routes: JSX.Element[] = views.map((v) => {
       const viewConfig: AppViewConfig | undefined = configService.getViewConfig({ id: v.id });
       const layoutConfig = layouts.find((l) => l.id === viewConfig?.layout) || layouts[0];
-      const componentProps: {
-        key: string;
-        exact: boolean;
-        path: string;
-        render: any;
-      } = {
-        key: v.id,
+      const componentProps: RouteProps = {
         exact: !!viewConfig?.exact,
         path: viewConfig?.path || '',
-        render: (props: any) =>
+        render: (props) =>
           createElement(layoutConfig.component, {}, createElement(v.component, { ...props, ...v.componentProps })),
       };
 
-      return <Route {...componentProps} />;
+      return <Route key={v.id} {...componentProps} />;
     });
 
     return routes;
