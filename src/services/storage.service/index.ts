@@ -24,7 +24,7 @@ export function moveItem(
   bucketId: string,
 ): Promise<void> {
   return item.isFolder
-    ? folderService.moveFolder({ folderId: item.id, destination: destinationFolderId }).then()
+    ? folderService.moveFolder(item as DriveFolderData, destinationFolderId, destinationPath, bucketId).then()
     : fileService.moveFile(item as DriveFileData, destinationFolderId, destinationPath, bucketId).then();
 }
 

@@ -30,7 +30,8 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
 
   get itemsList(): JSX.Element[] {
     return this.props.items.map((item: DriveItemData) => {
-      const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}`;
+      const itemParentId = item.parentId || item.folderId;
+      const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}-${itemParentId}`;
 
       return <DriveExplorerListItem key={itemKey} item={item} />;
     });
