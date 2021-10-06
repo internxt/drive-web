@@ -17,7 +17,7 @@ export default function BackupsListItem({
 }): JSX.Element {
   const dispatch = useAppDispatch();
   const isUploaded = !!backup.fileId;
-  const onDownloadButtonClicked = () => isUploaded && onDownloadBackupClicked(backup);
+  const onDownload = () => isUploaded && onDownloadBackupClicked(backup);
   const onInfoButtonClicked = (e: React.MouseEvent) => {
     const infoMenuFeatures = [
       {
@@ -56,6 +56,7 @@ export default function BackupsListItem({
       className={`py-3.5 border-b border-l-neutral-30 flex items-center hover:bg-blue-20 ${
         isUploaded ? '' : 'text-gray-40'
       }`}
+      onDoubleClick={onDownload}
     >
       <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
         <BackupIcon className={`w-8 h-8 ${isUploaded ? '' : 'filter grayscale opacity-40'}`} />
@@ -72,10 +73,7 @@ export default function BackupsListItem({
             <Unicons.UilEllipsisH className="w-full h-full" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
-            <BackupDropdownActions
-              onDownloadButtonClicked={onDownloadButtonClicked}
-              onInfoButtonClicked={onInfoButtonClicked}
-            />
+            <BackupDropdownActions onDownloadButtonClicked={onDownload} onInfoButtonClicked={onInfoButtonClicked} />
           </Dropdown.Menu>
         </Dropdown>
       </div>
