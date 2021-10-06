@@ -51,8 +51,6 @@ export async function moveFile(
   const relativePath = `${destinationPath}/${items.getItemDisplayName(file)}`;
   const hashedRelativePath = createHash('ripemd160').update(relativePath).digest('hex');
 
-  console.log('moveFile - relativePath: ', relativePath);
-
   const response = await httpService.post<MoveFilePayload, MoveFileResponse>('/api/storage/move/file', {
     fileId: file.fileId,
     destination,
