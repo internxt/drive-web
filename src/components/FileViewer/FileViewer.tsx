@@ -81,7 +81,7 @@ const FileViewer = (props: FileViewerProps) => {
       {/* CONTENT */}
       <div className="h-full flex justify-center items-center">
         {isTypeAllowed ? (
-          <div className="border border-red-50" onClick={(e) => e.stopPropagation()}>
+          <div onClick={(e) => e.stopPropagation()}>
             {viewers[fileExtensionGroup as FileExtensionGroup](viewerProps)}
           </div>
         ) : (
