@@ -102,7 +102,7 @@ export function fetchFolderContent(folderId: number): [Promise<FetchFolderConten
   const cancelTokenSource = CancelToken.source();
   const fn = async () => {
     try {
-      const response = await httpService.get<IContentFolder>(`/api/storage/folder/${folderId}`, {
+      const response = await httpService.get<IContentFolder>(`/api/storage/v2/folder/${folderId}`, {
         cancelToken: cancelTokenSource.token,
       });
       const result: FetchFolderContentResponse = {
