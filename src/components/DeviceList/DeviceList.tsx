@@ -2,6 +2,8 @@ import { Device } from '../../models/interfaces';
 import i18n from '../../services/i18n.service';
 import DriveListItemSkeleton from '../loaders/DriveListItemSkeleton';
 import DeviceListItem from './DeviceListItem';
+import * as unicons from '@iconscout/react-unicons';
+import desktopService from '../../services/desktop.service';
 
 interface Props {
   items: Device[];
@@ -16,19 +18,30 @@ const DeviceList = (props: Props) => {
       .fill(0)
       .map((n, i) => <DriveListItemSkeleton key={i} />);
   };
-  const getItemsList = () =>
-    props.items.map((item: Device) => <DeviceListItem key={item.id} device={item} onClick={props.onDeviceSelected} />);
 
-  return (
+  const items = props.items.map((item: Device) => (
+    <DeviceListItem key={item.id} device={item} onClick={props.onDeviceSelected} />
+  ));
+
+  return isLoading || items.length ? (
     <div className="flex flex-col flex-grow bg-white h-1">
-      <div className="files-list font-semibold flex border-b border-l-neutral-30 bg-white text-neutral-500 py-3 text-sm">
+      <div className="files-list font-semibold flex border-b border-l-neutral-30 bg-white text-neutral-400 py-3 text-sm">
         <div className="w-0.5/12 pl-3 flex items-center justify-start box-content"></div>
         <div className="flex-grow flex items-center px-3">{i18n.get('backups.devices-list.columns.name')}</div>
         <div className="w-2/12 hidden items-center xl:flex"></div>
         <div className="w-3/12 hidden items-center lg:flex">{i18n.get('backups.devices-list.columns.last-update')}</div>
         <div className="w-2/12 flex items-center">{i18n.get('backups.devices-list.columns.size')}</div>
       </div>
-      <div className="h-full overflow-y-auto">{isLoading ? getLoadingSkeleton() : getItemsList()}</div>
+      <div className="h-full overflow-y-auto">{isLoading ? getLoadingSkeleton() : items}</div>
+    </div>
+  ) : (
+    <div className="flex flex-col mt-24 items-center space-y-4">
+      <unicons.UilHistory className="text-blue-60 h-24 w-24" />
+      <h1 className="text-2xl font-bold text-gray-70">Start using backups</h1>
+      <p className="text-lg text-gray-50">Save a copy of your most important files on the cloud automatically</p>
+      <a className="pt-2 no-underline font-bold text-blue-60" href={desktopService.getDownloadAppUrl()} target="_blank">
+        Download our Desktop App to get started
+      </a>
     </div>
   );
 };
