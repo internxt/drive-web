@@ -34,11 +34,6 @@ const backupsService = {
       method: 'DELETE',
       headers,
     });
-    if (backup.fileId)
-      fetch(`${process.env.REACT_APP_API_URL}/api/storage/bucket/${backup.bucket}/file/${backup.fileId}`, {
-        method: 'DELETE',
-        headers,
-      });
   },
 };
 
