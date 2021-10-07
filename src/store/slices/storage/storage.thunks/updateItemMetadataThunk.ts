@@ -8,6 +8,8 @@ import fileService from '../../../../services/file.service';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
+import storageSelectors from '../storage.selectors';
+import { items } from '@internxt/lib';
 
 export const updateItemMetadataThunk = createAsyncThunk<
   void,
@@ -17,13 +19,24 @@ export const updateItemMetadataThunk = createAsyncThunk<
   'storage/updateItemMetadata',
   async (
     payload: { item: DriveItemData; metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload },
-    { dispatch },
+    { dispatch, getState },
   ) => {
     const { item, metadata } = payload;
+    const namePath = getState().storage.namePath;
+    const namePathDestinationArray = namePath.map((level) => level.name);
+    namePathDestinationArray[0] = '';
+    const folderPath = namePathDestinationArray.join('/');
+    const relativePath =
+      folderPath +
+      '/' +
+      items.getItemDisplayName({
+        name: metadata.itemName || item.name,
+        type: item.type,
+      });
 
     item.isFolder
       ? await folderService.updateMetaData(item.id, metadata)
-      : await fileService.updateMetaData(item.fileId, metadata);
+      : await fileService.updateMetaData(item.fileId, metadata, storageSelectors.bucket(getState()), relativePath);
 
     dispatch(
       storageActions.patchItem({
@@ -31,7 +44,7 @@ export const updateItemMetadataThunk = createAsyncThunk<
         folderId: item.isFolder ? item.parentId : item.folderId,
         isFolder: item.isFolder,
         patch: {
-          name: payload.metadata.metadata.itemName,
+          name: payload.metadata.itemName,
         },
       }),
     );
