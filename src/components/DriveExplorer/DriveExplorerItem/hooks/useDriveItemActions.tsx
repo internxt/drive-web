@@ -47,7 +47,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     setTimeout(() => nameInputRef.current?.focus(), 0);
   };
   const confirmNameChange = async () => {
-    const metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload = { metadata: { itemName: dirtyName } };
+    const metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload = { itemName: dirtyName };
 
     if (item.name !== dirtyName) {
       await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }));
