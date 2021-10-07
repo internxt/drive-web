@@ -14,8 +14,8 @@ import { DevicePlatform } from '../models/enums';
 import httpService from './http.service';
 import errorService from './error.service';
 import { items } from '@internxt/lib';
-import { createHash } from 'crypto';
 import fileService from './file.service';
+import i18n from './i18n.service';
 
 export interface IFolders {
   bucket: string;
@@ -186,6 +186,21 @@ export async function moveFolder(
 ): Promise<MoveFolderResponse> {
   const user = localStorageService.getUser() as UserSettings;
 
+  const response = await httpService
+    .post<MoveFolderPayload, MoveFolderResponse>('/api/storage/move/folder', {
+      folderId: folder.id,
+      destination,
+    })
+    .catch((err) => {
+      const castedError = errorService.castError(err);
+
+      if (castedError.status) {
+        castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
+      }
+
+      throw castedError;
+    });
+
   // * Renames files iterating over folders
   const pendingFolders = [{ destinationPath: `${destinationPath}/${folder.name}`, data: folder }];
   while (pendingFolders.length > 0) {
@@ -210,11 +225,6 @@ export async function moveFolder(
       })),
     );
   }
-
-  const response = await httpService.post<MoveFolderPayload, MoveFolderResponse>('/api/storage/move/folder', {
-    folderId: folder.id,
-    destination,
-  });
 
   analyticsService.trackMoveItem('folder', {
     file_id: response.item.id,

@@ -3,7 +3,9 @@ import { createHash } from 'crypto';
 import { DevicePlatform } from '../models/enums';
 import { DriveFileData, DriveFileMetadataPayload, UserSettings } from '../models/interfaces';
 import analyticsService from './analytics.service';
+import errorService from './error.service';
 import httpService from './http.service';
+import i18n from './i18n.service';
 import localStorageService from './local-storage.service';
 
 export interface MoveFilePayload {
@@ -58,12 +60,22 @@ export async function moveFile(
   const relativePath = `${destinationPath}/${items.getItemDisplayName(file)}`;
   const hashedRelativePath = createHash('ripemd160').update(relativePath).digest('hex');
 
-  const response = await httpService.post<MoveFilePayload, MoveFileResponse>('/api/storage/move/file', {
-    fileId: file.fileId,
-    destination,
-    relativePath: hashedRelativePath,
-    bucketId,
-  });
+  const response = await httpService
+    .post<MoveFilePayload, MoveFileResponse>('/api/storage/move/file', {
+      fileId: file.fileId,
+      destination,
+      relativePath: hashedRelativePath,
+      bucketId,
+    })
+    .catch((err) => {
+      const castedError = errorService.castError(err);
+
+      if (castedError.status) {
+        castedError.message = i18n.get(`tasks.move-file.errors.${castedError.status}`);
+      }
+
+      throw castedError;
+    });
 
   analyticsService.trackMoveItem('file', {
     file_id: response.item.id,

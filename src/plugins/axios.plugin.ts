@@ -35,14 +35,14 @@ const axiosPlugin: AppPlugin = {
       return requestConfig;
     });
 
-    axios.interceptors.response.use(undefined, (error) => {
-      if (error.response) {
-        if (error.response.status === 401) {
+    axios.interceptors.response.use(undefined, (err) => {
+      if (err.response) {
+        if (err.response.status === 401) {
           store.dispatch(userThunks.logoutThunk());
         }
       }
 
-      return Promise.reject(error);
+      return Promise.reject(err);
     });
   },
 };
