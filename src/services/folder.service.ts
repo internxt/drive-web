@@ -104,20 +104,25 @@ export interface MoveFolderResponse {
 export function fetchFolderContent(folderId: number): [Promise<FetchFolderContentResponse>, CancelTokenSource] {
   const cancelTokenSource = CancelToken.source();
   const fn = async () => {
-    const response = await httpService.get<IContentFolder>(`/api/storage/folder/${folderId}`, {
-      cancelToken: cancelTokenSource.token,
-    });
-    const result: FetchFolderContentResponse = {
-      folders: [],
-      files: [],
-    };
+    try {
+      const response = await httpService.get<IContentFolder>(`/api/storage/v2/folder/${folderId}`, {
+        cancelToken: cancelTokenSource.token,
+      });
+      const result: FetchFolderContentResponse = {
+        folders: [],
+        files: [],
+      };
 
-    if (response) {
-      result.folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
-      result.files = response.files;
+      if (response) {
+        result.folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
+        result.files = response.files;
+      }
+
+      return result;
+    } catch (err) {
+      const castedError = errorService.castError(err);
+      throw castedError;
     }
-
-    return result;
   };
 
   return [fn(), cancelTokenSource];
