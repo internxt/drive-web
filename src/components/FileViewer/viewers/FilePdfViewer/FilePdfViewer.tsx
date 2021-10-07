@@ -52,7 +52,7 @@ const FilePdfViewer = (props: FormatFileViewerProps) => {
     setNumPages(numPages);
   }
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center max-h-full">
       {props.isLoading ? (
         <span>{i18n.get('drive.loadingFile')}</span>
       ) : (
@@ -62,7 +62,7 @@ const FilePdfViewer = (props: FormatFileViewerProps) => {
           </button>
           <div className="mx-6">
             <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess} className="shadow-lg">
-              <Page pageNumber={pageNumber} />
+              <Page height={window.innerHeight * 0.85} pageNumber={pageNumber} />
             </Document>
             <span className="text-center block w-full mt-3">
               {pageNumber} of {numPages}
