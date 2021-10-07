@@ -25,21 +25,29 @@ const initialState: BackupsState = {
 };
 
 export const fetchDevicesThunk = createAsyncThunk<Device[], void, { state: RootState }>(
-  'plan/fetchDevices',
+  'backups/fetchDevices',
   async () => {
     return backupsService.getAllDevices();
   },
 );
 
 export const fetchDeviceBackupsThunk = createAsyncThunk<DeviceBackup[], string, { state: RootState }>(
-  'plan/fetchDeviceBackups',
+  'backups/fetchDeviceBackups',
   async (deviceMac: string) => {
     return backupsService.getAllBackups(deviceMac);
   },
 );
 
+export const deleteBackupThunk = createAsyncThunk<DeviceBackup, DeviceBackup, { state: RootState }>(
+  'backups/deleteBackup',
+  async (backup: DeviceBackup) => {
+    await backupsService.deleteBackup(backup);
+    return backup;
+  },
+);
+
 export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state: RootState }>(
-  'plan/downloadBackup',
+  'backups/downloadBackup',
   async (backup: DeviceBackup, { requestId, dispatch }) => {
     const taskId = requestId;
     const task: DownloadBackupTask = {
@@ -157,6 +165,13 @@ export const backupsSlice = createSlice({
       .addCase(downloadBackupThunk.pending, () => undefined)
       .addCase(downloadBackupThunk.fulfilled, () => undefined)
       .addCase(downloadBackupThunk.rejected, () => undefined);
+
+    builder
+      .addCase(deleteBackupThunk.pending, () => undefined)
+      .addCase(deleteBackupThunk.fulfilled, (state, action) => {
+        state.backups = state.backups.filter((b) => b.id !== action.payload.id);
+      })
+      .addCase(deleteBackupThunk.rejected, () => undefined);
   },
 });
 
@@ -168,6 +183,7 @@ export const backupsThunks = {
   fetchDevicesThunk,
   fetchDeviceBackupsThunk,
   downloadBackupThunk,
+  deleteBackupThunk,
 };
 
 export default backupsSlice.reducer;
