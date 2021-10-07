@@ -1,5 +1,5 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import { items as itemUtils } from '@internxt/lib';
+import { items, items as itemUtils } from '@internxt/lib';
 
 import i18n from '../../../../services/i18n.service';
 import folderService from '../../../../services/folder.service';
@@ -44,14 +44,8 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
   'storage/uploadItems',
   async ({ files, parentFolderId, folderPath, options }: UploadItemsPayload, { getState, dispatch, requestId }) => {
     const user = getState().user.user as UserSettings;
-    const { namePath } = getState().storage;
-
     const showSizeWarning = files.some((file) => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const relativePath = namePath
-      .map((pathLevel) => pathLevel.name)
-      .slice(1)
-      .join('/');
     const filesToUpload: ItemToUpload[] = [];
     const errors: Error[] = [];
     const tasksIds: string[] = [];
@@ -101,7 +95,13 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       const parentFolderContent = await parentFolderContentPromise;
       const [, , finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
       const fileContent = renameFile(file, finalFilename);
-
+      const relativePath =
+        folderPath +
+        '/' +
+        items.getItemDisplayName({
+          name: finalFilename,
+          type: extension,
+        });
       dispatch(
         taskManagerActions.updateTask({
           taskId,
@@ -118,7 +118,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         type: extension,
         content: fileContent,
         parentFolderId,
-        folderPath,
+        relativePath,
       });
 
       tasksIds.push(task.id);
@@ -126,8 +126,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     // 2.
     for (const [index, file] of filesToUpload.entries()) {
-      const type = file.type === undefined ? null : file.type;
-      const path = relativePath + '/' + file.name + '.' + type;
       const taskId = tasksIds[index];
       const updateProgressCallback = (progress) => {
         const task = taskManagerSelectors.findTaskById(getState())(taskId);
@@ -149,7 +147,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         const [uploadFilePromise, actionState] = storageService.upload.uploadFile(
           user.email,
           file,
-          path,
           isTeam,
           updateProgressCallback,
         );

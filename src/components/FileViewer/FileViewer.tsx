@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import { DriveFileData, DriveItemData } from '../../models/interfaces';

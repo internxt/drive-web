@@ -1,18 +1,18 @@
 import React, { ReactNode } from 'react';
 import { connect } from 'react-redux';
 
-import FileGridItem from '../FileExplorerItem/FileGridItem/FileGridItem';
+import DriveExplorerGridItem from '../DriveExplorerItem/DriveExplorerGridItem/DriveExplorerGridItem';
 import { DriveItemData } from '../../../models/interfaces';
 import DriveGridItemSkeleton from '../../loaders/DriveGridItemSkeleton';
-import './FilesGrid.scss';
+import './DriveExplorerGrid.scss';
 
-interface FilesGridProps {
+interface DriveExplorerGridProps {
   isLoading: boolean;
   items: DriveItemData[];
 }
 
-class FilesGrid extends React.Component<FilesGridProps> {
-  constructor(props: FilesGridProps) {
+class DriveExplorerGrid extends React.Component<DriveExplorerGridProps> {
+  constructor(props: DriveExplorerGridProps) {
     super(props);
   }
 
@@ -23,7 +23,10 @@ class FilesGrid extends React.Component<FilesGridProps> {
   }
 
   get itemsList(): JSX.Element[] {
-    return this.props.items.map((item, index) => <FileGridItem key={index} item={item} />);
+    return this.props.items.map((item) => {
+      const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}`;
+      return <DriveExplorerGridItem key={itemKey} item={item} />;
+    });
   }
 
   render(): ReactNode {
@@ -33,4 +36,4 @@ class FilesGrid extends React.Component<FilesGridProps> {
   }
 }
 
-export default connect()(FilesGrid);
+export default connect()(DriveExplorerGrid);

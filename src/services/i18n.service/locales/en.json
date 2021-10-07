@@ -167,65 +167,93 @@
   },
   "tasks": {
     "create-folder": {
-      "pending": "Pending to create folder",
-      "in-process": "Creating folder",
-      "success": "Folder created",
-      "error": "Error during folder creation",
-      "cancelled": "Folder creation cancelled"
+      "status": {
+        "pending": "Pending to create folder",
+        "in-process": "Creating folder",
+        "success": "Folder created",
+        "error": "Error during folder creation",
+        "cancelled": "Folder creation cancelled"
+      },
+      "errors": {}
     },
     "upload-file": {
-      "pending": "Pending to upload",
-      "encrypting": "Encrypting file",
-      "in-process": "{progress}% Uploading file",
-      "success": "File uploaded",
-      "error": "Error during upload",
-      "cancelled": "Upload cancelled"
+      "status": {
+        "pending": "Pending to upload",
+        "encrypting": "Encrypting file",
+        "in-process": "{progress}% Uploading file",
+        "success": "File uploaded",
+        "error": "Error during upload",
+        "cancelled": "Upload cancelled"
+      },
+      "errors": {}
     },
     "upload-folder": {
-      "pending": "Pending to upload",
-      "encrypting": "Encrypting files",
-      "in-process": "{progress}% Uploading folder",
-      "success": "Folder uploaded",
-      "error": "Error during upload",
-      "cancelled": "Upload cancelled"
+      "status": {
+        "pending": "Pending to upload",
+        "encrypting": "Encrypting files",
+        "in-process": "{progress}% Uploading folder",
+        "success": "Folder uploaded",
+        "error": "Error during upload",
+        "cancelled": "Upload cancelled"
+      },
+      "errors": {}
     },
     "download-file": {
-      "pending": "Pending to download",
-      "decrypting": "Fetching file",
-      "in-process": "{progress}% Downloading file",
-      "success": "File downloaded",
-      "error": "Error during download",
-      "cancelled": "Download cancelled"
+      "status": {
+        "pending": "Pending to download",
+        "decrypting": "Fetching file",
+        "in-process": "{progress}% Downloading file",
+        "success": "File downloaded",
+        "error": "Error during download",
+        "cancelled": "Download cancelled"
+      },
+      "errors": {}
     },
     "download-backup": {
-      "pending": "Pending to download",
-      "decrypting": "Fetching backup",
-      "in-process": "{progress}% Downloading backup",
-      "success": "Backup downloaded",
-      "error": "Error during download",
-      "cancelled": "Download cancelled"
+      "status": {
+        "pending": "Pending to download",
+        "decrypting": "Fetching backup",
+        "in-process": "{progress}% Downloading backup",
+        "success": "Backup downloaded",
+        "error": "Error during download",
+        "cancelled": "Download cancelled"
+      },
+      "errors": {}
     },
     "download-folder": {
-      "pending": "Pending to download",
-      "decrypting": "Fetching files",
-      "in-process": "Downloading folder",
-      "success": "Folder downloaded",
-      "error": "Error during download",
-      "cancelled": "Download cancelled"
+      "status": {
+        "pending": "Pending to download",
+        "decrypting": "Fetching files",
+        "in-process": "Downloading folder",
+        "success": "Folder downloaded",
+        "error": "Error during download",
+        "cancelled": "Download cancelled"
+      },
+      "errors": {}
     },
     "move-file": {
-      "pending": "Pending to move",
-      "in-process": "Moving file",
-      "success": "File moved",
-      "error": "Error during movement",
-      "cancelled": "Cancelled movement"
+      "status": {
+        "pending": "Pending to move",
+        "in-process": "Moving file",
+        "success": "File moved",
+        "error": "Error during movement",
+        "cancelled": "Cancelled movement"
+      },
+      "errors": {
+        "409": "A file with that name already exists in the destination folder"
+      }
     },
     "move-folder": {
-      "pending": "Pending to move",
-      "in-process": "Moving folder",
-      "success": "Folder moved",
-      "error": "Error during movement",
-      "cancelled": "Cancelled movement"
+      "status": {
+        "pending": "Pending to move",
+        "in-process": "Moving folder",
+        "success": "Folder moved",
+        "error": "Error during movement",
+        "cancelled": "Cancelled movement"
+      },
+      "errors": {
+        "409": "A folder with that name already exists in the destination folder"
+      }
     }
   },
   "success": {
@@ -242,6 +270,7 @@
     "done": "Done"
   },
   "action": {
+    "upload": "Upload",
     "download": "Download",
     "accessFile": "Access File",
     "upgradeNow": "Upgrade now!",

@@ -17,16 +17,18 @@ import {
 } from '../../../../services/task-manager.service';
 import databaseService, { DatabaseCollection } from '../../../../services/database.service';
 import itemsListService from '../../../../services/items-list.service';
+import storageSelectors from '../storage.selectors';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
   destinationFolderId: number;
+  destinationPath: string;
 }
 
 export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: RootState }>(
   'storage/moveItems',
-  async (payload: MoveItemsPayload, { dispatch, requestId }) => {
-    const { items, destinationFolderId } = payload;
+  async (payload: MoveItemsPayload, { getState, dispatch, requestId }) => {
+    const { items, destinationFolderId, destinationPath } = payload;
     const promises: Promise<void>[] = [];
 
     if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
@@ -58,7 +60,9 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
           };
 
       dispatch(taskManagerActions.addTask(task));
-      promises.push(storageService.moveItem(item, destinationFolderId));
+      promises.push(
+        storageService.moveItem(item, destinationFolderId, destinationPath, storageSelectors.bucket(getState())),
+      );
 
       promises[index]
         .then(async () => {
@@ -113,7 +117,7 @@ export const moveItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<Sto
   builder
     .addCase(moveItemsThunk.pending, () => undefined)
     .addCase(moveItemsThunk.fulfilled, () => undefined)
-    .addCase(moveItemsThunk.rejected, () => {
-      notificationsService.show(i18n.get('error.movingItem'), ToastType.Error);
+    .addCase(moveItemsThunk.rejected, (state, action) => {
+      notificationsService.show(action.error.message || i18n.get('error.movingItem'), ToastType.Error);
     });
 };

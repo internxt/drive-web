@@ -1,7 +1,7 @@
 import { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 
-import FileExplorer from '../../components/FileExplorer/FileExplorer';
+import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { AppView } from '../../models/enums';
 import { DriveItemData } from '../../models/interfaces';
 import navigationService from '../../services/navigation.service';
@@ -35,7 +35,7 @@ class RecentsView extends Component<RecentsViewProps> {
     const { items, isLoadingRecents } = this.props;
 
     return (
-      <FileExplorer
+      <DriveExplorer
         title="Recents"
         titleClassName="px-3"
         isLoading={isLoadingRecents}

@@ -1,22 +1,23 @@
 import React, { Fragment } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import * as Unicons from '@iconscout/react-unicons';
-import { items } from '@internxt/lib';
 
 import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
 import sizeService from '../../../../services/size.service';
 
-import './FileListItem.scss';
 import dateService from '../../../../services/date.service';
 import { storageActions } from '../../../../store/slices/storage';
 import iconService from '../../../../services/icon.service';
-import { DriveItemAction, DriveItemProps } from '..';
+import { DriveItemAction, DriveExplorerItemProps } from '..';
 import { useAppDispatch } from '../../../../store/hooks';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 
-const FileListItem = ({ item }: DriveItemProps) => {
+import './DriveExplorerListItem.scss';
+import { items } from '@internxt/lib';
+
+const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
   const dispatch = useAppDispatch();
   const { isItemSelected, isSomeItemSelected } = useDriveItemStoreProps();
   const {
@@ -171,4 +172,4 @@ const FileListItem = ({ item }: DriveItemProps) => {
   return isEditingName ? template : connectDragSource(template);
 };
 
-export default FileListItem;
+export default DriveExplorerListItem;

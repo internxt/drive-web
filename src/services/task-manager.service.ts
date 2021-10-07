@@ -143,7 +143,7 @@ const getTaskNotificationTitle = (task: TaskData): string => {
 };
 
 const getTaskNotificationSubtitle = (task: TaskData): string => {
-  return i18n.get(`tasks.${task.action}.${task.status}`, {
+  return i18n.get(`tasks.${task.action}.status.${task.status}`, {
     progress: task.progress ? (task.progress * 100).toFixed(2) : 0,
   });
 };

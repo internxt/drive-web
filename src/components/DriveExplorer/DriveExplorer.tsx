@@ -4,22 +4,21 @@ import * as Unicons from '@iconscout/react-unicons';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
-import { Workspace } from '../../models/enums';
+import { DragAndDropType, Workspace } from '../../models/enums';
 
 import { storageActions, storageSelectors } from '../../store/slices/storage';
 import { AppDispatch, RootState } from '../../store';
 
 import { FileViewMode } from '../../models/enums';
-import FilesList from './FilesList/FilesList';
-import FilesGrid from './FilesGrid/FilesGrid';
+import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
+import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import folderEmptyImage from '../../assets/images/folder-empty.svg';
 import noResultsSearchImage from '../../assets/images/no-results-search.svg';
 import { uiActions } from '../../store/slices/ui';
 
-import './FileExplorer.scss';
 import deviceService from '../../services/device.service';
 import CreateFolderDialog from '../dialogs/CreateFolderDialog/CreateFolderDialog';
-import FileExplorerOverlay from './FileExplorerOverlay/FileExplorerOverlay';
+import DriveExplorerOverlay from './DriveExplorerOverlay/DriveExplorerOverlay';
 
 import { transformDraggedItems } from '../../services/drag-and-drop.service';
 import DeleteItemsDialog from '../dialogs/DeleteItemsDialog/DeleteItemsDialog';
@@ -27,12 +26,13 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { StorageFilters } from '../../store/slices/storage/storage.model';
 import storageThunks from '../../store/slices/storage/storage.thunks';
-import { planSelectors, planThunks } from '../../store/slices/plan';
-
-import './FileExplorer.scss';
+import { planSelectors } from '../../store/slices/plan';
 import BaseButton from '../Buttons/BaseButton';
 
-interface FileExplorerProps {
+import './DriveExplorer.scss';
+import i18n from '../../services/i18n.service';
+
+interface DriveExplorerProps {
   title: JSX.Element | string;
   titleClassName?: string;
   isLoading: boolean;
@@ -58,20 +58,22 @@ interface FileExplorerProps {
   connectDropTarget: ConnectDropTarget;
 }
 
-interface FileExplorerState {
+interface DriveExplorerState {
   fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputKey: number; //! Changing this forces the invisible file input to render
   email: string;
   token: string;
   isAdmin: boolean;
   isMember: boolean;
 }
 
-class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
-  constructor(props: FileExplorerProps) {
+class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
+  constructor(props: DriveExplorerProps) {
     super(props);
 
     this.state = {
       fileInputRef: createRef(),
+      fileInputKey: Date.now(),
       email: '',
       token: '',
       isAdmin: true,
@@ -115,6 +117,8 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
         folderPath: namePath.slice(1).reduce((t, path) => `${t}${path.name}/`, ''),
       }),
     ).then(() => onFileUploaded && onFileUploaded());
+
+    this.setState({ fileInputKey: Date.now() });
   };
 
   onViewModeButtonClicked = (): void => {
@@ -152,14 +156,14 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
       isOver,
       connectDropTarget,
     } = this.props;
-    const { fileInputRef } = this.state;
+    const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
       [FileViewMode.List]: <Unicons.UilTable />,
       [FileViewMode.Grid]: <Unicons.UilListUiAlt />,
     };
     const viewModes = {
-      [FileViewMode.List]: FilesList,
-      [FileViewMode.Grid]: FilesGrid,
+      [FileViewMode.List]: DriveExplorerList,
+      [FileViewMode.Grid]: DriveExplorerGrid,
     };
     const ViewModeComponent = viewModes[viewMode];
 
@@ -177,12 +181,12 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
                     <Unicons.UilCloudDownload className="h-5 mr-1.5" />
-                    <span>Download</span>
+                    <span>{i18n.get('action.download')}</span>
                   </BaseButton>
                 ) : (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
                     <Unicons.UilCloudUpload className="h-5 mr-1.5" />
-                    <span>Upload</span>
+                    <span>{i18n.get('action.upload')}</span>
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
@@ -202,15 +206,20 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
             </div>
 
             <div className="h-full flex flex-col justify-between flex-grow overflow-y-hidden mb-5">
-              <div className="flex flex-col justify-between flex-grow overflow-hidden">
-                <ViewModeComponent items={items} isLoading={isLoading} />
-              </div>
+              {this.hasItems && (
+                <div className="flex flex-col justify-between flex-grow overflow-hidden">
+                  <ViewModeComponent items={items} isLoading={isLoading} />
+                </div>
+              )}
 
               {/* PAGINATION */}
               {/* !isLoading ? (
                 <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
                   <span className="text-sm w-1/3" />
-                  <div className="flex justify-center w-1/3">
+                  <divconst droppedType = monitor.getItemType();
+      const droppedDataParentId = item.parentId || item.folderId || -1;
+
+      return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id; className="flex justify-center w-1/3">
                     <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
                       <Unicons.UilAngleDoubleLeft />
                     </button>
@@ -226,7 +235,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
               {
                 /* EMPTY FOLDER */
                 !this.hasFilters && !this.hasItems && !isLoading ? (
-                  <FileExplorerOverlay
+                  <DriveExplorerOverlay
                     icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
                     title="This folder is empty"
                     subtitle="Drag and drop here or click on upload button"
@@ -237,7 +246,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
               {
                 /* NO SEARCH RESULTS */
                 this.hasFilters && !this.hasItems && !isLoading ? (
-                  <FileExplorerOverlay
+                  <DriveExplorerOverlay
                     icon={<img alt="" src={noResultsSearchImage} className="w-full m-auto" />}
                     title="There are no results for this search"
                     subtitle="Drag and drop here or click on upload button"
@@ -254,6 +263,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
             </div>
 
             <input
+              key={fileInputKey}
               className="hidden"
               ref={fileInputRef}
               type="file"
@@ -267,7 +277,7 @@ class FileExplorer extends Component<FileExplorerProps, FileExplorerState> {
   }
 }
 
-const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
+const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
   drop: (props, monitor) => {
     const { dispatch, currentFolderId, onDragAndDropEnd } = props;
     const droppedData: { files: File[]; items: DataTransferItemList } = monitor.getItem();
@@ -289,7 +299,7 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
           storageThunks.uploadItemsThunk({
             files,
             parentFolderId: currentFolderId,
-            folderPath: folderPath,
+            folderPath,
             options: {
               onSuccess: onDragAndDropEnd,
             },
@@ -316,7 +326,7 @@ const dropTargetSpec: DropTargetSpec<FileExplorerProps> = {
 
 const dropTargetCollect: DropTargetCollector<
   { isOver: boolean; connectDropTarget: ConnectDropTarget },
-  FileExplorerProps
+  DriveExplorerProps
 > = (connect, monitor) => {
   const isOver = monitor.isOver({ shallow: true });
 
@@ -343,4 +353,4 @@ export default connect((state: RootState) => {
     planLimit: planSelectors.planLimitToShow(state),
     planUsage: state.plan.planUsage,
   };
-})(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(FileExplorer));
+})(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));

@@ -14,13 +14,16 @@ interface BreadcrumbsItemProps {
 
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const namePath = useAppSelector((state) => state.storage.namePath);
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const selectedItems = useAppSelector((state) => state.storage.selectedItems);
-  const onItemDropped = (item: any, monitor: DropTargetMonitor) => {
+  const onItemDropped = (item, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
+    const breadcrumbIndex = namePath.findIndex((level) => level.id === props.item.id);
+    const namePathDestinationArray = namePath.slice(0, breadcrumbIndex + 1).map((level) => level.name);
+    namePathDestinationArray[0] = '';
+    const folderPath = namePathDestinationArray.join('/');
 
     if (droppedType === DragAndDropType.DriveItem) {
       const itemsToMove = isSomeItemSelected
@@ -33,27 +36,19 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         storageThunks.moveItemsThunk({
           items: itemsToMove as DriveItemData[],
           destinationFolderId: props.item.id,
+          destinationPath: folderPath,
         }),
       );
     } else if (droppedType === NativeTypes.FILE) {
-      const breadcrumbIndex = namePath.findIndex((level) => level.id === props.item.id);
-      const namePathDestinationArray = namePath.slice(0, breadcrumbIndex + 1).map((level) => level.name);
-
-      namePathDestinationArray[0] = '';
-
-      const folderPath = namePathDestinationArray.join('/');
-
       transformDraggedItems((droppedData as any).items, folderPath).then(async ({ rootList, files }) => {
         if (files.length) {
           // Only files
-          await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id, folderPath }));
+          await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.id, folderPath }));
         }
         if (rootList.length) {
           // Directory tree
           for (const root of rootList) {
-            const currentFolderId = item.id;
-
-            await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId }));
+            await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: props.item.id }));
           }
         }
       });

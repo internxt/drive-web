@@ -13,6 +13,9 @@ import {
 import { DevicePlatform } from '../models/enums';
 import httpService from './http.service';
 import errorService from './error.service';
+import { items } from '@internxt/lib';
+import fileService from './file.service';
+import i18n from './i18n.service';
 
 export interface IFolders {
   bucket: string;
@@ -180,9 +183,53 @@ export function deleteFolder(folderData: DriveFolderData): Promise<void> {
   });
 }
 
-export async function moveFolder(data: MoveFolderPayload): Promise<MoveFolderResponse> {
+export async function moveFolder(
+  folder: DriveFolderData,
+  destination: number,
+  destinationPath: string,
+  bucketId: string,
+): Promise<MoveFolderResponse> {
   const user = localStorageService.getUser() as UserSettings;
-  const response = await httpService.post<MoveFolderPayload, MoveFolderResponse>('/api/storage/moveFolder', data);
+
+  const response = await httpService
+    .post<MoveFolderPayload, MoveFolderResponse>('/api/storage/move/folder', {
+      folderId: folder.id,
+      destination,
+    })
+    .catch((err) => {
+      const castedError = errorService.castError(err);
+
+      if (castedError.status) {
+        castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
+      }
+
+      throw castedError;
+    });
+
+  // * Renames files iterating over folders
+  const pendingFolders = [{ destinationPath: `${destinationPath}/${folder.name}`, data: folder }];
+  while (pendingFolders.length > 0) {
+    const currentFolder = pendingFolders[0];
+    const [folderContentPromise] = fetchFolderContent(currentFolder.data.id);
+    const { files, folders } = await folderContentPromise;
+
+    pendingFolders.shift();
+
+    // * Renames current folder files
+    for (const file of files) {
+      const relativePath = `${currentFolder.destinationPath}/${items.getItemDisplayName(file)}`;
+
+      fileService.renameFileInNetwork(file.fileId, bucketId, relativePath);
+    }
+
+    // * Adds current folder folders to pending
+    pendingFolders.push(
+      ...folders.map((folderData) => ({
+        destinationPath: `${currentFolder.destinationPath}/${folderData.name}`,
+        data: folderData,
+      })),
+    );
+  }
 
   analyticsService.trackMoveItem('folder', {
     file_id: response.item.id,

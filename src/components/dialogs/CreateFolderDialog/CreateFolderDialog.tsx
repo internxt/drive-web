@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, KeyboardEventHandler } from 'react';
 import { connect } from 'react-redux';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -36,6 +36,11 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
   const onCreateButtonClicked = () => {
     createFolder();
   };
+  const onKeyPressed: KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.key === 'Enter') {
+      onCreateButtonClicked();
+    }
+  };
 
   return (
     <BaseDialog isOpen={isOpen} title="Create folder" onClose={onClose}>
@@ -46,6 +51,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
           placeholder="Enter folder name"
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
+          onKeyPress={onKeyPressed}
           className="w-full py-2 px-2.5"
         />
       </div>

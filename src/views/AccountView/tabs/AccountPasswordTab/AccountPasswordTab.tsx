@@ -28,7 +28,6 @@ const AccountPasswordTab = (): JSX.Element => {
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const confirmPassword = useWatch({ control, name: 'confirmPassword', defaultValue: '' });
   const currentPassword = useWatch({ control, name: 'currentPassword', defaultValue: '' });
-  const [error, setError] = useState<Error | string>();
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       if (password !== confirmPassword) {
@@ -39,11 +38,10 @@ const AccountPasswordTab = (): JSX.Element => {
       await changePassword(formData.password, formData.currentPassword, formData.email);
       notificationsService.show(i18n.get('success.passwordChanged'), ToastType.Success);
       reset();
-      setError('');
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
-      setError(castedError.message);
+      notificationsService.show(castedError.message, ToastType.Error);
     } finally {
       setIsLoading(false);
     }

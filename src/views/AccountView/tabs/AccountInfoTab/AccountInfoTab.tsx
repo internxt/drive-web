@@ -53,9 +53,9 @@ const AccountPlanInfoTab = (): JSX.Element => {
     <Fragment>
       <DeleteAccountDialog isOpen={isDeleteAccountDialogOpen} onClose={() => setIsDeleteAccountDialogOpen(false)} />
 
-      <div className="pt-10">
+      <div className="flex flex-col pt-10 items-center">
         {/* ACCOUNT INFO */}
-        <div className={`${isLgScreen ? '' : 'mx-auto'} max-w-sm mb-20`}>
+        <div className={`${isLgScreen ? '' : 'mx-auto'} max-w-sm w-full mb-20`}>
           {/* PERSONAL */}
           <div className={`${isLgScreen ? '' : 'justify-center'} flex mb-12`}>
             <div className="w-12 h-12 bg-blue-20 text-blue-60 rounded-1/2 flex justify-center items-center mr-4">

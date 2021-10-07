@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
-import FileListItem from '../FileExplorerItem/FileListItem/FileListItem';
+import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
 
 import { AppDispatch, RootState } from '../../../store';
 import { connect } from 'react-redux';
@@ -11,7 +11,7 @@ import DriveListItemSkeleton from '../../loaders/DriveListItemSkeleton';
 import i18n from '../../../services/i18n.service';
 import { OrderDirection } from '../../../models/enums';
 
-interface FilesListProps {
+interface DriveExplorerListProps {
   isLoading: boolean;
   items: DriveItemData[];
   selectedItems: DriveItemData[];
@@ -19,8 +19,8 @@ interface FilesListProps {
   dispatch: AppDispatch;
 }
 
-class FilesList extends React.Component<FilesListProps> {
-  constructor(props: FilesListProps) {
+class DriveExplorerList extends React.Component<DriveExplorerListProps> {
+  constructor(props: DriveExplorerListProps) {
     super(props);
   }
 
@@ -29,7 +29,12 @@ class FilesList extends React.Component<FilesListProps> {
   }
 
   get itemsList(): JSX.Element[] {
-    return this.props.items.map((item: DriveItemData, index: number) => <FileListItem key={index} item={item} />);
+    return this.props.items.map((item: DriveItemData) => {
+      const itemParentId = item.parentId || item.folderId;
+      const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}-${itemParentId}`;
+
+      return <DriveExplorerListItem key={itemKey} item={item} />;
+    });
   }
 
   get isAllSelected(): boolean {
@@ -109,4 +114,4 @@ class FilesList extends React.Component<FilesListProps> {
 export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,
   order: state.storage.order,
-}))(FilesList);
+}))(DriveExplorerList);

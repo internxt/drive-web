@@ -1,6 +1,6 @@
 @layer components {
   .account-view {
-    @apply block lg:flex h-full rounded-md bg-white px-8 pt-6 pb-16;
+    @apply block w-full lg:flex h-full rounded-md bg-white px-8 pt-6 pb-16;
 
     .tabs-container {
       width: 25vw;

@@ -24,6 +24,8 @@
   }
 
   .file-list-item-edit-name-button {
+    min-width: 20px;
+
     @apply ml-1 h-5 w-5 cursor-pointer opacity-0 text-blue-60;
   }
 
