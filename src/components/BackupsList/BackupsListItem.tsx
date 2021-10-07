@@ -11,13 +11,16 @@ import { uiActions } from '../../store/slices/ui';
 export default function BackupsListItem({
   backup,
   onDownloadBackupClicked,
+  onDeleteBackupClicked,
 }: {
   backup: DeviceBackup;
   onDownloadBackupClicked: (backup: DeviceBackup) => void;
+  onDeleteBackupClicked: (backup: DeviceBackup) => void;
 }): JSX.Element {
   const dispatch = useAppDispatch();
   const isUploaded = !!backup.fileId;
   const onDownload = () => isUploaded && onDownloadBackupClicked(backup);
+  const onDeleteButtonClicked = () => onDeleteBackupClicked(backup);
   const onInfoButtonClicked = (e: React.MouseEvent) => {
     const infoMenuFeatures = [
       {
@@ -73,7 +76,11 @@ export default function BackupsListItem({
             <Unicons.UilEllipsisH className="w-full h-full" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
-            <BackupDropdownActions onDownloadButtonClicked={onDownload} onInfoButtonClicked={onInfoButtonClicked} />
+            <BackupDropdownActions
+              onDownloadButtonClicked={onDownload}
+              onInfoButtonClicked={onInfoButtonClicked}
+              onDeleteButtonClicked={onDeleteButtonClicked}
+            />
           </Dropdown.Menu>
         </Dropdown>
       </div>

@@ -9,24 +9,13 @@ interface BackupDropdownActionsProps {
   hiddenActions?: DriveItemAction[];
   onDownloadButtonClicked: (e: MouseEvent) => void;
   onInfoButtonClicked: (e: MouseEvent) => void;
+  onDeleteButtonClicked: (e: MouseEvent) => void;
 }
 
 class BackupDropdownActions extends React.Component<BackupDropdownActionsProps> {
   constructor(props: BackupDropdownActionsProps) {
     super(props);
   }
-
-  onDownloadButtonClicked = (e: MouseEvent): void => {
-    const { onDownloadButtonClicked } = this.props;
-
-    onDownloadButtonClicked && onDownloadButtonClicked(e);
-  };
-
-  onInfoButtonClicked = (e: MouseEvent): void => {
-    const { onInfoButtonClicked } = this.props;
-
-    onInfoButtonClicked && onInfoButtonClicked(e);
-  };
 
   render(): ReactNode {
     const { title } = this.props;
@@ -37,15 +26,22 @@ class BackupDropdownActions extends React.Component<BackupDropdownActionsProps> 
         {title ? <span className="text-supporting-2 mb-1">{title}</span> : null}
 
         {!hiddenActions.includes(DriveItemAction.Download) ? (
-          <Dropdown.Item id="download" onClick={this.onDownloadButtonClicked}>
+          <Dropdown.Item id="download" onClick={this.props.onDownloadButtonClicked}>
             <Unicons.UilCloudDownload className="text-blue-60 h-5 mr-1" />
             <span>Download</span>
           </Dropdown.Item>
         ) : null}
         {!hiddenActions.includes(DriveItemAction.Info) ? (
-          <Dropdown.Item id="info" onClick={this.onInfoButtonClicked}>
+          <Dropdown.Item id="info" onClick={this.props.onInfoButtonClicked}>
             <Unicons.UilFileInfoAlt className="text-blue-60 h-5 mr-1" />
             <span>Info</span>
+          </Dropdown.Item>
+        ) : null}
+        <hr className="text-l-neutral-30 my-1.5"></hr>
+        {!hiddenActions.includes(DriveItemAction.Delete) ? (
+          <Dropdown.Item id="info" onClick={this.props.onDeleteButtonClicked}>
+            <Unicons.UilTrashAlt className="text-red-60 h-5 mr-1" />
+            <span className="text-red-60">Delete</span>
           </Dropdown.Item>
         ) : null}
       </div>
