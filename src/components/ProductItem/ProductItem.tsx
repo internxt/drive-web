@@ -35,13 +35,14 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
   const isBuyButtonDisabled = props.isBuyButtonDisabled || isPlanActive;
   const monthlyAmountMultiplied = props.product.price.monthlyAmount * priceMultiplier;
   const monthlyAmountFormatted =
+    moneyService.getCurrencySymbol(props.product.price.currency) +
     (numberService.hasDecimals(monthlyAmountMultiplied)
       ? monthlyAmountMultiplied.toFixed(2)
-      : monthlyAmountMultiplied.toFixed()) + moneyService.getCurrencySymbol(props.product.price.currency);
+      : monthlyAmountMultiplied.toFixed());
   const totalAmount = props.product.price.amount * priceMultiplier;
   const totalAmountFormatted =
-    (numberService.hasDecimals(totalAmount) ? totalAmount.toFixed(2) : totalAmount.toFixed()) +
-    moneyService.getCurrencySymbol(props.product.price.currency);
+    moneyService.getCurrencySymbol(props.product.price.currency) +
+    (numberService.hasDecimals(totalAmount) ? totalAmount.toFixed(2) : totalAmount.toFixed());
   const onBuyButtonClicked = async () => {
     if (props.product.metadata.is_drive) {
       dispatch(
@@ -68,9 +69,8 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
   const desktopTemplate = (
     <div className={`product-item desktop rounded-lg ${isPlanActive ? 'active' : ''}`}>
       <div
-        className={`${
-          isPlanActive ? 'visible' : 'invisible'
-        } py-2 font-semibold bg-blue-60 text-white text-xs flex justify-center items-center rounded-t-lg`}
+        className={`${isPlanActive ? 'visible' : 'invisible'
+          } py-2 font-semibold bg-blue-60 text-white text-xs flex justify-center items-center rounded-t-lg`}
       >
         {i18n.get('drive.currentPlan')}
       </div>
@@ -118,9 +118,9 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
             {isLifetime
               ? i18n.get('general.billing.oneTimePayment')
               : i18n.get('general.billing.billedEachPeriod', {
-                  price: totalAmountFormatted,
-                  period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
-                })}
+                price: totalAmountFormatted,
+                period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
+              })}
           </span>
         )}
         <div />
@@ -146,9 +146,9 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
           {isLifetime
             ? i18n.get('general.billing.oneTimePayment')
             : i18n.get('general.billing.billedEachPeriod', {
-                price: totalAmountFormatted,
-                period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
-              })}
+              price: totalAmountFormatted,
+              period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
+            })}
         </span>
       </div>
 
