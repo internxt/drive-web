@@ -300,14 +300,16 @@
       "internxt_tier2": "AppSumo Lifetime Tier 2",
       "internxt_tier3": "AppSumo Lifetime Tier 3",
       "internxt_tier4": "AppSumo Lifetime Tier 4",
-      "internxt_tier5": "AppSumo Lifetime Tier 5"
+      "internxt_tier5": "AppSumo Lifetime Tier 5",
+      "unlimited": "AppSumo Lifetime Tier 5"
     },
     "members": {
       "internxt_tier1": "Team members: 1",
       "internxt_tier2": "Team members: 5",
       "internxt_tier3": "Team members: 10",
       "internxt_tier4": "Team members: 25",
-      "internxt_tier5": "Team members: 100"
+      "internxt_tier5": "Team members: 100",
+      "unlimited": "Team members: {total}"
     },
     "plans": {
       "advice": "You will be redirected to your AppSumo account"
