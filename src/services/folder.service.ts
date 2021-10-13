@@ -8,12 +8,13 @@ import {
   DriveFolderData,
   DriveFolderMetadataPayload,
   DriveItemData,
+  FolderTree,
   UserSettings,
 } from '../models/interfaces';
 import { DevicePlatform } from '../models/enums';
 import httpService from './http.service';
 import errorService from './error.service';
-import { items } from '@internxt/lib';
+import { aes, items } from '@internxt/lib';
 import fileService from './file.service';
 import i18n from './i18n.service';
 
@@ -183,6 +184,38 @@ export function deleteFolder(folderData: DriveFolderData): Promise<void> {
   });
 }
 
+async function fetchFolderTree(folderId: number) {
+  const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/api/storage/tree/${folderId}`);
+  const folderDecryptedNames: Record<number, string> = {};
+  const fileDecryptedNames: Record<number, string> = {};
+
+  // ! Decrypts folders and files names
+  const pendingFolders: FolderTree[] = [tree];
+  while (pendingFolders.length > 0) {
+    const currentTree = pendingFolders[0];
+    const { folders, files } = {
+      folders: currentTree.children,
+      files: currentTree.files,
+    };
+
+    folderDecryptedNames[currentTree.id] = aes.decrypt(
+      currentTree.name,
+      `${process.env.REACT_APP_CRYPTO_SECRET2}-${currentTree.parentId}`,
+    );
+
+    for (const file of files) {
+      fileDecryptedNames[file.id] = aes.decrypt(file.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${file.folderId}`);
+    }
+
+    pendingFolders.shift();
+
+    // * Adds current folder folders to pending
+    pendingFolders.push(...folders);
+  }
+
+  return { tree, folderDecryptedNames, fileDecryptedNames, size };
+}
+
 export async function moveFolder(
   folder: DriveFolderData,
   destination: number,
@@ -246,6 +279,7 @@ const folderService = {
   updateMetaData,
   deleteFolder,
   moveFolder,
+  fetchFolderTree,
 };
 
 export default folderService;

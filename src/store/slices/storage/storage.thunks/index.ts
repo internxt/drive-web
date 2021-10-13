@@ -5,6 +5,8 @@ import { initializeThunk, initializeThunkExtraReducers } from './initializeThunk
 import { resetNamePathThunk, resetNamePathThunkExtraReducers } from './resetNamePathThunk';
 import { uploadItemsThunk, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
 import { downloadItemsThunk, downloadItemsThunkExtraReducers } from './downloadItemsThunk';
+import { downloadFileThunk, downloadFileThunkExtraReducers } from './downloadFileThunk';
+import { downloadFolderThunk, downloadFolderThunkExtraReducers } from './downloadFolderThunk';
 import { createFolderThunk, createFolderThunkExtraReducers } from './createFolderThunk';
 import { fetchRecentsThunk, fetchRecentsThunkExtraReducers } from './fetchRecentsThunk';
 import { fetchFolderContentThunk, fetchFolderContentThunkExtraReducers } from './fetchFolderContentThunk';
@@ -22,6 +24,8 @@ const storageThunks = {
   resetNamePathThunk,
   uploadItemsThunk,
   downloadItemsThunk,
+  downloadFileThunk,
+  downloadFolderThunk,
   fetchFolderContentThunk,
   deleteItemsThunk,
   goToFolderThunk,
@@ -37,6 +41,8 @@ export const storageExtraReducers = (builder: ActionReducerMapBuilder<StorageSta
   resetNamePathThunkExtraReducers(builder);
   uploadItemsThunkExtraReducers(builder);
   downloadItemsThunkExtraReducers(builder);
+  downloadFileThunkExtraReducers(builder);
+  downloadFolderThunkExtraReducers(builder);
   fetchFolderContentThunkExtraReducers(builder);
   deleteItemsThunkExtraReducers(builder);
   goToFolderThunkExtraReducers(builder);

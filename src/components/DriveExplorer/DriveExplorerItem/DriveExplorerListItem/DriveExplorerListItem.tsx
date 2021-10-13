@@ -93,14 +93,12 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
     >
       {/* SELECTION */}
       <div className="w-0.5/12 pl-3 flex items-center justify-start box-content">
-        {!item.isFolder ? (
-          <input
-            onClick={(e) => e.stopPropagation()}
-            type="checkbox"
-            checked={isItemSelected(item)}
-            onChange={onSelectCheckboxChanged}
-          />
-        ) : null}
+        <input
+          onClick={(e) => e.stopPropagation()}
+          type="checkbox"
+          checked={isItemSelected(item)}
+          onChange={onSelectCheckboxChanged}
+        />
       </div>
 
       {/* ICON */}
@@ -156,7 +154,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <FileDropdownActions
-              hiddenActions={item.isFolder ? [DriveItemAction.Download, DriveItemAction.Share] : []}
+              hiddenActions={item.isFolder ? [DriveItemAction.Share] : []}
               onRenameButtonClicked={onRenameButtonClicked}
               onDownloadButtonClicked={onDownloadButtonClicked}
               onShareButtonClicked={onShareButtonClicked}

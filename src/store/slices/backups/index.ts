@@ -3,7 +3,7 @@ import { RootState } from '../..';
 
 import { Device, DeviceBackup } from '../../../models/interfaces';
 import backupsService from '../../../services/backups.service';
-import { downloadBackup } from '../../../services/download.service';
+import downloadService from '../../../services/download.service';
 import notificationsService, { ToastType } from '../../../services/notifications.service';
 import { DownloadBackupTask, TaskProgress, TaskStatus, TaskType } from '../../../services/task-manager.service';
 import { taskManagerActions } from '../task-manager';
@@ -87,7 +87,7 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
     };
 
     try {
-      const actionState = await downloadBackup(backup, {
+      const actionState = await downloadService.downloadBackup(backup, {
         progressCallback: onProgress,
         finishedCallback: onFinished,
         errorCallback: onError,

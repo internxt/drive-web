@@ -131,11 +131,9 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   };
   const onItemClicked = (): void => {
-    if (!item.isFolder) {
-      isItemSelected(item)
-        ? dispatch(storageActions.deselectItems([item]))
-        : dispatch(storageActions.selectItems([item]));
-    }
+    isItemSelected(item)
+      ? dispatch(storageActions.deselectItems([item]))
+      : dispatch(storageActions.selectItems([item]));
   };
   const onItemDoubleClicked = (): void => {
     if (item.isFolder) {

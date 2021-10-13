@@ -2,98 +2,35 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
-import { DriveItemData } from '../../../../models/interfaces';
-import downloadService from '../../../../services/download.service';
+import { DriveFileData, DriveFolderData, DriveItemData } from '../../../../models/interfaces';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
-import { sessionSelectors } from '../../session/session.selectors';
-import errorService from '../../../../services/error.service';
-import { DownloadFileTask, TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service';
+import storageThunks from '.';
 
 export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
   'storage/downloadItems',
-  async (items: DriveItemData[], { getState, dispatch, requestId, rejectWithValue }) => {
-    const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const tasksIds: string[] = [];
+  async (items: DriveItemData[], { dispatch, requestId, rejectWithValue }) => {
     const promises: Promise<void>[] = [];
     const errors: unknown[] = [];
 
-    items.forEach((item, i) => {
-      const taskId = `${requestId}-${i}`;
-      const task: DownloadFileTask = {
-        id: taskId,
-        action: TaskType.DownloadFile,
-        status: TaskStatus.Pending,
-        progress: TaskProgress.Min,
-        file: item,
-        showNotification: true,
-        cancellable: true,
-      };
-
-      tasksIds.push(taskId);
-      dispatch(taskManagerActions.addTask(task));
-    });
-
-    for (const [index, item] of items.entries()) {
-      const taskId = tasksIds[index];
-      const updateProgressCallback = (progress: number) => {
-        const task = taskManagerSelectors.findTaskById(getState())(taskId);
-
-        if (task?.status !== TaskStatus.Cancelled) {
-          dispatch(
-            taskManagerActions.updateTask({
-              taskId: tasksIds[index],
-              merge: {
-                status: TaskStatus.InProcess,
-                progress,
-              },
-            }),
-          );
-        }
-      };
-      const [downloadPromise, actionState] = downloadService.downloadFile(item, isTeam, updateProgressCallback);
-
-      dispatch(
-        taskManagerActions.updateTask({
-          taskId,
-          merge: {
-            status: TaskStatus.Decrypting,
-            stop: async () => actionState?.stop(),
-          },
-        }),
-      );
-
-      downloadPromise
-        .then(() => {
-          dispatch(
-            taskManagerActions.updateTask({
-              taskId,
-              merge: {
-                status: TaskStatus.Success,
-              },
-            }),
-          );
-        })
-        .catch((err: unknown) => {
-          const castedError = errorService.castError(err);
-          const task = taskManagerSelectors.findTaskById(getState())(tasksIds[index]);
-
-          if (task?.status !== TaskStatus.Cancelled) {
-            dispatch(
-              taskManagerActions.updateTask({
-                taskId,
-                merge: {
-                  status: TaskStatus.Error,
-                },
-              }),
-            );
-
-            errors.push({ ...castedError });
-          }
-        });
-
-      promises.push(downloadPromise);
+    for (const item of items) {
+      if (item.isFolder) {
+        const downloadFolderPromise = dispatch(
+          storageThunks.downloadFolderThunk({
+            folder: item as DriveFolderData,
+            options: { relatedTaskId: requestId },
+          }),
+        ).unwrap();
+        promises.push(downloadFolderPromise);
+      } else {
+        const downloadFilePromise = dispatch(
+          storageThunks.downloadFileThunk({
+            file: item as DriveFileData,
+            options: { relatedTaskId: requestId },
+          }),
+        ).unwrap();
+        promises.push(downloadFilePromise);
+      }
     }
 
     await Promise.allSettled(promises);

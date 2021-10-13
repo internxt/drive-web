@@ -263,3 +263,18 @@ export interface FileInfoMenuItem {
   title: string;
   features: { label: string; value: string }[];
 }
+
+export interface FolderTree {
+  id: number;
+  bucket: string | null;
+  children: FolderTree[];
+  encrypt_version: string;
+  files: DriveFileData[];
+  name: string;
+  parentId: number;
+  parent_id: number;
+  userId: number;
+  user_id: number;
+  createdAt: string;
+  updatedAt: string;
+}
