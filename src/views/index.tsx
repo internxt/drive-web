@@ -1,5 +1,7 @@
 import { ComponentClass, FunctionComponent } from 'react';
 
+import SignUpView from './SignUpView/SignUpView';
+import SignInView from './SignInView/SignInView';
 import DriveView from './DriveView/DriveView';
 import BackupsView from './BackupsView/BackupsView';
 import RecentsView from './RecentsView/RecentsView';
@@ -11,15 +13,14 @@ import DeactivationTeamsView from './DeactivationTeamsView/DeactivationTeamsView
 import TeamSuccessView from '../views/TeamSuccessView/TeamSuccessView';
 import CheckoutView from './CheckoutView/CheckoutView';
 import ShareView from './ShareView/ShareView';
-import SignInView from './SignInView/SignInView';
-import SignUpView from './SignUpView/SignUpView';
 import RemoveAccountView from './RemoveAccountView/RemoveAccountView';
-import { AppView } from '../models/enums';
 import GuestAcceptInvitationView from './GuesAcceptInviteView/GuestAcceptInviteView';
+
+import { AppView } from '../models/enums';
 
 const views: Array<{
   id: string;
-  component: string | FunctionComponent<any> | ComponentClass<any>;
+  component: FunctionComponent<any> | ComponentClass<any>;
   componentProps?: Record<string, unknown>;
 }> = [
   { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },

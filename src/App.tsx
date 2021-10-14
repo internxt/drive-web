@@ -68,7 +68,9 @@ class App extends Component<AppProps> {
         exact: !!viewConfig?.exact,
         path: viewConfig?.path || '',
         render: (props) =>
-          createElement(layoutConfig.component, {}, createElement(v.component, { ...props, ...v.componentProps })),
+          createElement(layoutConfig.component, {
+            children: createElement(v.component, { ...props, ...v.componentProps }),
+          }),
       };
 
       return <Route key={v.id} {...componentProps} />;

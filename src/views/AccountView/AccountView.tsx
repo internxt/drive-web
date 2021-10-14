@@ -12,7 +12,7 @@ import navigationService from '../../services/navigation.service';
 import i18n from '../../services/i18n.service';
 import screenService from '../../services/screen.service';
 
-interface AccountViewProps {
+export interface AccountViewProps {
   dispatch: AppDispatch;
   currentTab: AccountViewTab;
 }

@@ -9,7 +9,7 @@ import { AppDispatch, RootState } from '../../store';
 import { storageSelectors } from '../../store/slices/storage';
 import storageThunks from '../../store/slices/storage/storage.thunks';
 
-interface RecentsViewProps {
+export interface RecentsViewProps {
   isLoadingRecents: boolean;
   items: DriveItemData[];
   dispatch: AppDispatch;

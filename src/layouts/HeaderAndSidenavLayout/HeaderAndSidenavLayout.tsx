@@ -13,7 +13,7 @@ import { AppView } from '../../models/enums';
 import GuestDialog from '../../components/dialogs/GuestDialog/GuestDialog';
 import DriveItemInfoMenu from '../../components/DriveItemInfoMenu/DriveItemInfoMenu';
 
-interface HeaderAndSidenavLayoutProps {
+export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
 }
 

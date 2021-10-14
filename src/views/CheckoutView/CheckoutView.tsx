@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { match } from 'react-router-dom';
 
-interface CheckoutViewProps {
+export interface CheckoutViewProps {
   match?: match<{ sessionId: string }>;
 }
 interface CheckoutViewState {

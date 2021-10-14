@@ -1,7 +1,7 @@
 import { items } from '@internxt/lib';
 import { createHash } from 'crypto';
 import { DevicePlatform } from '../models/enums';
-import { DriveFileData, DriveFileMetadataPayload, UserSettings } from '../models/interfaces';
+import { DriveFileData, DriveFileMetadataPayload, DriveItemData, UserSettings } from '../models/interfaces';
 import analyticsService from './analytics.service';
 import errorService from './error.service';
 import httpService from './http.service';
@@ -43,7 +43,7 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
   const user = localStorageService.getUser() as UserSettings;
 
   return httpService.delete(`/api/storage/folder/${fileData.folderId}/file/${fileData.id}`).then(() => {
-    analyticsService.trackDeleteItem(fileData, {
+    analyticsService.trackDeleteItem(fileData as DriveItemData, {
       email: user.email,
       platform: DevicePlatform.Web,
     });

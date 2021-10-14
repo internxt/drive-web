@@ -24,11 +24,6 @@ import errorService from '../../services/error.service';
 import { AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
 
-export const texts = {
-  label: 'INTERNXT',
-  sublabel: 'BE LIMITLESS',
-};
-
 export default function SignInView(): JSX.Element {
   const dispatch = useAppDispatch();
   const {

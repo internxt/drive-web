@@ -16,7 +16,7 @@ import sizeService from '../../services/size.service';
 import { aes } from '@internxt/lib';
 import { TaskProgress } from '../../services/task-manager.service';
 
-interface ShareViewProps {
+export interface ShareViewProps {
   match: match<{ token: string }>;
 }
 

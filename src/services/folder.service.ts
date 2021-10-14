@@ -67,7 +67,7 @@ export interface CreateFolderResponse {
   userId: number;
 }
 
-export interface IContentFolder {
+export interface FetchFolderContentResponse {
   bucket: string;
   children: FolderChild[];
   color: string;
@@ -75,8 +75,6 @@ export interface IContentFolder {
   encrypt_version: string;
   files: DriveItemData[];
   icon: string;
-  iconId: any;
-  icon_id: any;
   id: number;
   name: string;
   parentId: number;
@@ -84,11 +82,6 @@ export interface IContentFolder {
   updatedAt: string;
   userId: number;
   user_id: number;
-}
-
-export interface FetchFolderContentResponse {
-  folders: DriveFolderData[];
-  files: DriveFileData[];
 }
 
 export interface MoveFolderPayload {
@@ -102,14 +95,16 @@ export interface MoveFolderResponse {
   moved: boolean;
 }
 
-export function fetchFolderContent(folderId: number): [Promise<FetchFolderContentResponse>, CancelTokenSource] {
+export function fetchFolderContent(
+  folderId: number,
+): [Promise<{ folders: DriveFolderData[]; files: DriveFileData[] }>, CancelTokenSource] {
   const cancelTokenSource = CancelToken.source();
   const fn = async () => {
     try {
-      const response = await httpService.get<IContentFolder>(`/api/storage/v2/folder/${folderId}`, {
+      const response = await httpService.get<FetchFolderContentResponse>(`/api/storage/v2/folder/${folderId}`, {
         cancelToken: cancelTokenSource.token,
       });
-      const result: FetchFolderContentResponse = {
+      const result: { folders: DriveFolderData[]; files: DriveFileData[] } = {
         folders: [],
         files: [],
       };
@@ -177,7 +172,7 @@ export function deleteFolder(folderData: DriveFolderData): Promise<void> {
   const user = localStorageService.getUser() as UserSettings;
 
   return httpService.delete(`/api/storage/folder/${folderData.id}`).then(() => {
-    analyticsService.trackDeleteItem(folderData, {
+    analyticsService.trackDeleteItem(folderData as DriveItemData, {
       email: user.email,
       platform: DevicePlatform.Web,
     });

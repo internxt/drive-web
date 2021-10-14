@@ -1,6 +1,6 @@
 import * as prettySize from 'prettysize';
 import { AnalyticsTrack, DevicePlatform, SignupDeviceSource } from '../models/enums';
-import { UserSettings } from '../models/interfaces';
+import { DriveItemData, UserSettings } from '../models/interfaces';
 import localStorageService from './local-storage.service';
 
 export const PATH_NAMES = {
@@ -198,7 +198,10 @@ export function trackMoveItem(
   window.analytics.track(`${keyOp}-move`.toLowerCase(), payload);
 }
 
-export function trackDeleteItem(itemToDelete: any, payload: { email: string; platform: DevicePlatform }): void {
+export function trackDeleteItem(
+  itemToDelete: DriveItemData,
+  payload: { email: string; platform: DevicePlatform },
+): void {
   window.analytics.track(`${itemToDelete.isFolder ? 'folder' : 'file'}-delete`, payload);
 }
 
@@ -214,7 +217,7 @@ export function trackFileShare(): void {
   window.analytics.track(AnalyticsTrack.FileShare);
 }
 
-export function identify(user: any, email: string): void {
+export function identify(user: UserSettings, email: string): void {
   window.analytics.identify(user.uuid, {
     email,
     platform: DevicePlatform.Web,

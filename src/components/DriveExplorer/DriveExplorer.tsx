@@ -4,7 +4,7 @@ import * as Unicons from '@iconscout/react-unicons';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { DriveItemData, FolderPath, UserSettings } from '../../models/interfaces';
-import { DragAndDropType, Workspace } from '../../models/enums';
+import { Workspace } from '../../models/enums';
 
 import { storageActions, storageSelectors } from '../../store/slices/storage';
 import { AppDispatch, RootState } from '../../store';

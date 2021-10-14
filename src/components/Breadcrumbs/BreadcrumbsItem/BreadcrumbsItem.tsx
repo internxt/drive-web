@@ -40,18 +40,20 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         }),
       );
     } else if (droppedType === NativeTypes.FILE) {
-      transformDraggedItems((droppedData as any).items, folderPath).then(async ({ rootList, files }) => {
-        if (files.length) {
-          // Only files
-          await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.id, folderPath }));
-        }
-        if (rootList.length) {
-          // Directory tree
-          for (const root of rootList) {
-            await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: props.item.id }));
+      transformDraggedItems((droppedData as { files: File[]; items: DataTransferItemList }).items, folderPath).then(
+        async ({ rootList, files }) => {
+          if (files.length) {
+            // Only files
+            await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.id, folderPath }));
           }
-        }
-      });
+          if (rootList.length) {
+            // Directory tree
+            for (const root of rootList) {
+              await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: props.item.id }));
+            }
+          }
+        },
+      );
     }
   };
   const [{ isOver, canDrop }, drop] = useDrop(() => ({

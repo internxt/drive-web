@@ -7,7 +7,7 @@ import httpService from '../../services/http.service';
 import navigationService from '../../services/navigation.service';
 import notificationsService, { ToastType } from '../../services/notifications.service';
 
-interface DeactivationTeamsViewProps {
+export interface DeactivationTeamsViewProps {
   match: match<{ token: string }>;
 }
 

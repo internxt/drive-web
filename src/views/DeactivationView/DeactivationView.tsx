@@ -15,12 +15,12 @@ import { match } from 'react-router-dom';
 import navigationService from '../../services/navigation.service';
 import { AppView } from '../../models/enums';
 
-interface DeactivationProps {
+export interface DeactivationViewProps {
   match?: match<{ token: string }>;
   dispatch: AppDispatch;
 }
 
-class DeactivationView extends React.Component<DeactivationProps> {
+class DeactivationView extends React.Component<DeactivationViewProps> {
   state = {
     token: this.props.match?.params.token || '',
     result: this.confirmDeactivation(),

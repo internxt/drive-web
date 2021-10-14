@@ -1,4 +1,4 @@
-interface EmptyLayoutProps {
+export interface EmptyLayoutProps {
   children: JSX.Element;
 }
 

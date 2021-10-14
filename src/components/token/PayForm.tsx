@@ -76,7 +76,7 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
       });
   }
 
-  handleChange = (event: any): void => {
+  handleChange: React.ChangeEventHandler<{ value: unknown; id: string }> = (event) => {
     const statePropKey = event.target.id;
     const changes = { [statePropKey]: event.target.value } as Pick<PayTokenState, keyof PayTokenState>;
 

@@ -28,14 +28,14 @@ import { AppView } from '../../models/enums';
 import navigationService from '../../services/navigation.service';
 import { productsThunks } from '../../store/slices/products';
 
-interface SignUpProps {
+export interface SignUpViewProps {
   location: {
     search: string;
   };
   isNewUser: boolean;
 }
 
-const SignUp = (props: SignUpProps): JSX.Element => {
+const SignUpView = (props: SignUpViewProps): JSX.Element => {
   const qs = queryString.parse(navigationService.history.location.search);
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const tokenParam = qs.token;
@@ -431,4 +431,4 @@ const SignUp = (props: SignUpProps): JSX.Element => {
   );
 };
 
-export default SignUp;
+export default SignUpView;

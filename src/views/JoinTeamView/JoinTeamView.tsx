@@ -12,20 +12,20 @@ import errorService from '../../services/error.service';
 import navigationService from '../../services/navigation.service';
 import { AppView } from '../../models/enums';
 
-interface JoinTeamProps {
+export interface JoinTeamViewProps {
   dispatch: AppDispatch;
   match: match<{ token: string }>;
 }
 
-interface JoinTeamState {
+interface JoinTeamViewState {
   isTeamActivated: boolean | null;
   isTeamError: boolean;
   member?: string;
   teamPassword?: string;
 }
 
-class JoinTeamView extends React.Component<JoinTeamProps, JoinTeamState> {
-  constructor(props: JoinTeamProps) {
+class JoinTeamView extends React.Component<JoinTeamViewProps, JoinTeamViewState> {
+  constructor(props: JoinTeamViewProps) {
     super(props);
     this.state = {
       isTeamActivated: null,

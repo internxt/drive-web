@@ -1,10 +1,15 @@
 import { ComponentClass, FunctionComponent } from 'react';
 
-import EmptyLayout from './EmptyLayout/EmptyLayout';
-import HeaderAndSidenavLayout from './HeaderAndSidenavLayout/HeaderAndSidenavLayout';
+import EmptyLayout, { EmptyLayoutProps } from './EmptyLayout/EmptyLayout';
+import HeaderAndSidenavLayout, { HeaderAndSidenavLayoutProps } from './HeaderAndSidenavLayout/HeaderAndSidenavLayout';
 import { AppViewLayout } from '../models/enums';
 
-const layouts: Array<{ id: string; component: string | FunctionComponent<any> | ComponentClass<any> }> = [
+type AnyLayoutProps = EmptyLayoutProps | HeaderAndSidenavLayoutProps;
+
+const layouts: Array<{
+  id: string;
+  component: string | FunctionComponent<AnyLayoutProps> | ComponentClass<AnyLayoutProps>;
+}> = [
   {
     id: AppViewLayout.Empty,
     component: EmptyLayout,

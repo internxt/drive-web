@@ -11,7 +11,7 @@ import { AppDispatch, RootState } from '../../store';
 import { storageActions, storageSelectors } from '../../store/slices/storage';
 import storageThunks from '../../store/slices/storage/storage.thunks';
 
-interface DriveViewProps {
+export interface DriveViewProps {
   namePath: FolderPath[];
   isLoading: boolean;
   items: DriveItemData[];
