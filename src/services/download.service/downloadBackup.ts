@@ -26,7 +26,7 @@ export default async function downloadBackup(
   }
 
   const handle = await window.showSaveFilePicker({
-    suggestedName: backup.name,
+    suggestedName: `${backup.name}.zip`,
     types: [{ accept: { 'application/zip': ['.zip'] } }],
   });
 

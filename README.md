@@ -58,3 +58,12 @@ For example, with this snippet we are telling to purge that we are overriding th
     }
   }
 ```
+## Recommended IDE extensions (Visual Studio Code)
+To speed up the development and maintenance of the project, it is recommended to use the following extensions for the IDE:
+
+* Better Comments
+* ESLint
+* stylelint
+* PostCSS Language Support
+* SCSS Formatter
+* Tailwind CSS IntelliSense

@@ -9,6 +9,7 @@ import {
   LifetimeTier,
   OrderDirection,
   AppSumoTier,
+  DownloadFolderMethod,
 } from './enums';
 
 export interface AppConfig {
@@ -32,7 +33,14 @@ export interface AppPlanConfig {
   maxStorageLimit: number;
   defaultFeatures: string[];
 }
+
+export interface AppFileExplorerDownloadConfig {
+  folder: {
+    method: DownloadFolderMethod;
+  };
+}
 export interface AppFileExplorerConfig {
+  download: AppFileExplorerDownloadConfig;
   recentsLimit: number;
 }
 

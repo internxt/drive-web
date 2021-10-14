@@ -39,9 +39,8 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
 
   get isAllSelected(): boolean {
     const { selectedItems, items } = this.props;
-    const files = items.filter((item) => !item.isFolder);
 
-    return selectedItems.length === files.length && files.length > 0;
+    return selectedItems.length === items.length && items.length > 0;
   }
 
   get loadingSkeleton(): JSX.Element[] {
@@ -52,9 +51,8 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
 
   onSelectAllButtonClicked = () => {
     const { dispatch, items } = this.props;
-    const files: DriveItemData[] = items.filter((item) => !item.isFolder);
 
-    this.isAllSelected ? dispatch(storageActions.clearSelectedItems()) : dispatch(storageActions.selectItems(files));
+    this.isAllSelected ? dispatch(storageActions.clearSelectedItems()) : dispatch(storageActions.selectItems(items));
   };
 
   render(): ReactNode {

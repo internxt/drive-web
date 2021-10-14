@@ -137,7 +137,7 @@
     "uploadingFile": "Error uploading file: {reason}",
     "uploadingItems": "Some of the elements could not be uploaded",
     "downloadingFile": "Error downloading file: {message}",
-    "downloadingFolder": "Error downloading dolder: {message}",
+    "downloadingFolder": "Error downloading folder: {message}",
     "downloadingItems": "Some of the elements could not be downloaded",
     "movingItemInsideItself": "You can't move a folder inside itself",
     "movingItem": "Error when moving item/s",
@@ -225,7 +225,7 @@
       "status": {
         "pending": "Pending to download",
         "decrypting": "Fetching files",
-        "in-process": "Downloading folder",
+        "in-process": "{progress}% Downloading folder",
         "success": "Folder downloaded",
         "error": "Error during download",
         "cancelled": "Download cancelled"

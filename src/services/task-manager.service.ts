@@ -57,6 +57,7 @@ export interface DownloadFolderTask extends BaseTask {
   action: TaskType.DownloadFolder;
   cancellable: true;
   folder: { id: number; name: string };
+  compressionFormat: string;
 }
 
 export interface DownloadBackupTask extends BaseTask {
@@ -173,7 +174,7 @@ const getTaskNotificationIcon = (task: TaskData): FunctionComponent<SVGProps<SVG
       break;
     }
     case TaskType.DownloadFolder: {
-      icon = iconService.getItemIcon(true, '');
+      icon = iconService.getItemIcon(false, task.compressionFormat);
       break;
     }
     case TaskType.DownloadBackup: {

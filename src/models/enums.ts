@@ -136,3 +136,9 @@ export enum AppSumoTier {
   Tier4 = 'internxt_tier4',
   Tier5 = 'internxt_tier5',
 }
+
+export enum DownloadFolderMethod {
+  Blob = 'blob',
+  FileSystemAccessAPI = 'file-system-access-api',
+  StreamSaver = 'stream-saver',
+}

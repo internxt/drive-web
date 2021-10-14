@@ -1,27 +1,33 @@
-import { items } from '@internxt/lib';
-import fileDownload from 'js-file-download';
 import JSZip from 'jszip';
+import fileDownload from 'js-file-download';
+import { items } from '@internxt/lib';
 
-import { DriveFolderData, FolderTree } from '../../models/interfaces';
-import folderService, { fetchFolderContent } from '../folder.service';
-import fetchFileBlob from './fetchFileBlob';
+import { DriveFolderData, FolderTree } from '../../../models/interfaces';
+import folderService from '../../folder.service';
+import fetchFileBlob from '../fetchFileBlob';
 
 /**
- * @description Download a folder keeping all file blobs in memory
+ * @description Downloads a folder keeping all file blobs in memory
  *
  * @param folderData
  * @param isTeam
  */
-export default async function downloadFolder(
-  rootFolderData: DriveFolderData,
-  updateProgressCallback: (progress: number) => void,
-  isTeam: boolean,
-) {
+export default async function downloadFolderUsingBlobs({
+  folder,
+  decryptedCallback,
+  updateProgressCallback,
+  isTeam,
+}: {
+  folder: DriveFolderData;
+  decryptedCallback?: () => void;
+  updateProgressCallback?: (progress: number) => void;
+  isTeam: boolean;
+}) {
   const zip = new JSZip();
-  const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(
-    rootFolderData.id,
-  );
-  const downloadedSize = 0;
+  const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
+  let downloadedSize = 0;
+
+  decryptedCallback?.();
 
   // * Renames files iterating over folders
   const pendingFolders: { parentFolder: JSZip | null; data: FolderTree }[] = [{ parentFolder: zip, data: tree }];
@@ -41,9 +47,19 @@ export default async function downloadFolder(
         name: fileDecryptedNames[file.id],
         type: file.type,
       });
-      const [fileBlobPromise] = fetchFileBlob(file.fileId, { isTeam, updateProgressCallback: () => undefined });
+      const [fileBlobPromise] = fetchFileBlob(file.fileId, {
+        isTeam,
+        updateProgressCallback: (fileProgress) => {
+          const totalProgress = (downloadedSize + file.size * fileProgress) / size;
+
+          (updateProgressCallback || (() => undefined))(totalProgress);
+        },
+      });
       const fileBlob = await fileBlobPromise;
 
+      downloadedSize += file.size;
+
+      // currentFolderZip?.
       currentFolderZip?.file(displayFilename, fileBlob);
     }
 
@@ -57,7 +73,7 @@ export default async function downloadFolder(
   }
 
   const folderContent = await zip.generateAsync({ type: 'blob' }).then((content) => {
-    fileDownload(content, `${rootFolderData.name}.zip`, 'application/zip');
+    fileDownload(content, `${folder.name}.zip`, 'application/zip');
   });
 
   return folderContent;

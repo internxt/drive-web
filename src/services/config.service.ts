@@ -1,5 +1,5 @@
 import APP_CONFIG from '../config/app.json';
-import { AppViewLayout } from '../models/enums';
+import { AppViewLayout, DownloadFolderMethod } from '../models/enums';
 import { AppConfig, AppViewConfig } from '../models/interfaces';
 import { DatabaseProvider } from './database.service';
 
@@ -7,6 +7,16 @@ export function getAppConfig(): AppConfig {
   const config: AppConfig = {
     ...APP_CONFIG,
     ...{
+      fileExplorer: {
+        ...APP_CONFIG.fileExplorer,
+        download: {
+          ...APP_CONFIG.fileExplorer.download,
+          folder: {
+            ...APP_CONFIG.fileExplorer.download.folder,
+            method: APP_CONFIG.fileExplorer.download.folder.method as DownloadFolderMethod,
+          },
+        },
+      },
       views: APP_CONFIG.views.map((v) => ({ ...v, layout: v.layout as AppViewLayout })),
       database: { ...APP_CONFIG.database, provider: APP_CONFIG.database.provider as DatabaseProvider },
     },

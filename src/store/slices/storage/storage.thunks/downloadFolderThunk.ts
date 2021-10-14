@@ -42,8 +42,19 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       status: TaskStatus.Pending,
       progress: TaskProgress.Min,
       folder,
+      compressionFormat: 'zip',
       showNotification: options.showNotifications,
       cancellable: true,
+    };
+    const decryptedCallback = () => {
+      dispatch(
+        taskManagerActions.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.InProcess,
+          },
+        }),
+      );
     };
     const updateProgressCallback = (progress: number) => {
       const task = taskManagerSelectors.findTaskById(getState())(taskId);
@@ -60,10 +71,29 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
         );
       }
     };
+    const errorCallback = (err: Error) => {
+      console.log('errorCallback: ', err);
+      throw err;
+    };
 
     dispatch(taskManagerActions.addTask(task));
 
-    const downloadFolderPromise = downloadService.downloadFolder(folder, updateProgressCallback, isTeam);
+    dispatch(
+      taskManagerActions.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.Decrypting,
+        },
+      }),
+    );
+
+    const downloadFolderPromise = downloadService.downloadFolder({
+      folder,
+      decryptedCallback,
+      updateProgressCallback,
+      errorCallback,
+      isTeam,
+    });
 
     downloadFolderPromise
       .then(() => {

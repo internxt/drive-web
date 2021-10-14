@@ -5,9 +5,18 @@
   "plan": {
     "freePlanStorageLimit": 2147483648,
     "maxStorageLimit": 108851651149824,
-    "defaultFeatures": ["Web, Desktop & Mobile apps", "Unlimited devices", "Secure file sharing"]
+    "defaultFeatures": [
+      "Web, Desktop & Mobile apps",
+      "Unlimited devices",
+      "Secure file sharing"
+    ]
   },
   "fileExplorer": {
+    "download": {
+      "folder": {
+        "method": "stream-saver"
+      }
+    },
     "recentsLimit": 10
   },
   "views": [

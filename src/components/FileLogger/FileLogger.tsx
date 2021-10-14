@@ -20,7 +20,7 @@ const FileLogger = (): JSX.Element => {
     status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled],
   });
   const items: JSX.Element[] = allNotifications.map((n) => <FileLoggerItem notification={n} key={n.taskId} />);
-  const handleClose = () => {
+  const onCloseButtonClicked = () => {
     if (hasFinished) {
       setIsOpen(false);
       dispatch(taskManagerActions.clearTasks());
@@ -84,7 +84,10 @@ const FileLogger = (): JSX.Element => {
             <Unicons.UilAngleDoubleDown className="h-5" />
           </div>
 
-          <div className="cursor-pointer" onClick={handleClose}>
+          <div
+            className={`${hasFinished ? 'cursor-pointer' : 'cursor-not-allowed'} cursor-pointer`}
+            onClick={onCloseButtonClicked}
+          >
             <Unicons.UilTimes className={`h-5 ${hasFinished ? 'text-white' : 'text-m-neutral-100'}`} />
           </div>
         </div>
