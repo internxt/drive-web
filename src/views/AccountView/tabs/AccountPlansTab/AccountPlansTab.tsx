@@ -46,7 +46,10 @@ const AccountPlansTab = (): JSX.Element => {
     setCurrentWorkspace(nextWorkspace);
   };
   const onAppSumoButtonClicked = () => {
-    window.open(`https://appsumo.com/account/redemption/${currentPlan?.details?.invoiceItemUuid}`, '_blank');
+    window.open(
+      `https://appsumo.8odi.net/c/2715655/416948/7443?sharedid=button1&u=https://appsumo.com/account/redemption/${currentPlan?.details?.invoiceItemUuid}`,
+      '_blank',
+    );
   };
   const features = [
     {
