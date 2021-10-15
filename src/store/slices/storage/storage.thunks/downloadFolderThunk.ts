@@ -6,11 +6,12 @@ import { DriveFolderData } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
 import { sessionSelectors } from '../../session/session.selectors';
 import errorService from '../../../../services/error.service';
-import { DownloadFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service';
+import { TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service/enums';
 import AppError from '../../../../models/AppError';
+import { DownloadFolderTask } from '../../../../services/task-manager.service/interfaces';
+import taskManagerService from '../../../../services/task-manager.service';
 
 interface DownloadFolderThunkOptions {
   relatedTaskId: string;
@@ -30,7 +31,7 @@ const defaultDownloadFolderThunkOptions = {
 
 export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPayload, { state: RootState }>(
   'storage/downloadFolder',
-  async (payload: DownloadFolderThunkPayload, { getState, dispatch, requestId, rejectWithValue }) => {
+  async (payload: DownloadFolderThunkPayload, { getState, requestId, rejectWithValue }) => {
     const folder = payload.folder;
     const options = { ...defaultDownloadFolderThunkOptions, ...payload.options };
     const isTeam: boolean = sessionSelectors.isTeam(getState());
@@ -47,28 +48,24 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       cancellable: true,
     };
     const decryptedCallback = () => {
-      dispatch(
-        taskManagerActions.updateTask({
+      taskManagerService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.InProcess,
+        },
+      });
+    };
+    const updateProgressCallback = (progress: number) => {
+      const task = taskManagerService.findTask(taskId);
+
+      if (task?.status !== TaskStatus.Cancelled) {
+        taskManagerService.updateTask({
           taskId,
           merge: {
             status: TaskStatus.InProcess,
+            progress,
           },
-        }),
-      );
-    };
-    const updateProgressCallback = (progress: number) => {
-      const task = taskManagerSelectors.findTaskById(getState())(taskId);
-
-      if (task?.status !== TaskStatus.Cancelled) {
-        dispatch(
-          taskManagerActions.updateTask({
-            taskId,
-            merge: {
-              status: TaskStatus.InProcess,
-              progress,
-            },
-          }),
-        );
+        });
       }
     };
     const errorCallback = (err: Error) => {
@@ -76,16 +73,14 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       throw err;
     };
 
-    dispatch(taskManagerActions.addTask(task));
+    taskManagerService.addTask(task);
 
-    dispatch(
-      taskManagerActions.updateTask({
-        taskId,
-        merge: {
-          status: TaskStatus.Decrypting,
-        },
-      }),
-    );
+    taskManagerService.updateTask({
+      taskId,
+      merge: {
+        status: TaskStatus.Decrypting,
+      },
+    });
 
     const downloadFolderPromise = downloadService.downloadFolder({
       folder,
@@ -97,28 +92,24 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
 
     downloadFolderPromise
       .then(() => {
-        dispatch(
-          taskManagerActions.updateTask({
-            taskId,
-            merge: {
-              status: TaskStatus.Success,
-            },
-          }),
-        );
+        taskManagerService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Success,
+          },
+        });
       })
       .catch((err: unknown) => {
         const castedError = errorService.castError(err);
-        const task = taskManagerSelectors.findTaskById(getState())(taskId);
+        const task = taskManagerService.findTask(taskId);
 
         if (task?.status !== TaskStatus.Cancelled) {
-          dispatch(
-            taskManagerActions.updateTask({
-              taskId,
-              merge: {
-                status: TaskStatus.Error,
-              },
-            }),
-          );
+          taskManagerService.updateTask({
+            taskId,
+            merge: {
+              status: TaskStatus.Error,
+            },
+          });
 
           rejectWithValue(castedError);
         }

@@ -167,6 +167,9 @@
     }
   },
   "tasks": {
+    "messages": {
+      "allProcessesHaveFinished": "All processes have finished"
+    },
     "create-folder": {
       "status": {
         "pending": "Pending to create folder",

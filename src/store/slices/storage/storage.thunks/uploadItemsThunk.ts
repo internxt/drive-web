@@ -6,7 +6,6 @@ import folderService from '../../../../services/folder.service';
 import { renameFile } from '../../../../lib/utils';
 import storageService from '../../../../services/storage.service';
 import { DriveFileData, DriveItemData, UserSettings } from '../../../../models/interfaces';
-import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
 import { storageActions, storageSelectors } from '..';
 import { ItemToUpload } from '../../../../services/storage.service/storage-upload.service';
 import { StorageState } from '../storage.model';
@@ -15,9 +14,11 @@ import { sessionSelectors } from '../../session/session.selectors';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import { RootState } from '../../..';
 import errorService from '../../../../services/error.service';
-import { TaskProgress, TaskStatus, TaskType, UploadFileTask } from '../../../../services/task-manager.service';
+import { TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service/enums';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
+import { UploadFileTask } from '../../../../services/task-manager.service/interfaces';
+import taskManagerService from '../../../../services/task-manager.service';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -90,7 +91,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         stop: async () => cancelTokenSource.cancel(),
       };
 
-      dispatch(taskManagerActions.addTask(task));
+      taskManagerService.addTask(task);
 
       const parentFolderContent = await parentFolderContentPromise;
       const [, , finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
@@ -102,15 +103,13 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           name: finalFilename,
           type: extension,
         });
-      dispatch(
-        taskManagerActions.updateTask({
-          taskId,
-          merge: {
-            fileName: finalFilename,
-            isFileNameValidated: true,
-          },
-        }),
-      );
+      taskManagerService.updateTask({
+        taskId,
+        merge: {
+          fileName: finalFilename,
+          isFileNameValidated: true,
+        },
+      });
 
       filesToUpload.push({
         name: finalFilename,
@@ -128,22 +127,20 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     for (const [index, file] of filesToUpload.entries()) {
       const taskId = tasksIds[index];
       const updateProgressCallback = (progress) => {
-        const task = taskManagerSelectors.findTaskById(getState())(taskId);
+        const task = taskManagerService.findTask(taskId);
 
         if (task?.status !== TaskStatus.Cancelled) {
-          dispatch(
-            taskManagerActions.updateTask({
-              taskId: taskId,
-              merge: {
-                status: TaskStatus.InProcess,
-                progress,
-              },
-            }),
-          );
+          taskManagerService.updateTask({
+            taskId: taskId,
+            merge: {
+              status: TaskStatus.InProcess,
+              progress,
+            },
+          });
         }
       };
       const taskFn = async (): Promise<DriveFileData> => {
-        const task = taskManagerSelectors.findTaskById(getState())(taskId);
+        const task = taskManagerService.findTask(taskId);
         const [uploadFilePromise, actionState] = storageService.upload.uploadFile(
           user.email,
           file,
@@ -151,18 +148,16 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           updateProgressCallback,
         );
 
-        dispatch(
-          taskManagerActions.updateTask({
-            taskId,
-            merge: {
-              status: TaskStatus.Encrypting,
-              stop: async () => {
-                task?.stop?.();
-                actionState?.stop();
-              },
+        taskManagerService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Encrypting,
+            stop: async () => {
+              task?.stop?.();
+              actionState?.stop();
             },
-          }),
-        );
+          },
+        });
 
         const uploadedFile = await uploadFilePromise;
 
@@ -187,24 +182,20 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
             );
           }
 
-          dispatch(
-            taskManagerActions.updateTask({
-              taskId: taskId,
-              merge: { status: TaskStatus.Success },
-            }),
-          );
+          taskManagerService.updateTask({
+            taskId: taskId,
+            merge: { status: TaskStatus.Success },
+          });
         })
         .catch((err: unknown) => {
           const castedError = errorService.castError(err);
-          const task = taskManagerSelectors.findTaskById(getState())(tasksIds[index]);
+          const task = taskManagerService.findTask(tasksIds[index]);
 
           if (task?.status !== TaskStatus.Cancelled) {
-            dispatch(
-              taskManagerActions.updateTask({
-                taskId: taskId,
-                merge: { status: TaskStatus.Error },
-              }),
-            );
+            taskManagerService.updateTask({
+              taskId: taskId,
+              merge: { status: TaskStatus.Error },
+            });
 
             console.error(castedError);
 

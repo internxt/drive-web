@@ -6,11 +6,12 @@ import { DriveFileData } from '../../../../models/interfaces';
 import downloadService from '../../../../services/download.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { taskManagerActions, taskManagerSelectors } from '../../task-manager';
 import { sessionSelectors } from '../../session/session.selectors';
 import errorService from '../../../../services/error.service';
-import { DownloadFileTask, TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service';
+import { TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service/enums';
 import AppError from '../../../../models/AppError';
+import { DownloadFileTask } from '../../../../services/task-manager.service/interfaces';
+import taskManagerService from '../../../../services/task-manager.service';
 
 interface DownloadFileThunkOptions {
   relatedTaskId: string;
@@ -30,7 +31,7 @@ const defaultDownloadFileThunkOptions = {
 
 export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload, { state: RootState }>(
   'storage/downloadFile',
-  async (payload: DownloadFileThunkPayload, { getState, dispatch, requestId, rejectWithValue }) => {
+  async (payload: DownloadFileThunkPayload, { getState, requestId, rejectWithValue }) => {
     const file = payload.file;
     const options = { ...defaultDownloadFileThunkOptions, ...payload.options };
     const isTeam: boolean = sessionSelectors.isTeam(getState());
@@ -47,56 +48,48 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
     };
     const updateProgressCallback = (progress: number) => {
       if (task?.status !== TaskStatus.Cancelled) {
-        dispatch(
-          taskManagerActions.updateTask({
-            taskId,
-            merge: {
-              status: TaskStatus.InProcess,
-              progress,
-            },
-          }),
-        );
+        taskManagerService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.InProcess,
+            progress,
+          },
+        });
       }
     };
 
-    dispatch(taskManagerActions.addTask(task));
+    taskManagerService.addTask(task);
 
     const [downloadFilePromise, actionState] = downloadService.downloadFile(file, isTeam, updateProgressCallback);
 
-    dispatch(
-      taskManagerActions.updateTask({
-        taskId,
-        merge: {
-          status: TaskStatus.Decrypting,
-          stop: async () => actionState?.stop(),
-        },
-      }),
-    );
+    taskManagerService.updateTask({
+      taskId,
+      merge: {
+        status: TaskStatus.Decrypting,
+        stop: async () => actionState?.stop(),
+      },
+    });
 
     downloadFilePromise
       .then(() => {
-        dispatch(
-          taskManagerActions.updateTask({
-            taskId,
-            merge: {
-              status: TaskStatus.Success,
-            },
-          }),
-        );
+        taskManagerService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Success,
+          },
+        });
       })
       .catch((err: unknown) => {
         const castedError = errorService.castError(err);
-        const task = taskManagerSelectors.findTaskById(getState())(taskId);
+        const task = taskManagerService.findTask(taskId);
 
         if (task?.status !== TaskStatus.Cancelled) {
-          dispatch(
-            taskManagerActions.updateTask({
-              taskId,
-              merge: {
-                status: TaskStatus.Error,
-              },
-            }),
-          );
+          taskManagerService.updateTask({
+            taskId,
+            merge: {
+              status: TaskStatus.Error,
+            },
+          });
 
           rejectWithValue(castedError);
         }

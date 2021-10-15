@@ -1,22 +1,22 @@
 import * as Unicons from '@iconscout/react-unicons';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { taskManagerSelectors, taskManagerThunks } from '../../../store/slices/task-manager';
-import { NotificationData, TaskStatus } from '../../../services/task-manager.service';
+
+import { TaskStatus } from '../../../services/task-manager.service/enums';
+import { NotificationData } from '../../../services/task-manager.service/interfaces';
+import taskManagerService from '../../../services/task-manager.service';
 
 interface FileLoggerItemProps {
   notification: NotificationData;
 }
 
 const FileLoggerItem = ({ notification }: FileLoggerItemProps): JSX.Element => {
-  const dispatch = useAppDispatch();
-  const isTaskFinished = useAppSelector(taskManagerSelectors.isTaskFinished)(notification.taskId);
-  const isTaskProgressCompleted = useAppSelector(taskManagerSelectors.isTaskProgressCompleted)(notification.taskId);
+  const isTaskFinished = taskManagerService.isTaskFinished(notification.taskId);
+  const isTaskProgressCompleted = taskManagerService.isTaskProgressCompleted(notification.taskId);
   const statusClassName = isTaskFinished ? '' : 'opacity-50';
   const messageClassName = [TaskStatus.Error, TaskStatus.Cancelled].includes(notification.status)
     ? 'text-red-50'
     : 'text-neutral-500';
   const onCancelButtonClicked = () => {
-    dispatch(taskManagerThunks.cancelTaskThunk(notification.taskId));
+    taskManagerService.cancelTask(notification.taskId);
   };
 
   return (

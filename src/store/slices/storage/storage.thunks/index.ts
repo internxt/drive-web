@@ -12,10 +12,7 @@ import { fetchRecentsThunk, fetchRecentsThunkExtraReducers } from './fetchRecent
 import { fetchFolderContentThunk, fetchFolderContentThunkExtraReducers } from './fetchFolderContentThunk';
 import { deleteItemsThunk, deleteItemsThunkExtraReducers } from './deleteItemsThunk';
 import { goToFolderThunk, goToFolderThunkExtraReducers } from './goToFolderThunk';
-import {
-  createFolderTreeStructureThunk,
-  createFolderTreeStructureThunkExtraReducers,
-} from './createFolderTreeStructureThunk';
+import { uploadFolderThunk, uploadFolderThunkExtraReducers } from './uploadFolderThunk';
 import { updateItemMetadataThunk, updateItemMetadataThunkExtraReducers } from './updateItemMetadataThunk';
 import { moveItemsThunk, moveItemsThunkExtraReducers } from './moveItemsThunk';
 
@@ -29,7 +26,7 @@ const storageThunks = {
   fetchFolderContentThunk,
   deleteItemsThunk,
   goToFolderThunk,
-  createFolderTreeStructureThunk,
+  uploadFolderThunk,
   updateItemMetadataThunk,
   fetchRecentsThunk,
   createFolderThunk,
@@ -46,7 +43,7 @@ export const storageExtraReducers = (builder: ActionReducerMapBuilder<StorageSta
   fetchFolderContentThunkExtraReducers(builder);
   deleteItemsThunkExtraReducers(builder);
   goToFolderThunkExtraReducers(builder);
-  createFolderTreeStructureThunkExtraReducers(builder);
+  uploadFolderThunkExtraReducers(builder);
   updateItemMetadataThunkExtraReducers(builder);
   fetchRecentsThunkExtraReducers(builder);
   createFolderThunkExtraReducers(builder);

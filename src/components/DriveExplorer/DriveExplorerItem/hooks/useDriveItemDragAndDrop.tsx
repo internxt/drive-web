@@ -94,7 +94,7 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
             for (const root of rootList) {
               const currentFolderId = item.id;
 
-              await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId }));
+              await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId }));
             }
           }
         });

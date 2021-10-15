@@ -2,13 +2,13 @@ import JSZip from 'jszip';
 import { items } from '@internxt/lib';
 import streamToPromise from 'stream-to-promise';
 import streamSaver from 'streamsaver';
+import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 import { getEnvironmentConfig, Network } from '../../../lib/network';
 import { DriveFileData, DriveFolderData, FolderTree } from '../../../models/interfaces';
 import errorService from '../../error.service';
 import folderService from '../../folder.service';
 import internal from 'stream';
-import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 /**
  * @description Downloads a folder using StreamSaver.js

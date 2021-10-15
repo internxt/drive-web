@@ -310,7 +310,7 @@ const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
       if (rootList.length) {
         for (const root of rootList) {
           await dispatch(
-            storageThunks.createFolderTreeStructureThunk({
+            storageThunks.uploadFolderThunk({
               root,
               currentFolderId,
               options: {

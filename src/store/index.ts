@@ -5,12 +5,12 @@ import teamReducer from './slices/team';
 import storageReducer from './slices/storage';
 import sessionReducer from './slices/session';
 import uiReducer from './slices/ui';
-import taskManagerReducer from './slices/task-manager';
 import planReducer from './slices/plan';
 import productsReducer from './slices/products';
 import paymentReducer from './slices/payment';
 import backupsReducer from './slices/backups';
 import fileViewerReducer from './slices/fileViewer';
+import taskManagerReducer from './slices/taskManager';
 
 export const store = configureStore({
   reducer: {
@@ -19,12 +19,12 @@ export const store = configureStore({
     storage: storageReducer,
     session: sessionReducer,
     ui: uiReducer,
-    taskManager: taskManagerReducer,
     plan: planReducer,
     products: productsReducer,
     payment: paymentReducer,
     backups: backupsReducer,
     fileViewer: fileViewerReducer,
+    taskManager: taskManagerReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
 });

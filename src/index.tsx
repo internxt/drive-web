@@ -11,6 +11,7 @@ import { teamActions } from './store/slices/team';
 import { planThunks } from './store/slices/plan';
 import { productsThunks } from './store/slices/products';
 import storageThunks from './store/slices/storage/storage.thunks';
+import { taskManagerThunks } from './store/slices/taskManager';
 import { sessionActions } from './store/slices/session';
 
 import './index.scss';
@@ -25,6 +26,7 @@ store.dispatch(sessionActions.initialize());
 store.dispatch(storageThunks.initializeThunk());
 store.dispatch(planThunks.initializeThunk());
 store.dispatch(productsThunks.initializeThunk());
+store.dispatch(taskManagerThunks.initializeThunk());
 
 ReactDOM.render(
   <React.StrictMode>

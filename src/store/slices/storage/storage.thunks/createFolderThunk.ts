@@ -7,9 +7,10 @@ import { DriveFolderData, DriveItemData } from '../../../../models/interfaces';
 import folderService from '../../../../services/folder.service';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
-import { CreateFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service';
-import { taskManagerActions } from '../../task-manager';
+import { TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service/enums';
 import errorService from '../../../../services/error.service';
+import { CreateFolderTask } from '../../../../services/task-manager.service/interfaces';
+import taskManagerService from '../../../../services/task-manager.service';
 
 interface CreateFolderThunkOptions {
   relatedTaskId: string;
@@ -46,7 +47,7 @@ export const createFolderThunk = createAsyncThunk<
         stop: async () => cancelTokenSource.cancel(),
       };
 
-      dispatch(taskManagerActions.addTask(task));
+      taskManagerService.addTask(task);
 
       const createdFolder = await createdFolderPromise;
       const createdFolderNormalized: DriveFolderData = {
@@ -62,15 +63,13 @@ export const createFolderThunk = createAsyncThunk<
         encrypt_version: null,
       };
 
-      dispatch(
-        taskManagerActions.updateTask({
-          taskId: task.id,
-          merge: {
-            status: TaskStatus.Success,
-            progress: TaskProgress.Max,
-          },
-        }),
-      );
+      taskManagerService.updateTask({
+        taskId: task.id,
+        merge: {
+          status: TaskStatus.Success,
+          progress: TaskProgress.Max,
+        },
+      });
 
       if (currentFolderId === parentFolderId) {
         dispatch(

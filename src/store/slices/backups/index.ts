@@ -5,8 +5,9 @@ import { Device, DeviceBackup } from '../../../models/interfaces';
 import backupsService from '../../../services/backups.service';
 import downloadService from '../../../services/download.service';
 import notificationsService, { ToastType } from '../../../services/notifications.service';
-import { DownloadBackupTask, TaskProgress, TaskStatus, TaskType } from '../../../services/task-manager.service';
-import { taskManagerActions } from '../task-manager';
+import taskManagerService from '../../../services/task-manager.service';
+import { TaskProgress, TaskStatus, TaskType } from '../../../services/task-manager.service/enums';
+import { DownloadBackupTask } from '../../../services/task-manager.service/interfaces';
 
 interface BackupsState {
   isLoadingDevices: boolean;
@@ -40,7 +41,7 @@ export const fetchDeviceBackupsThunk = createAsyncThunk<DeviceBackup[], string, 
 
 export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state: RootState }>(
   'plan/downloadBackup',
-  async (backup: DeviceBackup, { requestId, dispatch }) => {
+  async (backup: DeviceBackup, { requestId }) => {
     const taskId = requestId;
     const task: DownloadBackupTask = {
       id: taskId,
@@ -53,37 +54,31 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
     };
 
     const onProgress = (progress: number) => {
-      dispatch(
-        taskManagerActions.updateTask({
-          taskId,
-          merge: {
-            status: TaskStatus.InProcess,
-            progress,
-          },
-        }),
-      );
+      taskManagerService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.InProcess,
+          progress,
+        },
+      });
     };
 
     const onFinished = () => {
-      dispatch(
-        taskManagerActions.updateTask({
-          taskId,
-          merge: {
-            status: TaskStatus.Success,
-          },
-        }),
-      );
+      taskManagerService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.Success,
+        },
+      });
     };
 
     const onError = () => {
-      dispatch(
-        taskManagerActions.updateTask({
-          taskId,
-          merge: {
-            status: TaskStatus.Error,
-          },
-        }),
-      );
+      taskManagerService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.Error,
+        },
+      });
     };
 
     try {
@@ -93,16 +88,14 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
         errorCallback: onError,
       });
 
-      dispatch(taskManagerActions.addTask(task));
+      taskManagerService.addTask(task);
 
-      dispatch(
-        taskManagerActions.updateTask({
-          taskId,
-          merge: {
-            stop: async () => actionState?.stop(),
-          },
-        }),
-      );
+      taskManagerService.updateTask({
+        taskId,
+        merge: {
+          stop: async () => actionState?.stop(),
+        },
+      });
     } catch (err) {
       if (err instanceof Error && err.name === 'FILE_SYSTEM_API_NOT_AVAILABLE')
         notificationsService.show(

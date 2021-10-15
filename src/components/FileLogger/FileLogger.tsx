@@ -2,30 +2,34 @@ import { Fragment, useState, useEffect } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import FileLoggerItem from './FileLoggerItem/FileLoggerItem';
-import './FileLogger.scss';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import spinnerIcon from '../../assets/icons/spinner.svg';
-import { taskManagerActions, taskManagerSelectors } from '../../store/slices/task-manager';
-import { TaskStatus } from '../../services/task-manager.service';
+import { TaskStatus } from '../../services/task-manager.service/enums';
+import i18n from '../../services/i18n.service';
+import taskManagerService from '../../services/task-manager.service';
+
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { uiActions } from '../../store/slices/ui';
+
+import './FileLogger.scss';
+import { useTaskManagerGetNotifications } from '../../hooks/taskManager';
 
 const FileLogger = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = useAppSelector((state) => state.ui.isFileLoggerOpen);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinized] = useState(false);
-  const getNotifications = useAppSelector(taskManagerSelectors.getNotifications);
-  const isTaskFinished = useAppSelector(taskManagerSelectors.isTaskFinished);
-  const allNotifications = getNotifications();
-  const finishedNotifications = getNotifications({
+  const allNotifications = useTaskManagerGetNotifications();
+  const finishedNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled],
   });
   const items: JSX.Element[] = allNotifications.map((n) => <FileLoggerItem notification={n} key={n.taskId} />);
   const onCloseButtonClicked = () => {
     if (hasFinished) {
-      setIsOpen(false);
-      dispatch(taskManagerActions.clearTasks());
+      dispatch(uiActions.setIsFileLoggerOpen(false));
+      taskManagerService.clearTasks();
     }
   };
+
   const handleLeavePage = (e) => {
     const confirmationMessage = '';
 
@@ -34,16 +38,14 @@ const FileLogger = (): JSX.Element => {
   };
 
   useEffect(() => {
-    if (Object.values(allNotifications).length) {
-      setIsOpen(true);
+    const processingItems = allNotifications.findIndex(
+      (notification) => !taskManagerService.isTaskFinished(notification.taskId),
+    );
 
-      const processingItems = allNotifications.findIndex((notification) => !isTaskFinished(notification.taskId));
-
-      if (processingItems !== -1) {
-        setHasFinished(false);
-      } else {
-        setHasFinished(true);
-      }
+    if (processingItems !== -1) {
+      setHasFinished(false);
+    } else {
+      setHasFinished(true);
     }
   }, [allNotifications]);
 
@@ -64,7 +66,7 @@ const FileLogger = (): JSX.Element => {
       <div className="flex justify-between bg-neutral-900 px-4 py-2.5 rounded-t-md select-none">
         <div className="flex items-center w-max text-sm text-white font-semibold">
           {hasFinished ? (
-            <span>All processes were finished</span>
+            <span>{i18n.get('tasks.messages.allProcessesHaveFinished')}</span>
           ) : (
             <Fragment>
               <img className="animate-spin mr-2" src={spinnerIcon} alt="" />

@@ -1,4 +1,4 @@
-import { IRoot } from '../store/slices/storage/storage.thunks/createFolderTreeStructureThunk';
+import { IRoot } from '../store/slices/storage/storage.thunks/uploadFolderThunk';
 
 interface FileSystemFileEntry extends FileSystemEntry {
   file: (successCallback: (file: File) => void) => void;

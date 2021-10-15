@@ -7,17 +7,12 @@ import { DriveItemData } from '../../../../models/interfaces';
 import i18n from '../../../../services/i18n.service';
 import notificationsService, { ToastType } from '../../../../services/notifications.service';
 import storageService from '../../../../services/storage.service';
-import { taskManagerActions } from '../../task-manager';
-import {
-  MoveFileTask,
-  MoveFolderTask,
-  TaskProgress,
-  TaskStatus,
-  TaskType,
-} from '../../../../services/task-manager.service';
+import { TaskProgress, TaskStatus, TaskType } from '../../../../services/task-manager.service/enums';
 import databaseService, { DatabaseCollection } from '../../../../services/database.service';
 import itemsListService from '../../../../services/items-list.service';
 import storageSelectors from '../storage.selectors';
+import { MoveFileTask, MoveFolderTask } from '../../../../services/task-manager.service/interfaces';
+import taskManagerService from '../../../../services/task-manager.service';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
@@ -59,21 +54,19 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
             cancellable: false,
           };
 
-      dispatch(taskManagerActions.addTask(task));
+      taskManagerService.addTask(task);
       promises.push(
         storageService.moveItem(item, destinationFolderId, destinationPath, storageSelectors.bucket(getState())),
       );
 
       promises[index]
         .then(async () => {
-          dispatch(
-            taskManagerActions.updateTask({
-              taskId: task.id,
-              merge: {
-                status: TaskStatus.Success,
-              },
-            }),
-          );
+          taskManagerService.updateTask({
+            taskId: task.id,
+            merge: {
+              status: TaskStatus.Success,
+            },
+          });
 
           dispatch(
             storageActions.popItems({
@@ -96,14 +89,12 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
           }
         })
         .catch(() => {
-          dispatch(
-            taskManagerActions.updateTask({
-              taskId: task.id,
-              merge: {
-                status: TaskStatus.Error,
-              },
-            }),
-          );
+          taskManagerService.updateTask({
+            taskId: task.id,
+            merge: {
+              status: TaskStatus.Error,
+            },
+          });
         });
     }
 

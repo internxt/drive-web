@@ -49,7 +49,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
           if (rootList.length) {
             // Directory tree
             for (const root of rootList) {
-              await dispatch(storageThunks.createFolderTreeStructureThunk({ root, currentFolderId: props.item.id }));
+              await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId: props.item.id }));
             }
           }
         },

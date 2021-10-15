@@ -8,13 +8,13 @@ import { storeTeamsInfo } from '../../../services/teams.service';
 import userService, { InitializeUserResponse } from '../../../services/user.service';
 import { teamActions } from '../team';
 import authService from '../../../services/auth.service';
-import { taskManagerActions } from '../task-manager';
 import { uiActions } from '../ui';
 import { sessionActions } from '../session';
 import { storageActions } from '../storage';
 import navigationService from '../../../services/navigation.service';
 import { AppView } from '../../../models/enums';
 import { sessionSelectors } from '../session/session.selectors';
+import taskManagerService from '../../../services/task-manager.service';
 
 interface UserState {
   isInitializing: boolean;
@@ -83,7 +83,8 @@ export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
     dispatch(teamActions.resetState());
     dispatch(storageActions.resetState());
     dispatch(uiActions.resetState());
-    dispatch(taskManagerActions.resetState());
+
+    taskManagerService.clearTasks();
   },
 );
 
