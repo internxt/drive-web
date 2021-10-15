@@ -4,7 +4,7 @@ import streamToPromise from 'stream-to-promise';
 import streamSaver from 'streamsaver';
 
 import { getEnvironmentConfig, Network } from '../../../lib/network';
-import { DriveFolderData, FolderTree } from '../../../models/interfaces';
+import { DriveFileData, DriveFolderData, FolderTree } from '../../../models/interfaces';
 import errorService from '../../error.service';
 import folderService from '../../folder.service';
 import internal from 'stream';
@@ -32,12 +32,12 @@ export default async function downloadFolderUsingStreamSaver({
   isTeam: boolean;
 }) {
   const downloadingSize: Record<number, number> = {};
-  const fileStreams: internal.Readable[] = [];
+  const fileStreams: { file: DriveFileData; stream: internal.Readable }[] = [];
   const actionStates: ActionState[] = [];
   const { bucketId, bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isTeam);
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
-  const zip = new JSZip();
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
+  const zip = new JSZip();
   const writableStream = streamSaver.createWriteStream(`${folder.name}.zip`, {});
   const writer = writableStream.getWriter();
 
@@ -45,10 +45,10 @@ export default async function downloadFolderUsingStreamSaver({
 
   try {
     // * Renames files iterating over folders
-    const pendingFolders: { parentFolder: JSZip | null; data: FolderTree }[] = [{ parentFolder: zip, data: tree }];
+    const pendingFolders: { parentFolder: JSZip | null; data: FolderTree }[] = [{ parentFolder: null, data: tree }];
     while (pendingFolders.length > 0) {
       const currentFolder = pendingFolders[0];
-      const currentFolderZip = currentFolder.parentFolder?.folder(folderDecryptedNames[currentFolder.data.id]) || null;
+      const currentFolderZip = currentFolder.parentFolder?.folder(folderDecryptedNames[currentFolder.data.id]) || zip;
       const { files, folders } = {
         files: currentFolder.data.files,
         folders: currentFolder.data.children,
@@ -72,22 +72,11 @@ export default async function downloadFolderUsingStreamSaver({
           },
         });
         const fileStream = await fileStreamPromise;
-        fileStream
-          .on('data', () => undefined)
-          .once('end', () => {
-            console.log('(downloadFolder.ts) fileStream end: ', file.id, ' - size: ', file.size);
-          })
-          .once('error', (err) => {
-            writer.abort();
-            errorCallback?.(err);
-          });
 
         currentFolderZip?.file(displayFilename, fileStream, { compression: 'DEFLATE' });
 
-        fileStreams.push(fileStream);
+        fileStreams.push({ file, stream: fileStream });
         actionState && actionStates.push(actionState);
-
-        fileStream.pause();
       }
 
       // * Adds current folder folders to pending
@@ -114,9 +103,18 @@ export default async function downloadFolderUsingStreamSaver({
       });
 
     // * Streams files one by one
-    for (const fileStream of fileStreams) {
-      fileStream.resume();
-      await streamToPromise(fileStream);
+    for (const { file, stream } of fileStreams) {
+      stream
+        .on('data', () => undefined)
+        .once('end', () => {
+          console.log('(downloadFolder.ts) fileStream end: ', file.id, ' - size: ', file.size);
+        })
+        .once('error', (err) => {
+          writer.abort();
+          errorCallback?.(err);
+        });
+
+      await streamToPromise(stream);
     }
 
     await streamToPromise(folderStream);

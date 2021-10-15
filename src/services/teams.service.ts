@@ -19,7 +19,7 @@ export async function getTeamsInfo(): Promise<{ userTeam: TeamsSettings; tokenTe
     });
 }
 
-export async function getKeys(mail: string): Promise<any> {
+export async function getKeys(mail: string): Promise<{ publicKey: string }> {
   return fetch(`${process.env.REACT_APP_API_URL}/api/user/keys/${mail}`, {
     method: 'GET',
     headers: getHeaders(true, false),
@@ -91,7 +91,7 @@ export function removeMember(item: InfoInvitationsMembers): Promise<void> {
 }
 
 export async function sendEmailTeamsMember(mail: string): Promise<void> {
-  const key = await getKeys(mail);
+  const { publicKey } = await getKeys(mail);
   const xTeam = localStorageService.getTeams() as TeamsSettings;
 
   //Datas
@@ -99,8 +99,8 @@ export async function sendEmailTeamsMember(mail: string): Promise<void> {
   const mnemonicTeam = xTeam.bridge_mnemonic;
 
   //Encrypt
-  const EncryptBridgePass = await encryptPGPInvitations(bridgePass, key.publicKey);
-  const EncryptMnemonicTeam = await encryptPGPInvitations(mnemonicTeam, key.publicKey);
+  const EncryptBridgePass = await encryptPGPInvitations(bridgePass, publicKey);
+  const EncryptMnemonicTeam = await encryptPGPInvitations(mnemonicTeam, publicKey);
 
   const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
   const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');

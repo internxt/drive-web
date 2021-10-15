@@ -267,13 +267,13 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
 
   const rootFolderInfo = await userService.initializeUser(email, xUser.mnemonic);
 
-  xUser.root_folder_id = rootFolderInfo.user.root_folder_id;
+  xUser.root_folder_id = rootFolderInfo?.user.root_folder_id;
   localStorageService.set('xToken', xToken);
   localStorageService.set('xMnemonic', mnemonic);
   return xUser;
 };
 
-export const getSalt = async (): Promise<any> => {
+export const getSalt = async () => {
   const email = localStorageService.getUser()?.email;
 
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
@@ -342,16 +342,18 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   analyticsService.track(email, 'success');
 };
 
-export const userHas2FAStored = async (): Promise<any> => {
+export const userHas2FAStored = async (): Promise<{
+  has2fa: boolean;
+  data: { hasKeys: boolean; sKey: string; tfa: boolean };
+}> => {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
     method: 'POST',
     headers: getHeaders(true, false),
     body: JSON.stringify({ email: JSON.parse(localStorage.xUser).email }),
   });
   const data = await response.json();
-  const has2FA = typeof data.tfa == 'boolean' ? data : false;
 
-  return has2FA;
+  return { has2fa: typeof data.tfa === 'boolean', data };
 };
 
 export const generateNew2FA = async (): Promise<any> => {

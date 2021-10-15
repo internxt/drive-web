@@ -16,16 +16,9 @@ declare namespace NodeJS {
   }
 }
 
-interface SegmentAnalytics {
-  identify: any;
-  track: (eventName: string, params?: any, options?: any, callback?: function) => void;
-  page: (pageName: string) => void;
-  reset: any;
-}
-
 interface Window {
   Stripe: stripe.StripeStatic;
-  analytics: SegmentAnalytics;
+  analytics: SegmentAnalytics.AnalyticsJS;
   _adftrack: any;
   grecaptcha: {
     ready: (cb: () => void) => void;

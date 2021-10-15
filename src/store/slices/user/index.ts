@@ -5,7 +5,7 @@ import { RootState } from '../..';
 import { UserSettings } from '../../../models/interfaces';
 import localStorageService from '../../../services/local-storage.service';
 import { storeTeamsInfo } from '../../../services/teams.service';
-import userService from '../../../services/user.service';
+import userService, { InitializeUserResponse } from '../../../services/user.service';
 import { teamActions } from '../team';
 import authService from '../../../services/auth.service';
 import { taskManagerActions } from '../task-manager';
@@ -44,7 +44,10 @@ export const initializeUserThunk = createAsyncThunk<
 
   if (user && isAuthenticated) {
     if (!user.root_folder_id) {
-      const initializeUserBody = await userService.initializeUser(user.email, user.mnemonic);
+      const initializeUserBody = (await userService.initializeUser(
+        user.email,
+        user.mnemonic,
+      )) as InitializeUserResponse;
 
       dispatch(
         userActions.setUser({

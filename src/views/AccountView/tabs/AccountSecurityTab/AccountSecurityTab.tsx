@@ -27,7 +27,7 @@ const AccountSecurityTab = (): JSX.Element => {
   };
   const check2FA = async () => {
     try {
-      const has2fa = await userHas2FAStored();
+      const { has2fa, data } = await userHas2FAStored();
 
       if (!has2fa) {
         const bidi = await generateNew2FA();
@@ -36,7 +36,7 @@ const AccountSecurityTab = (): JSX.Element => {
         setBackupKey(bidi.code);
       } else {
         setHas2FA(true);
-        setPasswordSalt(has2fa.sKey);
+        setPasswordSalt(data.sKey);
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);

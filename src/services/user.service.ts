@@ -1,6 +1,15 @@
 import { getHeaders } from '../lib/auth';
 
-export async function initializeUser(email: string, mnemonic: string): Promise<any> {
+export interface InitializeUserResponse {
+  user: {
+    email: string;
+    bucket: string;
+    mnemonic: string;
+    root_folder_id: number;
+  };
+}
+
+export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse | undefined> {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/initialize`, {
     method: 'post',
     headers: getHeaders(true, true),
@@ -11,9 +20,7 @@ export async function initializeUser(email: string, mnemonic: string): Promise<a
   });
 
   if (response.status === 200) {
-    const body = response.json();
-
-    return body;
+    return response.json();
   }
 }
 

@@ -29,8 +29,8 @@ const stripe = window.Stripe(
 );
 
 const paymentService = {
-  async createSession(body: CreatePaymentSessionPayload): Promise<any> {
-    const response = await httpService.post<CreatePaymentSessionPayload, unknown>(
+  async createSession(body: CreatePaymentSessionPayload): Promise<{ id: string }> {
+    const response = await httpService.post<CreatePaymentSessionPayload, { id: string }>(
       `${process.env.REACT_APP_API_URL}/api/v2/stripe/session`,
       body,
       {
