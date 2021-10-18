@@ -19,6 +19,7 @@ declare namespace NodeJS {
 interface Window {
   Stripe: stripe.StripeStatic;
   analytics: SegmentAnalytics.AnalyticsJS;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _adftrack: any;
   grecaptcha: {
     ready: (cb: () => void) => void;
