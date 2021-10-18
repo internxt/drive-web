@@ -3,12 +3,12 @@ import { items } from '@internxt/lib';
 import streamToPromise from 'stream-to-promise';
 import streamSaver from 'streamsaver';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
+import internal from 'stream';
 
+import errorService from 'app/core/services/error.service';
 import { getEnvironmentConfig, Network } from '../../../services/network';
 import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
-import errorService from '../../../../core/services/error.service';
 import folderService from '../../folder.service';
-import internal from 'stream';
 
 /**
  * @description Downloads a folder using StreamSaver.js
@@ -88,27 +88,31 @@ export default async function downloadFolderUsingStreamSaver({
       );
     }
 
-    const folderStream = zip.generateNodeStream({ streamFiles: true, compression: 'DEFLATE' }) as NodeJS.ReadableStream;
+    const folderStream = zip.generateInternalStream({
+      type: 'uint8array',
+      streamFiles: true,
+      compression: 'DEFLATE',
+    }) as internal.Readable;
     folderStream
       ?.on('data', (chunk: Buffer) => {
         writer.write(chunk);
       })
-      .once('end', () => {
+      .on('end', () => {
         console.log('(downloadFolder.ts) folderStream end!');
         writer.close();
       })
-      .once('error', (err) => {
+      .on('error', (err) => {
         writer.abort();
         errorCallback?.(err);
       });
 
+    folderStream.resume();
+
     // * Streams files one by one
-    for (const { file, stream } of fileStreams) {
+    for (const { stream } of fileStreams) {
       stream
         .on('data', () => undefined)
-        .once('end', () => {
-          console.log('(downloadFolder.ts) fileStream end: ', file.id, ' - size: ', file.size);
-        })
+        .once('end', () => undefined)
         .once('error', (err) => {
           writer.abort();
           errorCallback?.(err);

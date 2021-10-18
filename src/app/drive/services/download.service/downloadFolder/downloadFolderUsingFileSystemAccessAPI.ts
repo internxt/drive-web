@@ -1,13 +1,13 @@
 import JSZip from 'jszip';
 import { items } from '@internxt/lib';
 import streamToPromise from 'stream-to-promise';
+import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
+import errorService from 'app/core/services/error.service';
 import { getEnvironmentConfig, Network } from '../../../services/network';
-import { DriveFolderData, FolderTree } from '../../../types';
-import errorService from '../../../../core/services/error.service';
+import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
 import internal from 'stream';
-import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 /**
  * @description Downloads a folder using File System Access API
@@ -32,7 +32,7 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
   isTeam: boolean;
 }) {
   const downloadingSize: Record<number, number> = {};
-  const fileStreams: internal.Readable[] = [];
+  const fileStreams: { file: DriveFileData; stream: internal.Readable }[] = [];
   const actionStates: ActionState[] = [];
   const handle = await window.showSaveFilePicker({
     suggestedName: `${folder.name}.zip`,
@@ -46,17 +46,17 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
   const writable = await handle.createWritable();
   const { bucketId, bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isTeam);
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
-  const zip = new JSZip();
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
+  const zip = new JSZip();
 
   decryptedCallback?.();
 
   try {
     // * Renames files iterating over folders
-    const pendingFolders: { parentFolder: JSZip | null; data: FolderTree }[] = [{ parentFolder: zip, data: tree }];
+    const pendingFolders: { parentFolder: JSZip | null; data: FolderTree }[] = [{ parentFolder: null, data: tree }];
     while (pendingFolders.length > 0) {
       const currentFolder = pendingFolders[0];
-      const currentFolderZip = currentFolder.parentFolder?.folder(folderDecryptedNames[currentFolder.data.id]) || null;
+      const currentFolderZip = currentFolder.parentFolder?.folder(folderDecryptedNames[currentFolder.data.id]) || zip;
       const { files, folders } = {
         files: currentFolder.data.files,
         folders: currentFolder.data.children,
@@ -80,22 +80,11 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
           },
         });
         const fileStream = await fileStreamPromise;
-        fileStream
-          .on('data', () => undefined)
-          .once('end', () => {
-            console.log('(downloadFolder.ts) fileStream end: ', file.id, ' - size: ', file.size);
-          })
-          .once('error', (err) => {
-            writable.abort();
-            errorCallback?.(err);
-          });
 
         currentFolderZip?.file(displayFilename, fileStream, { compression: 'DEFLATE' });
 
-        fileStreams.push(fileStream);
+        fileStreams.push({ file, stream: fileStream });
         actionState && actionStates.push(actionState);
-
-        fileStream.pause();
       }
 
       // * Adds current folder folders to pending
@@ -107,24 +96,39 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
       );
     }
 
-    const folderStream = zip.generateNodeStream({ streamFiles: true, compression: 'DEFLATE' }) as NodeJS.ReadableStream;
+    const folderStream = zip.generateInternalStream({
+      type: 'uint8array',
+      streamFiles: true,
+      compression: 'DEFLATE',
+    }) as internal.Readable;
     folderStream
       ?.on('data', (chunk: Buffer) => {
         writable.write(chunk);
       })
-      .once('end', () => {
-        writable.close();
+      .on('end', () => {
         console.log('(downloadFolder.ts) folderStream end!');
+        writable.close();
       })
-      .once('error', (err) => {
+      .on('error', (err) => {
         writable.abort();
         errorCallback?.(err);
       });
 
+    folderStream.resume();
+
     // * Streams files one by one
-    for (const fileStream of fileStreams) {
-      fileStream.resume();
-      await streamToPromise(fileStream);
+    for (const { file, stream } of fileStreams) {
+      stream
+        .on('data', () => undefined)
+        .once('end', () => {
+          console.log('(downloadFolder.ts) fileStream end: ', file.id, ' - size: ', file.size);
+        })
+        .once('error', (err) => {
+          writable.abort();
+          errorCallback?.(err);
+        });
+
+      await streamToPromise(stream);
     }
 
     await streamToPromise(folderStream);

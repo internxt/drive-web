@@ -2,7 +2,7 @@ import React, { MouseEvent, ReactNode } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import Dropdown from 'react-bootstrap/Dropdown';
-import { DriveItemAction } from '../../DriveExplorer/DriveExplorerItem';
+import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
 
 interface FileDropdownActionsProps {
   title?: string;

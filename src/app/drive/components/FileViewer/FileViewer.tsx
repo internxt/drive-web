@@ -79,15 +79,13 @@ const FileViewer = (props: FileViewerProps) => {
       </div>
 
       {/* CONTENT */}
-      <div className="h-full flex justify-center items-center">
+      <div className="h-full flex justify-center items-center text-white">
         {isTypeAllowed ? (
           <div onClick={(e) => e.stopPropagation()}>
             {viewers[fileExtensionGroup as FileExtensionGroup](viewerProps)}
           </div>
         ) : (
-          <div className="text-white py-4 px-8 rounded-lg bg-m-neutral-400 shadow-lg">
-            {i18n.get('error.noFilePreview')}
-          </div>
+          <div className="py-4 px-8 rounded-lg bg-m-neutral-400 shadow-lg">{i18n.get('error.noFilePreview')}</div>
         )}
       </div>
     </div>

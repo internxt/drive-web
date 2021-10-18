@@ -3,7 +3,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import * as Unicons from '@iconscout/react-unicons';
 import { items } from '@internxt/lib';
 
-import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
+import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
 import iconService from '../../../../services/icon.service';
 import useForceUpdate from '../../../../../core/hooks/useForceUpdate';
 import { DriveItemAction, DriveExplorerItemProps } from '..';
@@ -99,7 +99,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps) => {
           <Unicons.UilEllipsisH className="w-full h-full" />
         </Dropdown.Toggle>
         <Dropdown.Menu>
-          <FileDropdownActions
+          <DriveItemDropdownActions
             hiddenActions={item.isFolder ? [DriveItemAction.Download, DriveItemAction.Share] : []}
             onRenameButtonClicked={onRenameButtonClicked}
             onDownloadButtonClicked={onDownloadButtonClicked}

@@ -1,6 +1,5 @@
 import fileService from '../file.service';
 import folderService from '../folder.service';
-import upload from './storage-upload.service';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../../types';
 
 export function deleteItems(items: DriveItemData[]): Promise<void> {
@@ -31,7 +30,6 @@ export function moveItem(
 const storageService = {
   deleteItems,
   moveItem,
-  upload,
 };
 
 export default storageService;

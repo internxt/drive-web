@@ -1,13 +1,14 @@
 import { items } from '@internxt/lib';
 import { createHash } from 'crypto';
-import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../types';
-import analyticsService from '../../analytics/services/analytics.service';
-import errorService from '../../core/services/error.service';
-import httpService from '../../core/services/http.service';
-import localStorageService from '../../core/services/local-storage.service';
-import { DevicePlatform } from '../../core/types';
-import i18n from '../../i18n/services/i18n.service';
-import { UserSettings } from '../../auth/types';
+import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../../types';
+import analyticsService from '../../../analytics/services/analytics.service';
+import errorService from '../../../core/services/error.service';
+import httpService from '../../../core/services/http.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import { DevicePlatform } from '../../../core/types';
+import i18n from '../../../i18n/services/i18n.service';
+import { UserSettings } from '../../../auth/types';
+import uploadFile from './uploadFile';
 
 export interface MoveFilePayload {
   fileId: string;
@@ -109,6 +110,7 @@ const fileService = {
   moveFile,
   fetchRecents,
   renameFileInNetwork,
+  uploadFile,
 };
 
 export default fileService;

@@ -114,8 +114,4 @@ export function uploadFile(
   return [promise, actionState];
 }
 
-const uploadService = {
-  uploadFile,
-};
-
-export default uploadService;
+export default uploadFile;

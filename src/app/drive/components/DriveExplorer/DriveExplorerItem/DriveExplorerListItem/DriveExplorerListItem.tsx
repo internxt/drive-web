@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import * as Unicons from '@iconscout/react-unicons';
 
-import FileDropdownActions from '../../../dropdowns/FileDropdownActions/FileDropdownActions';
+import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
 import sizeService from '../../../../../drive/services/size.service';
 
 import dateService from '../../../../../core/services/date.service';
@@ -153,7 +153,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
             <Unicons.UilEllipsisH className="w-full h-full" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
-            <FileDropdownActions
+            <DriveItemDropdownActions
               hiddenActions={item.isFolder ? [DriveItemAction.Share] : []}
               onRenameButtonClicked={onRenameButtonClicked}
               onDownloadButtonClicked={onDownloadButtonClicked}

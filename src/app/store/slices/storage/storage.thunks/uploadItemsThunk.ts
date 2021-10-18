@@ -13,12 +13,12 @@ import errorService from '../../../../core/services/error.service';
 import i18n from '../../../../i18n/services/i18n.service';
 import { renameFile } from '../../../../crypto/services/utils';
 import folderService from '../../../../drive/services/folder.service';
-import { ItemToUpload } from '../../../../drive/services/storage.service/storage-upload.service';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import storageService from '../../../../drive/services/storage.service';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../drive/services/network';
 import { UserSettings } from '../../../../auth/types';
 import { DriveFileData, DriveItemData } from '../../../../drive/types';
+import { ItemToUpload } from 'app/drive/services/file.service/uploadFile';
+import fileService from 'app/drive/services/file.service';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -141,7 +141,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       };
       const taskFn = async (): Promise<DriveFileData> => {
         const task = tasksService.findTask(taskId);
-        const [uploadFilePromise, actionState] = storageService.upload.uploadFile(
+        const [uploadFilePromise, actionState] = fileService.uploadFile(
           user.email,
           file,
           isTeam,
