@@ -1,0 +1,44 @@
+import { ComponentClass, FunctionComponent } from 'react';
+
+import SignUpView from '../../auth/views/SignUpView/SignUpView';
+import SignInView from '../../auth/views/SignInView/SignInView';
+import DriveView from '../../drive/views/DriveView/DriveView';
+import RecentsView from '../../drive/views/RecentsView/RecentsView';
+import NotFoundView from '../views/NotFoundView/NotFoundView';
+import AccountView from '../../core/views/AccountView/AccountView';
+import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
+import JoinTeamView from '../../teams/views/JoinTeamView/JoinTeamView';
+import TeamSuccessView from '../../teams/views/TeamSuccessView/TeamSuccessView';
+import DeactivationTeamsView from '../../teams/views/DeactivationTeamsView/DeactivationTeamsView';
+import ShareView from '../../share/views/ShareView/ShareView';
+import RemoveAccountView from '../../auth/views/RemoveAccountView/RemoveAccountView';
+import GuestAcceptInvitationView from '../../guests/views/GuestAcceptInviteView/GuestAcceptInviteView';
+import CheckoutView from '../../payment/views/CheckoutView/CheckoutView';
+import BackupsView from '../../backups/views/BackupsView/BackupsView';
+
+import { AppView } from '../types';
+
+const views: Array<{
+  id: string;
+  component: FunctionComponent<any> | ComponentClass<any>;
+  componentProps?: Record<string, unknown>;
+}> = [
+  { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
+  { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
+  { id: AppView.Login, component: SignInView },
+  { id: AppView.Drive, component: DriveView },
+  { id: AppView.Recents, component: RecentsView },
+  { id: AppView.Backups, component: BackupsView },
+  { id: AppView.Account, component: AccountView },
+  { id: AppView.TeamsJoin, component: JoinTeamView },
+  { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
+  { id: AppView.Deactivation, component: DeactivationView },
+  { id: AppView.TeamsDeactivation, component: DeactivationTeamsView },
+  { id: AppView.TeamSuccess, component: TeamSuccessView },
+  { id: AppView.Checkout, component: CheckoutView },
+  { id: AppView.Remove, component: RemoveAccountView },
+  { id: AppView.ShareToken, component: ShareView },
+  { id: AppView.NotFound, component: NotFoundView },
+];
+
+export default views;

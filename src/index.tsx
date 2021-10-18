@@ -4,15 +4,15 @@ import { Provider } from 'react-redux';
 
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import plugins from './plugins';
-import { store } from './store';
-import { userActions } from './store/slices/user';
-import { teamActions } from './store/slices/team';
-import { planThunks } from './store/slices/plan';
-import { productsThunks } from './store/slices/products';
-import storageThunks from './store/slices/storage/storage.thunks';
-import { taskManagerThunks } from './store/slices/taskManager';
-import { sessionActions } from './store/slices/session';
+import plugins from './app/core/plugins';
+import { store } from './app/store';
+import { userActions } from './app/store/slices/user';
+import { teamActions } from './app/store/slices/team';
+import { planThunks } from './app/store/slices/plan';
+import { productsThunks } from './app/store/slices/products';
+import storageThunks from './app/store/slices/storage/storage.thunks';
+import { taskManagerThunks } from './app/store/slices/taskManager';
+import { sessionActions } from './app/store/slices/session';
 
 import './index.scss';
 
