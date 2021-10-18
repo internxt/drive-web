@@ -1,10 +1,10 @@
 import * as Unicons from '@iconscout/react-unicons';
 
 import tasksService from '../../services/tasks.service';
-import { NotificationData, TaskStatus } from '../../types';
+import { TaskNotification, TaskStatus } from '../../types';
 
 interface TaskLoggerItemProps {
-  notification: NotificationData;
+  notification: TaskNotification;
 }
 
 const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {

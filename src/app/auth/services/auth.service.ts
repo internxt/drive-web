@@ -7,20 +7,21 @@ import {
   encryptText,
   encryptTextWithKey,
   passToHash,
-} from '../../crypto/services/utils';
-import { decryptPGP } from '../../crypto/services/utilspgp';
+} from 'app/crypto/services/utils';
+import { decryptPGP } from 'app/crypto/services/utilspgp';
 import userService from './user.service';
-import i18n from '../../i18n/services/i18n.service';
-import databaseService from '../../database/services/database.service';
-import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
-import navigationService from '../../core/services/navigation.service';
-import localStorageService from '../../core/services/local-storage.service';
-import analyticsService from '../../analytics/services/analytics.service';
-import httpService from '../../core/services/http.service';
-import { getAesInitFromEnv, validateFormat } from '../../crypto/services/keys.service';
-import { AppView, Workspace } from '../../core/types';
-import { generateNewKeys, updateKeys } from '../../crypto/services/pgp.service';
+import i18n from 'app/i18n/services/i18n.service';
+import databaseService from 'app/database/services/database.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import navigationService from 'app/core/services/navigation.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import analyticsService from 'app/analytics/services/analytics.service';
+import httpService from 'app/core/services/http.service';
+import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.service';
+import { AppView, Workspace } from 'app/core/types';
+import { generateNewKeys, updateKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '../types';
+import { TeamsSettings } from 'app/teams/types';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -42,7 +43,7 @@ export function cancelAccount(): Promise<void> {
     });
 }
 
-export const check2FANeeded = async (email: string): Promise<any> => {
+export const check2FANeeded = async (email: string): Promise<{ hasKeys: boolean; sKey: string; tfa: boolean }> => {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
     method: 'POST',
     headers: httpService.getHeaders(true, true),
@@ -72,7 +73,7 @@ export const doLogin = async (
   email: string,
   password: string,
   twoFactorCode: string,
-): Promise<{ data: any; user: any }> => {
+): Promise<{ data: { token: string; user: UserSettings; userTeam: TeamsSettings | null }; user: UserSettings }> => {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
     method: 'post',
     headers: httpService.getHeaders(false, false),
@@ -97,7 +98,18 @@ export const doLogin = async (
   return doAccess(email, password, encPass, twoFactorCode, keys);
 };
 
-export const doAccess = async (email: string, password: string, encPass: string, twoFactorCode: string, keys: any) => {
+export const doAccess = async (
+  email: string,
+  password: string,
+  encPass: string,
+  twoFactorCode: string,
+  keys: {
+    privateKeyArmored: string;
+    privateKeyArmoredEncrypted: string;
+    publicKeyArmored: string;
+    revocationCertificate: string;
+  },
+) => {
   try {
     const response = await fetch(`${process.env.REACT_APP_API_URL}/api/access`, {
       method: 'post',
@@ -361,7 +373,7 @@ export const userHas2FAStored = async (): Promise<{
   return { has2fa: typeof data.tfa === 'boolean', data };
 };
 
-export const generateNew2FA = async (): Promise<any> => {
+export const generateNew2FA = async (): Promise<{ qr: string; code: string }> => {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
     method: 'GET',
     headers: httpService.getHeaders(true, false),

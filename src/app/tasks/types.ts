@@ -109,7 +109,7 @@ export type TaskData =
   | MoveFileTask
   | MoveFolderTask;
 
-export interface NotificationData {
+export interface TaskNotification {
   taskId: string;
   status: TaskStatus;
   title: string;

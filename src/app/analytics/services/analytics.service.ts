@@ -1,8 +1,9 @@
 import * as prettySize from 'prettysize';
-import { UserSettings } from '../../auth/types';
-import localStorageService from '../../core/services/local-storage.service';
-import { DevicePlatform, SignupDeviceSource } from '../../core/types';
-import { DriveItemData } from '../../drive/types';
+
+import { UserSettings } from 'app/auth/types';
+import localStorageService from 'app/core/services/local-storage.service';
+import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
+import { DriveItemData } from 'app/drive/types';
 import { AnalyticsTrack } from '../types';
 
 export const PATH_NAMES = {

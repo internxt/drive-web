@@ -1,25 +1,26 @@
 import { ComponentClass, FunctionComponent } from 'react';
 
-import SignUpView from '../../auth/views/SignUpView/SignUpView';
-import SignInView from '../../auth/views/SignInView/SignInView';
-import DriveView from '../../drive/views/DriveView/DriveView';
-import RecentsView from '../../drive/views/RecentsView/RecentsView';
+import SignUpView from 'app/auth/views/SignUpView/SignUpView';
+import SignInView from 'app/auth/views/SignInView/SignInView';
+import DriveView from 'app/drive/views/DriveView/DriveView';
+import RecentsView from 'app/drive/views/RecentsView/RecentsView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
-import AccountView from '../../core/views/AccountView/AccountView';
-import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
-import JoinTeamView from '../../teams/views/JoinTeamView/JoinTeamView';
-import TeamSuccessView from '../../teams/views/TeamSuccessView/TeamSuccessView';
-import DeactivationTeamsView from '../../teams/views/DeactivationTeamsView/DeactivationTeamsView';
-import ShareView from '../../share/views/ShareView/ShareView';
-import RemoveAccountView from '../../auth/views/RemoveAccountView/RemoveAccountView';
-import GuestAcceptInvitationView from '../../guests/views/GuestAcceptInviteView/GuestAcceptInviteView';
-import CheckoutView from '../../payment/views/CheckoutView/CheckoutView';
-import BackupsView from '../../backups/views/BackupsView/BackupsView';
+import AccountView from 'app/core/views/AccountView/AccountView';
+import DeactivationView from 'app/core/views/DeactivationView/DeactivationView';
+import JoinTeamView from 'app/teams/views/JoinTeamView/JoinTeamView';
+import TeamSuccessView from 'app/teams/views/TeamSuccessView/TeamSuccessView';
+import DeactivationTeamsView from 'app/teams/views/DeactivationTeamsView/DeactivationTeamsView';
+import ShareView from 'app/share/views/ShareView/ShareView';
+import RemoveAccountView from 'app/auth/views/RemoveAccountView/RemoveAccountView';
+import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/GuestAcceptInviteView';
+import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
+import BackupsView from 'app/backups/views/BackupsView/BackupsView';
 
 import { AppView } from '../types';
 
 const views: Array<{
   id: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: FunctionComponent<any> | ComponentClass<any>;
   componentProps?: Record<string, unknown>;
 }> = [

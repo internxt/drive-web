@@ -6,7 +6,7 @@ import {
   TaskProgress,
   TaskStatus,
   TaskType,
-  NotificationData,
+  TaskNotification,
   TaskData,
   TaskFilter,
   UpdateTaskPayload,
@@ -72,7 +72,7 @@ class TaskManagerService {
       .reverse();
   }
 
-  public findNotification(task: TaskData): NotificationData {
+  public findNotification(task: TaskData): TaskNotification {
     return {
       taskId: task.id,
       status: task.status,
