@@ -85,7 +85,7 @@ class App extends Component<AppProps> {
 
     if (window.location.pathname) {
       if (pathName === 'new' && window.location.search !== '') {
-        analyticsService.page(PATH_NAMES[window.location.pathname]);
+        window.analytics.page(PATH_NAMES[window.location.pathname]);
       }
     }
 
