@@ -3,14 +3,14 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
 import { sessionSelectors } from '../../session/session.selectors';
-import downloadService from '../../../../drive/services/download.service';
-import errorService from '../../../../core/services/error.service';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import i18n from '../../../../i18n/services/i18n.service';
-import { DownloadFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../../tasks/types';
-import tasksService from '../../../../tasks/services/tasks.service';
-import AppError from '../../../../core/types';
-import { DriveFolderData } from '../../../../drive/types';
+import downloadService from 'app/drive/services/download.service';
+import errorService from 'app/core/services/error.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import i18n from 'app/i18n/services/i18n.service';
+import { DownloadFolderTask, TaskProgress, TaskStatus, TaskType } from 'app/tasks/types';
+import tasksService from 'app/tasks/services/tasks.service';
+import AppError from 'app/core/types';
+import { DriveFolderData } from 'app/drive/types';
 
 interface DownloadFolderThunkOptions {
   relatedTaskId: string;
@@ -44,7 +44,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       folder,
       compressionFormat: 'zip',
       showNotification: options.showNotifications,
-      cancellable: true,
+      cancellable: false,
     };
     const decryptedCallback = () => {
       tasksService.updateTask({
@@ -67,10 +67,6 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
         });
       }
     };
-    const errorCallback = (err: Error) => {
-      console.log('errorCallback: ', err);
-      throw err;
-    };
 
     tasksService.addTask(task);
 
@@ -81,12 +77,19 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       },
     });
 
-    const downloadFolderPromise = downloadService.downloadFolder({
+    const [downloadFolderPromise, stop]: [Promise<void>, () => void] = await downloadService.downloadFolder({
       folder,
       decryptedCallback,
       updateProgressCallback,
-      errorCallback,
       isTeam,
+    });
+
+    tasksService.updateTask({
+      taskId,
+      merge: {
+        cancellable: true,
+        stop: async () => stop(),
+      },
     });
 
     downloadFolderPromise

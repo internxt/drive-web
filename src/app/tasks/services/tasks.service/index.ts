@@ -84,7 +84,7 @@ class TaskManagerService {
     };
   }
 
-  public cancelTask(taskId: string) {
+  public async cancelTask(taskId: string) {
     this.updateTask({
       taskId,
       merge: {
@@ -92,7 +92,7 @@ class TaskManagerService {
       },
     });
 
-    // await (taskManagerSelectors.findTaskById(getState())(taskId)?.stop || (() => undefined))();
+    await (this.findTask(taskId)?.stop || (() => undefined))();
 
     this.eventEmitter.emit(TaskManagerEvent.TaskCancelled);
   }

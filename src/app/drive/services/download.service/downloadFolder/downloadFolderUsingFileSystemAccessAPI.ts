@@ -1,6 +1,5 @@
 import JSZip from 'jszip';
 import { items } from '@internxt/lib';
-import streamToPromise from 'stream-to-promise';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 import errorService from 'app/core/services/error.service';
@@ -96,42 +95,31 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
       );
     }
 
-    const folderStream = zip.generateInternalStream({
-      type: 'uint8array',
-      streamFiles: true,
-      compression: 'DEFLATE',
-    }) as internal.Readable;
-    folderStream
-      ?.on('data', (chunk: Buffer) => {
-        writable.write(chunk);
-      })
-      .on('end', () => {
-        console.log('(downloadFolder.ts) folderStream end!');
-        writable.close();
-      })
-      .on('error', (err) => {
-        writable.abort();
-        errorCallback?.(err);
-      });
+    return [
+      new Promise<void>((resolve, reject) => {
+        const folderStream = zip.generateInternalStream({
+          type: 'uint8array',
+          streamFiles: true,
+          compression: 'DEFLATE',
+        }) as internal.Readable;
+        folderStream
+          ?.on('data', (chunk: Buffer) => {
+            writable.write(chunk);
+          })
+          .on('end', () => {
+            console.log('(downloadFolder.ts) folderStream end!');
+            writable.close();
+            resolve();
+          })
+          .on('error', (err) => {
+            errorCallback?.(err);
+            reject(err);
+          });
 
-    folderStream.resume();
-
-    // * Streams files one by one
-    for (const { file, stream } of fileStreams) {
-      stream
-        .on('data', () => undefined)
-        .once('end', () => {
-          console.log('(downloadFolder.ts) fileStream end: ', file.id, ' - size: ', file.size);
-        })
-        .once('error', (err) => {
-          writable.abort();
-          errorCallback?.(err);
-        });
-
-      await streamToPromise(stream);
-    }
-
-    await streamToPromise(folderStream);
+        folderStream.resume();
+      }),
+      actionStates,
+    ];
   } catch (err) {
     const castedError = errorService.castError(err);
 

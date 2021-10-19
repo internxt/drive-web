@@ -36,10 +36,10 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
       <div className="flex justify-center items-center w-full bg-l-neutral-20 py-6">
         <div className="flex w-64 px-8">
           <BaseButton onClick={() => onClose()} className="transparent w-11/12 mr-2">
-            {i18n.get('action.cancel')}
+            {i18n.get('actions.cancel')}
           </BaseButton>
           <BaseButton className="primary w-11/12 ml-2" onClick={() => onAccept()}>
-            {i18n.get('action.upgrade')}
+            {i18n.get('actions.upgrade')}
           </BaseButton>
         </div>
       </div>

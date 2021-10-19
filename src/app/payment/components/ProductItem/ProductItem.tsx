@@ -52,7 +52,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
     }
   };
   const desktopBuyButtonLabel =
-    isBuyButtonDisabled && isCurrentProduct ? i18n.get('general.loading.redirecting') : i18n.get('action.buy');
+    isBuyButtonDisabled && isCurrentProduct ? i18n.get('general.loading.redirecting') : i18n.get('actions.buy');
   const tabletBuyButtonLabel =
     isBuyButtonDisabled && isCurrentProduct
       ? i18n.get('general.loading.redirecting')

@@ -1,6 +1,5 @@
 import JSZip from 'jszip';
 import { items } from '@internxt/lib';
-import streamToPromise from 'stream-to-promise';
 import streamSaver from 'streamsaver';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 import internal from 'stream';
@@ -40,6 +39,9 @@ export default async function downloadFolderUsingStreamSaver({
   const zip = new JSZip();
   const writableStream = streamSaver.createWriteStream(`${folder.name}.zip`, {});
   const writer = writableStream.getWriter();
+  const onUnload = () => {
+    writer.abort();
+  };
 
   decryptedCallback?.();
 
@@ -88,40 +90,40 @@ export default async function downloadFolderUsingStreamSaver({
       );
     }
 
-    const folderStream = zip.generateInternalStream({
-      type: 'uint8array',
-      streamFiles: true,
-      compression: 'DEFLATE',
-    }) as internal.Readable;
-    folderStream
-      ?.on('data', (chunk: Buffer) => {
-        writer.write(chunk);
-      })
-      .on('end', () => {
-        console.log('(downloadFolder.ts) folderStream end!');
-        writer.close();
-      })
-      .on('error', (err) => {
+    window.addEventListener('unload', onUnload);
+
+    return [
+      new Promise<void>((resolve, reject) => {
+        const folderStream = zip.generateInternalStream({
+          type: 'uint8array',
+          streamFiles: true,
+          compression: 'DEFLATE',
+        }) as internal.Readable;
+        folderStream
+          ?.on('data', (chunk: Buffer) => {
+            writer.write(chunk);
+          })
+          .on('end', () => {
+            console.log('(downloadFolder.ts) folderStream end!');
+            writer.close();
+            window.removeEventListener('unload', onUnload);
+            resolve();
+          })
+          .on('error', (err) => {
+            errorCallback?.(err);
+            reject(err);
+          });
+
+        folderStream.resume();
+      }),
+      () => {
+        for (const actionState of actionStates) {
+          actionState?.stop();
+        }
+
         writer.abort();
-        errorCallback?.(err);
-      });
-
-    folderStream.resume();
-
-    // * Streams files one by one
-    for (const { stream } of fileStreams) {
-      stream
-        .on('data', () => undefined)
-        .once('end', () => undefined)
-        .once('error', (err) => {
-          writer.abort();
-          errorCallback?.(err);
-        });
-
-      await streamToPromise(stream);
-    }
-
-    await streamToPromise(folderStream);
+      },
+    ];
   } catch (err) {
     const castedError = errorService.castError(err);
 

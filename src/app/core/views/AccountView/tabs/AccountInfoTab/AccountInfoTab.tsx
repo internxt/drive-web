@@ -117,7 +117,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
                   className={`${isCurrentPlanLifetime ? 'hidden' : ''} primary`}
                   onClick={onUpgradeButtonClicked}
                 >
-                  {i18n.get('action.upgradeNow')}
+                  {i18n.get('actions.upgradeNow')}
                 </BaseButton>
               </div>
             ) : (
@@ -145,7 +145,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
               className="block text-center text-m-neutral-80 cursor-pointer mt-10"
               onClick={onDeletePermanentlyAccountClicked}
             >
-              {i18n.get('action.deleteAccount')}
+              {i18n.get('actions.deleteAccount')}
             </span>
           )}
         </div>

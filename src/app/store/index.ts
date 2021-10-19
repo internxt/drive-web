@@ -26,7 +26,6 @@ export const store = configureStore({
     fileViewer: fileViewerReducer,
     taskManager: taskManagerReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

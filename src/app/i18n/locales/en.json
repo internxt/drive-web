@@ -273,7 +273,7 @@
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Done"
   },
-  "action": {
+  "actions": {
     "upload": "Upload",
     "download": "Download",
     "accessFile": "Access File",
@@ -296,6 +296,9 @@
         "size": "Size",
         "actions": "Actions"
       }
+    },
+    "deleteItems": {
+      "advice": "Please confirm that you want to delete these items. This action can't be undone."
     }
   },
   "appSumo": {

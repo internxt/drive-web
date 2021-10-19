@@ -178,12 +178,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
                     <Unicons.UilCloudDownload className="h-5 mr-1.5" />
-                    <span>{i18n.get('action.download')}</span>
+                    <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
                     <Unicons.UilCloudUpload className="h-5 mr-1.5" />
-                    <span>{i18n.get('action.upload')}</span>
+                    <span>{i18n.get('actions.upload')}</span>
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (

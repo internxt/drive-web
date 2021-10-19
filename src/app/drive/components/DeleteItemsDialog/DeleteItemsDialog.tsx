@@ -10,6 +10,7 @@ import { setItemsToDelete } from '../../../store/slices/storage';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { RootState } from '../../../store';
 import { DriveItemData } from '../../types';
+import i18n from 'app/i18n/services/i18n.service';
 
 import './DeleteItemsDialog.scss';
 
@@ -37,26 +38,27 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
 
       props.onItemsDeleted && props.onItemsDeleted();
 
+      setIsLoading(false);
       onClose();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
-      console.log(castedError.message);
-    } finally {
       setIsLoading(false);
+
+      console.log(castedError.message);
     }
   };
 
   return (
     <BaseDialog isOpen={isOpen} title="Delete items" onClose={onClose}>
       <span className="text-center block w-full text-base px-8 text-neutral-900 mt-2">
-        Please confirm that you want to delete these items. This action can't be undone.
+        {i18n.get('drive.deleteItems.advice')}
       </span>
 
       <div className="flex justify-center items-center bg-l-neutral-20 py-6 mt-6">
         <div className="flex w-64">
           <BaseButton onClick={() => onClose()} className="cancel w-full mr-2">
-            Cancel
+            {i18n.get('actions.cancel')}
           </BaseButton>
           <BaseButton className="primary w-11/12 ml-2" disabled={isLoading} onClick={() => onAccept()}>
             {isLoading ? 'Deleting...' : 'Delete'}

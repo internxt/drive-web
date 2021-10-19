@@ -60,7 +60,7 @@ export interface DownloadFileTask extends BaseTask {
 
 export interface DownloadFolderTask extends BaseTask {
   action: TaskType.DownloadFolder;
-  cancellable: true;
+  cancellable: boolean;
   folder: { id: number; name: string };
   compressionFormat: string;
 }
