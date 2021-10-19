@@ -7,7 +7,7 @@
 - Replace `TOKEN` with your own [Github Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) with `read:packages` permission **ONLY**
 - Use `yarn` to install project dependencies.
 
-## Available Scripts
+## Scripts
 
 ### `yarn start` / `yarn run dev`
 
@@ -46,6 +46,42 @@ If you aren’t satisfied with the build tool and configuration choices, you can
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+
+## Directory structure
+
+* [.github](./.github)
+* [.husky](./.husky)
+* [public](./public)
+* [scripts](./scripts)
+* [src](./src)
+  * [app](./src/app)
+  * [assets](./src/assets)
+  * [App.tsx](./src/App.tsx)
+  * [index.scss](./src/index.scss)
+  * [index.tsx](./src/index.tsx)
+  * [react-app-env.d.ts](./src/react-app-env.d.ts)
+  * [reportWebVitals.ts](./src/reportWebVitals.ts)
+  * [setupTests.ts](./src/setupTests.ts)
+* [test](./test)
+* [.env.example](./.env.example)
+* [.eslintrc.json](./eslintrc.json)
+* [.gitignore](./.gitignore)
+* [.npmrc.template](./.npmrc.template)
+* [.pretierrc.json](./.pretierrc.json)
+* [.stylelintignore](./.stylelintignore)
+* [.stylelintrc.json](./.stylelintrc.json)
+* [craco.config.js](./craco.config.js)
+* [jest.config.js](./jest.config.js)
+* [package.json](./package.json)
+* [README.md](./README.md)
+* [tailwind.config.js](./tailwind.config.js)
+* [tsconfig.json](./tsconfig.json)
+* [yarn.lock](./yarn.lock)
+
+The [/src](./src) folder contains the source code. </br>
+The subfolder [/src/app](./src/app) organizes the code in a very similar way to Angular, grouping by feature related files in modules.
+
+</br>
 
 ## Config Tailwind CSS purge option
 
