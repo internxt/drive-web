@@ -107,7 +107,6 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
             writable.write(chunk);
           })
           .on('end', () => {
-            console.log('(downloadFolder.ts) folderStream end!');
             writable.close();
             resolve();
           })

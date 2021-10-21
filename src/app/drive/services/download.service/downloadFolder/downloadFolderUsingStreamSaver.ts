@@ -104,7 +104,6 @@ export default async function downloadFolderUsingStreamSaver({
             writer.write(chunk);
           })
           .on('end', () => {
-            console.log('(downloadFolder.ts) folderStream end!');
             writer.close();
             window.removeEventListener('unload', onUnload);
             resolve();
@@ -118,7 +117,6 @@ export default async function downloadFolderUsingStreamSaver({
       }),
       () => {
         for (const actionState of actionStates) {
-          console.log('actionState.stop():', actionState);
           actionState?.stop();
         }
 
