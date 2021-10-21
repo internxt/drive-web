@@ -50,7 +50,7 @@
     "test": "npm run test:unit && npm run test:e2e",
     "eject": "react-scripts eject",
     "format": "prettier '{src,test}/**/*.{ts,tsx}' --write",
-    "lint:ts": "eslint '{src,test}/**/*.{ts,tsx}'",
+    "lint:ts": "eslint '{src,test}/**/*.{ts,tsx}' --max-warnings=0",
     "lint:ts:fix": "yarn run lint:ts --fix",
     "lint:scss": "stylelint 'src/**/*.{css,scss}'",
     "lint:scss:fix": "yarn run lint:scss --fix",
