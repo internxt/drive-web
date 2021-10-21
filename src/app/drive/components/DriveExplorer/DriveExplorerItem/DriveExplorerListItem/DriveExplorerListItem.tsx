@@ -114,17 +114,27 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
       {/* HOVER ACTIONS */}
       <div className="pl-3 w-2/12 items-center hidden xl:flex">
         <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
+          <button
+            onClick={onDownloadButtonClicked}
+            className="hover-action mr-3"
+            data-test={`download-${item.isFolder ? 'folder' : 'file'}-button`}
+          >
+            <Unicons.UilCloudDownload className="h-5" />
+          </button>
           {!item.isFolder ? (
-            <button onClick={onDownloadButtonClicked} className="hover-action mr-3" data-test="download-file-button">
-              <Unicons.UilCloudDownload className="h-5" />
-            </button>
-          ) : null}
-          {!item.isFolder ? (
-            <button onClick={onShareButtonClicked} className="hover-action mr-3" data-test="share-file-button">
+            <button
+              onClick={onShareButtonClicked}
+              className="hover-action mr-3"
+              data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
+            >
               <Unicons.UilShareAlt className="h-5" />
             </button>
           ) : null}
-          <button onClick={onDeleteButtonClicked} className="hover-action" data-test="delete-file-button">
+          <button
+            onClick={onDeleteButtonClicked}
+            className="hover-action"
+            data-test={`delete-${item.isFolder ? 'folder' : 'file'}-button`}
+          >
             <Unicons.UilTrashAlt className="h-5" />
           </button>
         </div>
