@@ -150,10 +150,10 @@ export function createFolder(
   return [fn(), cancelTokenSource];
 }
 
-export function updateMetaData(itemId: number, data: DriveFolderMetadataPayload): Promise<void> {
+export function updateMetaData(itemId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
   const user: UserSettings = localStorageService.getUser() as UserSettings;
 
-  return httpService.post(`/api/storage/folder/${itemId}/meta`, data).then(() => {
+  return httpService.post(`/api/storage/folder/${itemId}/meta`, { metadata }).then(() => {
     analyticsService.trackFolderRename({
       email: user.email,
       fileId: itemId,

@@ -21,11 +21,9 @@ export interface DriveFolderData {
 }
 
 export interface DriveFolderMetadataPayload {
-  metadata: {
-    itemName?: string;
-    color?: string;
-    icon?: string;
-  };
+  itemName?: string;
+  color?: string;
+  icon?: string;
 }
 
 export interface DriveFileData {
@@ -46,7 +44,7 @@ export interface DriveFileData {
 }
 
 export interface DriveFileMetadataPayload {
-  metadata: { itemName?: string };
+  itemName?: string;
 }
 
 export type DriveItemData = DriveFileData & DriveFolderData;

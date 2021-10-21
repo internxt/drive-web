@@ -29,16 +29,28 @@ interface RenameFileInNetworkPayload {
   relativePath: string;
 }
 
-export function updateMetaData(itemId: string, data: DriveFileMetadataPayload): Promise<void> {
+export function updateMetaData(
+  fileId: string,
+  metadata: DriveFileMetadataPayload,
+  bucketId: string,
+  relativePath: string,
+): Promise<void> {
   const user = localStorageService.getUser() as UserSettings;
+  const hashedRelativePath = createHash('ripemd160').update(relativePath).digest('hex');
 
-  return httpService.post(`/api/storage/file/${itemId}/meta`, data).then(() => {
-    analyticsService.trackFileRename({
-      file_id: itemId,
-      email: user.email,
-      platform: DevicePlatform.Web,
+  return httpService
+    .post(`/api/storage/file/${fileId}/meta`, {
+      metadata,
+      bucketId,
+      relativePath: hashedRelativePath,
+    })
+    .then(() => {
+      analyticsService.trackFileRename({
+        file_id: fileId,
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
     });
-  });
 }
 
 export function deleteFile(fileData: DriveFileData): Promise<void> {

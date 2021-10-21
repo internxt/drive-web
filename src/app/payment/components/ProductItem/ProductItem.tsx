@@ -33,13 +33,14 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
   const isBuyButtonDisabled = props.isBuyButtonDisabled || isPlanActive;
   const monthlyAmountMultiplied = props.product.price.monthlyAmount * priceMultiplier;
   const monthlyAmountFormatted =
+    moneyService.getCurrencySymbol(props.product.price.currency) +
     (numberService.hasDecimals(monthlyAmountMultiplied)
       ? monthlyAmountMultiplied.toFixed(2)
-      : monthlyAmountMultiplied.toFixed()) + moneyService.getCurrencySymbol(props.product.price.currency);
+      : monthlyAmountMultiplied.toFixed());
   const totalAmount = props.product.price.amount * priceMultiplier;
   const totalAmountFormatted =
-    (numberService.hasDecimals(totalAmount) ? totalAmount.toFixed(2) : totalAmount.toFixed()) +
-    moneyService.getCurrencySymbol(props.product.price.currency);
+    moneyService.getCurrencySymbol(props.product.price.currency) +
+    (numberService.hasDecimals(totalAmount) ? totalAmount.toFixed(2) : totalAmount.toFixed());
   const onBuyButtonClicked = async () => {
     if (props.product.metadata.is_drive) {
       dispatch(

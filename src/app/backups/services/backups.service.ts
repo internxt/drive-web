@@ -28,6 +28,13 @@ const backupsService = {
       };
     });
   },
+  async deleteBackup(backup: DeviceBackup): Promise<void> {
+    const headers = httpService.getHeaders(true, false);
+    await fetch(`${process.env.REACT_APP_API_URL}/api/backup/${backup.id}`, {
+      method: 'DELETE',
+      headers,
+    });
+  },
 };
 
 export default backupsService;

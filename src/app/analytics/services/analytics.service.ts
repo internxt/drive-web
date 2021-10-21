@@ -7,9 +7,9 @@ import { DriveItemData } from 'app/drive/types';
 import { AnalyticsTrack } from '../types';
 
 export const PATH_NAMES = {
-  '/new': 'drive-web-register',
-  '/login': 'drive-web-login',
-  '/storage': 'drive-web-storage',
+  '/new': 'Register',
+  '/login': 'Login',
+  '/storage': 'Drive Main',
   '/settings': 'drive-web-settings',
   '/invite': 'drive-web-invite',
   '/remove': 'drive-web-remove',

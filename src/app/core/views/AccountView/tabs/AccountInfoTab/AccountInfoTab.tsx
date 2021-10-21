@@ -97,7 +97,9 @@ const AccountPlanInfoTab = (): JSX.Element => {
                     {currentPlan?.isAppSumo ? (
                       <>
                         <span>{i18n.get(`appSumo.tiers.${currentPlan.details?.planId as string}`)}</span>
-                        <span>{i18n.get(`appSumo.members.${currentPlan.details?.planId as string}`)}</span>
+                        <span>
+                          {i18n.get(`appSumo.members.${currentPlan.details?.planId as string}`, { total: '\u221E' })}
+                        </span>
                       </>
                     ) : currentPlan?.planId ? (
                       <Fragment>

@@ -12,7 +12,7 @@ import i18n from './app/i18n/services/i18n.service';
 import { AppViewConfig } from './app/core/types';
 import navigationService from './app/core/services/navigation.service';
 import layouts from './app/core/layouts';
-import analyticsService, { PATH_NAMES } from './app/analytics/services/analytics.service';
+import { PATH_NAMES } from './app/analytics/services/analytics.service';
 import { sessionActions } from './app/store/slices/session';
 import { AppDispatch, RootState } from './app/store';
 import { initializeUserThunk } from './app/store/slices/user';
@@ -89,7 +89,7 @@ class App extends Component<AppProps> {
 
     if (window.location.pathname) {
       if (pathName === 'new' && window.location.search !== '') {
-        analyticsService.page(PATH_NAMES[window.location.pathname]);
+        window.analytics.page(PATH_NAMES[window.location.pathname]);
       }
     }
 

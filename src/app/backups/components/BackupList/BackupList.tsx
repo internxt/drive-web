@@ -16,12 +16,16 @@ const BackupList = (props: Props) => {
   const onDownloadBackupClicked = async (backup: DeviceBackup) => {
     dispatch(backupsThunks.downloadBackupThunk(backup));
   };
+  const onDeleteBackupClicked = async (backup: DeviceBackup) => {
+    dispatch(backupsThunks.deleteBackupThunk(backup));
+  };
   const getItemsList = () =>
     props.items.map((item: DeviceBackup) => (
       <BackupListItem
         key={item.id}
         backup={item}
-        onDownloadBackupClicked={(backup) => onDownloadBackupClicked(backup)}
+        onDownloadBackupClicked={onDownloadBackupClicked}
+        onDeleteBackupClicked={onDeleteBackupClicked}
       />
     ));
   const getLoadingSkeleton = () => {
