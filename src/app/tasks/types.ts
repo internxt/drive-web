@@ -27,14 +27,15 @@ export enum TaskProgress {
   Max = 1.0,
 }
 
-export enum TaskManagerEvent {
+export enum TaskEvent {
   TaskAdded = 'task-added',
   TaskUpdated = 'task-updated',
   TaskCompleted = 'task-completed',
   TaskCancelled = 'task-cancelled',
+  TaskError = 'task-error',
 }
 
-interface BaseTask {
+export interface BaseTask {
   id: string;
   relatedTaskId?: string;
   action: TaskType;

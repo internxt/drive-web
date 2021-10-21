@@ -118,6 +118,7 @@ export default async function downloadFolderUsingStreamSaver({
       }),
       () => {
         for (const actionState of actionStates) {
+          console.log('actionState.stop():', actionState);
           actionState?.stop();
         }
 

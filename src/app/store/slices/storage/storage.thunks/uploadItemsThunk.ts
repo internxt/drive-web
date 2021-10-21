@@ -7,16 +7,16 @@ import { sessionSelectors } from '../../session/session.selectors';
 import { RootState } from '../../..';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
-import { TaskProgress, TaskStatus, TaskType, UploadFileTask } from '../../../../tasks/types';
-import tasksService from '../../../../tasks/services/tasks.service';
-import errorService from '../../../../core/services/error.service';
-import i18n from '../../../../i18n/services/i18n.service';
-import { renameFile } from '../../../../crypto/services/utils';
-import folderService from '../../../../drive/services/folder.service';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../drive/services/network';
-import { UserSettings } from '../../../../auth/types';
-import { DriveFileData, DriveItemData } from '../../../../drive/types';
+import { TaskStatus, TaskType, UploadFileTask } from 'app/tasks/types';
+import tasksService from 'app/tasks/services/tasks.service';
+import errorService from 'app/core/services/error.service';
+import i18n from 'app/i18n/services/i18n.service';
+import { renameFile } from 'app/crypto/services/utils';
+import folderService from 'app/drive/services/folder.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network';
+import { UserSettings } from 'app/auth/types';
+import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { ItemToUpload } from 'app/drive/services/file.service/uploadFile';
 import fileService from 'app/drive/services/file.service';
 
@@ -43,7 +43,7 @@ const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = { showNotifications: t
  */
 export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
-  async ({ files, parentFolderId, folderPath, options }: UploadItemsPayload, { getState, dispatch, requestId }) => {
+  async ({ files, parentFolderId, folderPath, options }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
     const showSizeWarning = files.some((file) => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
@@ -73,25 +73,19 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       return;
     }
 
-    for (const [index, file] of files.entries()) {
+    for (const file of files) {
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const [parentFolderContentPromise, cancelTokenSource] = folderService.fetchFolderContent(parentFolderId);
-      const taskId = `${requestId}-${index}`;
-      const task: UploadFileTask = {
-        id: taskId,
+      const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
         action: TaskType.UploadFile,
-        status: TaskStatus.Pending,
-        progress: TaskProgress.Min,
         fileName: filename,
         fileType: extension,
         isFileNameValidated: false,
         showNotification: !!options?.showNotifications,
         cancellable: true,
         stop: async () => cancelTokenSource.cancel(),
-      };
-
-      tasksService.addTask(task);
+      });
 
       const parentFolderContent = await parentFolderContentPromise;
       const [, , finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
@@ -120,7 +114,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         relativePath,
       });
 
-      tasksIds.push(task.id);
+      tasksIds.push(taskId);
     }
 
     // 2.

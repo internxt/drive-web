@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import taskManagerService from '../services/tasks.service';
-import { TaskManagerEvent, TaskFilter } from '../types';
+import { TaskEvent, TaskFilter } from '../types';
 
 export function useTaskManagerGetNotifications(filter: TaskFilter = {}) {
   const [notifications, setNotifications] = useState(taskManagerService.getNotifications(filter));
@@ -13,12 +13,12 @@ export function useTaskManagerGetNotifications(filter: TaskFilter = {}) {
   };
 
   useEffect(() => {
-    taskManagerService.addListener(TaskManagerEvent.TaskAdded, onTaskAdded);
-    taskManagerService.addListener(TaskManagerEvent.TaskUpdated, onTaskUpdated);
+    taskManagerService.addListener({ event: TaskEvent.TaskAdded, listener: onTaskAdded });
+    taskManagerService.addListener({ event: TaskEvent.TaskUpdated, listener: onTaskUpdated });
 
     return () => {
-      taskManagerService.removeListener(TaskManagerEvent.TaskAdded, onTaskAdded);
-      taskManagerService.removeListener(TaskManagerEvent.TaskUpdated, onTaskUpdated);
+      taskManagerService.removeListener({ event: TaskEvent.TaskAdded, listener: onTaskAdded });
+      taskManagerService.removeListener({ event: TaskEvent.TaskUpdated, listener: onTaskUpdated });
     };
   }, []);
 

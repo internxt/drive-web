@@ -3,15 +3,15 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { DriveItemData } from '../../../../drive/types';
-import i18n from '../../../../i18n/services/i18n.service';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import storageService from '../../../../drive/services/storage.service';
-import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
-import itemsListService from '../../../../drive/services/items-list.service';
+import { DriveItemData } from 'app/drive/types';
+import i18n from 'app/i18n/services/i18n.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import storageService from 'app/drive/services/storage.service';
+import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+import itemsListService from 'app/drive/services/items-list.service';
 import storageSelectors from '../storage.selectors';
-import { MoveFileTask, MoveFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../../tasks/types';
-import tasksService from '../../../../tasks/services/tasks.service';
+import { MoveFileTask, MoveFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
+import tasksService from 'app/tasks/services/tasks.service';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
@@ -21,7 +21,7 @@ export interface MoveItemsPayload {
 
 export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: RootState }>(
   'storage/moveItems',
-  async (payload: MoveItemsPayload, { getState, dispatch, requestId }) => {
+  async (payload: MoveItemsPayload, { getState, dispatch }) => {
     const { items, destinationFolderId, destinationPath } = payload;
     const promises: Promise<void>[] = [];
 
@@ -31,29 +31,26 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
 
     for (const [index, item] of items.entries()) {
       const fromFolderId = item.parentId || item.folderId;
-      const task: MoveFileTask | MoveFolderTask = item.isFolder
-        ? {
-            id: `${requestId}-${index}`,
-            action: TaskType.MoveFolder,
-            status: TaskStatus.InProcess,
-            progress: TaskProgress.Min,
-            showNotification: true,
-            folder: item,
-            destinationFolderId,
-            cancellable: false,
-          }
-        : {
-            id: `${requestId}-${index}`,
-            action: TaskType.MoveFile,
-            status: TaskStatus.InProcess,
-            progress: TaskProgress.Min,
-            showNotification: true,
-            file: item,
-            destinationFolderId,
-            cancellable: false,
-          };
+      let taskId: string;
 
-      tasksService.addTask(task);
+      if (item.isFolder) {
+        taskId = tasksService.create<MoveFolderTask>({
+          action: TaskType.MoveFolder,
+          showNotification: true,
+          folder: item,
+          destinationFolderId,
+          cancellable: false,
+        });
+      } else {
+        taskId = tasksService.create<MoveFileTask>({
+          action: TaskType.MoveFile,
+          showNotification: true,
+          file: item,
+          destinationFolderId,
+          cancellable: false,
+        });
+      }
+
       promises.push(
         storageService.moveItem(item, destinationFolderId, destinationPath, storageSelectors.bucket(getState())),
       );
@@ -61,7 +58,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
       promises[index]
         .then(async () => {
           tasksService.updateTask({
-            taskId: task.id,
+            taskId,
             merge: {
               status: TaskStatus.Success,
             },
@@ -89,7 +86,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         })
         .catch(() => {
           tasksService.updateTask({
-            taskId: task.id,
+            taskId,
             merge: {
               status: TaskStatus.Error,
             },

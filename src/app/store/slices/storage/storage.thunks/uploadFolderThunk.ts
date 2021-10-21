@@ -8,7 +8,7 @@ import storageThunks from '.';
 import i18n from '../../../../i18n/services/i18n.service';
 import tasksService from '../../../../tasks/services/tasks.service';
 import errorService from '../../../../core/services/error.service';
-import { TaskProgress, TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
+import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 
@@ -38,11 +38,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     let rootFolderItem: DriveFolderData | undefined;
     const levels = [root];
     const itemsUnderRoot = countItemsUnderRoot(root);
-    const task: UploadFolderTask = {
-      id: requestId,
+    const taskId = tasksService.create<UploadFolderTask>({
       action: TaskType.UploadFolder,
-      status: TaskStatus.Pending,
-      progress: TaskProgress.Min,
       folderName: root.name,
       showNotification: !!options.withNotification,
       cancellable: true,
@@ -62,20 +59,18 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
         await Promise.all(promises);
       },
-    };
-
-    tasksService.addTask(task);
+    });
 
     try {
       root.folderId = currentFolderId;
 
       while (levels.length > 0) {
         const level: IRoot = levels.shift() as IRoot;
-        const [createdFolder] = await dispatch(
+        const createdFolder = await dispatch(
           storageThunks.createFolderThunk({
             parentFolderId: level.folderId as number,
             folderName: level.name,
-            options: { relatedTaskId: task.id, showErrors: false },
+            options: { relatedTaskId: taskId, showErrors: false },
           }),
         ).unwrap();
 
@@ -88,12 +83,12 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
                 files: [childrenFile],
                 parentFolderId: createdFolder.id,
                 folderPath: level.fullPathEdited,
-                options: { relatedTaskId: task.id, showNotifications: false, showErrors: false },
+                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
               }),
             ).unwrap();
 
             tasksService.updateTask({
-              taskId: task.id,
+              taskId: taskId,
               merge: {
                 status: TaskStatus.InProcess,
                 progress: ++alreadyUploaded / itemsUnderRoot,
@@ -110,7 +105,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
       }
 
       tasksService.updateTask({
-        taskId: task.id,
+        taskId: taskId,
         merge: {
           status: TaskStatus.Success,
         },
@@ -119,11 +114,11 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
       options.onSuccess?.();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-      const updatedTask = tasksService.findTask(task.id);
+      const updatedTask = tasksService.findTask(taskId);
 
       if (updatedTask?.status !== TaskStatus.Cancelled) {
         tasksService.updateTask({
-          taskId: task.id,
+          taskId: taskId,
           merge: {
             status: TaskStatus.Error,
           },

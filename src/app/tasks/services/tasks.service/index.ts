@@ -1,8 +1,10 @@
 import { items as itemsLib } from '@internxt/lib';
 import { FunctionComponent, SVGProps } from 'react';
+import { uniqueId } from 'lodash';
+import EventEmitter from 'events';
 
 import {
-  TaskManagerEvent,
+  TaskEvent,
   TaskProgress,
   TaskStatus,
   TaskType,
@@ -10,10 +12,10 @@ import {
   TaskData,
   TaskFilter,
   UpdateTaskPayload,
+  BaseTask,
 } from '../../types';
-import iconService from '../../../drive/services/icon.service';
-import EventEmitter from 'events';
-import i18n from '../../../i18n/services/i18n.service';
+import iconService from 'app/drive/services/icon.service';
+import i18n from 'app/i18n/services/i18n.service';
 
 class TaskManagerService {
   private tasks: TaskData[];
@@ -24,10 +26,14 @@ class TaskManagerService {
     this.eventEmitter = new EventEmitter();
   }
 
-  public addTask(task: TaskData) {
+  public create<T extends BaseTask>(data: Omit<T, 'id' | 'status' | 'progress'>) {
+    const task = this.taskFactory(data);
+
+    this.eventEmitter.emit(TaskEvent.TaskAdded, task);
+
     this.tasks.push(task);
 
-    this.eventEmitter.emit(TaskManagerEvent.TaskAdded, task);
+    return task.id;
   }
 
   public updateTask(patch: UpdateTaskPayload) {
@@ -35,7 +41,7 @@ class TaskManagerService {
 
     Object.assign(taskToUpdate, patch.merge);
 
-    this.eventEmitter.emit(TaskManagerEvent.TaskUpdated, taskToUpdate);
+    this.eventEmitter.emit(TaskEvent.TaskUpdated, taskToUpdate);
   }
 
   public clearTasks() {
@@ -85,6 +91,8 @@ class TaskManagerService {
   }
 
   public async cancelTask(taskId: string) {
+    const task = this.findTask(taskId);
+
     this.updateTask({
       taskId,
       merge: {
@@ -92,20 +100,41 @@ class TaskManagerService {
       },
     });
 
-    await (this.findTask(taskId)?.stop || (() => undefined))();
+    await (task?.stop || (() => undefined))();
 
-    this.eventEmitter.emit(TaskManagerEvent.TaskCancelled);
+    this.eventEmitter.emit(TaskEvent.TaskCancelled, task);
+    this.eventEmitter.emit(`${TaskEvent.TaskCancelled}-${taskId}`, task);
   }
 
-  public addListener(event: TaskManagerEvent, listener: () => void) {
-    this.eventEmitter.addListener(event, listener);
+  public addListener({
+    taskId,
+    event,
+    listener,
+  }: {
+    taskId?: string;
+    event: TaskEvent;
+    listener: (task: TaskData) => void;
+  }) {
+    const eventKey = taskId ? `${event}-${taskId}` : event;
+
+    this.eventEmitter.addListener(eventKey, listener);
   }
 
-  public removeListener(event: TaskManagerEvent, listener: () => void) {
-    this.eventEmitter.removeListener(event, listener);
+  public removeListener({
+    taskId,
+    event,
+    listener,
+  }: {
+    taskId?: string;
+    event: TaskEvent;
+    listener: (task: TaskData) => void;
+  }) {
+    const eventKey = taskId ? `${event}-${taskId}` : event;
+
+    this.eventEmitter.removeListener(eventKey, listener);
   }
 
-  public removeAllListeners(event: TaskManagerEvent) {
+  public removeAllListeners(event: TaskEvent) {
     this.eventEmitter.removeAllListeners(event);
   }
 
@@ -195,6 +224,17 @@ class TaskManagerService {
     }
 
     return icon;
+  }
+
+  private taskFactory<T extends BaseTask>(data: Omit<T, 'id' | 'status' | 'progress'>) {
+    const task = {
+      ...data,
+      id: uniqueId(),
+      status: TaskStatus.Pending,
+      progress: TaskProgress.Min,
+    };
+
+    return task as unknown as TaskData;
   }
 }
 

@@ -2,17 +2,20 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../..';
 import tasksService from '../../../tasks/services/tasks.service';
-import { TaskManagerEvent } from '../../../tasks/types';
+import { TaskEvent } from '../../../tasks/types';
 import { uiActions } from '../ui';
 
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
   'taskManager/initialize',
   async (payload: void, { dispatch }) => {
-    const onTaskAdded = () => {
-      dispatch(uiActions.setIsFileLoggerOpen(true));
-    };
-
-    tasksService.addListener(TaskManagerEvent.TaskAdded, onTaskAdded);
+    tasksService.addListener({
+      event: TaskEvent.TaskAdded,
+      listener: (task) => {
+        if (task.showNotification) {
+          dispatch(uiActions.setIsFileLoggerOpen(true));
+        }
+      },
+    });
   },
 );
 

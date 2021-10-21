@@ -3,24 +3,24 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
 import { sessionSelectors } from '../../session/session.selectors';
-import downloadService from '../../../../drive/services/download.service';
-import tasksService from '../../../../tasks/services/tasks.service';
-import { DriveFileData } from '../../../../drive/types';
-import AppError from '../../../../core/types';
-import i18n from '../../../../i18n/services/i18n.service';
-import errorService from '../../../../core/services/error.service';
-import { DownloadFileTask, TaskProgress, TaskStatus, TaskType } from '../../../../tasks/types';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import downloadService from 'app/drive/services/download.service';
+import tasksService from 'app/tasks/services/tasks.service';
+import { DriveFileData } from 'app/drive/types';
+import AppError from 'app/core/types';
+import i18n from 'app/i18n/services/i18n.service';
+import errorService from 'app/core/services/error.service';
+import { TaskStatus } from 'app/tasks/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface DownloadFileThunkOptions {
-  relatedTaskId: string;
-  showNotifications: boolean;
-  showErrors: boolean;
+  taskId: string;
+  showNotifications?: boolean;
+  showErrors?: boolean;
 }
 
 interface DownloadFileThunkPayload {
   file: DriveFileData;
-  options: Partial<DownloadFileThunkOptions>;
+  options: DownloadFileThunkOptions;
 }
 
 const defaultDownloadFileThunkOptions = {
@@ -30,25 +30,15 @@ const defaultDownloadFileThunkOptions = {
 
 export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload, { state: RootState }>(
   'storage/downloadFile',
-  async (payload: DownloadFileThunkPayload, { getState, requestId, rejectWithValue }) => {
+  async (payload: DownloadFileThunkPayload, { getState, rejectWithValue }) => {
     const file = payload.file;
     const options = { ...defaultDownloadFileThunkOptions, ...payload.options };
     const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const taskId = requestId;
-    const task: DownloadFileTask = {
-      id: taskId,
-      action: TaskType.DownloadFile,
-      status: TaskStatus.Pending,
-      progress: TaskProgress.Min,
-      file,
-      showNotification: options.showNotifications,
-      cancellable: true,
-      relatedTaskId: options.relatedTaskId,
-    };
+    const task = tasksService.findTask(options.taskId);
     const updateProgressCallback = (progress: number) => {
       if (task?.status !== TaskStatus.Cancelled) {
         tasksService.updateTask({
-          taskId,
+          taskId: options.taskId,
           merge: {
             status: TaskStatus.InProcess,
             progress,
@@ -57,12 +47,15 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
       }
     };
 
-    tasksService.addTask(task);
+    // ! Prevents the file download start if the task is already cancelled
+    if (task?.status === TaskStatus.Cancelled) {
+      return;
+    }
 
     const [downloadFilePromise, actionState] = downloadService.downloadFile(file, isTeam, updateProgressCallback);
 
     tasksService.updateTask({
-      taskId,
+      taskId: options.taskId,
       merge: {
         status: TaskStatus.Decrypting,
         stop: async () => actionState?.stop(),
@@ -72,7 +65,7 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
     downloadFilePromise
       .then(() => {
         tasksService.updateTask({
-          taskId,
+          taskId: options.taskId,
           merge: {
             status: TaskStatus.Success,
           },
@@ -80,11 +73,10 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
       })
       .catch((err: unknown) => {
         const castedError = errorService.castError(err);
-        const task = tasksService.findTask(taskId);
 
         if (task?.status !== TaskStatus.Cancelled) {
           tasksService.updateTask({
-            taskId,
+            taskId: options.taskId,
             merge: {
               status: TaskStatus.Error,
             },

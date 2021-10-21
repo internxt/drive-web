@@ -7,20 +7,20 @@ import downloadService from 'app/drive/services/download.service';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import i18n from 'app/i18n/services/i18n.service';
-import { DownloadFolderTask, TaskProgress, TaskStatus, TaskType } from 'app/tasks/types';
+import { TaskStatus } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import AppError from 'app/core/types';
 import { DriveFolderData } from 'app/drive/types';
 
 interface DownloadFolderThunkOptions {
-  relatedTaskId: string;
-  showNotifications: boolean;
-  showErrors: boolean;
+  taskId: string;
+  showNotifications?: boolean;
+  showErrors?: boolean;
 }
 
 interface DownloadFolderThunkPayload {
   folder: DriveFolderData;
-  options: Partial<DownloadFolderThunkOptions>;
+  options: DownloadFolderThunkOptions;
 }
 
 const defaultDownloadFolderThunkOptions = {
@@ -30,36 +30,23 @@ const defaultDownloadFolderThunkOptions = {
 
 export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPayload, { state: RootState }>(
   'storage/downloadFolder',
-  async (payload: DownloadFolderThunkPayload, { getState, requestId, rejectWithValue }) => {
+  async (payload: DownloadFolderThunkPayload, { getState, rejectWithValue }) => {
     const folder = payload.folder;
     const options = { ...defaultDownloadFolderThunkOptions, ...payload.options };
     const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const taskId = requestId;
-    const task: DownloadFolderTask = {
-      id: taskId,
-      relatedTaskId: options.relatedTaskId,
-      action: TaskType.DownloadFolder,
-      status: TaskStatus.Pending,
-      progress: TaskProgress.Min,
-      folder,
-      compressionFormat: 'zip',
-      showNotification: options.showNotifications,
-      cancellable: false,
-    };
+    const task = tasksService.findTask(options.taskId);
     const decryptedCallback = () => {
       tasksService.updateTask({
-        taskId,
+        taskId: options.taskId,
         merge: {
           status: TaskStatus.InProcess,
         },
       });
     };
     const updateProgressCallback = (progress: number) => {
-      const task = tasksService.findTask(taskId);
-
       if (task?.status !== TaskStatus.Cancelled) {
         tasksService.updateTask({
-          taskId,
+          taskId: options.taskId,
           merge: {
             status: TaskStatus.InProcess,
             progress,
@@ -68,12 +55,16 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       }
     };
 
-    tasksService.addTask(task);
+    // ! Prevents the folder download to start if the task is already cancelled
+    if (task?.status === TaskStatus.Cancelled) {
+      return;
+    }
 
     tasksService.updateTask({
-      taskId,
+      taskId: options.taskId,
       merge: {
         status: TaskStatus.Decrypting,
+        cancellable: false,
       },
     });
 
@@ -85,7 +76,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
     });
 
     tasksService.updateTask({
-      taskId,
+      taskId: options.taskId,
       merge: {
         cancellable: true,
         stop: async () => stop(),
@@ -95,7 +86,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
     downloadFolderPromise
       .then(() => {
         tasksService.updateTask({
-          taskId,
+          taskId: options.taskId,
           merge: {
             status: TaskStatus.Success,
           },
@@ -103,11 +94,11 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       })
       .catch((err: unknown) => {
         const castedError = errorService.castError(err);
-        const task = tasksService.findTask(taskId);
+        const task = tasksService.findTask(options.taskId);
 
         if (task?.status !== TaskStatus.Cancelled) {
           tasksService.updateTask({
-            taskId,
+            taskId: options.taskId,
             merge: {
               status: TaskStatus.Error,
             },

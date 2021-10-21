@@ -5,7 +5,7 @@ import { Device, DeviceBackup } from '../../../backups/types';
 import backupsService from '../../../backups/services/backups.service';
 import downloadService from '../../../drive/services/download.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { DownloadBackupTask, TaskProgress, TaskStatus, TaskType } from '../../../tasks/types';
+import { DownloadBackupTask, TaskStatus, TaskType } from '../../../tasks/types';
 import tasksService from '../../../tasks/services/tasks.service';
 
 interface BackupsState {
@@ -40,18 +40,13 @@ export const fetchDeviceBackupsThunk = createAsyncThunk<DeviceBackup[], string, 
 
 export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state: RootState }>(
   'plan/downloadBackup',
-  async (backup: DeviceBackup, { requestId }) => {
-    const taskId = requestId;
-    const task: DownloadBackupTask = {
-      id: taskId,
+  async (backup: DeviceBackup) => {
+    const taskId = tasksService.create<DownloadBackupTask>({
       action: TaskType.DownloadBackup,
-      status: TaskStatus.Pending,
-      progress: TaskProgress.Min,
       backup: { name: backup.name, type: 'zip' },
       showNotification: true,
       cancellable: true,
-    };
-
+    });
     const onProgress = (progress: number) => {
       tasksService.updateTask({
         taskId,
@@ -86,8 +81,6 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
         finishedCallback: onFinished,
         errorCallback: onError,
       });
-
-      tasksService.addTask(task);
 
       tasksService.updateTask({
         taskId,

@@ -21,32 +21,23 @@ interface CreateFolderPayload {
   options?: Partial<CreateFolderThunkOptions>;
 }
 
-export const createFolderThunk = createAsyncThunk<
-  [DriveFolderData, CreateFolderTask],
-  CreateFolderPayload,
-  { state: RootState }
->(
+export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderPayload, { state: RootState }>(
   'storage/createFolder',
-  async ({ folderName, parentFolderId, options }: CreateFolderPayload, { requestId, getState, dispatch }) => {
+  async ({ folderName, parentFolderId, options }: CreateFolderPayload, { getState, dispatch }) => {
     options = Object.assign({ showErrors: true }, options || {});
     const currentFolderId = storageSelectors.currentFolderId(getState());
 
     try {
       const [createdFolderPromise, cancelTokenSource] = folderService.createFolder(parentFolderId, folderName);
-      const task: CreateFolderTask = {
-        id: requestId,
+      const taskId = tasksService.create<CreateFolderTask>({
         relatedTaskId: options.relatedTaskId,
         action: TaskType.CreateFolder,
-        status: TaskStatus.InProcess,
-        progress: TaskProgress.Min,
         folderName: folderName,
         parentFolderId: parentFolderId,
         showNotification: false,
         cancellable: false,
         stop: async () => cancelTokenSource.cancel(),
-      };
-
-      tasksService.addTask(task);
+      });
 
       const createdFolder = await createdFolderPromise;
       const createdFolderNormalized: DriveFolderData = {
@@ -63,7 +54,7 @@ export const createFolderThunk = createAsyncThunk<
       };
 
       tasksService.updateTask({
-        taskId: task.id,
+        taskId: taskId,
         merge: {
           status: TaskStatus.Success,
           progress: TaskProgress.Max,
@@ -79,7 +70,7 @@ export const createFolderThunk = createAsyncThunk<
         );
       }
 
-      return [createdFolderNormalized, task];
+      return createdFolderNormalized;
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
