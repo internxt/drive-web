@@ -84,7 +84,7 @@ class App extends Component<AppProps> {
     let template: JSX.Element = <div></div>;
 
     if (window.location.pathname) {
-      if (pathName === 'new' && window.location.search !== '') {
+      if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
         window.analytics.page(PATH_NAMES[window.location.pathname]);
       }
     }
