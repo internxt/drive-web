@@ -40,7 +40,12 @@ const DeviceList = (props: Props) => {
       <unicons.UilHistory className="text-blue-60 h-24 w-24" />
       <h1 className="text-2xl font-bold text-gray-70">Start using backups</h1>
       <p className="text-lg text-gray-50">Save a copy of your most important files on the cloud automatically</p>
-      <a className="pt-2 no-underline font-bold text-blue-60" href={desktopService.getDownloadAppUrl()} target="_blank">
+      <a
+        className="pt-2 no-underline font-bold text-blue-60"
+        href={desktopService.getDownloadAppUrl()}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Download our Desktop App to get started
       </a>
     </div>
