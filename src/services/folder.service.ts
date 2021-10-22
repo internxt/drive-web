@@ -16,7 +16,6 @@ import errorService from './error.service';
 import { items } from '@internxt/lib';
 import fileService from './file.service';
 import i18n from './i18n.service';
-import { createHash } from 'crypto';
 
 export interface IFolders {
   bucket: string;

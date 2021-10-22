@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import * as Unicons from '@iconscout/react-unicons';
 
@@ -16,10 +16,11 @@ import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 
 import './DriveExplorerListItem.scss';
 import { items } from '@internxt/lib';
+import useForceUpdate from '../../../../hooks/useForceUpdate';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
   const dispatch = useAppDispatch();
-  const { isItemSelected, isSomeItemSelected } = useDriveItemStoreProps();
+  const { isItemSelected, isSomeItemSelected, selectedItems } = useDriveItemStoreProps();
   const {
     isEditingName,
     dirtyName,
