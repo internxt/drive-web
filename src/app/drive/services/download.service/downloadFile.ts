@@ -1,10 +1,10 @@
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
-import fileDownload from 'js-file-download';
-import analyticsService from '../../../analytics/services/analytics.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import { DevicePlatform } from '../../../core/types';
-import { DriveFileData } from '../../types';
 
+import analyticsService from 'app/analytics/services/analytics.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import { DevicePlatform } from 'app/core/types';
+import { DriveFileData } from '../../types';
+import downloadFileFromBlob from './downloadFileFromBlob';
 import fetchFileBlob from './fetchFileBlob';
 
 const trackFileDownloadStart = (
@@ -46,7 +46,7 @@ export default function downloadFile(
   const [blobPromise, actionState] = fetchFileBlob(fileId, { isTeam, updateProgressCallback });
   const fileBlobPromise = blobPromise
     .then((fileBlob) => {
-      fileDownload(fileBlob, completeFilename);
+      downloadFileFromBlob(fileBlob, completeFilename);
       trackFileDownloadFinished(userEmail, fileId, itemData.size);
     })
     .catch((err) => {

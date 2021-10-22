@@ -83,7 +83,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
       });
       const fileBlob = await fileBlobPromise;
 
-      downloadService.fileDownload(fileBlob, info.decryptedName as string);
+      downloadService.downloadFileFromBlob(fileBlob, info.decryptedName as string);
     }
   };
 
