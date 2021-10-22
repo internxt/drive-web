@@ -1,6 +1,7 @@
 
 {
   "parser": "@typescript-eslint/parser",
+  "ignorePatterns": ["/scripts", "craco.config.js"],
   "plugins": [
     "react",
     "@typescript-eslint",

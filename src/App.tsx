@@ -5,20 +5,22 @@ import { ToastContainer } from 'react-toastify';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 
-import { initializeUserThunk } from './store/slices/user';
-import { sessionActions } from './store/slices/session';
-import { AppViewConfig, DriveFileData, UserSettings } from './models/interfaces';
-import configService from './services/config.service';
-import analyticsService, { PATH_NAMES } from './services/analytics.service';
-import layouts from './layouts';
-import views from './views';
-import { AppDispatch, RootState } from './store';
-import errorService from './services/error.service';
-import navigationService from './services/navigation.service';
-import envService from './services/env.service';
-import i18n from './services/i18n.service';
-import FileViewer from './components/FileViewer/FileViewer';
-import { uiActions } from './store/slices/ui';
+import configService from './app/core/services/config.service';
+import errorService from './app/core/services/error.service';
+import envService from './app/core/services/env.service';
+import i18n from './app/i18n/services/i18n.service';
+import { AppViewConfig } from './app/core/types';
+import navigationService from './app/core/services/navigation.service';
+import layouts from './app/core/layouts';
+import { PATH_NAMES } from './app/analytics/services/analytics.service';
+import { sessionActions } from './app/store/slices/session';
+import { AppDispatch, RootState } from './app/store';
+import { initializeUserThunk } from './app/store/slices/user';
+import { uiActions } from './app/store/slices/ui';
+import { DriveFileData } from './app/drive/types';
+import { UserSettings } from './app/auth/types';
+import views from './app/core/config/views';
+import FileViewer from './app/drive/components/FileViewer/FileViewer';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -68,7 +70,9 @@ class App extends Component<AppProps> {
         exact: !!viewConfig?.exact,
         path: viewConfig?.path || '',
         render: (props) =>
-          createElement(layoutConfig.component, {}, createElement(v.component, { ...props, ...v.componentProps })),
+          createElement(layoutConfig.component, {
+            children: createElement(v.component, { ...props, ...v.componentProps }),
+          }),
       };
 
       return <Route key={v.id} {...componentProps} />;

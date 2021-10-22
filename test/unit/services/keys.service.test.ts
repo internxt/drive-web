@@ -1,7 +1,8 @@
 import { aes } from '@internxt/lib';
-import { isValid } from '../../../src/lib/utilspgp';
-import { generateNewKeys } from '../../../src/services/pgp.service';
-import { getAesInitFromEnv, validateFormat } from '../../../src/services/keys.service';
+
+import { isValid } from '../../../src/app/crypto/services/utilspgp';
+import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
+import { getAesInitFromEnv, validateFormat } from '../../../src/app/crypto/services/keys.service';
 
 import { config } from 'dotenv';
 config();

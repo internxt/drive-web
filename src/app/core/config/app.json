@@ -1,0 +1,134 @@
+{
+  "debug": {
+    "enabled": false
+  },
+  "plan": {
+    "freePlanStorageLimit": 2147483648,
+    "maxStorageLimit": 108851651149824
+  },
+  "fileExplorer": {
+    "download": {
+      "folder": {
+        "method": "stream-saver"
+      }
+    },
+    "recentsLimit": 10
+  },
+  "views": [
+    {
+      "id": "signup",
+      "layout": "empty",
+      "path": "/new",
+      "exact": true
+    },
+    {
+      "id": "appsumo",
+      "layout": "empty",
+      "path": "/appsumo",
+      "exact": true
+    },
+    {
+      "id": "login",
+      "layout": "empty",
+      "path": "/login",
+      "exact": true
+    },
+    {
+      "id": "drive",
+      "layout": "header-and-sidenav",
+      "path": "/app",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "recents",
+      "layout": "header-and-sidenav",
+      "path": "/app/recents",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "backups",
+      "layout": "header-and-sidenav",
+      "path": "/app/backups",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "account",
+      "layout": "header-and-sidenav",
+      "path": "/account",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "teams-join",
+      "layout": "empty",
+      "path": "/teams/join/:token",
+      "exact": false
+    },
+    {
+      "id": "deactivation",
+      "layout": "empty",
+      "path": "/deactivations/:token",
+      "exact": false
+    },
+    {
+      "id": "teams-deactivation",
+      "layout": "empty",
+      "path": "/deactivationsTeams/:token",
+      "exact": false
+    },
+    {
+      "id": "team-success",
+      "layout": "empty",
+      "path": "/team/success/:sessionId",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "checkout",
+      "layout": "empty",
+      "path": "/checkout/:sessionId",
+      "exact": false,
+      "auth": true
+    },
+    {
+      "id": "remove",
+      "layout": "empty",
+      "path": "/remove",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "share-token",
+      "layout": "empty",
+      "path": "/:token([a-z0-9]{20})",
+      "exact": true
+    },
+    {
+      "id": "maintenance",
+      "layout": "empty",
+      "path": "",
+      "exact": true
+    },
+    {
+      "id": "not-found",
+      "layout": "empty",
+      "path": "",
+      "exact": false
+    },
+    {
+      "id": "guest-accept-invite",
+      "layout": "empty",
+      "path": "/guest/invite",
+      "exact": true,
+      "auth": true
+    }
+  ],
+  "database": {
+    "name": "app-database",
+    "version": 1.0,
+    "provider": "indexed-db"
+  }
+}
