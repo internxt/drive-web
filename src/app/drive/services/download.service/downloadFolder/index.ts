@@ -1,4 +1,4 @@
-import configService from '../../../../core/services/config.service';
+import configService from 'app/core/services/config.service';
 import { DownloadFolderMethod } from '../../../types';
 import downloadFolderUsingBlobs from './downloadFolderUsingBlobs';
 import downloadFolderUsingFileSystemAccessAPI from './downloadFolderUsingFileSystemAccessAPI';

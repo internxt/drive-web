@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import * as Unicons from '@iconscout/react-unicons';
+import { items } from '@internxt/lib';
 
 import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
 import sizeService from '../../../../../drive/services/size.service';
@@ -15,7 +16,6 @@ import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAnd
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 
 import './DriveExplorerListItem.scss';
-import { items } from '@internxt/lib';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
   const dispatch = useAppDispatch();

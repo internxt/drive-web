@@ -56,20 +56,23 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       );
     }
   };
-  const [{ isOver, canDrop }, drop] = useDrop(() => ({
-    accept: [NativeTypes.FILE, DragAndDropType.DriveItem],
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-    canDrop: (item, monitor): boolean => {
-      const droppedType = monitor.getItemType();
-      const droppedDataParentId = item.parentId || item.folderId || -1;
+  const [{ isOver, canDrop }, drop] = useDrop(
+    () => ({
+      accept: [NativeTypes.FILE, DragAndDropType.DriveItem],
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
+      canDrop: (item, monitor): boolean => {
+        const droppedType = monitor.getItemType();
+        const droppedDataParentId = item.parentId || item.folderId || -1;
 
-      return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id;
-    },
-    drop: onItemDropped,
-  }));
+        return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id;
+      },
+      drop: onItemDropped,
+    }),
+    [selectedItems],
+  );
   const onItemClicked = (item: BreadcrumbItemData): void => {
     if (item.active) {
       item.onClick && item.onClick();

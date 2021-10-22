@@ -1,5 +1,4 @@
 import { Component } from 'react';
-import fileDownload from 'js-file-download';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 import * as Unicons from '@iconscout/react-unicons';
@@ -16,6 +15,7 @@ import { Network } from '../../../drive/services/network';
 import i18n from '../../../i18n/services/i18n.service';
 
 import './ShareView.scss';
+import downloadService from 'app/drive/services/download.service';
 
 export interface ShareViewProps {
   match: match<{ token: string }>;
@@ -74,7 +74,6 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
       const network = new Network('NONE', 'NONE', 'NONE');
 
       this.setState({ progress: MIN_PROGRESS });
-
       const [fileBlobPromise] = network.downloadFile(info.bucket, info.file, {
         fileEncryptionKey: Buffer.from(info.encryptionKey, 'hex'),
         fileToken: info.fileToken,
@@ -84,7 +83,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
       });
       const fileBlob = await fileBlobPromise;
 
-      fileDownload(fileBlob, info.decryptedName as string);
+      downloadService.fileDownload(fileBlob, info.decryptedName as string);
     }
   };
 
@@ -121,7 +120,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
 
       const ProgressComponent =
         progress < 100 ? (
-          <div style={{ width: `${progressBarPixelsTotal}px` }}>
+          <div style={{ width: `${progressBarPixelsTotal}px` }} className="bg-l-neutral-20">
             <div
               style={{ width: `${progressBarPixelsCurrent}px` }}
               className="border-t-8 rounded border-l-neutral-50 transition-width duration-1000"

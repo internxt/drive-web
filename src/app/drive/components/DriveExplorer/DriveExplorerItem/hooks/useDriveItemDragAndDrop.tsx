@@ -42,65 +42,68 @@ export const useDriveItemDrag = (item: DriveItemData): DriveItemDrag => {
 export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
   const dispatch = useAppDispatch();
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
-  const selectedItems = useAppSelector((state) => state.storage.selectedItems);
+  const { selectedItems } = useAppSelector((state) => state.storage);
   const namePath = useAppSelector((state) => state.storage.namePath);
   const [{ isDraggingOverThisItem, canDrop }, connectDropTarget] = useDrop<
     DriveItemData | DriveItemData[],
     unknown,
     DropTargetCollectorProps
-  >(() => ({
-    accept: item.isFolder /* && !props.isDraggingThisItem */ ? [NativeTypes.FILE, DragAndDropType.DriveItem] : [],
-    collect: (monitor) => ({
-      isDraggingOverThisItem: monitor.isOver() && item.isFolder,
-      canDrop: monitor.canDrop(),
-    }),
-    canDrop: (): boolean => true,
-    drop: (droppedItem, monitor) => {
-      const droppedType = monitor.getItemType();
+  >(
+    () => ({
+      accept: item.isFolder ? [NativeTypes.FILE, DragAndDropType.DriveItem] : [],
+      collect: (monitor) => ({
+        isDraggingOverThisItem: monitor.isOver() && item.isFolder,
+        canDrop: monitor.canDrop(),
+      }),
+      canDrop: () => true,
+      drop: (droppedItem, monitor) => {
+        const droppedType = monitor.getItemType();
 
-      if (!item.isFolder) {
-        return;
-      }
+        if (!item.isFolder) {
+          return;
+        }
 
-      const namePathDestinationArray = namePath.map((level) => level.name);
-      namePathDestinationArray[0] = '';
-      const folderPath = namePathDestinationArray.join('/') + '/' + item.name;
+        const namePathDestinationArray = namePath.map((level) => level.name);
+        namePathDestinationArray[0] = '';
+        const folderPath = namePathDestinationArray.join('/') + '/' + item.name;
 
-      if (droppedType === DragAndDropType.DriveItem) {
-        const droppedData = monitor.getItem<DriveItemData>();
-        const itemsToMove = isSomeItemSelected
-          ? [...selectedItems, droppedData as DriveItemData].filter(
-              (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
-            )
-          : [droppedData];
+        if (droppedType === DragAndDropType.DriveItem) {
+          const droppedData = monitor.getItem<DriveItemData>();
+          const itemsToMove = isSomeItemSelected
+            ? [...selectedItems, droppedData as DriveItemData].filter(
+                (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
+              )
+            : [droppedData];
 
-        dispatch(
-          storageThunks.moveItemsThunk({
-            items: itemsToMove,
-            destinationFolderId: item.id,
-            destinationPath: folderPath,
-          }),
-        );
-      } else if (droppedType === NativeTypes.FILE) {
-        const droppedData = monitor.getItem<{ items: DataTransferItemList }>();
+          dispatch(
+            storageThunks.moveItemsThunk({
+              items: itemsToMove,
+              destinationFolderId: item.id,
+              destinationPath: folderPath,
+            }),
+          );
+        } else if (droppedType === NativeTypes.FILE) {
+          const droppedData = monitor.getItem<{ items: DataTransferItemList }>();
 
-        transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
-          if (files.length) {
-            // Only files
-            await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id, folderPath }));
-          }
-          if (rootList.length) {
-            // Directory tree
-            for (const root of rootList) {
-              const currentFolderId = item.id;
-
-              await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId }));
+          transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
+            if (files.length) {
+              // Only files
+              await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id, folderPath }));
             }
-          }
-        });
-      }
-    },
-  }));
+            if (rootList.length) {
+              // Directory tree
+              for (const root of rootList) {
+                const currentFolderId = item.id;
+
+                await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId }));
+              }
+            }
+          });
+        }
+      },
+    }),
+    [selectedItems],
+  );
 
   return {
     isDraggingOverThisItem,
