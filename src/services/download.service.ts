@@ -1,5 +1,3 @@
-import fileDownload from 'js-file-download';
-
 import localStorageService from './local-storage.service';
 import analyticsService from './analytics.service';
 import { DevicePlatform } from '../models/enums';
@@ -17,6 +15,21 @@ function fetchFileBlob(
   return network.downloadFile(bucketId, fileId, {
     progressCallback: options.updateProgressCallback,
   });
+}
+
+async function fileDownload(fileBlob: Blob, filename) {
+  const blobText = await fileBlob.text();
+  const element = document.createElement('a');
+
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(blobText));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
 }
 
 export function downloadFile(
@@ -129,6 +142,7 @@ const trackFileDownloadFinished = (userEmail: string, file_id: string, file_size
 
 const downloadService = {
   fetchFileBlob,
+  fileDownload,
   downloadFile,
   downloadBackup,
 };
