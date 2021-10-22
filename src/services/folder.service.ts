@@ -16,6 +16,7 @@ import errorService from './error.service';
 import { items } from '@internxt/lib';
 import fileService from './file.service';
 import i18n from './i18n.service';
+import { createHash } from 'crypto';
 
 export interface IFolders {
   bucket: string;
@@ -160,16 +161,46 @@ export function createFolder(
   return [fn(), cancelTokenSource];
 }
 
-export function updateMetaData(itemId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
+export async function updateMetaData(
+  folderId: number,
+  metadata: DriveFolderMetadataPayload,
+  bucketId: string,
+  relativePath: string,
+): Promise<void> {
   const user: UserSettings = localStorageService.getUser() as UserSettings;
 
-  return httpService.post(`/api/storage/folder/${itemId}/meta`, { metadata }).then(() => {
+  await httpService.post(`/api/storage/folder/${folderId}/meta`, { metadata }).then(() => {
     analyticsService.trackFolderRename({
       email: user.email,
-      fileId: itemId,
+      fileId: folderId,
       platform: DevicePlatform.Web,
     });
   });
+
+  // * Renames files on network recursively
+  const pendingFolders = [{ relativePath, folderId }];
+  while (pendingFolders.length > 0) {
+    const currentFolder = pendingFolders[0];
+    const [folderContentPromise] = fetchFolderContent(currentFolder.folderId);
+    const { files, folders } = await folderContentPromise;
+
+    pendingFolders.shift();
+
+    // * Renames current folder files
+    for (const file of files) {
+      const relativePath = `${currentFolder.relativePath}/${items.getItemDisplayName(file)}`;
+
+      fileService.renameFileInNetwork(file.fileId, bucketId, relativePath);
+    }
+
+    // * Adds current folder folders to pending
+    pendingFolders.push(
+      ...folders.map((folderData) => ({
+        relativePath: `${currentFolder.relativePath}/${folderData.name}`,
+        folderId: folderData.id,
+      })),
+    );
+  }
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {

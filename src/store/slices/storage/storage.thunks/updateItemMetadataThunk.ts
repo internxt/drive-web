@@ -35,7 +35,7 @@ export const updateItemMetadataThunk = createAsyncThunk<
       });
 
     item.isFolder
-      ? await folderService.updateMetaData(item.id, metadata)
+      ? await folderService.updateMetaData(item.id, metadata, storageSelectors.bucket(getState()), relativePath)
       : await fileService.updateMetaData(item.fileId, metadata, storageSelectors.bucket(getState()), relativePath);
 
     dispatch(
