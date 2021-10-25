@@ -1,0 +1,15 @@
+name: Drive Web CD
+on:
+  push:
+    branches: [ci]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.PRODUCTION_MACHINE_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: Run Deploy Script
+        run: "ssh -t ${{ secrets.PRODUCTION_MACHINE_USER }}@${{ secrets.PRODUCTION_MACHINE_HOSTNAME }} './deploy-web.sh'"
