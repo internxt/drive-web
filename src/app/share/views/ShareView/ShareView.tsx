@@ -16,6 +16,7 @@ import i18n from '../../../i18n/services/i18n.service';
 
 import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';
+import errorService from 'app/core/services/error.service';
 
 export interface ShareViewProps {
   match: match<{ token: string }>;
@@ -29,7 +30,7 @@ interface ShareViewState {
   token: string;
   progress: number;
   info: GetShareInfoWithDecryptedName | null;
-  linkExpired: boolean;
+  error: Error | null;
   accessedFile: boolean;
 }
 
@@ -38,11 +39,11 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     token: this.props.match.params.token,
     progress: TaskProgress.Min,
     info: null,
-    linkExpired: false,
+    error: null,
     accessedFile: false,
   };
 
-  loadInfo = async (): Promise<void> => {
+  loadInfo = async () => {
     this.setState({
       accessedFile: true,
     });
@@ -50,7 +51,14 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     const token = this.state.token;
 
     try {
-      const info = await getShareInfo(token);
+      const info = await getShareInfo(token).catch(() => {
+        throw new Error(i18n.get('error.linkExpired'));
+      });
+
+      // ! iOS Chrome not supported
+      if (navigator.userAgent.match('CriOS')) {
+        throw new Error(i18n.get('error.browserNotSupported', { userAgent: navigator.userAgent }));
+      }
 
       this.setState({
         info: {
@@ -59,8 +67,10 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
         },
       });
     } catch (err) {
+      const castedError = errorService.castError(err);
+
       this.setState({
-        linkExpired: true,
+        error: castedError,
       });
     }
   };
@@ -96,6 +106,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
   }
 
   render(): JSX.Element {
+    const error = this.state.error as unknown as Error;
     let body;
 
     if (!this.state.accessedFile) {
@@ -104,8 +115,8 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
           {i18n.get('actions.accessFile')}
         </BaseButton>
       );
-    } else if (this.state.linkExpired) {
-      body = <p className="text-lg text-red-70">{i18n.get('error.linkExpired')}</p>;
+    } else if (error) {
+      body = <p className="text-lg text-red-70">{error.message}</p>;
     } else if (this.state.info) {
       const info = this.state.info as unknown as GetShareInfoWithDecryptedName;
 
