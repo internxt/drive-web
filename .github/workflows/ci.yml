@@ -15,9 +15,8 @@ env:
   REACT_APP_RECAPTCHA_V3: ${{ secrets.REACT_APP_RECAPTCHA_V3 }}
   GENERATE_SOURCEMAP: ${{ secrets.GENERATE_SOURCEMAP }}
   CI: false
-
 jobs:
-  ci:
+  tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -29,7 +28,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://npm.pkg.github.com'
-
       - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
       # You cannot read packages from other private repos with GITHUB_TOKEN
@@ -46,6 +44,26 @@ jobs:
           start: yarn start
           command: yarn test:e2e
           wait-on: http://localhost:3000
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://npm.pkg.github.com'
+      - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
+      - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
+      # You cannot read packages from other private repos with GITHUB_TOKEN
+      # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
+      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
+      - run: echo "always-auth=true" >> .npmrc
+      - name: Install
+        run: yarn
       - name: Build
         run: yarn build
         env:
@@ -53,6 +71,6 @@ jobs:
       - name: Install netlify
         run: npm install -g netlify
       - name: Deploy build
-        env: 
+        env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_PAT }}
         run: DEBUG=* netlify deploy --dir=build
