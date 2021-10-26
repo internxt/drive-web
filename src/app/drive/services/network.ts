@@ -105,26 +105,28 @@ export class Network {
     let errored = false;
 
     const promise = new Promise<Blob>((resolve, reject) => {
-      downloadStreamPromise.then((downloadStream) => {
-        const chunks: Buffer[] = [];
-        downloadStream
-          .on('data', (chunk: Buffer) => {
-            chunks.push(chunk);
-          })
-          .once('error', (err) => {
-            errored = true;
-            reject(err);
-          })
-          .once('end', () => {
-            if (errored) {
-              return;
-            }
-            const uploadedBytes = chunks.reduce((acumm, chunk) => acumm + chunk.length, 0);
+      downloadStreamPromise
+        .then((downloadStream) => {
+          const chunks: Buffer[] = [];
+          downloadStream
+            .on('data', (chunk: Buffer) => {
+              chunks.push(chunk);
+            })
+            .once('error', (err) => {
+              errored = true;
+              reject(err);
+            })
+            .once('end', () => {
+              if (errored) {
+                return;
+              }
+              const uploadedBytes = chunks.reduce((acumm, chunk) => acumm + chunk.length, 0);
 
-            params.progressCallback(1, uploadedBytes, uploadedBytes);
-            resolve(new Blob(chunks, { type: 'application/octet-stream' }));
-          });
-      });
+              params.progressCallback(1, uploadedBytes, uploadedBytes);
+              resolve(new Blob(chunks, { type: 'application/octet-stream' }));
+            });
+        })
+        .catch(reject);
     });
 
     return [promise, actionState];
