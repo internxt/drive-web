@@ -52,15 +52,17 @@ export const icons = {
 export const getItemIcon = (isFolder: boolean, itemExtension: string): FunctionComponent<SVGProps<SVGSVGElement>> => {
   let groupId: FileExtensionGroup = FileExtensionGroup.Default;
 
-  Object.entries(extensionsList).every(([key, list]) => {
-    const matched = list.includes(itemExtension);
+  if (itemExtension) {
+    Object.entries(extensionsList).every(([key, list]) => {
+      const matched = list.includes(itemExtension.toLowerCase());
 
-    if (matched) {
-      groupId = FileExtensionGroup[key];
-    }
+      if (matched) {
+        groupId = FileExtensionGroup[key];
+      }
 
-    return !matched;
-  });
+      return !matched;
+    });
+  }
 
   return !isFolder ? iconsByFileExtensionGroup[groupId] : LightFolder;
 };
