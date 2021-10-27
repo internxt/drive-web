@@ -196,10 +196,11 @@ code {
     @apply border-2 border-neutral-500 rounded-1px text-xs text-neutral-500 w-3 h-3;
   }
 
+  input:not([type]),
   input[type="text"],
   input[type="email"],
   input[type="password"] {
-    @apply ring-1 ring-m-neutral-100 rounded focus:ring-blue-60 text-neutral-500 placeholder-m-neutral-100 text-base px-3 py-2;
+    @apply ring-1 ring-m-neutral-100 rounded focus:ring-blue-60 text-neutral-500 placeholder-m-neutral-60 text-base px-3 py-2;
 
     &:disabled {
       @apply bg-l-neutral-30;
@@ -266,8 +267,12 @@ code {
   .base-button.primary {
     @apply bg-blue-60 hover:bg-blue-80 text-white;
 
+    &.inverse {
+      @apply bg-blue-20 text-blue-60 hover:bg-blue-30;
+    }
+
     &:disabled {
-      @apply bg-l-neutral-30 text-m-neutral-80;
+      @apply bg-l-neutral-30 text-m-neutral-80 hover:bg-l-neutral-30;
     }
   }
 

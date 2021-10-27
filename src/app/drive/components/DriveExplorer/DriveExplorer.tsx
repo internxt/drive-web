@@ -7,13 +7,13 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
-import folderEmptyImage from '../../../../assets/images/folder-empty.svg';
-import noResultsSearchImage from '../../../../assets/images/no-results-search.svg';
+import folderEmptyImage from 'assets/images/folder-empty.svg';
+import noResultsSearchImage from 'assets/images/no-results-search.svg';
 import DriveExplorerOverlay from './DriveExplorerOverlay/DriveExplorerOverlay';
-import { transformDraggedItems } from '../../../core/services/drag-and-drop.service';
-import { StorageFilters } from '../../../store/slices/storage/storage.model';
-import { AppDispatch, RootState } from '../../../store';
-import { Workspace } from '../../../core/types';
+import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
+import { StorageFilters } from 'app/store/slices/storage/storage.model';
+import { AppDispatch, RootState } from 'app/store';
+import { Workspace } from 'app/core/types';
 
 import './DriveExplorer.scss';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
@@ -22,7 +22,7 @@ import { storageActions } from '../../../store/slices/storage';
 import { uiActions } from '../../../store/slices/ui';
 import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
-import BaseButton from '../../../core/components/Buttons/BaseButton';
+import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';

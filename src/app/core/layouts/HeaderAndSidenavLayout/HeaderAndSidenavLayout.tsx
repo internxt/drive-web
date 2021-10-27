@@ -2,16 +2,16 @@ import { Link } from 'react-router-dom';
 
 import AppHeader from '../../components/AppHeader/AppHeader';
 import Sidenav from '../../components/Sidenav/Sidenav';
-import { uiActions } from '../../../store/slices/ui';
-import ReachedPlanLimitDialog from '../../../drive/components/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
-import ShareItemDialog from '../../components/dialogs/ShareItemDialog/ShareItemDialog';
-import InviteTeamMemberDialog from '../../../teams/components/InviteTeamMemberDialog/InviteTeamMemberDialog';
+import { uiActions } from 'app/store/slices/ui';
+import ReachedPlanLimitDialog from 'app/drive/components/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
+import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
+import InviteTeamMemberDialog from 'app/teams/components/InviteTeamMemberDialog/InviteTeamMemberDialog';
 import navigationService from '../../services/navigation.service';
-import GuestDialog from '../../../guests/components/GuestDialog/GuestDialog';
+import GuestDialog from 'app/guests/components/GuestDialog/GuestDialog';
 import { AppView } from '../../types';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import TaskLogger from '../../../tasks/components/TaskLogger/TaskLogger';
-import DriveItemInfoMenu from '../../../drive/components/DriveItemInfoMenu/DriveItemInfoMenu';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
+import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemInfoMenu';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;

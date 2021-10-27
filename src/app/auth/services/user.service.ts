@@ -31,9 +31,14 @@ export const sendDeactivationEmail = (email: string): Promise<Response> => {
   });
 };
 
+const inviteAFriend = (email: string) => {
+  return httpService.post<{ email: string }, void>('/api/user/invite', { email });
+};
+
 const userService = {
   initializeUser,
   sendDeactivationEmail,
+  inviteAFriend,
 };
 
 export default userService;

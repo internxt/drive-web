@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { getPasswordDetails } from '../../../auth/services/auth.service';
 import { UserSettings } from '../../../auth/types';
-import BaseButton from '../../../core/components/Buttons/BaseButton';
+import BaseButton from '../../../shared/components/forms/BaseButton';
 import httpService from '../../../core/services/http.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';

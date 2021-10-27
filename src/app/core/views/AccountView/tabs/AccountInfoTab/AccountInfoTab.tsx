@@ -2,20 +2,21 @@ import { Fragment, useState, useEffect } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import { AccountViewTab } from '..';
-import DeleteAccountDialog from '../../../../components/dialogs/DeleteAccountDialog/DeleteAccountDialog';
-import AccountAdvice from '../../../../components/AccountAdvice/AccountAdvice';
-import BaseButton from '../../../../components/Buttons/BaseButton';
+import AccountAdvice from 'app/shared/components/AccountAdvice/AccountAdvice';
 import screenService from '../../../../services/screen.service';
-import moneyService from '../../../../../payment/services/money.service';
-import usageService from '../../../../../drive/services/usage.service';
-import { userSelectors } from '../../../../../store/slices/user';
-import { sessionSelectors } from '../../../../../store/slices/session/session.selectors';
-import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
-import { bytesToString } from '../../../../../drive/services/size.service';
-import limitService from '../../../../../drive/services/limit.service';
-import i18n from '../../../../../i18n/services/i18n.service';
-import { setCurrentAccountTab } from '../../../../../store/slices/ui';
-import { planSelectors } from '../../../../../store/slices/plan';
+import DeleteAccountDialog from 'app/auth/components/DeleteAccountDialog/DeleteAccountDialog';
+import BaseButton from 'app/shared/components/forms/BaseButton';
+import moneyService from 'app/payment/services/money.service';
+import usageService from 'app/drive/services/usage.service';
+import { userSelectors } from 'app/store/slices/user';
+import { sessionSelectors } from 'app/store/slices/session/session.selectors';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { bytesToString } from 'app/drive/services/size.service';
+import limitService from 'app/drive/services/limit.service';
+import i18n from 'app/i18n/services/i18n.service';
+import { setCurrentAccountTab } from 'app/store/slices/ui';
+import { planSelectors } from 'app/store/slices/plan';
+import InviteAFriendWidget from 'app/auth/components/InviteAFriendWidget/InviteAFriendWidget';
 
 const AccountPlanInfoTab = (): JSX.Element => {
   const [isLgScreen, setIsLgScreen] = useState(screenService.isLg());
@@ -53,7 +54,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
 
       <div className="flex flex-col pt-10 items-center">
         {/* ACCOUNT INFO */}
-        <div className={`${isLgScreen ? '' : 'mx-auto'} max-w-sm w-full mb-20`}>
+        <div className={`${isLgScreen ? '' : 'mx-auto'} max-w-sm w-full mb-12`}>
           {/* PERSONAL */}
           <div className={`${isLgScreen ? '' : 'justify-center'} flex mb-12`}>
             <div className="w-12 h-12 bg-blue-20 text-blue-60 rounded-1/2 flex justify-center items-center mr-4">
@@ -127,6 +128,8 @@ const AccountPlanInfoTab = (): JSX.Element => {
             )}
           </div>
         </div>
+
+        <InviteAFriendWidget className="mb-20" />
 
         {/* MORE INFO & DELETE ACCOUNT */}
         <div>

@@ -115,6 +115,13 @@
       }
     }
   },
+  "form": {
+    "fields": {
+      "email": {
+        "placeholder": "Email address"
+      }
+    }
+  },
   "error": {
     "genericError": "There was an error: {reason}",
     "serverError": "Internal server error. Try again later",
@@ -145,7 +152,8 @@
     "teamInvitation": "The invitation email could not be sent",
     "noSpaceAvailable": "Your Internxt Drive is full. Get more space upgrading your account.",
     "noFilePreview": "No file preview available",
-    "browserNotSupported": "Browser not supported: {userAgent}"
+    "browserNotSupported": "Browser not supported: {userAgent}",
+    "inviteAFriend": "Error sending the invitation to a friend: {message}"
   },
   "backups": {
     "backups-from": "Backups from {deviceName}",
@@ -272,7 +280,8 @@
     "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
     "joinedToTheTeam": "You have successfully joined to the team",
-    "done": "Done"
+    "done": "Done",
+    "inviteAFriend": "An invitation has been sent to {email}"
   },
   "actions": {
     "upload": "Upload",
@@ -283,7 +292,8 @@
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
     "buy": "Buy",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "sendInvitation": "Send invitation"
   },
   "drive": {
     "usage": "Usage",
@@ -321,6 +331,13 @@
     },
     "plans": {
       "advice": "You will be redirected to your AppSumo account"
+    }
+  },
+  "inviteAFriend": {
+    "title": "Invite a friend",
+    "description": "Get up to 4GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
+    "actions": {
+      "sendInvitation": "Send invitation"
     }
   }
 }

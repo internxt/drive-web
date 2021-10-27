@@ -2,14 +2,14 @@ import * as Unicons from '@iconscout/react-unicons';
 import { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 
-import Breadcrumbs, { BreadcrumbItemData } from '../../../core/components/Breadcrumbs/Breadcrumbs';
+import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
-import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
-import pollingService from '../../../core/services/polling.service';
-import { AppDispatch, RootState } from '../../../store';
-import { storageActions, storageSelectors } from '../../../store/slices/storage';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
+import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+import pollingService from 'app/core/services/polling.service';
+import { AppDispatch, RootState } from 'app/store';
+import { storageActions, storageSelectors } from 'app/store/slices/storage';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
 
 export interface DriveViewProps {
   namePath: FolderPath[];

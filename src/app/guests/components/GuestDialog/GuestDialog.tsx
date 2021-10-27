@@ -1,15 +1,15 @@
 import { connect } from 'react-redux';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { IFormValues } from '../../../core/types';
-import { RootState } from '../../../store';
-import BaseInput from '../../../core/components/forms/inputs/BaseInput';
-import AuthButton from '../../../core/components/Buttons/AuthButton';
-import BaseDialog from '../../../core/components/dialogs/BaseDialog/BaseDialog';
-import { uiActions } from '../../../store/slices/ui';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import httpService from '../../../core/services/http.service';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { IFormValues } from 'app/core/types';
+import { RootState } from 'app/store';
+import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import AuthButton from 'app/shared/components/AuthButton';
+import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import { uiActions } from 'app/store/slices/ui';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import httpService from 'app/core/services/http.service';
 import { AxiosError } from 'axios';
 
 const GuestInviteDialog = () => {

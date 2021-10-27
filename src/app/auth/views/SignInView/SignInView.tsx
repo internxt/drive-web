@@ -5,24 +5,24 @@ import { auth } from '@internxt/lib';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { initializeUserThunk, userActions } from '../../../store/slices/user';
-import { RootState } from '../../../store';
-import { useAppDispatch } from '../../../store/hooks';
+import { initializeUserThunk, userActions } from 'app/store/slices/user';
+import { RootState } from 'app/store';
+import { useAppDispatch } from 'app/store/hooks';
 import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
-import AuthButton from '../../../core/components/Buttons/AuthButton';
-import { twoFactorRegexPattern } from '../../../core/services/validation.service';
+import AuthButton from 'app/shared/components/AuthButton';
+import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { check2FANeeded, doLogin } from '../../services/auth.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import analyticsService from '../../../analytics/services/analytics.service';
-import bigLogo from '../../../../assets/icons/big-logo.svg';
+import localStorageService from 'app/core/services/local-storage.service';
+import analyticsService from 'app/analytics/services/analytics.service';
+import bigLogo from 'assets/icons/big-logo.svg';
 import { UilLock, UilEyeSlash, UilEye, UilEnvelope } from '@iconscout/react-unicons';
-import { planThunks } from '../../../store/slices/plan';
-import { productsThunks } from '../../../store/slices/products';
-import errorService from '../../../core/services/error.service';
-import { AppView, IFormValues } from '../../../core/types';
-import navigationService from '../../../core/services/navigation.service';
+import { planThunks } from 'app/store/slices/plan';
+import { productsThunks } from 'app/store/slices/products';
+import errorService from 'app/core/services/error.service';
+import { AppView, IFormValues } from 'app/core/types';
+import navigationService from 'app/core/services/navigation.service';
 import { UserSettings } from '../../types';
-import BaseInput from '../../../core/components/forms/inputs/BaseInput';
+import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
 
 export default function SignInView(): JSX.Element {
   const dispatch = useAppDispatch();

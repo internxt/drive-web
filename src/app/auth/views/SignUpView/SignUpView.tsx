@@ -8,27 +8,24 @@ import { UilLock, UilEyeSlash, UilEye, UilEnvelope, UilUser } from '@iconscout/r
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 
-import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
-import localStorageService from '../../../core/services/local-storage.service';
-import analyticsService, {
-  signupDevicesource,
-  signupCampaignSource,
-} from '../../../analytics/services/analytics.service';
 import { readReferalCookie } from '../../services/auth.service';
-import BaseInput from '../../../core/components/forms/inputs/BaseInput';
-import BaseCheckbox from '../../../core/components/BaseCheckbox/BaseCheckbox';
-import AuthButton from '../../../core/components/Buttons/AuthButton';
-import { useAppDispatch } from '../../../store/hooks';
-import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../../crypto/services/utils';
-import { userActions, userThunks } from '../../../store/slices/user';
-import { generateNewKeys } from '../../../crypto/services/pgp.service';
-import { planThunks } from '../../../store/slices/plan';
-import { getAesInitFromEnv } from '../../../crypto/services/keys.service';
-import errorService from '../../../core/services/error.service';
-import navigationService from '../../../core/services/navigation.service';
-import { productsThunks } from '../../../store/slices/products';
-import httpService from '../../../core/services/http.service';
-import { AppView, IFormValues } from '../../../core/types';
+import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
+import localStorageService from 'app/core/services/local-storage.service';
+import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
+import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import AuthButton from 'app/shared/components/AuthButton';
+import { useAppDispatch } from 'app/store/hooks';
+import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
+import { userActions, userThunks } from 'app/store/slices/user';
+import { generateNewKeys } from 'app/crypto/services/pgp.service';
+import { planThunks } from 'app/store/slices/plan';
+import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
+import errorService from 'app/core/services/error.service';
+import navigationService from 'app/core/services/navigation.service';
+import { productsThunks } from 'app/store/slices/products';
+import httpService from 'app/core/services/http.service';
+import { AppView, IFormValues } from 'app/core/types';
 import { UserSettings } from '../../types';
 
 export interface SignUpViewProps {
@@ -42,7 +39,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
   const qs = queryString.parse(navigationService.history.location.search);
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const tokenParam = qs.token;
-  // const hasReferrerParam = (qs.referrer && qs.referrer.toString()) || undefined;
+  const hasReferrer = !!qs.ref;
   const {
     register,
     formState: { errors, isValid },
@@ -58,8 +55,6 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
 
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const confirmPassword = useWatch({ control, name: 'confirmPassword', defaultValue: '' });
-  const [referrer] = useState('');
-
   const [showPassword, setShowPassword] = useState(false);
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
@@ -190,7 +185,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
         privateKey: encPrivateKey,
         publicKey: codpublicKey,
         revocationKey: codrevocationKey,
-        referrer: referrer,
+        referrer: hasReferrer ? qs.ref : undefined,
         captcha: captcha,
       }),
     })

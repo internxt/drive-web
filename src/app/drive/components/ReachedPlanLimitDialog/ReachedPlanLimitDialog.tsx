@@ -1,13 +1,13 @@
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import BaseDialog from '../../../core/components/dialogs/BaseDialog/BaseDialog';
-import BaseButton from '../../../core/components/Buttons/BaseButton';
-import { setCurrentAccountTab, uiActions } from '../../../store/slices/ui';
-import navigationService from '../../../core/services/navigation.service';
-import { AccountViewTab } from '../../../core/views/AccountView/tabs';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import BaseButton from 'app/shared/components/forms/BaseButton';
+import { setCurrentAccountTab, uiActions } from 'app/store/slices/ui';
+import navigationService from 'app/core/services/navigation.service';
+import { AccountViewTab } from 'app/core/views/AccountView/tabs';
 
 import './ReachedPlanLimitDialog.scss';
-import { AppView } from '../../../core/types';
-import i18n from '../../../i18n/services/i18n.service';
+import { AppView } from 'app/core/types';
+import i18n from 'app/i18n/services/i18n.service';
 
 const ReachedPlanLimitDialog = (): JSX.Element => {
   const isOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);

@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import * as Unicons from '@iconscout/react-unicons';
 
-import BaseButton from '../../../../../../components/Buttons/BaseButton';
-import BaseInput from '../../../../../../components/forms/inputs/BaseInput';
-import authService from '../../../../../../../auth/services/auth.service';
-import errorService from '../../../../../../../core/services/error.service';
-import i18n from '../../../../../../../i18n/services/i18n.service';
-import notificationsService, { ToastType } from '../../../../../../../notifications/services/notifications.service';
-import { twoFactorRegexPattern } from '../../../../../../../core/services/validation.service';
+import BaseButton from 'app/shared/components/forms/BaseButton';
+import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import authService from 'app/auth/services/auth.service';
+import errorService from 'app/core/services/error.service';
+import i18n from 'app/i18n/services/i18n.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { TwoFactorAuthStepProps } from '.';
 import { IFormValues } from '../../../../../../types';
 

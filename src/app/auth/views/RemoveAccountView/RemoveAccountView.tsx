@@ -5,11 +5,11 @@ import { UilEnvelope } from '@iconscout/react-unicons';
 import { Link } from 'react-router-dom';
 
 import userService from '../../services/user.service';
-import BaseButton from '../../../core/components/Buttons/BaseButton';
-import BaseInput from '../../../core/components/forms/inputs/BaseInput';
-import { IFormValues } from '../../../core/types';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import i18n from '../../../i18n/services/i18n.service';
+import BaseButton from 'app/shared/components/forms/BaseButton';
+import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import { IFormValues } from 'app/core/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import i18n from 'app/i18n/services/i18n.service';
 
 const RemoveAccount = (): JSX.Element => {
   const {

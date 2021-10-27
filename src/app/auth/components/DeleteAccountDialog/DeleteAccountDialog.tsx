@@ -1,8 +1,8 @@
-import BaseDialog from '../BaseDialog/BaseDialog';
+import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 
-import authService from '../../../../auth/services/auth.service';
-import errorService from '../../../../core/services/error.service';
-import BaseButton from '../../Buttons/BaseButton';
+import authService from 'app/auth/services/auth.service';
+import errorService from 'app/core/services/error.service';
+import BaseButton from 'app/shared/components/forms/BaseButton';
 
 const DeleteAccountDialog = (props: { isOpen: boolean; onClose: () => void }): JSX.Element => {
   const onClose = (): void => {
