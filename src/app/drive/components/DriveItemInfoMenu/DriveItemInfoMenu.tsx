@@ -1,4 +1,5 @@
-import * as Unicons from '@iconscout/react-unicons';
+import UilTimes from '@iconscout/react-unicons/icons/uil-times';
+import UilFolderNetwork from '@iconscout/react-unicons/icons/uil-folder-network';
 import { SVGProps } from 'react';
 
 import './DriveItemInfoMenu.scss';
@@ -33,7 +34,7 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps) => {
           className="w-8 h-8 rounded-1/2 bg-l-neutral-20 cursor-pointer justify-center items-center flex"
           onClick={props.onClose}
         >
-          <Unicons.UilTimes className="text-blue-60" />
+          <UilTimes className="text-blue-60" />
         </div>
       </div>
 
@@ -47,7 +48,7 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps) => {
       {/* INFO TAB CONTENT */}
       <div className="relative border-l border-dashed border-l-neutral-50 pl-4">
         <div className="w-4 absolute bg-white -left-2 text-neutral-500">
-          <Unicons.UilFolderNetwork className="w-full" />
+          <UilFolderNetwork className="w-full" />
         </div>
 
         {featuresList}

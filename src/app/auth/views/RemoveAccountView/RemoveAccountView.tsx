@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
-import { UilEnvelope } from '@iconscout/react-unicons';
+import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
 import { Link } from 'react-router-dom';
 
 import userService from '../../services/user.service';

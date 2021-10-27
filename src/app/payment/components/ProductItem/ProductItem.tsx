@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Fragment, useState } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
+import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 
 import './ProductItem.scss';
 import i18n from 'app/i18n/services/i18n.service';
@@ -138,7 +138,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
       <div className="w-36">
         <div className={`${isPlanActive ? 'text-blue-60' : ''} flex`}>
           <span className="block text-xl font-bold mr-3">{props.product.metadata.simple_name}</span>
-          {isPlanActive && <Unicons.UilCheck />}
+          {isPlanActive && <UilCheck />}
         </div>
 
         <span className={`${isPlanActive ? 'text-blue-60' : 'text-m-neutral-80'} block text-xs`}>

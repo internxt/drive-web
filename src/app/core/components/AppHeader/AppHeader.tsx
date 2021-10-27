@@ -1,7 +1,13 @@
 import React, { Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import * as Unicons from '@iconscout/react-unicons';
+import UilSearch from '@iconscout/react-unicons/icons/uil-search';
+import UilUserCircle from '@iconscout/react-unicons/icons/uil-user-circle';
+import UilUserPlus from '@iconscout/react-unicons/icons/uil-user-plus';
+import UilChatBubbleUser from '@iconscout/react-unicons/icons/uil-chat-bubble-user';
+import UilBuilding from '@iconscout/react-unicons/icons/uil-building';
+import UilUser from '@iconscout/react-unicons/icons/uil-user';
+import UilSignout from '@iconscout/react-unicons/icons/uil-signout';
 
 import { Dropdown } from 'react-bootstrap';
 import { userSelectors, userThunks } from '../../../store/slices/user';
@@ -90,7 +96,7 @@ class AppHeader extends React.Component<AppHeaderProps> {
             placeholder="Search files"
             className="right-icon semi-dense w-72 transform duration-200 no-ring bg-l-neutral-10 focus:w-full max-w-xl"
           />
-          <Unicons.UilSearch
+          <UilSearch
             onClick={this.onSearchButtonClicked}
             className="text-blue-60 cursor-pointer right-7 relative w-4 top-0.5"
           />
@@ -108,29 +114,29 @@ class AppHeader extends React.Component<AppHeaderProps> {
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item id="account" onClick={this.onAccountButtonClicked}>
-              <Unicons.UilUserCircle className="h-5 mr-1" />
+              <UilUserCircle className="h-5 mr-1" />
               <span>Account</span>
             </Dropdown.Item>
             {user && user.sharedWorkspace && (
               <Dropdown.Item id="guest-invite" onClick={this.onGuestInviteCliked}>
-                <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
+                <UilUserPlus className="text-blue-60 h-5 mr-1" />
                 <span>Guest</span>
               </Dropdown.Item>
             )}
             <Dropdown.Item id="info" onClick={this.onSupportButtonClicked}>
-              <Unicons.UilChatBubbleUser className="h-5 mr-1" />
+              <UilChatBubbleUser className="h-5 mr-1" />
               <span>Support</span>
             </Dropdown.Item>
             {team && (
               <Dropdown.Item id="business" onClick={this.onChangeWorkspaceButtonClicked}>
                 {!isTeam ? (
                   <Fragment>
-                    <Unicons.UilBuilding className="h-5 mr-1" />
+                    <UilBuilding className="h-5 mr-1" />
                     <span>Business</span>
                   </Fragment>
                 ) : (
                   <Fragment>
-                    <Unicons.UilUser className="h-5 mr-1" />
+                    <UilUser className="h-5 mr-1" />
                     <span>Personal</span>
                   </Fragment>
                 )}
@@ -140,14 +146,14 @@ class AppHeader extends React.Component<AppHeaderProps> {
               <Fragment>
                 <hr className="text-l-neutral-30 my-1.5"></hr>
                 <Dropdown.Item onClick={this.onInviteMemberClick}>
-                  <Unicons.UilUserPlus className="text-blue-60 h-5 mr-1" />
+                  <UilUserPlus className="text-blue-60 h-5 mr-1" />
                   <span>Invite members</span>
                 </Dropdown.Item>
               </Fragment>
             )}
             <hr className="text-l-neutral-30 my-1.5"></hr>
             <Dropdown.Item id="logout" className="text-red-60 hover:text-red-60" onClick={this.onLogoutButtonClicked}>
-              <Unicons.UilSignout className="h-5 mr-1" />
+              <UilSignout className="h-5 mr-1" />
               <span>Log out</span>
             </Dropdown.Item>
           </Dropdown.Menu>

@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
+import UilShieldPlus from '@iconscout/react-unicons/icons/uil-shield-plus';
 
 import ProductItem from 'app/payment/components/ProductItem/ProductItem';
 import i18n from 'app/i18n/services/i18n.service';
@@ -54,17 +54,17 @@ const AccountPlansTab = (): JSX.Element => {
   };
   const features = [
     {
-      icon: Unicons.UilShieldPlus,
+      icon: UilShieldPlus,
       title: i18n.get('views.account.tabs.plans.features.0.title'),
       description: i18n.get('views.account.tabs.plans.features.0.description'),
     },
     {
-      icon: Unicons.UilShieldPlus,
+      icon: UilShieldPlus,
       title: i18n.get('views.account.tabs.plans.features.1.title'),
       description: i18n.get('views.account.tabs.plans.features.1.description'),
     },
     {
-      icon: Unicons.UilShieldPlus,
+      icon: UilShieldPlus,
       title: i18n.get('views.account.tabs.plans.features.2.title'),
       description: i18n.get('views.account.tabs.plans.features.2.description'),
     },

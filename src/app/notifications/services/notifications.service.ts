@@ -1,4 +1,7 @@
-import * as Unicons from '@iconscout/react-unicons';
+import UilCheckCircle from '@iconscout/react-unicons/icons/uil-check-circle';
+import UilTimesCircle from '@iconscout/react-unicons/icons/uil-times-circle';
+import UilExclamationTriangle from '@iconscout/react-unicons/icons/uil-exclamation-triangle';
+import UilInfoCircle from '@iconscout/react-unicons/icons/uil-info-circle';
 import { uniqueId } from 'lodash';
 import { createElement } from 'react';
 import { toast } from 'react-toastify';
@@ -16,16 +19,16 @@ const notificationsService = {
   show: (text: string, type: ToastType, duration = 3000): void => {
     const configByType = {
       success: {
-        icon: Unicons.UilCheckCircle,
+        icon: UilCheckCircle,
       },
       error: {
-        icon: Unicons.UilTimesCircle,
+        icon: UilTimesCircle,
       },
       warning: {
-        icon: Unicons.UilExclamationTriangle,
+        icon: UilExclamationTriangle,
       },
       info: {
-        icon: Unicons.UilInfoCircle,
+        icon: UilInfoCircle,
       },
     };
 

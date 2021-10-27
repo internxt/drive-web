@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
+import UilHdd from '@iconscout/react-unicons/icons/uil-hdd';
 
 import DeviceList from '../../components/DeviceList/DeviceList';
 import i18n from 'app/i18n/services/i18n.service';
@@ -20,7 +20,7 @@ export default function BackupsView(): JSX.Element {
     {
       id: -1,
       label: 'Devices',
-      icon: <Unicons.UilHdd className="w-4 h-4 mr-1" />,
+      icon: <UilHdd className="w-4 h-4 mr-1" />,
       active: true,
       onClick: () => goBack(),
     },

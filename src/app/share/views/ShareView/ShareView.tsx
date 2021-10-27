@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
-import * as Unicons from '@iconscout/react-unicons';
+import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 import { aes } from '@internxt/lib';
 
 import { getShareInfo, GetShareInfoResponse } from 'app/share/services/share.service';
@@ -138,7 +138,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
             ></div>
           </div>
         ) : (
-          <Unicons.UilCheck className="text-green-50" height="40" width="40"></Unicons.UilCheck>
+          <UilCheck className="text-green-50" height="40" width="40"></UilCheck>
         );
 
       const DownloadButton = (

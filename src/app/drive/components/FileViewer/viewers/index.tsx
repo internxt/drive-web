@@ -1,6 +1,7 @@
 import { FileExtensionGroup } from '../../../types/file-types';
-import FileImageViewer from './FileImageViewer/FileImageViewer';
-import FilePdfViewer from './FilePdfViewer/FilePdfViewer';
+import { lazy } from 'react';
+const FileImageViewer = lazy(() => import('./FileImageViewer/FileImageViewer'));
+const FilePdfViewer = lazy(() => import('./FilePdfViewer/FilePdfViewer'));
 
 export default {
   [FileExtensionGroup.Image]: FileImageViewer,

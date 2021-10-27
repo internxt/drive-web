@@ -4,7 +4,11 @@ import * as bip39 from 'bip39';
 import queryString from 'query-string';
 import { aes, auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
-import { UilLock, UilEyeSlash, UilEye, UilEnvelope, UilUser } from '@iconscout/react-unicons';
+import UilLock from '@iconscout/react-unicons/icons/uil-lock';
+import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
+import UilEye from '@iconscout/react-unicons/icons/uil-eye';
+import UilUser from '@iconscout/react-unicons/icons/uil-user';
+import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 

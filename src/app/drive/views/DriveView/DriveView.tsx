@@ -1,4 +1,4 @@
-import * as Unicons from '@iconscout/react-unicons';
+import UilHdd from '@iconscout/react-unicons/icons/uil-hdd';
 import { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 
@@ -64,7 +64,7 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
       items.push({
         id: firstPath.id,
         label: 'Drive',
-        icon: <Unicons.UilHdd className="w-4 h-4 mr-1" />,
+        icon: <UilHdd className="w-4 h-4 mr-1" />,
         active: true,
         onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath)),
       });

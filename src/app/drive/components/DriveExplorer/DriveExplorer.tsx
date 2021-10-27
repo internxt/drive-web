@@ -1,6 +1,11 @@
 import { createRef, ReactNode, Component } from 'react';
 import { connect } from 'react-redux';
-import * as Unicons from '@iconscout/react-unicons';
+import UilTable from '@iconscout/react-unicons/icons/uil-table';
+import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
+import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
+import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
+import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
+import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 import 'react-toastify/dist/ReactToastify.css';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -155,8 +160,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     } = this.props;
     const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: <Unicons.UilTable />,
-      [FileViewMode.Grid]: <Unicons.UilListUiAlt />,
+      [FileViewMode.List]: <UilTable />,
+      [FileViewMode.Grid]: <UilListUiAlt />,
     };
     const viewModes = {
       [FileViewMode.List]: DriveExplorerList,
@@ -177,23 +182,23 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               <div className="flex">
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <Unicons.UilCloudDownload className="h-5 mr-1.5" />
+                    <UilCloudDownload className="h-5 mr-1.5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <Unicons.UilCloudUpload className="h-5 mr-1.5" />
+                    <UilCloudUpload className="h-5 mr-1.5" />
                     <span>{i18n.get('actions.upload')}</span>
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
                   <BaseButton className="dark w-8 square mr-2" onClick={this.onCreateFolderButtonClicked}>
-                    <Unicons.UilFolderPlus />
+                    <UilFolderPlus />
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="dark w-8 square mr-2" onClick={this.onBulkDeleteButtonClicked}>
-                    <Unicons.UilTrashAlt />
+                    <UilTrashAlt />
                   </BaseButton>
                 ) : null}
                 <BaseButton className="dark square w-8" onClick={this.onViewModeButtonClicked}>
@@ -218,11 +223,11 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
       return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id; className="flex justify-center w-1/3">
                     <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                      <Unicons.UilAngleDoubleLeft />
+                      <UilAngleDoubleLeft />
                     </button>
                     <button className="pagination-button">1</button>
                     <button onClick={this.onNextPageButtonClicked} className="pagination-button">
-                      <Unicons.UilAngleDoubleRight />
+                      <UilAngleDoubleRight />
                     </button>
                   </div>
                   <div className="w-1/3"></div>

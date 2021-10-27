@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
+import { useEffect, Suspense } from 'react';
+import UilTimes from '@iconscout/react-unicons/icons/uil-times';
+import UilFileDownload from '@iconscout/react-unicons/icons/uil-file-download';
 
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from '../../types/file-types';
 import fileExtensionService from '../../services/file-extension.service';
@@ -59,6 +60,8 @@ const FileViewer = (props: FileViewerProps) => {
     };
   }, []);
 
+  const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
+
   return (
     <div
       className="absolute z-50 top-0 left-0 right-0 bottom-0 bg-black bg-opacity-80 flex flex-col"
@@ -68,12 +71,12 @@ const FileViewer = (props: FileViewerProps) => {
       <div className="flex justify-between px-8 py-3">
         <div className="flex text-white">
           <button className="h-6 w-6" onClick={onCloseButtonClicked}>
-            <Unicons.UilTimes />
+            <UilTimes />
           </button>
         </div>
         <div className="flex text-white">
           <button className="h-6 w-6" onClick={onDownloadButtonClicked}>
-            <Unicons.UilFileDownload />
+            <UilFileDownload />
           </button>
         </div>
       </div>
@@ -82,7 +85,9 @@ const FileViewer = (props: FileViewerProps) => {
       <div className="h-full flex justify-center items-center text-white">
         {isTypeAllowed ? (
           <div onClick={(e) => e.stopPropagation()}>
-            {viewers[fileExtensionGroup as FileExtensionGroup](viewerProps)}
+            <Suspense fallback={<div></div>}>
+              <Viewer {...viewerProps} />
+            </Suspense>
           </div>
         ) : (
           <div className="py-4 px-8 rounded-lg bg-m-neutral-400 shadow-lg">{i18n.get('error.noFilePreview')}</div>

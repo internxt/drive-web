@@ -1,5 +1,5 @@
-import * as openpgp from 'openpgp';
 import localStorageService from '../../core/services/local-storage.service';
+import { getOpenpgp } from './pgp.service';
 
 export async function isValidBase64(key: string): Promise<boolean> {
   const isPlain = await isValid(key);
@@ -8,6 +8,7 @@ export async function isValidBase64(key: string): Promise<boolean> {
 }
 
 export async function isValid(key: string): Promise<boolean> {
+  const openpgp = await getOpenpgp();
   const keyResult = await openpgp.key.readArmored(key);
 
   return !keyResult.err;
@@ -19,6 +20,8 @@ export async function decryptPGP(message: string) {
   if (!user) {
     throw Error('User not found on local storage');
   }
+
+  const openpgp = await getOpenpgp();
 
   // User settings
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
@@ -44,6 +47,8 @@ export async function encryptPGP(message: string) {
     throw Error('User not found on local storage');
   }
 
+  const openpgp = await getOpenpgp();
+
   // User settings
   const publicKey = Buffer.from(user.publicKey, 'base64').toString();
 
@@ -61,6 +66,8 @@ export async function encryptPGP(message: string) {
 export async function encryptPGPInvitations(message: string, key: string) {
   // User settings
   const publicKey = Buffer.from(key, 'base64').toString();
+
+  const openpgp = await getOpenpgp();
 
   // Prepare input
   const originalText = openpgp.message.fromText(message);

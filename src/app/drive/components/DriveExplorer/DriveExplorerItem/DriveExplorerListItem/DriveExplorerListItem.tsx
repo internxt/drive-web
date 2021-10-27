@@ -1,6 +1,10 @@
 import React, { Fragment } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import * as Unicons from '@iconscout/react-unicons';
+import UilPen from '@iconscout/react-unicons/icons/uil-pen';
+import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
+import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
+import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
+import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 import { items } from '@internxt/lib';
 
 import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
@@ -76,9 +80,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
           >
             {items.getItemDisplayName(item)}
           </span>
-          {!isEditingName && (
-            <Unicons.UilPen onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
-          )}
+          {!isEditingName && <UilPen onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />}
         </div>
       </Fragment>
     );
@@ -119,7 +121,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
             className="hover-action mr-3"
             data-test={`download-${item.isFolder ? 'folder' : 'file'}-button`}
           >
-            <Unicons.UilCloudDownload className="h-5" />
+            <UilCloudDownload className="h-5" />
           </button>
           {!item.isFolder ? (
             <button
@@ -127,7 +129,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
               className="hover-action mr-3"
               data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
             >
-              <Unicons.UilShareAlt className="h-5" />
+              <UilShareAlt className="h-5" />
             </button>
           ) : null}
           <button
@@ -135,7 +137,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
             className="hover-action"
             data-test={`delete-${item.isFolder ? 'folder' : 'file'}-button`}
           >
-            <Unicons.UilTrashAlt className="h-5" />
+            <UilTrashAlt className="h-5" />
           </button>
         </div>
       </div>
@@ -160,7 +162,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
       <div className="flex items-center w-1/12">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
-            <Unicons.UilEllipsisH className="w-full h-full" />
+            <UilEllipsisH className="w-full h-full" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <DriveItemDropdownActions

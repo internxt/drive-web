@@ -1,5 +1,8 @@
 import { Device } from '../../types';
-import * as Unicons from '@iconscout/react-unicons';
+import UilApple from '@iconscout/react-unicons/icons/uil-apple';
+import UilLinux from '@iconscout/react-unicons/icons/uil-linux';
+import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
+import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
 import dateService from '../../../core/services/date.service';
 import sizeService from '../../../drive/services/size.service';
 
@@ -14,16 +17,16 @@ export default function DeviceListItem({
 
   switch (device.platform) {
     case 'darwin':
-      Icon = Unicons.UilApple;
+      Icon = UilApple;
       break;
     case 'linux':
-      Icon = Unicons.UilLinux;
+      Icon = UilLinux;
       break;
     case 'win32':
-      Icon = Unicons.UilWindows;
+      Icon = UilWindows;
       break;
     default:
-      Icon = Unicons.UilDesktop;
+      Icon = UilDesktop;
   }
 
   return (

@@ -1,4 +1,8 @@
-import * as Unicons from '@iconscout/react-unicons';
+import UilLock from '@iconscout/react-unicons/icons/uil-lock';
+import UilReceipt from '@iconscout/react-unicons/icons/uil-receipt';
+import UilShieldPlus from '@iconscout/react-unicons/icons/uil-shield-plus';
+import UilSuitcase from '@iconscout/react-unicons/icons/uil-suitcase';
+
 import { FunctionComponent, SVGProps } from 'react';
 
 import AccountPasswordTab from './AccountPasswordTab/AccountPasswordTab';
@@ -28,27 +32,27 @@ export default [
     component: AccountInfoTab,
     title: i18n.get('views.account.tabs.info.title'),
     description: i18n.get('views.account.tabs.info.description'),
-    icon: Unicons.UilReceipt,
+    icon: UilReceipt,
   },
   {
     id: AccountViewTab.Plans,
     component: AccountPlansTab,
     title: i18n.get('views.account.tabs.plans.title'),
     description: i18n.get('views.account.tabs.plans.description'),
-    icon: Unicons.UilSuitcase,
+    icon: UilSuitcase,
   },
   {
     id: AccountViewTab.Password,
     component: AccountPasswordTab,
     title: i18n.get('views.account.tabs.password.title'),
     description: i18n.get('views.account.tabs.password.description'),
-    icon: Unicons.UilLock,
+    icon: UilLock,
   },
   {
     id: AccountViewTab.Security,
     component: AccountSecurityTab,
     title: i18n.get('views.account.tabs.security.title'),
     description: i18n.get('views.account.tabs.security.description'),
-    icon: Unicons.UilShieldPlus,
+    icon: UilShieldPlus,
   },
 ];

@@ -1,4 +1,4 @@
-import * as unicons from '@iconscout/react-unicons';
+import UilHistory from '@iconscout/react-unicons/icons/uil-history';
 
 import i18n from '../../../i18n/services/i18n.service';
 import DeviceListItem from './DeviceListItem';
@@ -37,7 +37,7 @@ const DeviceList = (props: Props) => {
     </div>
   ) : (
     <div className="flex flex-col mt-24 items-center space-y-4">
-      <unicons.UilHistory className="text-blue-60 h-24 w-24" />
+      <UilHistory className="text-blue-60 h-24 w-24" />
       <h1 className="text-2xl font-bold text-gray-70">Start using backups</h1>
       <p className="text-lg text-gray-50">Save a copy of your most important files on the cloud automatically</p>
       <a

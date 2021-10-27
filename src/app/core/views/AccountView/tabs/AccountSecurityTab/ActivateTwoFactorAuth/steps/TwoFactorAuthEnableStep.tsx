@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import * as Unicons from '@iconscout/react-unicons';
+import UilEye from '@iconscout/react-unicons/icons/uil-eye';
+import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
+import UilLock from '@iconscout/react-unicons/icons/uil-lock';
 
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
@@ -79,12 +81,12 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
           icon={
             twoFactorCode ? (
               showTwoFactorCode ? (
-                <Unicons.UilEyeSlash className="w-4 text-blue-40" onClick={() => setShowTwoFactorCode(false)} />
+                <UilEyeSlash className="w-4 text-blue-40" onClick={() => setShowTwoFactorCode(false)} />
               ) : (
-                <Unicons.UilEye className="w-4 text-blue-40" onClick={() => setShowTwoFactorCode(true)} />
+                <UilEye className="w-4 text-blue-40" onClick={() => setShowTwoFactorCode(true)} />
               )
             ) : (
-              <Unicons.UilLock className="w-4 text-blue-40" />
+              <UilLock className="w-4 text-blue-40" />
             )
           }
           minLength={1}

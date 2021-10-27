@@ -1,4 +1,4 @@
-import { UilClipboardAlt } from '@iconscout/react-unicons';
+import UilClipboardAlt from '@iconscout/react-unicons/icons/uil-clipboard-alt';
 import { useState } from 'react';
 import { useEffect } from 'react';
 

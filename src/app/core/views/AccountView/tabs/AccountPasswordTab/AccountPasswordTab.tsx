@@ -1,6 +1,8 @@
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
-import * as Unicons from '@iconscout/react-unicons';
+import UilLock from '@iconscout/react-unicons/icons/uil-lock';
+import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
+import UilEye from '@iconscout/react-unicons/icons/uil-eye';
+import UilShieldPlus from '@iconscout/react-unicons/icons/uil-shield-plus';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
@@ -146,12 +148,12 @@ const AccountPasswordTab = (): JSX.Element => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 w-full justify-around mb-14">
         <AccountAdvice
-          icon={Unicons.UilShieldPlus}
+          icon={UilShieldPlus}
           title={i18n.get('views.account.tabs.password.advice3.title')}
           description={i18n.get('views.account.tabs.password.advice3.description')}
         />
         <AccountAdvice
-          icon={Unicons.UilShieldPlus}
+          icon={UilShieldPlus}
           title={i18n.get('views.account.tabs.password.advice4.title')}
           description={i18n.get('views.account.tabs.password.advice4.description')}
         />

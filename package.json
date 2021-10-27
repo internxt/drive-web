@@ -56,7 +56,8 @@
     "lint:scss": "stylelint 'src/**/*.{css,scss}'",
     "lint:scss:fix": "yarn run lint:scss --fix",
     "lint": "yarn run lint:ts && yarn run lint:scss",
-    "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix"
+    "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
+    "analyze": "cross-env ANALYZE=true yarn build"
   },
   "browserslist": {
     "production": [
@@ -93,6 +94,7 @@
     "@types/stripe-v3": "^3.1.25",
     "@types/wicg-file-system-access": "^2020.9.4",
     "autoprefixer": "^9",
+    "cross-env": "^7.0.3",
     "customize-cra": "^1.0.0",
     "cypress": "^8.3.1",
     "cypress-file-upload": "^5.0.8",
@@ -113,6 +115,7 @@
     "stylelint-scss": "^3.17.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "ts-jest": "26",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.2",
+    "webpack-bundle-analyzer": "^4.5.0"
   }
 }
