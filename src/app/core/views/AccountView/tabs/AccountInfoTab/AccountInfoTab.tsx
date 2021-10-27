@@ -16,7 +16,6 @@ import limitService from 'app/drive/services/limit.service';
 import i18n from 'app/i18n/services/i18n.service';
 import { setCurrentAccountTab } from 'app/store/slices/ui';
 import { planSelectors } from 'app/store/slices/plan';
-import InviteAFriendWidget from 'app/auth/components/InviteAFriendWidget/InviteAFriendWidget';
 
 const AccountPlanInfoTab = (): JSX.Element => {
   const [isLgScreen, setIsLgScreen] = useState(screenService.isLg());
@@ -129,7 +128,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
           </div>
         </div>
 
-        <InviteAFriendWidget className="mb-20" />
+        {/* <InviteAFriendWidget className="mb-20" /> */}
 
         {/* MORE INFO & DELETE ACCOUNT */}
         <div>
