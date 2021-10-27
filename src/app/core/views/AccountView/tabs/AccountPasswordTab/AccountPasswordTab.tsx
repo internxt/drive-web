@@ -3,13 +3,13 @@ import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
 import * as Unicons from '@iconscout/react-unicons';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 
-import BaseInput from '../../../../components/forms/inputs/BaseInput';
+import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
 import { useState } from 'react';
-import { changePassword } from '../../../../../auth/services/auth.service';
-import i18n from '../../../../../i18n/services/i18n.service';
-import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
-import BaseButton from '../../../../components/Buttons/BaseButton';
-import AccountAdvice from '../../../../components/AccountAdvice/AccountAdvice';
+import { changePassword } from 'app/auth/services/auth.service';
+import i18n from 'app/i18n/services/i18n.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import BaseButton from 'app/shared/components/forms/BaseButton';
+import AccountAdvice from 'app/shared/components/AccountAdvice/AccountAdvice';
 import { IFormValues } from '../../../../types';
 import errorService from '../../../../services/error.service';
 

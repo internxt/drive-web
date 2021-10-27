@@ -3,18 +3,18 @@ import { useEffect, useState } from 'react';
 import { UilTrashAlt, UilUserPlus } from '@iconscout/react-unicons';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { InfoInvitationsMembers, TeamsSettings } from '../../types';
-import { RootState } from '../../../store';
-import BaseInput from '../../../core/components/forms/inputs/BaseInput';
-import AuthButton from '../../../core/components/Buttons/AuthButton';
-import BaseDialog from '../../../core/components/dialogs/BaseDialog/BaseDialog';
+import { RootState } from 'app/store';
+import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import AuthButton from 'app/shared/components/AuthButton';
+import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { getMembers, removeMember, sendEmailTeamsMember } from '../../services/teams.service';
-import { uiActions } from '../../../store/slices/ui';
-import i18n from '../../../i18n/services/i18n.service';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import errorService from '../../../core/services/error.service';
-import { IFormValues } from '../../../core/types';
+import { uiActions } from 'app/store/slices/ui';
+import i18n from 'app/i18n/services/i18n.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'app/core/services/error.service';
+import { IFormValues } from 'app/core/types';
 
 interface InviteTeamMemberDialogProps {
   team: TeamsSettings | undefined | null;

@@ -1,6 +1,6 @@
+import { IFormValues } from 'app/core/types';
 import React from 'react';
 import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-form';
-import { IFormValues } from '../../../types';
 
 interface InputProps {
   className?: string;

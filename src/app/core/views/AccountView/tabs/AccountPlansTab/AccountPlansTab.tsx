@@ -1,16 +1,16 @@
 import { Fragment, useState } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
-import ProductItem from '../../../../../payment/components/ProductItem/ProductItem';
-import i18n from '../../../../../i18n/services/i18n.service';
-import { useAppSelector } from '../../../../../store/hooks';
+import ProductItem from 'app/payment/components/ProductItem/ProductItem';
+import i18n from 'app/i18n/services/i18n.service';
+import { useAppSelector } from 'app/store/hooks';
 
 import './AccountPlansTab.scss';
-import { productsSelectors } from '../../../../../store/slices/products';
-import BaseButton from '../../../../components/Buttons/BaseButton';
-import { planSelectors } from '../../../../../store/slices/plan';
+import { productsSelectors } from 'app/store/slices/products';
+import BaseButton from 'app/shared/components/forms/BaseButton';
+import { planSelectors } from 'app/store/slices/plan';
 import { Workspace } from '../../../../types';
-import { RenewalPeriod } from '../../../../../payment/types';
+import { RenewalPeriod } from 'app/payment/types';
 
 const AccountPlansTab = (): JSX.Element => {
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace>(Workspace.Individuals);

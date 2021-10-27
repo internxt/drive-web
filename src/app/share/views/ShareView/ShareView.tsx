@@ -4,15 +4,15 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as Unicons from '@iconscout/react-unicons';
 import { aes } from '@internxt/lib';
 
-import { getShareInfo, GetShareInfoResponse } from '../../../share/services/share.service';
-import { ReactComponent as Spinner } from '../../../../assets/icons/spinner.svg';
-import { ReactComponent as Logo } from '../../../../assets/icons/big-logo.svg';
-import iconService from '../../../drive/services/icon.service';
-import BaseButton from '../../../core/components/Buttons/BaseButton';
-import sizeService from '../../../drive/services/size.service';
-import { TaskProgress } from '../../../tasks/types';
-import { Network } from '../../../drive/services/network';
-import i18n from '../../../i18n/services/i18n.service';
+import { getShareInfo, GetShareInfoResponse } from 'app/share/services/share.service';
+import { ReactComponent as Spinner } from 'assets/icons/spinner.svg';
+import { ReactComponent as Logo } from 'assets/icons/big-logo.svg';
+import iconService from 'app/drive/services/icon.service';
+import BaseButton from 'app/shared/components/forms/BaseButton';
+import sizeService from 'app/drive/services/size.service';
+import { TaskProgress } from 'app/tasks/types';
+import { Network } from 'app/drive/services/network';
+import i18n from 'app/i18n/services/i18n.service';
 
 import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';

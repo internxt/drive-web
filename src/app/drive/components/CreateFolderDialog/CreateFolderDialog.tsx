@@ -1,14 +1,14 @@
 import { useState, KeyboardEventHandler } from 'react';
 import { connect } from 'react-redux';
 
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { RootState } from '../../../store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { RootState } from 'app/store';
 
-import BaseDialog from '../../../core/components/dialogs/BaseDialog/BaseDialog';
-import { uiActions } from '../../../store/slices/ui';
-import BaseButton from '../../../core/components/Buttons/BaseButton';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
-import storageSelectors from '../../../store/slices/storage/storage.selectors';
+import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import { uiActions } from 'app/store/slices/ui';
+import BaseButton from 'app/shared/components/forms/BaseButton';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import storageSelectors from 'app/store/slices/storage/storage.selectors';
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
   currentFolderId: number;

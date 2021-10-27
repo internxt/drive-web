@@ -2,12 +2,12 @@ import { useEffect } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import DeviceList from '../../components/DeviceList/DeviceList';
-import i18n from '../../../i18n/services/i18n.service';
+import i18n from 'app/i18n/services/i18n.service';
 import { Device } from '../../types';
 import BackupsList from '../../components/BackupList/BackupList';
-import Breadcrumbs, { BreadcrumbItemData } from '../../../core/components/Breadcrumbs/Breadcrumbs';
-import { backupsActions, backupsThunks } from '../../../store/slices/backups';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import { backupsActions, backupsThunks } from 'app/store/slices/backups';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 
 export default function BackupsView(): JSX.Element {
   const dispatch = useAppDispatch();

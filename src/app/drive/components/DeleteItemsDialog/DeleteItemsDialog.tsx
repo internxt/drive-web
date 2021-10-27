@@ -1,14 +1,14 @@
 import { useSelector } from 'react-redux';
 
-import BaseDialog from '../../../core/components/dialogs/BaseDialog/BaseDialog';
+import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { useState } from 'react';
-import BaseButton from '../../../core/components/Buttons/BaseButton';
-import errorService from '../../../core/services/error.service';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
-import { uiActions } from '../../../store/slices/ui';
-import { setItemsToDelete } from '../../../store/slices/storage';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { RootState } from '../../../store';
+import BaseButton from 'app/shared/components/forms/BaseButton';
+import errorService from 'app/core/services/error.service';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { uiActions } from 'app/store/slices/ui';
+import { setItemsToDelete } from 'app/store/slices/storage';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { RootState } from 'app/store';
 import { DriveItemData } from '../../types';
 import i18n from 'app/i18n/services/i18n.service';
 

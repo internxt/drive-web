@@ -2,14 +2,14 @@ import React, { SetStateAction, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
 
-import { deactivate2FA } from '../../../../../../auth/services/auth.service';
-import { twoFactorRegexPattern } from '../../../../../../core/services/validation.service';
-import AuthButton from '../../../../../components/Buttons/AuthButton';
-import BaseInput from '../../../../../components/forms/inputs/BaseInput';
-import i18n from '../../../../../../i18n/services/i18n.service';
-import notificationsService, { ToastType } from '../../../../../../notifications/services/notifications.service';
-import errorService from '../../../../../../core/services/error.service';
+import AuthButton from 'app/shared/components/AuthButton';
+import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
 import { IFormValues } from '../../../../../types';
+import { deactivate2FA } from 'app/auth/services/auth.service';
+import { twoFactorRegexPattern } from 'app/core/services/validation.service';
+import i18n from 'app/i18n/services/i18n.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'app/core/services/error.service';
 
 interface Deactivate2FAProps {
   passwordSalt: string;

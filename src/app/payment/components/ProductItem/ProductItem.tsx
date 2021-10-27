@@ -3,15 +3,15 @@ import { Fragment, useState } from 'react';
 import * as Unicons from '@iconscout/react-unicons';
 
 import './ProductItem.scss';
-import i18n from '../../../i18n/services/i18n.service';
-import numberService from '../../../core/services/number.service';
-import screenService from '../../../core/services/screen.service';
-import NumberInput from '../../../core/components/forms/inputs/NumberInput';
-import { planSelectors } from '../../../store/slices/plan';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import BaseButton from '../../../core/components/Buttons/BaseButton';
+import i18n from 'app/i18n/services/i18n.service';
+import numberService from 'app/core/services/number.service';
+import screenService from 'app/core/services/screen.service';
+import NumberInput from 'app/shared/components/forms/inputs/NumberInput';
+import { planSelectors } from 'app/store/slices/plan';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import BaseButton from 'app/shared/components/forms/BaseButton';
 import { ProductData, RenewalPeriod } from '../../types';
-import { paymentThunks } from '../../../store/slices/payment';
+import { paymentThunks } from 'app/store/slices/payment';
 import moneyService from '../../services/money.service';
 
 interface ProductItemProps {

@@ -1,12 +1,12 @@
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
-import storageSelectors from '../../../../store/slices/storage/storage.selectors';
-import storageThunks from '../../../../store/slices/storage/storage.thunks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import storageSelectors from 'app/store/slices/storage/storage.selectors';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { BreadcrumbItemData } from '../Breadcrumbs';
-import { transformDraggedItems } from '../../../services/drag-and-drop.service';
-import { DragAndDropType } from '../../../types';
-import { DriveItemData } from '../../../../drive/types';
+import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
+import { DragAndDropType } from 'app/core/types';
+import { DriveItemData } from 'app/drive/types';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;

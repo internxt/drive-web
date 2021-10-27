@@ -1,7 +1,7 @@
 import { match } from 'react-router';
-import LoadingFileExplorer from '../../../core/components/LoadingFileExplorer/LoadingFileExplorer';
-import navigationService from '../../../core/services/navigation.service';
-import { AppView } from '../../../core/types';
+import LoadingFileExplorer from 'app/shared/components/LoadingFileExplorer/LoadingFileExplorer';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 
 import teamsService from '../../services/teams.service';
 

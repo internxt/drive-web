@@ -4,14 +4,14 @@ import { UilEnvelope, UilPaperclip } from '@iconscout/react-unicons';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 
 import localStorageService from '../../../../services/local-storage.service';
-import AuthButton from '../../../../components/Buttons/AuthButton';
-import BaseInput from '../../../../components/forms/inputs/BaseInput';
-import BaseButton from '../../../../components/Buttons/BaseButton';
+import BaseButton from 'app/shared/components/forms/BaseButton';
 import { IFormValues } from '../../../../types';
-import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import errorService from '../../../../services/error.service';
-import { getCredit, sendClaimEmail, sendInvitationEmail } from '../../../../../referrals/services/referral.service';
-import i18n from '../../../../../i18n/services/i18n.service';
+import { getCredit, sendClaimEmail, sendInvitationEmail } from 'app/referrals/services/referral.service';
+import i18n from 'app/i18n/services/i18n.service';
+import AuthButton from 'app/shared/components/AuthButton';
+import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
 
 const AccountReferralsTab = (): JSX.Element => {
   const {

@@ -2,22 +2,22 @@ import { UilClipboardAlt } from '@iconscout/react-unicons';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-import { generateFileKey, Network } from '../../../../drive/services/network';
-import { DriveItemData } from '../../../../drive/types';
-import { uiActions } from '../../../../store/slices/ui';
-import BaseDialog from '../BaseDialog/BaseDialog';
-import shareService from '../../../../share/services/share.service';
+import { generateFileKey, Network } from 'app/drive/services/network';
+import { DriveItemData } from 'app/drive/types';
+import { uiActions } from 'app/store/slices/ui';
+import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import shareService from 'app/share/services/share.service';
 import './ShareItemDialog.scss';
-import { storageActions } from '../../../../store/slices/storage';
-import { trackShareLinkBucketIdUndefined } from '../../../../analytics/services/analytics.service';
-import { userThunks } from '../../../../store/slices/user';
-import i18n from '../../../../i18n/services/i18n.service';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import { storageActions } from 'app/store/slices/storage';
+import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytics.service';
+import { userThunks } from 'app/store/slices/user';
+import i18n from 'app/i18n/services/i18n.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { items } from '@internxt/lib';
-import navigationService from '../../../services/navigation.service';
-import { AppView } from '../../../types';
-import errorService from '../../../services/error.service';
-import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
+import errorService from 'app/core/services/error.service';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
