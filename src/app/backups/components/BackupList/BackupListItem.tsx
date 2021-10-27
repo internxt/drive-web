@@ -1,7 +1,7 @@
 import { Dropdown } from 'react-bootstrap';
 
 import { DeviceBackup } from '../../types';
-import * as Unicons from '@iconscout/react-unicons';
+import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import dateService from '../../../core/services/date.service';
 import { ReactComponent as BackupIcon } from '../../../../assets/icons/light/folder-backup.svg';
 import sizeService from '../../../drive/services/size.service';
@@ -74,7 +74,7 @@ export default function BackupsListItem({
       <div className="w-1/12 flex items-center rounded-tr-4px">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
-            <Unicons.UilEllipsisH className="w-full h-full" />
+            <UilEllipsisH className="w-full h-full" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <BackupDropdownActions

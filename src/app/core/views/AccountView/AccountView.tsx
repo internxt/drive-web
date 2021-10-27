@@ -1,4 +1,4 @@
-import * as Unicons from '@iconscout/react-unicons';
+import UilAngleDoubleRight from '@iconscout/react-unicons/icons/uil-angle-double-right';
 import { Component } from 'react';
 import queryString from 'query-string';
 import { connect } from 'react-redux';
@@ -70,7 +70,7 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
         <div className="flex mb-2">
           <tab.icon className="text-blue-40 mr-2" />
           <span className="font-semibold mr-3 text-base">{tab.title}</span>
-          <Unicons.UilAngleDoubleRight className="" />
+          <UilAngleDoubleRight className="" />
         </div>
         <p className="text-sm">{tab.description}</p>
       </div>

@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
+import UilArrowDown from '@iconscout/react-unicons/icons/uil-arrow-down';
+import UilArrowUp from '@iconscout/react-unicons/icons/uil-arrow-up';
 import { connect } from 'react-redux';
 
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
@@ -66,7 +67,7 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
       dispatch(storageActions.setOrder({ by: orderBy, direction }));
     };
     const sortButtonFactory = () => {
-      const IconComponent = order.direction === OrderDirection.Desc ? Unicons.UilArrowDown : Unicons.UilArrowUp;
+      const IconComponent = order.direction === OrderDirection.Desc ? UilArrowDown : UilArrowUp;
       return <IconComponent className="ml-2" />;
     };
 

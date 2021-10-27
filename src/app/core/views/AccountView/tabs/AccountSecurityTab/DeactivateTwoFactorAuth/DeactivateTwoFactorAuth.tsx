@@ -1,6 +1,8 @@
 import React, { SetStateAction, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { UilLock, UilEyeSlash, UilEye } from '@iconscout/react-unicons';
+import UilLock from '@iconscout/react-unicons/icons/uil-lock';
+import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
+import UilEye from '@iconscout/react-unicons/icons/uil-eye';
 
 import AuthButton from 'app/shared/components/AuthButton';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';

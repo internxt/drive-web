@@ -1,11 +1,15 @@
-import openpgp from 'openpgp';
 import httpService from '../../core/services/http.service';
+
+export async function getOpenpgp() {
+  return import('openpgp');
+}
 
 export async function generateNewKeys(): Promise<{
   privateKeyArmored: string;
   publicKeyArmored: string;
   revocationCertificate: string;
 }> {
+  const openpgp = await getOpenpgp();
   const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await openpgp.generateKey({
     userIds: [{ email: 'inxt@inxt.com' }],
     curve: 'ed25519',

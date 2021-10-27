@@ -1,4 +1,4 @@
-import * as Unicons from '@iconscout/react-unicons';
+import UilTimes from '@iconscout/react-unicons/icons/uil-times';
 
 import tasksService from '../../services/tasks.service';
 import { TaskNotification, TaskStatus } from '../../types';
@@ -30,7 +30,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
 
       {notification.isTaskCancellable && !isTaskProgressCompleted && !isTaskFinished && (
         <div className="text-red-60 ml-auto cursor-pointer" onClick={onCancelButtonClicked}>
-          <Unicons.UilTimes />
+          <UilTimes />
         </div>
       )}
     </div>

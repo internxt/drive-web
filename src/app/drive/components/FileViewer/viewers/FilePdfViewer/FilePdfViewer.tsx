@@ -1,4 +1,5 @@
-import * as Unicons from '@iconscout/react-unicons';
+import UilArrowLeft from '@iconscout/react-unicons/icons/uil-arrow-left';
+import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useEffect, useState, Fragment } from 'react';
@@ -58,7 +59,7 @@ const FilePdfViewer = (props: FormatFileViewerProps) => {
       ) : (
         <Fragment>
           <button onClick={() => setPageNumber(pageNumber - 1)} className="h-12 w-12" disabled={isFirstPage}>
-            <Unicons.UilArrowLeft className={`${isFirstPage ? 'opacity-50' : ''}`} />
+            <UilArrowLeft className={`${isFirstPage ? 'opacity-50' : ''}`} />
           </button>
           <div className="mx-6">
             <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess} className="shadow-lg">
@@ -69,7 +70,7 @@ const FilePdfViewer = (props: FormatFileViewerProps) => {
             </span>
           </div>
           <button onClick={() => setPageNumber(pageNumber + 1)} className="h-12 w-12" disabled={isLastPage}>
-            <Unicons.UilArrowRight className={`${isLastPage ? 'opacity-50' : ''}`} />
+            <UilArrowRight className={`${isLastPage ? 'opacity-50' : ''}`} />
           </button>
         </Fragment>
       )}

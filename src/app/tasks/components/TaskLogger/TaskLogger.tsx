@@ -1,5 +1,6 @@
 import { Fragment, useState, useEffect } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
+import UilAngleDoubleDown from '@iconscout/react-unicons/icons/uil-angle-double-down';
+import UilTimes from '@iconscout/react-unicons/icons/uil-times';
 
 import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
 import spinnerIcon from '../../../../assets/icons/spinner.svg';
@@ -82,14 +83,14 @@ const TaskLogger = (): JSX.Element => {
               isMinimized ? 'rotate-180' : 'rotate-0'
             } cursor-pointer`}
           >
-            <Unicons.UilAngleDoubleDown className="h-5" />
+            <UilAngleDoubleDown className="h-5" />
           </div>
 
           <div
             className={`${hasFinished ? 'cursor-pointer' : 'cursor-not-allowed'} cursor-pointer`}
             onClick={onCloseButtonClicked}
           >
-            <Unicons.UilTimes className={`h-5 ${hasFinished ? 'text-white' : 'text-m-neutral-100'}`} />
+            <UilTimes className={`h-5 ${hasFinished ? 'text-white' : 'text-m-neutral-100'}`} />
           </div>
         </div>
       </div>

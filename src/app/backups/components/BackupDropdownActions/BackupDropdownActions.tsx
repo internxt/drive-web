@@ -1,5 +1,7 @@
 import React, { MouseEvent, ReactNode } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
+import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
+import UilFileInfoAlt from '@iconscout/react-unicons/icons/uil-file-info-alt';
+import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DriveItemAction } from '../../../drive/components/DriveExplorer/DriveExplorerItem';
 
@@ -26,20 +28,20 @@ class BackupDropdownActions extends React.Component<BackupDropdownActionsProps> 
 
         {!hiddenActions.includes(DriveItemAction.Download) ? (
           <Dropdown.Item id="download" onClick={this.props.onDownloadButtonClicked}>
-            <Unicons.UilCloudDownload className="text-blue-60 h-5 mr-1" />
+            <UilCloudDownload className="text-blue-60 h-5 mr-1" />
             <span>Download</span>
           </Dropdown.Item>
         ) : null}
         {!hiddenActions.includes(DriveItemAction.Info) ? (
           <Dropdown.Item id="info" onClick={this.props.onInfoButtonClicked}>
-            <Unicons.UilFileInfoAlt className="text-blue-60 h-5 mr-1" />
+            <UilFileInfoAlt className="text-blue-60 h-5 mr-1" />
             <span>Info</span>
           </Dropdown.Item>
         ) : null}
         <hr className="text-l-neutral-30 my-1.5"></hr>
         {!hiddenActions.includes(DriveItemAction.Delete) ? (
           <Dropdown.Item id="info" onClick={this.props.onDeleteButtonClicked}>
-            <Unicons.UilTrashAlt className="text-red-60 h-5 mr-1" />
+            <UilTrashAlt className="text-red-60 h-5 mr-1" />
             <span className="text-red-60">Delete</span>
           </Dropdown.Item>
         ) : null}

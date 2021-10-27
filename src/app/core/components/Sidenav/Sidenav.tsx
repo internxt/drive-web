@@ -1,5 +1,11 @@
 import React from 'react';
-import * as Unicons from '@iconscout/react-unicons';
+import UilAngleDoubleLeft from '@iconscout/react-unicons/icons/uil-angle-double-left';
+import UilAngleDoubleRight from '@iconscout/react-unicons/icons/uil-angle-double-right';
+import UilFolderMedical from '@iconscout/react-unicons/icons/uil-folder-medical';
+import UilHdd from '@iconscout/react-unicons/icons/uil-hdd';
+import UilClockEight from '@iconscout/react-unicons/icons/uil-clock-eight';
+import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
+
 import { connect } from 'react-redux';
 
 import { RootState } from '../../../store';
@@ -71,7 +77,7 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
           className="hidden lg:flex items-center p-2 collapse-button cursor-pointer z-40 absolute transform"
           onClick={onCollapseButtonClicked}
         >
-          {isCollapsed ? <Unicons.UilAngleDoubleRight /> : <Unicons.UilAngleDoubleLeft />}
+          {isCollapsed ? <UilAngleDoubleRight /> : <UilAngleDoubleLeft />}
         </button>
 
         <div className="pl-6 py-1.5 cursor-pointer border-b border-l-neutral-30" onClick={this.onLogoClicked}>
@@ -95,27 +101,17 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
           } pt-7 border-r border-l-neutral-30 h-full flex flex-col justify-between`}
         >
           <div>
-            <SidenavItem
-              label="Drive"
-              to="/app"
-              icon={<Unicons.UilFolderMedical className="w-5" />}
-              isOpen={!isCollapsed}
-            />
-            <SidenavItem
-              label="Backups"
-              to="/app/backups"
-              icon={<Unicons.UilHdd className="w-5" />}
-              isOpen={!isCollapsed}
-            />
+            <SidenavItem label="Drive" to="/app" icon={<UilFolderMedical className="w-5" />} isOpen={!isCollapsed} />
+            <SidenavItem label="Backups" to="/app/backups" icon={<UilHdd className="w-5" />} isOpen={!isCollapsed} />
             <SidenavItem
               label="Recents"
               to="/app/recents"
-              icon={<Unicons.UilClockEight className="w-5" />}
+              icon={<UilClockEight className="w-5" />}
               isOpen={!isCollapsed}
             />
             <SidenavItem
               label="Download App"
-              icon={<Unicons.UilDesktop className="w-5" />}
+              icon={<UilDesktop className="w-5" />}
               isOpen={!isCollapsed}
               onClick={this.onDownloadAppButtonClicked}
             />

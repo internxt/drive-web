@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from 'react';
-import * as Unicons from '@iconscout/react-unicons';
+import UilShieldPlus from '@iconscout/react-unicons/icons/uil-shield-plus';
 
 import { AccountViewTab } from '..';
 import AccountAdvice from 'app/shared/components/AccountAdvice/AccountAdvice';
@@ -134,12 +134,12 @@ const AccountPlanInfoTab = (): JSX.Element => {
         <div>
           <div className="grid grid-cols-2 gap-14 w-full justify-around mb-14">
             <AccountAdvice
-              icon={Unicons.UilShieldPlus}
+              icon={UilShieldPlus}
               title={i18n.get('views.account.tabs.info.advice1.title')}
               description={i18n.get('views.account.tabs.info.advice1.description')}
             />
             <AccountAdvice
-              icon={Unicons.UilShieldPlus}
+              icon={UilShieldPlus}
               title={i18n.get('views.account.tabs.info.advice2.title')}
               description={i18n.get('views.account.tabs.info.advice2.description')}
             />

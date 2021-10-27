@@ -24,9 +24,11 @@ export interface CreateTeamsPaymentSessionPayload {
   canceledUrl?: string;
 }
 
-const stripe = window.Stripe(
-  !envService.isProduction() ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK,
-);
+function getStripe() {
+  return window.Stripe(
+    !envService.isProduction() ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK,
+  );
+}
 
 const paymentService = {
   async createSession(body: CreatePaymentSessionPayload): Promise<{ id: string }> {
@@ -42,6 +44,8 @@ const paymentService = {
   },
 
   async redirectToCheckout(options: stripe.StripeServerCheckoutOptions): Promise<{ error: stripe.Error }> {
+    const stripe = getStripe();
+
     return stripe.redirectToCheckout(options);
   },
 
@@ -72,6 +76,8 @@ const paymentService = {
     if (response.error) {
       throw Error(response.error);
     }
+
+    const stripe = getStripe();
 
     await stripe.redirectToCheckout({ sessionId: response.id });
   },

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { UilEnvelope, UilPaperclip } from '@iconscout/react-unicons';
+import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
+import UilPaperclip from '@iconscout/react-unicons/icons/uil-paperclip';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 
 import localStorageService from '../../../../services/local-storage.service';

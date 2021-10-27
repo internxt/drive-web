@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { UilTrashAlt, UilUserPlus } from '@iconscout/react-unicons';
+import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
+import UilUserPlus from '@iconscout/react-unicons/icons/uil-user-plus';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';

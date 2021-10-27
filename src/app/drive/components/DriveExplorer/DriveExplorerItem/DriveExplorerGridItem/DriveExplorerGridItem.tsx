@@ -1,6 +1,6 @@
 import { Fragment, createRef, useEffect, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
-import * as Unicons from '@iconscout/react-unicons';
+import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import { items } from '@internxt/lib';
 
 import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
@@ -96,7 +96,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps) => {
     >
       <Dropdown>
         <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
-          <Unicons.UilEllipsisH className="w-full h-full" />
+          <UilEllipsisH className="w-full h-full" />
         </Dropdown.Toggle>
         <Dropdown.Menu>
           <DriveItemDropdownActions
