@@ -12,6 +12,7 @@ interface UISliceState {
   isFileInfoMenuOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
+  isNewsletterDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
@@ -29,6 +30,7 @@ const initialState: UISliceState = {
   isFileInfoMenuOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
+  isNewsletterDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
   isShareItemDialogOpen: false,
   isInviteMemberDialogOpen: false,
@@ -58,6 +60,9 @@ export const uiSlice = createSlice({
     },
     setIsDeleteItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDeleteItemsDialogOpen = action.payload;
+    },
+    setIsNewsletterDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isNewsletterDialogOpen = action.payload;
     },
     setIsReachedPlanLimitDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isReachedPlanLimitDialogOpen = action.payload;
@@ -107,6 +112,7 @@ export const uiSlice = createSlice({
 export const {
   setIsCreateFolderDialogOpen,
   setIsDeleteItemsDialogOpen,
+  setIsNewsletterDialogOpen,
   setIsFileLoggerOpen,
   setIsFileInfoMenuOpen,
   setIsReachedPlanLimitDialogOpen,

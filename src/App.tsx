@@ -21,11 +21,13 @@ import { DriveFileData } from './app/drive/types';
 import { UserSettings } from './app/auth/types';
 import views from './app/core/config/views';
 import FileViewer from './app/drive/components/FileViewer/FileViewer';
+import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 
 interface AppProps {
   isAuthenticated: boolean;
   isInitialized: boolean;
   isFileViewerOpen: boolean;
+  isNewsletterDialogOpen: boolean;
   fileViewerItem: DriveFileData | null;
   user: UserSettings | undefined;
   dispatch: AppDispatch;
@@ -83,7 +85,8 @@ class App extends Component<AppProps> {
 
   render(): JSX.Element {
     const isDev = !envService.isProduction();
-    const { isInitialized, isAuthenticated, isFileViewerOpen, fileViewerItem, dispatch } = this.props;
+    const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, fileViewerItem, dispatch } =
+      this.props;
     const pathName = window.location.pathname.split('/')[1];
     let template: JSX.Element = <div></div>;
 
@@ -113,6 +116,7 @@ class App extends Component<AppProps> {
 
             <ToastContainer />
 
+            <NewsletterDialog isOpen={isNewsletterDialogOpen} />
             {isFileViewerOpen && (
               <FileViewer file={fileViewerItem} onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))} />
             )}
@@ -129,6 +133,7 @@ export default connect((state: RootState) => ({
   isAuthenticated: state.user.isAuthenticated,
   isInitialized: state.user.isInitialized,
   isFileViewerOpen: state.ui.isFileViewerOpen,
+  isNewsletterDialogOpen: state.ui.isNewsletterDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,
 }))(App);

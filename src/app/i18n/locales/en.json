@@ -153,7 +153,8 @@
     "noSpaceAvailable": "Your Internxt Drive is full. Get more space upgrading your account.",
     "noFilePreview": "No file preview available",
     "browserNotSupported": "Browser not supported: {userAgent}",
-    "inviteAFriend": "Error sending the invitation to a friend: {message}"
+    "inviteAFriend": "Error sending the invitation to a friend: {message}",
+    "subscribeToNewsletter": "Error subscribing to newsletter: {message}"
   },
   "backups": {
     "backups-from": "Backups from {deviceName}",
@@ -281,7 +282,8 @@
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Done",
-    "inviteAFriend": "An invitation has been sent to {email}"
+    "inviteAFriend": "An invitation has been sent to {email}",
+    "subscribeToNewsletter": "{email} successfully subscribed to newsletter"
   },
   "actions": {
     "upload": "Upload",
@@ -293,7 +295,8 @@
     "changePassword": "Change password",
     "buy": "Buy",
     "cancel": "Cancel",
-    "sendInvitation": "Send invitation"
+    "sendInvitation": "Send invitation",
+    "subscribe": "Subscribe"
   },
   "drive": {
     "usage": "Usage",
@@ -338,6 +341,12 @@
     "description": "Get up to 4GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
     "actions": {
       "sendInvitation": "Send invitation"
+    }
+  },
+  "newsletter": {
+    "dialog": {
+      "title": "Subscribe to our newsletter",
+      "message": "Get the last news and updates right in your mail inbox"
     }
   }
 }
