@@ -25,7 +25,7 @@ export default function PlanUsage({
   return (
     <div className={`flex flex-col justify-center w-full rounded-md ${className}`}>
       {isLoading ? (
-        <p>{i18n.get('general.loading.default')}</p>
+        <p className="text-sm">{i18n.get('general.loading.default')}</p>
       ) : (
         <p className="text-sm text-m-neutral-70 m-0">
           {bytesToString(usage) || '0'} of {limitService.formatLimit(limit)}
