@@ -113,20 +113,18 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
             />
           </div>
 
-          {!isCollapsed && (
-            <div>
-              {/* REFERRALS WIDGET */}
-              <ReferralsWidget />
+          <div className={isCollapsed ? 'opacity-0' : ''}>
+            {/* REFERRALS WIDGET */}
+            <ReferralsWidget />
 
-              <div className="px-6 mt-8 mb-12">
-                <PlanUsage
-                  limit={planLimit}
-                  usage={planUsage}
-                  isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
-                ></PlanUsage>
-              </div>
+            <div className="px-6 mt-8 mb-12">
+              <PlanUsage
+                limit={planLimit}
+                usage={planUsage}
+                isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
+              ></PlanUsage>
             </div>
-          )}
+          </div>
         </div>
       </div>
     );
