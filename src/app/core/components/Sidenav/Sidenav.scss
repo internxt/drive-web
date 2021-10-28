@@ -1,6 +1,6 @@
 @layer components {
   .side-nav {
-    @apply min-w-sidenav-1280 w-sidenav-1280 flex flex-col justify-between;
+    @apply w-sidenav flex-none flex flex-col justify-between;
 
     .collapse-button {
       left: 11.2rem;
@@ -10,7 +10,7 @@
   }
 
   .side-nav.collapsed {
-    @apply bg-white min-w-sidenav-1280-collapsed w-sidenav-1280-collapsed px-0;
+    @apply bg-white w-sidenav-collapsed px-0;
 
     .collapse-button {
       @apply left-2.5;

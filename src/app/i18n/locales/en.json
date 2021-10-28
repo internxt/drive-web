@@ -296,7 +296,8 @@
     "buy": "Buy",
     "cancel": "Cancel",
     "sendInvitation": "Send invitation",
-    "subscribe": "Subscribe"
+    "subscribe": "Subscribe",
+    "moreInfo": "More info"
   },
   "drive": {
     "usage": "Usage",
@@ -347,6 +348,13 @@
     "dialog": {
       "title": "Subscribe to our newsletter",
       "message": "Get the last news and updates right in your mail inbox"
+    }
+  },
+  "referrals": {
+    "rewards": {
+      "title": "Get 10GB for free",
+      "progress": "{progress}GB unlocked",
+      "limit": "(out of 10GB)"
     }
   }
 }

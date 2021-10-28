@@ -5,13 +5,14 @@ import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';
 import { uiActions } from 'app/store/slices/ui';
-import { useAppDispatch } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import i18n from 'app/i18n/services/i18n.service';
 import newsletterService from 'app/newsletter/services/newsletterService';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 const NewsletterDialog = (props: { isOpen: boolean }): JSX.Element => {
-  const [email, setEmail] = useState('');
+  const user = useAppSelector((state) => state.user.user);
+  const [email, setEmail] = useState(user?.email || '');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
 
