@@ -1,6 +1,6 @@
-import './LoadingFileExplorer.scss';
+import './LoadingPulse.scss';
 
-export default function LoadingFileExplorer(): JSX.Element {
+export default function LoadingPulse(): JSX.Element {
   return (
     <div className="loader-container">
       <div className="loader06"></div>

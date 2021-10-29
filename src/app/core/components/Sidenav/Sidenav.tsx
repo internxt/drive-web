@@ -15,7 +15,7 @@ import smallLogo from 'assets/icons/small-logo.svg';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import SidenavItem from './SidenavItem/SidenavItem';
 import desktopService from 'app/core/services/desktop.service';
-import PlanUsage from '../PlanUsage/PlanUsage';
+import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
 import { planSelectors } from 'app/store/slices/plan';
 import screenService from 'app/core/services/screen.service';
 

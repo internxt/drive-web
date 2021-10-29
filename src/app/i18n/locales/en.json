@@ -351,6 +351,14 @@
     }
   },
   "referrals": {
+    "items": {
+      "create-account": "Create an account",
+      "install-mobile-app": "Install mobile app and upload a file",
+      "share-file": "Share a file via link",
+      "subscribe-to-newsletter": "Subscribe to newsletter",
+      "install-desktop-app": "Install desktop app and upload a file",
+      "invite-friends": "Invite {steps} friends"
+    },
     "rewards": {
       "title": "Get 10GB for free",
       "progress": "{progress}GB unlocked",

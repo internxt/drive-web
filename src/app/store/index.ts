@@ -11,6 +11,7 @@ import paymentReducer from './slices/payment';
 import backupsReducer from './slices/backups';
 import fileViewerReducer from './slices/fileViewer';
 import taskManagerReducer from './slices/taskManager';
+import referralsReducer from './slices/referrals';
 
 export const store = configureStore({
   reducer: {
@@ -25,6 +26,7 @@ export const store = configureStore({
     backups: backupsReducer,
     fileViewer: fileViewerReducer,
     taskManager: taskManagerReducer,
+    referrals: referralsReducer,
   },
 });
 

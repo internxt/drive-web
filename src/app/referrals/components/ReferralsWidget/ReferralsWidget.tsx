@@ -5,23 +5,19 @@ import UilAngleDown from '@iconscout/react-unicons/icons/uil-angle-down';
 import i18n from 'app/i18n/services/i18n.service';
 
 import './ReferralsWidget.scss';
+import { useAppSelector } from 'app/store/hooks';
 
 const ReferralsWidget = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const referrals = [
-    { id: 1, credit: 2, title: 'Create an account' },
-    { id: 2, credit: 1, title: 'Install mobile app and upload a file' },
-    { id: 3, credit: 1, title: 'Share a file via link' },
-    { id: 4, credit: 1, title: 'Subscribe to newsletter' },
-    { id: 5, credit: 1, title: 'Install desktop app and upload a file' },
-    { id: 6, credit: 4, title: 'Invite 4 friends' },
-  ];
+  const referrals = useAppSelector((state) => state.referrals.list);
   const referralsList = referrals.map((referral) => (
     <div key={referral.id} className="referral-item flex items-center mb-4">
       <div className="referral-item-bullet flex-none h-4 w-8 py-1 px-2 text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2">
         <span className="text-m-neutral-100">{`${referral.credit}GB`}</span>
       </div>
-      <span className="text-neutral-500 text-sm">{referral.title}</span>
+      <span className="text-neutral-500 text-sm">
+        {i18n.get(`referrals.items.${referral.key}`, { steps: referral.steps })}
+      </span>
     </div>
   ));
   const onCollapseButtonClicked = () => {

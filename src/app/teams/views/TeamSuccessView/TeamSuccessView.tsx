@@ -1,5 +1,5 @@
 import { match } from 'react-router';
-import LoadingFileExplorer from 'app/shared/components/LoadingFileExplorer/LoadingFileExplorer';
+import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 
@@ -10,7 +10,7 @@ export default function Success(props: { match: match<{ sessionId: string }> }):
 
   return (
     <div className="flex jutify-center content-center mt-3">
-      <LoadingFileExplorer />
+      <LoadingPulse />
     </div>
   );
 }

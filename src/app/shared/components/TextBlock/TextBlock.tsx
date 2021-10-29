@@ -1,12 +1,12 @@
 import { FunctionComponent, SVGProps } from 'react';
 
-interface AccountAdviceProps {
+interface TextBlockProps {
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   title: string;
   description: string;
 }
 
-const AccountAdvice = (props: AccountAdviceProps): JSX.Element => {
+const TextBlock = (props: TextBlockProps): JSX.Element => {
   return (
     <div className="account-advice-component">
       <div className="mb-2 flex">
@@ -18,4 +18,4 @@ const AccountAdvice = (props: AccountAdviceProps): JSX.Element => {
   );
 };
 
-export default AccountAdvice;
+export default TextBlock;
