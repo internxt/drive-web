@@ -10,25 +10,14 @@ export interface InitializeUserResponse {
 }
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse | undefined> {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/initialize`, {
-    method: 'post',
-    headers: httpService.getHeaders(true, true),
-    body: JSON.stringify({
-      email,
-      mnemonic,
-    }),
+  return httpService.post<{ email: string; mnemonic: string }, InitializeUserResponse | undefined>('/api/initialize', {
+    email,
+    mnemonic,
   });
-
-  if (response.status === 200) {
-    return response.json();
-  }
 }
 
-export const sendDeactivationEmail = (email: string): Promise<Response> => {
-  return fetch(`${process.env.REACT_APP_API_URL}/api/reset/${email}`, {
-    method: 'GET',
-    headers: httpService.getHeaders(false, false),
-  });
+export const sendDeactivationEmail = (email: string): Promise<void> => {
+  return httpService.get<void>(`/api/reset/${email}`);
 };
 
 const inviteAFriend = (email: string) => {

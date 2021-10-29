@@ -32,17 +32,10 @@ export interface GetShareInfoResponse {
 }
 
 export function generateShareLink(fileId: string, params: GenerateShareLinkRequestBody): Promise<string> {
-  return fetch(`${process.env.REACT_APP_API_URL}/api/storage/share/file/${fileId}`, {
-    method: 'POST',
-    headers: httpService.getHeaders(true, true),
-    body: JSON.stringify(params),
-  })
-    .then((res) => {
-      if (res.status === 401) throw new Error('unauthenticated');
-      return res.json();
-    })
-    .then((res: GenerateShareLinkResponse) => {
-      return `${window.location.origin}/${res.token}`;
+  return httpService
+    .post<GenerateShareLinkRequestBody, GenerateShareLinkResponse>(`/api/storage/share/file/${fileId}`, params)
+    .then((response: GenerateShareLinkResponse) => {
+      return `${window.location.origin}/${response.token}`;
     });
 }
 
