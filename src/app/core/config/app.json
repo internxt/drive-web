@@ -97,8 +97,7 @@
       "id": "remove",
       "layout": "empty",
       "path": "/remove",
-      "exact": true,
-      "auth": true
+      "exact": true    
     },
     {
       "id": "share-token",
