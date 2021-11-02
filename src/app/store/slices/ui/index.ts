@@ -8,6 +8,7 @@ import { AccountViewTab } from '../../../core/views/AccountView/tabs';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
+  isReferralsWidgetCollapsed: boolean;
   isFileLoggerOpen: boolean;
   isFileInfoMenuOpen: boolean;
   isCreateFolderDialogOpen: boolean;
@@ -26,6 +27,7 @@ interface UISliceState {
 
 const initialState: UISliceState = {
   isSidenavCollapsed: false,
+  isReferralsWidgetCollapsed: false,
   isFileLoggerOpen: false,
   isFileInfoMenuOpen: false,
   isCreateFolderDialogOpen: false,
@@ -48,6 +50,9 @@ export const uiSlice = createSlice({
   reducers: {
     setIsSidenavCollapsed: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isSidenavCollapsed = action.payload;
+    },
+    setIsReferralsWidgetCollapsed: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isReferralsWidgetCollapsed = action.payload;
     },
     setIsFileLoggerOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isFileLoggerOpen = action.payload;
@@ -110,6 +115,7 @@ export const uiSlice = createSlice({
 });
 
 export const {
+  setIsReferralsWidgetCollapsed,
   setIsCreateFolderDialogOpen,
   setIsDeleteItemsDialogOpen,
   setIsNewsletterDialogOpen,

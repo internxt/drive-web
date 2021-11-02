@@ -1,14 +1,16 @@
-import { useState } from 'react';
 import UilAngleUp from '@iconscout/react-unicons/icons/uil-angle-up';
 import UilAngleDown from '@iconscout/react-unicons/icons/uil-angle-down';
 
 import i18n from 'app/i18n/services/i18n.service';
 
 import './ReferralsWidget.scss';
-import { useAppSelector } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { uiActions } from 'app/store/slices/ui';
 
 const ReferralsWidget = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const dispatch = useAppDispatch();
+  const isCollapsed = useAppSelector((state) => state.ui.isReferralsWidgetCollapsed);
+  const setIsCollapsed = (value) => dispatch(uiActions.setIsReferralsWidgetCollapsed(value));
   const referrals = useAppSelector((state) => state.referrals.list);
   const referralsList = referrals.map((referral) => (
     <div key={referral.id} className="referral-item flex items-center mb-4">
