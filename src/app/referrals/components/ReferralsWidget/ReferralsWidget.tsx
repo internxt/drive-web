@@ -13,7 +13,7 @@ const ReferralsWidget = () => {
   const referralsList = referrals.map((referral) => (
     <div key={referral.id} className="referral-item flex items-center mb-4">
       <div className="referral-item-bullet flex-none h-4 w-8 py-1 px-2 text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2">
-        <span className="text-m-neutral-100">{`${referral.credit}GB`}</span>
+        <span>{`${referral.credit}GB`}</span>
       </div>
       <span className="text-neutral-500 text-sm">
         {i18n.get(`referrals.items.${referral.key}`, { steps: referral.steps })}
