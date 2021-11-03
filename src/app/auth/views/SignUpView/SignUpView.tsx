@@ -76,9 +76,11 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
   }
 
   useEffect(() => {
-    const isAppSumo = navigationService.getCurrentView()?.id === AppView.AppSumo;
+    const isRegisterStagging =
+      navigationService.getCurrentView()?.id === AppView.AppSumo ||
+      navigationService.getCurrentView()?.id === AppView.Activate;
 
-    if (isAppSumo && tokenParam && typeof tokenParam === 'string') {
+    if (isRegisterStagging && tokenParam && typeof tokenParam === 'string') {
       localStorageService.clear();
       localStorageService.set('xToken', tokenParam);
     }

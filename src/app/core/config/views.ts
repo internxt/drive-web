@@ -26,6 +26,7 @@ const views: Array<{
 }> = [
   { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
+  { id: AppView.Activate, component: SignUpView, componentProps: { isNewUser: true } },
   { id: AppView.Login, component: SignInView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },

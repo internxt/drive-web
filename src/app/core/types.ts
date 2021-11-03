@@ -97,6 +97,7 @@ export enum AppViewLayout {
 
 export enum AppView {
   Signup = 'signup',
+  Activate = 'activate',
   AppSumo = 'appsumo',
   Login = 'login',
   Drive = 'drive',

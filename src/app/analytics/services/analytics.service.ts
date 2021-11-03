@@ -9,6 +9,7 @@ import { AnalyticsTrack } from '../types';
 export const PATH_NAMES = {
   '/new': 'Register',
   '/appsumo': 'Register',
+  '/activate': 'Register',
   '/login': 'Login',
   '/storage': 'Drive Main',
   '/settings': 'drive-web-settings',
