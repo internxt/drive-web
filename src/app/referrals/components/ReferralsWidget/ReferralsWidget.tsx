@@ -2,23 +2,27 @@ import UilAngleUp from '@iconscout/react-unicons/icons/uil-angle-up';
 import UilAngleDown from '@iconscout/react-unicons/icons/uil-angle-down';
 
 import i18n from 'app/i18n/services/i18n.service';
-
-import './ReferralsWidget.scss';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
+
+import './ReferralsWidget.scss';
 
 const ReferralsWidget = () => {
   const dispatch = useAppDispatch();
   const isCollapsed = useAppSelector((state) => state.ui.isReferralsWidgetCollapsed);
   const setIsCollapsed = (value) => dispatch(uiActions.setIsReferralsWidgetCollapsed(value));
   const referrals = useAppSelector((state) => state.referrals.list);
+  const creditSum = referrals.reduce((t, x) => t + x.credit, 0);
   const referralsList = referrals.map((referral) => (
     <div key={referral.id} className="referral-item flex items-center mb-4">
       <div className="referral-item-bullet flex-none h-4 w-8 py-1 px-2 text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2">
         <span>{`${referral.credit}GB`}</span>
       </div>
       <span className="text-neutral-500 text-sm">
-        {i18n.get(`referrals.items.${referral.key}`, { steps: referral.steps })}
+        {i18n.get(`referrals.items.${referral.key}`, {
+          steps: referral.steps,
+          completedSteps: referral.completedSteps,
+        })}
       </span>
     </div>
   ));
@@ -31,10 +35,10 @@ const ReferralsWidget = () => {
       {/* HEADER */}
       <div className="flex items-center">
         <div className="mr-3">
-          <span className="font-semibold">{i18n.get('referrals.rewards.title')}</span>
+          <span className="font-semibold">{i18n.get('referrals.rewards.title', { creditSum })}</span>
           <p className="text-supporting-2 m-0">
             <span className="text-green-50">{i18n.get('referrals.rewards.progress', { progress: 0 })}</span>
-            <span className="text-neutral-500">{' ' + i18n.get('referrals.rewards.limit')}</span>
+            <span className="text-neutral-500">{' ' + i18n.get('referrals.rewards.limit', { creditSum })}</span>
           </p>
         </div>
         <div className="flex-none rounded-1/2 bg-l-neutral-30 w-4 h-4 cursor-pointer" onClick={onCollapseButtonClicked}>

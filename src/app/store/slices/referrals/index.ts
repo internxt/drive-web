@@ -12,12 +12,12 @@ interface ReferralsState {
 const initialState: ReferralsState = {
   isLoading: false,
   list: [
-    { id: 1, key: 'create-account', credit: 2, steps: 1 },
-    { id: 2, key: 'install-mobile-app', credit: 1, steps: 1 },
-    { id: 3, key: 'share-file', credit: 1, steps: 1 },
-    { id: 4, key: 'subscribe-to-newsletter', credit: 1, steps: 1 },
-    { id: 5, key: 'install-desktop-app', credit: 1, steps: 1 },
-    { id: 6, key: 'invite-friends', credit: 4, steps: 4 },
+    { id: 1, key: 'create-account', credit: 2, steps: 1, completedSteps: 0 },
+    { id: 2, key: 'install-mobile-app', credit: 1, steps: 1, completedSteps: 0 },
+    { id: 3, key: 'share-file', credit: 1, steps: 1, completedSteps: 0 },
+    { id: 4, key: 'subscribe-to-newsletter', credit: 1, steps: 1, completedSteps: 0 },
+    { id: 5, key: 'install-desktop-app', credit: 1, steps: 1, completedSteps: 0 },
+    { id: 6, key: 'invite-friends', credit: 4, steps: 4, completedSteps: 0 },
   ],
 };
 

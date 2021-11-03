@@ -357,12 +357,12 @@
       "share-file": "Share a file via link",
       "subscribe-to-newsletter": "Subscribe to newsletter",
       "install-desktop-app": "Install desktop app and upload a file",
-      "invite-friends": "Invite {steps} friends"
+      "invite-friends": "Invite {completedSteps}/{steps} friends"
     },
     "rewards": {
-      "title": "Get 10GB for free",
+      "title": "Get {creditSum}GB for free",
       "progress": "{progress}GB unlocked",
-      "limit": "(out of 10GB)"
+      "limit": "(out of {creditSum}GB)"
     }
   }
 }

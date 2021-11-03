@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import AppHeader from '../../components/AppHeader/AppHeader';
+import Navbar from '../../components/Navbar/Navbar';
 import Sidenav from '../../components/Sidenav/Sidenav';
 import { uiActions } from 'app/store/slices/ui';
 import ReachedPlanLimitDialog from 'app/drive/components/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
@@ -50,7 +50,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
         <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />
 
         <div className="flex flex-col flex-grow bg-white w-1">
-          <AppHeader />
+          <Navbar />
           <div className="flex-grow flex w-full h-1">
             {children}
 
