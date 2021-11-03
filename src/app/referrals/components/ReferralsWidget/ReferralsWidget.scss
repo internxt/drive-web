@@ -3,10 +3,18 @@
     @apply relative text-m-neutral-100;
   }
 
+  .referral-item-label {
+    @apply text-neutral-500;
+  }
+
   .referral-item {
     &.active {
       .referral-item-bullet {
         @apply bg-green-40 text-white;
+      }
+
+      .referral-item-label {
+        @apply text-m-neutral-60 line-through;
       }
     }
   }

@@ -15,11 +15,11 @@ const ReferralsWidget = () => {
   const referrals = useAppSelector((state) => state.referrals.list);
   const creditSum = referrals.reduce((t, x) => t + x.credit, 0);
   const referralsList = referrals.map((referral) => (
-    <div key={referral.key} className="referral-item flex items-center mb-4">
+    <div key={referral.key} className={`${referral.isCompleted ? 'active' : ''} referral-item flex items-center mb-4`}>
       <div className="referral-item-bullet flex-none h-4 w-8 py-1 px-2 text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2">
         <span>{`${referral.credit}GB`}</span>
       </div>
-      <span className="text-neutral-500 text-sm">
+      <span className="referral-item-label text-sm">
         {i18n.get(`referrals.items.${referral.key}`, {
           steps: referral.steps,
           completedSteps: referral.completedSteps,
