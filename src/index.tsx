@@ -13,6 +13,7 @@ import { productsThunks } from './app/store/slices/products';
 import storageThunks from './app/store/slices/storage/storage.thunks';
 import { taskManagerThunks } from './app/store/slices/taskManager';
 import { sessionActions } from './app/store/slices/session';
+import { referralsThunks } from 'app/store/slices/referrals';
 
 import './index.scss';
 
@@ -27,6 +28,7 @@ store.dispatch(storageThunks.initializeThunk());
 store.dispatch(planThunks.initializeThunk());
 store.dispatch(productsThunks.initializeThunk());
 store.dispatch(taskManagerThunks.initializeThunk());
+store.dispatch(referralsThunks.initializeThunk());
 
 ReactDOM.render(
   <React.StrictMode>

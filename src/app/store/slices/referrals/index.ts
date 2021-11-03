@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import userReferralsService from 'app/referrals/services/user-referrals.service';
+import usersReferralsService from 'app/referrals/services/users-referrals.service';
 
 import { UserReferral } from 'app/referrals/types';
 import { RootState } from 'app/store';
@@ -11,20 +11,20 @@ interface ReferralsState {
 
 const initialState: ReferralsState = {
   isLoading: false,
-  list: [
-    { id: 1, key: 'create-account', credit: 2, steps: 1, completedSteps: 0 },
-    { id: 2, key: 'install-mobile-app', credit: 1, steps: 1, completedSteps: 0 },
-    { id: 3, key: 'share-file', credit: 1, steps: 1, completedSteps: 0 },
-    { id: 4, key: 'subscribe-to-newsletter', credit: 1, steps: 1, completedSteps: 0 },
-    { id: 5, key: 'install-desktop-app', credit: 1, steps: 1, completedSteps: 0 },
-    { id: 6, key: 'invite-friends', credit: 4, steps: 4, completedSteps: 0 },
-  ],
+  list: [],
 };
 
-export const fetchUserReferrals = createAsyncThunk<UserReferral[], void, { state: RootState }>(
+const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
+  'referrals/initialize',
+  async (payload, { dispatch }) => {
+    await dispatch(fetchUserReferralsThunk());
+  },
+);
+
+const fetchUserReferralsThunk = createAsyncThunk<UserReferral[], void, { state: RootState }>(
   'referrals/fetchUserReferrals',
   () => {
-    return userReferralsService.fetch();
+    return usersReferralsService.fetch();
   },
 );
 
@@ -34,19 +34,24 @@ export const referralsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUserReferrals.pending, (state) => {
+      .addCase(fetchUserReferralsThunk.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(fetchUserReferrals.fulfilled, (state, action) => {
+      .addCase(fetchUserReferralsThunk.fulfilled, (state, action) => {
         state.isLoading = false;
         state.list = action.payload;
       })
-      .addCase(fetchUserReferrals.rejected, (state) => {
+      .addCase(fetchUserReferralsThunk.rejected, (state) => {
         state.isLoading = false;
       });
   },
 });
 
 export const referralsActions = referralsSlice.actions;
+
+export const referralsThunks = {
+  initializeThunk,
+  fetchUserReferralsThunk,
+};
 
 export default referralsSlice.reducer;

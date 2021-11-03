@@ -11,10 +11,11 @@ const ReferralsWidget = () => {
   const dispatch = useAppDispatch();
   const isCollapsed = useAppSelector((state) => state.ui.isReferralsWidgetCollapsed);
   const setIsCollapsed = (value) => dispatch(uiActions.setIsReferralsWidgetCollapsed(value));
+  const isLoadingReferrals = useAppSelector((state) => state.referrals.isLoading);
   const referrals = useAppSelector((state) => state.referrals.list);
   const creditSum = referrals.reduce((t, x) => t + x.credit, 0);
   const referralsList = referrals.map((referral) => (
-    <div key={referral.id} className="referral-item flex items-center mb-4">
+    <div key={referral.key} className="referral-item flex items-center mb-4">
       <div className="referral-item-bullet flex-none h-4 w-8 py-1 px-2 text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2">
         <span>{`${referral.credit}GB`}</span>
       </div>
@@ -30,7 +31,9 @@ const ReferralsWidget = () => {
     setIsCollapsed(!isCollapsed);
   };
 
-  return (
+  return isLoadingReferrals ? (
+    <div></div>
+  ) : (
     <div className="p-6 border-t border-b border-l-neutral-30 bg-l-neutral-10">
       {/* HEADER */}
       <div className="flex items-center">
