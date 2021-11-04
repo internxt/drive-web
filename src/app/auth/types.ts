@@ -28,4 +28,5 @@ export interface UserSettings {
   bridgeUser: string;
   sharedWorkspace: boolean;
   appSumoDetails: AppSumoDetails | null;
+  hasReferralsProgram: boolean;
 }

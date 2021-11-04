@@ -1,4 +1,5 @@
 import httpService from '../../core/services/http.service';
+import { UserSettings } from '../types';
 
 export interface InitializeUserResponse {
   user: {
@@ -24,8 +25,16 @@ const inviteAFriend = (email: string) => {
   return httpService.post<{ email: string }, void>('/api/user/invite', { email });
 };
 
+/**
+ * ! This endpoint accepts a body but is using GET method
+ */
+const refreshUser = async () => {
+  return httpService.get<{ user: UserSettings; token: string }>('/api/user/refresh');
+};
+
 const userService = {
   initializeUser,
+  refreshUser,
   sendDeactivationEmail,
   inviteAFriend,
 };

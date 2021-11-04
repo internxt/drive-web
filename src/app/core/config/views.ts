@@ -17,6 +17,7 @@ import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
 
 import { AppView } from '../types';
+import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
 
 const views: Array<{
   id: string;
@@ -36,6 +37,7 @@ const views: Array<{
   { id: AppView.Deactivation, component: DeactivationView },
   { id: AppView.TeamsDeactivation, component: DeactivationTeamsView },
   { id: AppView.TeamSuccess, component: TeamSuccessView },
+  { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
   { id: AppView.Checkout, component: CheckoutView },
   { id: AppView.Remove, component: RemoveAccountView },
   { id: AppView.ShareToken, component: ShareView },

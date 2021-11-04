@@ -6,12 +6,14 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 
 import './ReferralsWidget.scss';
+import { userSelectors } from 'app/store/slices/user';
 
 const ReferralsWidget = () => {
   const dispatch = useAppDispatch();
   const isCollapsed = useAppSelector((state) => state.ui.isReferralsWidgetCollapsed);
   const setIsCollapsed = (value) => dispatch(uiActions.setIsReferralsWidgetCollapsed(value));
   const isLoadingReferrals = useAppSelector((state) => state.referrals.isLoading);
+  const hasReferralsProgram = useAppSelector(userSelectors.hasReferralsProgram);
   const referrals = useAppSelector((state) => state.referrals.list);
   const creditSum = referrals.reduce((t, x) => t + x.credit, 0);
   const currentCredit = referrals.reduce((t, x) => (x.completedSteps / x.steps) * x.credit + t, 0);
@@ -32,7 +34,7 @@ const ReferralsWidget = () => {
     setIsCollapsed(!isCollapsed);
   };
 
-  return isLoadingReferrals ? (
+  return !hasReferralsProgram || isLoadingReferrals ? (
     <div></div>
   ) : (
     <div className="p-6 border-t border-b border-l-neutral-30 bg-l-neutral-10">

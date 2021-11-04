@@ -3,6 +3,7 @@ import usersReferralsService from 'app/referrals/services/users-referrals.servic
 
 import { UserReferral } from 'app/referrals/types';
 import { RootState } from 'app/store';
+import { userSelectors } from '../user';
 
 interface ReferralsState {
   isLoading: boolean;
@@ -16,8 +17,13 @@ const initialState: ReferralsState = {
 
 const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
   'referrals/initialize',
-  async (payload, { dispatch }) => {
-    await dispatch(fetchUserReferralsThunk());
+  async (payload, { getState, dispatch }) => {
+    const isAuthenticated = getState().user.isAuthenticated;
+    const hasReferralsProgram = userSelectors.hasReferralsProgram(getState());
+
+    if (isAuthenticated && hasReferralsProgram) {
+      await dispatch(fetchUserReferralsThunk());
+    }
   },
 );
 
@@ -31,7 +37,11 @@ const fetchUserReferralsThunk = createAsyncThunk<UserReferral[], void, { state: 
 export const referralsSlice = createSlice({
   name: 'referrals',
   initialState,
-  reducers: {},
+  reducers: {
+    resetState: (state: ReferralsState) => {
+      Object.assign(state, initialState);
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserReferralsThunk.pending, (state) => {

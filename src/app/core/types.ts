@@ -107,6 +107,7 @@ export enum AppView {
   Deactivation = 'deactivation',
   TeamsDeactivation = 'teams-deactivation',
   TeamSuccess = 'team-success',
+  CheckoutSuccess = 'checkout-success',
   Checkout = 'checkout',
   Remove = 'remove',
   ShareToken = 'share-token',

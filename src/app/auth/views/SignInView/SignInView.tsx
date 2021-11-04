@@ -26,6 +26,7 @@ import { AppView, IFormValues } from 'app/core/types';
 import navigationService from 'app/core/services/navigation.service';
 import { UserSettings } from '../../types';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import { referralsThunks } from 'app/store/slices/referrals';
 
 export default function SignInView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -67,6 +68,7 @@ export default function SignInView(): JSX.Element {
         try {
           dispatch(productsThunks.initializeThunk());
           dispatch(planThunks.initializeThunk());
+          dispatch(referralsThunks.initializeThunk());
           await dispatch(initializeUserThunk()).unwrap();
         } catch (e: unknown) {
           console.log(e);
