@@ -361,7 +361,7 @@
     },
     "rewards": {
       "title": "Get {creditSum}GB for free",
-      "progress": "{progress}GB unlocked",
+      "progress": "{currentCredit}GB unlocked",
       "limit": "(out of {creditSum}GB)"
     }
   }

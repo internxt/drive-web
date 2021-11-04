@@ -14,6 +14,7 @@ const ReferralsWidget = () => {
   const isLoadingReferrals = useAppSelector((state) => state.referrals.isLoading);
   const referrals = useAppSelector((state) => state.referrals.list);
   const creditSum = referrals.reduce((t, x) => t + x.credit, 0);
+  const currentCredit = referrals.reduce((t, x) => (x.completedSteps / x.steps) * x.credit + t, 0);
   const referralsList = referrals.map((referral) => (
     <div key={referral.key} className={`${referral.isCompleted ? 'active' : ''} referral-item flex items-center mb-4`}>
       <div className="referral-item-bullet flex-none h-4 w-8 py-1 px-2 text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2">
@@ -40,7 +41,7 @@ const ReferralsWidget = () => {
         <div className="mr-3">
           <span className="font-semibold">{i18n.get('referrals.rewards.title', { creditSum })}</span>
           <p className="text-supporting-2 m-0">
-            <span className="text-green-50">{i18n.get('referrals.rewards.progress', { progress: 0 })}</span>
+            <span className="text-green-50">{i18n.get('referrals.rewards.progress', { currentCredit })}</span>
             <span className="text-neutral-500">{' ' + i18n.get('referrals.rewards.limit', { creditSum })}</span>
           </p>
         </div>
