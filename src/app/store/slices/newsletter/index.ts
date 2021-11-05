@@ -4,6 +4,7 @@ import newsletterService from 'app/newsletter/services/newsletterService';
 
 import { RootState } from '../..';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { referralsThunks } from '../referrals';
 
 interface NewsletterState {
   isSubscribing: boolean;
@@ -15,8 +16,9 @@ const initialState: NewsletterState = {
 
 export const subscribeToNewsletterThunk = createAsyncThunk<void, { email: string }, { state: RootState }>(
   'newsletter/subscribeToNewsletter',
-  async (payload) => {
+  async (payload, { dispatch }) => {
     await newsletterService.subscribe(payload.email);
+    dispatch(referralsThunks.fetchUserReferralsThunk());
   },
 );
 
