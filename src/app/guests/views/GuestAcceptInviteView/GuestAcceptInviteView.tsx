@@ -58,7 +58,7 @@ export default function GuestAcceptInvitationView(): JSX.Element {
         </Form.Group>
 
         <BaseButton
-          disabled={loading || invitationAccepted}
+          disabled={loading || invitationAccepted || password === ''}
           className="primary"
           onClick={() => {
             setLoading(true);
@@ -79,8 +79,21 @@ export default function GuestAcceptInvitationView(): JSX.Element {
               })
               .catch((err) => {
                 setPassword('');
+                // TODO: Use on axios handling error interceptor
+                let errMsg: string;
+
+                const isServerError = !!err.response;
+                const serverUnavailable = !!err.request;
+
+                if (isServerError) {
+                  errMsg = err.response.data.error;
+                } else if (serverUnavailable) {
+                  errMsg = 'Server not available';
+                } else {
+                  errMsg = err.message;
+                }
                 notificationsService.show(
-                  `${err.message || 'Error accepting invitation'}. Please, try again`,
+                  `${errMsg || 'Error accepting invitation'}. Please, try again`,
                   ToastType.Error,
                 );
               })
