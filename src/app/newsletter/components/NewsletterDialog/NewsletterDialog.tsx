@@ -3,42 +3,25 @@ import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import errorService from 'app/core/services/error.service';
 import { uiActions } from 'app/store/slices/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import i18n from 'app/i18n/services/i18n.service';
-import newsletterService from 'app/newsletter/services/newsletterService';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { newsletterThunks } from 'app/store/slices/newsletter';
 
 const NewsletterDialog = (props: { isOpen: boolean }): JSX.Element => {
   const user = useAppSelector((state) => state.user.user);
   const [email, setEmail] = useState(user?.email || '');
-  const [isLoading, setIsLoading] = useState(false);
+  const isSubscribing = useAppSelector((state) => state.newsletter.isSubscribing);
   const dispatch = useAppDispatch();
 
   const onClose = (): void => {
     dispatch(uiActions.setIsNewsletterDialogOpen(false));
   };
   const onSubscribeButtonClicked = async (): Promise<void> => {
-    try {
-      setIsLoading(true);
+    await dispatch(newsletterThunks.subscribeToNewsletterThunk({ email }));
 
-      await newsletterService.subscribe(email);
-
-      setEmail('');
-      setIsLoading(false);
-      onClose();
-      notificationsService.show(i18n.get('success.subscribeToNewsletter', { email }), ToastType.Info);
-    } catch (err: unknown) {
-      const castedError = errorService.castError(err);
-
-      setIsLoading(false);
-
-      notificationsService.show(
-        i18n.get('error.subscribeToNewsletter', { message: castedError.message }),
-        ToastType.Error,
-      );
-    }
+    setEmail('');
+    onClose();
   };
 
   return (
@@ -61,7 +44,7 @@ const NewsletterDialog = (props: { isOpen: boolean }): JSX.Element => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <BaseButton
-          disabled={isLoading || !email || !isValidEmail(email)}
+          disabled={isSubscribing || !email || !isValidEmail(email)}
           className="primary"
           onClick={onSubscribeButtonClicked}
         >
