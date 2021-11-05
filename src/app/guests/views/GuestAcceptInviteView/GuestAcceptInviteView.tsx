@@ -58,7 +58,7 @@ export default function GuestAcceptInvitationView(): JSX.Element {
         </Form.Group>
 
         <BaseButton
-          disabled={loading || invitationAccepted}
+          disabled={loading || invitationAccepted || password === ''}
           className="primary"
           onClick={() => {
             setLoading(true);
