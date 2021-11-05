@@ -6,6 +6,7 @@ import usersReferralsService from 'app/referrals/services/users-referrals.servic
 
 import { ReferralKey, UserReferral } from 'app/referrals/types';
 import { RootState } from 'app/store';
+import { planThunks } from '../plan';
 import { uiActions } from '../ui';
 import { userSelectors } from '../user';
 
@@ -35,6 +36,14 @@ const fetchUserReferralsThunk = createAsyncThunk<UserReferral[], void, { state: 
   'referrals/fetchUserReferrals',
   () => {
     return usersReferralsService.fetch();
+  },
+);
+
+const refreshUserReferrals = createAsyncThunk<void, void, { state: RootState }>(
+  'referrals/refreshUserReferrals',
+  (payload, { dispatch }) => {
+    dispatch(referralsThunks.fetchUserReferralsThunk());
+    dispatch(planThunks.fetchLimitThunk());
   },
 );
 
@@ -86,6 +95,7 @@ export const referralsActions = referralsSlice.actions;
 export const referralsThunks = {
   initializeThunk,
   fetchUserReferralsThunk,
+  refreshUserReferrals,
   executeUserReferralActionThunk,
 };
 

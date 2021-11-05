@@ -18,7 +18,7 @@ export const subscribeToNewsletterThunk = createAsyncThunk<void, { email: string
   'newsletter/subscribeToNewsletter',
   async (payload, { dispatch }) => {
     await newsletterService.subscribe(payload.email);
-    dispatch(referralsThunks.fetchUserReferralsThunk());
+    dispatch(referralsThunks.refreshUserReferrals());
   },
 );
 

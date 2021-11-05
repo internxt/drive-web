@@ -76,7 +76,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         encryptionKey: fileEncryptionKey.toString('hex'),
       });
 
-      dispatch(referralsThunks.fetchUserReferralsThunk());
+      dispatch(referralsThunks.refreshUserReferrals());
 
       window.analytics.track('file-share');
       setLinkToCopy(link);
