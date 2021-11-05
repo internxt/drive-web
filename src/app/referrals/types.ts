@@ -1,12 +1,3 @@
-export interface UserReferral {
-  key: string;
-  steps: number;
-  completedSteps: number;
-  isCompleted: boolean;
-  credit: number;
-  type: ReferralType;
-}
-
 export enum ReferralType {
   Storage = 'storage',
 }
@@ -18,4 +9,13 @@ export enum ReferralKey {
   SubscribeToNewsletter = 'subscribe-to-newsletter',
   InstallDesktopApp = 'install-desktop-app',
   InviteFriends = 'invite-friends',
+}
+
+export interface UserReferral {
+  key: ReferralKey;
+  steps: number;
+  completedSteps: number;
+  isCompleted: boolean;
+  credit: number;
+  type: ReferralType;
 }

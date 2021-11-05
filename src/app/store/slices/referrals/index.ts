@@ -1,8 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import desktopService from 'app/core/services/desktop.service';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 import usersReferralsService from 'app/referrals/services/users-referrals.service';
 
-import { UserReferral } from 'app/referrals/types';
+import { ReferralKey, UserReferral } from 'app/referrals/types';
 import { RootState } from 'app/store';
+import { uiActions } from '../ui';
 import { userSelectors } from '../user';
 
 interface ReferralsState {
@@ -34,6 +38,26 @@ const fetchUserReferralsThunk = createAsyncThunk<UserReferral[], void, { state: 
   },
 );
 
+const executeUserReferralActionThunk = createAsyncThunk<void, { referralKey: ReferralKey }, { state: RootState }>(
+  'referrals/executeUserReferralActionThunk',
+  ({ referralKey }, { dispatch }) => {
+    switch (referralKey) {
+      case ReferralKey.SubscribeToNewsletter: {
+        dispatch(uiActions.setIsNewsletterDialogOpen(true));
+        break;
+      }
+      case ReferralKey.InstallDesktopApp: {
+        window.open(desktopService.getDownloadAppUrl(), '_blank');
+        break;
+      }
+      case ReferralKey.InviteFriends: {
+        navigationService.push(AppView.Account);
+        break;
+      }
+    }
+  },
+);
+
 export const referralsSlice = createSlice({
   name: 'referrals',
   initialState,
@@ -62,6 +86,7 @@ export const referralsActions = referralsSlice.actions;
 export const referralsThunks = {
   initializeThunk,
   fetchUserReferralsThunk,
+  executeUserReferralActionThunk,
 };
 
 export default referralsSlice.reducer;

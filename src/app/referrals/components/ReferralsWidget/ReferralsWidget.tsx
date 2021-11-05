@@ -7,6 +7,8 @@ import { uiActions } from 'app/store/slices/ui';
 
 import './ReferralsWidget.scss';
 import { userSelectors } from 'app/store/slices/user';
+import { referralsThunks } from 'app/store/slices/referrals';
+import usersReferralsService from 'app/referrals/services/users-referrals.service';
 
 const ReferralsWidget = () => {
   const dispatch = useAppDispatch();
@@ -17,8 +19,17 @@ const ReferralsWidget = () => {
   const referrals = useAppSelector((state) => state.referrals.list);
   const creditSum = referrals.reduce((t, x) => t + x.credit, 0);
   const currentCredit = referrals.reduce((t, x) => (x.completedSteps / x.steps) * x.credit + t, 0);
+  const onReferralItemClicked = (referral) => {
+    !referral.isCompleted && dispatch(referralsThunks.executeUserReferralActionThunk({ referralKey: referral.key }));
+  };
   const referralsList = referrals.map((referral) => (
-    <div key={referral.key} className={`${referral.isCompleted ? 'active' : ''} referral-item flex items-center mb-4`}>
+    <div
+      key={referral.key}
+      className={`${referral.isCompleted ? 'active' : ''} ${
+        usersReferralsService.hasClickAction(referral.key) && !referral.isCompleted ? 'interactive' : ''
+      } referral-item flex items-center mb-4`}
+      onClick={() => onReferralItemClicked(referral)}
+    >
       <div className="referral-item-bullet flex-none h-4 w-8 py-1 px-2 text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2">
         <span>{`${referral.credit}GB`}</span>
       </div>

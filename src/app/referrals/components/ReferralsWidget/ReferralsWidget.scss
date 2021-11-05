@@ -8,7 +8,14 @@
   }
 
   .referral-item {
+
+    &.interactive {
+      @apply cursor-pointer;
+    }
+
     &.active {
+      @apply cursor-default;
+
       .referral-item-bullet {
         @apply bg-green-40 text-white;
       }

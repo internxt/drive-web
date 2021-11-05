@@ -1,9 +1,14 @@
 import httpService from 'app/core/services/http.service';
-import { UserReferral } from '../types';
+import { ReferralKey, UserReferral } from '../types';
 
 const usersReferralsService = {
   fetch() {
     return httpService.get<UserReferral[]>('/api/users-referrals');
+  },
+  hasClickAction(referralKey: ReferralKey) {
+    return [ReferralKey.SubscribeToNewsletter, ReferralKey.InstallDesktopApp, ReferralKey.InviteFriends].includes(
+      referralKey,
+    );
   },
 };
 
