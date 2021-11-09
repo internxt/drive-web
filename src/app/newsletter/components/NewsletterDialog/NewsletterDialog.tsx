@@ -19,8 +19,6 @@ const NewsletterDialog = (props: { isOpen: boolean }): JSX.Element => {
   };
   const onSubscribeButtonClicked = async (): Promise<void> => {
     await dispatch(newsletterThunks.subscribeToNewsletterThunk({ email }));
-
-    setEmail('');
     onClose();
   };
 
@@ -41,6 +39,7 @@ const NewsletterDialog = (props: { isOpen: boolean }): JSX.Element => {
           placeholder={i18n.get('form.fields.email.placeholder')}
           type="email"
           value={email}
+          disabled={true}
           onChange={(e) => setEmail(e.target.value)}
         />
         <BaseButton
