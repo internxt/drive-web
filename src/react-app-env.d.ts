@@ -26,3 +26,7 @@ interface Window {
     execute: (siteKey: string, { action: string }) => Promise<string>;
   };
 }
+
+interface Navigator {
+  brave?: { isBrave: () => Promise<boolean> };
+}

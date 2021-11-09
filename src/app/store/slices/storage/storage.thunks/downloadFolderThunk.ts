@@ -68,47 +68,59 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       },
     });
 
-    const [downloadFolderPromise, stop]: [Promise<void>, () => void] = await downloadService.downloadFolder({
-      folder,
-      decryptedCallback,
-      updateProgressCallback,
-      isTeam,
-    });
+    try {
+      const [downloadFolderPromise, stop]: [Promise<void>, () => void] = await downloadService.downloadFolder({
+        folder,
+        decryptedCallback,
+        updateProgressCallback,
+        isTeam,
+      });
 
-    tasksService.updateTask({
-      taskId: options.taskId,
-      merge: {
-        cancellable: true,
-        stop: async () => stop(),
-      },
-    });
+      tasksService.updateTask({
+        taskId: options.taskId,
+        merge: {
+          cancellable: true,
+          stop: async () => stop(),
+        },
+      });
 
-    downloadFolderPromise
-      .then(() => {
-        tasksService.updateTask({
-          taskId: options.taskId,
-          merge: {
-            status: TaskStatus.Success,
-          },
-        });
-      })
-      .catch((err: unknown) => {
-        const castedError = errorService.castError(err);
-        const task = tasksService.findTask(options.taskId);
-
-        if (task?.status !== TaskStatus.Cancelled) {
+      downloadFolderPromise
+        .then(() => {
           tasksService.updateTask({
             taskId: options.taskId,
             merge: {
-              status: TaskStatus.Error,
+              status: TaskStatus.Success,
             },
           });
+        })
+        .catch((err: unknown) => {
+          const castedError = errorService.castError(err);
+          const task = tasksService.findTask(options.taskId);
 
-          rejectWithValue(castedError);
-        }
+          if (task?.status !== TaskStatus.Cancelled) {
+            tasksService.updateTask({
+              taskId: options.taskId,
+              merge: {
+                status: TaskStatus.Error,
+              },
+            });
+
+            rejectWithValue(castedError);
+          }
+        });
+
+      await downloadFolderPromise;
+    } catch (err) {
+      tasksService.updateTask({
+        taskId: options.taskId,
+        merge: {
+          status: TaskStatus.Error,
+          cancellable: false,
+        },
       });
 
-    await downloadFolderPromise;
+      throw err;
+    }
   },
 );
 
@@ -119,6 +131,8 @@ export const downloadFolderThunkExtraReducers = (builder: ActionReducerMapBuilde
     .addCase(downloadFolderThunk.rejected, (state, action) => {
       const options = { ...defaultDownloadFolderThunkOptions, ...action.meta.arg.options };
       const rejectedValue = action.payload as AppError;
+
+      console.log('DOWNLOAD FOLDER THUNK REJECTED!');
 
       if (options.showErrors) {
         const errorMessage = rejectedValue?.message || action.error.message;

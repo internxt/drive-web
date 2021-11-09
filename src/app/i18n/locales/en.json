@@ -152,7 +152,7 @@
     "teamInvitation": "The invitation email could not be sent",
     "noSpaceAvailable": "Your Internxt Drive is full. Get more space upgrading your account.",
     "noFilePreview": "No file preview available",
-    "browserNotSupported": "Browser not supported: {userAgent}",
+    "browserNotSupported": "Browser not supported ({userAgent})",
     "inviteAFriend": "Error sending the invitation to a friend: {message}",
     "subscribeToNewsletter": "Error subscribing to newsletter: {message}"
   },

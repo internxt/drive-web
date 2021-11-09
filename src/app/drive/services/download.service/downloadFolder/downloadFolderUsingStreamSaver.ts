@@ -8,6 +8,7 @@ import errorService from 'app/core/services/error.service';
 import { getEnvironmentConfig, Network } from '../../../services/network';
 import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
+import i18n from 'app/i18n/services/i18n.service';
 
 /**
  * @description Downloads a folder using StreamSaver.js
@@ -37,6 +38,12 @@ export default async function downloadFolderUsingStreamSaver({
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
   const zip = new JSZip();
+  const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
+
+  if (isBrave) {
+    throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
+  }
+
   const writableStream = streamSaver.createWriteStream(`${folder.name}.zip`, {});
   const writer = writableStream.getWriter();
   const onUnload = () => {
