@@ -360,9 +360,9 @@
       "invite-friends": "Invite {completedSteps}/{steps} friends"
     },
     "rewards": {
-      "title": "Get {creditSum}GB for free",
-      "progress": "{currentCredit}GB unlocked",
-      "limit": "(out of {creditSum}GB)"
+      "title": "Get {creditSum} for free",
+      "progress": "{currentCredit} unlocked",
+      "limit": "(out of {creditSum})"
     }
   }
 }

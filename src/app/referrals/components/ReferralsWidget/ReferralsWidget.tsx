@@ -9,6 +9,8 @@ import './ReferralsWidget.scss';
 import { userSelectors } from 'app/store/slices/user';
 import { referralsThunks } from 'app/store/slices/referrals';
 import usersReferralsService from 'app/referrals/services/users-referrals.service';
+import { sessionSelectors } from 'app/store/slices/session/session.selectors';
+import sizeService from 'app/drive/services/size.service';
 
 const ReferralsWidget = () => {
   const dispatch = useAppDispatch();
@@ -19,6 +21,8 @@ const ReferralsWidget = () => {
   const referrals = useAppSelector((state) => state.referrals.list);
   const creditSum = referrals.reduce((t, x) => t + x.credit, 0);
   const currentCredit = referrals.reduce((t, x) => (x.completedSteps / x.steps) * x.credit + t, 0);
+  const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const isWidgetHidden = !hasReferralsProgram || isLoadingReferrals || isTeam;
   const onReferralItemClicked = (referral) => {
     !referral.isCompleted && dispatch(referralsThunks.executeUserReferralActionThunk({ referralKey: referral.key }));
   };
@@ -31,7 +35,7 @@ const ReferralsWidget = () => {
       onClick={() => onReferralItemClicked(referral)}
     >
       <div className="referral-item-bullet flex-none h-4 w-8 py-1 px-2 text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2">
-        <span>{`${referral.credit}GB`}</span>
+        <span>{sizeService.bytesToString(referral.credit)}</span>
       </div>
       <span className="referral-item-label text-sm">
         {i18n.get(`referrals.items.${referral.key}`, {
@@ -45,17 +49,23 @@ const ReferralsWidget = () => {
     setIsCollapsed(!isCollapsed);
   };
 
-  return !hasReferralsProgram || isLoadingReferrals ? (
+  return isWidgetHidden ? (
     <div></div>
   ) : (
     <div className="p-6 border-t border-b border-l-neutral-30 bg-l-neutral-10">
       {/* HEADER */}
       <div className="flex items-center">
         <div className="mr-3">
-          <span className="font-semibold">{i18n.get('referrals.rewards.title', { creditSum })}</span>
+          <span className="font-semibold">
+            {i18n.get('referrals.rewards.title', { creditSum: sizeService.bytesToString(creditSum) })}
+          </span>
           <p className="text-supporting-2 m-0">
-            <span className="text-green-50">{i18n.get('referrals.rewards.progress', { currentCredit })}</span>
-            <span className="text-neutral-500">{' ' + i18n.get('referrals.rewards.limit', { creditSum })}</span>
+            <span className="text-green-50">
+              {i18n.get('referrals.rewards.progress', { currentCredit: sizeService.bytesToString(currentCredit) })}
+            </span>
+            <span className="text-neutral-500">
+              {' ' + i18n.get('referrals.rewards.limit', { creditSum: sizeService.bytesToString(creditSum) })}
+            </span>
           </p>
         </div>
         <div className="flex-none rounded-1/2 bg-l-neutral-30 w-4 h-4 cursor-pointer" onClick={onCollapseButtonClicked}>
