@@ -29,6 +29,7 @@ const axiosPlugin: AppPlugin = {
         'internxt-client': 'drive-web',
         Authorization: `Bearer ${tokenByWorkspace[workspace]}`,
         'internxt-mnemonic': mnemonicByWorkspace[workspace],
+        ...requestConfig.headers,
       };
 
       return requestConfig;

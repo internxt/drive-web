@@ -4,23 +4,17 @@ import { Device, DeviceBackup } from '../types';
 
 const backupsService = {
   async getAllDevices(): Promise<Device[]> {
-    const devices = await fetch(`${process.env.REACT_APP_API_URL}/api/backup/device`, {
-      method: 'GET',
-      headers: httpService.getHeaders(true, false),
-    }).then((res) => res.json());
+    const devices = await httpService.get<Device[]>('/api/backup/device');
+
     return devices.filter((device) => device.id);
   },
+
   async getAllBackups(mac: string): Promise<DeviceBackup[]> {
-    const backups = await fetch(`${process.env.REACT_APP_API_URL}/api/backup/${mac}`, {
-      method: 'GET',
-      headers: httpService.getHeaders(true, false),
-    }).then((res) => {
-      return res.json();
-    });
+    const backups = await httpService.get<DeviceBackup[]>(`/api/backup/${mac}`);
 
     return backups.map((backup) => {
       const path = aes.decrypt(backup.path, `${process.env.REACT_APP_CRYPTO_SECRET2}-${backup.bucket}`);
-      const name = path.split(/[/\\]/).pop();
+      const name = path.split(/[/\\]/).pop() as string;
       return {
         ...backup,
         path,
@@ -28,12 +22,9 @@ const backupsService = {
       };
     });
   },
+
   async deleteBackup(backup: DeviceBackup): Promise<void> {
-    const headers = httpService.getHeaders(true, false);
-    await fetch(`${process.env.REACT_APP_API_URL}/api/backup/${backup.id}`, {
-      method: 'DELETE',
-      headers,
-    });
+    await httpService.delete<void>(`/api/backup/${backup.id}`);
   },
 };
 

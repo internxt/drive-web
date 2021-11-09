@@ -5,22 +5,22 @@ import UilFolderMedical from '@iconscout/react-unicons/icons/uil-folder-medical'
 import UilHdd from '@iconscout/react-unicons/icons/uil-hdd';
 import UilClockEight from '@iconscout/react-unicons/icons/uil-clock-eight';
 import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
-
 import { connect } from 'react-redux';
 
-import { RootState } from '../../../store';
-import { UserSettings } from '../../../auth/types';
-import smallLogo from '../../../../assets/icons/small-logo.svg';
-import { ReactComponent as InternxtLogo } from '../../../../assets/icons/big-logo.svg';
+import { AppView } from '../../types';
+import navigationService from '../../services/navigation.service';
+import { RootState } from 'app/store';
+import { UserSettings } from 'app/auth/types';
+import smallLogo from 'assets/icons/small-logo.svg';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import SidenavItem from './SidenavItem/SidenavItem';
-import desktopService from '../../../core/services/desktop.service';
+import desktopService from 'app/core/services/desktop.service';
+import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
+import { planSelectors } from 'app/store/slices/plan';
+import screenService from 'app/core/services/screen.service';
 
 import './Sidenav.scss';
-import PlanUsage from '../PlanUsage/PlanUsage';
-import { planSelectors } from '../../../store/slices/plan';
-import navigationService from '../../services/navigation.service';
-import screenService from '../../../core/services/screen.service';
-import { AppView } from '../../types';
+import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -95,12 +95,8 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
           )}
         </div>
 
-        <div
-          className={`${
-            isCollapsed ? '' : 'px-6'
-          } pt-7 border-r border-l-neutral-30 h-full flex flex-col justify-between`}
-        >
-          <div>
+        <div className={`pt-7 border-r border-l-neutral-30 h-full flex flex-col justify-between`}>
+          <div className={isCollapsed ? '' : 'px-6'}>
             <SidenavItem label="Drive" to="/app" icon={<UilFolderMedical className="w-5" />} isOpen={!isCollapsed} />
             <SidenavItem label="Backups" to="/app/backups" icon={<UilHdd className="w-5" />} isOpen={!isCollapsed} />
             <SidenavItem
@@ -117,15 +113,18 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
             />
           </div>
 
-          {!isCollapsed && (
-            <div className="mb-12">
+          <div className={isCollapsed ? 'opacity-0' : ''}>
+            {/* REFERRALS WIDGET */}
+            <ReferralsWidget />
+
+            <div className="px-6 mt-8 mb-12">
               <PlanUsage
                 limit={planLimit}
                 usage={planUsage}
                 isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
               ></PlanUsage>
             </div>
-          )}
+          </div>
         </div>
       </div>
     );

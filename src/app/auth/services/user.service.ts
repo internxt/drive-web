@@ -1,4 +1,5 @@
 import httpService from '../../core/services/http.service';
+import { UserSettings } from '../types';
 
 export interface InitializeUserResponse {
   user: {
@@ -10,33 +11,30 @@ export interface InitializeUserResponse {
 }
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse | undefined> {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/initialize`, {
-    method: 'post',
-    headers: httpService.getHeaders(true, true),
-    body: JSON.stringify({
-      email,
-      mnemonic,
-    }),
+  return httpService.post<{ email: string; mnemonic: string }, InitializeUserResponse | undefined>('/api/initialize', {
+    email,
+    mnemonic,
   });
-
-  if (response.status === 200) {
-    return response.json();
-  }
 }
 
-export const sendDeactivationEmail = (email: string): Promise<Response> => {
-  return fetch(`${process.env.REACT_APP_API_URL}/api/reset/${email}`, {
-    method: 'GET',
-    headers: httpService.getHeaders(false, false),
-  });
+export const sendDeactivationEmail = (email: string): Promise<void> => {
+  return httpService.get<void>(`/api/reset/${email}`);
 };
 
 const inviteAFriend = (email: string) => {
   return httpService.post<{ email: string }, void>('/api/user/invite', { email });
 };
 
+/**
+ * ! This endpoint accepts a body but is using GET method
+ */
+const refreshUser = async () => {
+  return httpService.get<{ user: UserSettings; token: string }>('/api/user/refresh');
+};
+
 const userService = {
   initializeUser,
+  refreshUser,
   sendDeactivationEmail,
   inviteAFriend,
 };

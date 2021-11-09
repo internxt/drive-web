@@ -18,6 +18,7 @@ import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import errorService from 'app/core/services/error.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { referralsThunks } from 'app/store/slices/referrals';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
@@ -74,6 +75,8 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         views,
         encryptionKey: fileEncryptionKey.toString('hex'),
       });
+
+      dispatch(referralsThunks.refreshUserReferrals());
 
       window.analytics.track('file-share');
       setLinkToCopy(link);

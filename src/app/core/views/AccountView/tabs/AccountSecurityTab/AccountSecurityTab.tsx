@@ -88,7 +88,7 @@ const AccountSecurityTab = (): JSX.Element => {
       {isLoading ? (
         <ActivateTwoFactorAuthSkeleton />
       ) : (
-        <div className={`${isLgScreen ? 'max-w-xl' : 'max-w-lg'} mx-auto w-full`}>
+        <div className={`${isLgScreen ? 'max-w-lg' : 'max-w-lg'} mx-auto w-full`}>
           <div className={`${has2FA ? 'hidden' : 'flex'} mb-2`}>{stepButtons}</div>
           {has2FA ? <Deactivate2FA passwordSalt={passwordSalt} setHas2FA={setHas2FA} /> : currentActivateStep}
         </div>

@@ -23,7 +23,7 @@ import { AppView, Workspace } from '../../types';
 import { UserSettings } from '../../../auth/types';
 import { TeamsSettings } from '../../../teams/types';
 
-interface AppHeaderProps {
+interface NavbarProps {
   user: UserSettings | undefined;
   nameLetters: string;
   team: TeamsSettings | undefined | null;
@@ -34,8 +34,8 @@ interface AppHeaderProps {
   dispatch: AppDispatch;
 }
 
-class AppHeader extends React.Component<AppHeaderProps> {
-  constructor(props: AppHeaderProps) {
+class Navbar extends React.Component<NavbarProps> {
+  constructor(props: NavbarProps) {
     super(props);
   }
 
@@ -175,4 +175,4 @@ export default connect((state: RootState) => {
     storageFilters: state.storage.filters,
     currentFolderId: storageSelectors.currentFolderId(state),
   };
-})(AppHeader);
+})(Navbar);

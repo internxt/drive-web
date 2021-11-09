@@ -11,7 +11,7 @@ import { changePassword } from 'app/auth/services/auth.service';
 import i18n from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import AccountAdvice from 'app/shared/components/AccountAdvice/AccountAdvice';
+import TextBlock from 'app/shared/components/TextBlock/TextBlock';
 import { IFormValues } from '../../../../types';
 import errorService from '../../../../services/error.service';
 
@@ -147,12 +147,12 @@ const AccountPasswordTab = (): JSX.Element => {
       <span className="mb-9">{i18n.get('views.account.tabs.password.advice2.title')}</span>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 w-full justify-around mb-14">
-        <AccountAdvice
+        <TextBlock
           icon={UilShieldPlus}
           title={i18n.get('views.account.tabs.password.advice3.title')}
           description={i18n.get('views.account.tabs.password.advice3.description')}
         />
-        <AccountAdvice
+        <TextBlock
           icon={UilShieldPlus}
           title={i18n.get('views.account.tabs.password.advice4.title')}
           description={i18n.get('views.account.tabs.password.advice4.description')}

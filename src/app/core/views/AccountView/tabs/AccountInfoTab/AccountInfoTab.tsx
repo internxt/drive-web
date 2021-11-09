@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect } from 'react';
 import UilShieldPlus from '@iconscout/react-unicons/icons/uil-shield-plus';
 
 import { AccountViewTab } from '..';
-import AccountAdvice from 'app/shared/components/AccountAdvice/AccountAdvice';
+import TextBlock from 'app/shared/components/TextBlock/TextBlock';
 import screenService from '../../../../services/screen.service';
 import DeleteAccountDialog from 'app/auth/components/DeleteAccountDialog/DeleteAccountDialog';
 import BaseButton from 'app/shared/components/forms/BaseButton';
@@ -16,6 +16,7 @@ import limitService from 'app/drive/services/limit.service';
 import i18n from 'app/i18n/services/i18n.service';
 import { setCurrentAccountTab } from 'app/store/slices/ui';
 import { planSelectors } from 'app/store/slices/plan';
+import InviteAFriendWidget from 'app/auth/components/InviteAFriendWidget/InviteAFriendWidget';
 
 const AccountPlanInfoTab = (): JSX.Element => {
   const [isLgScreen, setIsLgScreen] = useState(screenService.isLg());
@@ -128,17 +129,17 @@ const AccountPlanInfoTab = (): JSX.Element => {
           </div>
         </div>
 
-        {/* <InviteAFriendWidget className="mb-20" /> */}
+        <InviteAFriendWidget className="mb-20" />
 
         {/* MORE INFO & DELETE ACCOUNT */}
         <div>
           <div className="grid grid-cols-2 gap-14 w-full justify-around mb-14">
-            <AccountAdvice
+            <TextBlock
               icon={UilShieldPlus}
               title={i18n.get('views.account.tabs.info.advice1.title')}
               description={i18n.get('views.account.tabs.info.advice1.description')}
             />
-            <AccountAdvice
+            <TextBlock
               icon={UilShieldPlus}
               title={i18n.get('views.account.tabs.info.advice2.title')}
               description={i18n.get('views.account.tabs.info.advice2.description')}

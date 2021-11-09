@@ -8,13 +8,14 @@ import { sessionActions } from '../session';
 import { storageActions } from '../storage';
 import navigationService from '../../../core/services/navigation.service';
 import { sessionSelectors } from '../session/session.selectors';
-import { AppView } from '../../../core/types';
+import { AppView, LocalStorageItem } from '../../../core/types';
 import tasksService from '../../../tasks/services/tasks.service';
 import authService from '../../../auth/services/auth.service';
 import { UserSettings } from '../../../auth/types';
 import userService, { InitializeUserResponse } from '../../../auth/services/user.service';
 import { storeTeamsInfo } from '../../../teams/services/teams.service';
 import localStorageService from '../../../core/services/local-storage.service';
+import { referralsActions } from '../referrals';
 
 interface UserState {
   isInitializing: boolean;
@@ -73,6 +74,16 @@ export const initializeUserThunk = createAsyncThunk<
   }
 });
 
+export const refreshUserThunk = createAsyncThunk<void, void, { state: RootState }>(
+  'user/refresh',
+  async (payload: void, { dispatch }) => {
+    const { user, token } = await userService.refreshUser();
+
+    dispatch(userActions.setUser(user));
+    dispatch(userActions.setToken(token));
+  },
+);
+
 export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
   'user/logout',
   async (payload: void, { dispatch }) => {
@@ -83,6 +94,7 @@ export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
     dispatch(teamActions.resetState());
     dispatch(storageActions.resetState());
     dispatch(uiActions.resetState());
+    dispatch(referralsActions.resetState());
 
     tasksService.clearTasks();
   },
@@ -103,7 +115,10 @@ export const userSlice = createSlice({
       state.isAuthenticated = !!action.payload;
       state.user = action.payload;
 
-      localStorageService.set('xUser', JSON.stringify(action.payload));
+      localStorageService.set(LocalStorageItem.User, JSON.stringify(action.payload));
+    },
+    setToken: (state: UserState, action: PayloadAction<string>) => {
+      localStorageService.set(LocalStorageItem.UserToken, action.payload);
     },
     resetState: (state: UserState) => {
       Object.assign(state, initialState);
@@ -125,6 +140,11 @@ export const userSlice = createSlice({
         toast.warn('User initialization error ' + errorMsg);
         navigationService.push(AppView.Login);
       });
+
+    builder
+      .addCase(refreshUserThunk.pending, () => undefined)
+      .addCase(refreshUserThunk.fulfilled, () => undefined)
+      .addCase(refreshUserThunk.rejected, () => undefined);
 
     builder
       .addCase(logoutThunk.pending, () => undefined)
@@ -149,6 +169,7 @@ export const userSelectors = {
     return nameLetters.toUpperCase();
   },
   isFromAppSumo: (state: RootState): boolean => !!state.user.user?.appSumoDetails,
+  hasReferralsProgram: (state: RootState): boolean => !!state.user.user?.hasReferralsProgram,
 };
 
 export const { initialize, resetState, setIsUserInitialized } = userSlice.actions;
@@ -156,6 +177,7 @@ export const userActions = userSlice.actions;
 
 export const userThunks = {
   initializeUserThunk,
+  refreshUserThunk,
   logoutThunk,
 };
 

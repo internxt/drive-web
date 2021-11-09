@@ -21,7 +21,7 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps) => {
   let template: JSX.Element = <div></div>;
 
   template = (
-    <div className="w-activity-1280 min-w-activity-1280 bg-white rounded-4px pl-6 mr-8 border-l border-l-neutral-30 pt-6">
+    <div className="w-activity min-w-activity bg-white rounded-4px pl-6 mr-8 border-l border-l-neutral-30 pt-6">
       {/* HEADER */}
       <div className="flex items-center mb-4">
         <div className="flex items-center min-w-9 w-9 h-9">

@@ -1,10 +1,10 @@
-import i18n from '../../../i18n/services/i18n.service';
-import limitService from '../../../drive/services/limit.service';
-import navigationService from '../../services/navigation.service';
-import { bytesToString } from '../../../drive/services/size.service';
-import usageService from '../../../drive/services/usage.service';
-import { AccountViewTab } from '../../views/AccountView/tabs';
-import { AppView } from '../../types';
+import i18n from 'app/i18n/services/i18n.service';
+import limitService from 'app/drive/services/limit.service';
+import { bytesToString } from 'app/drive/services/size.service';
+import usageService from 'app/drive/services/usage.service';
+import { AccountViewTab } from 'app/core/views/AccountView/tabs';
+import { AppView } from 'app/core/types';
+import navigationService from 'app/core/services/navigation.service';
 
 export default function PlanUsage({
   limit,
@@ -25,7 +25,7 @@ export default function PlanUsage({
   return (
     <div className={`flex flex-col justify-center w-full rounded-md ${className}`}>
       {isLoading ? (
-        <p>{i18n.get('general.loading.default')}</p>
+        <p className="text-sm">{i18n.get('general.loading.default')}</p>
       ) : (
         <p className="text-sm text-m-neutral-70 m-0">
           {bytesToString(usage) || '0'} of {limitService.formatLimit(limit)}

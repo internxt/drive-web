@@ -8,10 +8,12 @@ import { AccountViewTab } from '../../../core/views/AccountView/tabs';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
+  isReferralsWidgetCollapsed: boolean;
   isFileLoggerOpen: boolean;
   isFileInfoMenuOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
+  isNewsletterDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
@@ -25,10 +27,12 @@ interface UISliceState {
 
 const initialState: UISliceState = {
   isSidenavCollapsed: false,
+  isReferralsWidgetCollapsed: false,
   isFileLoggerOpen: false,
   isFileInfoMenuOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
+  isNewsletterDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
   isShareItemDialogOpen: false,
   isInviteMemberDialogOpen: false,
@@ -47,6 +51,9 @@ export const uiSlice = createSlice({
     setIsSidenavCollapsed: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isSidenavCollapsed = action.payload;
     },
+    setIsReferralsWidgetCollapsed: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isReferralsWidgetCollapsed = action.payload;
+    },
     setIsFileLoggerOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isFileLoggerOpen = action.payload;
     },
@@ -58,6 +65,9 @@ export const uiSlice = createSlice({
     },
     setIsDeleteItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDeleteItemsDialogOpen = action.payload;
+    },
+    setIsNewsletterDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isNewsletterDialogOpen = action.payload;
     },
     setIsReachedPlanLimitDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isReachedPlanLimitDialogOpen = action.payload;
@@ -105,8 +115,10 @@ export const uiSlice = createSlice({
 });
 
 export const {
+  setIsReferralsWidgetCollapsed,
   setIsCreateFolderDialogOpen,
   setIsDeleteItemsDialogOpen,
+  setIsNewsletterDialogOpen,
   setIsFileLoggerOpen,
   setIsFileInfoMenuOpen,
   setIsReachedPlanLimitDialogOpen,

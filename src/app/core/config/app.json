@@ -87,6 +87,13 @@
       "auth": true
     },
     {
+      "id": "checkout-success",
+      "layout": "empty",
+      "path": "/checkout/success",
+      "exact": false,
+      "auth": true
+    },
+    {
       "id": "checkout",
       "layout": "empty",
       "path": "/checkout/:sessionId",

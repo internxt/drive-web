@@ -29,9 +29,9 @@ module.exports = {
         fit: 'fit-content',
       },
       width: {
-        'sidenav-1280': '200px',
-        'sidenav-1280-collapsed': '64px',
-        'activity-1280': '296px',
+        'sidenav': '210px',
+        'sidenav-collapsed': '64px',
+        'activity': '296px',
         '0.5/12': '4.166667%',
       },
       margin: {
@@ -39,9 +39,7 @@ module.exports = {
       },
       minWidth: {
         104: '26rem',
-        'sidenav-1280': '180px',
-        'sidenav-1280-collapsed': '64px',
-        'activity-1280': '296px',
+        'activity': '296px',
       },
       padding: {
         '42px': '42px'

@@ -31,6 +31,7 @@ import { productsThunks } from 'app/store/slices/products';
 import httpService from 'app/core/services/http.service';
 import { AppView, IFormValues } from 'app/core/types';
 import { UserSettings } from '../../types';
+import { referralsThunks } from 'app/store/slices/referrals';
 
 export interface SignUpViewProps {
   location: {
@@ -239,6 +240,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
 
           dispatch(productsThunks.initializeThunk());
           dispatch(planThunks.initializeThunk());
+          dispatch(referralsThunks.initializeThunk());
           dispatch(userThunks.initializeUserThunk()).then(() => {
             navigationService.push(AppView.Drive);
           });
