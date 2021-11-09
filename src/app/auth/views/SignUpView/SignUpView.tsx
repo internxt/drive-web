@@ -117,8 +117,8 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
         return { res: res, body: body };
       }
     };
-
-    return fetch(`${process.env.REACT_APP_API_URL}/api/appsumo/update`, {
+    const activate = qs.register === 'activate' ? 'activate' : 'appsumo';
+    return fetch(`${process.env.REACT_APP_API_URL}/api/${activate}/update`, {
       method: 'POST',
       headers: httpService.getHeaders(true, false),
       body: JSON.stringify(body),
