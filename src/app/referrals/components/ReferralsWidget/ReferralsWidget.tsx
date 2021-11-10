@@ -20,7 +20,7 @@ const ReferralsWidget = () => {
   const hasReferralsProgram = useAppSelector(userSelectors.hasReferralsProgram);
   const referrals = useAppSelector((state) => state.referrals.list);
   const creditSum = referrals.reduce((t, x) => t + x.credit * x.steps, 0);
-  const currentCredit = referrals.reduce((t, x) => (x.completedSteps / x.steps) * x.credit + t, 0);
+  const currentCredit = referrals.reduce((t, x) => x.completedSteps * x.credit + t, 0);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const isWidgetHidden = !hasReferralsProgram || isLoadingReferrals || isTeam;
   const onReferralItemClicked = (referral) => {
