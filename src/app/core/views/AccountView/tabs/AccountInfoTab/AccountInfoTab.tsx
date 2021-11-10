@@ -91,7 +91,9 @@ const AccountPlanInfoTab = (): JSX.Element => {
               <div className="flex justify-between w-full">
                 <div>
                   <span className="text-neutral-700 font-bold text-xl">
-                    {currentPlan?.isAppSumo ? limitService.formatLimit(planLimit) : currentPlan?.simpleName}
+                    {!isCurrentPlanLifetime || currentPlan?.isAppSumo
+                      ? limitService.formatLimit(planLimit)
+                      : currentPlan?.simpleName}
                   </span>
 
                   <div className="flex w-full items-start text-neutral-500 text-xs flex-col">
