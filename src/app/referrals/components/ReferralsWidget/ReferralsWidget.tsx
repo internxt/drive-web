@@ -19,7 +19,7 @@ const ReferralsWidget = () => {
   const isLoadingReferrals = useAppSelector((state) => state.referrals.isLoading);
   const hasReferralsProgram = useAppSelector(userSelectors.hasReferralsProgram);
   const referrals = useAppSelector((state) => state.referrals.list);
-  const creditSum = referrals.reduce((t, x) => t + x.credit, 0);
+  const creditSum = referrals.reduce((t, x) => t + x.credit * x.steps, 0);
   const currentCredit = referrals.reduce((t, x) => (x.completedSteps / x.steps) * x.credit + t, 0);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const isWidgetHidden = !hasReferralsProgram || isLoadingReferrals || isTeam;
@@ -35,7 +35,7 @@ const ReferralsWidget = () => {
       onClick={() => onReferralItemClicked(referral)}
     >
       <div className="referral-item-bullet flex-none h-4 w-8 py-1 px-2 text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2">
-        <span>{sizeService.bytesToString(referral.credit)}</span>
+        <span>{sizeService.bytesToString(referral.credit * referral.steps)}</span>
       </div>
       <span className="referral-item-label text-sm">
         {i18n.get(`referrals.items.${referral.key}`, {
