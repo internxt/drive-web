@@ -12,7 +12,7 @@ import usersReferralsService from 'app/referrals/services/users-referrals.servic
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import sizeService from 'app/drive/services/size.service';
 
-const ReferralsWidget = () => {
+const ReferralsWidget = (props: { className?: string }) => {
   const dispatch = useAppDispatch();
   const isCollapsed = useAppSelector((state) => state.ui.isReferralsWidgetCollapsed);
   const setIsCollapsed = (value) => dispatch(uiActions.setIsReferralsWidgetCollapsed(value));
@@ -52,9 +52,13 @@ const ReferralsWidget = () => {
   return isWidgetHidden ? (
     <div></div>
   ) : (
-    <div className="p-6 border-t border-b border-l-neutral-30 bg-l-neutral-10">
+    <div
+      className={`flex flex-col py-6 border-t border-b border-l-neutral-30 bg-l-neutral-10 overflow-y-hidden  ${
+        isCollapsed ? '' : 'h-full max-h-120'
+      } ${props.className || ''}`}
+    >
       {/* HEADER */}
-      <div className="flex items-center">
+      <div className="flex items-center px-6">
         <div className="mr-3">
           <span className="font-semibold">
             {i18n.get('referrals.rewards.title', { creditSum: sizeService.bytesToString(creditSum) })}
@@ -78,11 +82,15 @@ const ReferralsWidget = () => {
       </div>
 
       {/* LIST */}
-      {!isCollapsed && <div className="mt-8 mb-4">{referralsList}</div>}
+      {!isCollapsed && (
+        <div className="referrals-list mt-8 mb-4 overflow-y-auto">
+          <div className="px-6">{referralsList}</div>
+        </div>
+      )}
 
       {/* TERMS AND CONDITIONS */}
       {!isCollapsed && (
-        <div>
+        <div className="px-6">
           <a
             className="text-xs text-m-neutral-60 hover:text-m-neutral-100"
             target="_blank"
