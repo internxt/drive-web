@@ -1,16 +1,21 @@
 import { useState } from 'react';
+import { AxiosError, AxiosResponse } from 'axios';
 import { Form } from 'react-bootstrap';
+
 import { getPasswordDetails } from '../../../auth/services/auth.service';
 import { UserSettings } from '../../../auth/types';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import httpService from '../../../core/services/http.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { useAppDispatch } from 'app/store/hooks';
+import { userThunks } from 'app/store/slices/user';
 
 export default function GuestAcceptInvitationView(): JSX.Element {
   const [loading, setLoading] = useState(false);
   const [invitationAccepted, setInvitationAccepted] = useState(false);
   const [password, setPassword] = useState('');
+  const dispatch = useAppDispatch();
 
   async function verifyPassword() {
     const details = await getPasswordDetails(password);
@@ -32,6 +37,43 @@ export default function GuestAcceptInvitationView(): JSX.Element {
 
       return details;
     });
+  }
+
+  // TODO: Use on axios handling error interceptor
+  function extractMessageFromError(err: AxiosError): string {
+    let errMsg: string;
+    const error: AxiosError = err as AxiosError;
+
+    const isServerError = !!error.response;
+    const serverUnavailable = !!error.request;
+
+    if (isServerError) {
+      errMsg = (error.response as AxiosResponse<{ error: string }>).data.error;
+    } else if (serverUnavailable) {
+      errMsg = 'Server not available';
+    } else {
+      errMsg = error.message;
+    }
+
+    return errMsg;
+  }
+
+  async function joinWorkspace() {
+    try {
+      const details = await verifyPassword();
+      const payload = Buffer.from(password).toString('hex');
+
+      await httpService.post('/api/guest/accept', { payload, details });
+
+      notificationsService.show(
+        'Invitation to workspace accepted. Log in again to start using the workspace',
+        ToastType.Success,
+      );
+
+      await dispatch(userThunks.logoutThunk());
+    } catch (err) {
+      throw new Error(extractMessageFromError(err as AxiosError));
+    }
   }
 
   return (
@@ -62,40 +104,16 @@ export default function GuestAcceptInvitationView(): JSX.Element {
           className="primary"
           onClick={() => {
             setLoading(true);
-            verifyPassword()
-              .then((details) => {
-                return httpService
-                  .post('/api/guest/accept', {
-                    payload: Buffer.from(password).toString('hex'),
-                    details,
-                  })
-                  .then(() => {
-                    setInvitationAccepted(true);
-                    notificationsService.show(
-                      'Invitation to workspace accepted, wait until migration is complete',
-                      ToastType.Success,
-                    );
-                  });
+            joinWorkspace()
+              .then(() => {
+                setInvitationAccepted(true);
               })
               .catch((err) => {
-                setPassword('');
-                // TODO: Use on axios handling error interceptor
-                let errMsg: string;
-
-                const isServerError = !!err.response;
-                const serverUnavailable = !!err.request;
-
-                if (isServerError) {
-                  errMsg = err.response.data.error;
-                } else if (serverUnavailable) {
-                  errMsg = 'Server not available';
-                } else {
-                  errMsg = err.message;
-                }
                 notificationsService.show(
-                  `${errMsg || 'Error accepting invitation'}. Please, try again`,
+                  `${err.message || 'Error accepting invitation'}. Please, try again`,
                   ToastType.Error,
                 );
+                setPassword('');
               })
               .finally(() => {
                 setLoading(false);
