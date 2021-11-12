@@ -2,17 +2,20 @@ import { useState } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
 import { Form } from 'react-bootstrap';
 
-import authService, { getPasswordDetails } from '../../../auth/services/auth.service';
+import { getPasswordDetails } from '../../../auth/services/auth.service';
 import { UserSettings } from '../../../auth/types';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import httpService from '../../../core/services/http.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { useAppDispatch } from 'app/store/hooks';
+import { userThunks } from 'app/store/slices/user';
 
 export default function GuestAcceptInvitationView(): JSX.Element {
   const [loading, setLoading] = useState(false);
   const [invitationAccepted, setInvitationAccepted] = useState(false);
   const [password, setPassword] = useState('');
+  const dispatch = useAppDispatch();
 
   async function verifyPassword() {
     const details = await getPasswordDetails(password);
@@ -67,7 +70,7 @@ export default function GuestAcceptInvitationView(): JSX.Element {
         ToastType.Success,
       );
 
-      await authService.logOut();
+      await dispatch(userThunks.logoutThunk());
     } catch (err) {
       throw new Error(extractMessageFromError(err as AxiosError));
     }
