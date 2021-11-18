@@ -4,6 +4,7 @@ import httpService from '../../core/services/http.service';
 import envService from '../../core/services/env.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
 import { Workspace } from '../../core/types';
+import { loadStripe, RedirectToCheckoutServerOptions, Stripe } from '@stripe/stripe-js';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;
@@ -24,10 +25,16 @@ export interface CreateTeamsPaymentSessionPayload {
   canceledUrl?: string;
 }
 
-function getStripe() {
-  return window.Stripe(
-    !envService.isProduction() ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK,
-  );
+let stripe: Stripe;
+
+async function getStripe() {
+  if (!stripe) {
+    stripe = (await loadStripe(
+      envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK,
+    )) as Stripe;
+  }
+
+  return stripe;
 }
 
 const paymentService = {
@@ -43,8 +50,8 @@ const paymentService = {
     return response;
   },
 
-  async redirectToCheckout(options: stripe.StripeServerCheckoutOptions): Promise<{ error: stripe.Error }> {
-    const stripe = getStripe();
+  async redirectToCheckout(options: RedirectToCheckoutServerOptions) {
+    const stripe = await getStripe();
 
     return stripe.redirectToCheckout(options);
   },
@@ -77,7 +84,7 @@ const paymentService = {
       throw Error(response.error);
     }
 
-    const stripe = getStripe();
+    const stripe = await getStripe();
 
     await stripe.redirectToCheckout({ sessionId: response.id });
   },
