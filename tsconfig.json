@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -23,12 +19,6 @@
     "downlevelIteration": true,
     "baseUrl": "./src"
   },
-  "types": [
-    "filesystem",
-    "@types/react",
-    "@types/stripe-v3"
-  ],
-  "include": [
-    "src"
-  ]
+  "types": ["filesystem", "@types/react"],
+  "include": ["src"]
 }

@@ -1,3 +1,4 @@
+import paymentService from 'app/payment/services/payment.service';
 import React, { ReactNode } from 'react';
 import { match } from 'react-router-dom';
 
@@ -28,11 +29,7 @@ class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState>
 
     if (match) {
       if (this.state.sessionId) {
-        const stripe = window.Stripe(
-          match[1] === 'test' ? process.env.REACT_APP_STRIPE_TEST_PK : process.env.REACT_APP_STRIPE_PK,
-        );
-
-        stripe
+        paymentService
           .redirectToCheckout({ sessionId: this.state.sessionId })
           .then((result) => {
             console.log(result);
