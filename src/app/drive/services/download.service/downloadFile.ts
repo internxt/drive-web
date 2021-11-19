@@ -26,12 +26,6 @@ const trackFileDownloadError = (userEmail: string, file_id: string, msg: string)
   analyticsService.trackFileDownloadError(data);
 };
 
-const trackFileDownloadFinished = (userEmail: string, file_id: string, file_size: number) => {
-  const data = { file_id, file_size, email: userEmail, platform: DevicePlatform.Web };
-
-  analyticsService.trackFileDownloadFinished(data);
-};
-
 export default function downloadFile(
   itemData: DriveFileData,
   isTeam: boolean,
@@ -47,7 +41,10 @@ export default function downloadFile(
   const fileBlobPromise = blobPromise
     .then((fileBlob) => {
       downloadFileFromBlob(fileBlob, completeFilename);
-      trackFileDownloadFinished(userEmail, fileId, itemData.size);
+      analyticsService.trackFileDownloadCompleted({
+        size: itemData.size,
+        extension: itemData.type,
+      });
     })
     .catch((err) => {
       const errMessage = err instanceof Error ? err.message : (err as string);
