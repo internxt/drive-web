@@ -1,4 +1,5 @@
 import * as prettySize from 'prettysize';
+import httpService from '../../../../src/app/core/services/http.service';
 
 import { UserSettings } from 'app/auth/types';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -15,6 +16,19 @@ export const PATH_NAMES = {
   '/invite': 'drive-web-invite',
   '/remove': 'drive-web-remove',
 };
+
+export function trackFileDownloadCompleted(properties) {
+  trackData(properties, 'file_downloaded');
+}
+
+function trackData(properties, actionName) {
+  const user = localStorageService.getUser();
+  httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {
+    actionName,
+    user,
+    properties,
+  });
+}
 
 const payload = {
   usage: 0,
@@ -278,6 +292,7 @@ const analyticsService = {
   trackUserResetPasswordRequest,
   track,
   trackFileUploadBucketIdUndefined,
+  trackFileDownloadCompleted,
 };
 
 export default analyticsService;
