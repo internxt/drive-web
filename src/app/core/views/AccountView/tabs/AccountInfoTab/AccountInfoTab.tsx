@@ -90,11 +90,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
             {!isLoadingPlans ? (
               <div className="flex justify-between w-full">
                 <div>
-                  <span className="text-neutral-700 font-bold text-xl">
-                    {!isCurrentPlanLifetime || currentPlan?.isAppSumo
-                      ? limitService.formatLimit(planLimit)
-                      : currentPlan?.simpleName}
-                  </span>
+                  <span className="text-neutral-700 font-bold text-xl">{limitService.formatLimit(planLimit)}</span>
 
                   <div className="flex w-full items-start text-neutral-500 text-xs flex-col">
                     {currentPlan?.isAppSumo ? (
@@ -114,7 +110,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
                         </span>
                       </Fragment>
                     ) : (
-                      <span>{!isCurrentPlanLifetime ? 'Free plan' : i18n.get('general.billing.oneTimePayment')}</span>
+                      <span>{!isCurrentPlanLifetime && 'Free plan'}</span> // ! Pending to show "lifetime" label when able to determine the user's plan
                     )}
                   </div>
                 </div>
