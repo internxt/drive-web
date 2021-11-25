@@ -1,16 +1,15 @@
 import { Environment } from '@internxt/inxt-js';
 import { createHash } from 'crypto';
-import { FileInfo } from '@internxt/inxt-js/build/api/fileinfo';
-import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
+import { ActionState, FileInfo } from '@internxt/inxt-js/build/api';
 import { Readable } from 'stream';
 import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '../../auth/types';
 import { TeamsSettings } from '../../teams/types';
+import * as blobToStream from 'blob-to-stream';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
-
 interface IUploadParams {
   filesize: number;
   filepath: string;
@@ -29,6 +28,7 @@ interface EnvironmentConfig {
   bridgePass: string;
   encryptionKey: string;
   bucketId: string;
+  useProxy: boolean;
 }
 
 export class Network {
@@ -52,6 +52,7 @@ export class Network {
       bridgeUser,
       encryptionKey,
       bridgeUrl: process.env.REACT_APP_STORJ_BRIDGE,
+      useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
     });
   }
 
@@ -70,23 +71,28 @@ export class Network {
 
     const hashName = createHash('ripemd160').update(params.filepath).digest('hex');
     const promise = new Promise((resolve: (fileId: string) => void, reject) => {
-      actionState = this.environment.uploadFile(bucketId, {
-        filename: hashName,
-        fileSize: params.filesize,
-        fileContent: params.filecontent,
-        progressCallback: params.progressCallback,
-        finishedCallback: (err, fileId) => {
-          if (err) {
-            return reject(err);
-          }
+      actionState = this.environment.upload(
+        bucketId,
+        {
+          name: hashName,
+          progressCallback: params.progressCallback,
+          finishedCallback: (err, fileId) => {
+            if (err) {
+              return reject(err);
+            }
 
-          if (!fileId) {
-            return reject(Error('File not created'));
-          }
+            if (!fileId) {
+              return reject(Error('File not created'));
+            }
 
-          resolve(fileId);
+            resolve(fileId);
+          },
         },
-      });
+        {
+          label: 'OneStreamOnly',
+          params: { source: { size: params.filesize, stream: blobToStream(params.filecontent) } },
+        },
+      );
     });
 
     return [promise, actionState];
@@ -148,7 +154,6 @@ export class Network {
     }
 
     this.environment.config.download = { concurrency: 6 };
-    this.environment.config.useProxy = true;
 
     const promise = new Promise<Readable>((resolve, reject) => {
       actionState = this.environment.download(
@@ -202,6 +207,7 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
       bridgePass: team.bridge_password,
       encryptionKey: team.bridge_mnemonic,
       bucketId: team.bucket,
+      useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
     };
   }
 
@@ -212,6 +218,7 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
     bridgePass: user.userId,
     encryptionKey: user.mnemonic,
     bucketId: user.bucket,
+    useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
   };
 }
 
