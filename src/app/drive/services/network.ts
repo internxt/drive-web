@@ -52,7 +52,6 @@ export class Network {
       bridgeUser,
       encryptionKey,
       bridgeUrl: process.env.REACT_APP_STORJ_BRIDGE,
-      useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
     });
   }
 
@@ -90,7 +89,11 @@ export class Network {
         },
         {
           label: 'OneStreamOnly',
-          params: { source: { size: params.filesize, stream: blobToStream(params.filecontent) } },
+          params: {
+            source: { size: params.filesize, stream: blobToStream(params.filecontent) },
+            useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
+            concurrency: 6,
+          },
         },
       );
     });
@@ -153,8 +156,6 @@ export class Network {
       throw new Error('File id not provided');
     }
 
-    this.environment.config.download = { concurrency: 6 };
-
     const promise = new Promise<Readable>((resolve, reject) => {
       actionState = this.environment.download(
         bucketId,
@@ -176,7 +177,10 @@ export class Network {
         },
         {
           label: 'OneStreamOnly',
-          params: {},
+          params: {
+            useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
+            concurrency: 6,
+          },
         },
       );
     });
