@@ -11,7 +11,7 @@ interface DriveItemInfoMenuProps {
   onClose: () => void;
 }
 
-const DriveItemInfoMenu = (props: DriveItemInfoMenuProps) => {
+const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
   const featuresList = props.features.map((feature, index) => (
     <div key={index} className="file-activity-info-item">
       <span className="label">{feature.label}</span>
@@ -27,7 +27,10 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps) => {
         <div className="flex items-center min-w-9 w-9 h-9">
           <props.icon className="h-full" />
         </div>
-        <span className="mx-3 overflow-hidden whitespace-nowrap overflow-ellipsis block text-neutral-700 text-sm flex-grow">
+        <span
+          className="mx-3 overflow-hidden whitespace-nowrap\
+         overflow-ellipsis block text-neutral-700 text-sm flex-grow"
+        >
           {props.title}
         </span>
         <div

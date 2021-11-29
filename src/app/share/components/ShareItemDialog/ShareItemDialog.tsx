@@ -135,7 +135,8 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
           </div>
 
           <div
-            className="flex w-72 items-center justify-between rounded-md bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text"
+            className="flex w-72 items-center justify-between rounded-md \
+            bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text"
             onClick={() => {
               navigator.clipboard.writeText(linkToCopy);
               notificationsService.show(i18n.get('success.linkCopied'), ToastType.Info);

@@ -13,7 +13,7 @@ import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAnd
 
 import './DriveExplorerGridItem.scss';
 
-const DriveExplorerGridItem = (props: DriveExplorerItemProps) => {
+const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
   const { item } = props;
   const { isItemSelected } = useDriveItemStoreProps();
@@ -118,7 +118,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps) => {
     </div>,
   );
 
-  return isEditingName ? template : connectDragSource(template);
+  return (isEditingName ? template : connectDragSource(template)) as JSX.Element;
 };
 
 export default DriveExplorerGridItem;

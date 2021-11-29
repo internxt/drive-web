@@ -7,7 +7,7 @@ import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 
-const InviteAFriendWidget = (props: { className?: string }) => {
+const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const onSendButtonClicked = async () => {

@@ -11,7 +11,7 @@ const itemsListService = {
 
     return listCopy;
   },
-  sort(list: DriveItemData[], by: 'name' | 'type' | 'updatedAt' | 'size', direction: OrderDirection) {
+  sort(list: DriveItemData[], by: 'name' | 'type' | 'updatedAt' | 'size', direction: OrderDirection): void {
     const dirNumber = direction === OrderDirection.Desc ? 1 : -1;
     const sortFns: Record<string, (a: DriveItemData, b: DriveItemData) => number> = {
       name: (a, b) =>

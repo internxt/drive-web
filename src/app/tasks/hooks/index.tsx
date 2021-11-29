@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 
 import taskManagerService from '../services/tasks.service';
-import { TaskEvent, TaskFilter } from '../types';
+import { TaskEvent, TaskFilter, TaskNotification } from '../types';
 
-export function useTaskManagerGetNotifications(filter: TaskFilter = {}) {
+export function useTaskManagerGetNotifications(filter: TaskFilter = {}): TaskNotification[] {
   const [notifications, setNotifications] = useState(taskManagerService.getNotifications(filter));
   const onTaskAdded = () => {
     setNotifications(taskManagerService.getNotifications(filter));

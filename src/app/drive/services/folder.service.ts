@@ -204,7 +204,12 @@ export function deleteFolder(folderData: DriveFolderData): Promise<void> {
   });
 }
 
-async function fetchFolderTree(folderId: number) {
+async function fetchFolderTree(folderId: number): Promise<{
+  tree: FolderTree;
+  folderDecryptedNames: Record<number, string>;
+  fileDecryptedNames: Record<number, string>;
+  size: number;
+}> {
   const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/api/storage/tree/${folderId}`);
   const folderDecryptedNames: Record<number, string> = {};
   const fileDecryptedNames: Record<number, string> = {};

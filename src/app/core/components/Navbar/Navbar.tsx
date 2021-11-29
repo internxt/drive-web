@@ -104,7 +104,10 @@ class Navbar extends React.Component<NavbarProps> {
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">
             <div className="flex items-center cursor-pointer">
-              <div className="h-6 w6 rounded-2xl mr-2 bg-l-neutral-20 p-1 flex justify-center items-center text-neutral-700 text-sm">
+              <div
+                className="h-6 w6 rounded-2xl mr-2 bg-l-neutral-20 \
+              p-1 flex justify-center items-center text-neutral-700 text-sm"
+              >
                 {nameLetters}
               </div>
               <span className="hidden md:block text-neutral-500 text-base whitespace-nowrap">

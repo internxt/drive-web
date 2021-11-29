@@ -4,7 +4,7 @@ import { userThunks } from 'app/store/slices/user';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 
-const CheckoutSuccessView = () => {
+const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();
 
   useEffectAsync(async () => {
