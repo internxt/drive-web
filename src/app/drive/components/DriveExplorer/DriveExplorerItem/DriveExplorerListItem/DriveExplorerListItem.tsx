@@ -21,7 +21,7 @@ import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 
 import './DriveExplorerListItem.scss';
 
-const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
+const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { isItemSelected, isSomeItemSelected } = useDriveItemStoreProps();
   const {
@@ -179,7 +179,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps) => {
     </div>
   );
 
-  return isEditingName ? template : connectDragSource(template);
+  return isEditingName ? template : (connectDragSource(template) as JSX.Element);
 };
 
 export default DriveExplorerListItem;

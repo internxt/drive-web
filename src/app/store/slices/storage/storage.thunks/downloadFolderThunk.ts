@@ -69,12 +69,12 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
     });
 
     try {
-      const [downloadFolderPromise, stop]: [Promise<void>, () => void] = await downloadService.downloadFolder({
+      const [downloadFolderPromise, stop] = (await downloadService.downloadFolder({
         folder,
         decryptedCallback,
         updateProgressCallback,
         isTeam,
-      });
+      })) as [Promise<void>, () => void];
 
       tasksService.updateTask({
         taskId: options.taskId,

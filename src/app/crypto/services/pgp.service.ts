@@ -1,6 +1,6 @@
 import httpService from '../../core/services/http.service';
 
-export async function getOpenpgp() {
+export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
 }
 

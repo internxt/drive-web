@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import * as prettySize from 'prettysize';
 import httpService from '../../../../src/app/core/services/http.service';
 
@@ -17,7 +18,7 @@ export const PATH_NAMES = {
   '/remove': 'drive-web-remove',
 };
 
-export function trackFileDownloadCompleted(properties) {
+export function trackFileDownloadCompleted(properties): void {
   trackData(properties, 'file_downloaded');
 }
 

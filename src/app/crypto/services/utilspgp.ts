@@ -1,3 +1,4 @@
+import { DecryptResult, EncryptResult } from 'openpgp';
 import localStorageService from '../../core/services/local-storage.service';
 import { getOpenpgp } from './pgp.service';
 
@@ -14,7 +15,7 @@ export async function isValid(key: string): Promise<boolean> {
   return !keyResult.err;
 }
 
-export async function decryptPGP(message: string) {
+export async function decryptPGP(message: string): Promise<DecryptResult> {
   const user = localStorageService.getUser();
 
   if (!user) {
@@ -40,7 +41,7 @@ export async function decryptPGP(message: string) {
   });
 }
 
-export async function encryptPGP(message: string) {
+export async function encryptPGP(message: string): Promise<EncryptResult & { data: string }> {
   const user = localStorageService.getUser();
 
   if (!user) {
@@ -63,7 +64,7 @@ export async function encryptPGP(message: string) {
   });
 }
 
-export async function encryptPGPInvitations(message: string, key: string) {
+export async function encryptPGPInvitations(message: string, key: string): Promise<EncryptResult & { data: string }> {
   // User settings
   const publicKey = Buffer.from(key, 'base64').toString();
 

@@ -10,7 +10,7 @@ import { FormatFileViewerProps } from '../../FileViewer';
 
 import './FileImageViewer.scss';
 
-const FileImageViewer = (props: FormatFileViewerProps) => {
+const FileImageViewer = (props: FormatFileViewerProps): JSX.Element => {
   const [blobActionState, setBlobActionState] = useState<ActionState | undefined>(undefined);
   const dispatch = useAppDispatch();
   const fileUrl = useAppSelector(fileViewerSelectors.objectUrlByFileId)(props.file?.fileId || '');

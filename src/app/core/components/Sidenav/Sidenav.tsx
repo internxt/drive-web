@@ -95,7 +95,7 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
           )}
         </div>
 
-        <div className={`h-full flex flex-col pt-7 border-r border-l-neutral-30 justify-between`}>
+        <div className="h-full flex flex-col pt-7 border-r border-l-neutral-30 justify-between">
           <div className={`${isCollapsed ? '' : 'px-6'} pb-4`}>
             <SidenavItem label="Drive" to="/app" icon={<UilFolderMedical className="w-5" />} isOpen={!isCollapsed} />
             <SidenavItem label="Backups" to="/app/backups" icon={<UilHdd className="w-5" />} isOpen={!isCollapsed} />

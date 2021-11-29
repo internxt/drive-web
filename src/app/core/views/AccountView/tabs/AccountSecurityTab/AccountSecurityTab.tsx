@@ -4,7 +4,8 @@ import Deactivate2FA from './DeactivateTwoFactorAuth/DeactivateTwoFactorAuth';
 import activateSteps from './ActivateTwoFactorAuth/steps';
 
 import './AccountSecurityTab.scss';
-import ActivateTwoFactorAuthSkeleton from '../../../../../auth/components/ActivateTwoFactorAuthSkeleton/ActivateTwoFactorAuthSkeleton';
+// eslint-disable-next-line max-len
+import ActivateTwoFactorAuthSkeleton from 'app/auth/components/ActivateTwoFactorAuthSkeleton/ActivateTwoFactorAuthSkeleton';
 import i18n from '../../../../../i18n/services/i18n.service';
 import screenService from '../../../../services/screen.service';
 import errorService from '../../../../services/error.service';

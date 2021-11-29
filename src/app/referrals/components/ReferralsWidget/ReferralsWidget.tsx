@@ -12,7 +12,7 @@ import usersReferralsService from 'app/referrals/services/users-referrals.servic
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import sizeService from 'app/drive/services/size.service';
 
-const ReferralsWidget = (props: { className?: string }) => {
+const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   const dispatch = useAppDispatch();
   const isCollapsed = useAppSelector((state) => state.ui.isReferralsWidgetCollapsed);
   const setIsCollapsed = (value) => dispatch(uiActions.setIsReferralsWidgetCollapsed(value));
@@ -34,7 +34,10 @@ const ReferralsWidget = (props: { className?: string }) => {
       } referral-item flex items-center mb-4`}
       onClick={() => onReferralItemClicked(referral)}
     >
-      <div className="referral-item-bullet flex-none h-4 w-8 py-1 px-2 text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2">
+      <div
+        className="referral-item-bullet flex-none h-4 w-8 py-1 px-2\
+       text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2"
+      >
         <span>{sizeService.bytesToString(referral.credit * referral.steps)}</span>
       </div>
       <span className="referral-item-label text-sm">

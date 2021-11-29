@@ -4,7 +4,7 @@ import httpService from '../../core/services/http.service';
 import envService from '../../core/services/env.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
 import { Workspace } from '../../core/types';
-import { loadStripe, RedirectToCheckoutServerOptions, Stripe } from '@stripe/stripe-js';
+import { loadStripe, RedirectToCheckoutServerOptions, Stripe, StripeError } from '@stripe/stripe-js';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;
@@ -50,7 +50,7 @@ const paymentService = {
     return response;
   },
 
-  async redirectToCheckout(options: RedirectToCheckoutServerOptions) {
+  async redirectToCheckout(options: RedirectToCheckoutServerOptions): Promise<{ error: StripeError }> {
     const stripe = await getStripe();
 
     return stripe.redirectToCheckout(options);

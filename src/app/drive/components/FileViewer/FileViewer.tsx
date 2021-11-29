@@ -24,7 +24,7 @@ export interface FormatFileViewerProps {
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-const FileViewer = (props: FileViewerProps) => {
+const FileViewer = (props: FileViewerProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector((state) => state.fileViewer.isLoading);
   const onCloseButtonClicked = () => props.onClose();

@@ -74,7 +74,8 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
         {i18n.get('drive.currentPlan')}
       </div>
       <div
-        className={`${sizeClassName} flex flex-col justify-center text-neutral-700 p-6 border border-l-neutral-30 rounded-lg bg-white`}
+        className={`${sizeClassName} flex flex-col justify-center\
+         text-neutral-700 p-6 border border-l-neutral-30 rounded-lg bg-white`}
       >
         {/* SIMPLE NAME */}
         <h4 className="mx-auto rounded-3xl px-4 py-1 bg-l-neutral-20 text-m-neutral-80 font-semibold mb-4 w-min">
