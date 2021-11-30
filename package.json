@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@iconscout/react-unicons": "^1.1.6",
-    "@internxt/inxt-js": "=1.2.12",
+    "@internxt/inxt-js": "=1.2.13",
     "@internxt/lib": "1.1.2",
     "@reduxjs/toolkit": "^1.6.0",
     "@stripe/stripe-js": "^1.21.1",
