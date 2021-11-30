@@ -36,7 +36,7 @@ const AccountPlansTab = (): JSX.Element => {
     </div>
   ));
   const changePlansWorkspaceLabelMap = {
-    [Workspace.Individuals]: i18n.get(`views.account.tabs.plans.changeWorkspace.business`),
+    [Workspace.Individuals]: i18n.get('views.account.tabs.plans.changeWorkspace.business'),
     [Workspace.Business]: i18n.get('views.account.tabs.plans.changeWorkspace.personal'),
   };
   const onChangePlansWorkspaceClicked = () => {
@@ -48,6 +48,7 @@ const AccountPlansTab = (): JSX.Element => {
   };
   const onAppSumoButtonClicked = () => {
     window.open(
+      // eslint-disable-next-line max-len
       `https://appsumo.8odi.net/c/2715655/416948/7443?sharedid=button1&u=https://appsumo.com/account/redemption/${currentPlan?.details?.invoiceItemUuid}`,
       '_blank',
     );
@@ -72,7 +73,8 @@ const AccountPlansTab = (): JSX.Element => {
   const featuresList = features.map((feature, index) => (
     <div
       key={index}
-      className="w-56 h-56 flex flex-col justify-center items-center border border-l-neutral-30 rounded-lg text-center p-6 m-3"
+      className="w-56 h-56 flex flex-col justify-center items-center\
+       border border-l-neutral-30 rounded-lg text-center p-6 m-3"
     >
       <feature.icon className="text-blue-40 mb-2" />
       <span className="block text-neutral-900 mb-2">{feature.title}</span>

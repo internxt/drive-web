@@ -106,7 +106,11 @@ async function fetchRecents(limit: number): Promise<DriveFileData[]> {
   return response;
 }
 
-async function renameFileInNetwork(fileId: string, bucketId: string, relativePath: string) {
+async function renameFileInNetwork(
+  fileId: string,
+  bucketId: string,
+  relativePath: string,
+): Promise<{ message: string }> {
   const hashedRelativePath = createHash('ripemd160').update(relativePath).digest('hex');
 
   return httpService.post<RenameFileInNetworkPayload, { message: string }>('/api/storage/rename-file-in-network', {

@@ -2,10 +2,10 @@ import httpService from 'app/core/services/http.service';
 import { ReferralKey, UserReferral } from '../types';
 
 const usersReferralsService = {
-  fetch() {
+  fetch(): Promise<UserReferral[]> {
     return httpService.get<UserReferral[]>('/api/users-referrals');
   },
-  hasClickAction(referralKey: ReferralKey) {
+  hasClickAction(referralKey: ReferralKey): boolean {
     return [ReferralKey.SubscribeToNewsletter, ReferralKey.InstallDesktopApp, ReferralKey.InviteFriends].includes(
       referralKey,
     );

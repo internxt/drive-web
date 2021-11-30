@@ -30,7 +30,7 @@ export default async function downloadFolderUsingStreamSaver({
   updateProgressCallback?: (progress: number) => void;
   errorCallback?: (err: Error) => void;
   isTeam: boolean;
-}) {
+}): Promise<[Promise<void>, () => void]> {
   const downloadingSize: Record<number, number> = {};
   const fileStreams: { file: DriveFileData; stream: internal.Readable }[] = [];
   const actionStates: ActionState[] = [];

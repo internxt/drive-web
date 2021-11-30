@@ -101,7 +101,11 @@ class App extends Component<AppProps> {
         <DndProvider backend={HTML5Backend}>
           <Router history={navigationService.history}>
             {isDev && configService.getAppConfig().debug.enabled && (
-              <span className="absolute text-supporting-2 font-bold text-white text-center bg-red-50 w-28 px-3.5 py-1 top-5 -right-7 tracking-wider opacity-80 transform rotate-45 z-50 pointer-events-none drop-shadow-2xl">
+              <span
+                className="absolute text-supporting-2 font-bold text-white text-center \
+               bg-red-50 w-28 px-3.5 py-1 top-5 -right-7 tracking-wider opacity-80 transform \
+               rotate-45 z-50 pointer-events-none drop-shadow-2xl"
+              >
                 {i18n.get('general.stage.development')}
               </span>
             )}

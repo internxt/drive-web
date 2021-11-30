@@ -12,7 +12,7 @@ interface Props {
   onDeviceSelected: (device: Device) => void;
 }
 
-const DeviceList = (props: Props) => {
+const DeviceList = (props: Props): JSX.Element => {
   const { isLoading } = props;
   const getLoadingSkeleton = () => {
     return Array(10)
@@ -26,7 +26,10 @@ const DeviceList = (props: Props) => {
 
   return isLoading || items.length ? (
     <div className="flex flex-col flex-grow bg-white h-1">
-      <div className="files-list font-semibold flex border-b border-l-neutral-30 bg-white text-neutral-400 py-3 text-sm">
+      <div
+        className="files-list font-semibold flex border-b\
+       border-l-neutral-30 bg-white text-neutral-400 py-3 text-sm"
+      >
         <div className="w-0.5/12 pl-3 flex items-center justify-start box-content"></div>
         <div className="flex-grow flex items-center px-3">{i18n.get('backups.devices-list.columns.name')}</div>
         <div className="w-2/12 hidden items-center xl:flex"></div>

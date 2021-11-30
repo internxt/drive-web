@@ -109,7 +109,7 @@ export const doAccess = async (
     publicKeyArmored: string;
     revocationCertificate: string;
   },
-) => {
+): Promise<{ data: { token: string; user: UserSettings; userTeam: TeamsSettings | null }; user: UserSettings }> => {
   try {
     const response = await fetch(`${process.env.REACT_APP_API_URL}/api/access`, {
       method: 'post',
@@ -176,12 +176,13 @@ export const doAccess = async (
   }
 };
 
-export const readReferalCookie = () => {
+export const readReferalCookie = (): string | null => {
   const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
 
   return cookie ? cookie[2] : null;
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const doRegister = async (
   name: string,
   lastname: string,
@@ -233,6 +234,7 @@ export const doRegister = async (
   return body;
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const updateInfo = async (name: string, lastname: string, email: string, password: string) => {
   // Setup hash and salt
   const hashObj = passToHash({ password });
@@ -290,7 +292,7 @@ export const updateInfo = async (name: string, lastname: string, email: string, 
   return xUser;
 };
 
-export const getSalt = async () => {
+export const getSalt = async (): Promise<string> => {
   const email = localStorageService.getUser()?.email;
 
   const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
@@ -304,7 +306,9 @@ export const getSalt = async () => {
   return salt;
 };
 
-export const getPasswordDetails = async (currentPassword: string) => {
+export const getPasswordDetails = async (
+  currentPassword: string,
+): Promise<{ salt: string; hashedCurrentPassword: string; encryptedCurrentPassword: string }> => {
   const salt = await getSalt();
   if (!salt) {
     throw new Error('Internal server error. Please reload.');
@@ -317,7 +321,7 @@ export const getPasswordDetails = async (currentPassword: string) => {
   return { salt, hashedCurrentPassword, encryptedCurrentPassword };
 };
 
-export const changePassword = async (newPassword: string, currentPassword: string, email: string) => {
+export const changePassword = async (newPassword: string, currentPassword: string, email: string): Promise<void> => {
   const user = localStorageService.getUser() as UserSettings;
 
   const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);

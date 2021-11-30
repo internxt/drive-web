@@ -4,7 +4,10 @@ import './AuthSideInfo.scss';
 
 const AuthSideInfo = ({ title, subtitle }: { title: string; subtitle: string }): JSX.Element => {
   return (
-    <div className="hidden md:flex flex-col justify-between items-start w-104 min-w-104 h-full bg-gradient-to-b from-blue-60 to-blue-80 text-white p-12 relative">
+    <div
+      className="hidden md:flex flex-col justify-between items-start \
+    w-104 min-w-104 h-full bg-gradient-to-b from-blue-60 to-blue-80 text-white p-12 relative"
+    >
       <img className="absolute top-0 left-0 object-cover w-full h-full" src={sideInfoBackground} alt="" />
 
       <div className="flex flex-col z-10">

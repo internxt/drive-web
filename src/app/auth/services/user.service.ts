@@ -21,14 +21,14 @@ export const sendDeactivationEmail = (email: string): Promise<void> => {
   return httpService.get<void>(`/api/reset/${email}`);
 };
 
-const inviteAFriend = (email: string) => {
+const inviteAFriend = (email: string): Promise<void> => {
   return httpService.post<{ email: string }, void>('/api/user/invite', { email });
 };
 
 /**
  * ! This endpoint accepts a body but is using GET method
  */
-const refreshUser = async () => {
+const refreshUser = async (): Promise<{ user: UserSettings; token: string }> => {
   return httpService.get<{ user: UserSettings; token: string }>('/api/user/refresh');
 };
 

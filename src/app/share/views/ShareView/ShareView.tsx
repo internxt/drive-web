@@ -149,7 +149,8 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
 
       body = (
         <div
-          className="bg-white w-full mx-5 md:w-1/2 xl:w-1/4 border border-solid rounded border-l-neutral-50 flex flex-col items-center justify-center py-8"
+          className="bg-white w-full mx-5 md:w-1/2 xl:w-1/4 border\
+           border-solid rounded border-l-neutral-50 flex flex-col items-center justify-center py-8"
           style={{ minHeight: '40%' }}
         >
           <div className="flex items-center max-w-full px-4">

@@ -29,7 +29,7 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
   updateProgressCallback?: (progress: number) => void;
   errorCallback?: (err: Error) => void;
   isTeam: boolean;
-}) {
+}): Promise<[Promise<void>, ActionState[]]> {
   const downloadingSize: Record<number, number> = {};
   const fileStreams: { file: DriveFileData; stream: internal.Readable }[] = [];
   const actionStates: ActionState[] = [];
@@ -39,7 +39,7 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
   });
 
   if (!handle) {
-    return;
+    throw new Error();
   }
 
   const writable = await handle.createWritable();

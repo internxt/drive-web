@@ -259,7 +259,10 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               {
                 /* DRAG AND DROP */
                 isOver ? (
-                  <div className="drag-over-effect pointer-events-none absolute h-full w-full flex justify-center items-end"></div>
+                  <div
+                    className="drag-over-effect pointer-events-none\
+                   absolute h-full w-full flex justify-center items-end"
+                  ></div>
                 ) : null
               }
             </div>

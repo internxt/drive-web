@@ -14,7 +14,7 @@ import { fileViewerActions, fileViewerSelectors } from '../../../../../store/sli
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const FilePdfViewer = (props: FormatFileViewerProps) => {
+const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const [blobActionState, setBlobActionState] = useState<ActionState | undefined>(undefined);
   const dispatch = useAppDispatch();
   const fileUrl = useAppSelector(fileViewerSelectors.objectUrlByFileId)(props.file?.fileId || '');

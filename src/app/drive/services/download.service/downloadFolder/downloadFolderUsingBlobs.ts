@@ -22,7 +22,7 @@ export default async function downloadFolderUsingBlobs({
   decryptedCallback?: () => void;
   updateProgressCallback?: (progress: number) => void;
   isTeam: boolean;
-}) {
+}): Promise<void> {
   const zip = new JSZip();
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
   let downloadedSize = 0;

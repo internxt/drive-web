@@ -1,20 +1,6 @@
-
 {
-  "parser": "@typescript-eslint/parser",
-  "ignorePatterns": ["/scripts", "craco.config.js"],
-  "plugins": [
-    "react",
-    "@typescript-eslint",
-    "prettier"
-  ],
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier"
-  ],
+  "extends": "@internxt/eslint-config-internxt",
   "rules": {
-    "prettier/prettier": 1,
-    "@typescript-eslint/explicit-module-boundary-types": "off"
+    "no-console": "off"
   }
 }
