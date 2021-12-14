@@ -1,18 +1,17 @@
 import { Environment } from '@internxt/inxt-js';
-import { createHash } from 'crypto';
 import { ActionState, FileInfo } from '@internxt/inxt-js/build/api';
 import { Readable } from 'stream';
 import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '../../auth/types';
 import { TeamsSettings } from '../../teams/types';
 import * as blobToStream from 'blob-to-stream';
+import * as uuid from 'uuid';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 interface IUploadParams {
   filesize: number;
-  filepath: string;
   filecontent: Blob;
   progressCallback: ProgressCallback;
 }
@@ -68,12 +67,11 @@ export class Network {
       throw new Error('Bucket id not provided');
     }
 
-    const hashName = createHash('ripemd160').update(params.filepath).digest('hex');
     const promise = new Promise((resolve: (fileId: string) => void, reject) => {
       actionState = this.environment.upload(
         bucketId,
         {
-          name: hashName,
+          name: uuid.v4(),
           progressCallback: params.progressCallback,
           finishedCallback: (err, fileId) => {
             if (err) {

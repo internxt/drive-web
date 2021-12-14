@@ -1,5 +1,4 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import { items } from '@internxt/lib';
 
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
@@ -25,18 +24,10 @@ export const updateItemMetadataThunk = createAsyncThunk<
     const namePath = getState().storage.namePath;
     const namePathDestinationArray = namePath.map((level) => level.name);
     namePathDestinationArray[0] = '';
-    const folderPath = namePathDestinationArray.join('/');
-    const relativePath =
-      folderPath +
-      '/' +
-      items.getItemDisplayName({
-        name: metadata.itemName || item.name,
-        type: item.type,
-      });
 
     item.isFolder
-      ? await folderService.updateMetaData(item.id, metadata, storageSelectors.bucket(getState()), relativePath)
-      : await fileService.updateMetaData(item.fileId, metadata, storageSelectors.bucket(getState()), relativePath);
+      ? await folderService.updateMetaData(item.id, metadata)
+      : await fileService.updateMetaData(item.fileId, metadata, storageSelectors.bucket(getState()));
 
     dispatch(
       storageActions.patchItem({

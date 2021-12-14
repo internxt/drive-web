@@ -110,13 +110,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
   };
 
   onUploadInputChanged = async (e) => {
-    const { dispatch, onFileUploaded, currentFolderId, namePath } = this.props;
+    const { dispatch, onFileUploaded, currentFolderId } = this.props;
 
     dispatch(
       storageThunks.uploadItemsThunk({
         files: Array.from(e.target.files),
         parentFolderId: currentFolderId,
-        folderPath: namePath.slice(1).reduce((t, path) => `${t}${path.name}/`, ''),
       }),
     ).then(() => onFileUploaded && onFileUploaded());
 
@@ -304,7 +303,6 @@ const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
           storageThunks.uploadItemsThunk({
             files,
             parentFolderId: currentFolderId,
-            folderPath,
             options: {
               onSuccess: onDragAndDropEnd,
             },

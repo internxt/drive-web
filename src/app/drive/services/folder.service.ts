@@ -3,8 +3,7 @@ const CancelToken = axios.CancelToken;
 
 import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData, FolderTree } from '../types';
 import errorService from '../../core/services/error.service';
-import { aes, items } from '@internxt/lib';
-import fileService from './file.service';
+import { aes } from '@internxt/lib';
 import httpService from '../../core/services/http.service';
 import { DevicePlatform } from '../../core/types';
 import analyticsService from '../../analytics/services/analytics.service';
@@ -151,12 +150,7 @@ export function createFolder(
   return [fn(), cancelTokenSource];
 }
 
-export async function updateMetaData(
-  folderId: number,
-  metadata: DriveFolderMetadataPayload,
-  bucketId: string,
-  relativePath: string,
-): Promise<void> {
+export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
   const user: UserSettings = localStorageService.getUser() as UserSettings;
 
   await httpService.post(`/api/storage/folder/${folderId}/meta`, { metadata }).then(() => {
@@ -166,31 +160,6 @@ export async function updateMetaData(
       platform: DevicePlatform.Web,
     });
   });
-
-  // * Renames files on network recursively
-  const pendingFolders = [{ relativePath, folderId }];
-  while (pendingFolders.length > 0) {
-    const currentFolder = pendingFolders[0];
-    const [folderContentPromise] = fetchFolderContent(currentFolder.folderId);
-    const { files, folders } = await folderContentPromise;
-
-    pendingFolders.shift();
-
-    // * Renames current folder files
-    for (const file of files) {
-      const relativePath = `${currentFolder.relativePath}/${items.getItemDisplayName(file)}`;
-
-      fileService.renameFileInNetwork(file.fileId, bucketId, relativePath);
-    }
-
-    // * Adds current folder folders to pending
-    pendingFolders.push(
-      ...folders.map((folderData) => ({
-        relativePath: `${currentFolder.relativePath}/${folderData.name}`,
-        folderId: folderData.id,
-      })),
-    );
-  }
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
@@ -241,12 +210,7 @@ async function fetchFolderTree(folderId: number): Promise<{
   return { tree, folderDecryptedNames, fileDecryptedNames, size };
 }
 
-export async function moveFolder(
-  folder: DriveFolderData,
-  destination: number,
-  destinationPath: string,
-  bucketId: string,
-): Promise<MoveFolderResponse> {
+export async function moveFolder(folder: DriveFolderData, destination: number): Promise<MoveFolderResponse> {
   const user = localStorageService.getUser() as UserSettings;
 
   const response = await httpService
@@ -263,31 +227,6 @@ export async function moveFolder(
 
       throw castedError;
     });
-
-  // * Renames files iterating over folders
-  const pendingFolders = [{ destinationPath: `${destinationPath}/${folder.name}`, data: folder }];
-  while (pendingFolders.length > 0) {
-    const currentFolder = pendingFolders[0];
-    const [folderContentPromise] = fetchFolderContent(currentFolder.data.id);
-    const { files, folders } = await folderContentPromise;
-
-    pendingFolders.shift();
-
-    // * Renames current folder files
-    for (const file of files) {
-      const relativePath = `${currentFolder.destinationPath}/${items.getItemDisplayName(file)}`;
-
-      fileService.renameFileInNetwork(file.fileId, bucketId, relativePath);
-    }
-
-    // * Adds current folder folders to pending
-    pendingFolders.push(
-      ...folders.map((folderData) => ({
-        destinationPath: `${currentFolder.destinationPath}/${folderData.name}`,
-        data: folderData,
-      })),
-    );
-  }
 
   analyticsService.trackMoveItem('folder', {
     file_id: response.item.id,

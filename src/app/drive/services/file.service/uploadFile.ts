@@ -17,7 +17,6 @@ export interface ItemToUpload {
   type: string;
   content: File;
   parentFolderId: number;
-  relativePath: string;
 }
 
 export function uploadFile(
@@ -52,7 +51,6 @@ export function uploadFile(
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
     const content = new Blob([file.content], { type: file.type });
     const [uploadFilePromise, uploadFileActionState] = network.uploadFile(bucketId, {
-      filepath: file.relativePath,
       filesize: file.size,
       filecontent: content,
       progressCallback: updateProgressCallback,

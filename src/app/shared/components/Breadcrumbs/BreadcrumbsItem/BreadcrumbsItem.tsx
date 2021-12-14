@@ -36,7 +36,6 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         storageThunks.moveItemsThunk({
           items: itemsToMove as DriveItemData[],
           destinationFolderId: props.item.id,
-          destinationPath: folderPath,
         }),
       );
     } else if (droppedType === NativeTypes.FILE) {
@@ -44,7 +43,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         async ({ rootList, files }) => {
           if (files.length) {
             // Only files
-            await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.id, folderPath }));
+            await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.id }));
           }
           if (rootList.length) {
             // Directory tree

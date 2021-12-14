@@ -1,5 +1,5 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import { items, items as itemUtils } from '@internxt/lib';
+import { items as itemUtils } from '@internxt/lib';
 
 import { storageActions, storageSelectors } from '..';
 import { StorageState } from '../storage.model';
@@ -30,7 +30,6 @@ interface UploadItemsThunkOptions {
 interface UploadItemsPayload {
   files: File[];
   parentFolderId: number;
-  folderPath: string;
   options?: Partial<UploadItemsThunkOptions>;
 }
 
@@ -43,7 +42,7 @@ const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = { showNotifications: t
  */
 export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
-  async ({ files, parentFolderId, folderPath, options }: UploadItemsPayload, { getState, dispatch }) => {
+  async ({ files, parentFolderId, options }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
     const showSizeWarning = files.some((file) => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
@@ -90,13 +89,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       const parentFolderContent = await parentFolderContentPromise;
       const [, , finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
       const fileContent = renameFile(file, finalFilename);
-      const relativePath =
-        folderPath +
-        '/' +
-        items.getItemDisplayName({
-          name: finalFilename,
-          type: extension,
-        });
+
       tasksService.updateTask({
         taskId,
         merge: {
@@ -111,7 +104,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         type: extension,
         content: fileContent,
         parentFolderId,
-        relativePath,
       });
 
       tasksIds.push(taskId);

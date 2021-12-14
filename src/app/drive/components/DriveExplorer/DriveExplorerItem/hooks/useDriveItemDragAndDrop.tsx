@@ -79,7 +79,6 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
             storageThunks.moveItemsThunk({
               items: itemsToMove,
               destinationFolderId: item.id,
-              destinationPath: folderPath,
             }),
           );
         } else if (droppedType === NativeTypes.FILE) {
@@ -88,7 +87,7 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
             if (files.length) {
               // Only files
-              await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id, folderPath }));
+              await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id }));
             }
             if (rootList.length) {
               // Directory tree

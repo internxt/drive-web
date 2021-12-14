@@ -1,5 +1,3 @@
-import { items } from '@internxt/lib';
-import { createHash } from 'crypto';
 import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../../types';
 import analyticsService from '../../../analytics/services/analytics.service';
 import errorService from '../../../core/services/error.service';
@@ -9,6 +7,7 @@ import { DevicePlatform } from '../../../core/types';
 import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '../../../auth/types';
 import uploadFile from './uploadFile';
+import * as uuid from 'uuid';
 
 export interface MoveFilePayload {
   fileId: string;
@@ -23,26 +22,14 @@ export interface MoveFileResponse {
   moved: boolean;
 }
 
-interface RenameFileInNetworkPayload {
-  fileId: string;
-  bucketId: string;
-  relativePath: string;
-}
-
-export function updateMetaData(
-  fileId: string,
-  metadata: DriveFileMetadataPayload,
-  bucketId: string,
-  relativePath: string,
-): Promise<void> {
+export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {
   const user = localStorageService.getUser() as UserSettings;
-  const hashedRelativePath = createHash('ripemd160').update(relativePath).digest('hex');
 
   return httpService
     .post(`/api/storage/file/${fileId}/meta`, {
       metadata,
       bucketId,
-      relativePath: hashedRelativePath,
+      relativePath: uuid.v4(),
     })
     .then(() => {
       analyticsService.trackFileRename({
@@ -64,21 +51,14 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
   });
 }
 
-export async function moveFile(
-  file: DriveFileData,
-  destination: number,
-  destinationPath: string,
-  bucketId: string,
-): Promise<MoveFileResponse> {
+export async function moveFile(file: DriveFileData, destination: number, bucketId: string): Promise<MoveFileResponse> {
   const user = localStorageService.getUser() as UserSettings;
-  const relativePath = `${destinationPath}/${items.getItemDisplayName(file)}`;
-  const hashedRelativePath = createHash('ripemd160').update(relativePath).digest('hex');
 
   const response = await httpService
     .post<MoveFilePayload, MoveFileResponse>('/api/storage/move/file', {
       fileId: file.fileId,
       destination,
-      relativePath: hashedRelativePath,
+      relativePath: uuid.v4(),
       bucketId,
     })
     .catch((err) => {
@@ -106,26 +86,11 @@ async function fetchRecents(limit: number): Promise<DriveFileData[]> {
   return response;
 }
 
-async function renameFileInNetwork(
-  fileId: string,
-  bucketId: string,
-  relativePath: string,
-): Promise<{ message: string }> {
-  const hashedRelativePath = createHash('ripemd160').update(relativePath).digest('hex');
-
-  return httpService.post<RenameFileInNetworkPayload, { message: string }>('/api/storage/rename-file-in-network', {
-    fileId,
-    bucketId,
-    relativePath: hashedRelativePath,
-  });
-}
-
 const fileService = {
   updateMetaData,
   deleteFile,
   moveFile,
   fetchRecents,
-  renameFileInNetwork,
   uploadFile,
 };
 
