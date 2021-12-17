@@ -178,7 +178,7 @@ export class Network {
         {
           label: 'OneStreamOnly',
           params: {
-            useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
+            useProxy: false,
             concurrency: 6,
           },
         },
