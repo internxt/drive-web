@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 
 describe('Signup user', () => {
-  const username = `${crypto.randomBytes(8).toString('hex')}@inxt.com`;
+  const username = `${crypto.randomBytes(32).toString('hex')}@inxt.com`;
   const password = `Pw4${crypto.randomBytes(4).toString('hex')}`;
 
   it('Should signup an user correctly', () => {
