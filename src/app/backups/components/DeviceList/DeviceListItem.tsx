@@ -1,17 +1,22 @@
 import { Device } from '../../types';
+import { Dropdown } from 'react-bootstrap';
 import UilApple from '@iconscout/react-unicons/icons/uil-apple';
 import UilLinux from '@iconscout/react-unicons/icons/uil-linux';
 import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
 import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
+import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import dateService from '../../../core/services/date.service';
 import sizeService from '../../../drive/services/size.service';
+import DeviceDropdownActions from '../DeviceDropdownActions/DeviceDropdownActions';
 
 export default function DeviceListItem({
   device,
   onClick,
+  onDeleteClick,
 }: {
   device: Device;
   onClick: (clickedDevice: Device) => void;
+  onDeleteClick: (clickedDevice: Device) => void;
 }): JSX.Element {
   let Icon;
 
@@ -43,6 +48,16 @@ export default function DeviceListItem({
         {dateService.format(device.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
       <div className="w-2/12 flex items-center">{sizeService.bytesToString(device.size)}</div>
+      <div className="w-1/12 flex items-center rounded-tr-4px">
+        <Dropdown>
+          <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
+            <UilEllipsisH className="w-full h-full" />
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <DeviceDropdownActions onDeleteButtonClicked={() => onDeleteClick(device)} />
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
     </div>
   );
 }

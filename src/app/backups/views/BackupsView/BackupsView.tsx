@@ -46,6 +46,10 @@ export default function BackupsView(): JSX.Element {
     dispatch(backupsActions.setCurrentDevice(null));
   };
 
+  const onDeviceDeleted = (target: Device) => {
+    dispatch(backupsThunks.deleteDeviceThunk(target));
+  };
+
   useEffect(() => {
     dispatch(backupsThunks.fetchDevicesThunk());
   }, []);
@@ -58,7 +62,12 @@ export default function BackupsView(): JSX.Element {
       {currentDevice ? (
         <BackupsList isLoading={isLoadingDeviceBackups} items={currentDeviceBackups} />
       ) : (
-        <DeviceList isLoading={isLoadingDevices} items={devices} onDeviceSelected={onDeviceSelected} />
+        <DeviceList
+          isLoading={isLoadingDevices}
+          items={devices}
+          onDeviceSelected={onDeviceSelected}
+          onDeviceDeleted={onDeviceDeleted}
+        />
       )}
     </div>
   );

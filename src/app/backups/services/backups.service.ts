@@ -26,6 +26,9 @@ const backupsService = {
   async deleteBackup(backup: DeviceBackup): Promise<void> {
     await httpService.delete<void>(`/api/backup/${backup.id}`);
   },
+  async deleteDevice(device: Device): Promise<void> {
+    await httpService.delete<void>(`/api/backup/device/${device.id}`);
+  },
 };
 
 export default backupsService;

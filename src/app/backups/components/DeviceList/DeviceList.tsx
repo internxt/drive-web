@@ -10,6 +10,7 @@ interface Props {
   items: Device[];
   isLoading: boolean;
   onDeviceSelected: (device: Device) => void;
+  onDeviceDeleted: (device: Device) => void;
 }
 
 const DeviceList = (props: Props): JSX.Element => {
@@ -21,7 +22,12 @@ const DeviceList = (props: Props): JSX.Element => {
   };
 
   const items = props.items.map((item: Device) => (
-    <DeviceListItem key={item.id} device={item} onClick={props.onDeviceSelected} />
+    <DeviceListItem
+      key={item.id}
+      device={item}
+      onClick={props.onDeviceSelected}
+      onDeleteClick={props.onDeviceDeleted}
+    />
   ));
 
   return isLoading || items.length ? (
@@ -35,6 +41,7 @@ const DeviceList = (props: Props): JSX.Element => {
         <div className="w-2/12 hidden items-center xl:flex"></div>
         <div className="w-3/12 hidden items-center lg:flex">{i18n.get('backups.devices-list.columns.last-update')}</div>
         <div className="w-2/12 flex items-center">{i18n.get('backups.devices-list.columns.size')}</div>
+        <div className="w-1/12 flex items-center">Actions</div>
       </div>
       <div className="h-full overflow-y-auto">{isLoading ? getLoadingSkeleton() : items}</div>
     </div>
