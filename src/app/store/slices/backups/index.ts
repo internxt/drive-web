@@ -46,6 +46,14 @@ export const deleteBackupThunk = createAsyncThunk<DeviceBackup, DeviceBackup, { 
   },
 );
 
+export const deleteDeviceThunk = createAsyncThunk<Device, Device, { state: RootState }>(
+  'backups/deleteDevice',
+  async (device: Device) => {
+    await backupsService.deleteDevice(device);
+    return device;
+  },
+);
+
 export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state: RootState }>(
   'backups/downloadBackup',
   async (backup: DeviceBackup) => {
@@ -158,6 +166,13 @@ export const backupsSlice = createSlice({
         state.backups = state.backups.filter((b) => b.id !== action.payload.id);
       })
       .addCase(deleteBackupThunk.rejected, () => undefined);
+
+    builder
+      .addCase(deleteDeviceThunk.pending, () => undefined)
+      .addCase(deleteDeviceThunk.fulfilled, (state, action) => {
+        state.devices = state.devices.filter((b) => b.id !== action.payload.id);
+      })
+      .addCase(deleteDeviceThunk.rejected, () => undefined);
   },
 });
 
@@ -170,6 +185,7 @@ export const backupsThunks = {
   fetchDeviceBackupsThunk,
   downloadBackupThunk,
   deleteBackupThunk,
+  deleteDeviceThunk,
 };
 
 export default backupsSlice.reducer;
