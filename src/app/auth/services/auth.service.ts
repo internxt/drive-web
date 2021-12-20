@@ -1,4 +1,3 @@
-import * as bip39 from 'bip39';
 import { aes } from '@internxt/lib';
 
 import {
@@ -9,7 +8,6 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import { decryptPGP } from 'app/crypto/services/utilspgp';
-import userService from './user.service';
 import i18n from 'app/i18n/services/i18n.service';
 import databaseService from 'app/database/services/database.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -176,120 +174,10 @@ export const doAccess = async (
   }
 };
 
-export const readReferalCookie = (): string | null => {
+export const readReferalCookie = (): string | undefined => {
   const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
 
-  return cookie ? cookie[2] : null;
-};
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const doRegister = async (
-  name: string,
-  lastname: string,
-  email: string,
-  password: string,
-  referrer?: string,
-) => {
-  // Setup hash and salt
-  const hashObj = passToHash({ password });
-  const encPass = encryptText(hashObj.hash);
-  const encSalt = encryptText(hashObj.salt);
-  // Setup mnemonic
-  const mnemonic = bip39.generateMnemonic(256);
-  const encMnemonic = encryptTextWithKey(mnemonic, password);
-
-  //Generate keys
-  const {
-    privateKeyArmored,
-    publicKeyArmored: codpublicKey,
-    revocationCertificate: codrevocationKey,
-  } = await generateNewKeys();
-
-  //Datas
-  const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
-
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register`, {
-    method: 'post',
-    headers: httpService.getHeaders(true, true),
-    body: JSON.stringify({
-      name: name,
-      lastname: lastname,
-      email: email,
-      password: encPass,
-      mnemonic: encMnemonic,
-      salt: encSalt,
-      referral: readReferalCookie(),
-      privateKey: encPrivateKey,
-      publicKey: codpublicKey,
-      revocationKey: codrevocationKey,
-      referrer: referrer,
-    }),
-  });
-  const body = await response.json();
-
-  if (response.status !== 200) {
-    throw new Error(body.error ? body.error : 'Internal server error');
-  }
-
-  return body;
-};
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const updateInfo = async (name: string, lastname: string, email: string, password: string) => {
-  // Setup hash and salt
-  const hashObj = passToHash({ password });
-  const encPass = encryptText(hashObj.hash);
-  const encSalt = encryptText(hashObj.salt);
-
-  // Setup mnemonic
-  const mnemonic = bip39.generateMnemonic(256);
-  const encMnemonic = encryptTextWithKey(mnemonic, password);
-
-  // Body
-  const body = {
-    name: name,
-    lastname: lastname,
-    email: email,
-    password: encPass,
-    mnemonic: encMnemonic,
-    salt: encSalt,
-    referral: readReferalCookie(),
-  };
-
-  const fetchHandler = async (res: Response) => {
-    const body = await res.text();
-
-    try {
-      const bodyJson = JSON.parse(body);
-
-      return { res: res, data: bodyJson };
-    } catch {
-      return { res: res, data: body };
-    }
-  };
-
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appsumo/update`, {
-    method: 'POST',
-    headers: httpService.getHeaders(true, false),
-    body: JSON.stringify(body),
-  });
-  const { res, data } = await fetchHandler(response);
-
-  if (res.status !== 200) {
-    throw Error(data.error || 'Internal Server Error');
-  }
-
-  const xToken = data.token;
-  const xUser = data.user;
-
-  xUser.mnemonic = mnemonic;
-
-  const rootFolderInfo = await userService.initializeUser(email, xUser.mnemonic);
-
-  xUser.root_folder_id = rootFolderInfo?.user.root_folder_id;
-  localStorageService.set('xToken', xToken);
-  localStorageService.set('xMnemonic', mnemonic);
-  return xUser;
+  return cookie ? cookie[2] : undefined;
 };
 
 export const getSalt = async (): Promise<string> => {
@@ -434,7 +322,6 @@ const authService = {
   logOut,
   doLogin,
   doAccess,
-  doRegister,
   check2FANeeded,
   readReferalCookie,
   cancelAccount,
