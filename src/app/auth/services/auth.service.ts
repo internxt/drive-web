@@ -16,7 +16,7 @@ import analyticsService from 'app/analytics/services/analytics.service';
 import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.service';
 import { AppView, Workspace } from 'app/core/types';
-import { generateNewKeys, updateKeys } from 'app/crypto/services/pgp.service';
+import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '../types';
 import packageJson from '../../../../package.json';
 
@@ -107,9 +107,13 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
       const revocationCertificate = user.revocationKey;
 
       const { update, privkeyDecrypted, newPrivKey } = await validateFormat(privateKey, password);
-
+      const newKeys: Keys = {
+        privateKeyEncrypted: newPrivKey,
+        publicKey: publicKey,
+        revocationCertificate: revocationCertificate
+      };
       if (update) {
-        await updateKeys(publicKey, newPrivKey, revocationCertificate);
+        await authClient.updateKeys(newKeys, token);
       }
 
       const clearUser = {
