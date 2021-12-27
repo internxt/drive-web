@@ -1,7 +1,8 @@
 import axios, { CancelTokenSource } from 'axios';
+
 const CancelToken = axios.CancelToken;
 
-import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData, FolderTree } from '../types';
+import { DriveFolderData, DriveFolderMetadataPayload, DriveItemData, FolderTree } from '../types';
 import errorService from '../../core/services/error.service';
 import { aes } from '@internxt/lib';
 import httpService from '../../core/services/http.service';
@@ -86,36 +87,6 @@ export interface MoveFolderResponse {
   item: DriveFolderData;
   destination: number;
   moved: boolean;
-}
-
-export function fetchFolderContent(
-  folderId: number,
-): [Promise<{ folders: DriveFolderData[]; files: DriveFileData[] }>, CancelTokenSource] {
-  const cancelTokenSource = CancelToken.source();
-  const fn = async () => {
-    const response = await httpService.get<FetchFolderContentResponse>(`/api/storage/v2/folder/${folderId}`, {
-      cancelToken: cancelTokenSource.token,
-    });
-    const result: { folders: DriveFolderData[]; files: DriveFileData[] } = {
-      folders: [],
-      files: [],
-    };
-
-    if (response) {
-      result.folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
-      result.files = response.files;
-    }
-
-    return result;
-  };
-
-  return [
-    fn().catch((err) => {
-      const castedError = errorService.castError(err);
-      throw castedError;
-    }),
-    cancelTokenSource,
-  ];
 }
 
 export function createFolder(
@@ -238,7 +209,6 @@ export async function moveFolder(folder: DriveFolderData, destination: number): 
 }
 
 const folderService = {
-  fetchFolderContent,
   createFolder,
   updateMetaData,
   deleteFolder,
