@@ -1,5 +1,6 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { items as itemUtils } from '@internxt/lib';
+import { createStorageClient } from '../../../../../factory/modules';
 
 import { storageActions, storageSelectors } from '..';
 import { StorageState } from '../storage.model';
@@ -12,7 +13,6 @@ import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'app/core/services/error.service';
 import i18n from 'app/i18n/services/i18n.service';
 import { renameFile } from 'app/crypto/services/utils';
-import folderService from 'app/drive/services/folder.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network';
 import { UserSettings } from 'app/auth/types';
@@ -72,9 +72,11 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       return;
     }
 
+    const storageClient = createStorageClient();
+
     for (const file of files) {
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-      const [parentFolderContentPromise, cancelTokenSource] = folderService.fetchFolderContent(parentFolderId);
+      const [parentFolderContentPromise, cancelTokenSource] = storageClient.getFolderContent(parentFolderId);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
         action: TaskType.UploadFile,
