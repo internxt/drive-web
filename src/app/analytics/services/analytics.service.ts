@@ -18,6 +18,7 @@ export const PATH_NAMES = {
   '/remove': 'drive-web-remove',
 };
 
+
 export function trackFileDownloadCompleted(properties): void {
   trackData(properties, 'file_downloaded');
 }
@@ -122,6 +123,7 @@ export function trackSignUp(payload: {
 }): void {
   window.analytics.identify(payload.userId, payload.traits);
   window.analytics.track(AnalyticsTrack.SignUp, payload.properties);
+  window.rdt('track', 'SignUp');
 }
 
 export function trackUserEnterPayments(): void {
