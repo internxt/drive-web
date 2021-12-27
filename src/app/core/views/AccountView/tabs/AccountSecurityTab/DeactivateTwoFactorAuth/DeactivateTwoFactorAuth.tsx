@@ -51,10 +51,7 @@ const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Ele
   };
 
   return (
-    <form className="flex w-full flex-col mt-8" onSubmit={handleSubmit(onSubmit)}>
-      <span className="security-info_texts mb-4 text-center">
-        You already have Two-Factor Authentication enabled. If you want to disable it, fill the fields below.
-      </span>
+    <form className="flex w-full flex-col space-y-4" onSubmit={handleSubmit(onSubmit)}>
 
       <div className="flex justify-between">
         <BaseInput

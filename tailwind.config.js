@@ -47,6 +47,19 @@ module.exports = {
       borderWidth: {
         3: '3px',
       },
+      ringOpacity: (theme) => ({
+        DEFAULT: '0.5',
+        ...theme('opacity')
+      }),
+      ringWidth: {
+        DEFAULT: '3px',
+        0: '0px',
+        1: '1px',
+        2: '2px',
+        3: '3px',
+        4: '4px',
+        8: '8px'
+      },
       borderRadius: {
         '1px': '1px',
         '2px': '2px',
@@ -177,13 +190,13 @@ module.exports = {
   },
   variants: {
     extend: {
-      ringWidth: ['hover'],
-      ringColor: ['hover'],
-      borderWidth: ['hover'],
-      borderRadius: ['responsive', 'focus'],
-      backgroundColor: ['active'],
+      ringWidth: ['hover', 'active', 'focus'],
+      ringColor: ['hover', 'active', 'focus'],
+      borderWidth: ['hover', 'active', 'focus'],
+      borderRadius: ['responsive', 'hover', 'active', 'focus'],
+      backgroundColor: ['active', 'hover', 'focus'],
       visibility: ['group-hover'],
-      width: ['focus']
+      width: ['hover', 'active', 'focus']
     },
   },
   plugins: [

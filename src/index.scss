@@ -30,14 +30,46 @@ code {
 /* TEXT */
 @font-face {
   font-family: "NeueEinstellung";
-  src:
-    local("NeueEinstellung-Regular"),
-    url(./assets/fonts/NeueEinstellung-Regular.woff2) format("woff2"),
-    url(./assets/fonts/NeueEinstellung-Regular.woff) format("woff"),
-    url(./assets/fonts/NeueEinstellung-Regular.eot) format("truetype");
-  font-weight: normal;
+  font-weight: 400;
   font-style: normal;
-  font-stretch: normal;
+  font-display: auto;
+  src: local("NeueEinstellung-Regular"),
+       url(./assets/fonts/NeueEinstellung-Regular.ttf) format("truetype"),
+       url(./assets/fonts/NeueEinstellung-Regular.woff) format("woff"),
+       url(./assets/fonts/NeueEinstellung-Regular.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: "NeueEinstellung";
+  font-weight: 500;
+  font-style: normal;
+  font-display: auto;
+  src: local("NeueEinstellung-Medium"),
+       url(./assets/fonts/NeueEinstellung-Medium.ttf) format("truetype"),
+       url(./assets/fonts/NeueEinstellung-Medium.woff) format("woff"),
+       url(./assets/fonts/NeueEinstellung-Medium.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: "NeueEinstellung";
+  font-weight: 600;
+  font-style: normal;
+  font-display: auto;
+  src: local("NeueEinstellung-Semibold"),
+       url(./assets/fonts/NeueEinstellung-Semibold.ttf) format("truetype"),
+       url(./assets/fonts/NeueEinstellung-Semibold.woff) format("woff"),
+       url(./assets/fonts/NeueEinstellung-Semibold.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: "NeueEinstellung";
+  font-weight: 700;
+  font-style: normal;
+  font-display: auto;
+  src: local("NeueEinstellung-Bold"),
+       url(./assets/fonts/NeueEinstellung-Bold.ttf) format("truetype"),
+       url(./assets/fonts/NeueEinstellung-Bold.woff) format("woff"),
+       url(./assets/fonts/NeueEinstellung-Bold.woff2) format("woff2");
 }
 
 * {

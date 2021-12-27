@@ -83,7 +83,7 @@ const AccountPlansTab = (): JSX.Element => {
   ));
 
   return (
-    <div className="group w-full h-fit">
+    <div className="group w-full h-fit mt-10">
       {currentPlan?.isAppSumo ? (
         <div>
           <span className="block w-full text-center">{i18n.get('appSumo.plans.advice')}</span>

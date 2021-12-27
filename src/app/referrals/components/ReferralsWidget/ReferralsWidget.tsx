@@ -75,11 +75,14 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
             </span>
           </p>
         </div>
-        <div className="flex-none rounded-1/2 bg-l-neutral-30 w-4 h-4 cursor-pointer" onClick={onCollapseButtonClicked}>
+        <div
+          className="flex-none rounded-full bg-l-neutral-30 w-4 h-4 cursor-pointer"
+          onClick={onCollapseButtonClicked}
+        >
           {isCollapsed ? (
-            <UilAngleDown className="text-m-neutral-100 w-full h-full" />
-          ) : (
             <UilAngleUp className="text-m-neutral-100 w-full h-full" />
+          ) : (
+            <UilAngleDown className="text-m-neutral-100 w-full h-full" />
           )}
         </div>
       </div>
