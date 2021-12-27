@@ -33,10 +33,11 @@ code {
   font-weight: 400;
   font-style: normal;
   font-display: auto;
-  src: local("NeueEinstellung-Regular"),
-       url(./assets/fonts/NeueEinstellung-Regular.ttf) format("truetype"),
-       url(./assets/fonts/NeueEinstellung-Regular.woff) format("woff"),
-       url(./assets/fonts/NeueEinstellung-Regular.woff2) format("woff2");
+  src:
+    local("NeueEinstellung-Regular"),
+    url(./assets/fonts/NeueEinstellung-Regular.ttf) format("truetype"),
+    url(./assets/fonts/NeueEinstellung-Regular.woff) format("woff"),
+    url(./assets/fonts/NeueEinstellung-Regular.woff2) format("woff2");
 }
 
 @font-face {
@@ -44,10 +45,11 @@ code {
   font-weight: 500;
   font-style: normal;
   font-display: auto;
-  src: local("NeueEinstellung-Medium"),
-       url(./assets/fonts/NeueEinstellung-Medium.ttf) format("truetype"),
-       url(./assets/fonts/NeueEinstellung-Medium.woff) format("woff"),
-       url(./assets/fonts/NeueEinstellung-Medium.woff2) format("woff2");
+  src:
+    local("NeueEinstellung-Medium"),
+    url(./assets/fonts/NeueEinstellung-Medium.ttf) format("truetype"),
+    url(./assets/fonts/NeueEinstellung-Medium.woff) format("woff"),
+    url(./assets/fonts/NeueEinstellung-Medium.woff2) format("woff2");
 }
 
 @font-face {
@@ -55,10 +57,11 @@ code {
   font-weight: 600;
   font-style: normal;
   font-display: auto;
-  src: local("NeueEinstellung-Semibold"),
-       url(./assets/fonts/NeueEinstellung-Semibold.ttf) format("truetype"),
-       url(./assets/fonts/NeueEinstellung-Semibold.woff) format("woff"),
-       url(./assets/fonts/NeueEinstellung-Semibold.woff2) format("woff2");
+  src:
+    local("NeueEinstellung-Semibold"),
+    url(./assets/fonts/NeueEinstellung-Semibold.ttf) format("truetype"),
+    url(./assets/fonts/NeueEinstellung-Semibold.woff) format("woff"),
+    url(./assets/fonts/NeueEinstellung-Semibold.woff2) format("woff2");
 }
 
 @font-face {
@@ -66,10 +69,11 @@ code {
   font-weight: 700;
   font-style: normal;
   font-display: auto;
-  src: local("NeueEinstellung-Bold"),
-       url(./assets/fonts/NeueEinstellung-Bold.ttf) format("truetype"),
-       url(./assets/fonts/NeueEinstellung-Bold.woff) format("woff"),
-       url(./assets/fonts/NeueEinstellung-Bold.woff2) format("woff2");
+  src:
+    local("NeueEinstellung-Bold"),
+    url(./assets/fonts/NeueEinstellung-Bold.ttf) format("truetype"),
+    url(./assets/fonts/NeueEinstellung-Bold.woff) format("woff"),
+    url(./assets/fonts/NeueEinstellung-Bold.woff2) format("woff2");
 }
 
 * {
