@@ -1,7 +1,3 @@
-import axios, { CancelTokenSource } from 'axios';
-
-const CancelToken = axios.CancelToken;
-
 import { DriveFolderData, DriveFolderMetadataPayload, DriveItemData, FolderTree } from '../types';
 import errorService from '../../core/services/error.service';
 import { aes } from '@internxt/lib';
@@ -11,6 +7,9 @@ import analyticsService from '../../analytics/services/analytics.service';
 import i18n from '../../i18n/services/i18n.service';
 import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '../../auth/types';
+import { createStorageClient } from '../../../factory/modules';
+import { StorageTypes } from '@internxt/sdk';
+import axios, { CancelTokenSource } from 'axios';
 
 export interface IFolders {
   bucket: string;
@@ -46,21 +45,6 @@ export interface FolderChild {
   user_id: number;
 }
 
-export interface CreateFolderPayload {
-  parentFolderId: number;
-  folderName: string;
-}
-
-export interface CreateFolderResponse {
-  bucket: string;
-  id: number;
-  name: string;
-  parentId: number;
-  createdAt: string;
-  updatedAt: string;
-  userId: number;
-}
-
 export interface FetchFolderContentResponse {
   bucket: string;
   children: FolderChild[];
@@ -92,33 +76,31 @@ export interface MoveFolderResponse {
 export function createFolder(
   currentFolderId: number,
   folderName: string,
-): [Promise<CreateFolderResponse>, CancelTokenSource] {
-  const cancelTokenSource = CancelToken.source();
-  const fn = async () => {
-    try {
-      const user = localStorageService.getUser() as UserSettings;
-      const data: CreateFolderPayload = {
-        parentFolderId: currentFolderId,
-        folderName,
-      };
-      const response = await httpService.post<CreateFolderPayload, CreateFolderResponse>('/api/storage/folder', data, {
-        cancelToken: cancelTokenSource.token,
-      });
+): [
+  Promise<StorageTypes.CreateFolderResponse>,
+  CancelTokenSource
+] {
+  const payload: StorageTypes.CreateFolderPayload = {
+    parentFolderId: currentFolderId,
+    folderName: folderName
+  };
+  const storageClient = createStorageClient();
+  const [createdFolderPromise, cancelTokenSource] = storageClient.createFolder(payload);
 
+  const finalPromise = createdFolderPromise
+    .then(response => {
+      const user = localStorageService.getUser() as UserSettings;
       analyticsService.trackFolderCreated({
         email: user.email,
         platform: DevicePlatform.Web,
       });
-
       return response;
-    } catch (err: unknown) {
-      const castedError = errorService.castError(err);
+    })
+    .catch(error => {
+      throw errorService.castError(error);
+    });
 
-      throw castedError;
-    }
-  };
-
-  return [fn(), cancelTokenSource];
+  return [finalPromise, cancelTokenSource];
 }
 
 export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
