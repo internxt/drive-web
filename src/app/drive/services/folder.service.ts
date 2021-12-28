@@ -9,7 +9,7 @@ import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '../../auth/types';
 import { createStorageClient } from '../../../factory/modules';
 import { StorageTypes } from '@internxt/sdk';
-import axios, { CancelTokenSource } from 'axios';
+import { CancelTokenSource } from 'axios';
 
 export interface IFolders {
   bucket: string;
@@ -62,16 +62,6 @@ export interface FetchFolderContentResponse {
   user_id: number;
 }
 
-export interface MoveFolderPayload {
-  folderId: number;
-  destination: number;
-}
-
-export interface MoveFolderResponse {
-  item: DriveFolderData;
-  destination: number;
-  moved: boolean;
-}
 
 export function createFolder(
   currentFolderId: number,
@@ -163,31 +153,32 @@ async function fetchFolderTree(folderId: number): Promise<{
   return { tree, folderDecryptedNames, fileDecryptedNames, size };
 }
 
-export async function moveFolder(folder: DriveFolderData, destination: number): Promise<MoveFolderResponse> {
-  const user = localStorageService.getUser() as UserSettings;
+export async function moveFolder(
+  folder: DriveFolderData, destination: number
+): Promise<StorageTypes.MoveFolderResponse> {
+  const storageClient = createStorageClient();
+  const payload: StorageTypes.MoveFolderPayload = {
+    folder: folder,
+    destinationFolderId: destination
+  };
 
-  const response = await httpService
-    .post<MoveFolderPayload, MoveFolderResponse>('/api/storage/move/folder', {
-      folderId: folder.id,
-      destination,
+  return storageClient.moveFolder(payload)
+    .then(response => {
+      const user = localStorageService.getUser() as UserSettings;
+      analyticsService.trackMoveItem('folder', {
+        file_id: response.item.id,
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
+      return response;
     })
     .catch((err) => {
       const castedError = errorService.castError(err);
-
       if (castedError.status) {
         castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
       }
-
       throw castedError;
     });
-
-  analyticsService.trackMoveItem('folder', {
-    file_id: response.item.id,
-    email: user.email,
-    platform: DevicePlatform.Web,
-  });
-
-  return response;
 }
 
 const folderService = {
