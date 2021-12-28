@@ -94,15 +94,20 @@ export function createFolder(
 }
 
 export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
-  const user: UserSettings = localStorageService.getUser() as UserSettings;
-
-  await httpService.post(`/api/storage/folder/${folderId}/meta`, { metadata }).then(() => {
-    analyticsService.trackFolderRename({
-      email: user.email,
-      fileId: folderId,
-      platform: DevicePlatform.Web,
+  const storageClient = createStorageClient();
+  const payload: StorageTypes.UpdateFolderMetadataPayload = {
+    folderId: folderId,
+    changes: metadata
+  };
+  return storageClient.updateFolder(payload)
+    .then(() => {
+      const user: UserSettings = localStorageService.getUser() as UserSettings;
+      analyticsService.trackFolderRename({
+        email: user.email,
+        fileId: folderId,
+        platform: DevicePlatform.Web,
+      });
     });
-  });
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
