@@ -26,6 +26,7 @@ const AccountSecurityTab = (): JSX.Element => {
   const [backupKey, setBackupKey] = useState('');
   const [passwordSalt, setPasswordSalt] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [disableSubmit, setDisableSubmit] = useState(false);
   const check2FA = async () => {
     try {
       const { has2fa, data } = await userHas2FAStored();
@@ -39,6 +40,7 @@ const AccountSecurityTab = (): JSX.Element => {
         setHas2FA(true);
         setPasswordSalt(data.sKey);
         setCurrentStep(0);
+        setDisableSubmit(false);
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -58,6 +60,11 @@ const AccountSecurityTab = (): JSX.Element => {
     qr,
     backupKey,
     setHas2FA,
+  };
+
+  const check2FALenght = () => {
+    const minLength = (document.getElementById('input2fa') as HTMLInputElement).value.length >= 6;
+    setDisableSubmit(minLength);
   };
 
   const enableModal = (
@@ -81,7 +88,10 @@ const AccountSecurityTab = (): JSX.Element => {
         <Dialog
           as="div"
           className="fixed flex flex-col w-full h-full items-center justify-center inset-0 z-10 overflow-y-auto"
-          onClose={() => { setModal2FA(false); setTimeout(() => { setCurrentStep(0); }, 200); }}
+          onClose={() => {
+            setModal2FA(false);
+            setTimeout(() => { setCurrentStep(0); setDisableSubmit(false); }, 200);
+          }}
         >
           <div className="flex flex-col min-h-screen px-4 items-center justify-center">
             <Transition.Child
@@ -111,6 +121,7 @@ const AccountSecurityTab = (): JSX.Element => {
               <div
                 className="relative flex flex-col w-full md:w-156 max-w-lg transition-all transform bg-white
                            p-6 shadow-xl rounded-2xl space-y-6"
+                onKeyUp={() => { currentStep === steps.length - 1 && check2FALenght(); }}
               >
                 
                 <div className="modal_title flex flex-col">
@@ -137,7 +148,10 @@ const AccountSecurityTab = (): JSX.Element => {
                     type="button"
                     className="flex flex-row px-3.5 py-1.5 bg-red-10 text-red-60 text-sm font-medium rounded-md
                                border border-red-20"
-                    onClick={() => { setModal2FA(false); setTimeout(() => { setCurrentStep(0); }, 200); }}
+                    onClick={() => {
+                      setModal2FA(false);
+                      setTimeout(() => { setCurrentStep(0); setDisableSubmit(false); }, 200);
+                    }}
                   >
                     Cancel
                   </button>
@@ -156,16 +170,23 @@ const AccountSecurityTab = (): JSX.Element => {
 
                     <button
                       type="button"
-                      className="flex flex-row px-3.5 py-1.5 bg-blue-60 text-white text-sm font-medium rounded-md
-                                border border-blue-60"
+                      className={`flex flex-row px-3.5 py-1.5
+                                  ${
+                                    (currentStep === steps.length - 1 && !disableSubmit) ?
+                                    'cursor-not-allowed bg-blue-30 border-blue-30'
+                                    :
+                                    'bg-blue-60 border-blue-60'
+                                  }
+                                 text-white text-sm font-medium rounded-md border`}
                       onClick={() => {
                         currentStep < (steps.length - 1) ?
                         setCurrentStep(currentStep + 1)
                         :
-                        handleSubmit();}
-                      }
+                        disableSubmit && handleSubmit();
+                      }}
+                      disabled={currentStep === steps.length - 1 ? !disableSubmit : false}
                     >
-                      { currentStep < 3 ? 'Next' : 'Enable 2FA'}
+                      { currentStep < steps.length - 1 ? 'Next' : 'Enable 2FA'}
                     </button>
                   </div>
                 </div>

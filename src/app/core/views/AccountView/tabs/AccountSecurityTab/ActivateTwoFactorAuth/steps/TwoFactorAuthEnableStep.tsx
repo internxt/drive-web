@@ -10,6 +10,7 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [enabledSubmit2FA, setEnabledSubmit2FA] = useState(true);
 
   const {
     register,
@@ -63,11 +64,13 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
         <label className="text-sm font-medium text-m-neutral-100 mb-0.5">Two-factor authenticacion code</label>
         <input
           {... register('twoFactorCode')}
+          id="input2fa"
           type="text"
           placeholder="App generated code"
           required
           autoComplete="false"
           minLength={1}
+          onChange={(e) => { e.target.value.length >= 6 && setEnabledSubmit2FA(false); }}
         />
       </div>
 
@@ -77,7 +80,7 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
         </div>
       )}
 
-      <button type="submit" id="submit2fa" className="hidden"></button>
+      <button type="submit" id="submit2fa" className="hidden" disabled={enabledSubmit2FA}></button>
     </form>
   );
 };
