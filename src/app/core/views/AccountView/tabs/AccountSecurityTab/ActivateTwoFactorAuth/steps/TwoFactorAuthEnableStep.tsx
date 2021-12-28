@@ -47,7 +47,7 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
         {i18n.get('views.account.tabs.security.two-factor-auth.steps.enable.description.line1')}
       </span>
 
-      <div className="flex flex-col space-y-0.5">
+      <div className="hidden flex-col space-y-0.5">
         <label className="text-sm font-medium text-m-neutral-100 mb-0.5">Backup key (from previous step)</label>
         <input
           {... register('backupKey')}
