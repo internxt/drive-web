@@ -183,7 +183,8 @@ const AccountSecurityTab = (): JSX.Element => {
         <button
           type="button"
           onClick={() => { setDisableModal2FA(true); }}
-          className="flex flex-row px-6 py-2 bg-l-neutral-20 text-m-neutral-300 font-medium rounded-lg"
+          className="flex flex-row px-6 py-2 bg-red-10 hover:bg-red-20 hover:bg-opacity-50
+                     text-red-60 font-medium rounded-lg"
         >
           Disable 2FA
         </button>
@@ -265,7 +266,7 @@ const AccountSecurityTab = (): JSX.Element => {
       {/* Two-Factor Authentication */}
       <div className="w-full flex flex-col mt-10 mb-16">
         {has2FA &&
-          <div className="flex flex-row self-start items-center justify-center px-3 py-1 bg-green-10
+          <div className="flex flex-row self-start items-center justify-center pl-2 px-2.5 py-1 bg-green-10
                         text-green-60 text-sm font-medium rounded-md mb-2 space-x-2">
             <UilCheckCircle className="w-4 h-4" />
             <span>Enabled</span>

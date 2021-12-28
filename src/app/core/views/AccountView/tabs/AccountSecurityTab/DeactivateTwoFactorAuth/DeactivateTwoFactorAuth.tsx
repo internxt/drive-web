@@ -53,52 +53,48 @@ const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Ele
   return (
     <form className="flex w-full flex-col space-y-4" onSubmit={handleSubmit(onSubmit)}>
 
-      <div className="flex justify-between">
-        <BaseInput
-          label="password"
-          placeholder="Password"
-          type={showPassword ? 'text' : 'password'}
-          error={errors.password}
-          register={register}
-          required={true}
-          icon={
-            password ? (
-              showPassword ? (
-                <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
-              ) : (
-                <UilEye className="w-4" onClick={() => setShowPassword(true)} />
-              )
+      <BaseInput
+        label="password"
+        placeholder="Password"
+        type={showPassword ? 'text' : 'password'}
+        error={errors.password}
+        register={register}
+        required={true}
+        icon={
+          password ? (
+            showPassword ? (
+              <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
             ) : (
-              <UilLock className="w-4" />
+              <UilEye className="w-4" onClick={() => setShowPassword(true)} />
             )
-          }
-          minLength={1}
-        />
+          ) : (
+            <UilLock className="w-4" />
+          )
+        }
+        minLength={1}
+      />
 
-        <div className="mx-2" />
-
-        <BaseInput
-          label="twoFactorCode"
-          placeholder="Two-Factor authentication code"
-          type={showTwoFactorCode ? 'text' : 'password'}
-          error={errors.twoFactorCode}
-          register={register}
-          required={true}
-          icon={
-            twoFactorCode ? (
-              showTwoFactorCode ? (
-                <UilEyeSlash className="w-4" onClick={() => setShowTwoFactorCode(false)} />
-              ) : (
-                <UilEye className="w-4" onClick={() => setShowTwoFactorCode(true)} />
-              )
+      <BaseInput
+        label="twoFactorCode"
+        placeholder="Two-Factor Authentication code"
+        type={showTwoFactorCode ? 'text' : 'password'}
+        error={errors.twoFactorCode}
+        register={register}
+        required={true}
+        icon={
+          twoFactorCode ? (
+            showTwoFactorCode ? (
+              <UilEyeSlash className="w-4" onClick={() => setShowTwoFactorCode(false)} />
             ) : (
-              <UilLock className="w-4" />
+              <UilEye className="w-4" onClick={() => setShowTwoFactorCode(true)} />
             )
-          }
-          minLength={1}
-          pattern={twoFactorRegexPattern}
-        />
-      </div>
+          ) : (
+            <UilLock className="w-4" />
+          )
+        }
+        minLength={1}
+        pattern={twoFactorRegexPattern}
+      />
 
       <AuthButton
         text="Disable Two-Factor Authentication"

@@ -80,7 +80,7 @@ const AccountPasswordTab = (): JSX.Element => {
             }
             register={register}
             required={true}
-            minLength={1}
+            min={1}
             error={errors.currentPassword}
           />
           <BaseInput
@@ -100,7 +100,7 @@ const AccountPasswordTab = (): JSX.Element => {
             }
             register={register}
             required={true}
-            minLength={1}
+            min={1}
             error={errors.password}
             pattern={{
               value: isValidPasswordRegex,
