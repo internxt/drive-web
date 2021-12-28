@@ -215,7 +215,7 @@
     "download-file": {
       "status": {
         "pending": "Pending to download",
-        "decrypting": "Fetching file",
+        "decrypting": "Decrypting file",
         "in-process": "{progress}% Downloading file",
         "success": "File downloaded",
         "error": "Error during download",
@@ -226,7 +226,7 @@
     "download-backup": {
       "status": {
         "pending": "Pending to download",
-        "decrypting": "Fetching backup",
+        "decrypting": "Decrypting backup",
         "in-process": "{progress}% Downloading backup",
         "success": "Backup downloaded",
         "error": "Error during download",
@@ -237,7 +237,7 @@
     "download-folder": {
       "status": {
         "pending": "Pending to download",
-        "decrypting": "Fetching files",
+        "decrypting": "Decrypting files",
         "in-process": "{progress}% Downloading folder",
         "success": "Folder downloaded",
         "error": "Error during download",
