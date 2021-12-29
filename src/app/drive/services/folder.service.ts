@@ -111,14 +111,15 @@ export async function updateMetaData(folderId: number, metadata: DriveFolderMeta
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
-  const user = localStorageService.getUser() as UserSettings;
-
-  return httpService.delete(`/api/storage/folder/${folderData.id}`).then(() => {
-    analyticsService.trackDeleteItem(folderData as DriveItemData, {
-      email: user.email,
-      platform: DevicePlatform.Web,
+  const storageClient = createStorageClient();
+  return storageClient.deleteFolder(folderData.id)
+    .then(() => {
+      const user = localStorageService.getUser() as UserSettings;
+      analyticsService.trackDeleteItem(folderData as DriveItemData, {
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
     });
-  });
 }
 
 async function fetchFolderTree(folderId: number): Promise<{
