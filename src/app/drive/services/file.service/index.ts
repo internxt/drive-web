@@ -8,6 +8,8 @@ import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '../../../auth/types';
 import uploadFile from './uploadFile';
 import * as uuid from 'uuid';
+import { createStorageClient } from '../../../../factory/modules';
+import { StorageTypes } from '@internxt/sdk';
 
 export interface MoveFilePayload {
   fileId: string;
@@ -23,15 +25,17 @@ export interface MoveFileResponse {
 }
 
 export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {
-  const user = localStorageService.getUser() as UserSettings;
+  const storageClient = createStorageClient();
+  const payload: StorageTypes.UpdateFilePayload = {
+    fileId: fileId,
+    metadata: metadata,
+    bucketId: bucketId,
+    destinationPath: uuid.v4()
+  };
 
-  return httpService
-    .post(`/api/storage/file/${fileId}/meta`, {
-      metadata,
-      bucketId,
-      relativePath: uuid.v4(),
-    })
+  return storageClient.updateFile(payload)
     .then(() => {
+      const user = localStorageService.getUser() as UserSettings;
       analyticsService.trackFileRename({
         file_id: fileId,
         email: user.email,
