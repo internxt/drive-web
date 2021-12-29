@@ -11,13 +11,6 @@ import * as uuid from 'uuid';
 import { createStorageClient } from '../../../../factory/modules';
 import { StorageTypes } from '@internxt/sdk';
 
-export interface MoveFilePayload {
-  fileId: string;
-  destination: number;
-  bucketId: string;
-  relativePath: string;
-}
-
 export interface MoveFileResponse {
   item: DriveFileData;
   destination: number;
@@ -59,33 +52,33 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
     });
 }
 
-export async function moveFile(file: DriveFileData, destination: number, bucketId: string): Promise<MoveFileResponse> {
-  const user = localStorageService.getUser() as UserSettings;
-
-  const response = await httpService
-    .post<MoveFilePayload, MoveFileResponse>('/api/storage/move/file', {
-      fileId: file.fileId,
-      destination,
-      relativePath: uuid.v4(),
-      bucketId,
+export async function moveFile(
+  file: DriveFileData, destination: number, bucketId: string
+): Promise<StorageTypes.MoveFileResponse> {
+  const storageClient = createStorageClient();
+  const payload: StorageTypes.MoveFilePayload = {
+    fileId: file.fileId,
+    destination: destination,
+    bucketId: bucketId,
+    destinationPath: uuid.v4()
+  };
+  return storageClient.moveFile(payload)
+    .then(response => {
+      const user = localStorageService.getUser() as UserSettings;
+      analyticsService.trackMoveItem('file', {
+        file_id: response.item.id,
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
+      return response;
     })
-    .catch((err) => {
-      const castedError = errorService.castError(err);
-
+    .catch(error => {
+      const castedError = errorService.castError(error);
       if (castedError.status) {
         castedError.message = i18n.get(`tasks.move-file.errors.${castedError.status}`);
       }
-
       throw castedError;
     });
-
-  analyticsService.trackMoveItem('file', {
-    file_id: response.item.id,
-    email: user.email,
-    platform: DevicePlatform.Web,
-  });
-
-  return response;
 }
 
 async function fetchRecents(limit: number): Promise<DriveFileData[]> {
