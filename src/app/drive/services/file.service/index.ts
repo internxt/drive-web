@@ -45,14 +45,18 @@ export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayloa
 }
 
 export function deleteFile(fileData: DriveFileData): Promise<void> {
-  const user = localStorageService.getUser() as UserSettings;
-
-  return httpService.delete(`/api/storage/folder/${fileData.folderId}/file/${fileData.id}`).then(() => {
-    analyticsService.trackDeleteItem(fileData as DriveItemData, {
-      email: user.email,
-      platform: DevicePlatform.Web,
+  const storageClient = createStorageClient();
+  return storageClient.deleteFile({
+    fileId: fileData.id,
+    folderId: fileData.folderId
+  })
+    .then(() => {
+      const user = localStorageService.getUser() as UserSettings;
+      analyticsService.trackDeleteItem(fileData as DriveItemData, {
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
     });
-  });
 }
 
 export async function moveFile(file: DriveFileData, destination: number, bucketId: string): Promise<MoveFileResponse> {
