@@ -11,6 +11,7 @@ import UilUser from '@iconscout/react-unicons/icons/uil-user';
 import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
+import { Auth, Keys, RegisterDetails } from '@internxt/sdk';
 
 import { readReferalCookie } from '../../services/auth.service';
 import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
@@ -32,6 +33,7 @@ import httpService from 'app/core/services/http.service';
 import { AppView, IFormValues } from 'app/core/types';
 import { UserSettings } from '../../types';
 import { referralsThunks } from 'app/store/slices/referrals';
+import packageJson from '../../../../../package.json';
 
 export interface SignUpViewProps {
   location: {
@@ -170,89 +172,84 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
 
     const {
       privateKeyArmored,
-      publicKeyArmored: codpublicKey,
-      revocationCertificate: codrevocationKey,
+      publicKeyArmored,
+      revocationCertificate,
     } = await generateNewKeys();
-
     const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
 
-    return fetch(`${process.env.REACT_APP_API_URL}/api/register`, {
-      method: 'post',
-      headers: httpService.getHeaders(true, true),
-      body: JSON.stringify({
-        name: name,
-        lastname: lastname,
-        email: email,
-        password: encPass,
-        mnemonic: encMnemonic,
-        salt: encSalt,
-        referral: readReferalCookie(),
-        privateKey: encPrivateKey,
-        publicKey: codpublicKey,
-        revocationKey: codrevocationKey,
-        referrer: hasReferrer ? qs.ref : undefined,
-        captcha: captcha,
-      }),
-    })
-      .then(async (response) => {
-        if (response.status === 200) {
-          const body = await response.json();
-          const { token, uuid } = body;
-          const user: UserSettings = body.user;
+    const authClient = Auth.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version);
 
-          user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
+    const keys: Keys = {
+      privateKeyEncrypted: encPrivateKey,
+      publicKey: publicKeyArmored,
+      revocationCertificate: revocationCertificate
+    };
+    const registerDetails: RegisterDetails = {
+      name: name,
+      lastname: lastname,
+      email: email,
+      password: encPass,
+      salt: encSalt,
+      mnemonic: encMnemonic,
+      keys: keys,
+      captcha: captcha,
+      referral: readReferalCookie(),
+      referrer: hasReferrer ? String(qs.ref) : undefined,
+    };
 
-          analyticsService.trackSignUp({
-            userId: uuid,
-            properties: {
-              signup_source: signupCampaignSource(window.location.search),
-              email: email,
-            },
-            traits: {
-              member_tier: 'free',
-              email: email,
-              first_name: name,
-              last_name: lastname,
-              usage: 0,
-              createdAt: new Date().toISOString(),
-              signup_device_source: signupDevicesource(window.navigator.userAgent),
-              acquisition_channel: signupCampaignSource(window.location.search),
-            },
-          });
+    return authClient.register(registerDetails)
+      .then((data) => {
+        const token = data.token;
+        const user: UserSettings = {
+          ...data.user,
+          bucket: ''
+        };
+        const uuid = data.uuid;
 
-          // adtrack script
-          window._adftrack = Array.isArray(window._adftrack)
-            ? window._adftrack
-            : window._adftrack
+        user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
+
+        analyticsService.trackSignUp({
+          userId: uuid,
+          properties: {
+            signup_source: signupCampaignSource(window.location.search),
+            email: email,
+          },
+          traits: {
+            member_tier: 'free',
+            email: email,
+            first_name: name,
+            last_name: lastname,
+            usage: 0,
+            createdAt: new Date().toISOString(),
+            signup_device_source: signupDevicesource(window.navigator.userAgent),
+            acquisition_channel: signupCampaignSource(window.location.search),
+          },
+        });
+
+        // adtrack script
+        window._adftrack = Array.isArray(window._adftrack)
+          ? window._adftrack
+          : window._adftrack
             ? [window._adftrack]
             : [];
-          window._adftrack.push({
-            HttpHost: 'track.adform.net',
-            pm: 2370627,
-            divider: encodeURIComponent('|'),
-            pagename: encodeURIComponent('New'),
-          });
+        window._adftrack.push({
+          HttpHost: 'track.adform.net',
+          pm: 2370627,
+          divider: encodeURIComponent('|'),
+          pagename: encodeURIComponent('New'),
+        });
 
-          localStorageService.set('xToken', token);
-          user.mnemonic = decryptTextWithKey(user.mnemonic, password);
-          dispatch(userActions.setUser({ ...user }));
-          localStorageService.set('xMnemonic', user.mnemonic);
+        localStorageService.set('xToken', token);
+        user.mnemonic = decryptTextWithKey(user.mnemonic, password);
+        dispatch(userActions.setUser({ ...user }));
+        localStorageService.set('xMnemonic', user.mnemonic);
 
-          dispatch(productsThunks.initializeThunk());
-          dispatch(planThunks.initializeThunk());
-          dispatch(referralsThunks.initializeThunk());
-          dispatch(userThunks.initializeUserThunk()).then(() => {
-            navigationService.push(AppView.Drive);
-          });
-        } else {
-          return response.json().then((body) => {
-            if (body.error) {
-              throw new Error(body.error);
-            } else {
-              throw new Error('Internal Server Error');
-            }
-          });
-        }
+        dispatch(productsThunks.initializeThunk());
+        dispatch(planThunks.initializeThunk());
+        dispatch(referralsThunks.initializeThunk());
+        dispatch(userThunks.initializeUserThunk()).then(() => {
+          navigationService.push(AppView.Drive);
+        });
       })
       .catch((err) => {
         console.error('Register error', err);
@@ -286,7 +283,6 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-
       setSignupError(castedError.message);
     } finally {
       setShowError(true);

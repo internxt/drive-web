@@ -59,11 +59,11 @@ export default function SignInView(): JSX.Element {
       const res = await check2FANeeded(email);
 
       if (!res.tfa || showTwoFactor) {
-        const { data, user } = await doLogin(email, password, twoFactorCode);
+        const { token, user } = await doLogin(email, password, twoFactorCode);
 
         dispatch(userActions.setUser(user));
-        analyticsService.identify(data.user, email);
-        analyticsService.trackSignIn({ email, userId: data.user.uuid });
+        analyticsService.identify(user, email);
+        analyticsService.trackSignIn({ email, userId: user.uuid });
 
         try {
           dispatch(productsThunks.initializeThunk());
@@ -75,9 +75,9 @@ export default function SignInView(): JSX.Element {
         }
 
         setIsAuthenticated(true);
-        setToken(data.token);
+        setToken(token);
         userActions.setUser(user);
-        setRegisterCompleted(data.user.registerCompleted);
+        setRegisterCompleted(user.registerCompleted);
       } else {
         setShowTwoFactor(true);
       }

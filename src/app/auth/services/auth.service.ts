@@ -1,6 +1,5 @@
-import * as bip39 from 'bip39';
 import { aes } from '@internxt/lib';
-
+import { Auth, CryptoProvider, Keys, LoginDetails, Password, UserAccessError } from '@internxt/sdk';
 import {
   decryptText,
   decryptTextWithKey,
@@ -8,8 +7,6 @@ import {
   encryptTextWithKey,
   passToHash,
 } from 'app/crypto/services/utils';
-import { decryptPGP } from 'app/crypto/services/utilspgp';
-import userService from './user.service';
 import i18n from 'app/i18n/services/i18n.service';
 import databaseService from 'app/database/services/database.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -19,9 +16,9 @@ import analyticsService from 'app/analytics/services/analytics.service';
 import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.service';
 import { AppView, Workspace } from 'app/core/types';
-import { generateNewKeys, updateKeys } from 'app/crypto/services/pgp.service';
+import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '../types';
-import { TeamsSettings } from 'app/teams/types';
+import packageJson from '../../../../package.json';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -69,227 +66,82 @@ const generateNewKeysWithEncrypted = async (password: string) => {
   };
 };
 
-export const doLogin = async (
-  email: string,
-  password: string,
-  twoFactorCode: string,
-): Promise<{ data: { token: string; user: UserSettings; userTeam: TeamsSettings | null }; user: UserSettings }> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
-    method: 'post',
-    headers: httpService.getHeaders(false, false),
-    body: JSON.stringify({ email }),
-  });
-  const body = await response.json();
-
-  if (response.status === 400) {
-    throw new Error(body.error || 'Can not connect to server');
-  }
-  if (response.status !== 200) {
-    throw new Error('This account does not exist');
-  }
-
-  // Manage credentials verification
-  const keys = await generateNewKeysWithEncrypted(password);
-  // Check password
-  const salt = decryptText(body.sKey);
-  const hashObj = passToHash({ password, salt });
-  const encPass = encryptText(hashObj.hash);
-
-  return doAccess(email, password, encPass, twoFactorCode, keys);
-};
-
-export const doAccess = async (
-  email: string,
-  password: string,
-  encPass: string,
-  twoFactorCode: string,
-  keys: {
-    privateKeyArmored: string;
-    privateKeyArmoredEncrypted: string;
-    publicKeyArmored: string;
-    revocationCertificate: string;
-  },
-): Promise<{ data: { token: string; user: UserSettings; userTeam: TeamsSettings | null }; user: UserSettings }> => {
-  try {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/access`, {
-      method: 'post',
-      headers: httpService.getHeaders(false, false),
-      body: JSON.stringify({
-        email,
-        password: encPass,
-        tfa: twoFactorCode,
-        privateKey: keys.privateKeyArmoredEncrypted,
-        publicKey: keys.publicKeyArmored,
-        revocateKey: keys.revocationCertificate,
-      }),
-    });
-    const data = await response.json();
-
-    if (response.status !== 200) {
-      analyticsService.signInAttempted(email, data.error);
-      throw new Error(data.error ? data.error : data);
+export const doLogin = async (email: string, password: string, twoFactorCode: string): Promise<{
+  user: UserSettings
+  token: string;
+}> => {
+  const authClient = Auth.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version);
+  const loginDetails: LoginDetails = {
+    email: email,
+    password: password,
+    tfaCode: twoFactorCode
+  };
+  const cryptoProvider: CryptoProvider = {
+    encryptPasswordHash(password: Password, encryptedSalt: string): string {
+      const salt = decryptText(encryptedSalt);
+      const hashObj = passToHash({ password, salt });
+      return encryptText(hashObj.hash);
+    },
+    async generateKeys(password: Password): Promise<Keys> {
+      const {
+        privateKeyArmoredEncrypted,
+        publicKeyArmored,
+        revocationCertificate,
+      } = await generateNewKeysWithEncrypted(password);
+      const keys: Keys = {
+        privateKeyEncrypted: privateKeyArmoredEncrypted,
+        publicKey: publicKeyArmored,
+        revocationCertificate: revocationCertificate
+      };
+      return Promise.resolve(keys);
     }
-    const privateKey = data.user.privateKey;
-    const publicKey = data.user.publicKey;
-    const revocateKey = data.user.revocateKey;
-    const { update, privkeyDecrypted, newPrivKey } = await validateFormat(privateKey, password);
+  };
 
-    analyticsService.identify(data.user.uuid, email);
+  return authClient.login(loginDetails, cryptoProvider)
+    .then(async data => {
+      const user = data.user;
+      const token = data.token;
 
-    // Manage successfull login
-    const user = {
-      ...data.user,
-      mnemonic: decryptTextWithKey(data.user.mnemonic, password),
-      email,
-      privateKey: Buffer.from(privkeyDecrypted).toString('base64'),
-      publicKey: publicKey,
-      revocationKey: revocateKey,
-    };
+      const publicKey = user.publicKey;
+      const privateKey = user.privateKey;
+      const revocationCertificate = user.revocationKey;
 
-    if (data.userTeam) {
-      const mnemonicDecode = Buffer.from(data.userTeam.bridge_mnemonic, 'base64').toString();
-      const mnemonicDecrypt = await decryptPGP(mnemonicDecode);
-      const team = {
-        idTeam: data.userTeam.idTeam,
-        user: data.userTeam.bridge_user,
-        password: data.userTeam.bridge_password,
-        mnemonic: mnemonicDecrypt.data,
-        admin: data.userTeam.admin,
-        root_folder_id: data.userTeam.root_folder_id,
-        isAdmin: data.userTeam.isAdmin,
+      const { update, privkeyDecrypted, newPrivKey } = await validateFormat(privateKey, password);
+      const newKeys: Keys = {
+        privateKeyEncrypted: newPrivKey,
+        publicKey: publicKey,
+        revocationCertificate: revocationCertificate
+      };
+      if (update) {
+        await authClient.updateKeys(newKeys, token);
+      }
+
+      const clearUser = {
+        ...user,
+        mnemonic: decryptTextWithKey(user.mnemonic, password),
+        privateKey: Buffer.from(privkeyDecrypted).toString('base64'),
       };
 
-      localStorageService.set('xTeam', JSON.stringify(team));
-      localStorageService.set('xTokenTeam', data.tokenTeam);
-    }
+      localStorageService.set('xToken', token);
+      localStorageService.set('xMnemonic', user.mnemonic);
 
-    localStorageService.set('xToken', data.token);
-    localStorageService.set('xMnemonic', user.mnemonic);
-
-    if (update) {
-      await updateKeys(publicKey, newPrivKey, revocateKey);
-    }
-
-    return { data, user };
-  } catch (err: unknown) {
-    throw err instanceof Error ? err : new Error(err as string);
-  }
+      return {
+        user: clearUser,
+        token: token
+      };
+    })
+    .catch(error => {
+      if (error instanceof UserAccessError) {
+        analyticsService.signInAttempted(email, error.message);
+      }
+      throw error;
+    });
 };
 
-export const readReferalCookie = (): string | null => {
+export const readReferalCookie = (): string | undefined => {
   const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
 
-  return cookie ? cookie[2] : null;
-};
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const doRegister = async (
-  name: string,
-  lastname: string,
-  email: string,
-  password: string,
-  referrer?: string,
-) => {
-  // Setup hash and salt
-  const hashObj = passToHash({ password });
-  const encPass = encryptText(hashObj.hash);
-  const encSalt = encryptText(hashObj.salt);
-  // Setup mnemonic
-  const mnemonic = bip39.generateMnemonic(256);
-  const encMnemonic = encryptTextWithKey(mnemonic, password);
-
-  //Generate keys
-  const {
-    privateKeyArmored,
-    publicKeyArmored: codpublicKey,
-    revocationCertificate: codrevocationKey,
-  } = await generateNewKeys();
-
-  //Datas
-  const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
-
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register`, {
-    method: 'post',
-    headers: httpService.getHeaders(true, true),
-    body: JSON.stringify({
-      name: name,
-      lastname: lastname,
-      email: email,
-      password: encPass,
-      mnemonic: encMnemonic,
-      salt: encSalt,
-      referral: readReferalCookie(),
-      privateKey: encPrivateKey,
-      publicKey: codpublicKey,
-      revocationKey: codrevocationKey,
-      referrer: referrer,
-    }),
-  });
-  const body = await response.json();
-
-  if (response.status !== 200) {
-    throw new Error(body.error ? body.error : 'Internal server error');
-  }
-
-  return body;
-};
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const updateInfo = async (name: string, lastname: string, email: string, password: string) => {
-  // Setup hash and salt
-  const hashObj = passToHash({ password });
-  const encPass = encryptText(hashObj.hash);
-  const encSalt = encryptText(hashObj.salt);
-
-  // Setup mnemonic
-  const mnemonic = bip39.generateMnemonic(256);
-  const encMnemonic = encryptTextWithKey(mnemonic, password);
-
-  // Body
-  const body = {
-    name: name,
-    lastname: lastname,
-    email: email,
-    password: encPass,
-    mnemonic: encMnemonic,
-    salt: encSalt,
-    referral: readReferalCookie(),
-  };
-
-  const fetchHandler = async (res: Response) => {
-    const body = await res.text();
-
-    try {
-      const bodyJson = JSON.parse(body);
-
-      return { res: res, data: bodyJson };
-    } catch {
-      return { res: res, data: body };
-    }
-  };
-
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appsumo/update`, {
-    method: 'POST',
-    headers: httpService.getHeaders(true, false),
-    body: JSON.stringify(body),
-  });
-  const { res, data } = await fetchHandler(response);
-
-  if (res.status !== 200) {
-    throw Error(data.error || 'Internal Server Error');
-  }
-
-  const xToken = data.token;
-  const xUser = data.user;
-
-  xUser.mnemonic = mnemonic;
-
-  const rootFolderInfo = await userService.initializeUser(email, xUser.mnemonic);
-
-  xUser.root_folder_id = rootFolderInfo?.user.root_folder_id;
-  localStorageService.set('xToken', xToken);
-  localStorageService.set('xMnemonic', mnemonic);
-  return xUser;
+  return cookie ? cookie[2] : undefined;
 };
 
 export const getSalt = async (): Promise<string> => {
@@ -433,8 +285,6 @@ const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
 const authService = {
   logOut,
   doLogin,
-  doAccess,
-  doRegister,
   check2FANeeded,
   readReferalCookie,
   cancelAccount,
