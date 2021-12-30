@@ -9,9 +9,10 @@ interface InputProps {
   disabled?: boolean;
   register: UseFormRegister<IFormValues>;
   required: boolean;
-  minLength?: ValidationRule<string | number> | undefined;
-  maxLength?: ValidationRule<string | number> | undefined;
-  min?: ValidationRule<number> | undefined;
+  minLength?: ValidationRule<number> | undefined;
+  maxLength?: ValidationRule<number> | undefined;
+  min?: ValidationRule<number | string> | undefined;
+  max?: ValidationRule<number | string> | undefined;
   placeholder: string;
   pattern?: ValidationRule<RegExp> | undefined;
   icon?: JSX.Element;

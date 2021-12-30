@@ -1,112 +1,86 @@
 import { useState } from 'react';
-import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import UilEye from '@iconscout/react-unicons/icons/uil-eye';
-import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
-import UilLock from '@iconscout/react-unicons/icons/uil-lock';
-
-import BaseButton from 'app/shared/components/forms/BaseButton';
-import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import { useForm } from 'react-hook-form';
 import authService from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
 import i18n from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { TwoFactorAuthStepProps } from '.';
-import { IFormValues } from '../../../../../../types';
 
 const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => {
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showTwoFactorCode, setShowTwoFactorCode] = useState(false);
+  const [enabledSubmit2FA, setEnabledSubmit2FA] = useState(true);
+
   const {
     register,
-    formState: { errors, isValid },
-    handleSubmit,
-    control,
-    reset,
-  } = useForm<IFormValues>({ mode: 'onChange' });
-  const twoFactorCode = useWatch({ control, name: 'twoFactorCode', defaultValue: '' });
-  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
-    try {
-      if (formData.backupKey !== props.backupKey) {
-        setError(i18n.get('error.backupKeyDontMatch'));
-        return;
+    handleSubmit
+  } = useForm();
+
+  const onSubmit = async (formData) => {
+    if (!isLoading) {
+      try {
+        if (formData.backupKey !== props.backupKey) {
+          setError(i18n.get('error.backupKeyDontMatch'));
+          return;
+        }
+        setIsLoading(true);
+
+        await authService.store2FA(props.backupKey, formData.twoFactorCode);
+        notificationsService.show(i18n.get('success.twoFactorAuthActivated'), ToastType.Success);
+        props.setHas2FA(true);
+      } catch (err: unknown) {
+        const castedError = errorService.castError(err);
+
+        setError(castedError.message || i18n.get('error.serverError'));
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(true);
-
-      await authService.store2FA(props.backupKey, formData.twoFactorCode);
-      notificationsService.show(i18n.get('success.twoFactorAuthActivated'), ToastType.Success);
-      props.setHas2FA(true);
-      reset();
-    } catch (err: unknown) {
-      const castedError = errorService.castError(err);
-
-      notificationsService.show(castedError.message || i18n.get('error.serverError'), ToastType.Error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <form
-      className="text-center square flex justify-center w-full flex-col py-8 px-16"
+      className="flex flex-col items-center justify-center space-y-4"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <span className="security-info_texts mb-8">
-        Finally, to enable Two-Factor Authentication, fill the fields below.
+      <span className="text-base font-medium">
+        {i18n.get('views.account.tabs.security.two-factor-auth.steps.enable.description.line1')}
       </span>
 
-      <div>
-        <BaseInput
-          className="mb-4"
-          label="backupKey"
-          placeholder="Backup key"
+      <div className="hidden flex-col space-y-0.5">
+        <label className="text-sm font-medium text-m-neutral-100 mb-0.5">Backup key (from previous step)</label>
+        <input
+          {... register('backupKey')}
+          className="pointer-events-none mb-4"
           type="text"
-          error={errors.backupKey}
-          register={register}
-          required={true}
-          minLength={1}
+          value={props.backupKey}
+          required
+          readOnly
         />
+      </div>
 
-        <div className="mx-2" />
-
-        <BaseInput
-          className="mb-4"
-          label="twoFactorCode"
-          placeholder="Two-Factor authentication code"
-          type={showTwoFactorCode ? 'text' : 'password'}
-          error={errors.twoFactorCode}
-          register={register}
-          required={true}
-          icon={
-            twoFactorCode ? (
-              showTwoFactorCode ? (
-                <UilEyeSlash className="w-4 text-blue-40" onClick={() => setShowTwoFactorCode(false)} />
-              ) : (
-                <UilEye className="w-4 text-blue-40" onClick={() => setShowTwoFactorCode(true)} />
-              )
-            ) : (
-              <UilLock className="w-4 text-blue-40" />
-            )
-          }
+      <div className="flex flex-col space-y-0.5">
+        <label className="text-sm font-medium text-m-neutral-100 mb-0.5">Two-factor authenticacion code</label>
+        <input
+          {... register('twoFactorCode')}
+          id="input2fa"
+          type="text"
+          placeholder="App generated code"
+          required
+          autoComplete="false"
           minLength={1}
-          pattern={twoFactorRegexPattern}
+          onChange={(e) => { e.target.value.length >= 6 && setEnabledSubmit2FA(false); }}
         />
       </div>
 
       {error && (
-        <div className="flex mt-1 mb-4">
-          <span className="text-red-60 text-sm w-56 font-medium">{error}</span>
+        <div className="flex flex-col items-center justify-center text-red-60 text-sm font-medium">
+          <span className="px-3 py-1.5 bg-red-10 rounded-md">{error}</span>
         </div>
       )}
 
-      <BaseButton className="primary" disabled={isLoading || !isValid}>
-        {isLoading || !isValid
-          ? isValid
-            ? 'Configuring Two-Factor Authenticator...'
-            : 'Enable Two-Factor Authentication'
-          : 'Enable Two-Factor Authentication'}
-      </BaseButton>
+      <button type="submit" id="submit2fa" className="hidden" disabled={enabledSubmit2FA}></button>
     </form>
   );
 };

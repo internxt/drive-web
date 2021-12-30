@@ -101,7 +101,7 @@ class AccountView extends Component<AccountViewProps, AccountViewState> {
         )}
 
         {/* CURRENT TAB */}
-        <div className="max-w-4xl w-full h-full mx-auto flex flex-col overflow-y-auto items-center">
+        <div className="mx-auto max-w-4xl w-full h-full flex flex-col overflow-y-auto items-start">
           <CurrentTabComponent />
         </div>
       </div>

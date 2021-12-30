@@ -58,8 +58,8 @@ const AccountPasswordTab = (): JSX.Element => {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <h2 className="mb-6 font-semibold">{i18n.get('views.account.tabs.password.advice1.title')}</h2>
-      <p className="mb-11">{i18n.get('views.account.tabs.password.advice1.description')}</p>
+      <h2 className="mb-2 font-semibold">{i18n.get('views.account.tabs.password.advice1.title')}</h2>
+      <p className="mb-10">{i18n.get('views.account.tabs.password.advice1.description')}</p>
 
       <div className="flex justify-center">
         <form className="w-full max-w-sm grid grid-cols-1 gap-6 mb-14" onSubmit={handleSubmit(onSubmit)}>
@@ -80,7 +80,7 @@ const AccountPasswordTab = (): JSX.Element => {
             }
             register={register}
             required={true}
-            minLength={1}
+            min={1}
             error={errors.currentPassword}
           />
           <BaseInput
@@ -100,7 +100,7 @@ const AccountPasswordTab = (): JSX.Element => {
             }
             register={register}
             required={true}
-            minLength={1}
+            min={1}
             error={errors.password}
             pattern={{
               value: isValidPasswordRegex,

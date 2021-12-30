@@ -3,6 +3,7 @@
   "version": "1.1.0",
   "private": true,
   "dependencies": {
+    "@headlessui/react": "^1.4.2",
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/inxt-js": "=1.2.14",
     "@internxt/lib": "1.1.2",
@@ -119,5 +120,8 @@
     "ts-jest": "26",
     "typescript": "^4.4.2",
     "webpack-bundle-analyzer": "^4.5.0"
+  },
+  "engines": {
+    "node": ">=v14.17.0"
   }
 }
