@@ -10,14 +10,12 @@ import ActivateTwoFactorAuthSkeleton from 'app/auth/components/ActivateTwoFactor
 import AccountPasswordTab from '../AccountPasswordTab/AccountPasswordTab';
 import UilCheckCircle from '@iconscout/react-unicons/icons/uil-check-circle';
 import i18n from '../../../../../i18n/services/i18n.service';
-// import screenService from '../../../../services/screen.service';
 import errorService from '../../../../services/error.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { TwoFactorAuthStep } from '../../../../../auth/types';
 import { generateNew2FA, userHas2FAStored } from '../../../../../auth/services/auth.service';
 
 const AccountSecurityTab = (): JSX.Element => {
-  // const [isLgScreen, setIsLgScreen] = useState(screenService.isLg());
   const [currentStep, setCurrentStep] = useState(0);
   const [has2FA, setHas2FA] = useState(false);
   const [modal2FA, setModal2FA] = useState(false);
@@ -277,10 +275,6 @@ const AccountSecurityTab = (): JSX.Element => {
       check2FA();
     }
   }, [has2FA]);
-
-  // useEffect(() => {
-  //   setIsLgScreen(screenService.isLg());
-  // });
 
   return (
     <>
