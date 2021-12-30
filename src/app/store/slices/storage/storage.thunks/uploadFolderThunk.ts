@@ -82,7 +82,6 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
               uploadItemsThunk({
                 files: [childrenFile],
                 parentFolderId: createdFolder.id,
-                folderPath: level.fullPathEdited,
                 options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
               }),
             ).unwrap();
