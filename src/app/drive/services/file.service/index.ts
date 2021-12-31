@@ -10,12 +10,6 @@ import * as uuid from 'uuid';
 import { createStorageClient } from '../../../../factory/modules';
 import { StorageTypes } from '@internxt/sdk';
 
-export interface MoveFileResponse {
-  item: DriveFileData;
-  destination: number;
-  moved: boolean;
-}
-
 export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {
   const storageClient = createStorageClient();
   const payload: StorageTypes.UpdateFilePayload = {
