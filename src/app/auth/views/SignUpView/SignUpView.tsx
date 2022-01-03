@@ -12,7 +12,6 @@ import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 import { Keys, RegisterDetails } from '@internxt/sdk/dist/auth';
-
 import { readReferalCookie } from '../../services/auth.service';
 import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
 import localStorageService from 'app/core/services/local-storage.service';
