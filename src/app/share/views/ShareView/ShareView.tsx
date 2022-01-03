@@ -17,7 +17,7 @@ import i18n from 'app/i18n/services/i18n.service';
 import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';
 import errorService from 'app/core/services/error.service';
-import { ShareTypes } from '@internxt/sdk';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
 
 export interface ShareViewProps {
   match: match<{ token: string }>;

@@ -19,7 +19,7 @@ import { AppView } from 'app/core/types';
 import errorService from 'app/core/services/error.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { referralsThunks } from 'app/store/slices/referrals';
-import { ShareTypes } from '@internxt/sdk';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
