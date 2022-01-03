@@ -1,5 +1,5 @@
 import { aes } from '@internxt/lib';
-import { Auth, CryptoProvider, Keys, LoginDetails, Password, UserAccessError } from '@internxt/sdk';
+import { Auth, CryptoProvider, Keys, LoginDetails, Password, UserAccessError } from '@internxt/sdk/dist/auth';
 import {
   decryptText,
   decryptTextWithKey,

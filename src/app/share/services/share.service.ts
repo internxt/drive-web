@@ -1,6 +1,6 @@
 import errorService from '../../core/services/error.service';
 import { createShareClient } from '../../../factory/modules';
-import { ShareTypes } from '@internxt/sdk';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
 
 export function generateShareLink(params: ShareTypes.GenerateShareLinkPayload): Promise<string> {
   const shareClient = createShareClient();
