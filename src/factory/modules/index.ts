@@ -10,6 +10,13 @@ export function createStorageClient(): Drive.Storage {
   return Drive.Storage.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version, token, mnemonic);
 }
 
+export function createShareClient(): Drive.Share {
+  const workspace = getWorkspace();
+  const token = getToken(workspace);
+  const mnemonic = getMnemonic(workspace);
+  return Drive.Share.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version, token, mnemonic);
+}
+
 function getWorkspace(): string {
   return (localStorageService.get(LocalStorageItem.Workspace) as Workspace) || Workspace.Individuals;
 }
