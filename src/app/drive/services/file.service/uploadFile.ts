@@ -59,7 +59,6 @@ export function uploadFile(
     promise = uploadFilePromise.then(async (fileId) => {
       const name = encryptFilename(file.name, file.parentFolderId);
       const folder_id = file.parentFolderId;
-      const encrypt_version = '03-aes';
 
       const storageClient = createStorageClient();
 
@@ -70,7 +69,7 @@ export function uploadFile(
         name: name,
         bucket: bucketId,
         folder_id: folder_id,
-        encrypt_version: encrypt_version
+        encrypt_version: StorageTypes.EncryptionVersion.Aes03
       };
 
       return storageClient.createFileEntry(fileEntry)
