@@ -4,7 +4,7 @@ import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import usersReferralsService from 'app/referrals/services/users-referrals.service';
 
-import { ReferralKey, UserReferral } from 'app/referrals/types';
+import { UserReferral, ReferralKey } from '@internxt/sdk/dist/drive/users/types';
 import { RootState } from 'app/store';
 import { planThunks } from '../plan';
 import { uiActions } from '../ui';

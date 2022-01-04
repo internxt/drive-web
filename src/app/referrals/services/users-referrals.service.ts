@@ -1,9 +1,11 @@
-import httpService from 'app/core/services/http.service';
-import { ReferralKey, UserReferral } from '../types';
+import { UserReferral, ReferralKey } from '@internxt/sdk/dist/drive/users/types';
+import { createUsersClient } from '../../../factory/modules';
+
 
 const usersReferralsService = {
   fetch(): Promise<UserReferral[]> {
-    return httpService.get<UserReferral[]>('/api/users-referrals');
+    const usersClient = createUsersClient();
+    return usersClient.getReferrals();
   },
   hasClickAction(referralKey: ReferralKey): boolean {
     return [ReferralKey.SubscribeToNewsletter, ReferralKey.InstallDesktopApp, ReferralKey.InviteFriends].includes(
