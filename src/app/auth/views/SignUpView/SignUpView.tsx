@@ -11,7 +11,7 @@ import UilUser from '@iconscout/react-unicons/icons/uil-user';
 import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
-import { Auth, Keys, RegisterDetails } from '@internxt/sdk/dist/auth';
+import { Keys, RegisterDetails } from '@internxt/sdk/dist/auth';
 
 import { readReferalCookie } from '../../services/auth.service';
 import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
@@ -33,7 +33,7 @@ import httpService from 'app/core/services/http.service';
 import { AppView, IFormValues } from 'app/core/types';
 import { UserSettings } from '../../types';
 import { referralsThunks } from 'app/store/slices/referrals';
-import packageJson from '../../../../../package.json';
+import { createAuthClient } from '../../../../factory/modules';
 
 export interface SignUpViewProps {
   location: {
@@ -181,7 +181,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
     } = await generateNewKeys();
     const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
 
-    const authClient = Auth.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version);
+    const authClient = createAuthClient();
 
     const keys: Keys = {
       privateKeyEncrypted: encPrivateKey,

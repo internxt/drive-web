@@ -1,5 +1,5 @@
 import { aes } from '@internxt/lib';
-import { Auth, CryptoProvider, Keys, LoginDetails, Password, UserAccessError } from '@internxt/sdk/dist/auth';
+import { CryptoProvider, Keys, LoginDetails, Password, UserAccessError } from '@internxt/sdk/dist/auth';
 import {
   decryptText,
   decryptTextWithKey,
@@ -18,7 +18,7 @@ import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.serv
 import { AppView, Workspace } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '../types';
-import packageJson from '../../../../package.json';
+import { createAuthClient } from '../../../factory/modules';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -70,7 +70,7 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
   user: UserSettings
   token: string;
 }> => {
-  const authClient = Auth.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version);
+  const authClient = createAuthClient();
   const loginDetails: LoginDetails = {
     email: email,
     password: password,
