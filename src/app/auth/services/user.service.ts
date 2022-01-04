@@ -1,5 +1,6 @@
 import httpService from '../../core/services/http.service';
 import { UserSettings } from '../types';
+import { createUsersClient } from '../../../factory/modules';
 
 export interface InitializeUserResponse {
   user: {
@@ -22,7 +23,8 @@ export const sendDeactivationEmail = (email: string): Promise<void> => {
 };
 
 const inviteAFriend = (email: string): Promise<void> => {
-  return httpService.post<{ email: string }, void>('/api/user/invite', { email });
+  const usersClient = createUsersClient();
+  return usersClient.sendInvitation(email);
 };
 
 /**

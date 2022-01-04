@@ -3,7 +3,7 @@ import packageJson from '../../../package.json';
 import localStorageService from '../../app/core/services/local-storage.service';
 import { LocalStorageItem, Workspace } from '../../app/core/types';
 
-export function createAuthClient(): Drive.Storage {
+export function createAuthClient(): Auth {
   const workspace = getWorkspace();
   const token = getToken(workspace);
   const mnemonic = getMnemonic(workspace);
@@ -23,7 +23,6 @@ export function createShareClient(): Drive.Share {
   const mnemonic = getMnemonic(workspace);
   return Drive.Share.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version, token, mnemonic);
 }
-
 
 function getMnemonic(workspace: string): string {
   const mnemonicByWorkspace: { [key in Workspace]: string } = {
