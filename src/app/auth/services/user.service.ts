@@ -12,15 +12,14 @@ export const sendDeactivationEmail = (email: string): Promise<void> => {
 };
 
 const inviteAFriend = (email: string): Promise<void> => {
-  const usersClient = createUsersClient();
-  return usersClient.sendInvitation(email);
+  return createUsersClient().sendInvitation(email);
 };
 
 /**
  * ! This endpoint accepts a body but is using GET method
  */
 const refreshUser = async (): Promise<{ user: UserSettings; token: string }> => {
-  return httpService.get<{ user: UserSettings; token: string }>('/api/user/refresh');
+  return createUsersClient().refreshUser();
 };
 
 const userService = {
