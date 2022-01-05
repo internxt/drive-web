@@ -3,7 +3,7 @@ export enum AnalyticsTrack {
   SignIn = 'user-signin',
   SignInAttempted = 'user-signin-attempted',
   SignUp = 'User Signup',
-  UserEnterPayments = 'user-enter-payments',
+  UserEnterPayments = 'Checkout Opened',
   PlanSubscriptionSelected = 'plan-subscription-selected',
   FolderCreated = 'folder-created',
   FolderRename = 'folder-rename',

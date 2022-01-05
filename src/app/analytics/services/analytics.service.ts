@@ -130,8 +130,8 @@ export function trackSignUp(payload: {
   window.rdt('track', 'SignUp');
 }
 
-export function trackUserEnterPayments(): void {
-  window.analytics.track(AnalyticsTrack.UserEnterPayments);
+export function trackUserEnterPayments(priceId: string): void {
+  window.analytics.track(AnalyticsTrack.UserEnterPayments, { price_id: priceId });
 }
 
 export function trackPlanSubscriptionSelected(payload: {

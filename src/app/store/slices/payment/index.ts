@@ -46,7 +46,7 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
     try {
       const session = await paymentService.createSession(body);
 
-      analyticsService.trackUserEnterPayments();
+      analyticsService.trackUserEnterPayments(payload.product.price.id);
 
       await paymentService.redirectToCheckout({ sessionId: session.id });
     } catch (err: unknown) {
