@@ -1,5 +1,5 @@
 import { SVGProps } from 'react';
-import { AppSumoDetails } from '../../appsumo/types';
+import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { RenewalPeriod } from '../../payment/types';
 
 export interface DriveFolderData {

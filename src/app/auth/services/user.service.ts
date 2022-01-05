@@ -1,5 +1,5 @@
 import httpService from '../../core/services/http.service';
-import { UserSettings } from '../types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createUsersClient } from '../../../factory/modules';
 import { InitializeUserResponse } from '@internxt/sdk/dist/drive/users/types';
 

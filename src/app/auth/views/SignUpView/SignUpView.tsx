@@ -31,7 +31,7 @@ import navigationService from 'app/core/services/navigation.service';
 import { productsThunks } from 'app/store/slices/products';
 import httpService from 'app/core/services/http.service';
 import { AppView, IFormValues } from 'app/core/types';
-import { UserSettings } from '../../types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { createAuthClient } from '../../../../factory/modules';
 

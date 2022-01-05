@@ -6,7 +6,7 @@ import { DevicePlatform } from '../../core/types';
 import analyticsService from '../../analytics/services/analytics.service';
 import i18n from '../../i18n/services/i18n.service';
 import localStorageService from '../../core/services/local-storage.service';
-import { UserSettings } from '../../auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createStorageClient } from '../../../factory/modules';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { CancelTokenSource } from 'axios';

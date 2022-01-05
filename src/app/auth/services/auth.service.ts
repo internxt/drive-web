@@ -17,7 +17,7 @@ import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.service';
 import { AppView, Workspace } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
-import { UserSettings } from '../types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAuthClient, createUsersClient } from '../../../factory/modules';
 import { ChangePasswordPayload } from '@internxt/sdk/src/drive/users/types';
 

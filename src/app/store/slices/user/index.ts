@@ -11,7 +11,7 @@ import { sessionSelectors } from '../session/session.selectors';
 import { AppView, LocalStorageItem } from '../../../core/types';
 import tasksService from '../../../tasks/services/tasks.service';
 import authService from '../../../auth/services/auth.service';
-import { UserSettings } from '../../../auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import userService from '../../../auth/services/user.service';
 import { InitializeUserResponse } from '@internxt/sdk/dist/drive/users/types';
 import { storeTeamsInfo } from '../../../teams/services/teams.service';
