@@ -12,7 +12,8 @@ import { AppView, LocalStorageItem } from '../../../core/types';
 import tasksService from '../../../tasks/services/tasks.service';
 import authService from '../../../auth/services/auth.service';
 import { UserSettings } from '../../../auth/types';
-import userService, { InitializeUserResponse } from '../../../auth/services/user.service';
+import userService from '../../../auth/services/user.service';
+import { InitializeUserResponse } from '@internxt/sdk/dist/drive/users/types';
 import { storeTeamsInfo } from '../../../teams/services/teams.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { referralsActions } from '../referrals';
@@ -53,8 +54,8 @@ export const initializeUserThunk = createAsyncThunk<
       dispatch(
         userActions.setUser({
           ...user,
-          root_folder_id: initializeUserBody.user.root_folder_id,
-          bucket: initializeUserBody.user.bucket,
+          root_folder_id: initializeUserBody.root_folder_id,
+          bucket: initializeUserBody.bucket,
         }),
       );
     }
