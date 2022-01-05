@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../..';
-import { ProductData, ProductPriceType, StripeSessionMode } from '../../../payment/types';
+import { ProductData, ProductPriceType, StripeSessionMode, SuccessUrl } from '../../../payment/types';
 import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
 import i18n from '../../../i18n/services/i18n.service';
@@ -33,6 +33,8 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
   async (payload: CheckoutThunkPayload) => {
     const body: CreatePaymentSessionPayload = {
       test: envService.isProduction() ? undefined : true,
+      // eslint-disable-next-line max-len
+      successUrl: (envService.isProduction() ? SuccessUrl.prod : SuccessUrl.dev) + `?price_id=${payload.product.price.id}`,
       mode:
         payload.product.price.type === ProductPriceType.OneTime
           ? StripeSessionMode.Payment

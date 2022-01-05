@@ -62,3 +62,8 @@ export enum RenewalPeriod {
   Annually = 'annually',
   Lifetime = 'lifetime',
 }
+
+export enum SuccessUrl {
+  prod = 'https://drive.internxt.com/checkout/success',
+  dev = 'http://localhost:3000/checkout/success'
+}
