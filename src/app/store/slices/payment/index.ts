@@ -33,6 +33,8 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
   async (payload: CheckoutThunkPayload) => {
     const body: CreatePaymentSessionPayload = {
       test: envService.isProduction() ? undefined : true,
+      // eslint-disable-next-line max-len
+      successUrl: process.env.REACT_APP_HOSTNAME + `/checkout/success?price_id=${payload.product.price.id}`,
       mode:
         payload.product.price.type === ProductPriceType.OneTime
           ? StripeSessionMode.Payment
@@ -44,7 +46,7 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
     try {
       const session = await paymentService.createSession(body);
 
-      analyticsService.trackUserEnterPayments();
+      analyticsService.trackUserEnterPayments(payload.product.price.id);
 
       await paymentService.redirectToCheckout({ sessionId: session.id });
     } catch (err: unknown) {

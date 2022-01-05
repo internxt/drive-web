@@ -6,7 +6,9 @@ import { UserSettings } from 'app/auth/types';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
-import { AnalyticsTrack } from '../types';
+import { AnalyticsTrack, PriceData } from '../types';
+import queryString from 'query-string';
+
 
 export const PATH_NAMES = {
   '/new': 'Register',
@@ -17,6 +19,8 @@ export const PATH_NAMES = {
   '/invite': 'drive-web-invite',
   '/remove': 'drive-web-remove',
 };
+
+
 
 
 export function trackFileDownloadCompleted(properties): void {
@@ -126,8 +130,8 @@ export function trackSignUp(payload: {
   window.rdt('track', 'SignUp');
 }
 
-export function trackUserEnterPayments(): void {
-  window.analytics.track(AnalyticsTrack.UserEnterPayments);
+export function trackUserEnterPayments(priceId: string): void {
+  window.analytics.track(AnalyticsTrack.UserEnterPayments, { price_id: priceId });
 }
 
 export function trackPlanSubscriptionSelected(payload: {
@@ -267,6 +271,39 @@ export function trackShareLinkBucketIdUndefined(payload: { email: string }): voi
   window.analytics.track(AnalyticsTrack.ShareLinkBucketIdUndefined, payload);
 }
 
+export async function trackPaymentConversion() {
+  window.analytics.page('Checkout Success');
+  const queryStringParsed = queryString.parse(location.search);
+  const priceId = String(queryStringParsed.price_id);
+  const priceData: PriceData = await httpService.get(`${process.env.REACT_APP_API_URL}/api/price`, {
+    params: {
+      priceId
+    }
+  });
+
+  const { username, uuid } = getUser();
+  window.analytics.identify(
+    uuid,
+    {
+      email: username,
+      plan: priceId,
+      storage_limit: priceData.metadata.maxSpaceBytes,
+      plan_name: priceData.metadata.name
+    }
+  );
+  window.analytics.track(
+    AnalyticsTrack.PaymentConversionEvent,
+    {
+      price_id: priceId,
+      email: username,
+      currency: priceData.currency.toUpperCase(),
+      value: priceData.unit_amount * 0.01,
+      type: priceData.type,
+      plan_name: priceData.metadata.name
+    }
+  );
+}
+
 const analyticsService = {
   page,
   identify,
@@ -296,6 +333,7 @@ const analyticsService = {
   track,
   trackFileUploadBucketIdUndefined,
   trackFileDownloadCompleted,
+  trackPaymentConversion,
 };
 
 export default analyticsService;
