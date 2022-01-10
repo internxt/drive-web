@@ -11,10 +11,7 @@ import { useAppDispatch } from 'app/store/hooks';
 import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
 import AuthButton from 'app/shared/components/AuthButton';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
-import {
-  check2FANeeded,
-  doLogin,
-} from '../../services/auth.service';
+import { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
 import bigLogo from 'assets/icons/big-logo.svg';
@@ -59,9 +56,9 @@ export default function SignInView(): JSX.Element {
     const { email, password } = formData;
 
     try {
-      const res = await check2FANeeded(email);
+      const isTfaEnabled = await is2FANeeded(email);
 
-      if (!res.tfa || showTwoFactor) {
+      if (!isTfaEnabled || showTwoFactor) {
         const { token, user } = await doLogin(email, password, twoFactorCode);
         dispatch(userActions.setUser(user));
         analyticsService.identify(user, user.email);

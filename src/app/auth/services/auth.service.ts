@@ -48,19 +48,15 @@ export function cancelAccount(): Promise<void> {
     });
 }
 
-export const check2FANeeded = async (email: string): Promise<{ hasKeys: boolean; sKey: string; tfa: boolean }> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
-    method: 'POST',
-    headers: httpService.getHeaders(true, true),
-    body: JSON.stringify({ email }),
-  });
-  const data = await response.json();
+export const is2FANeeded = async (email: string): Promise<boolean> => {
+  const authClient = createAuthClient();
+  const securityDetails = await authClient.securityDetails(email)
+    .catch(error => {
+      analyticsService.signInAttempted(email, error.message);
+      throw new Error(error.message ?? 'Login error');
+    });
 
-  if (response.status !== 200) {
-    analyticsService.signInAttempted(email, data.error);
-    throw new Error(data.error ? data.error : 'Login error');
-  }
-  return data;
+  return securityDetails.tfaEnabled;
 };
 
 const generateNewKeysWithEncrypted = async (password: string) => {
@@ -275,7 +271,7 @@ const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
 const authService = {
   logOut,
   doLogin,
-  check2FANeeded,
+  check2FANeeded: is2FANeeded,
   readReferalCookie,
   cancelAccount,
   store2FA,
