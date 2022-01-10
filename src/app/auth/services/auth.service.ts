@@ -150,16 +150,9 @@ export const readReferalCookie = (): string | undefined => {
 
 export const getSalt = async (): Promise<string> => {
   const email = localStorageService.getUser()?.email;
-
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
-    method: 'post',
-    headers: httpService.getHeaders(false, false),
-    body: JSON.stringify({ email }),
-  });
-  const data = await response.json();
-  const salt = decryptText(data.sKey);
-
-  return salt;
+  const authClient = Auth.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version);
+  const securityDetails = await authClient.securityDetails(String(email));
+  return decryptText(securityDetails.encryptedSalt);
 };
 
 export const getPasswordDetails = async (
