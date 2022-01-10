@@ -1,5 +1,12 @@
 import { aes } from '@internxt/lib';
-import { CryptoProvider, Keys, LoginDetails, Password, UserAccessError } from '@internxt/sdk/dist/auth';
+import {
+  CryptoProvider,
+  Keys,
+  LoginDetails,
+  Password,
+  SecurityDetails,
+  UserAccessError
+} from '@internxt/sdk/dist/auth';
 import {
   decryptText,
   decryptTextWithKey,
@@ -150,7 +157,7 @@ export const readReferalCookie = (): string | undefined => {
 
 export const getSalt = async (): Promise<string> => {
   const email = localStorageService.getUser()?.email;
-  const authClient = Auth.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version);
+  const authClient = createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
 };
@@ -206,18 +213,10 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     });
 };
 
-export const userHas2FAStored = async (): Promise<{
-  has2fa: boolean;
-  data: { hasKeys: boolean; sKey: string; tfa: boolean };
-}> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
-    method: 'POST',
-    headers: httpService.getHeaders(true, false),
-    body: JSON.stringify({ email: JSON.parse(localStorage.xUser).email }),
-  });
-  const data = await response.json();
-
-  return { has2fa: typeof data.tfa === 'boolean', data };
+export const userHas2FAStored = async (): Promise<SecurityDetails> => {
+  const email = localStorageService.getUser()?.email;
+  const authClient = createAuthClient();
+  return await authClient.securityDetails(<string>email);
 };
 
 export const generateNew2FA = async (): Promise<{ qr: string; code: string }> => {
