@@ -1,27 +1,58 @@
-import { Drive, Auth, Token } from '@internxt/sdk';
+import { Storage, Share, Users } from '@internxt/sdk/dist/drive';
+import { Auth, Token } from '@internxt/sdk/dist/auth';
+import {
+  ApiSecurity, ApiUrl,
+  AppDetails
+} from '@internxt/sdk/dist/shared';
 import packageJson from '../../../package.json';
 import localStorageService from '../../app/core/services/local-storage.service';
 import { LocalStorageItem, Workspace } from '../../app/core/types';
 
 export function createAuthClient(): Auth {
-  const workspace = getWorkspace();
-  const token = getToken(workspace);
-  const mnemonic = getMnemonic(workspace);
-  return Auth.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version, token, mnemonic);
+  const apiUrl = getApiUrl();
+  const appDetails = getAppDetails();
+  const apiSecurity = getApiSecurity();
+  return Auth.client(apiUrl, appDetails, apiSecurity);
 }
 
-export function createStorageClient(): Drive.Storage {
-  const workspace = getWorkspace();
-  const token = getToken(workspace);
-  const mnemonic = getMnemonic(workspace);
-  return Drive.Storage.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version, token, mnemonic);
+export function createStorageClient(): Storage {
+  const apiUrl = getApiUrl();
+  const appDetails = getAppDetails();
+  const apiSecurity = getApiSecurity();
+  return Storage.client(apiUrl, appDetails, apiSecurity);
 }
 
-export function createShareClient(): Drive.Share {
+export function createShareClient(): Share {
+  const apiUrl = getApiUrl();
+  const appDetails = getAppDetails();
+  const apiSecurity = getApiSecurity();
+  return Share.client(apiUrl, appDetails, apiSecurity);
+}
+
+export function createUsersClient(): Users {
+  const apiUrl = getApiUrl();
+  const appDetails = getAppDetails();
+  const apiSecurity = getApiSecurity();
+  return Users.client(apiUrl, appDetails, apiSecurity);
+}
+
+function getApiUrl(): ApiUrl {
+  return process.env.REACT_APP_API_URL;
+}
+
+function getAppDetails(): AppDetails {
+  return {
+    clientName: packageJson.name,
+    clientVersion: packageJson.version,
+  };
+}
+
+function getApiSecurity(): ApiSecurity {
   const workspace = getWorkspace();
-  const token = getToken(workspace);
-  const mnemonic = getMnemonic(workspace);
-  return Drive.Share.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version, token, mnemonic);
+  return {
+    mnemonic: getMnemonic(workspace),
+    token: getToken(workspace)
+  };
 }
 
 function getMnemonic(workspace: string): string {
