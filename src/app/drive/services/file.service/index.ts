@@ -76,7 +76,7 @@ export async function moveFile(
 
 async function fetchRecents(limit: number): Promise<DriveFileData[]> {
   const storageClient = createStorageClient();
-  return storageClient.recentFiles(limit);
+  return storageClient.getRecentFiles(limit);
 }
 
 const fileService = {

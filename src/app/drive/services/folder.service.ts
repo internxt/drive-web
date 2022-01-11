@@ -164,7 +164,7 @@ export async function moveFolder(
 ): Promise<StorageTypes.MoveFolderResponse> {
   const storageClient = createStorageClient();
   const payload: StorageTypes.MoveFolderPayload = {
-    folder: folder,
+    folderId: folder.id,
     destinationFolderId: destination
   };
 
