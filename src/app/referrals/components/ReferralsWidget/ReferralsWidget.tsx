@@ -52,7 +52,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
     setIsCollapsed(!isCollapsed);
   };
 
-  return isWidgetHidden ? (
+  return isWidgetHidden || referralsList.length === 0 ? (
     <div></div>
   ) : (
     <div
