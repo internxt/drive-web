@@ -4,7 +4,7 @@ import {
   Keys,
   LoginDetails,
   Password,
-  SecurityDetails,
+  SecurityDetails, TwoFactorAuthQR,
   UserAccessError
 } from '@internxt/sdk/dist/auth';
 import {
@@ -215,17 +215,8 @@ export const userHas2FAStored = async (): Promise<SecurityDetails> => {
   return await authClient.securityDetails(<string>email);
 };
 
-export const generateNew2FA = async (): Promise<{ qr: string; code: string }> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
-    method: 'GET',
-    headers: httpService.getHeaders(true, false),
-  });
-  const data = await response.json();
-
-  if (response.status !== 200) {
-    throw new Error(data);
-  }
-  return data;
+export const generateNew2FA = async (): Promise<TwoFactorAuthQR> => {
+  return createAuthClient().generateTwoFactorAuthQR();
 };
 
 export const deactivate2FA = async (
@@ -236,36 +227,13 @@ export const deactivate2FA = async (
   const salt = decryptText(passwordSalt);
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
-
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
-    method: 'DELETE',
-    headers: httpService.getHeaders(true, false),
-    body: JSON.stringify({
-      pass: encPass,
-      code: deactivationCode,
-    }),
-  });
-  const data = await response.json();
-
-  if (response.status !== 200) {
-    throw new Error(data.error);
-  }
+  const authClient = createAuthClient();
+  return authClient.disableTwoFactorAuth(encPass, deactivationCode);
 };
 
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
-    method: 'PUT',
-    headers: httpService.getHeaders(true, false),
-    body: JSON.stringify({
-      key: code,
-      code: twoFactorCode,
-    }),
-  });
-  const data = await response.json();
-
-  if (response.status !== 200) {
-    throw new Error(data.error);
-  }
+  const authClient = createAuthClient();
+  return authClient.storeTwoFactorAuthKey(code, twoFactorCode);
 };
 
 const authService = {

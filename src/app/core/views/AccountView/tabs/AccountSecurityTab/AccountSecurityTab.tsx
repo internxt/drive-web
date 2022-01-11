@@ -30,10 +30,9 @@ const AccountSecurityTab = (): JSX.Element => {
       const { tfaEnabled, encryptedSalt } = await userHas2FAStored();
 
       if (!tfaEnabled) {
-        const bidi = await generateNew2FA();
-
-        setQr(bidi.qr);
-        setBackupKey(bidi.code);
+        const { qr, backupKey } = await generateNew2FA();
+        setQr(qr);
+        setBackupKey(backupKey);
       } else {
         setHas2FA(true);
         setPasswordSalt(encryptedSalt);
