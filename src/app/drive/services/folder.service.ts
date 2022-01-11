@@ -160,11 +160,11 @@ async function fetchFolderTree(folderId: number): Promise<{
 }
 
 export async function moveFolder(
-  folder: DriveFolderData, destination: number
+  folderId: number, destination: number
 ): Promise<StorageTypes.MoveFolderResponse> {
   const storageClient = createStorageClient();
   const payload: StorageTypes.MoveFolderPayload = {
-    folderId: folder.id,
+    folderId: folderId,
     destinationFolderId: destination
   };
 

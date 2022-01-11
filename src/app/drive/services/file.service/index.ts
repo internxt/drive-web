@@ -46,11 +46,11 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
 }
 
 export async function moveFile(
-  file: DriveFileData, destination: number, bucketId: string
+  fileId: string, destination: number, bucketId: string
 ): Promise<StorageTypes.MoveFileResponse> {
   const storageClient = createStorageClient();
   const payload: StorageTypes.MoveFilePayload = {
-    fileId: file.fileId,
+    fileId: fileId,
     destination: destination,
     bucketId: bucketId,
     destinationPath: uuid.v4()
