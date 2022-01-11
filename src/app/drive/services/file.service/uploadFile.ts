@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { StorageTypes } from '@internxt/sdk';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 import { DriveFileData } from '../../types';
 import analyticsService from '../../../analytics/services/analytics.service';

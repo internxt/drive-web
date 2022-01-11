@@ -8,7 +8,7 @@ import { UserSettings } from '../../../auth/types';
 import uploadFile from './uploadFile';
 import * as uuid from 'uuid';
 import { createStorageClient } from '../../../../factory/modules';
-import { StorageTypes } from '@internxt/sdk';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
 
 export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {
   const storageClient = createStorageClient();

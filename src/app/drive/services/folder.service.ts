@@ -8,7 +8,7 @@ import i18n from '../../i18n/services/i18n.service';
 import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '../../auth/types';
 import { createStorageClient } from '../../../factory/modules';
-import { StorageTypes } from '@internxt/sdk';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { CancelTokenSource } from 'axios';
 
 export interface IFolders {

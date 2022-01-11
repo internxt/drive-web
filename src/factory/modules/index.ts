@@ -1,13 +1,13 @@
-import { Storage, Token } from '@internxt/sdk';
+import { Drive, Token } from '@internxt/sdk';
 import packageJson from '../../../package.json';
 import localStorageService from '../../app/core/services/local-storage.service';
 import { LocalStorageItem, Workspace } from '../../app/core/types';
 
-export function createStorageClient(): Storage {
+export function createStorageClient(): Drive.Storage {
   const workspace = getWorkspace();
   const token = getToken(workspace);
   const mnemonic = getMnemonic(workspace);
-  return Storage.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version, token, mnemonic);
+  return Drive.Storage.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version, token, mnemonic);
 }
 
 function getWorkspace(): string {
