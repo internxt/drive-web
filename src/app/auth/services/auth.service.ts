@@ -20,9 +20,8 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import navigationService from 'app/core/services/navigation.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
-import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.service';
-import { AppView, Workspace } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAuthClient, createUsersClient } from '../../../factory/modules';
@@ -36,15 +35,13 @@ export async function logOut(): Promise<void> {
 }
 
 export function cancelAccount(): Promise<void> {
-  return httpService
-    .get<void>('/api/deactivate', { authWorkspace: Workspace.Individuals })
+  const email = localStorageService.getUser()?.email;
+  return createAuthClient().sendDeactivationEmail(<string>email)
     .then(() => {
       notificationsService.show(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
     })
-    .catch((err) => {
+    .catch(() => {
       notificationsService.show(i18n.get('error.deactivatingAccount'), ToastType.Warning);
-      console.log(err);
-      throw err;
     });
 }
 
