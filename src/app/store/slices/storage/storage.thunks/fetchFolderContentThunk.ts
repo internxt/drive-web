@@ -3,17 +3,18 @@ import _ from 'lodash';
 
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import folderService from '../../../../drive/services/folder.service';
 import { StorageState } from '../storage.model';
 import i18n from '../../../../i18n/services/i18n.service';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveItemData } from '../../../../drive/types';
+import { createStorageClient } from '../../../../../factory/modules';
 
 export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchFolderContent',
   async (folderId, { dispatch }) => {
-    const [responsePromise] = folderService.fetchFolderContent(folderId);
+    const storageClient = createStorageClient();
+    const [responsePromise] = storageClient.getFolderContent(folderId);
     const databaseContent = await databaseService.get<DatabaseCollection.Levels>(DatabaseCollection.Levels, folderId);
 
     dispatch(storageActions.resetOrder());
@@ -30,15 +31,14 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
     }
 
     responsePromise.then((response) => {
-      const items = _.concat(response.folders as DriveItemData[], response.files as DriveItemData[]);
-
+      const folders = response.children.map(folder => ({ ...folder, isFolder: true }));
+      const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
       dispatch(
         storageActions.setItems({
           folderId,
           items,
         }),
       );
-
       databaseService.put(DatabaseCollection.Levels, folderId, items);
     });
   },
