@@ -1,4 +1,4 @@
-import { Storage, Share, Users } from '@internxt/sdk/dist/drive';
+import { Storage, Share, Users, Referrals } from '@internxt/sdk/dist/drive';
 import { Auth, Token } from '@internxt/sdk/dist/auth';
 import {
   ApiSecurity, ApiUrl,
@@ -34,6 +34,13 @@ export function createUsersClient(): Users {
   const appDetails = getAppDetails();
   const apiSecurity = getApiSecurity();
   return Users.client(apiUrl, appDetails, apiSecurity);
+}
+
+export function createReferralsClient(): Referrals {
+  const apiUrl = getApiUrl();
+  const appDetails = getAppDetails();
+  const apiSecurity = getApiSecurity();
+  return Referrals.client(apiUrl, appDetails, apiSecurity);
 }
 
 function getApiUrl(): ApiUrl {

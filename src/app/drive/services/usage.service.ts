@@ -1,8 +1,8 @@
-import { UsageResponse } from '@internxt/sdk/src/drive/users/types';
-import { createUsersClient } from '../../../factory/modules';
+import { UsageResponse } from '@internxt/sdk/src/drive/storage/types';
+import { createStorageClient } from '../../../factory/modules';
 
 export async function fetchUsage(): Promise<UsageResponse> {
-  return createUsersClient().spaceUsage();
+  return createStorageClient().spaceUsage();
 }
 
 function getUsagePercent(usage: number, limit: number): number {
