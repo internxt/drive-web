@@ -23,6 +23,8 @@ const AccountPlanInfoTab = (): JSX.Element => {
   const [isDeleteAccountDialogOpen, setIsDeleteAccountDialogOpen] = useState(false);
   const user = useAppSelector((state) => state.user.user);
   const fullName = useAppSelector(userSelectors.userFullName);
+  const hasReferralsProgram = useAppSelector(userSelectors.hasReferralsProgram);
+  const referrals = useAppSelector((state) => state.referrals.list);
   const nameLetters = useAppSelector(userSelectors.nameLetters);
   const isLoadingPlanLimit = useAppSelector((state) => state.plan.isLoadingPlanLimit);
   const planUsage = useAppSelector((state) => state.plan.planUsage);
@@ -31,6 +33,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
   const currentPlan = useAppSelector(planSelectors.currentPlan);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const isCurrentPlanLifetime = useAppSelector(planSelectors.isCurrentPlanLifetime);
+  const isInviteFriendWidgetHidden = !hasReferralsProgram || isTeam || referrals.length === 0;
   const dispatch = useAppDispatch();
   const onUpgradeButtonClicked = () => {
     dispatch(setCurrentAccountTab(AccountViewTab.Plans));
@@ -127,7 +130,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
           </div>
         </div>
 
-        <InviteAFriendWidget className="mb-20" />
+        { !isInviteFriendWidgetHidden && <InviteAFriendWidget className="mb-20" /> }
 
         {/* MORE INFO & DELETE ACCOUNT */}
         <div>
