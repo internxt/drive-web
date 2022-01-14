@@ -1350,12 +1350,13 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/9a19de23e3330a81c0e2bace1a6a0325fc8633197cf677e44ea75e54df315b5e"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@0.2.7":
-  version "0.2.7"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/0.2.7/71fd6360227a42cbff265306167f91f67fe1b82f6e8f251127cba6a8cbe9b842#73e676ad89bb4f777fc00e2d22fcb8fccb0cec5d"
-  integrity sha512-iq+TtW+XLf+GGDTkd8I8v2S/JnefOW+MPhbi8ArzAOC/ra0lFA7DuAaD604IPJ9xYLUCpjM7VZpi08n6Bi5cYQ==
+"@internxt/sdk@0.2.8":
+  version "0.2.8"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/0.2.8/44b9510307621c225cd79fdbf766835f83f161c20edcfe27063a89cc9204aa08#f89d189ef8349c3c869b515fd027369211325f6e"
+  integrity sha512-VChUcUlv7HyU1aRWY4NoNEWnWiDdXz1JqADbCbHKFYR8jzNdwKIMrO1JoEob49c4OmWzQB/oacFf6aBFj1py8Q==
   dependencies:
     axios "^0.24.0"
+    query-string "^7.1.0"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -10870,6 +10871,16 @@ query-string@^6.13.8:
   version "6.14.1"
   resolved "https://registry.npmjs.org/query-string/-/query-string-6.14.1.tgz"
   integrity sha512-XDxAeVmpfu1/6IjyT/gXHOl+S0vQ9owggJ30hhWKdHAsNPOcasn5o9BW0eejZqL2e4vMjhAxoW3jVHcD6mbcYw==
+  dependencies:
+    decode-uri-component "^0.2.0"
+    filter-obj "^1.1.0"
+    split-on-first "^1.0.0"
+    strict-uri-encode "^2.0.0"
+
+query-string@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-7.1.0.tgz#96b88f27b39794f97b8c8ccd060bc900495078ef"
+  integrity sha512-wnJ8covk+S9isYR5JIXPt93kFUmI2fQ4R/8130fuq+qwLiGVTurg7Klodgfw4NSz/oe7xnyi09y3lSrogUeM3g==
   dependencies:
     decode-uri-component "^0.2.0"
     filter-obj "^1.1.0"
