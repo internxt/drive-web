@@ -19,7 +19,7 @@ import { AppView, Workspace } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAuthClient, createUsersClient } from '../../../factory/modules';
-import { ChangePasswordPayload } from '@internxt/sdk/src/drive/users/types';
+import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
