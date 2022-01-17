@@ -272,37 +272,46 @@ export function trackShareLinkBucketIdUndefined(payload: { email: string }): voi
 }
 
 export async function trackPaymentConversion() {
-  window.analytics.page('Checkout Success');
-  const queryStringParsed = queryString.parse(location.search);
-  const priceId = String(queryStringParsed.price_id);
-  const priceData: PriceData = await httpService.get(`${process.env.REACT_APP_API_URL}/api/price`, {
-    params: {
-      priceId
-    }
-  });
 
-  const { username, uuid } = getUser();
-  window.analytics.identify(
-    uuid,
-    {
-      email: username,
-      plan: priceId,
-      storage_limit: priceData.metadata.maxSpaceBytes,
-      plan_name: priceData.metadata.name
-    }
-  );
-  window.analytics.track(
-    AnalyticsTrack.PaymentConversionEvent,
-    {
-      price_id: priceId,
-      email: username,
-      currency: priceData.currency.toUpperCase(),
-      value: priceData.unit_amount * 0.01,
-      type: priceData.type,
-      plan_name: priceData.metadata.name
-    }
-  );
-}
+  try {
+    window.analytics.page('Checkout Success');
+    const queryStringParsed = queryString.parse(location.search);
+    const priceId = String(queryStringParsed.price_id);
+
+    const priceData: PriceData = await httpService.get(`${process.env.REACT_APP_API_URL}/api/price`, {
+      params: {
+        priceId
+      }
+    });
+
+    const { username, uuid } = getUser();
+    window.analytics.identify(
+      uuid,
+      {
+        email: username,
+        plan: priceId,
+        storage_limit: priceData.metadata.maxSpaceBytes,
+        plan_name: priceData.metadata.name
+      }
+    );
+    window.analytics.track(
+      AnalyticsTrack.PaymentConversionEvent,
+      {
+        price_id: priceId,
+        email: username,
+        currency: priceData.currency.toUpperCase(),
+        value: priceData.unit_amount * 0.01,
+        type: priceData.type,
+        plan_name: priceData.metadata.name
+      }
+    );
+  }
+  catch (err) {
+    window.analytics.track(
+      'Signup After Payment Error'
+    );
+  }
+};
 
 const analyticsService = {
   page,
