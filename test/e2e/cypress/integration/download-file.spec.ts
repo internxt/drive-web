@@ -1,9 +1,10 @@
-import * as path from 'path';
+import { join } from 'path';
 
 describe('Download file', () => {
   const filename = 'example.txt';
   const downloadsFolder = Cypress.config('downloadsFolder');
   const fixturesFolder = Cypress.config('fixturesFolder');
+  const downloadedFileFullPath = join(downloadsFolder, filename);
 
   beforeEach(() => {
     cy.clearLocalStorage();
@@ -11,10 +12,16 @@ describe('Download file', () => {
   });
 
   it('Should download a single file', () => {
-    cy.get('[data-test=download-file-button]').click({ force: true });
-
-    cy.readFile(path.join(fixturesFolder as string, filename)).then((originalFile) => {
-      cy.readFile(path.join(downloadsFolder, filename)).should('eq', originalFile);
-    });
+    cy.get('[data-test=download-file-button]').click({ force: true })
+      .then(() => {
+        cy.readFile(join(fixturesFolder as string, filename)).then((originalFile) => {
+          cy.readFile(downloadedFileFullPath).should('eq', originalFile);
+        });
+      });
   });
+
+  after(() => {
+    cy.task('removeFile', downloadedFileFullPath);
+  });
+
 });
