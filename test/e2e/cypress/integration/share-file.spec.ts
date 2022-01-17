@@ -6,6 +6,7 @@ describe('Share file', () => {
   const fixturesFolder = Cypress.config('fixturesFolder');
 
   beforeEach(() => {
+    cy.clearLocalStorage();
     cy.login();
   });
 
@@ -24,4 +25,5 @@ describe('Share file', () => {
         });
       });
   });
+
 });
