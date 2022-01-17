@@ -116,14 +116,17 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
         await authClient.updateKeys(newKeys, token);
       }
 
+      const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
+      const clearPrivateKeyBase64 = Buffer.from(privkeyDecrypted).toString('base64');
+
       const clearUser = {
         ...user,
-        mnemonic: decryptTextWithKey(user.mnemonic, password),
-        privateKey: Buffer.from(privkeyDecrypted).toString('base64'),
+        mnemonic: clearMnemonic,
+        privateKey: clearPrivateKeyBase64,
       };
 
       localStorageService.set('xToken', token);
-      localStorageService.set('xMnemonic', user.mnemonic);
+      localStorageService.set('xMnemonic', clearMnemonic);
 
       return {
         user: clearUser,
@@ -184,7 +187,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const encryptedNewSalt = encryptText(hashedNewPassword.salt);
 
   // Encrypt the mnemonic
-  const encryptedMnemonic = encryptTextWithKey(localStorage.xMnemonic, newPassword);
+  const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
