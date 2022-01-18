@@ -174,7 +174,8 @@
     "noFilePreview": "No file preview available",
     "browserNotSupported": "Browser not supported ({userAgent})",
     "inviteAFriend": "Error sending the invitation to a friend: {message}",
-    "subscribeToNewsletter": "Error subscribing to newsletter: {message}"
+    "subscribeToNewsletter": "Error subscribing to newsletter: {message}",
+    "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support."
   },
   "backups": {
     "backups-from": "Backups from {deviceName}",
