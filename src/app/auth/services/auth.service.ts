@@ -142,6 +142,18 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
     });
 };
 
+export const checkIfMnemonicIsCorrupted = (mnemonic: string): boolean => {
+  const valid = /([a-z]*\s)/.test(mnemonic);
+
+  return !valid;
+};
+
+export const restoreCorruptedMnemonic = (mnemonic: string, last_password: string, current_password: string): void => {
+  const clearMnemonic = decryptTextWithKey(mnemonic, last_password);
+
+  console.log(clearMnemonic, current_password);
+};
+
 export const readReferalCookie = (): string | undefined => {
   const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
 

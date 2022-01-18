@@ -55,10 +55,13 @@ const InputPrimary = ({
 
     <div
       className={`text-m-neutral-100 absolute ${
-        label === 'password' || label === 'confirmPassword' ? 'right-3 bottom-2 cursor-pointer' : 'right-3 bottom-2'
+        label === 'password' || label === 'confirmPassword'|| label === 'lastPassword' 
+          ? 'right-3 bottom-2 cursor-pointer' 
+          : 'right-3 bottom-2'
       } flex items-center justify-center`}
       onClick={() =>
-        label === 'password' || label === 'confirmPassword' || label === 'currentPassword' ? onClick && onClick() : null
+        label === 'password' || label === 'confirmPassword' ||
+        label === 'currentPassword' || label === 'lastPassword' ? onClick && onClick() : null
       }
     >
       {icon || null}
