@@ -13,9 +13,7 @@ import AuthButton from 'app/shared/components/AuthButton';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import {
   check2FANeeded,
-  checkIfMnemonicIsCorrupted,
   doLogin,
-  restoreCorruptedMnemonicAndReturnClearOne
 } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
@@ -32,7 +30,6 @@ import navigationService from 'app/core/services/navigation.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
 import { referralsThunks } from 'app/store/slices/referrals';
-import i18n from '../../../i18n/services/i18n.service';
 
 export default function SignInView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -44,7 +41,6 @@ export default function SignInView(): JSX.Element {
   } = useForm<IFormValues>({ mode: 'onChange' });
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
-  const lastPassword = useWatch({ control, name: 'lastPassword', defaultValue: '' });
   const twoFactorCode = useWatch({ control, name: 'twoFactorCode', defaultValue: '' });
   const mnemonic = localStorageService.get('xMnemonic');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -52,12 +48,9 @@ export default function SignInView(): JSX.Element {
   const [registerCompleted, setRegisterCompleted] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showTwoFactor, setShowTwoFactor] = useState(false);
-  const [showAskLastPassword, setShowAskLastPassword] = useState(false);
   const [loginError, setLoginError] = useState<string[]>([]);
   const [showErrors, setShowErrors] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showLastPassword, setShowLastPassword] = useState(false);
-  const [showLastPasswordError, setShowLastPasswordError] = useState(false);
   const [showTwoFactorCode, setShowTwoFactorCode] = useState(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
@@ -70,29 +63,26 @@ export default function SignInView(): JSX.Element {
 
       if (!res.tfa || showTwoFactor) {
         const { token, user } = await doLogin(email, password, twoFactorCode);
+        dispatch(userActions.setUser(user));
+        analyticsService.identify(user, user.email);
+        analyticsService.trackSignIn({
+          email: user.email,
+          userId: user.uuid
+        });
 
-        const isCorrupted = checkIfMnemonicIsCorrupted(user.mnemonic);
-
-        if (isCorrupted) {
-          if (formData.lastPassword) {
-            try {
-              const clearMnemonic = await restoreCorruptedMnemonicAndReturnClearOne(
-                user, formData.lastPassword, password
-              );
-              setShowLastPasswordError(false);
-              setShowLastPassword(false);
-              user.mnemonic = clearMnemonic;
-              await successfulLogin(user, token);
-            } catch (e) {
-              console.log(e);
-              setShowLastPasswordError(true);
-            }
-          } else {
-            setShowAskLastPassword(true);
-          }
-        } else {
-          await successfulLogin(user, token);
+        try {
+          dispatch(productsThunks.initializeThunk());
+          dispatch(planThunks.initializeThunk());
+          dispatch(referralsThunks.initializeThunk());
+          await dispatch(initializeUserThunk()).unwrap();
+        } catch (e: unknown) {
+          console.log(e);
         }
+
+        setIsAuthenticated(true);
+        setToken(token);
+        userActions.setUser(user);
+        setRegisterCompleted(user.registerCompleted);
       } else {
         setShowTwoFactor(true);
       }
@@ -112,29 +102,6 @@ export default function SignInView(): JSX.Element {
     } finally {
       setIsLoggingIn(false);
     }
-  };
-
-  const successfulLogin = async (user: UserSettings, token: string) => {
-    dispatch(userActions.setUser(user));
-    analyticsService.identify(user, user.email);
-    analyticsService.trackSignIn({
-      email: user.email,
-      userId: user.uuid
-    });
-
-    try {
-      dispatch(productsThunks.initializeThunk());
-      dispatch(planThunks.initializeThunk());
-      dispatch(referralsThunks.initializeThunk());
-      await dispatch(initializeUserThunk()).unwrap();
-    } catch (e: unknown) {
-      console.log(e);
-    }
-
-    setIsAuthenticated(true);
-    setToken(token);
-    userActions.setUser(user);
-    setRegisterCompleted(user.registerCompleted);
   };
 
   useEffect(() => {
@@ -226,39 +193,6 @@ export default function SignInView(): JSX.Element {
               pattern={twoFactorRegexPattern}
             />
           )}
-
-          {
-            showAskLastPassword
-            &&
-            <BaseInput
-              className="mb-2.5"
-              placeholder="Last Password"
-              label={'lastPassword'}
-              type={showLastPassword ? 'text' : 'password'}
-              icon={
-                lastPassword ? (
-                  showLastPassword ? (
-                    <UilEyeSlash className="w-4" onClick={() => setShowLastPassword(false)} />
-                  ) : (
-                    <UilEye className="w-4" onClick={() => setShowLastPassword(true)} />
-                  )
-                ) : (
-                  <UilLock className="w-4" />
-                )
-              }
-              register={register}
-              required={true}
-              minLength={{ value: 1, message: 'Last password must not be empty' }}
-              error={errors.password}
-            />
-          }
-          {
-            showLastPasswordError
-            &&
-            <div className="flex my-1">
-              <span className="text-red-60 text-sm w-56 font-medium">{i18n.get('error.lastPasswordError')}</span>
-            </div>
-          }
 
           {loginError && showErrors && (
             <div className="flex my-1">

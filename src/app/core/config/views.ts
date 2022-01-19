@@ -18,6 +18,7 @@ import BackupsView from 'app/backups/views/BackupsView/BackupsView';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
+import RecoverView from '../../auth/views/RecoverView/RecoverView';
 
 const views: Array<{
   id: string;
@@ -28,6 +29,7 @@ const views: Array<{
   { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
+  { id: AppView.Recover, component: RecoverView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Backups, component: BackupsView },

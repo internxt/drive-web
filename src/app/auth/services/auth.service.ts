@@ -142,63 +142,6 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
     });
 };
 
-export const checkIfMnemonicIsCorrupted = (mnemonic: string): boolean => {
-  const valid = /([a-z]*\s)/.test(mnemonic);
-  return !valid;
-};
-
-export const restoreCorruptedMnemonicAndReturnClearOne = async (
-  user: UserSettings, last_password: string, current_password: string
-): Promise<string> => {
-  const mnemonic = user.mnemonic;
-  const clearMnemonic = decryptTextWithKey(mnemonic, last_password);
-  const isCorrupted = checkIfMnemonicIsCorrupted(clearMnemonic);
-
-  if (isCorrupted) {
-    throw new Error('Provided last password is not valid or needs more iterations');
-  } else {
-    await changePasswordFromCorruptedMnemonic(current_password, user, clearMnemonic);
-    return clearMnemonic;
-  }
-};
-
-export const changePasswordFromCorruptedMnemonic =
-  async (currentPassword: string, user: UserSettings, clearMnemonic: string): Promise<void> => {
-    // Recover current salt
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
-      method: 'post',
-      headers: httpService.getHeaders(false, false),
-      body: JSON.stringify({
-        email: user.email
-      }),
-    });
-    const data = await response.json();
-    const encryptedSalt = data.sKey;
-    const salt = decryptText(encryptedSalt);
-
-    // Encrypt current password
-    const hashedCurrentPassword = passToHash({ password: currentPassword, salt }).hash;
-    const encryptedCurrentPassword = encryptText(hashedCurrentPassword);
-
-    // Encrypt the mnemonic with current password
-    const encryptedMnemonic = encryptTextWithKey(clearMnemonic, currentPassword);
-    const privateKey = Buffer.from(user.privateKey, 'base64').toString();
-    const privateKeyEncrypted = aes.encrypt(privateKey, currentPassword, getAesInitFromEnv());
-
-    // Persist data
-    await fetch(`${process.env.REACT_APP_API_URL}/api/user/password`, {
-      method: 'PATCH',
-      headers: httpService.getHeaders(true, true),
-      body: JSON.stringify({
-        currentPassword: encryptedCurrentPassword,
-        newPassword: encryptedCurrentPassword,
-        newSalt: encryptedSalt,
-        mnemonic: encryptedMnemonic,
-        privateKey: privateKeyEncrypted,
-      }),
-    });
-  };
-
 export const readReferalCookie = (): string | undefined => {
   const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
 
