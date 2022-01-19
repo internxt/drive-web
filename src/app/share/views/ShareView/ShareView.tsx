@@ -33,7 +33,6 @@ interface ShareViewState {
   info: GetShareInfoWithDecryptedName | null;
   error: Error | null;
   accessedFile: boolean;
-  isProblematicDevice: boolean;
 }
 
 class ShareView extends Component<ShareViewProps, ShareViewState> {
@@ -43,7 +42,6 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     info: null,
     error: null,
     accessedFile: false,
-    isProblematicDevice: false,
   };
 
   loadInfo = async () => {
@@ -57,15 +55,6 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
       const info = await getShareInfo(token).catch(() => {
         throw new Error(i18n.get('error.linkExpired'));
       });
-
-      // ! iOS Chrome not supported
-      if (navigator.userAgent.match('CriOS')) {
-        // throw new Error(i18n.get('error.browserNotSupported', { userAgent: navigator.userAgent }));
-        this.setState({
-          ...this.state,
-          isProblematicDevice: true,
-        });
-      }
 
       this.setState({
         info: {
@@ -90,15 +79,6 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     if (info) {
       const network = new Network('NONE', 'NONE', 'NONE');
 
-      if (this.state.isProblematicDevice) {
-        console.log({
-          bucket: info.bucket,
-          file: info.file,
-          fileEncryptionKey: Buffer.from(info.encryptionKey, 'hex'),
-          fileToken: info.fileToken,
-        });
-      }
-
       this.setState({ progress: MIN_PROGRESS });
       const [fileBlobPromise] = network.downloadFile(info.bucket, info.file, {
         fileEncryptionKey: Buffer.from(info.encryptionKey, 'hex'),
@@ -108,6 +88,16 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
         },
       });
       const fileBlob = await fileBlobPromise;
+
+      // ! iOS Chrome requires special handling
+      if (navigator.userAgent.match('CriOS')) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(fileBlob);
+        a.target = '_blank';
+        a.download = info.decryptedName as string;
+        document.body.appendChild(a);
+        a.click();
+      }
 
       downloadService.downloadFileFromBlob(fileBlob, info.decryptedName as string);
     }
@@ -158,16 +148,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
         );
 
       const DownloadButton = (
-        <BaseButton
-          onClick={() =>
-            this.download().catch((err) => {
-              if (this.state.isProblematicDevice) {
-                console.log(err);
-              }
-            })
-          }
-          className="primary font-bold p-5"
-        >
+        <BaseButton onClick={this.download} className="primary font-bold p-5">
           {i18n.get('actions.download')}
         </BaseButton>
       );
