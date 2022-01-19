@@ -45,6 +45,14 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
   };
 
   loadInfo = async () => {
+    // ! iOS Chrome is not supported
+    if (navigator.userAgent.match('CriOS')) {
+      this.setState({
+        ...this.state,
+        error: new Error('Chrome iOS not supported. Use Safari to proceed'),
+      });
+    }
+
     this.setState({
       accessedFile: true,
     });
@@ -88,20 +96,6 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
         },
       });
       const fileBlob = await fileBlobPromise;
-
-      // ! iOS Chrome requires special handling
-      if (navigator.userAgent.match('CriOS')) {
-        const reader = new FileReader();
-
-        reader.onloadend = () => {
-          const url = reader.result;
-          const dataURI = 'data:' + fileBlob.type + ';base64,' + btoa(url as string);
-          window.open(dataURI);
-        };
-
-        reader.readAsDataURL(fileBlob);
-        return;
-      }
 
       downloadService.downloadFileFromBlob(fileBlob, info.decryptedName as string);
     }
