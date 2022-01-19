@@ -170,7 +170,7 @@ export const getPasswordDetails = async (
     throw new Error('Internal server error. Please reload.');
   }
 
-  // Encrypt the password
+  // Encrypt  the password
   const hashedCurrentPassword = passToHash({ password: currentPassword, salt }).hash;
   const encryptedCurrentPassword = encryptText(hashedCurrentPassword);
 

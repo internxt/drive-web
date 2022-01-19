@@ -11,7 +11,10 @@ import { useAppDispatch } from 'app/store/hooks';
 import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
 import AuthButton from 'app/shared/components/AuthButton';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
-import { check2FANeeded, doLogin } from '../../services/auth.service';
+import {
+  check2FANeeded,
+  doLogin,
+} from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
 import bigLogo from 'assets/icons/big-logo.svg';
@@ -60,10 +63,12 @@ export default function SignInView(): JSX.Element {
 
       if (!res.tfa || showTwoFactor) {
         const { token, user } = await doLogin(email, password, twoFactorCode);
-
         dispatch(userActions.setUser(user));
-        analyticsService.identify(user, email);
-        analyticsService.trackSignIn({ email, userId: user.uuid });
+        analyticsService.identify(user, user.email);
+        analyticsService.trackSignIn({
+          email: user.email,
+          userId: user.uuid
+        });
 
         try {
           dispatch(productsThunks.initializeThunk());
