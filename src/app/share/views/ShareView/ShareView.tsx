@@ -91,12 +91,16 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
 
       // ! iOS Chrome requires special handling
       if (navigator.userAgent.match('CriOS')) {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(fileBlob);
-        a.target = '_blank';
-        a.download = info.decryptedName as string;
-        document.body.appendChild(a);
-        a.click();
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          const url = reader.result;
+          const dataURI = 'data:' + fileBlob.type + ';base64,' + btoa(url as string);
+          window.open(dataURI);
+        };
+
+        reader.readAsDataURL(fileBlob);
+        return;
       }
 
       downloadService.downloadFileFromBlob(fileBlob, info.decryptedName as string);
