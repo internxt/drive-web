@@ -1,5 +1,5 @@
 import { aes } from '@internxt/lib';
-import { Auth, CryptoProvider, Keys, LoginDetails, Password, UserAccessError } from '@internxt/sdk';
+import { CryptoProvider, Keys, LoginDetails, Password, UserAccessError } from '@internxt/sdk/dist/auth';
 import {
   decryptText,
   decryptTextWithKey,
@@ -17,8 +17,9 @@ import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.service';
 import { AppView, Workspace } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
-import { UserSettings } from '../types';
-import packageJson from '../../../../package.json';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { createAuthClient, createUsersClient } from '../../../factory/modules';
+import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -70,7 +71,7 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
   user: UserSettings
   token: string;
 }> => {
-  const authClient = Auth.client(process.env.REACT_APP_API_URL, packageJson.name, packageJson.version);
+  const authClient = createAuthClient();
   const loginDetails: LoginDetails = {
     email: email,
     password: password,
@@ -191,31 +192,25 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/password`, {
-    method: 'PATCH',
-    headers: httpService.getHeaders(true, true),
-    body: JSON.stringify({
-      currentPassword: encryptedCurrentPassword,
-      newPassword: encryptedNewPassword,
-      newSalt: encryptedNewSalt,
-      mnemonic: encryptedMnemonic,
-      privateKey: privateKeyEncrypted,
-    }),
-  });
+  const usersClient = createUsersClient();
 
-  const data = await response.json();
-
-  if (response.status === 500) {
-    analyticsService.track(email, 'error');
-    throw new Error('The password you introduced does not match your current password');
-  }
-
-  if (response.status !== 200) {
-    analyticsService.track(email, 'error');
-    throw new Error(data.error);
-  }
-
-  analyticsService.track(email, 'success');
+  return usersClient.changePassword(<ChangePasswordPayload>{
+    currentEncryptedPassword: encryptedCurrentPassword,
+    newEncryptedPassword: encryptedNewPassword,
+    newEncryptedSalt: encryptedNewSalt,
+    encryptedMnemonic: encryptedMnemonic,
+    encryptedPrivateKey: privateKeyEncrypted,
+  })
+    .then(() => {
+      analyticsService.track(email, 'success');
+    })
+    .catch(error => {
+      analyticsService.track(email, 'error');
+      if (error.status === 500) {
+        throw new Error('The password you introduced does not match your current password');
+      }
+      throw error;
+    });
 };
 
 export const userHas2FAStored = async (): Promise<{

@@ -1,4 +1,4 @@
-import { UserSettings } from '../../auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../teams/types';
 import { Workspace } from '../types';
 

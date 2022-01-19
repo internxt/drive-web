@@ -24,7 +24,7 @@ import { productsThunks } from 'app/store/slices/products';
 import errorService from 'app/core/services/error.service';
 import { AppView, IFormValues } from 'app/core/types';
 import navigationService from 'app/core/services/navigation.service';
-import { UserSettings } from '../../types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
 import { referralsThunks } from 'app/store/slices/referrals';
 

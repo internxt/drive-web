@@ -2,7 +2,7 @@
 import * as prettySize from 'prettysize';
 import httpService from '../../../../src/app/core/services/http.service';
 
-import { UserSettings } from 'app/auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
