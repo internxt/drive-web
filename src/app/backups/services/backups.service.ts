@@ -1,11 +1,12 @@
 import { aes } from '@internxt/lib';
 import httpService from '../../core/services/http.service';
-import { Device, DeviceBackup } from '../types';
+import { DeviceBackup } from '../types';
+import { createBackupsClient } from '../../../factory/modules';
+import { Device } from '@internxt/sdk/dist/drive/backups/types';
 
 const backupsService = {
   async getAllDevices(): Promise<Device[]> {
-    const devices = await httpService.get<Device[]>('/api/backup/device');
-
+    const devices = await createBackupsClient().getAllDevices();
     return devices.filter((device) => device.id);
   },
 
