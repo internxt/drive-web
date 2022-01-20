@@ -94,9 +94,8 @@ export function identifyPlan(newValue: number) {
 }
 
 export function trackSignOut() {
-  window.analytics.track(AnalyticsTrack.SignOut, {
-    email: getUser()?.email,
-  });
+  window.analytics.track(AnalyticsTrack.SignOut);
+  window.analytics.reset();
 }
 
 export function trackSignIn(payload: { email: string; userId: string }): void {
