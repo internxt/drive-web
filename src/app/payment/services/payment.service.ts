@@ -3,8 +3,8 @@ import { encryptPGP } from '../../crypto/services/utilspgp';
 import httpService from '../../core/services/http.service';
 import envService from '../../core/services/env.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
-import { Workspace } from '../../core/types';
 import { loadStripe, RedirectToCheckoutServerOptions, Stripe, StripeError } from '@stripe/stripe-js';
+import { createPaymentsClient } from '../../../factory/modules';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;
@@ -38,16 +38,8 @@ async function getStripe() {
 }
 
 const paymentService = {
-  async createSession(body: CreatePaymentSessionPayload): Promise<{ id: string }> {
-    const response = await httpService.post<CreatePaymentSessionPayload, { id: string }>(
-      `${process.env.REACT_APP_API_URL}/api/v2/stripe/session`,
-      body,
-      {
-        authWorkspace: Workspace.Individuals,
-      },
-    );
-
-    return response;
+  async createSession(payload: CreatePaymentSessionPayload): Promise<{ id: string }> {
+    return createPaymentsClient().createSession(payload);
   },
 
   async redirectToCheckout(options: RedirectToCheckoutServerOptions): Promise<{ error: StripeError }> {
