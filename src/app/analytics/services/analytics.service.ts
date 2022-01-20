@@ -6,7 +6,7 @@ import { UserSettings } from 'app/auth/types';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
-import { AnalyticsTrack, PriceData } from '../types';
+import { AnalyticsTrack } from '../types';
 import queryString from 'query-string';
 
 
@@ -274,10 +274,11 @@ export function trackShareLinkBucketIdUndefined(payload: { email: string }): voi
 export async function trackPaymentConversion() {
   window.analytics.page('Checkout Success');
   const queryStringParsed = queryString.parse(location.search);
-  const priceId = String(queryStringParsed.price_id);
-  const priceData: PriceData = await httpService.get(`${process.env.REACT_APP_API_URL}/api/price`, {
+  const checkoutSessionId = String(queryStringParsed.cs_id);
+  const { metadata, amount_total, currency } = await httpService.get(
+    `${process.env.REACT_APP_API_URL}/api/stripe/session`, {
     params: {
-      priceId
+      sessionId: checkoutSessionId
     }
   });
 
@@ -286,20 +287,25 @@ export async function trackPaymentConversion() {
     uuid,
     {
       email: username,
-      plan: priceId,
-      storage_limit: priceData.metadata.maxSpaceBytes,
-      plan_name: priceData.metadata.name
+      plan: metadata.priceId,
+      storage_limit: metadata.maxSpaceBytes,
+      plan_name: metadata.name
     }
   );
+  const amount = amount_total * 0.01;
   window.analytics.track(
     AnalyticsTrack.PaymentConversionEvent,
     {
-      price_id: priceId,
+      price_id: metadata.priceId,
+      product: metadata.product,
       email: username,
-      currency: priceData.currency.toUpperCase(),
-      value: priceData.unit_amount * 0.01,
-      type: priceData.type,
-      plan_name: priceData.metadata.name
+      currency: currency.toUpperCase(),
+      value: amount,
+      revenue: amount,
+      quantity: 1,
+      type: metadata.type,
+      plan_name: metadata.name,
+      impact_value: amount_total === 0 ? 5 : amount
     }
   );
 }
