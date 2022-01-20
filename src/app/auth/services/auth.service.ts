@@ -206,17 +206,16 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     });
 };
 
-export const userHas2FAStored = async (): Promise<SecurityDetails> => {
+export const userHas2FAStored = (): Promise<SecurityDetails> => {
   const email = localStorageService.getUser()?.email;
-  const authClient = createAuthClient();
-  return await authClient.securityDetails(<string>email);
+  return createAuthClient().securityDetails(<string>email);
 };
 
-export const generateNew2FA = async (): Promise<TwoFactorAuthQR> => {
+export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
   return createAuthClient().generateTwoFactorAuthQR();
 };
 
-export const deactivate2FA = async (
+export const deactivate2FA = (
   passwordSalt: string,
   deactivationPassword: string,
   deactivationCode: string,
