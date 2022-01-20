@@ -15,6 +15,7 @@ import { Keys, RegisterDetails } from '@internxt/sdk/dist/auth';
 
 import { readReferalCookie } from '../../services/auth.service';
 import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
+import SignUpAnimation from './SignUpAnimation';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
@@ -34,12 +35,6 @@ import { AppView, IFormValues } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { createAuthClient } from '../../../../factory/modules';
-
-import folderBack from '../../../../assets/images/signup-animation/folder-back.svg';
-import folderFront from '../../../../assets/images/signup-animation/folder-front.svg';
-import fileZIP from '../../../../assets/images/signup-animation/zip.svg';
-import fileDOC from '../../../../assets/images/signup-animation/doc.svg';
-import filePDF from '../../../../assets/images/signup-animation/pdf.svg';
 
 export interface SignUpViewProps {
   location: {
@@ -326,179 +321,139 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
 
   return (
     <>
-      {isDoingRegister && (
-        <div className="flex flex-col h-screen w-screen justify-center items-center cursor-default">
-          <div className='relative h-32 w-40 mb-4 pointer-events-none'>
-            <img className="absolute top-0 left-0 object-contain w-full h-full" src={folderBack} alt="" />
-            <img
-              className={`absolute object-contain w-16 h-16 transition-all duration-250 ease-in-out
-              ${animationStep >= 3 ?
-                '-top-3 left-1/3 transform -translate-x-10 -rotate-12 scale-90'
-                :
-                'top-12 left-1/3 transform -translate-x-2 -rotate-12 scale-50'
-              }`}
-              src={filePDF}
-              alt=""
-            />
-            <img
-              className={`absolute object-contain w-16 h-16 transition-all duration-250 ease-in-out
-              ${animationStep >= 6 ?
-                '-top-2 left-1/2 transform -translate-x-7 rotate-3 scale-90'
-                :
-                'top-10 left-1/2 transform -translate-x-8 rotate-3 scale-50'
-              }`}
-              src={fileDOC}
-              alt=""
-            />
-            <img
-              className={`absolute object-contain w-16 h-16 transition-all duration-250 ease-in-out
-              ${animationStep >= 9 ?
-                'top-0 left-1/2 transform translate-x-2 rotate-30 scale-90'
-                :
-                'top-10 left-1/2 transform -translate-x-6 rotate-30 scale-50'
-              }`}
-              src={fileZIP}
-              alt=""
-            />
-            <img className="absolute top-0 left-0 object-contain w-full h-full" src={folderFront} alt="" />
-          </div>
+      {isDoingRegister ?
+        (
+          <SignUpAnimation step={animationStep} />
+        )
+        :
+        (
+          <div className="flex h-full w-full">
+            <AuthSideInfo title="" subtitle="" />
 
-          <div className="flex flex-col items-center justify-center">
-            <p className="text-2xl font-semibold text-cool-gray-90">Preparing your workspace</p>
-            <div className="relative text-base font-medium text-cool-gray-40">
-              This may take a few seconds...
-            </div>
-          </div>
-        </div>
-      )}
+            <div className="flex flex-col items-center justify-center w-full">
+              <form className="flex flex-col w-72" onSubmit={handleSubmit(getReCaptcha)}>
+                <span className="text-base font-semibold text-neutral-900 mt-1.5 mb-6">Create an Internxt account</span>
 
-      {!isDoingRegister && (
-        <div className="flex h-full w-full">
-          <AuthSideInfo title="" subtitle="" />
+                <BaseInput
+                  className="mb-2.5"
+                  placeholder="Name"
+                  label="name"
+                  type="text"
+                  icon={<UilUser className="w-4" />}
+                  register={register}
+                  required={true}
+                  minLength={{ value: 1, message: 'Name must not be empty' }}
+                  error={errors.name}
+                />
 
-          <div className="flex flex-col items-center justify-center w-full">
-            <form className="flex flex-col w-72" onSubmit={handleSubmit(getReCaptcha)}>
-              <span className="text-base font-semibold text-neutral-900 mt-1.5 mb-6">Create an Internxt account</span>
+                <BaseInput
+                  className="mb-2.5"
+                  placeholder="Lastname"
+                  label="lastname"
+                  type="text"
+                  icon={<UilUser className="w-4" />}
+                  register={register}
+                  required={true}
+                  minLength={{ value: 1, message: 'Lastname must not be empty' }}
+                  error={errors.lastname}
+                />
 
-              <BaseInput
-                className="mb-2.5"
-                placeholder="Name"
-                label="name"
-                type="text"
-                icon={<UilUser className="w-4" />}
-                register={register}
-                required={true}
-                minLength={{ value: 1, message: 'Name must not be empty' }}
-                error={errors.name}
-              />
+                <BaseInput
+                  className="mb-2.5"
+                  placeholder="Email"
+                  label="email"
+                  type="email"
+                  disabled={hasEmailParam}
+                  icon={<UilEnvelope className="w-4" />}
+                  register={register}
+                  required={true}
+                  minLength={{ value: 1, message: 'Email must not be empty' }}
+                  pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+                  error={errors.email}
+                />
 
-              <BaseInput
-                className="mb-2.5"
-                placeholder="Lastname"
-                label="lastname"
-                type="text"
-                icon={<UilUser className="w-4" />}
-                register={register}
-                required={true}
-                minLength={{ value: 1, message: 'Lastname must not be empty' }}
-                error={errors.lastname}
-              />
-
-              <BaseInput
-                className="mb-2.5"
-                placeholder="Email"
-                label="email"
-                type="email"
-                disabled={hasEmailParam}
-                icon={<UilEnvelope className="w-4" />}
-                register={register}
-                required={true}
-                minLength={{ value: 1, message: 'Email must not be empty' }}
-                pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
-                error={errors.email}
-              />
-
-              <BaseInput
-                className="mb-2.5"
-                placeholder="Password"
-                label="password"
-                type={showPassword ? 'text' : 'password'}
-                icon={
-                  password ? (
-                    showPassword ? (
-                      <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
+                <BaseInput
+                  className="mb-2.5"
+                  placeholder="Password"
+                  label="password"
+                  type={showPassword ? 'text' : 'password'}
+                  icon={
+                    password ? (
+                      showPassword ? (
+                        <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
+                      ) : (
+                        <UilEye className="w-4" onClick={() => setShowPassword(true)} />
+                      )
                     ) : (
-                      <UilEye className="w-4" onClick={() => setShowPassword(true)} />
+                      <UilLock className="w-4" />
                     )
-                  ) : (
-                    <UilLock className="w-4" />
-                  )
-                }
-                register={register}
-                required={true}
-                minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
-                error={errors.password}
-                pattern={{
-                  value: isValidPasswordRegex,
-                  message: 'The password must contain lowercase/uppercase letters and at least a number',
-                }}
-              />
+                  }
+                  register={register}
+                  required={true}
+                  minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
+                  error={errors.password}
+                  pattern={{
+                    value: isValidPasswordRegex,
+                    message: 'The password must contain lowercase/uppercase letters and at least a number',
+                  }}
+                />
 
-              <BaseInput
-                className="mb-2.5"
-                placeholder="Confirm new password"
-                label="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
-                icon={
-                  confirmPassword ? (
-                    showConfirmPassword ? (
-                      <UilEyeSlash className="w-4" onClick={() => setShowConfirmPassword(false)} />
+                <BaseInput
+                  className="mb-2.5"
+                  placeholder="Confirm new password"
+                  label="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  icon={
+                    confirmPassword ? (
+                      showConfirmPassword ? (
+                        <UilEyeSlash className="w-4" onClick={() => setShowConfirmPassword(false)} />
+                      ) : (
+                        <UilEye className="w-4" onClick={() => setShowConfirmPassword(true)} />
+                      )
                     ) : (
-                      <UilEye className="w-4" onClick={() => setShowConfirmPassword(true)} />
+                      <UilLock className="w-4" />
                     )
-                  ) : (
-                    <UilLock className="w-4" />
-                  )
-                }
-                register={register}
-                required={true}
-                minLength={{ value: 1, message: 'Password must not be empty' }}
-                error={errors.confirmPassword}
-              />
+                  }
+                  register={register}
+                  required={true}
+                  minLength={{ value: 1, message: 'Password must not be empty' }}
+                  error={errors.confirmPassword}
+                />
 
-              <div className="mt-1 mb-2">
-                <span className="text-red-60 text-sm font-medium">{bottomInfoError}</span>
+                <div className="mt-1 mb-2">
+                  <span className="text-red-60 text-sm font-medium">{bottomInfoError}</span>
+                </div>
+
+                <span className="text-xs font-normal text-neutral-500 text-justify mb-3">
+                  Internxt uses your password to encrypt and decrypt your files. Due to the secure nature
+                  of Internxt, we don't know your password. That means that if you forget it, your files
+                  will be gone. With us, you're the only owner of your files.
+                </span>
+
+                <BaseCheckbox
+                  label="acceptTerms"
+                  text="Accept terms, conditions and privacy policy"
+                  required={true}
+                  register={register}
+                  additionalStyling="mt-2 -mb-0"
+                />
+
+                <div className="mt-3" />
+                <AuthButton
+                  isDisabled={isLoading || !isValid}
+                  text="Create an account"
+                  textWhenDisabled={isValid ? 'Encrypting...' : 'Create an account'}
+                />
+              </form>
+
+              <div className="flex justify-center items-center w-full mt-2">
+                <span className="text-sm text-neutral-500 ml-3 select-none mr-2">Already registered?</span>
+                <Link to="/login">Log in </Link>
               </div>
-
-              <span className="text-xs font-normal text-neutral-500 text-justify mb-3">
-                Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we
-                don't know your password. That means that if you forget it, your files will be gone. With us, you're the
-                only owner of your files.
-              </span>
-
-              <BaseCheckbox
-                label="acceptTerms"
-                text="Accept terms, conditions and privacy policy"
-                required={true}
-                register={register}
-                additionalStyling="mt-2 -mb-0"
-              />
-
-              <div className="mt-3" />
-              <AuthButton
-                isDisabled={isLoading || !isValid}
-                text="Create an account"
-                textWhenDisabled={isValid ? 'Encrypting...' : 'Create an account'}
-              />
-            </form>
-
-            <div className="flex justify-center items-center w-full mt-2">
-              <span className="text-sm text-neutral-500 ml-3 select-none mr-2">Already registered?</span>
-              <Link to="/login">Log in </Link>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </>
   );
 };
