@@ -76,7 +76,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     for (const file of files) {
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-      const [parentFolderContentPromise, cancelTokenSource] = storageClient.getFolderContent(parentFolderId);
+      const [parentFolderContentPromise, requestCanceler] = storageClient.getFolderContent(parentFolderId);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
         action: TaskType.UploadFile,
@@ -85,7 +85,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         isFileNameValidated: false,
         showNotification: !!options?.showNotifications,
         cancellable: true,
-        stop: async () => cancelTokenSource.cancel(),
+        stop: async () => requestCanceler.cancel(),
       });
 
       const parentFolderContent = await parentFolderContentPromise;

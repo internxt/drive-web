@@ -28,7 +28,7 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
     const currentFolderId = storageSelectors.currentFolderId(getState());
 
     try {
-      const [createdFolderPromise, cancelTokenSource] = folderService.createFolder(parentFolderId, folderName);
+      const [createdFolderPromise, requestCanceler] = folderService.createFolder(parentFolderId, folderName);
 
       const taskId = tasksService.create<CreateFolderTask>({
         relatedTaskId: options.relatedTaskId,
@@ -37,7 +37,7 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
         parentFolderId: parentFolderId,
         showNotification: false,
         cancellable: false,
-        stop: async () => cancelTokenSource.cancel(),
+        stop: async () => requestCanceler.cancel(),
       });
 
       const createdFolder = await createdFolderPromise;

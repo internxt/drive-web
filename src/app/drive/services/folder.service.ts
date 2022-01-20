@@ -9,7 +9,7 @@ import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createStorageClient } from '../../../factory/modules';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { CancelTokenSource } from 'axios';
+import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 
 export interface IFolders {
   bucket: string;
@@ -68,14 +68,14 @@ export function createFolder(
   folderName: string,
 ): [
   Promise<StorageTypes.CreateFolderResponse>,
-  CancelTokenSource
+  RequestCanceler
 ] {
   const payload: StorageTypes.CreateFolderPayload = {
     parentFolderId: currentFolderId,
     folderName: folderName
   };
   const storageClient = createStorageClient();
-  const [createdFolderPromise, cancelTokenSource] = storageClient.createFolder(payload);
+  const [createdFolderPromise, requestCanceler] = storageClient.createFolder(payload);
 
   const finalPromise = createdFolderPromise
     .then(response => {
@@ -90,7 +90,7 @@ export function createFolder(
       throw errorService.castError(error);
     });
 
-  return [finalPromise, cancelTokenSource];
+  return [finalPromise, requestCanceler];
 }
 
 export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
