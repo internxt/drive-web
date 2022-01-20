@@ -1,5 +1,12 @@
 import { aes } from '@internxt/lib';
-import { CryptoProvider, Keys, LoginDetails, Password, UserAccessError } from '@internxt/sdk/dist/auth';
+import {
+  CryptoProvider,
+  Keys,
+  LoginDetails,
+  Password,
+  SecurityDetails, TwoFactorAuthQR,
+  UserAccessError
+} from '@internxt/sdk/dist/auth';
 import {
   decryptText,
   decryptTextWithKey,
@@ -13,9 +20,8 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import navigationService from 'app/core/services/navigation.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
-import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.service';
-import { AppView, Workspace } from 'app/core/types';
+import { AppView } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAuthClient, createUsersClient } from '../../../factory/modules';
@@ -29,31 +35,25 @@ export async function logOut(): Promise<void> {
 }
 
 export function cancelAccount(): Promise<void> {
-  return httpService
-    .get<void>('/api/deactivate', { authWorkspace: Workspace.Individuals })
+  const email = localStorageService.getUser()?.email;
+  return createAuthClient().sendDeactivationEmail(<string>email)
     .then(() => {
       notificationsService.show(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
     })
-    .catch((err) => {
+    .catch(() => {
       notificationsService.show(i18n.get('error.deactivatingAccount'), ToastType.Warning);
-      console.log(err);
-      throw err;
     });
 }
 
-export const check2FANeeded = async (email: string): Promise<{ hasKeys: boolean; sKey: string; tfa: boolean }> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
-    method: 'POST',
-    headers: httpService.getHeaders(true, true),
-    body: JSON.stringify({ email }),
-  });
-  const data = await response.json();
+export const is2FANeeded = async (email: string): Promise<boolean> => {
+  const authClient = createAuthClient();
+  const securityDetails = await authClient.securityDetails(email)
+    .catch(error => {
+      analyticsService.signInAttempted(email, error.message);
+      throw new Error(error.message ?? 'Login error');
+    });
 
-  if (response.status !== 200) {
-    analyticsService.signInAttempted(email, data.error);
-    throw new Error(data.error ? data.error : 'Login error');
-  }
-  return data;
+  return securityDetails.tfaEnabled;
 };
 
 const generateNewKeysWithEncrypted = async (password: string) => {
@@ -150,16 +150,9 @@ export const readReferalCookie = (): string | undefined => {
 
 export const getSalt = async (): Promise<string> => {
   const email = localStorageService.getUser()?.email;
-
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
-    method: 'post',
-    headers: httpService.getHeaders(false, false),
-    body: JSON.stringify({ email }),
-  });
-  const data = await response.json();
-  const salt = decryptText(data.sKey);
-
-  return salt;
+  const authClient = createAuthClient();
+  const securityDetails = await authClient.securityDetails(String(email));
+  return decryptText(securityDetails.encryptedSalt);
 };
 
 export const getPasswordDetails = async (
@@ -213,34 +206,16 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     });
 };
 
-export const userHas2FAStored = async (): Promise<{
-  has2fa: boolean;
-  data: { hasKeys: boolean; sKey: string; tfa: boolean };
-}> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
-    method: 'POST',
-    headers: httpService.getHeaders(true, false),
-    body: JSON.stringify({ email: JSON.parse(localStorage.xUser).email }),
-  });
-  const data = await response.json();
-
-  return { has2fa: typeof data.tfa === 'boolean', data };
+export const userHas2FAStored = (): Promise<SecurityDetails> => {
+  const email = localStorageService.getUser()?.email;
+  return createAuthClient().securityDetails(<string>email);
 };
 
-export const generateNew2FA = async (): Promise<{ qr: string; code: string }> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
-    method: 'GET',
-    headers: httpService.getHeaders(true, false),
-  });
-  const data = await response.json();
-
-  if (response.status !== 200) {
-    throw new Error(data);
-  }
-  return data;
+export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
+  return createAuthClient().generateTwoFactorAuthQR();
 };
 
-export const deactivate2FA = async (
+export const deactivate2FA = (
   passwordSalt: string,
   deactivationPassword: string,
   deactivationCode: string,
@@ -248,42 +223,19 @@ export const deactivate2FA = async (
   const salt = decryptText(passwordSalt);
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
-
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
-    method: 'DELETE',
-    headers: httpService.getHeaders(true, false),
-    body: JSON.stringify({
-      pass: encPass,
-      code: deactivationCode,
-    }),
-  });
-  const data = await response.json();
-
-  if (response.status !== 200) {
-    throw new Error(data.error);
-  }
+  const authClient = createAuthClient();
+  return authClient.disableTwoFactorAuth(encPass, deactivationCode);
 };
 
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tfa`, {
-    method: 'PUT',
-    headers: httpService.getHeaders(true, false),
-    body: JSON.stringify({
-      key: code,
-      code: twoFactorCode,
-    }),
-  });
-  const data = await response.json();
-
-  if (response.status !== 200) {
-    throw new Error(data.error);
-  }
+  const authClient = createAuthClient();
+  return authClient.storeTwoFactorAuthKey(code, twoFactorCode);
 };
 
 const authService = {
   logOut,
   doLogin,
-  check2FANeeded,
+  check2FANeeded: is2FANeeded,
   readReferalCookie,
   cancelAccount,
   store2FA,

@@ -1,6 +1,5 @@
-import httpService from '../../core/services/http.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { createUsersClient } from '../../../factory/modules';
+import { createAuthClient, createUsersClient } from '../../../factory/modules';
 import { InitializeUserResponse } from '@internxt/sdk/dist/drive/users/types';
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
@@ -8,7 +7,7 @@ export async function initializeUser(email: string, mnemonic: string): Promise<I
 }
 
 export const sendDeactivationEmail = (email: string): Promise<void> => {
-  return httpService.get<void>(`/api/reset/${email}`);
+  return createAuthClient().sendDeactivationEmail(email);
 };
 
 const inviteAFriend = (email: string): Promise<void> => {
