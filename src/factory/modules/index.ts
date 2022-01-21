@@ -51,7 +51,7 @@ export function createPaymentsClient(): Payments {
 }
 
 function getApiUrl(): ApiUrl {
-  return process.env.REACT_APP_API_URL;
+  return process.env.REACT_APP_API_URL + '/api';
 }
 
 function getAppDetails(): AppDetails {
