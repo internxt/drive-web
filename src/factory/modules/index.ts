@@ -1,4 +1,4 @@
-import { Storage, Share, Users, Referrals, Payments } from '@internxt/sdk/dist/drive';
+import { Storage, Share, Users, Referrals, Payments, Backups } from '@internxt/sdk/dist/drive';
 import { Auth, Token } from '@internxt/sdk/dist/auth';
 import {
   ApiSecurity, ApiUrl,
@@ -48,6 +48,13 @@ export function createPaymentsClient(): Payments {
   const appDetails = getAppDetails();
   const apiSecurity = getApiSecurity();
   return Payments.client(apiUrl, appDetails, apiSecurity);
+}
+
+export function createBackupsClient(): Backups {
+  const apiUrl = getApiUrl();
+  const appDetails = getAppDetails();
+  const apiSecurity = getApiSecurity();
+  return Backups.client(apiUrl, appDetails, apiSecurity);
 }
 
 function getApiUrl(): ApiUrl {
