@@ -1,5 +1,5 @@
 export enum AnalyticsTrack {
-  SignOut = 'user-signout',
+  SignOut = 'User SignOut',
   SignIn = 'user-signin',
   SignInAttempted = 'user-signin-attempted',
   SignUp = 'User Signup',

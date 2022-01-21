@@ -6,7 +6,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
-import { AnalyticsTrack, PriceData } from '../types';
+import { AnalyticsTrack } from '../types';
 import queryString from 'query-string';
 
 
@@ -94,9 +94,8 @@ export function identifyPlan(newValue: number) {
 }
 
 export function trackSignOut() {
-  window.analytics.track(AnalyticsTrack.SignOut, {
-    email: getUser()?.email,
-  });
+  window.analytics.track(AnalyticsTrack.SignOut);
+  window.analytics.reset();
 }
 
 export function trackSignIn(payload: { email: string; userId: string }): void {
@@ -272,46 +271,55 @@ export function trackShareLinkBucketIdUndefined(payload: { email: string }): voi
 }
 
 export async function trackPaymentConversion() {
-
   try {
     window.analytics.page('Checkout Success');
     const queryStringParsed = queryString.parse(location.search);
-    const priceId = String(queryStringParsed.price_id);
-
-    const priceData: PriceData = await httpService.get(`${process.env.REACT_APP_API_URL}/api/price`, {
+    const checkoutSessionId = String(queryStringParsed.cs_id);
+    const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
+      `${process.env.REACT_APP_API_URL}/api/stripe/session`, {
       params: {
-        priceId
+        sessionId: checkoutSessionId
       }
     });
-
     const { username, uuid } = getUser();
+    const amount = amount_total * 0.01;
+
     window.analytics.identify(
       uuid,
       {
         email: username,
-        plan: priceId,
-        storage_limit: priceData.metadata.maxSpaceBytes,
-        plan_name: priceData.metadata.name
+        plan: metadata.priceId,
+        customer_id: customer,
+        storage_limit: metadata.maxSpaceBytes,
+        plan_name: metadata.name,
+        subscription_id: subscription,
+        payment_intent
       }
     );
     window.analytics.track(
       AnalyticsTrack.PaymentConversionEvent,
       {
-        price_id: priceId,
+        price_id: metadata.priceId,
+        product: metadata.product,
         email: username,
-        currency: priceData.currency.toUpperCase(),
-        value: priceData.unit_amount * 0.01,
-        type: priceData.type,
-        plan_name: priceData.metadata.name
+        customer_id: customer,
+        currency: currency.toUpperCase(),
+        value: amount,
+        revenue: amount,
+        quantity: 1,
+        type: metadata.type,
+        plan_name: metadata.name,
+        impact_value: amount_total === 0 ? 5 : amount,
+        subscription_id: subscription,
+        payment_intent,
       }
     );
   }
   catch (err) {
-    window.analytics.track(
-      'Signup After Payment Error'
-    );
+    window.analytics.track('Error Signup After Payment Conversion');
   }
-};
+
+}
 
 const analyticsService = {
   page,
