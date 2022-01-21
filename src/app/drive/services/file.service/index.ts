@@ -7,7 +7,7 @@ import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import uploadFile from './uploadFile';
 import * as uuid from 'uuid';
-import { createStorageClient } from '../../../../factory/modules';
+import { createStorageClient } from '../../../core/factory/sdk';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 
 export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {

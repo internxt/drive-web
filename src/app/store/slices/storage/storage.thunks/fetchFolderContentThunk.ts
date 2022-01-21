@@ -8,7 +8,7 @@ import i18n from '../../../../i18n/services/i18n.service';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveItemData } from '../../../../drive/types';
-import { createStorageClient } from '../../../../../factory/modules';
+import { createStorageClient } from '../../../../core/factory/sdk';
 
 export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchFolderContent',

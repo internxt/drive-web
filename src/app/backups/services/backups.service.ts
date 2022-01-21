@@ -1,5 +1,5 @@
 import { aes } from '@internxt/lib';
-import { createBackupsClient } from '../../../factory/modules';
+import { createBackupsClient } from '../../core/factory/sdk';
 import { Device, DeviceBackup } from '@internxt/sdk/dist/drive/backups/types';
 
 const backupsService = {

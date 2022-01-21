@@ -4,9 +4,9 @@ import {
   ApiSecurity, ApiUrl,
   AppDetails
 } from '@internxt/sdk/dist/shared';
-import packageJson from '../../../package.json';
-import localStorageService from '../../app/core/services/local-storage.service';
-import { LocalStorageItem, Workspace } from '../../app/core/types';
+import packageJson from '../../../../../package.json';
+import localStorageService from '../../services/local-storage.service';
+import { LocalStorageItem, Workspace } from '../../types';
 
 export function createAuthClient(): Auth {
   const apiUrl = getApiUrl();
@@ -95,3 +95,4 @@ function getToken(workspace: string): Token {
 function getWorkspace(): string {
   return (localStorageService.get(LocalStorageItem.Workspace) as Workspace) || Workspace.Individuals;
 }
+

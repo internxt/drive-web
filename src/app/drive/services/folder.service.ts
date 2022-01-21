@@ -7,7 +7,7 @@ import analyticsService from '../../analytics/services/analytics.service';
 import i18n from '../../i18n/services/i18n.service';
 import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { createStorageClient } from '../../../factory/modules';
+import { createStorageClient } from '../../core/factory/sdk';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 

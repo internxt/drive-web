@@ -1,5 +1,5 @@
 import { bytesToString } from './size.service';
-import { createStorageClient } from '../../../factory/modules';
+import { createStorageClient } from '../../core/factory/sdk';
 
 export const INFINITE_LIMIT = 108851651149824;
 

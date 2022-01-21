@@ -1,6 +1,6 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { items as itemUtils } from '@internxt/lib';
-import { createStorageClient } from '../../../../../factory/modules';
+import { createStorageClient } from '../../../../core/factory/sdk';
 
 import { storageActions, storageSelectors } from '..';
 import { StorageState } from '../storage.model';
