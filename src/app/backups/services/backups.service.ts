@@ -1,5 +1,4 @@
 import { aes } from '@internxt/lib';
-import httpService from '../../core/services/http.service';
 import { createBackupsClient } from '../../../factory/modules';
 import { Device, DeviceBackup } from '@internxt/sdk/dist/drive/backups/types';
 
@@ -22,11 +21,11 @@ const backupsService = {
     });
   },
 
-  async deleteBackup(backup: DeviceBackup): Promise<void> {
-    await createBackupsClient().deleteBackup(backup.id);
+  deleteBackup(backup: DeviceBackup): Promise<void> {
+    return createBackupsClient().deleteBackup(backup.id);
   },
-  async deleteDevice(device: Device): Promise<void> {
-    await httpService.delete<void>(`/api/backup/device/${device.id}`);
+  deleteDevice(device: Device): Promise<void> {
+    return createBackupsClient().deleteDevice(device.id);
   },
 };
 
