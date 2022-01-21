@@ -157,7 +157,12 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
         });
 
         if (activate === 'activate') {
-          analyticsService.trackPaymentConversion();
+          analyticsService.trackPaymentConversion()
+            .catch((err) =>
+              analytics.track('Payment Conversion Error', {
+                msg: err.message
+              })
+            );
         }
         return dispatch(userThunks.initializeUserThunk()).then(() => {
           localStorageService.set('xToken', xToken);
