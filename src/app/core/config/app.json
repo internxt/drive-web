@@ -34,6 +34,12 @@
       "exact": true
     },
     {
+      "id": "recover",
+      "layout": "empty",
+      "path": "/recover",
+      "exact": true
+    },
+    {
       "id": "drive",
       "layout": "header-and-sidenav",
       "path": "/app",

@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 import { aes } from '@internxt/lib';
 
-import { getShareInfo, GetShareInfoResponse } from 'app/share/services/share.service';
+import { getShareInfo } from 'app/share/services/share.service';
 import { ReactComponent as Spinner } from 'assets/icons/spinner.svg';
 import { ReactComponent as Logo } from 'assets/icons/big-logo.svg';
 import iconService from 'app/drive/services/icon.service';
@@ -17,12 +17,13 @@ import i18n from 'app/i18n/services/i18n.service';
 import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';
 import errorService from 'app/core/services/error.service';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
 
 export interface ShareViewProps {
   match: match<{ token: string }>;
 }
 
-interface GetShareInfoWithDecryptedName extends GetShareInfoResponse {
+interface GetShareInfoWithDecryptedName extends ShareTypes.GetShareInfoResponse {
   decryptedName: string | null;
 }
 
@@ -44,6 +45,14 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
   };
 
   loadInfo = async () => {
+    // ! iOS Chrome is not supported
+    if (navigator.userAgent.match('CriOS')) {
+      this.setState({
+        ...this.state,
+        error: new Error('Chrome iOS not supported. Use Safari to proceed'),
+      });
+    }
+
     this.setState({
       accessedFile: true,
     });
@@ -54,11 +63,6 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
       const info = await getShareInfo(token).catch(() => {
         throw new Error(i18n.get('error.linkExpired'));
       });
-
-      // ! iOS Chrome not supported
-      if (navigator.userAgent.match('CriOS')) {
-        throw new Error(i18n.get('error.browserNotSupported', { userAgent: navigator.userAgent }));
-      }
 
       this.setState({
         info: {
@@ -97,7 +101,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     }
   };
 
-  getDecryptedName(info: GetShareInfoResponse): string {
+  getDecryptedName(info: ShareTypes.GetShareInfoResponse): string {
     const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.fileMeta.folderId.toString()}`;
     const decryptedFilename = aes.decrypt(info.fileMeta.name, salt);
     const type = info.fileMeta.type;

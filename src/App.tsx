@@ -18,7 +18,7 @@ import { AppDispatch, RootState } from './app/store';
 import { initializeUserThunk } from './app/store/slices/user';
 import { uiActions } from './app/store/slices/ui';
 import { DriveFileData } from './app/drive/types';
-import { UserSettings } from './app/auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import views from './app/core/config/views';
 import FileViewer from './app/drive/components/FileViewer/FileViewer';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';

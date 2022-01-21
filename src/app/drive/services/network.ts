@@ -2,7 +2,7 @@ import { Environment } from '@internxt/inxt-js';
 import { ActionState, FileInfo } from '@internxt/inxt-js/build/api';
 import { Readable } from 'stream';
 import localStorageService from '../../core/services/local-storage.service';
-import { UserSettings } from '../../auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../teams/types';
 import * as blobToStream from 'blob-to-stream';
 import * as uuid from 'uuid';

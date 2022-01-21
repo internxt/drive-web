@@ -27,16 +27,15 @@ const AccountSecurityTab = (): JSX.Element => {
   const [disableSubmit, setDisableSubmit] = useState(false);
   const check2FA = async () => {
     try {
-      const { has2fa, data } = await userHas2FAStored();
+      const { tfaEnabled, encryptedSalt } = await userHas2FAStored();
 
-      if (!has2fa) {
-        const bidi = await generateNew2FA();
-
-        setQr(bidi.qr);
-        setBackupKey(bidi.code);
+      if (!tfaEnabled) {
+        const { qr, backupKey } = await generateNew2FA();
+        setQr(qr);
+        setBackupKey(backupKey);
       } else {
         setHas2FA(true);
-        setPasswordSalt(data.sKey);
+        setPasswordSalt(encryptedSalt);
         setCurrentStep(0);
         setDisableSubmit(false);
       }
@@ -121,7 +120,7 @@ const AccountSecurityTab = (): JSX.Element => {
                            p-6 shadow-xl rounded-2xl space-y-6"
                 onKeyUp={() => { currentStep === steps.length - 1 && check2FALenght(); }}
               >
-                
+
                 <div className="modal_title flex flex-col">
                   <span className="text-sm font-medium text-m-neutral-100">
                     {i18n.get('views.account.tabs.security.two-factor-auth.stepsLabel',
@@ -249,7 +248,7 @@ const AccountSecurityTab = (): JSX.Element => {
                 className="relative flex flex-col w-full md:w-156 max-w-lg transition-all transform bg-white
                            p-6 shadow-xl rounded-2xl space-y-6"
               >
-                
+
                 <div className="modal_title flex flex-col">
                   <Dialog.Title
                     as="h3"

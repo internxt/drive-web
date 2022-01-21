@@ -20,7 +20,7 @@ import sessionThunks from '../../../store/slices/session/session.thunks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import navigationService from '../../services/navigation.service';
 import { AppView, Workspace } from '../../types';
-import { UserSettings } from '../../../auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 
 interface NavbarProps {

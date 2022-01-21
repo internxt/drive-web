@@ -2,12 +2,14 @@
 	"baseUrl": "http://localhost:3000",
 	"chromeWebSecurity": false,
 	"defaultCommandTimeout": 60000,
+	"pluginsFile": "cypress/plugins/index.ts",
 	"testFiles": [
 		"signup.spec.ts",
 		"upload-file.spec.ts",
 		"download-file.spec.ts",
 		"share-file.spec.ts",
 		"delete-file.spec.ts",
-		"drag-and-drop.spec.ts"
+		"drag-and-drop.spec.ts",
+		"change-password.spec.ts"
 	]
 }

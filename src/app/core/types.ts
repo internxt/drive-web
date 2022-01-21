@@ -13,6 +13,7 @@ export interface IFormValues {
   lastname: string;
   email: string;
   password: string;
+  lastPassword: string;
   currentPassword: string;
   twoFactorCode: string;
   confirmPassword: string;
@@ -99,6 +100,7 @@ export enum AppView {
   Signup = 'signup',
   AppSumo = 'appsumo',
   Login = 'login',
+  Recover = 'recover',
   Drive = 'drive',
   Recents = 'recents',
   Backups = 'backups',
