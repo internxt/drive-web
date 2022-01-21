@@ -316,9 +316,7 @@ export async function trackPaymentConversion() {
     );
   }
   catch (err) {
-    window.analytics.track('Error Signup After Payment Conversion', {
-      msg: err.message
-    });
+    window.analytics.track('Error Signup After Payment Conversion');
   }
 
 }
