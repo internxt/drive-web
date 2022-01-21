@@ -4,7 +4,7 @@ import httpService from '../../core/services/http.service';
 import envService from '../../core/services/env.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
 import { loadStripe, RedirectToCheckoutServerOptions, Stripe, StripeError } from '@stripe/stripe-js';
-import { createPaymentsClient } from '../../../factory/modules';
+import { createPaymentsClient } from '../../core/factory/sdk';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;

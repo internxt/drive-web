@@ -1,5 +1,5 @@
 import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
-import { createStorageClient } from '../../../factory/modules';
+import { createStorageClient } from '../../core/factory/sdk';
 
 export async function fetchUsage(): Promise<UsageResponse> {
   return createStorageClient().spaceUsage();

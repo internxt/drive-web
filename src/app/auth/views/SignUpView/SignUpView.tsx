@@ -33,7 +33,7 @@ import httpService from 'app/core/services/http.service';
 import { AppView, IFormValues } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { referralsThunks } from 'app/store/slices/referrals';
-import { createAuthClient } from '../../../../factory/modules';
+import { createAuthClient } from '../../../core/factory/sdk';
 
 export interface SignUpViewProps {
   location: {

@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { createAuthClient, createUsersClient } from '../../../factory/modules';
+import { createAuthClient, createUsersClient } from '../../core/factory/sdk';
 import { InitializeUserResponse } from '@internxt/sdk/dist/drive/users/types';
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {

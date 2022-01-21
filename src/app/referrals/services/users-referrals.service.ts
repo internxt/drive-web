@@ -1,5 +1,5 @@
 import { UserReferral, ReferralKey } from '@internxt/sdk/dist/drive/referrals/types';
-import { createReferralsClient } from '../../../factory/modules';
+import { createReferralsClient } from '../../core/factory/sdk';
 
 
 const usersReferralsService = {
