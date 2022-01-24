@@ -7,6 +7,8 @@ import {
 import packageJson from '../../../../../package.json';
 import localStorageService from '../../services/local-storage.service';
 import { LocalStorageItem, Workspace } from '../../types';
+import authService from '../../../auth/services/auth.service';
+import tasksService from '../../../tasks/services/tasks.service';
 
 export function createAuthClient(): Auth {
   const apiUrl = getApiUrl();
@@ -72,7 +74,11 @@ function getApiSecurity(): ApiSecurity {
   const workspace = getWorkspace();
   return {
     mnemonic: getMnemonic(workspace),
-    token: getToken(workspace)
+    token: getToken(workspace),
+    unauthorizedCallback: async () => {
+      authService.logOut();
+      tasksService.clearTasks();
+    }
   };
 }
 
