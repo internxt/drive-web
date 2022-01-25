@@ -2,12 +2,15 @@ import { Environment } from '@internxt/inxt-js';
 import { ActionState, FileInfo } from '@internxt/inxt-js/build/api';
 import { Readable } from 'stream';
 import localStorageService from '../../../core/services/local-storage.service';
-import { UserSettings } from '../../../auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { Sha256 } from 'asmcrypto.js';
-import { createCipheriv } from 'crypto';
+import { createCipheriv, randomBytes } from 'crypto';
 import { request } from 'https';
-import { prepareUpload } from './requests';
+import { finishUpload, getUploadUrl, prepareUpload } from './requests';
+import { calculateEncryptedFileHash, uploadFile } from './upload';
+import { createAES256Cipher, encryptFilename } from './crypto';
+import { v4 } from 'uuid';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 50 * 1024 * 1024 * 1024;
 
@@ -35,9 +38,11 @@ interface EnvironmentConfig {
 export class Network {
   private environment: Environment;
 
+  private mnemonic: string;
+
   private creds: {
-    user: string,
-    pass: string
+    user: string;
+    pass: string;
   };
 
   constructor(bridgeUser: string, bridgePass: string, encryptionKey: string) {
@@ -55,8 +60,10 @@ export class Network {
 
     this.creds = {
       user: bridgeUser,
-      pass: bridgePass
+      pass: bridgePass,
     };
+
+    this.mnemonic = encryptionKey;
 
     this.environment = new Environment({
       bridgePass,
@@ -213,124 +220,26 @@ export class Network {
     return [promise, actionState];
   }
 
-  async uploadTest(file: File) {
-    console.log('Filename', file.name);
-    console.log('hola estoy aqui');
-
-    console.time('FILE_HASING');
-
-    const readable = file.stream().getReader();
-
-    let done = false;
-    const hasher = new Sha256();
-    // const hasher = new sjcl.hash.sha256();
-
-    while (!done) {
-      const status = await readable.read();
-
-      if (!status.done) {
-        hasher.process(status.value);
-      }
-
-      done = status.done;
-    }
-    hasher.finish();
-    console.timeEnd('FILE_HASING');
-    console.log(Buffer.from(hasher.result!).toString('hex'));
-  }
-
-  async encryptFile(file: File) {
-    const readable = file.stream().getReader();
-    const hasher = new Sha256();
-
-    console.time('FILE_HASING');
-
-    let done = false;
-    const key = Buffer.from('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex');
-    const iv = Buffer.from('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex');
-    const cipher = createCipheriv('aes-256-ctr', key, iv);
-
-    while (!done) {
-      const status = await readable.read();
-
-      if (!status.done) {
-        hasher.process(cipher.update(status.value));
-      }
-
-      done = status.done;
-    }
-
-    // hasher.process(cipher.final());
-    hasher.finish();
-
-    console.timeEnd('FILE_HASING');
-    console.log(Buffer.from(hasher.result!).toString('hex'));
-  }
-
   async doUpload(bucketId: string, params: IUploadParams) {
-    await prepareUpload(bucketId, this.creds);
-    const fileHash = await this.calculateFileHash(params.filecontent);
-    const uploadUrl = await this.getUploadUrl();
-    await uploadFile(params.filecontent, uploadUrl);
-    await finishUpload();
-  }
+    const file: File = params.filecontent;
+    const frameId = await prepareUpload(bucketId, this.creds);
 
-  async calculateFileHash(file: File): Promise<string> {
-    const readable = file.stream().getReader();
-    const hasher = new Sha256();
+    const index = randomBytes(32);
+    const key = await generateFileKey(this.mnemonic, bucketId, index);
+    const iv = index.slice(0, 16);
 
-    let done = false;
-    const key = Buffer.from('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex');
-    const iv = Buffer.from('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex');
-    const cipher = createCipheriv('aes-256-ctr', key, iv);
+    const fileHash = await calculateEncryptedFileHash(file, createAES256Cipher(key, iv));
+    const shardMeta = {
+      hash: fileHash,
+      index: 0,
+      parity: false,
+      size: params.filesize,
+    };
+    const uploadUrl = await getUploadUrl(frameId, shardMeta, this.creds);
+    await uploadFile(file, createAES256Cipher(key, iv), uploadUrl);
 
-    while (!done) {
-      const status = await readable.read();
-
-      if (!status.done) {
-        hasher.process(cipher.update(status.value));
-      }
-
-      done = status.done;
-    }
-
-    hasher.finish();
-
-    return Buffer.from(hasher.result!).toString('hex');
-  }
-
-  async _uploadFile(file: File, url: string): Promise<void> {
-    const readable = file.stream().getReader();
-    const formattedUrl = new URL(url);
-    const req = request({
-      headers: {
-        'Content-Type': 'application/octet-stream'
-      },
-      hostname: formattedUrl.hostname,
-      port: formattedUrl.port,
-      protocol: formattedUrl.protocol,
-      path: formattedUrl.pathname + '?' + formattedUrl.searchParams.toString(),
-      method: 'PUT'
-    });  
-
-    let done = false;
-    const key = Buffer.from('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex');
-    const iv = Buffer.from('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex');
-    const cipher = createCipheriv('aes-256-ctr', key, iv);
-
-    while (!done) {
-      const status = await readable.read();
-
-      if (!status.done) {
-        hasher.process(cipher.update(status.value));
-      }
-
-      done = status.done;
-    }
-
-    hasher.finish();
-
-    return Buffer.from(hasher.result!).toString('hex');
+    const encryptedFilename = await encryptFilename(this.mnemonic, bucketId, v4());
+    await finishUpload(this.mnemonic, bucketId, frameId, encryptedFilename, index, key, shardMeta, this.creds);
   }
 
   getFileDownloadStream(
