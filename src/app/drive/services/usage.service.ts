@@ -1,8 +1,9 @@
 import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
-import { createStorageClient } from '../../core/factory/sdk';
+import { SdkFactory } from '../../core/factory/sdk';
 
 export async function fetchUsage(): Promise<UsageResponse> {
-  return createStorageClient().spaceUsage();
+  const storageClient = SdkFactory.getInstance().createStorageClient();
+  return storageClient.spaceUsage();
 }
 
 function getUsagePercent(usage: number, limit: number): number {

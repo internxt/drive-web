@@ -1,10 +1,11 @@
 import { UserReferral, ReferralKey } from '@internxt/sdk/dist/drive/referrals/types';
-import { createReferralsClient } from '../../core/factory/sdk';
+import { SdkFactory } from '../../core/factory/sdk';
 
 
 const usersReferralsService = {
   fetch(): Promise<UserReferral[]> {
-    return createReferralsClient().getReferrals();
+    const referralsClient = SdkFactory.getInstance().createReferralsClient();
+    return referralsClient.getReferrals();
   },
   hasClickAction(referralKey: ReferralKey): boolean {
     return [ReferralKey.SubscribeToNewsletter, ReferralKey.InstallDesktopApp, ReferralKey.InviteFriends].includes(

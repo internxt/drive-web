@@ -1,6 +1,7 @@
 import { ProductData } from '../types';
-import { createPaymentsClient } from '../../core/factory/sdk';
+import { SdkFactory } from '../../core/factory/sdk';
 
 export const fetchProducts = async (): Promise<ProductData[]> => {
-  return createPaymentsClient().getProducts();
+  const paymentsClient = SdkFactory.getInstance().createPaymentsClient();
+  return paymentsClient.getProducts();
 };

@@ -23,6 +23,7 @@ import views from './app/core/config/views';
 import FileViewer from './app/drive/components/FileViewer/FileViewer';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import { SdkFactory } from './app/core/factory/sdk';
+import localStorageService from './app/core/services/local-storage.service';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -45,7 +46,7 @@ class App extends Component<AppProps> {
     });
     const dispatch: AppDispatch = this.props.dispatch;
 
-    SdkFactory.initialize(dispatch);
+    SdkFactory.initialize(dispatch, localStorageService);
 
     window.addEventListener('offline', () => {
       dispatch(sessionActions.setHasConnection(false));
