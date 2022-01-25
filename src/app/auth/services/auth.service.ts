@@ -24,7 +24,7 @@ import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.serv
 import { AppView } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { createAuthClient, createUsersClient } from '../../core/factory/sdk';
+import { createAuthClient, createUsersClient, SdkFactory } from '../../core/factory/sdk';
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 
 export async function logOut(): Promise<void> {
@@ -71,7 +71,7 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
   user: UserSettings
   token: string;
 }> => {
-  const authClient = createAuthClient();
+  const authClient = SdkFactory.getInstance().createAuthClient();
   const loginDetails: LoginDetails = {
     email: email,
     password: password,
