@@ -1324,10 +1324,10 @@
     "@typescript-eslint/parser" "^5.4.0"
     eslint-config-prettier "^8.3.0"
 
-"@internxt/inxt-js@=1.2.19":
-  version "1.2.19"
-  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.19/50d8ba84c9c5cdd62ce3822ba981ce8c916c28e11afe9b7d1fffabd72174ccbb"
-  integrity sha512-NmBGWZtGPUPADaY+Eric4Bs4gOlgf4WuWLoliJd3oJy4MDP9TDSb/3rrCgR++OmbJQhr2jVwr+DoAAO/xjZEug==
+"@internxt/inxt-js@=1.2.20":
+  version "1.2.20"
+  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.20/729db68b5377303445f2df08ab694fc00769a52c8c136b8bc96160ac3c2cd377#0f393b747c4193de450ad6591bc840ed82d8c66e"
+  integrity sha512-NzC2mCE6oq+0fMjzKG7AZXvXjMumOSzQjdXPnGvvhT4x0fgS1d60Ct1Erl7PgxhP8W3aUwpauOXLGelDuIGu/g==
   dependencies:
     "@internxt/lib" "^1.1.6"
     async "^3.2.0"
@@ -2226,6 +2226,11 @@
   resolved "https://registry.npmjs.org/@types/sizzle/-/sizzle-2.3.3.tgz"
   integrity sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==
 
+"@types/sjcl@^1.0.30":
+  version "1.0.30"
+  resolved "https://registry.yarnpkg.com/@types/sjcl/-/sjcl-1.0.30.tgz#c1db866622ef4da56af081fa2e258d76fb255b89"
+  integrity sha512-4ebBtj1rx3Kh3To5RnPua+U4JzVwH2MxUmHQvAlxWpzmfmupBRyyXAIEQceon+e5tW9aBeOApTYA6EXfBysRyQ==
+
 "@types/socket.io-client@^1.4.35":
   version "1.4.36"
   resolved "https://registry.npmjs.org/@types/socket.io-client/-/socket.io-client-1.4.36.tgz"
@@ -2989,6 +2994,10 @@ asap@~2.0.6:
   version "2.0.6"
   resolved "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz"
   integrity sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY=
+
+"asmcrypto.js@git+https://github.com/asmcrypto/asmcrypto.js.git":
+  version "2.3.2"
+  resolved "git+https://github.com/asmcrypto/asmcrypto.js.git#2a7a339aea5a00c023479df6cb84acec8eb7373f"
 
 asn1.js@^5.0.0, asn1.js@^5.2.0:
   version "5.4.1"
@@ -12080,6 +12089,11 @@ sisteransi@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/sisteransi/-/sisteransi-1.0.5.tgz"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
+
+sjcl@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/sjcl/-/sjcl-1.0.8.tgz#f2ec8d7dc1f0f21b069b8914a41a8f236b0e252a"
+  integrity sha512-LzIjEQ0S0DpIgnxMEayM1rq9aGwGRG4OnZhCdjx7glTaJtf4zRfpg87ImfjSJjoW9vKpagd82McDOwbRT5kQKQ==
 
 slash@^3.0.0:
   version "3.0.0"
