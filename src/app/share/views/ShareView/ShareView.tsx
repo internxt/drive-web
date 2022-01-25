@@ -11,7 +11,7 @@ import iconService from 'app/drive/services/icon.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
-import { Network } from 'app/drive/services/network';
+import { Network } from 'app/drive/services/network/network';
 import i18n from 'app/i18n/services/i18n.service';
 
 import './ShareView.scss';

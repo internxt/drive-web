@@ -6,7 +6,7 @@ import analyticsService from '../../../analytics/services/analytics.service';
 import { AppView, DevicePlatform } from '../../../core/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
-import { getEnvironmentConfig, Network } from '../network';
+import { getEnvironmentConfig, Network } from '../network/network';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { createStorageClient } from '../../../../factory/modules';
@@ -49,10 +49,10 @@ export function uploadFile(
     }
 
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
-    const content = new Blob([file.content], { type: file.type });
+    // const content = new Blob([file.content], { type: file.type });
     const [uploadFilePromise, uploadFileActionState] = network.uploadFile(bucketId, {
       filesize: file.size,
-      filecontent: content,
+      filecontent: file.content,
       progressCallback: updateProgressCallback,
     });
 

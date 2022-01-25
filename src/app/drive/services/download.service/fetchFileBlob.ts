@@ -1,5 +1,5 @@
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
-import { getEnvironmentConfig, Network } from '../network';
+import { getEnvironmentConfig, Network } from '../network/network';
 
 export default function fetchFileBlob(
   fileId: string,
