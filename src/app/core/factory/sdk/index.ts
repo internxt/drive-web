@@ -5,10 +5,8 @@ import {
   AppDetails
 } from '@internxt/sdk/dist/shared';
 import packageJson from '../../../../../package.json';
-import localStorageService from '../../services/local-storage.service';
-import { LocalStorageItem, Workspace } from '../../types';
-import authService from '../../../auth/services/auth.service';
-import tasksService from '../../../tasks/services/tasks.service';
+import { LocalStorageService } from '../../services/local-storage.service';
+import { Workspace } from '../../types';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 
@@ -16,16 +14,19 @@ export class SdkFactory {
   private static instance: SdkFactory;
   private readonly dispatch: AppDispatch;
   private readonly apiUrl: ApiUrl;
+  private readonly localStorage: LocalStorageService;
 
-  private constructor(apiUrl: ApiUrl, dispatch: AppDispatch) {
+  private constructor(apiUrl: ApiUrl, dispatch: AppDispatch, localStorage: LocalStorageService) {
     this.apiUrl = apiUrl;
     this.dispatch = dispatch;
+    this.localStorage = localStorage;
   }
 
-  public static initialize(dispatch: AppDispatch): void {
+  public static initialize(dispatch: AppDispatch, localStorage: LocalStorageService): void {
     this.instance = new SdkFactory(
       process.env.REACT_APP_API_URL,
-      dispatch
+      dispatch,
+      localStorage
     );
   }
 
@@ -50,13 +51,48 @@ export class SdkFactory {
     return Storage.client(apiUrl, appDetails, apiSecurity);
   }
 
+  public createShareClient(): Share {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getApiSecurity();
+    return Share.client(apiUrl, appDetails, apiSecurity);
+  }
+
+  public createUsersClient(): Users {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getApiSecurity();
+    return Users.client(apiUrl, appDetails, apiSecurity);
+  }
+
+  public createReferralsClient(): Referrals {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getApiSecurity();
+    return Referrals.client(apiUrl, appDetails, apiSecurity);
+  }
+
+  public createPaymentsClient(): Payments {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getApiSecurity();
+    return Payments.client(apiUrl, appDetails, apiSecurity);
+  }
+
+  public createBackupsClient(): Backups {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getApiSecurity();
+    return Backups.client(apiUrl, appDetails, apiSecurity);
+  }
+
   /** Helpers **/
 
   private getApiSecurity(): ApiSecurity {
-    const workspace = SdkFactory.getWorkspace();
+    const workspace = this.localStorage.getWorkspace();
     return {
-      mnemonic: SdkFactory.getMnemonic(workspace),
-      token: SdkFactory.getToken(workspace),
+      mnemonic: this.getMnemonic(workspace),
+      token: this.getToken(workspace),
       unauthorizedCallback: async () => {
         this.dispatch(userThunks.logoutThunk());
       }
@@ -74,117 +110,21 @@ export class SdkFactory {
     };
   }
 
-  private static getMnemonic(workspace: string): string {
+  private getMnemonic(workspace: string): string {
     const mnemonicByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: localStorageService.get('xMnemonic') || '',
-      [Workspace.Business]: localStorageService.getTeams()?.bridge_mnemonic || '',
+      [Workspace.Individuals]: this.localStorage.get('xMnemonic') || '',
+      [Workspace.Business]: this.localStorage.getTeams()?.bridge_mnemonic || '',
     };
     return mnemonicByWorkspace[workspace];
   }
 
-  private static getToken(workspace: string): Token {
+  private getToken(workspace: string): Token {
     const tokenByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: localStorageService.get('xToken') || '',
-      [Workspace.Business]: localStorageService.get('xTokenTeam') || '',
+      [Workspace.Individuals]: this.localStorage.get('xToken') || '',
+      [Workspace.Business]: this.localStorage.get('xTokenTeam') || '',
     };
     return tokenByWorkspace[workspace];
   }
 
-  private static getWorkspace(): string {
-    return (localStorageService.get(LocalStorageItem.Workspace) as Workspace) || Workspace.Individuals;
-  }
-
-}
-
-export function createAuthClient(): Auth {
-  const apiUrl = getApiUrl();
-  const appDetails = getAppDetails();
-  const apiSecurity = getApiSecurity();
-  return Auth.client(apiUrl, appDetails, apiSecurity);
-}
-
-export function createStorageClient(): Storage {
-  const apiUrl = getApiUrl();
-  const appDetails = getAppDetails();
-  const apiSecurity = getApiSecurity();
-  return Storage.client(apiUrl, appDetails, apiSecurity);
-}
-
-export function createShareClient(): Share {
-  const apiUrl = getApiUrl();
-  const appDetails = getAppDetails();
-  const apiSecurity = getApiSecurity();
-  return Share.client(apiUrl, appDetails, apiSecurity);
-}
-
-export function createUsersClient(): Users {
-  const apiUrl = getApiUrl();
-  const appDetails = getAppDetails();
-  const apiSecurity = getApiSecurity();
-  return Users.client(apiUrl, appDetails, apiSecurity);
-}
-
-export function createReferralsClient(): Referrals {
-  const apiUrl = getApiUrl();
-  const appDetails = getAppDetails();
-  const apiSecurity = getApiSecurity();
-  return Referrals.client(apiUrl, appDetails, apiSecurity);
-}
-
-export function createPaymentsClient(): Payments {
-  const apiUrl = getApiUrl();
-  const appDetails = getAppDetails();
-  const apiSecurity = getApiSecurity();
-  return Payments.client(apiUrl, appDetails, apiSecurity);
-}
-
-export function createBackupsClient(): Backups {
-  const apiUrl = getApiUrl();
-  const appDetails = getAppDetails();
-  const apiSecurity = getApiSecurity();
-  return Backups.client(apiUrl, appDetails, apiSecurity);
-}
-
-function getApiUrl(): ApiUrl {
-  return process.env.REACT_APP_API_URL + '/api';
-}
-
-function getAppDetails(): AppDetails {
-  return {
-    clientName: packageJson.name,
-    clientVersion: packageJson.version,
-  };
-}
-
-function getApiSecurity(): ApiSecurity {
-  const workspace = getWorkspace();
-  return {
-    mnemonic: getMnemonic(workspace),
-    token: getToken(workspace),
-    unauthorizedCallback: async () => {
-      authService.logOut();
-      tasksService.clearTasks();
-    }
-  };
-}
-
-function getMnemonic(workspace: string): string {
-  const mnemonicByWorkspace: { [key in Workspace]: string } = {
-    [Workspace.Individuals]: localStorageService.get('xMnemonic') || '',
-    [Workspace.Business]: localStorageService.getTeams()?.bridge_mnemonic || '',
-  };
-  return mnemonicByWorkspace[workspace];
-}
-
-function getToken(workspace: string): Token {
-  const tokenByWorkspace: { [key in Workspace]: string } = {
-    [Workspace.Individuals]: localStorageService.get('xToken') || '',
-    [Workspace.Business]: localStorageService.get('xTokenTeam') || '',
-  };
-  return tokenByWorkspace[workspace];
-}
-
-function getWorkspace(): string {
-  return (localStorageService.get(LocalStorageItem.Workspace) as Workspace) || Workspace.Individuals;
 }
 
