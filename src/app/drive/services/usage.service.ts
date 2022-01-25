@@ -1,12 +1,8 @@
-import httpService from '../../core/services/http.service';
-
-export interface UsageResponse {
-  _id: string;
-  total: number;
-}
+import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { createStorageClient } from '../../../factory/modules';
 
 export async function fetchUsage(): Promise<UsageResponse> {
-  return httpService.get('/api/usage');
+  return createStorageClient().spaceUsage();
 }
 
 function getUsagePercent(usage: number, limit: number): number {

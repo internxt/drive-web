@@ -4,7 +4,7 @@ import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { DevicePlatform } from '../../../core/types';
 import i18n from '../../../i18n/services/i18n.service';
-import { UserSettings } from '../../../auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import uploadFile from './uploadFile';
 import * as uuid from 'uuid';
 import { createStorageClient } from '../../../../factory/modules';

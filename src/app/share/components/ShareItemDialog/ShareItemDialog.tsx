@@ -19,6 +19,7 @@ import { AppView } from 'app/core/types';
 import errorService from 'app/core/services/error.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { referralsThunks } from 'app/store/slices/referrals';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
@@ -68,13 +69,17 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
       const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
 
-      const link = await shareService.generateShareLink(fileId, {
+      const payload: ShareTypes.GenerateShareLinkPayload = {
+        fileId,
         bucket,
         fileToken,
         isFolder: false,
         views,
         encryptionKey: fileEncryptionKey.toString('hex'),
-      });
+      };
+
+      const link = await shareService.generateShareLink(payload);
+
 
       dispatch(referralsThunks.refreshUserReferrals());
 

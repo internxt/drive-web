@@ -15,7 +15,7 @@ import i18n from 'app/i18n/services/i18n.service';
 import { renameFile } from 'app/crypto/services/utils';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network/network';
-import { UserSettings } from 'app/auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { ItemToUpload } from 'app/drive/services/file.service/uploadFile';
 import fileService from 'app/drive/services/file.service';
@@ -76,7 +76,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     for (const file of files) {
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-      const [parentFolderContentPromise, cancelTokenSource] = storageClient.getFolderContent(parentFolderId);
+      const [parentFolderContentPromise, requestCanceler] = storageClient.getFolderContent(parentFolderId);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
         action: TaskType.UploadFile,
@@ -85,7 +85,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         isFileNameValidated: false,
         showNotification: !!options?.showNotifications,
         cancellable: true,
-        stop: async () => cancelTokenSource.cancel(),
+        stop: async () => requestCanceler.cancel(),
       });
 
       const parentFolderContent = await parentFolderContentPromise;

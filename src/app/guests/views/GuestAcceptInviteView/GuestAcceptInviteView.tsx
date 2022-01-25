@@ -3,7 +3,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { Form } from 'react-bootstrap';
 
 import { getPasswordDetails } from '../../../auth/services/auth.service';
-import { UserSettings } from '../../../auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import httpService from '../../../core/services/http.service';
 import localStorageService from '../../../core/services/local-storage.service';

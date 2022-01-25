@@ -32,7 +32,7 @@ import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import i18n from '../../../i18n/services/i18n.service';
-import { UserSettings } from '../../../auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;

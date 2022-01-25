@@ -1,35 +1,24 @@
-import httpService from '../../core/services/http.service';
-import { UserSettings } from '../types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { createAuthClient, createUsersClient } from '../../../factory/modules';
+import { InitializeUserResponse } from '@internxt/sdk/dist/drive/users/types';
 
-export interface InitializeUserResponse {
-  user: {
-    email: string;
-    bucket: string;
-    mnemonic: string;
-    root_folder_id: number;
-  };
-}
-
-export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse | undefined> {
-  return httpService.post<{ email: string; mnemonic: string }, InitializeUserResponse | undefined>('/api/initialize', {
-    email,
-    mnemonic,
-  });
+export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
+  return createUsersClient().initialize(email, mnemonic);
 }
 
 export const sendDeactivationEmail = (email: string): Promise<void> => {
-  return httpService.get<void>(`/api/reset/${email}`);
+  return createAuthClient().sendDeactivationEmail(email);
 };
 
 const inviteAFriend = (email: string): Promise<void> => {
-  return httpService.post<{ email: string }, void>('/api/user/invite', { email });
+  return createUsersClient().sendInvitation(email);
 };
 
 /**
  * ! This endpoint accepts a body but is using GET method
  */
 const refreshUser = async (): Promise<{ user: UserSettings; token: string }> => {
-  return httpService.get<{ user: UserSettings; token: string }>('/api/user/refresh');
+  return createUsersClient().refreshUser();
 };
 
 const userService = {

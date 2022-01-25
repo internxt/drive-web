@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { AppView } from '../../types';
 import navigationService from '../../services/navigation.service';
 import { RootState } from 'app/store';
-import { UserSettings } from 'app/auth/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import smallLogo from 'assets/icons/small-logo.svg';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import SidenavItem from './SidenavItem/SidenavItem';
