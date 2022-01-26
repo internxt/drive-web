@@ -2,7 +2,7 @@ import { sha256 } from '@internxt/inxt-js/build/lib/utils/crypto';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import { encryptFilename, generateHMAC } from './crypto';
 
-const networkApiUrl = process.env.REACT_APP_BRIDGE;
+const networkApiUrl = process.env.REACT_APP_STORJ_BRIDGE;
 
 interface NetworkCredentials {
   user: string;
@@ -187,7 +187,7 @@ export async function finishUpload(
   encryptionKey: Buffer,
   shardMeta: ShardMeta,
   creds: NetworkCredentials,
-) {
+): Promise<string> {
   const payload: CreateEntryFromFramePayload = {
     frame: frameId,
     filename: await encryptFilename(mnemonic, bucketId, filename),

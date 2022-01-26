@@ -89,7 +89,7 @@ export class Network {
       setTimeout(() => rej(), 100000000);
     });
 
-    this.encryptFile(params.filecontent);
+    this.doUpload(bucketId, params);
 
     // this.uploadTest(params.filecontent).then(() => {
     // const fileToHashStream = params.filecontent.stream().getReader();
@@ -220,26 +220,40 @@ export class Network {
     return [promise, actionState];
   }
 
-  async doUpload(bucketId: string, params: IUploadParams) {
+  async doUpload(bucketId: string, params: IUploadParams): Promise<string> {
     const file: File = params.filecontent;
     const frameId = await prepareUpload(bucketId, this.creds);
+
+    console.log('Frame ID %s', frameId);
 
     const index = randomBytes(32);
     const key = await generateFileKey(this.mnemonic, bucketId, index);
     const iv = index.slice(0, 16);
 
+    console.log('INDEX %s', index.toString('hex'));
+    console.log('KEY %s', key.toString('hex'));
+    console.log('IV %s', iv.toString('hex'));
+
     const fileHash = await calculateEncryptedFileHash(file, createAES256Cipher(key, iv));
+    console.log('FILE_HASH %s', fileHash);
+
     const shardMeta = {
       hash: fileHash,
       index: 0,
       parity: false,
       size: params.filesize,
     };
+
+    console.log('PARTIAL SHARD META', JSON.stringify(shardMeta));
+
     const uploadUrl = await getUploadUrl(frameId, shardMeta, this.creds);
+
+    console.log('UPLOAD URL %s', uploadUrl);
+    return '';
     await uploadFile(file, createAES256Cipher(key, iv), uploadUrl);
 
-    const encryptedFilename = await encryptFilename(this.mnemonic, bucketId, v4());
-    await finishUpload(this.mnemonic, bucketId, frameId, encryptedFilename, index, key, shardMeta, this.creds);
+    // const encryptedFilename = await encryptFilename(this.mnemonic, bucketId, v4());
+    // return finishUpload(this.mnemonic, bucketId, frameId, encryptedFilename, index, key, shardMeta, this.creds);
   }
 
   getFileDownloadStream(
