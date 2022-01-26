@@ -1,4 +1,4 @@
-import { Cipher } from 'crypto';
+import { Cipher, createHash } from 'crypto';
 import { request } from 'https';
 import { Sha256 } from 'asmcrypto.js';
 
@@ -20,7 +20,7 @@ export async function calculateEncryptedFileHash(plainFile: File, cipher: Cipher
 
   hasher.finish();
 
-  return Buffer.from(hasher.result!).toString('hex');
+  return createHash('ripemd160').update(Buffer.from(hasher.result!)).digest('hex');
 }
 
 export async function uploadFile(plainFile: File, cipher: Cipher, url: string): Promise<void> {
