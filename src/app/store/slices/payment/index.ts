@@ -34,7 +34,7 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
     const body: CreatePaymentSessionPayload = {
       test: envService.isProduction() ? undefined : true,
       // eslint-disable-next-line max-len
-      successUrl: process.env.REACT_APP_HOSTNAME + `/checkout/success?price_id=${payload.product.price.id}`,
+      successUrl: process.env.REACT_APP_HOSTNAME + `/checkout/success?price_id=${payload.product.price.id}&cs_id={CHECKOUT_SESSION_ID}`,
       mode:
         payload.product.price.type === ProductPriceType.OneTime
           ? StripeSessionMode.Payment
