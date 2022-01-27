@@ -109,7 +109,9 @@ export const storageSlice = createSlice({
 
         state.levels[folderId] = itemsToDatabase;
 
-        databaseService.put(DatabaseCollection.Levels, folderId, itemsToDatabase);
+        databaseService.then(db => {
+          db.put(DatabaseCollection.Levels, folderId, itemsToDatabase);
+        });
       }
 
       state.recents = state.recents.map((item) => {
@@ -136,7 +138,9 @@ export const storageSlice = createSlice({
 
         state.levels[folderId] = items;
 
-        databaseService.put(DatabaseCollection.Levels, folderId, items);
+        databaseService.then(db => {
+          db.put(DatabaseCollection.Levels, folderId, items);
+        });
       });
 
       if (action.payload.updateRecents) {
@@ -159,7 +163,9 @@ export const storageSlice = createSlice({
 
         state.levels[folderId] = items;
 
-        databaseService.put(DatabaseCollection.Levels, folderId, items);
+          databaseService.then(db => {
+            db.put(DatabaseCollection.Levels, folderId, items);
+          });
       });
 
       if (action.payload.updateRecents) {

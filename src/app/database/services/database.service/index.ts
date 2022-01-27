@@ -19,18 +19,20 @@ export interface AppDatabase extends DBSchema {
 }
 
 export interface DatabaseService {
-  (databaseName: string, databaseVersion: number): {
-    put: <Name extends StoreNames<AppDatabase>>(
-      collectionName: DatabaseCollection,
-      key: StoreKey<AppDatabase, Name>,
-      value: StoreValue<AppDatabase, Name>,
-    ) => Promise<void>;
-    get: <Name extends StoreNames<AppDatabase>>(
-      collectionName: DatabaseCollection,
-      key: StoreKey<AppDatabase, Name>,
-    ) => Promise<StoreValue<AppDatabase, Name> | undefined>;
-    clear: () => Promise<void>;
-  };
+  (databaseName: string, databaseVersion: number): Promise<PersistenceLayer>;
+}
+
+export interface PersistenceLayer {
+  put: <Name extends StoreNames<AppDatabase>>(
+    collectionName: DatabaseCollection,
+    key: StoreKey<AppDatabase, Name>,
+    value: StoreValue<AppDatabase, Name>,
+  ) => Promise<void>;
+  get: <Name extends StoreNames<AppDatabase>>(
+    collectionName: DatabaseCollection,
+    key: StoreKey<AppDatabase, Name>,
+  ) => Promise<StoreValue<AppDatabase, Name> | undefined>;
+  clear: () => Promise<void>;
 }
 
 const providers: { [key in DatabaseProvider]: DatabaseService } = {

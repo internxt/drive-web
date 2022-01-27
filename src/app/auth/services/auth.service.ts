@@ -29,7 +29,7 @@ import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
-  await databaseService.clear();
+  await (await databaseService).clear();
   localStorageService.clear();
   navigationService.push(AppView.Login);
 }

@@ -33,7 +33,8 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
     this.setState({
       databasePolling: pollingService.create(async () => {
         const { currentFolderId } = this.props;
-        const currentFolderItems = await databaseService.get(DatabaseCollection.Levels, this.props.currentFolderId);
+        const currentFolderItems = await (await databaseService)
+          .get(DatabaseCollection.Levels, this.props.currentFolderId);
 
         if (currentFolderItems) {
           dispatch(storageActions.setItems({ folderId: currentFolderId, items: currentFolderItems }));
