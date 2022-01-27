@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import * as prettySize from 'prettysize';
 import httpService from '../../../../src/app/core/services/http.service';
+import errorService from 'app/core/services/error.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -316,7 +317,10 @@ export async function trackPaymentConversion() {
     );
   }
   catch (err) {
-    window.analytics.track('Error Signup After Payment Conversion');
+    const castedError = errorService.castError(err);
+    window.analytics.track('Error Signup After Payment Conversion', {
+      message: castedError.message || '',
+    });
   }
 
 }
