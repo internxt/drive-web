@@ -24,7 +24,7 @@ import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.serv
 import { AppView } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { SdkFactory } from '../../core/factory/sdk';
+import { createAuthClient, createUsersClient } from '../../../factory/modules';
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 
 export async function logOut(): Promise<void> {
@@ -36,8 +36,7 @@ export async function logOut(): Promise<void> {
 
 export function cancelAccount(): Promise<void> {
   const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.sendDeactivationEmail(<string>email)
+  return createAuthClient().sendDeactivationEmail(<string>email)
     .then(() => {
       notificationsService.show(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
     })
@@ -47,7 +46,7 @@ export function cancelAccount(): Promise<void> {
 }
 
 export const is2FANeeded = async (email: string): Promise<boolean> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = createAuthClient();
   const securityDetails = await authClient.securityDetails(email)
     .catch(error => {
       analyticsService.signInAttempted(email, error.message);
@@ -72,7 +71,7 @@ export const doLogin = async (email: string, password: string, twoFactorCode: st
   user: UserSettings
   token: string;
 }> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = createAuthClient();
   const loginDetails: LoginDetails = {
     email: email,
     password: password,
@@ -151,7 +150,7 @@ export const readReferalCookie = (): string | undefined => {
 
 export const getSalt = async (): Promise<string> => {
   const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
 };
@@ -186,7 +185,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
-  const usersClient = SdkFactory.getInstance().createUsersClient();
+  const usersClient = createUsersClient();
 
   return usersClient.changePassword(<ChangePasswordPayload>{
     currentEncryptedPassword: encryptedCurrentPassword,
@@ -209,13 +208,11 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 
 export const userHas2FAStored = (): Promise<SecurityDetails> => {
   const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.securityDetails(<string>email);
+  return createAuthClient().securityDetails(<string>email);
 };
 
 export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.generateTwoFactorAuthQR();
+  return createAuthClient().generateTwoFactorAuthQR();
 };
 
 export const deactivate2FA = (
@@ -226,12 +223,12 @@ export const deactivate2FA = (
   const salt = decryptText(passwordSalt);
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = createAuthClient();
   return authClient.disableTwoFactorAuth(encPass, deactivationCode);
 };
 
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = createAuthClient();
   return authClient.storeTwoFactorAuthKey(code, twoFactorCode);
 };
 

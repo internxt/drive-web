@@ -7,9 +7,9 @@ import analyticsService from '../../analytics/services/analytics.service';
 import i18n from '../../i18n/services/i18n.service';
 import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { createStorageClient } from '../../../factory/modules';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
-import { SdkFactory } from '../../core/factory/sdk';
 
 export interface IFolders {
   bucket: string;
@@ -74,7 +74,7 @@ export function createFolder(
     parentFolderId: currentFolderId,
     folderName: folderName
   };
-  const storageClient = SdkFactory.getInstance().createStorageClient();
+  const storageClient = createStorageClient();
   const [createdFolderPromise, requestCanceler] = storageClient.createFolder(payload);
 
   const finalPromise = createdFolderPromise
@@ -94,7 +94,7 @@ export function createFolder(
 }
 
 export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
+  const storageClient = createStorageClient();
   const payload: StorageTypes.UpdateFolderMetadataPayload = {
     folderId: folderId,
     changes: metadata
@@ -111,7 +111,7 @@ export async function updateMetaData(folderId: number, metadata: DriveFolderMeta
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
+  const storageClient = createStorageClient();
   return storageClient.deleteFolder(folderData.id)
     .then(() => {
       const user = localStorageService.getUser() as UserSettings;
@@ -162,7 +162,7 @@ async function fetchFolderTree(folderId: number): Promise<{
 export async function moveFolder(
   folderId: number, destination: number
 ): Promise<StorageTypes.MoveFolderResponse> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
+  const storageClient = createStorageClient();
   const payload: StorageTypes.MoveFolderPayload = {
     folderId: folderId,
     destinationFolderId: destination

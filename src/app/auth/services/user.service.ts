@@ -1,28 +1,24 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { SdkFactory } from '../../core/factory/sdk';
+import { createAuthClient, createUsersClient } from '../../../factory/modules';
 import { InitializeUserResponse } from '@internxt/sdk/dist/drive/users/types';
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.initialize(email, mnemonic);
+  return createUsersClient().initialize(email, mnemonic);
 }
 
 export const sendDeactivationEmail = (email: string): Promise<void> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.sendDeactivationEmail(email);
+  return createAuthClient().sendDeactivationEmail(email);
 };
 
 const inviteAFriend = (email: string): Promise<void> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.sendInvitation(email);
+  return createUsersClient().sendInvitation(email);
 };
 
 /**
  * ! This endpoint accepts a body but is using GET method
  */
 const refreshUser = async (): Promise<{ user: UserSettings; token: string }> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.refreshUser();
+  return createUsersClient().refreshUser();
 };
 
 const userService = {

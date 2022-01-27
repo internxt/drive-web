@@ -1,5 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { items as itemUtils } from '@internxt/lib';
+import { createStorageClient } from '../../../../../factory/modules';
+
 import { storageActions, storageSelectors } from '..';
 import { StorageState } from '../storage.model';
 import { sessionSelectors } from '../../session/session.selectors';
@@ -17,7 +19,6 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { ItemToUpload } from 'app/drive/services/file.service/uploadFile';
 import fileService from 'app/drive/services/file.service';
-import { SdkFactory } from '../../../../core/factory/sdk';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -71,7 +72,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       return;
     }
 
-    const storageClient = SdkFactory.getInstance().createStorageClient();
+    const storageClient = createStorageClient();
 
     for (const file of files) {
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
