@@ -24,6 +24,7 @@ import FileViewer from './app/drive/components/FileViewer/FileViewer';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import { SdkFactory } from './app/core/factory/sdk';
 import localStorageService from './app/core/services/local-storage.service';
+import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -92,7 +93,7 @@ class App extends Component<AppProps> {
     const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, fileViewerItem, dispatch } =
       this.props;
     const pathName = window.location.pathname.split('/')[1];
-    let template: JSX.Element = <div></div>;
+    let template = <PreparingWorkspaceAnimation />;
 
     if (window.location.pathname) {
       if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {

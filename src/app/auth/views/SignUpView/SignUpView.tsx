@@ -14,7 +14,6 @@ import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPasswor
 import { Keys, RegisterDetails } from '@internxt/sdk/dist/auth';
 import { readReferalCookie } from '../../services/auth.service';
 import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
-import SignUpAnimation from './SignUpAnimation';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
@@ -66,16 +65,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDoingRegister, setIsDoingRegister] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [animationStep, setAnimationStep] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAnimationStep(steps => (steps >= 18 ? 0 : steps + 1));
-    }, 100);
-    return () => clearInterval(interval);
-  }, [animationStep]);
 
   const formInputError = Object.values(errors)[0];
 
@@ -182,11 +172,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithKey(mnemonic, password);
 
-    const {
-      privateKeyArmored,
-      publicKeyArmored,
-      revocationCertificate,
-    } = await generateNewKeys();
+    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
     const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
 
     const authClient = SdkFactory.getInstance().createAuthClient();
@@ -194,7 +180,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
     const keys: Keys = {
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,
-      revocationCertificate: revocationCertificate
+      revocationCertificate: revocationCertificate,
     };
     const registerDetails: RegisterDetails = {
       name: name,
@@ -209,14 +195,13 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
       referrer: hasReferrer ? String(qs.ref) : undefined,
     };
 
-    setIsDoingRegister(true);
-
-    authClient.register(registerDetails)
+    authClient
+      .register(registerDetails)
       .then((data) => {
         const token = data.token;
         const user: UserSettings = {
           ...data.user,
-          bucket: ''
+          bucket: '',
         };
         const uuid = data.uuid;
 
@@ -244,8 +229,8 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
         window._adftrack = Array.isArray(window._adftrack)
           ? window._adftrack
           : window._adftrack
-            ? [window._adftrack]
-            : [];
+          ? [window._adftrack]
+          : [];
         window._adftrack.push({
           HttpHost: 'track.adform.net',
           pm: 2370627,
@@ -267,9 +252,9 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
       })
       .catch((err) => {
         console.error('Register error', err);
-        setIsDoingRegister(false);
         setSignupError(err.message || err);
         setShowError(true);
+        setIsLoading(false);
       });
   };
 
@@ -290,6 +275,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
             navigationService.push(AppView.Drive);
           })
           .catch((err) => {
+            setIsLoading(false);
             console.log('ERR', err);
             throw new Error(err.message + ', please contact us');
           });
@@ -297,11 +283,11 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
         await doRegister(name, lastname, email, password, token);
       }
     } catch (err: unknown) {
+      setIsLoading(false);
       const castedError = errorService.castError(err);
       setSignupError(castedError.message);
     } finally {
       setShowError(true);
-      setIsLoading(false);
     }
   };
 
@@ -318,141 +304,131 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
   }
 
   return (
-    <>
-      {isDoingRegister ?
-        (
-          <SignUpAnimation step={animationStep} />
-        )
-        :
-        (
-          <div className="flex h-full w-full">
-            <AuthSideInfo title="" subtitle="" />
+    <div className="flex h-full w-full">
+      <AuthSideInfo title="" subtitle="" />
 
-            <div className="flex flex-col items-center justify-center w-full">
-              <form className="flex flex-col w-72" onSubmit={handleSubmit(getReCaptcha)}>
-                <span className="text-base font-semibold text-neutral-900 mt-1.5 mb-6">Create an Internxt account</span>
+      <div className="flex flex-col items-center justify-center w-full">
+        <form className="flex flex-col w-72" onSubmit={handleSubmit(getReCaptcha)}>
+          <span className="text-base font-semibold text-neutral-900 mt-1.5 mb-6">Create an Internxt account</span>
 
-                <BaseInput
-                  className="mb-2.5"
-                  placeholder="Name"
-                  label="name"
-                  type="text"
-                  icon={<UilUser className="w-4" />}
-                  register={register}
-                  required={true}
-                  minLength={{ value: 1, message: 'Name must not be empty' }}
-                  error={errors.name}
-                />
+          <BaseInput
+            className="mb-2.5"
+            placeholder="Name"
+            label="name"
+            type="text"
+            icon={<UilUser className="w-4" />}
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Name must not be empty' }}
+            error={errors.name}
+          />
 
-                <BaseInput
-                  className="mb-2.5"
-                  placeholder="Lastname"
-                  label="lastname"
-                  type="text"
-                  icon={<UilUser className="w-4" />}
-                  register={register}
-                  required={true}
-                  minLength={{ value: 1, message: 'Lastname must not be empty' }}
-                  error={errors.lastname}
-                />
+          <BaseInput
+            className="mb-2.5"
+            placeholder="Lastname"
+            label="lastname"
+            type="text"
+            icon={<UilUser className="w-4" />}
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Lastname must not be empty' }}
+            error={errors.lastname}
+          />
 
-                <BaseInput
-                  className="mb-2.5"
-                  placeholder="Email"
-                  label="email"
-                  type="email"
-                  disabled={hasEmailParam}
-                  icon={<UilEnvelope className="w-4" />}
-                  register={register}
-                  required={true}
-                  minLength={{ value: 1, message: 'Email must not be empty' }}
-                  pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
-                  error={errors.email}
-                />
+          <BaseInput
+            className="mb-2.5"
+            placeholder="Email"
+            label="email"
+            type="email"
+            disabled={hasEmailParam}
+            icon={<UilEnvelope className="w-4" />}
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Email must not be empty' }}
+            pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+            error={errors.email}
+          />
 
-                <BaseInput
-                  className="mb-2.5"
-                  placeholder="Password"
-                  label="password"
-                  type={showPassword ? 'text' : 'password'}
-                  icon={
-                    password ? (
-                      showPassword ? (
-                        <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
-                      ) : (
-                        <UilEye className="w-4" onClick={() => setShowPassword(true)} />
-                      )
-                    ) : (
-                      <UilLock className="w-4" />
-                    )
-                  }
-                  register={register}
-                  required={true}
-                  minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
-                  error={errors.password}
-                  pattern={{
-                    value: isValidPasswordRegex,
-                    message: 'The password must contain lowercase/uppercase letters and at least a number',
-                  }}
-                />
+          <BaseInput
+            className="mb-2.5"
+            placeholder="Password"
+            label="password"
+            type={showPassword ? 'text' : 'password'}
+            icon={
+              password ? (
+                showPassword ? (
+                  <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
+                ) : (
+                  <UilEye className="w-4" onClick={() => setShowPassword(true)} />
+                )
+              ) : (
+                <UilLock className="w-4" />
+              )
+            }
+            register={register}
+            required={true}
+            minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
+            error={errors.password}
+            pattern={{
+              value: isValidPasswordRegex,
+              message: 'The password must contain lowercase/uppercase letters and at least a number',
+            }}
+          />
 
-                <BaseInput
-                  className="mb-2.5"
-                  placeholder="Confirm new password"
-                  label="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  icon={
-                    confirmPassword ? (
-                      showConfirmPassword ? (
-                        <UilEyeSlash className="w-4" onClick={() => setShowConfirmPassword(false)} />
-                      ) : (
-                        <UilEye className="w-4" onClick={() => setShowConfirmPassword(true)} />
-                      )
-                    ) : (
-                      <UilLock className="w-4" />
-                    )
-                  }
-                  register={register}
-                  required={true}
-                  minLength={{ value: 1, message: 'Password must not be empty' }}
-                  error={errors.confirmPassword}
-                />
+          <BaseInput
+            className="mb-2.5"
+            placeholder="Confirm new password"
+            label="confirmPassword"
+            type={showConfirmPassword ? 'text' : 'password'}
+            icon={
+              confirmPassword ? (
+                showConfirmPassword ? (
+                  <UilEyeSlash className="w-4" onClick={() => setShowConfirmPassword(false)} />
+                ) : (
+                  <UilEye className="w-4" onClick={() => setShowConfirmPassword(true)} />
+                )
+              ) : (
+                <UilLock className="w-4" />
+              )
+            }
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Password must not be empty' }}
+            error={errors.confirmPassword}
+          />
 
-                <div className="mt-1 mb-2">
-                  <span className="text-red-60 text-sm font-medium">{bottomInfoError}</span>
-                </div>
-
-                <span className="text-xs font-normal text-neutral-500 text-justify mb-3">
-                  Internxt uses your password to encrypt and decrypt your files. Due to the secure nature
-                  of Internxt, we don't know your password. That means that if you forget it, your files
-                  will be gone. With us, you're the only owner of your files.
-                </span>
-
-                <BaseCheckbox
-                  label="acceptTerms"
-                  text="Accept terms, conditions and privacy policy"
-                  required={true}
-                  register={register}
-                  additionalStyling="mt-2 -mb-0"
-                />
-
-                <div className="mt-3" />
-                <AuthButton
-                  isDisabled={isLoading || !isValid}
-                  text="Create an account"
-                  textWhenDisabled={isValid ? 'Encrypting...' : 'Create an account'}
-                />
-              </form>
-
-              <div className="flex justify-center items-center w-full mt-2">
-                <span className="text-sm text-neutral-500 ml-3 select-none mr-2">Already registered?</span>
-                <Link to="/login">Log in </Link>
-              </div>
-            </div>
+          <div className="mt-1 mb-2">
+            <span className="text-red-60 text-sm font-medium">{bottomInfoError}</span>
           </div>
-        )
-      }
-    </>
+
+          <span className="text-xs font-normal text-neutral-500 text-justify mb-3">
+            Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we
+            don't know your password. That means that if you forget it, your files will be gone. With us, you're the
+            only owner of your files.
+          </span>
+
+          <BaseCheckbox
+            label="acceptTerms"
+            text="Accept terms, conditions and privacy policy"
+            required={true}
+            register={register}
+            additionalStyling="mt-2 -mb-0"
+          />
+
+          <div className="mt-3" />
+          <AuthButton
+            isDisabled={isLoading || !isValid}
+            text="Create an account"
+            textWhenDisabled={isValid ? 'Encrypting...' : 'Create an account'}
+          />
+        </form>
+
+        <div className="flex justify-center items-center w-full mt-2">
+          <span className="text-sm text-neutral-500 ml-3 select-none mr-2">Already registered?</span>
+          <Link to="/login">Log in </Link>
+        </div>
+      </div>
+    </div>
   );
 };
 
