@@ -13,7 +13,7 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import { match } from 'react-router-dom';
 import navigationService from '../../services/navigation.service';
 import { AppView } from '../../types';
-import { createAuthClient } from '../../../../factory/modules';
+import { SdkFactory } from '../../factory/sdk';
 
 export interface DeactivationViewProps {
   match?: match<{ token: string }>;
@@ -43,7 +43,8 @@ class DeactivationView extends React.Component<DeactivationViewProps> {
   };
 
   ConfirmDeactivateUser = (token: string) => {
-    return createAuthClient().confirmDeactivation(token)
+    const authClient = SdkFactory.getInstance().createAuthClient();
+    return authClient.confirmDeactivation(token)
       .then(() => {
         this.ClearAndRedirect();
       })

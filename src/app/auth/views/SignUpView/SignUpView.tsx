@@ -33,7 +33,7 @@ import httpService from 'app/core/services/http.service';
 import { AppView, IFormValues } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { referralsThunks } from 'app/store/slices/referrals';
-import { createAuthClient } from '../../../../factory/modules';
+import { SdkFactory } from '../../../core/factory/sdk';
 
 export interface SignUpViewProps {
   location: {
@@ -189,7 +189,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
     } = await generateNewKeys();
     const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
 
-    const authClient = createAuthClient();
+    const authClient = SdkFactory.getInstance().createAuthClient();
 
     const keys: Keys = {
       privateKeyEncrypted: encPrivateKey,
