@@ -16,9 +16,13 @@ import { sessionActions } from './app/store/slices/session';
 import { referralsThunks } from 'app/store/slices/referrals';
 
 import './index.scss';
+import { SdkFactory } from './app/core/factory/sdk';
+import localStorageService from './app/core/services/local-storage.service';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
+
+SdkFactory.initialize(store.dispatch, localStorageService);
 
 // Initializes store
 store.dispatch(userActions.initialize());
