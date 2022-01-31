@@ -29,13 +29,13 @@ const NewsletterDialog = (props: { isOpen: boolean }): JSX.Element => {
       panelClasses="px-6 py-8 w-156"
       onClose={onClose}
     >
-      <span className="newsletter text-center block w-full text-sm px-8 text-m-neutral-100 mt-2">
+      <span className="newsletter text-center block w-full text-sm px-8 text-neutral-100 mt-2">
         {i18n.get('newsletter.dialog.message')}
       </span>
 
       <div className="mt-6 flex">
         <input
-          className="flex-grow no-ring mr-2 border border-l-neutral-30 semi-dense"
+          className="flex-grow no-ring mr-2 border border-neutral-30 semi-dense"
           placeholder={i18n.get('form.fields.email.placeholder')}
           type="email"
           value={email}

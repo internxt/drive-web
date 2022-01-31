@@ -90,7 +90,7 @@ const TaskLogger = (): JSX.Element => {
             className={`${hasFinished ? 'cursor-pointer' : 'cursor-not-allowed'} cursor-pointer`}
             onClick={onCloseButtonClicked}
           >
-            <UilTimes className={`h-5 ${hasFinished ? 'text-white' : 'text-m-neutral-100'}`} />
+            <UilTimes className={`h-5 ${hasFinished ? 'text-white' : 'text-neutral-100'}`} />
           </div>
         </div>
       </div>

@@ -10,7 +10,7 @@ const TwoFactorAuthBackupKeyStep = (props: TwoFactorAuthStepProps): JSX.Element 
       <div className="flex flex-col items-center justify-center space-y-3">
 
         <div className="flex flex-row px-6 py-3 font-medium rounded-lg border border-yellow-30
-                      bg-l-neutral-10 select-all">
+                      bg-neutral-10 select-all">
           {props.backupKey}
         </div>
         

@@ -59,7 +59,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
         />
       </div>
 
-      <div className="flex justify-center items-center bg-l-neutral-20 py-6 mt-6">
+      <div className="flex justify-center items-center bg-neutral-20 py-6 mt-6">
         <div className="flex w-64">
           <BaseButton className="cancel w-full mr-4" onClick={onClose}>
             Cancel

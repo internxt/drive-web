@@ -21,7 +21,7 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
   let template: JSX.Element = <div></div>;
 
   template = (
-    <div className="w-activity min-w-activity bg-white rounded-4px pl-6 mr-8 border-l border-l-neutral-30 pt-6">
+    <div className="w-activity min-w-activity bg-white rounded-4px pl-6 mr-8 border-l border-neutral-30 pt-6">
       {/* HEADER */}
       <div className="flex items-center mb-4">
         <div className="flex items-center min-w-9 w-9 h-9">
@@ -34,7 +34,7 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
           {props.title}
         </span>
         <div
-          className="w-8 h-8 rounded-1/2 bg-l-neutral-20 cursor-pointer justify-center items-center flex"
+          className="w-8 h-8 rounded-1/2 bg-neutral-20 cursor-pointer justify-center items-center flex"
           onClick={props.onClose}
         >
           <UilTimes className="text-blue-60" />

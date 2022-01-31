@@ -36,7 +36,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
     >
       <div
         className="referral-item-bullet flex-none h-4 w-8 py-1 px-2\
-       text-xs rounded-lg bg-l-neutral-30 flex justify-center items-center mr-2"
+       text-xs rounded-lg bg-neutral-30 flex justify-center items-center mr-2"
       >
         <span>{sizeService.bytesToString(referral.credit * referral.steps)}</span>
       </div>
@@ -56,7 +56,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
     <div></div>
   ) : (
     <div
-      className={`flex flex-col py-6 border-t border-b border-l-neutral-30 bg-l-neutral-10 overflow-y-hidden  ${
+      className={`flex flex-col py-6 border-t border-b border-neutral-30 bg-neutral-10 overflow-y-hidden  ${
         isCollapsed ? '' : 'h-full max-h-120'
       } ${props.className || ''}`}
     >
@@ -76,13 +76,13 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
           </p>
         </div>
         <div
-          className="flex-none rounded-full bg-l-neutral-30 w-4 h-4 cursor-pointer"
+          className="flex-none rounded-full bg-neutral-30 w-4 h-4 cursor-pointer"
           onClick={onCollapseButtonClicked}
         >
           {isCollapsed ? (
-            <UilAngleUp className="text-m-neutral-100 w-full h-full" />
+            <UilAngleUp className="text-neutral-100 w-full h-full" />
           ) : (
-            <UilAngleDown className="text-m-neutral-100 w-full h-full" />
+            <UilAngleDown className="text-neutral-100 w-full h-full" />
           )}
         </div>
       </div>
@@ -98,7 +98,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
       {!isCollapsed && (
         <div className="px-6">
           <a
-            className="text-xs text-m-neutral-60 hover:text-m-neutral-100"
+            className="text-xs text-neutral-60 hover:text-neutral-100"
             target="_blank"
             href="https://help.internxt.com/"
             rel="noopener noreferrer"

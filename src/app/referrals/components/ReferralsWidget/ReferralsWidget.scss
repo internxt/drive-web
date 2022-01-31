@@ -1,6 +1,6 @@
 @layer components {
   .referral-item-bullet {
-    @apply relative text-m-neutral-100;
+    @apply relative text-neutral-100;
   }
 
   .referral-item-label {
@@ -20,7 +20,7 @@
       }
 
       .referral-item-label {
-        @apply text-m-neutral-60 line-through;
+        @apply text-neutral-60 line-through;
       }
     }
   }
@@ -30,7 +30,7 @@
       &::after {
         content: '';
 
-        @apply absolute h-12 w-0.5 top-4 bg-l-neutral-20;
+        @apply absolute h-12 w-0.5 top-4 bg-neutral-20;
       }
     }
 

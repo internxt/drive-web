@@ -81,7 +81,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
                 </span>
               )}
 
-              <div className="flex justify-start h-1.5 w-full bg-l-neutral-30 rounded-lg overflow-hidden mt-0.5">
+              <div className="flex justify-start h-1.5 w-full bg-neutral-30 rounded-lg overflow-hidden mt-0.5">
                 <div className="h-full bg-blue-70" style={progressBarFillStyle} />
               </div>
             </div>
@@ -148,7 +148,7 @@ const AccountPlanInfoTab = (): JSX.Element => {
           </div>
           {!currentPlan?.isAppSumo && (
             <span
-              className="block text-center text-m-neutral-80 cursor-pointer mt-10"
+              className="block text-center text-neutral-80 cursor-pointer mt-10"
               onClick={onDeletePermanentlyAccountClicked}
             >
               {i18n.get('actions.deleteAccount')}

@@ -309,6 +309,9 @@
   "actions": {
     "upload": "Upload",
     "download": "Download",
+    "downloading": "Downloading",
+    "downloaded": "Downloaded",
+    "view": "View",
     "accessFile": "Access File",
     "upgradeNow": "Upgrade now!",
     "upgrade": "Upgrade",

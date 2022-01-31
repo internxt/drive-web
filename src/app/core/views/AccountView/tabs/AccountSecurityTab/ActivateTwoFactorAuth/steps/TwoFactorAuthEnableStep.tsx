@@ -49,7 +49,7 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
       </span>
 
       <div className="hidden flex-col space-y-0.5">
-        <label className="text-sm font-medium text-m-neutral-100 mb-0.5">Backup key (from previous step)</label>
+        <label className="text-sm font-medium text-neutral-100 mb-0.5">Backup key (from previous step)</label>
         <input
           {... register('backupKey')}
           className="pointer-events-none mb-4"
@@ -61,7 +61,7 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
       </div>
 
       <div className="flex flex-col space-y-0.5">
-        <label className="text-sm font-medium text-m-neutral-100 mb-0.5">Two-factor authenticacion code</label>
+        <label className="text-sm font-medium text-neutral-100 mb-0.5">Two-factor authenticacion code</label>
         <input
           {... register('twoFactorCode')}
           id="input2fa"

@@ -33,7 +33,7 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
         {i18n.get('error.noSpaceAvailable')}
       </span>
 
-      <div className="flex justify-center items-center w-full bg-l-neutral-20 py-6">
+      <div className="flex justify-center items-center w-full bg-neutral-20 py-6">
         <div className="flex w-64 px-8">
           <BaseButton onClick={() => onClose()} className="transparent w-11/12 mr-2">
             {i18n.get('actions.cancel')}

@@ -74,11 +74,11 @@ const AccountPlansTab = (): JSX.Element => {
     <div
       key={index}
       className="w-56 h-56 flex flex-col justify-center items-center\
-       border border-l-neutral-30 rounded-lg text-center p-6 m-3"
+       border border-neutral-30 rounded-lg text-center p-6 m-3"
     >
       <feature.icon className="text-blue-40 mb-2" />
       <span className="block text-neutral-900 mb-2">{feature.title}</span>
-      <span className="block text-m-neutral-100 text-sm">{feature.description}</span>
+      <span className="block text-neutral-100 text-sm">{feature.description}</span>
     </div>
   ));
 
@@ -94,7 +94,7 @@ const AccountPlansTab = (): JSX.Element => {
       ) : (
         <Fragment>
           {/* PERIOD SELECTOR */}
-          <div className="mx-auto mb-6 rounded-lg bg-l-neutral-20 h-10 w-96 flex py-1 px-0.5">{renewalPeriodList}</div>
+          <div className="mx-auto mb-6 rounded-lg bg-neutral-20 h-10 w-96 flex py-1 px-0.5">{renewalPeriodList}</div>
 
           {/* CHANGE PLANS WORKSPACE */}
           <span

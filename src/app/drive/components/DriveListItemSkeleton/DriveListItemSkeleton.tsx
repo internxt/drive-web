@@ -2,7 +2,7 @@ import Skeleton from 'react-loading-skeleton';
 
 const DriveListItemSkeleton = (): JSX.Element => {
   return (
-    <div className="py-3.5 border-b border-l-neutral-30 w-full flex">
+    <div className="py-3.5 border-b border-neutral-30 w-full flex">
       <div className="w-0.5/12 px-3 flex items-center justify-center box-content"></div>
       <div className="w-0.5/12 px-3 flex items-center box-content">
         <Skeleton circle={true} height={25} width={25} />

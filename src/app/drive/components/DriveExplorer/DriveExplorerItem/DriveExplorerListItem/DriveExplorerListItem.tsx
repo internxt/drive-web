@@ -105,7 +105,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {/* ICON */}
       <div className="w-1/12 flex items-center px-3 box-content">
-        <div className="h-8 w-8 flex justify-center">
+        <div className="h-10 w-10 flex justify-center">
           <ItemIconComponent className="h-full" />
         </div>
       </div>
