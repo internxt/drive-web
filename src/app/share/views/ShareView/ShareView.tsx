@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Component, Fragment } from 'react';
-import { Menu, Transition } from '@headlessui/react';
+import { Menu, Dialog, Transition } from '@headlessui/react';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 import UilEye from '@iconscout/react-unicons/icons/uil-eye';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
+import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { aes } from '@internxt/lib';
 
 import { getShareInfo } from 'app/share/services/share.service';
@@ -43,6 +44,7 @@ interface ShareViewState {
   info: GetShareInfoWithDecryptedName | null;
   error: Error | null;
   accessedFile: boolean;
+  openPreview: boolean;
 }
 
 class ShareView extends Component<ShareViewProps, ShareViewState> {
@@ -52,7 +54,8 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     info: null,
     error: null,
     accessedFile: false,
-    user: null
+    user: null,
+    openPreview: false,
   };
 
   loadInfo = async () => {
@@ -89,6 +92,18 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
         error: castedError,
       });
     }
+  };
+  
+  openPreview = async () => {
+    this.setState({
+        openPreview: true,
+      });
+  };
+
+  closePreview = async () => {
+    this.setState({
+        openPreview: false,
+      });
   };
 
   download = async (): Promise<void> => {
@@ -202,8 +217,9 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
           {/* Actions */}
           <div className="flex flex-row space-x-3 items-center justify-center">
             <button
+              onClick={this.openPreview}
               className="flex flex-row items-center h-10 px-6 rounded-lg bg-blue-10 text-blue-60 space-x-2
-                         font-medium cursor-pointer"
+                         font-medium cursor-pointer active:bg-blue-20 active:bg-opacity-65"
             >
               <UilEye height="20" width="20" />
               <span>{i18n.get('actions.view')}</span>
@@ -250,172 +266,228 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     }
 
     return (
-      <div className="flex flex-row justify-center items-stretch h-screen bg-white text-cool-gray-90">
-        
-        {/* Banner */}
-        <div className="relative flex flex-col w-96 h-full bg-blue-80 text-white">
-          <img src={bg} className="absolute top-0 left-0 object-cover object-center h-full w-full" />
+      <>
+        {/* Preview */}
+        <Transition
+          appear
+          show={this.state.openPreview}
+          as={Fragment}
+          enter="ease-out duration-150"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-100"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <Dialog
+            as="div"
+            className="fixed inset-0 z-10 overflow-y-auto text-white"
+            onClose={this.closePreview}
+          >
+            <div className="min-h-screen">
 
-          <div className="flex flex-col space-y-12 p-12 h-full z-10">
-            <div className="relative flex flex-row items-center space-x-2 font-semibold">
-              <Logo className="w-4 h-4" />
-              <span>INTERNXT</span>
-            </div>
+              <Dialog.Overlay className="fixed inset-0 bg-cool-gray-100 bg-opacity-90 backdrop-filter
+                                        backdrop-blur-md" />
 
-            <div className="flex flex-col justify-center h-full space-y-20">
-              <div className="flex flex-col space-y-2">
-                <span className="opacity-60 text-xl">WE ARE INTERNXT</span>
-                <p className="text-5xl-banner font-semibold leading-none">Private and secure cloud storage</p>
+              {/* Close & File name */}
+              <div className="absolute top-0 left-0 flex flex-row items-center h-20 px-6 space-x-6 text-lg
+                              font-medium">
+                <button
+                  onClick={this.closePreview}
+                  className="flex flex-col items-center justify-center h-10 w-10 rounded-full
+                            bg-white bg-opacity-15">
+                  <UilMultiply height="20" width="20" />
+                </button>
+
+                <Dialog.Title>{this.state.info && this.state.info['decryptedName']}</Dialog.Title>
               </div>
 
-              <div className="flex flex-col space-y-3 text-xl">
-                <div className="flex flex-row items-center space-x-3">
-                  <img src={Shield} className="w-6 h-6" />
-                  <span>Privacy by design</span>
-                </div>
-
-                <div className="flex flex-row items-center space-x-3">
-                  <img src={EndToEnd} className="w-6 h-6" />
-                  <span>End-to-end encryption</span>
-                </div>
-
-                <div className="flex flex-row items-center space-x-3">
-                  <img src={Lock} className="w-6 h-6" />
-                  <span>Military-grade encryption</span>
-                </div>
-
-                <div className="flex flex-row items-center space-x-3">
-                  <img src={EyeSlash} className="w-6 h-6" />
-                  <span>Zero-knowledge technology</span>
-                </div>
+              {/* Download button */}
+              <div className="absolute top-0 right-0 flex flex-row items-center h-20 px-6 space-x-6 text-lg
+                              font-medium">
+                <button
+                  onClick={this.closePreview}
+                  className="flex flex-row items-center h-10 px-6 rounded-lg space-x-2 cursor-pointer
+                            font-medium bg-white bg-opacity-15">
+                  <UilImport height="20" width="20" />
+                  <span className="font-medium">{i18n.get('actions.download')}</span>
+                </button>
               </div>
+              
             </div>
+          </Dialog>
+        </Transition>
 
-            {!isAuthenticated && (
-              <Link to="/new" className="no-underline">
-                <div className="flex flex-row items-center justify-center rounded-xl no-underline ring-3 ring-blue-30
-                                p-1 cursor-pointer">
-                  <div className="flex flex-row items-center justify-center w-full h-12 bg-white text-blue-70 rounded-lg
-                              no-underline text-xl font-semibold px-6">
-                    <span>Get 10GB for FREE</span>
-                  </div>
-                </div>
-              </Link>
-            )}
-
-          </div>
-        </div>
-
-        {/* Download container */}
-        <div className="flex flex-col flex-1">
+        {/* Content */}
+        <div className="flex flex-row justify-center items-stretch h-screen bg-white text-cool-gray-90">
           
-          {/* Top bar */}
-          <div className="flex flex-row justify-end items-center h-20 px-6">
-            
-            {isAuthenticated ?
-              (
-                <>
-                  {/* User avatar */}
-                  <Menu as="div" className="relative inline-block text-left">
-                    <div>
-                      <Menu.Button className="inline-flex justify-center w-full px-4 py-2 font-medium
-                                              rounded-lg focus:outline-none focus-visible:ring-2
-                                              focus-visible:ring-blue-20 focus-visible:ring-opacity-75">
-                        <div className="flex flex-row space-x-3">
-                          <div className="flex flex-row items-center justify-center rounded-full bg-blue-10 text-blue-80
-                                          h-8 w-8">
-                            <span className="font-semibold text-sm">JD</span>
-                          </div>
-                          <div className="flex flex-row items-center font-semibold">
-                            <span>Jonh{' '}Doe</span>
-                          </div>
-                        </div>
-                      </Menu.Button>
-                    </div>
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items className="absolute right-0 origin-top-right bg-white rounded-md shadow-lg ring-1
-                                             ring-cool-gray-100 ring-opacity-5 focus:outline-none p-1 whitespace-nowrap
-                                             ">
-                        
-                        <Menu.Item>
-                            {({ active }) => (
-                              <Link to="/app" className="no-underline text-cool-gray-90 hover:text-cool-gray-90">
-                                <button
-                                className={`${active && 'bg-cool-gray-5'} group flex rounded-md items-center w-full
-                                            px-4 py-2 font-medium`}
-                              >
-                                Go to Internxt Drive
-                              </button>
-                              </Link>
-                            )}
-                          </Menu.Item>
+          {/* Banner */}
+          <div className="relative flex flex-col w-96 h-full bg-blue-80 text-white">
+            <img src={bg} className="absolute top-0 left-0 object-cover object-center h-full w-full" />
 
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={`${active && 'bg-cool-gray-5'} group flex rounded-md items-center w-full
-                                            px-4 py-2 font-medium`}
-                              >
-                                Download Desktop App
-                              </button>
-                            )}
-                          </Menu.Item>
+            <div className="flex flex-col space-y-12 p-12 h-full z-10">
+              <div className="relative flex flex-row items-center space-x-2 font-semibold">
+                <Logo className="w-4 h-4" />
+                <span>INTERNXT</span>
+              </div>
 
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={`${active && 'bg-red-10 bg-opacity-50 text-red-60'} group flex rounded-md
-                                            items-center w-full px-4 py-2 font-medium`}
-                              >
-                                Log out
-                              </button>
-                            )}
-                          </Menu.Item>
+              <div className="flex flex-col justify-center h-full space-y-20">
+                <div className="flex flex-col space-y-2">
+                  <span className="opacity-60 text-xl">WE ARE INTERNXT</span>
+                  <p className="text-5xl-banner font-semibold leading-none">Private and secure cloud storage</p>
+                </div>
 
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
-                </>
-              ) : (
-                <>
-                  {/* Login / Create account */}
-                  <div className="flex flex-row space-x-3">
-                    <Link to="/login" className="no-underline">
-                      <div className="flex flex-row items-center justify-center rounded-lg h-9 px-4 font-medium
-                                    text-cool-gray-90 hover:text-cool-gray-90 cursor-pointer no-underline">
-                        Login
-                      </div>
-                    </Link>
-
-                    <Link to="/new" className="no-underline">
-                      <a className="flex flex-row items-center justify-center rounded-lg bg-cool-gray-10 h-9 px-4
-                                    font-medium text-cool-gray-90 hover:text-cool-gray-90 cursor-pointer no-underline">
-                        Create account
-                      </a>
-                    </Link>
+                <div className="flex flex-col space-y-3 text-xl">
+                  <div className="flex flex-row items-center space-x-3">
+                    <img src={Shield} className="w-6 h-6" />
+                    <span>Privacy by design</span>
                   </div>
-                </>
-              )
-            }
-            
+
+                  <div className="flex flex-row items-center space-x-3">
+                    <img src={EndToEnd} className="w-6 h-6" />
+                    <span>End-to-end encryption</span>
+                  </div>
+
+                  <div className="flex flex-row items-center space-x-3">
+                    <img src={Lock} className="w-6 h-6" />
+                    <span>Military-grade encryption</span>
+                  </div>
+
+                  <div className="flex flex-row items-center space-x-3">
+                    <img src={EyeSlash} className="w-6 h-6" />
+                    <span>Zero-knowledge technology</span>
+                  </div>
+                </div>
+              </div>
+
+              {!isAuthenticated && (
+                <Link to="/new" className="no-underline">
+                  <div className="flex flex-row items-center justify-center rounded-xl no-underline ring-3 ring-blue-30
+                                  p-1 cursor-pointer">
+                    <div className="flex flex-row items-center justify-center w-full h-12 bg-white text-blue-70
+                                    rounded-lg no-underline text-xl font-semibold px-6">
+                      <span>Get 10GB for FREE</span>
+                    </div>
+                  </div>
+                </Link>
+              )}
+
+            </div>
           </div>
 
-          {/* File container */}
-          <div className="flex flex-col items-center justify-center space-y-10 h-full">
-            {body}
+          {/* Download container */}
+          <div className="flex flex-col flex-1">
+            
+            {/* Top bar */}
+            <div className="flex flex-row justify-end items-center h-20 px-6">
+              
+              {isAuthenticated ?
+                (
+                  <>
+                    {/* User avatar */}
+                    <Menu as="div" className="relative inline-block text-left">
+                      <div>
+                        <Menu.Button className="inline-flex justify-center w-full px-4 py-2 font-medium
+                                                rounded-lg focus:outline-none focus-visible:ring-2
+                                                focus-visible:ring-blue-20 focus-visible:ring-opacity-75">
+                          <div className="flex flex-row space-x-3">
+                            <div className="flex flex-row items-center justify-center rounded-full bg-blue-10
+                                          text-blue-80 h-8 w-8">
+                              <span className="font-semibold text-sm">JD</span>
+                            </div>
+                            <div className="flex flex-row items-center font-semibold">
+                              <span>Jonh{' '}Doe</span>
+                            </div>
+                          </div>
+                        </Menu.Button>
+                      </div>
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items className="absolute right-0 origin-top-right bg-white rounded-md shadow-lg ring-1
+                                              ring-cool-gray-100 ring-opacity-5 focus:outline-none p-1 whitespace-nowrap
+                                              ">
+                          
+                          <Menu.Item>
+                              {({ active }) => (
+                                <Link to="/app" className="no-underline text-cool-gray-90 hover:text-cool-gray-90">
+                                  <button
+                                  className={`${active && 'bg-cool-gray-5'} group flex rounded-md items-center w-full
+                                              px-4 py-2 font-medium`}
+                                >
+                                  Go to Internxt Drive
+                                </button>
+                                </Link>
+                              )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${active && 'bg-cool-gray-5'} group flex rounded-md items-center w-full
+                                              px-4 py-2 font-medium`}
+                                >
+                                  Download Desktop App
+                                </button>
+                              )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${active && 'bg-red-10 bg-opacity-50 text-red-60'} group flex rounded-md
+                                              items-center w-full px-4 py-2 font-medium`}
+                                >
+                                  Log out
+                                </button>
+                              )}
+                            </Menu.Item>
+
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
+                  </>
+                ) : (
+                  <>
+                    {/* Login / Create account */}
+                    <div className="flex flex-row space-x-3">
+                      <Link to="/login" className="no-underline">
+                        <div className="flex flex-row items-center justify-center rounded-lg h-9 px-4 font-medium
+                                      text-cool-gray-90 hover:text-cool-gray-90 cursor-pointer no-underline">
+                          Login
+                        </div>
+                      </Link>
+
+                      <Link to="/new" className="no-underline">
+                        <a className="flex flex-row items-center justify-center rounded-lg bg-cool-gray-10 h-9 px-4
+                                      font-medium text-cool-gray-90 hover:text-cool-gray-90 cursor-pointer
+                                      no-underline">
+                          Create account
+                        </a>
+                      </Link>
+                    </div>
+                  </>
+                )
+              }
+              
+            </div>
+
+            {/* File container */}
+            <div className="flex flex-col items-center justify-center space-y-10 h-full">
+              {body}
+            </div>
+
           </div>
 
         </div>
-
-      </div>
+      </>
+      
     );
   }
 }

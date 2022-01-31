@@ -12,6 +12,37 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      opacity: {
+        0: '0',
+        1: '.01',
+        2: '.02',
+        3: '.03',
+        4: '.04',
+        5: '.05',
+        6: '.06',
+        7: '.07',
+        8: '.08',
+        9: '.09',
+        10: '.1',
+        15: '.15',
+        20: '.2',
+        25: '.25',
+        30: '.3',
+        35: '.35',
+        40: '.4',
+        45: '.45',
+        50: '.5',
+        55: '.55',
+        60: '.6',
+        65: '.65',
+        70: '.7',
+        75: '.75',
+        80: '.8',
+        85: '.85',
+        90: '.9',
+        95: '.95',
+        100: '1',
+      },
       rotate: {
         '10-': '-10deg',
         10: '10deg',
@@ -55,6 +86,9 @@ module.exports = {
       },
       ringOpacity: (theme) => ({
         DEFAULT: '0.5',
+        ...theme('opacity')
+      }),
+      backgroundOpacity: (theme) => ({
         ...theme('opacity')
       }),
       ringWidth: {
@@ -304,6 +338,7 @@ module.exports = {
       borderWidth: ['hover', 'active', 'focus'],
       borderRadius: ['responsive', 'hover', 'active', 'focus'],
       backgroundColor: ['active', 'hover', 'focus'],
+      backgroundOpacity: ['active', 'hover', 'focus'],
       visibility: ['group-hover'],
       width: ['hover', 'active', 'focus']
     },
