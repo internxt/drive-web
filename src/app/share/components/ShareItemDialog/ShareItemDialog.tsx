@@ -1,7 +1,6 @@
 import UilClipboardAlt from '@iconscout/react-unicons/icons/uil-clipboard-alt';
 import { useState } from 'react';
 import { useEffect } from 'react';
-
 import { generateFileKey, Network } from 'app/drive/services/network';
 import { DriveItemData } from 'app/drive/types';
 import { uiActions } from 'app/store/slices/ui';
@@ -69,16 +68,15 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
       const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
 
-      const payload: ShareTypes.GenerateShareLinkPayload = {
+      const payload: ShareTypes.GenerateShareFileLinkPayload = {
         fileId,
         bucket,
         fileToken,
-        isFolder: false,
         views,
         encryptionKey: fileEncryptionKey.toString('hex'),
       };
 
-      const link = await shareService.generateShareLink(payload);
+      const link = await shareService.generateShareFileLink(payload);
 
 
       dispatch(referralsThunks.refreshUserReferrals());

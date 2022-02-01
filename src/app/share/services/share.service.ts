@@ -2,9 +2,9 @@ import errorService from '../../core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../core/factory/sdk';
 
-export function generateShareLink(params: ShareTypes.GenerateShareLinkPayload): Promise<string> {
+export function generateShareFileLink(params: ShareTypes.GenerateShareFileLinkPayload): Promise<string> {
   const shareClient = SdkFactory.getInstance().createShareClient();
-  return shareClient.createShareLink(params)
+  return shareClient.createShareFileLink(params)
     .then(response => {
       return `${window.location.origin}/${response.token}`;
     });
@@ -19,7 +19,7 @@ export function getShareInfo(token: string): Promise<ShareTypes.GetShareInfoResp
 }
 
 const shareService = {
-  generateShareLink,
+  generateShareFileLink,
   getShareInfo,
 };
 
