@@ -8,7 +8,9 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
 import { AnalyticsTrack } from '../types';
+import { getCookie, setCookie } from '../utils';
 import queryString from 'query-string';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export const PATH_NAMES = {
@@ -16,9 +18,10 @@ export const PATH_NAMES = {
   '/appsumo': 'Register',
   '/login': 'Login',
   '/storage': 'Drive Main',
-  '/settings': 'drive-web-settings',
-  '/invite': 'drive-web-invite',
-  '/remove': 'drive-web-remove',
+  '/settings': 'Settings',
+  '/invite': 'Invite',
+  '/remove': 'Remove Account',
+  '/app': 'App'
 };
 
 
@@ -127,6 +130,7 @@ export function trackSignUp(payload: {
 }): void {
   window.analytics.identify(payload.userId, payload.traits);
   window.analytics.track(AnalyticsTrack.SignUp, payload.properties);
+  trackSignUpServer(payload);
   window.rdt('track', 'SignUp');
 }
 
@@ -257,7 +261,7 @@ export function trackUserResetPasswordRequest(): void {
 }
 
 export function track(email: string, status: 'error' | 'success'): void {
-  window.analytics.track('user-change-password', {
+  window.analytics.track('Password Changed', {
     status,
     email,
   });
@@ -324,6 +328,86 @@ export async function trackPaymentConversion() {
   }
 
 }
+
+async function getBodyPage(segmentName?: string) {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const brave = navigator.brave && await navigator.brave.isBrave();
+  const browser = brave ? 'brave' : navigator.userAgent;
+  let userId = null;
+  let anonymousId = uuidv4();;
+  try {
+    anonymousId = JSON.parse(window.localStorage.getItem('ajs_anonymous_id') || '');
+    userId = JSON.parse(window.localStorage.getItem('ajs_user_id') || '');
+  }
+  catch (err) {
+    anonymousId = getCookie('anonymousId') || anonymousId;
+    userId = null;
+    setCookie('anonymousId', anonymousId, 50);
+  }
+  return {
+    anonymousId,
+    userId,
+    context: {
+      campaign: {
+        source: urlParams.get('utm_source'),
+        id: urlParams.get('utm_id'),
+        medium: urlParams.get('utm_medium'),
+        term: urlParams.get('utm_term'),
+        content: urlParams.get('utm_content'),
+        irclickid: urlParams.get('irclickid')
+      },
+      userAgent: navigator.userAgent,
+      browser,
+      locale: window.navigator.language
+    },
+    name: segmentName,
+    properties: {
+      path: window.location.pathname,
+      referrer: document.referrer,
+      search: window.location.search,
+      url: document.URL,
+    }
+  };
+}
+
+export async function serverPage(segmentName: string) {
+  const page = await getBodyPage(segmentName);
+  return httpService.post(`${process.env.REACT_APP_API_URL}/api/data/p`,
+    {
+      page,
+    })
+    .catch(() => {
+      // no op
+    });
+}
+
+export async function trackSignUpServer(payload: {
+  properties: { signup_source; email: string };
+  traits: {
+    member_tier?: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    usage: number;
+    createdAt: string;
+    signup_device_source: string;
+    acquisition_channel;
+  };
+  userId: string;
+}) {
+  const page = await getBodyPage();
+  return httpService.post(`${process.env.REACT_APP_API_URL}/api/data/t`,
+    {
+      page,
+      track: payload,
+      actionName: 'server_signup'
+    }
+  ).catch(() => {
+    // No op
+  });
+}
+
 
 const analyticsService = {
   page,
