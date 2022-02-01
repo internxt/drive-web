@@ -10,6 +10,16 @@ export function generateShareFileLink(params: ShareTypes.GenerateShareFileLinkPa
     });
 }
 
+export function generateShareFolderLink(
+  params: ShareTypes.GenerateShareFolderLinkPayload, code: string
+): Promise<string> {
+  const shareClient = SdkFactory.getInstance().createShareClient();
+  return shareClient.createShareFolderLink(params)
+    .then(response => {
+      return `${window.location.origin}/${response.token}?c=${code}`;
+    });
+}
+
 export function getShareInfo(token: string): Promise<ShareTypes.GetShareInfoResponse> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.getShareByToken(token)
@@ -20,6 +30,7 @@ export function getShareInfo(token: string): Promise<ShareTypes.GetShareInfoResp
 
 const shareService = {
   generateShareFileLink,
+  generateShareFolderLink,
   getShareInfo,
 };
 
