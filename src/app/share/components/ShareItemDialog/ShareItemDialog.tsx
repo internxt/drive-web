@@ -19,6 +19,8 @@ import errorService from 'app/core/services/error.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
+import lib from '@internxt/lib';
+import crypto from 'crypto';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
@@ -63,22 +65,34 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         return;
       }
 
+      let link;
       const network = new Network(email, userId, mnemonic);
-      const { index } = await network.getFileInfo(bucket, fileId);
-      const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
-      const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
 
-      const payload: ShareTypes.GenerateShareFileLinkPayload = {
-        fileId,
-        bucket,
-        fileToken,
-        views,
-        encryptionKey: fileEncryptionKey.toString('hex'),
-      };
-
-      const link = await shareService.generateShareFileLink(payload);
-
-
+      if (item.isFolder) {
+        const code = crypto.randomBytes(32).toString('hex');
+        const encryptedMnemonic = lib.aes.encrypt(mnemonic, code);
+        const bucketToken = await network.createFileToken(bucket, '', 'PULL');
+        const payload: ShareTypes.GenerateShareFolderLinkPayload = {
+          folderId: item.id,
+          bucket: bucket,
+          bucketToken: bucketToken,
+          views: views,
+          encryptedMnemonic: encryptedMnemonic
+        };
+        link = await shareService.generateShareFolderLink(payload, code);
+      } else {
+        const { index } = await network.getFileInfo(bucket, fileId);
+        const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
+        const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
+        const payload: ShareTypes.GenerateShareFileLinkPayload = {
+          fileId,
+          bucket,
+          fileToken,
+          views,
+          encryptionKey: fileEncryptionKey.toString('hex'),
+        };
+        link = await shareService.generateShareFileLink(payload);
+      }
       dispatch(referralsThunks.refreshUserReferrals());
 
       window.analytics.track('file-share');
