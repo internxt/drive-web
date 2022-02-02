@@ -293,9 +293,12 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
                                         backdrop-blur-md" />
 
               {/* Content */}
-              <div className="flex flex-col items-center justify-start min-h-screen">
+              <div
+                tabIndex={0}
+                className="flex flex-col items-center justify-start min-h-screen"
+              >
                 <div
-                  className="relative z-10 my-24"
+                  className="relative z-10 my-24 outline-none"
                 >
                   <div className="relative px-80 w-96 min-h-screen bg-white" />
                   <div className="w-full h-6" />
