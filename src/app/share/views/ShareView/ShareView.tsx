@@ -3,11 +3,6 @@ import { Component, Fragment } from 'react';
 import { Menu, Dialog, Transition } from '@headlessui/react';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
-import UilCheck from '@iconscout/react-unicons/icons/uil-check';
-import UilEye from '@iconscout/react-unicons/icons/uil-eye';
-import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
-import UilImport from '@iconscout/react-unicons/icons/uil-import';
-import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { aes } from '@internxt/lib';
 
 import { getShareInfo } from 'app/share/services/share.service';
@@ -24,6 +19,13 @@ import Shield from 'assets/images/shared-file/icons/shield.png';
 import EndToEnd from 'assets/images/shared-file/icons/end-to-end.png';
 import Lock from 'assets/images/shared-file/icons/lock.png';
 import EyeSlash from 'assets/images/shared-file/icons/eye-slash.png';
+import UilCheck from '@iconscout/react-unicons/icons/uil-check';
+import UilEye from '@iconscout/react-unicons/icons/uil-eye';
+import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
+import UilImport from '@iconscout/react-unicons/icons/uil-import';
+import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
+import UilMinus from '@iconscout/react-unicons/icons/uil-minus';
+import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
 
 import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';
@@ -281,37 +283,95 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
         >
           <Dialog
             as="div"
-            className="fixed inset-0 z-10 overflow-y-auto text-white"
+            className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden text-white"
             onClose={this.closePreview}
           >
-            <div className="min-h-screen">
+            <div className="min-h-screen w-screen flex flex-col items-center justify-start">
 
+              {/* Close overlay */}
               <Dialog.Overlay className="fixed inset-0 bg-cool-gray-100 bg-opacity-90 backdrop-filter
                                         backdrop-blur-md" />
 
-              {/* Close & File name */}
-              <div className="absolute top-0 left-0 flex flex-row items-center h-20 px-6 space-x-6 text-lg
-                              font-medium">
-                <button
-                  onClick={this.closePreview}
-                  className="flex flex-col items-center justify-center h-10 w-10 rounded-full
-                            bg-white bg-opacity-15">
-                  <UilMultiply height="20" width="20" />
-                </button>
-
-                <Dialog.Title>{this.state.info && this.state.info['decryptedName']}</Dialog.Title>
+              {/* Content */}
+              <div className="flex flex-col items-center justify-start min-h-screen">
+                <div
+                  className="relative z-10 my-24"
+                >
+                  <div className="relative px-80 w-96 min-h-screen bg-white" />
+                  <div className="w-full h-6" />
+                  <div className="relative px-80 w-96 min-h-screen bg-black" />
+                  <div className="w-full h-6" />
+                  <div className="relative px-80 w-96 min-h-screen bg-blue-60" />
+                </div>
               </div>
 
-              {/* Download button */}
-              <div className="absolute top-0 right-0 flex flex-row items-center h-20 px-6 space-x-6 text-lg
-                              font-medium">
-                <button
-                  onClick={this.closePreview}
-                  className="flex flex-row items-center h-10 px-6 rounded-lg space-x-2 cursor-pointer
-                            font-medium bg-white bg-opacity-15">
-                  <UilImport height="20" width="20" />
-                  <span className="font-medium">{i18n.get('actions.download')}</span>
-                </button>
+              {/* Background */}
+              <div className="fixed -top-6 -inset-x-20 h-16 bg-cool-gray-100 z-10 pointer-events-none
+                              filter blur-2xl" />
+
+              {/* Top bar controls */}
+              <div className="fixed top-0 left-0 w-screen h-0 flex flex-row items-start justify-between px-4 z-20
+                              select-none text-lg font-medium">
+                
+                {/* Close and title */}
+                <div className="flex flex-row items-center justify-start h-10 mt-3 space-x-4 z-10">
+                  <button
+                    onClick={this.closePreview}
+                    className="relative group flex flex-col items-center justify-center h-10 w-10 bg-white bg-opacity-0
+                                    hover:bg-opacity-10 focus:bg-opacity-5 transition duration-50 ease-in-out
+                                    rounded-full">
+                    <UilMultiply height="20" width="20" />
+                  </button>
+
+                  <Dialog.Title>{this.state.info && this.state.info['decryptedName']}</Dialog.Title>
+                </div>
+
+                {/* Download button */}
+                <div className="flex flex-row items-center justify-end h-10 mt-3 space-x-4 z-10">
+                  <button
+                    onClick={this.closePreview}
+                    className="flex flex-row items-center h-10 px-6 rounded-lg space-x-2 cursor-pointer
+                              font-medium bg-white bg-opacity-0 hover:bg-opacity-10 focus:bg-opacity-5
+                              transition duration-50 ease-in-out">
+                    <UilImport height="20" width="20" />
+                    <span className="font-medium">{i18n.get('actions.download')}</span>
+                  </button>
+                </div>
+              </div>
+              
+              {/* Preview bottom controls */}
+              <div className="fixed bottom-6 left-1/2 flex flex-row items-center h-12 px-1.5 text-lg
+                              font-medium z-10 transform -translate-x-1/2 rounded-xl overflow-hidden
+                              shadow-xl select-none">
+                <div className="absolute inset-0 h-full w-full backdrop-filter backdrop-blur-xl
+                                backdrop-contrast-50" />
+                <div className="absolute inset-0 h-full w-full bg-cool-gray-100 bg-opacity-80" />
+
+                <div className="flex flex-row items-center justify-center space-x-1.5 z-10">
+                  <span className="font-medium px-4 z-10">1 of 3</span>
+
+                  <div className="w-px h-8 bg-white bg-opacity-10" />
+                
+                  <div className="flex flex-row items-center justify-center">
+                    <button
+                      onClick={() => { console.log('zoom +'); }}
+                      disabled={false}
+                      className="flex flex-row items-center justify-center h-9 w-9 rounded-lg cursor-pointer
+                                 bg-white bg-opacity-0 hover:bg-opacity-10 active:bg-opacity-5 disabled:opacity-30
+                                 transition duration-50 ease-in-out disabled:pointer-events-none">
+                      <UilPlus height="24" width="24" className="pointer-events-none" />
+                    </button>
+
+                    <button
+                      onClick={() => { console.log('zoom -'); }}
+                      disabled={true}
+                      className="flex flex-row items-center justify-center h-9 w-9 rounded-lg cursor-pointer
+                                 bg-white bg-opacity-0 hover:bg-opacity-10 active:bg-opacity-5 disabled:opacity-30
+                                 transition duration-50 ease-in-out disabled:pointer-events-none">
+                      <UilMinus height="24" width="24" className="pointer-events-none" />
+                    </button>
+                  </div>
+                </div>
               </div>
               
             </div>
@@ -338,25 +398,19 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
                 </div>
 
                 <div className="flex flex-col space-y-3 text-xl">
-                  <div className="flex flex-row items-center space-x-3">
-                    <img src={Shield} className="w-6 h-6" />
-                    <span>Privacy by design</span>
-                  </div>
-
-                  <div className="flex flex-row items-center space-x-3">
-                    <img src={EndToEnd} className="w-6 h-6" />
-                    <span>End-to-end encryption</span>
-                  </div>
-
-                  <div className="flex flex-row items-center space-x-3">
-                    <img src={Lock} className="w-6 h-6" />
-                    <span>Military-grade encryption</span>
-                  </div>
-
-                  <div className="flex flex-row items-center space-x-3">
-                    <img src={EyeSlash} className="w-6 h-6" />
-                    <span>Zero-knowledge technology</span>
-                  </div>
+                  {
+                    [
+                      {icon: Shield, label: 'Privacy by design'},
+                      {icon: EndToEnd, label: 'End-to-end encryption'},
+                      {icon: Lock, label: 'Military-grade encryption'},
+                      {icon: EyeSlash, label: 'Zero-knowledge technology'},
+                    ].map((item) => (
+                      <div className="flex flex-row items-center space-x-3">
+                        <img src={item.icon} className="w-6 h-6" />
+                        <span>{item.label}</span>
+                      </div>
+                    ))
+                  }
                 </div>
               </div>
 
@@ -420,9 +474,9 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
                                   <button
                                   className={`${active && 'bg-cool-gray-5'} group flex rounded-md items-center w-full
                                               px-4 py-2 font-medium`}
-                                >
-                                  Go to Internxt Drive
-                                </button>
+                                  >
+                                    Go to Internxt Drive
+                                  </button>
                                 </Link>
                               )}
                             </Menu.Item>

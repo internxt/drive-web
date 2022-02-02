@@ -12,6 +12,11 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      backdropInvert: {
+        25: '25%',
+        50: '50%',
+        75: '75%',
+      },
       opacity: {
         0: '0',
         1: '.01',
@@ -333,14 +338,16 @@ module.exports = {
   },
   variants: {
     extend: {
-      ringWidth: ['hover', 'active', 'focus'],
-      ringColor: ['hover', 'active', 'focus'],
-      borderWidth: ['hover', 'active', 'focus'],
-      borderRadius: ['responsive', 'hover', 'active', 'focus'],
-      backgroundColor: ['active', 'hover', 'focus'],
-      backgroundOpacity: ['active', 'hover', 'focus'],
-      visibility: ['group-hover'],
-      width: ['hover', 'active', 'focus']
+      ringWidth: ['hover', 'active', 'focus', 'disabled'],
+      ringColor: ['hover', 'active', 'focus', 'disabled'],
+      borderWidth: ['hover', 'active', 'focus', 'disabled'],
+      borderRadius: ['responsive', 'hover', 'active', 'focus', 'disabled'],
+      backgroundColor: ['active', 'hover', 'focus', 'disabled', 'group-hover', 'group-focus', 'focus-within'],
+      backgroundOpacity: ['active', 'hover', 'focus', 'disabled', 'group-hover', 'group-focus', 'focus-within'],
+      visibility: ['group-hover', 'disabled'],
+      opacity: ['disabled', 'group-hover', 'group-focus', 'focus-within'],
+      pointerEvents: ['disabled'],
+      width: ['hover', 'active', 'focus', 'disabled', 'group-hover', 'group-focus', 'focus-within']
     },
   },
   plugins: [
