@@ -15,7 +15,9 @@ instance.listen((nav) => {
     const pageName = PATH_NAMES[keys[index]];
 
     window.analytics.page(pageName);
-    serverPage(pageName);
+    serverPage(pageName).catch(() => {
+      // NO OP
+    });
   }
 });
 

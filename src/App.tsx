@@ -98,7 +98,9 @@ class App extends Component<AppProps> {
     if (window.location.pathname) {
       if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
         window.analytics.page(PATH_NAMES[window.location.pathname]);
-        serverPage(PATH_NAMES[window.location.pathname]);
+        serverPage(PATH_NAMES[window.location.pathname]).catch(() => {
+          // NO OP
+        });
 
       }
     }
