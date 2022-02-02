@@ -298,6 +298,7 @@
     "deletedTeamMember": "The {resource} has been successfully deleted",
     "accountDeactivationEmailSent": "Deactivation email sent!",
     "claimEmailSent": "Claim email sent!",
+    "teamsSubscriptionRedeemed":"Your team is ready! Log in again to start using Teams",
     "linkCopied": "Link copied!",
     "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
