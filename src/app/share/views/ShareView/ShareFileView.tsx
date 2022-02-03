@@ -4,7 +4,6 @@ import { Menu, Transition } from '@headlessui/react';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 import { aes } from '@internxt/lib';
-
 import { ReactComponent as Logo } from 'assets/icons/brand/x-white.svg';
 import { getSharedFileInfo } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
@@ -489,5 +488,4 @@ const ShareFileView = (props: ShareViewProps): JSX.Element => {
     </>
   );
 };
-
 export default ShareFileView;
