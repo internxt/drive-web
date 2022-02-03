@@ -5,7 +5,10 @@
 
     @apply relative py-3.5 border-b border-neutral-30 text-base w-full flex;
 
-    &:hover,
+    &:hover {
+      @apply bg-neutral-20;
+    }
+
     &.selected {
       @apply bg-blue-20;
     }
