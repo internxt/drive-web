@@ -40,7 +40,7 @@ export interface ShareViewProps extends ShareViewState {
   match: match<{ token: string }>;
 }
 
-interface GetShareInfoWithDecryptedName extends ShareTypes.GetShareInfoResponse {
+interface GetShareInfoWithDecryptedName extends ShareTypes.SharedFileInfo {
   name: string | null;
 }
 
@@ -56,7 +56,7 @@ interface ShareViewState {
   user: UserSettings | null;
 }
 
-const ShareView = (props: ShareViewProps): JSX.Element => {
+const ShareFileView = (props: ShareViewProps): JSX.Element => {
 
   const token = props.match.params.token;
   const [progress, setProgress] = useState(TaskProgress.Min);
@@ -76,7 +76,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
 		};
     getInfo();
   }, []);
-  
+
   const Spinner = (
     <>
       <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg"
@@ -95,7 +95,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
     return initials;
   };
 
-  function closePreview() {
+  const closePreview = () => {
     setOpenPreview(false);
   };
 
@@ -109,7 +109,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
     }
   };
 
-  const getDecryptedName = (info: ShareTypes.GetShareInfoResponse):string => {
+  const getDecryptedName = (info: ShareTypes.SharedFileInfo):string => {
     const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.fileMeta.folderId.toString()}`;
     const decryptedFilename = aes.decrypt(info.fileMeta.name, salt);
 
@@ -154,7 +154,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
       });
 
       setIsLoaded(true);
-      
+
       const updatedName = { ...info };
       if (updatedName.fileMeta) {
         updatedName.fileMeta.name = getDecryptedName(info);
@@ -169,7 +169,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
 
   const download = async (): Promise<void> => {
     if (!isDownloading) {
-      const fileInfo = info as unknown as GetShareInfoWithDecryptedName | null;
+      const fileInfo = info as unknown as ShareTypes.SharedFileInfo | null;
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
@@ -324,7 +324,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
 
       {/* Content */}
       <div className="flex flex-row justify-center items-stretch h-screen bg-white text-cool-gray-90">
-        
+
         {/* Banner */}
         <div className="relative hidden lg:flex flex-col w-96 h-full bg-blue-80 text-white flex-shrink-0">
           <img src={bg} className="absolute top-0 left-0 object-cover object-center h-full w-full" />
@@ -375,10 +375,10 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
 
         {/* Download container */}
         <div className="flex flex-col flex-1">
-          
+
           {/* Top bar */}
           <div className="flex flex-row justify-end items-center h-20 px-6 flex-shrink-0">
-            
+
             {isAuthenticated ?
               (
                 <>
@@ -411,7 +411,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
                       <Menu.Items className="absolute right-0 origin-top-right bg-white rounded-md shadow-lg ring-1
                                             ring-cool-gray-100 ring-opacity-5 focus:outline-none p-1 whitespace-nowrap
                                             ">
-                        
+
                         <Menu.Item>
                             {({ active }) => (
                               <Link to="/app" className="no-underline text-cool-gray-90 hover:text-cool-gray-90">
@@ -475,7 +475,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
                 </>
               )
             }
-            
+
           </div>
 
           {/* File container */}
@@ -490,4 +490,4 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
   );
 };
 
-export default ShareView;
+export default ShareFileView;

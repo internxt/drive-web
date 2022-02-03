@@ -112,7 +112,7 @@ export enum AppView {
   CheckoutSuccess = 'checkout-success',
   Checkout = 'checkout',
   Remove = 'remove',
-  ShareToken = 'share-token',
+  ShareFileToken = 'share-token',
   GuestAcceptInvite = 'guest-accept-invite',
   NotFound = 'not-found',
 }
