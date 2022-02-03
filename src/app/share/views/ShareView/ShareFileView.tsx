@@ -5,8 +5,8 @@ import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 import { aes } from '@internxt/lib';
 
-import { getShareInfo } from 'app/share/services/share.service';
 import { ReactComponent as Logo } from 'assets/icons/brand/x-white.svg';
+import { getSharedFileInfo } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
@@ -143,7 +143,7 @@ const ShareFileView = (props: ShareViewProps): JSX.Element => {
     }
 
     try {
-      const info = await getShareInfo(token).catch(() => {
+      const info = await getSharedFileInfo(token).catch(() => {
         setIsError(true);
         throw new Error(i18n.get('error.linkExpired'));
       });

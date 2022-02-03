@@ -20,9 +20,9 @@ export function generateShareFolderLink(
     });
 }
 
-export function getShareInfo(token: string): Promise<ShareTypes.GetShareInfoResponse> {
+export function getSharedFileInfo(token: string): Promise<ShareTypes.GetShareInfoResponse> {
   const shareClient = SdkFactory.getInstance().createShareClient();
-  return shareClient.getShareByToken(token)
+  return shareClient.getSharedFileByToken(token)
     .catch(error => {
       throw errorService.castError(error);
     });
@@ -31,7 +31,7 @@ export function getShareInfo(token: string): Promise<ShareTypes.GetShareInfoResp
 const shareService = {
   generateShareFileLink,
   generateShareFolderLink,
-  getShareInfo,
+  getSharedFileInfo,
 };
 
 export default shareService;
