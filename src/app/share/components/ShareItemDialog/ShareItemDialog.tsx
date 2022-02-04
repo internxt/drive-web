@@ -12,14 +12,13 @@ import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytic
 import { userThunks } from 'app/store/slices/user';
 import i18n from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { items } from '@internxt/lib';
+import { items, aes } from '@internxt/lib';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import errorService from 'app/core/services/error.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
-import lib from '@internxt/lib';
 import crypto from 'crypto';
 
 interface ShareItemDialogProps {
@@ -70,7 +69,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
 
       if (item.isFolder) {
         const code = crypto.randomBytes(32).toString('hex');
-        const encryptedMnemonic = lib.aes.encrypt(mnemonic, code);
+        const encryptedMnemonic = aes.encrypt(mnemonic, code);
         const bucketToken = await network.createFileToken(bucket, '', 'PULL');
         const payload: ShareTypes.GenerateShareFolderLinkPayload = {
           folderId: item.id,
