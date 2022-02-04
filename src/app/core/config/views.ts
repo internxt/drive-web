@@ -19,6 +19,7 @@ import BackupsView from 'app/backups/views/BackupsView/BackupsView';
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import RecoverView from '../../auth/views/RecoverView/RecoverView';
+import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 
 const views: Array<{
   id: string;
@@ -43,6 +44,7 @@ const views: Array<{
   { id: AppView.Checkout, component: CheckoutView },
   { id: AppView.Remove, component: RemoveAccountView },
   { id: AppView.ShareFileToken, component: ShareFileView },
+  { id: AppView.ShareFolderToken, component: ShareFolderView },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 

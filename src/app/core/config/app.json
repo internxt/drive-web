@@ -119,6 +119,12 @@
       "exact": true
     },
     {
+      "id": "share-folder-token",
+      "layout": "empty",
+      "path": "/folder/:token([a-z0-9]{20})/:code",
+      "exact": true
+    },
+    {
       "id": "maintenance",
       "layout": "empty",
       "path": "",
