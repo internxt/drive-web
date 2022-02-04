@@ -20,7 +20,7 @@ export function generateShareFolderLink(
     });
 }
 
-export function getSharedFileInfo(token: string): Promise<ShareTypes.GetShareInfoResponse> {
+export function getSharedFileInfo(token: string): Promise<ShareTypes.SharedFileInfo> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.getSharedFileByToken(token)
     .catch(error => {
