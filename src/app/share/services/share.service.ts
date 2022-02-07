@@ -17,7 +17,7 @@ export function generateShareFolderLink(
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.createShareFolderLink(params)
     .then(response => {
-      return `${window.location.origin}/${response.token}?c=${code}`;
+      return `${window.location.origin}/folder/${response.token}/${code}`;
     });
 }
 
@@ -34,13 +34,13 @@ export function getSharedFolderInfo(token: string): Promise<ShareTypes.SharedFol
   return shareClient.getSharedFolderByToken(token);
 }
 
-export function getSharedDirectoryFolders(payload: ShareTypes.GetSharedDirectoryPayload):
+export function getSharedDirectoryFolders(payload: ShareTypes.GetSharedDirectoryFoldersPayload):
   Promise<ShareTypes.SharedDirectoryFolders> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.getSharedDirectoryFolders(payload);
 }
 
-export function getSharedDirectoryFiles(payload: ShareTypes.GetSharedDirectoryPayload):
+export function getSharedDirectoryFiles(payload: ShareTypes.GetSharedDirectoryFilesPayload):
   Promise<ShareTypes.SharedDirectoryFiles> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.getSharedDirectoryFiles(payload);

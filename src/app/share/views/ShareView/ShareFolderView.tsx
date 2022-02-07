@@ -2,7 +2,11 @@ import { Component } from 'react';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
-import { getSharedDirectoryFolders, getSharedFolderInfo } from 'app/share/services/share.service';
+import {
+  getSharedDirectoryFiles,
+  getSharedDirectoryFolders,
+  getSharedFolderInfo
+} from 'app/share/services/share.service';
 import { ReactComponent as Spinner } from 'assets/icons/spinner.svg';
 import { ReactComponent as Logo } from 'assets/icons/big-logo.svg';
 import iconService from 'app/drive/services/icon.service';
@@ -14,9 +18,14 @@ import JSZip from 'jszip';
 import './ShareView.scss';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import sizeService from '../../../drive/services/size.service';
+import { Network } from '../../../drive/services/network';
+import fileDownload from 'js-file-download';
 
 export interface ShareViewProps {
-  match: match<{ token: string }>;
+  match: match<{
+    token: string,
+    code: string,
+  }>;
 }
 
 interface FolderPackage {
@@ -31,11 +40,13 @@ interface ShareViewState {
   ready: boolean
   info: ShareTypes.SharedFolderInfo
   completedFolders: FolderPackage[]
+  rootPackage: JSZip
 }
 
 class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
   state = {
     token: this.props.match.params.token,
+    code: this.props.match.params.code,
     error: null,
     progress: TaskProgress.Min,
     ready: false,
@@ -46,7 +57,8 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
       bucket: '',
       bucketToken: ''
     },
-    completedFolders: []
+    completedFolders: [],
+    rootPackage: new JSZip()
   };
 
   componentDidMount(): void {
@@ -84,7 +96,6 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
         },
       });
     } catch (err) {
-      console.log(err);
       throw new Error(i18n.get('error.linkExpired'));
     }
 
@@ -93,7 +104,7 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
 
     const pendingFolders: FolderPackage[] = [{
       folderId: rootFolderId,
-      pack: new JSZip()
+      pack: this.state.rootPackage
     }];
     const completedFolders: FolderPackage[] = [];
 
@@ -101,7 +112,7 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
       const { folderId, pack } = (pendingFolders.shift() as FolderPackage);
       let completed = false;
       while (!completed) {
-        const payload: ShareTypes.GetSharedDirectoryPayload = {
+        const payload: ShareTypes.GetSharedDirectoryFoldersPayload = {
           token: this.state.token,
           directoryId: folderId,
           offset: currentOffset,
@@ -125,8 +136,62 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
     });
   }
 
+  updateProgress = (progress) => {
+    this.setState({
+      progress: Math.max(TaskProgress.Min, progress * 100)
+    });
+  }
+
   download = async (): Promise<void> => {
-    //
+    const network = new Network('NONE', 'NONE', 'NONE');
+    const downloadingSize: Record<number, number> = {};
+    const filesRequestLimit = 10;
+
+    const pendingFolders = this.state.completedFolders as FolderPackage[];
+
+    while (pendingFolders.length) {
+      const { folderId, pack } = pendingFolders.shift() as FolderPackage;
+      let currentOffset = 0;
+      let completed = false;
+
+      while (!completed) {
+        const payload: ShareTypes.GetSharedDirectoryFilesPayload = {
+          token: this.state.token,
+          code: this.state.code,
+          directoryId: folderId,
+          offset: currentOffset,
+          limit: filesRequestLimit,
+        };
+        const filesResponse = await getSharedDirectoryFiles(payload);
+
+        for (const file of filesResponse.files) {
+          const [fileBlobPromise] = network.downloadFile(
+            this.state.info.bucket,
+            file.id,
+            {
+              fileEncryptionKey: Buffer.from(file.encryptionKey, 'hex'),
+              fileToken: this.state.info.bucketToken,
+              progressCallback: (fileProgress) => {
+                downloadingSize[file.id] = file.size * fileProgress;
+                const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
+                const totalProgress = totalDownloadedSize / this.state.info.size;
+                this.updateProgress(totalProgress);
+              },
+            }
+          );
+          const fileBlob = await fileBlobPromise;
+          pack.file(`${file.name}.${file.type}`, fileBlob);
+        }
+
+        completed = filesResponse.last;
+        currentOffset += filesRequestLimit;
+      }
+    }
+
+    await this.state.rootPackage.generateAsync({ type: 'blob' }).then((content) => {
+      fileDownload(content, `${this.state.info.name}.zip`, 'application/zip');
+    });
+
   };
 
   render(): JSX.Element {
