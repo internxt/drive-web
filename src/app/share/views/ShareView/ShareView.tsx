@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Component, Fragment } from 'react';
 import { Menu, Dialog, Transition } from '@headlessui/react';
+import Draggable from 'react-draggable';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 import { aes } from '@internxt/lib';
@@ -49,6 +50,19 @@ interface ShareViewState {
   openPreview: boolean;
 }
 
+// const [previewScroll, setPreviewScroll] = useState({
+//   'x': 0,
+//   'y': 0,
+//   'progressX': 0,
+//   'progressY': 0,
+//   'totalWidth': 0,
+//   'totalHeight': 0,
+//   'width': 0,
+//   'height': 0,
+//   'portionX': 0,
+//   'portionY': 0,
+// });
+
 class ShareView extends Component<ShareViewProps, ShareViewState> {
   state = {
     token: this.props.match.params.token,
@@ -95,18 +109,6 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
       });
     }
   };
-  
-  openPreview = async () => {
-    this.setState({
-        openPreview: true,
-      });
-  };
-
-  closePreview = async () => {
-    this.setState({
-        openPreview: false,
-      });
-  };
 
   download = async (): Promise<void> => {
     const info = this.state.info as unknown as GetShareInfoWithDecryptedName | null;
@@ -145,6 +147,80 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     const error = this.state.error as unknown as Error;
     const isAuthenticated = true;
     let body;
+
+    let previewScroll = {
+      'x': 0,
+      'y': 0,
+      'progressX': 0,
+      'progressY': 0,
+      'totalWidth': 0,
+      'totalHeight': 0,
+      'width': 0,
+      'height': 0,
+      'portionX': 0,
+      'portionY': 0,
+    };
+
+    const previewOnScroll = (e) => {
+    const scrollY = e.target.scrollTop;
+    const scrollTotalY = e.target.scrollHeight;
+    const scrollX = e.target.scrollLeft;
+    const scrollTotalX = e.target.scrollWidth;
+    const height = e.target.offsetHeight;
+    const width = e.target.offsetWidth;
+
+    previewScroll = {
+      'x': scrollX,
+      'y': scrollY,
+      'progressX': scrollX/(scrollTotalX - width)*100 || 100,
+      'progressY': scrollY/(scrollTotalY - height)*100 || 100,
+      'totalWidth': scrollTotalX,
+      'totalHeight': scrollTotalY,
+      'width': width,
+      'height': height,
+      'portionX': Math.floor(width/scrollTotalX*100),
+      'portionY': Math.floor(height/scrollTotalY*100),
+    };
+
+    // this.previewScroll['x'] = scrollX;
+    // this.previewScroll['y'] = scrollY;
+    // this.previewScroll['progressX'] = scrollX/(scrollTotalX - width)*100;
+    // this.previewScroll['progressY'] = scrollY/(scrollTotalY - height)*100;
+    // this.previewScroll['totalWidth'] = scrollTotalX;
+    // this.previewScroll['totalHeight'] = scrollTotalY;
+    // this.previewScroll['width'] = width;
+    // this.previewScroll['height'] = height;
+    // this.previewScroll['portionX'] = Math.floor(width/scrollTotalX*100);
+    // this.previewScroll['portionY'] = Math.floor(height/scrollTotalY*100);
+  };
+
+  // const resetPreviewScroll = () => {
+  //   previewScroll = {
+  //     'x': 0,
+  //     'y': 0,
+  //     'progressX': 0,
+  //     'progressY': 0,
+  //     'totalWidth': 0,
+  //     'totalHeight': 0,
+  //     'width': 0,
+  //     'height': 0,
+  //     'portionX': 0,
+  //     'portionY': 0,
+  //   };
+  // };
+  
+  const openPreview = async () => {
+    // this.resetPreviewScroll();
+    this.setState({
+        openPreview: true,
+      });
+  };
+
+  const closePreview = async () => {
+    this.setState({
+        openPreview: false,
+      });
+  };
 
     const Spinner = (
       <>
@@ -219,7 +295,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
           {/* Actions */}
           <div className="flex flex-row space-x-3 items-center justify-center">
             <button
-              onClick={this.openPreview}
+              onClick={openPreview}
               className="flex flex-row items-center h-10 px-6 rounded-lg bg-blue-10 text-blue-60 space-x-2
                          font-medium cursor-pointer active:bg-blue-20 active:bg-opacity-65"
             >
@@ -283,10 +359,28 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
         >
           <Dialog
             as="div"
-            className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden text-white"
-            onClose={this.closePreview}
+            className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden text-white hide-scroll"
+            onClose={closePreview}
+            onScroll={previewOnScroll}
           >
             <div className="min-h-screen w-screen flex flex-col items-center justify-start">
+
+            {/* Custom scroll */}
+            <div className="fixed top-0 right-0 w-3 h-screen bg-white bg-opacity-10 z-10">
+              <Draggable
+                axis="y"
+                bounds="parent"
+                defaultPosition={{x: 0, y: 0}}
+                onDrag={() => { console.log('dragged Y'); }}
+              >
+                <div
+                  className="w-full bg-white bg-opacity-80"
+                  style={{
+                    height: previewScroll.height
+                  }}
+                />
+              </Draggable>
+            </div>
 
               {/* Close overlay */}
               <Dialog.Overlay className="fixed inset-0 bg-cool-gray-100 bg-opacity-90 backdrop-filter
@@ -301,6 +395,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
                   className="relative z-10 my-24 outline-none"
                 >
                   <div className="relative px-80 w-96 min-h-screen bg-white" />
+                  <div onClick={ () => { console.log(previewScroll.height); } }>HAZ CLICK PARA IMPRIMIR</div>
                   <div className="w-full h-6" />
                   <div className="relative px-80 w-96 min-h-screen bg-black" />
                   <div className="w-full h-6" />
@@ -319,7 +414,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
                 {/* Close and title */}
                 <div className="flex flex-row items-center justify-start h-10 mt-3 space-x-4 z-10">
                   <button
-                    onClick={this.closePreview}
+                    onClick={closePreview}
                     className="relative group flex flex-col items-center justify-center h-10 w-10 bg-white bg-opacity-0
                                     hover:bg-opacity-10 focus:bg-opacity-5 transition duration-50 ease-in-out
                                     rounded-full">
@@ -332,7 +427,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
                 {/* Download button */}
                 <div className="flex flex-row items-center justify-end h-10 mt-3 space-x-4 z-10">
                   <button
-                    onClick={this.closePreview}
+                    onClick={closePreview}
                     className="flex flex-row items-center h-10 px-6 rounded-lg space-x-2 cursor-pointer
                               font-medium bg-white bg-opacity-0 hover:bg-opacity-10 focus:bg-opacity-5
                               transition duration-50 ease-in-out">
@@ -408,7 +503,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
                       {icon: Lock, label: 'Military-grade encryption'},
                       {icon: EyeSlash, label: 'Zero-knowledge technology'},
                     ].map((item) => (
-                      <div className="flex flex-row items-center space-x-3">
+                      <div className="flex flex-row items-center space-x-3" key={item.icon}>
                         <img src={item.icon} className="w-6 h-6" />
                         <span>{item.label}</span>
                       </div>

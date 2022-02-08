@@ -13,17 +13,17 @@
   }
 
   /* width */
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
+  // ::-webkit-scrollbar {
+  //   width: 4px;
+  // }
 
   /* Track */
-  ::-webkit-scrollbar-track {
-    @apply bg-blue-10;
-  }
+  // ::-webkit-scrollbar-track {
+  //   @apply bg-blue-10;
+  // }
 
   /* Handle */
-  ::-webkit-scrollbar-thumb {
-    @apply bg-blue-30;
-  }
+  // ::-webkit-scrollbar-thumb {
+  //   @apply bg-blue-30;
+  // }
 }
