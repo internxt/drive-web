@@ -47,6 +47,8 @@ interface ShareViewState {
 }
 
 class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
+  FOLDERS_LIMIT_BY_REQUEST = 16;
+  FILES_LIMIT_BY_REQUEST = 128;
   state = {
     token: this.props.match.params.token,
     code: this.props.match.params.code,
@@ -111,7 +113,6 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
       throw new Error(i18n.get('error.linkExpired'));
     }
 
-    const foldersLimitPerRequest = 10;
     let currentOffset = 0;
 
     const pendingFolders: FolderPackage[] = [{
@@ -128,7 +129,7 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
           token: this.state.token,
           directoryId: folderId,
           offset: currentOffset,
-          limit: foldersLimitPerRequest,
+          limit: this.FOLDERS_LIMIT_BY_REQUEST,
         };
         const foldersResponse = await getSharedDirectoryFolders(payload);
         foldersResponse.folders.map(folder => {
@@ -138,7 +139,7 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
           });
         });
         completed = foldersResponse.last;
-        currentOffset += foldersLimitPerRequest;
+        currentOffset += this.FOLDERS_LIMIT_BY_REQUEST;
       }
       completedFolders.push({ folderId, pack });
     }
@@ -211,11 +212,9 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
         pack.file(`${file.name}.${file.type}`, fileStream, { compression: 'DEFLATE' });
       },
       async () => {
-
         const writableStream = streamSaver.createWriteStream(`${this.state.info.name}.zip`, {});
         const writer = writableStream.getWriter();
-
-        const downloadPromise = new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {
           const folderStream = this.state.rootPackage.generateInternalStream({
             type: 'uint8array',
             streamFiles: true,
@@ -236,11 +235,8 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
               window.removeEventListener('unload', writer.abort);
               resolve();
             });
-
           folderStream.resume();
         });
-
-        await downloadPromise;
       }
     );
   };
@@ -261,7 +257,6 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
   ) => {
     const network = new Network('NONE', 'NONE', 'NONE');
     const downloadingSize: Record<number, number> = {};
-    const filesLimitPerRequest = 10;
 
     const pendingFolders = this.state.completedFolders as FolderPackage[];
 
@@ -278,7 +273,7 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
           code: this.state.code,
           directoryId: folderId,
           offset: currentOffset,
-          limit: filesLimitPerRequest,
+          limit: this.FILES_LIMIT_BY_REQUEST,
         };
         const filesResponse = await getSharedDirectoryFiles(payload);
 
@@ -297,7 +292,7 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
         }
 
         completed = filesResponse.last;
-        currentOffset += filesLimitPerRequest;
+        currentOffset += this.FILES_LIMIT_BY_REQUEST;
       }
     }
 
