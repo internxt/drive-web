@@ -326,7 +326,7 @@
     "sendInvitation": "Send invitation",
     "subscribe": "Subscribe",
     "moreInfo": "More info",
-    "ok": "Ok"
+    "dismiss": "Dismiss"
   },
   "drive": {
     "usage": "Usage",

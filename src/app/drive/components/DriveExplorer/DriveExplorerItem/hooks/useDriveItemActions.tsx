@@ -10,6 +10,7 @@ import { storageActions } from '../../../../../store/slices/storage';
 import storageSelectors from '../../../../../store/slices/storage/storage.selectors';
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
+import { SdkFactory } from '../../../../../core/factory/sdk';
 
 interface DriveItemActions {
   isEditingName: boolean;
@@ -80,11 +81,29 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
     dispatch(storageThunks.downloadItemsThunk([item]));
   };
-  const onShareButtonClicked = (e: React.MouseEvent): void => {
+  const onShareButtonClicked = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
 
-    dispatch(storageActions.setItemToShare(item));
-    dispatch(uiActions.setIsShareItemDialogOpen(true));
+    const proceed = () => {
+      dispatch(storageActions.setItemToShare(item));
+      dispatch(uiActions.setIsShareItemDialogOpen(true));
+    };
+
+    if (item.isFolder) {
+      const maxAcceptableSize = 1024 * 1024 * 1000; // 1GB
+      const folderSize = await getFolderSize(item.id);
+      if (folderSize > maxAcceptableSize) {
+        dispatch(uiActions.setIsSharedFolderTooBigDialogOpen(true));
+      } else {
+        proceed();
+      }
+    } else {
+      proceed();
+    }
+  };
+  const getFolderSize = (folderId: number) => {
+    const storageClient = SdkFactory.getInstance().createStorageClient();
+    return storageClient.getFolderSize(folderId);
   };
   const onInfoButtonClicked = (e: React.MouseEvent): void => {
     const itemDisplayName = items.getItemDisplayName(item);
