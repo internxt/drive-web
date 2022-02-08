@@ -8,6 +8,7 @@
 
     &.selected {
       @apply bg-blue-20;
+
       box-shadow: inset 0 0 0 0.15rem var(--color-blue-40);
     }
 
