@@ -142,12 +142,27 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     this.loadInfo();
   }
 
+  // handleLeavePage = (e) => {
+  //   const confirmationMessage = '';
+
+  //   e.returnValue = confirmationMessage; //Trident, Chrome 34+
+  //   return confirmationMessage; // WebKit, Chrome <34
+  // };
+
   // auth = useAppSelector((state) => state.user.isAuthenticated);
   // user = useAppSelector((state) => state.user.user);
 
   render(): JSX.Element {
     const error = this.state.error as unknown as Error;
     let body;
+
+    // useEffect(() => {
+    //   if (this.state.isDownloading && this.state.progress < 100) {
+    //     window.addEventListener('beforeunload', this.handleLeavePage);
+
+    //     return () => window.removeEventListener('beforeunload', this.handleLeavePage);
+    //   }
+    // }, [this.state.progress]);
 
     // console.log(this.auth);
     // console.log(this.user && this.user.name);
@@ -434,11 +449,11 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
                       </Link>
 
                       <Link to="/new" className="no-underline">
-                        <a className="flex flex-row items-center justify-center rounded-lg bg-cool-gray-10 h-9 px-4
+                        <div className="flex flex-row items-center justify-center rounded-lg bg-cool-gray-10 h-9 px-4
                                       font-medium text-cool-gray-90 hover:text-cool-gray-90 cursor-pointer
                                       no-underline">
                           Create account
-                        </a>
+                        </div>
                       </Link>
                     </div>
                   </>
