@@ -1,28 +1,29 @@
 import { Component } from 'react';
 import { match } from 'react-router';
-import 'react-toastify/dist/ReactToastify.css';
+import JSZip from 'jszip';
+import fileDownload from 'js-file-download';
+import { Readable } from 'stream';
+import streamSaver from 'streamsaver';
+import { SharedDirectoryFile } from '@internxt/sdk/dist/drive/share/types';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 import {
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
   getSharedFolderInfo
 } from 'app/share/services/share.service';
+
 import { ReactComponent as Spinner } from 'assets/icons/spinner.svg';
 import { ReactComponent as Logo } from 'assets/icons/big-logo.svg';
 import iconService from 'app/drive/services/icon.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import { TaskProgress } from 'app/tasks/types';
 import i18n from 'app/i18n/services/i18n.service';
-import JSZip from 'jszip';
-
-import './ShareView.scss';
-import { ShareTypes } from '@internxt/sdk/dist/drive';
 import sizeService from '../../../drive/services/size.service';
 import { IDownloadParams, Network } from '../../../drive/services/network';
-import fileDownload from 'js-file-download';
-import internal from 'stream';
-import { SharedDirectoryFile } from '../../../../../../sdk/dist/drive/share/types';
-import streamSaver from 'streamsaver';
+
+import 'react-toastify/dist/ReactToastify.css';
+import './ShareView.scss';
 
 export interface ShareViewProps {
   match: match<{
@@ -73,9 +74,9 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
           ready: true
         });
       })
-      .catch(error => {
+      .catch((err) => {
         this.setState({
-          error: error.message
+          error: err.message
         });
       });
   }
@@ -95,24 +96,17 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
       throw new Error('Chrome iOS not supported. Use Safari to proceed');
     }
 
-    let rootFolderId;
-    try {
-      // Load general info
-      const folderInfo = await getSharedFolderInfo(this.state.token);
-      rootFolderId = folderInfo.folderId;
-      this.setState({
-        info: {
-          folderId: rootFolderId,
-          name: folderInfo.name,
-          size: folderInfo.size,
-          bucket: folderInfo.bucket,
-          bucketToken: folderInfo.bucketToken,
-        },
-      });
-    } catch (err) {
-      throw new Error(i18n.get('error.linkExpired'));
-    }
-
+    const folderInfo = await getSharedFolderInfo(this.state.token);
+    const rootFolderId = folderInfo.folderId;
+    this.setState({
+      info: {
+        folderId: rootFolderId,
+        name: folderInfo.name,
+        size: folderInfo.size,
+        bucket: folderInfo.bucket,
+        bucketToken: folderInfo.bucketToken,
+      },
+    });
     let currentOffset = 0;
 
     const pendingFolders: FolderPackage[] = [{
@@ -121,8 +115,8 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
     }];
     const completedFolders: FolderPackage[] = [];
 
-    while (pendingFolders.length) {
-      const { folderId, pack } = (pendingFolders.shift() as FolderPackage);
+    while (pendingFolders.length > 0) {
+      const { folderId, pack } = pendingFolders.shift() as FolderPackage;
       let completed = false;
       while (!completed) {
         const payload: ShareTypes.GetSharedDirectoryFoldersPayload = {
@@ -214,28 +208,27 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
       async () => {
         const writableStream = streamSaver.createWriteStream(`${this.state.info.name}.zip`, {});
         const writer = writableStream.getWriter();
+
         await new Promise<void>((resolve, reject) => {
           const folderStream = this.state.rootPackage.generateInternalStream({
             type: 'uint8array',
             streamFiles: true,
             compression: 'DEFLATE',
-          }) as internal.Readable;
+          }) as Readable;
           folderStream
             ?.on('data', (chunk: Buffer) => {
-              console.log('write');
+              console.log('folder data here');
               writer.write(chunk);
             })
-            .on('error', (err) => {
-              console.log('error');
+            .once('error', (err) => {
+              writer.close();
               reject(err);
             })
-            .on('end', () => {
-              console.log('end');
+            .once('end', () => {
               writer.close();
               window.removeEventListener('unload', writer.abort);
               resolve();
-            });
-          folderStream.resume();
+            }).resume();
         });
       }
     );
