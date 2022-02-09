@@ -1,7 +1,5 @@
-import { useEffect, Suspense } from 'react';
-import UilTimes from '@iconscout/react-unicons/icons/uil-times';
-import UilFileDownload from '@iconscout/react-unicons/icons/uil-file-download';
-
+import { Suspense, Fragment } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from '../../types/file-types';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
@@ -11,9 +9,13 @@ import i18n from '../../../i18n/services/i18n.service';
 import { DriveFileData, DriveItemData } from '../../types';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
+import UilImport from '@iconscout/react-unicons/icons/uil-import';
+import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
+
 interface FileViewerProps {
   file: DriveFileData | null;
   onClose: () => void;
+  show: boolean;
 }
 
 export interface FormatFileViewerProps {
@@ -27,18 +29,14 @@ const extensionsList = fileExtensionService.computeExtensionsLists(fileExtension
 const FileViewer = (props: FileViewerProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector((state) => state.fileViewer.isLoading);
-  const onCloseButtonClicked = () => props.onClose();
-  const onDownloadButtonClicked = () =>
+  const onClose = () =>
+    props.onClose();
+  const onDownload = () =>
     props.file && dispatch(storageThunks.downloadItemsThunk([props.file as DriveItemData]));
-  const onKeyUp = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      onCloseButtonClicked();
-    }
-  };
   const viewerProps = {
     isLoading,
     file: props.file,
-    setIsLoading: (value: boolean) => dispatch(fileViewerActions.setIsLoading(value)),
+    setIsLoading: (value: boolean) => dispatch(fileViewerActions.setIsLoading(value))
   };
   let isTypeAllowed = false;
   let fileExtensionGroup: number | null = null;
@@ -52,48 +50,91 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
     }
   }
 
-  useEffect(() => {
-    document.addEventListener('keyup', onKeyUp, false);
-
-    return () => {
-      document.removeEventListener('keyup', onKeyUp, false);
-    };
-  }, []);
-
   const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
 
   return (
-    <div
-      className="absolute z-50 top-0 left-0 right-0 bottom-0 bg-black bg-opacity-80 flex flex-col"
-      onClick={onCloseButtonClicked}
+    <Transition
+      appear
+      show={props.show}
+      as={Fragment}
+      enter="ease-out duration-150"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="ease-in duration-100"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
     >
-      {/* HEADER */}
-      <div className="flex justify-between px-8 py-3">
-        <div className="flex text-white">
-          <button className="h-6 w-6" onClick={onCloseButtonClicked}>
-            <UilTimes />
-          </button>
-        </div>
-        <div className="flex text-white">
-          <button className="h-6 w-6" onClick={onDownloadButtonClicked}>
-            <UilFileDownload />
-          </button>
-        </div>
-      </div>
+      <Dialog
+        as="div"
+        className="fixed flex flex-col items-center justify-start inset-0 z-50 text-white hide-scroll"
+        onClose={onClose}
+      >
+        <div className="h-screen w-screen flex flex-col items-center justify-center">
 
-      {/* CONTENT */}
-      <div className="h-full flex justify-center items-center text-white">
-        {isTypeAllowed ? (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Suspense fallback={<div></div>}>
-              <Viewer {...viewerProps} />
-            </Suspense>
+          {/* Close overlay */}
+          <Dialog.Overlay className="fixed inset-0 bg-cool-gray-100 bg-opacity-90 backdrop-filter
+                                    backdrop-blur-md" />
+
+          {/* Content */}
+          {isTypeAllowed ? (
+            <div
+              tabIndex={0}
+              className="flex flex-col justify-start items-start z-10 outline-none max-w-full max-h-full overflow-auto"
+            >
+                <div onClick={(e) => e.stopPropagation()} className="" >
+                  <Suspense fallback={<div></div>}>
+                    <Viewer {...viewerProps} />
+                  </Suspense>
+                </div>
+            </div>
+            
+          ) : (
+            <div
+              tabIndex={0}
+              className="flex flex-col items-center justify-center h-12 px-8 bg-white bg-opacity-5 font-medium
+                         rounded-xl z-10 pointer-events-none outline-none"
+            >
+              {i18n.get('error.noFilePreview')}
+            </div>
+          )}
+
+          {/* Background */}
+          <div className="fixed -top-6 -inset-x-20 h-16 bg-cool-gray-100 z-10 pointer-events-none
+                          filter blur-2xl" />
+
+          {/* Top bar controls */}
+          <div className="fixed top-0 left-0 w-screen h-0 flex flex-row items-start justify-between px-4 z-20
+                          select-none text-lg font-medium">
+            
+            {/* Close and title */}
+            <div className="flex flex-row items-center justify-start h-10 mt-3 space-x-4 z-10">
+              <button
+                onClick={onClose}
+                className="relative group flex flex-col items-center justify-center h-10 w-10 bg-white bg-opacity-0
+                                hover:bg-opacity-10 focus:bg-opacity-5 transition duration-50 ease-in-out
+                                rounded-full">
+                <UilMultiply height="20" width="20" />
+              </button>
+
+              <Dialog.Title>{props.file && `${props.file.name}.${props.file.type}`}</Dialog.Title>
+            </div>
+
+            {/* Download button */}
+            <div className="flex flex-row items-center justify-end h-10 mt-3 space-x-4 z-10">
+              <button
+                onClick={onDownload}
+                className="flex flex-row items-center h-10 px-6 rounded-lg space-x-2 cursor-pointer
+                          font-medium bg-white bg-opacity-0 hover:bg-opacity-10 focus:bg-opacity-5
+                          transition duration-50 ease-in-out">
+                <UilImport height="20" width="20" />
+                <span className="font-medium">{i18n.get('actions.download')}</span>
+              </button>
+            </div>
           </div>
-        ) : (
-          <div className="py-4 px-8 rounded-lg bg-m-neutral-400 shadow-lg">{i18n.get('error.noFilePreview')}</div>
-        )}
-      </div>
-    </div>
+          
+        </div>
+      </Dialog>
+    </Transition>
   );
 };
 

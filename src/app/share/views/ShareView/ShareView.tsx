@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Component, Fragment } from 'react';
-import { Menu, Dialog, Transition } from '@headlessui/react';
-import Draggable from 'react-draggable';
+import { Menu, Transition } from '@headlessui/react';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 import { aes } from '@internxt/lib';
@@ -14,6 +13,9 @@ import { TaskProgress } from 'app/tasks/types';
 import { Network } from 'app/drive/services/network';
 import i18n from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
+import { DriveFileData } from '../../../../app/drive/types';
+// import { useAppSelector } from '../../../../app/store/hooks';
+import FileViewer from '../../../../app/drive/components/FileViewer/FileViewer';
 
 import bg from 'assets/images/shared-file/bg.png';
 import Shield from 'assets/images/shared-file/icons/shield.png';
@@ -24,14 +26,12 @@ import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 import UilEye from '@iconscout/react-unicons/icons/uil-eye';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
-import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
-import UilMinus from '@iconscout/react-unicons/icons/uil-minus';
-import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
 
 import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';
 import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 export interface ShareViewProps {
   match: match<{ token: string }>;
@@ -44,34 +44,28 @@ interface GetShareInfoWithDecryptedName extends ShareTypes.GetShareInfoResponse 
 interface ShareViewState {
   token: string;
   progress: number;
+  isDownloading: boolean;
   info: GetShareInfoWithDecryptedName | null;
   error: Error | null;
   accessedFile: boolean;
   openPreview: boolean;
+  fileViewerItem: DriveFileData | null;
+  isAuthenticated: boolean;
+  user: UserSettings | null;
 }
-
-// const [previewScroll, setPreviewScroll] = useState({
-//   'x': 0,
-//   'y': 0,
-//   'progressX': 0,
-//   'progressY': 0,
-//   'totalWidth': 0,
-//   'totalHeight': 0,
-//   'width': 0,
-//   'height': 0,
-//   'portionX': 0,
-//   'portionY': 0,
-// });
 
 class ShareView extends Component<ShareViewProps, ShareViewState> {
   state = {
     token: this.props.match.params.token,
     progress: TaskProgress.Min,
+    isDownloading: false,
     info: null,
     error: null,
     accessedFile: false,
     user: null,
     openPreview: false,
+    fileViewerItem: null,
+    isAuthenticated: false /* useAppSelector((state) => state.user.isAuthenticated) */,
   };
 
   loadInfo = async () => {
@@ -82,7 +76,6 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
         error: new Error('Chrome iOS not supported. Use Safari to proceed'),
       });
     }
-
     
     this.setState({
       accessedFile: true
@@ -111,23 +104,29 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
   };
 
   download = async (): Promise<void> => {
-    const info = this.state.info as unknown as GetShareInfoWithDecryptedName | null;
-    const MIN_PROGRESS = 0;
+    if (!this.state.isDownloading) {
+      const info = this.state.info as unknown as GetShareInfoWithDecryptedName | null;
+      const MIN_PROGRESS = 0;
 
-    if (info) {
-      const network = new Network('NONE', 'NONE', 'NONE');
+      if (info) {
+        const network = new Network('NONE', 'NONE', 'NONE');
 
-      this.setState({ progress: MIN_PROGRESS });
-      const [fileBlobPromise] = network.downloadFile(info.bucket, info.file, {
-        fileEncryptionKey: Buffer.from(info.encryptionKey, 'hex'),
-        fileToken: info.fileToken,
-        progressCallback: (progress) => {
-          this.setState({ ...this.state, progress: Math.max(MIN_PROGRESS, progress * 100) });
-        },
-      });
-      const fileBlob = await fileBlobPromise;
+        this.setState({ progress: MIN_PROGRESS, isDownloading: true });
+        const [fileBlobPromise] = network.downloadFile(info.bucket, info.file, {
+          fileEncryptionKey: Buffer.from(info.encryptionKey, 'hex'),
+          fileToken: info.fileToken,
+          progressCallback: (progress) => {
+            this.setState({
+              ...this.state,
+              progress: Math.max(MIN_PROGRESS, Math.round((progress * 100) * 1e2 ) / 1e2)
+            });
+            console.log(progress);
+          },
+        });
+        const fileBlob = await fileBlobPromise;
 
-      downloadService.downloadFileFromBlob(fileBlob, info.decryptedName as string);
+        downloadService.downloadFileFromBlob(fileBlob, info.decryptedName as string);
+      }
     }
   };
 
@@ -143,84 +142,28 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     this.loadInfo();
   }
 
+  // auth = useAppSelector((state) => state.user.isAuthenticated);
+  // user = useAppSelector((state) => state.user.user);
+
   render(): JSX.Element {
     const error = this.state.error as unknown as Error;
-    const isAuthenticated = true;
     let body;
 
-    let previewScroll = {
-      'x': 0,
-      'y': 0,
-      'progressX': 0,
-      'progressY': 0,
-      'totalWidth': 0,
-      'totalHeight': 0,
-      'width': 0,
-      'height': 0,
-      'portionX': 0,
-      'portionY': 0,
-    };
-
-    const previewOnScroll = (e) => {
-    const scrollY = e.target.scrollTop;
-    const scrollTotalY = e.target.scrollHeight;
-    const scrollX = e.target.scrollLeft;
-    const scrollTotalX = e.target.scrollWidth;
-    const height = e.target.offsetHeight;
-    const width = e.target.offsetWidth;
-
-    previewScroll = {
-      'x': scrollX,
-      'y': scrollY,
-      'progressX': scrollX/(scrollTotalX - width)*100 || 100,
-      'progressY': scrollY/(scrollTotalY - height)*100 || 100,
-      'totalWidth': scrollTotalX,
-      'totalHeight': scrollTotalY,
-      'width': width,
-      'height': height,
-      'portionX': Math.floor(width/scrollTotalX*100),
-      'portionY': Math.floor(height/scrollTotalY*100),
-    };
-
-    // this.previewScroll['x'] = scrollX;
-    // this.previewScroll['y'] = scrollY;
-    // this.previewScroll['progressX'] = scrollX/(scrollTotalX - width)*100;
-    // this.previewScroll['progressY'] = scrollY/(scrollTotalY - height)*100;
-    // this.previewScroll['totalWidth'] = scrollTotalX;
-    // this.previewScroll['totalHeight'] = scrollTotalY;
-    // this.previewScroll['width'] = width;
-    // this.previewScroll['height'] = height;
-    // this.previewScroll['portionX'] = Math.floor(width/scrollTotalX*100);
-    // this.previewScroll['portionY'] = Math.floor(height/scrollTotalY*100);
-  };
-
-  // const resetPreviewScroll = () => {
-  //   previewScroll = {
-  //     'x': 0,
-  //     'y': 0,
-  //     'progressX': 0,
-  //     'progressY': 0,
-  //     'totalWidth': 0,
-  //     'totalHeight': 0,
-  //     'width': 0,
-  //     'height': 0,
-  //     'portionX': 0,
-  //     'portionY': 0,
-  //   };
-  // };
+    // console.log(this.auth);
+    // console.log(this.user && this.user.name);
   
-  const openPreview = async () => {
-    // this.resetPreviewScroll();
-    this.setState({
-        openPreview: true,
-      });
-  };
+    const openPreview = async () => {
+      // this.resetPreviewScroll();
+      this.setState({
+          openPreview: true,
+        });
+    };
 
-  const closePreview = async () => {
-    this.setState({
-        openPreview: false,
-      });
-  };
+    const closePreview = async () => {
+      this.setState({
+          openPreview: false,
+        });
+    };
 
     const Spinner = (
       <>
@@ -251,7 +194,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
             <span className="text-cool-gray-60">Link expired or files deleted</span>
           </div>
 
-          {isAuthenticated && (
+          {this.state.isAuthenticated && (
             <Link to="/app" className="no-underline cursor-pointer text-cool-gray-90 hover:text-cool-gray-90">
               <div className="flex flex-row items-center justify-center rounded-lg bg-cool-gray-10 h-10 px-6
                             font-medium space-x-2">
@@ -266,7 +209,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
       const info = this.state.info as unknown as GetShareInfoWithDecryptedName;
       const formattedSize = sizeService.bytesToString(info.fileMeta.size);
       const ItemIconComponent = iconService.getItemIcon(false, info.fileMeta.type);
-      const { progress } = this.state;
+      const { progress, isDownloading } = this.state;
 
       body = (
         <>
@@ -308,14 +251,13 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
               className={`flex flex-row items-center h-10 px-6 rounded-lg text-white space-x-2 cursor-pointer
                           font-medium ${progress && !(progress < 100) ? 'bg-green-40' : 'bg-blue-60'}`}
             >
-              {progress ?
+              {isDownloading ?
                 progress < 100 ?
                   (
                     <>
-                      <div className="h-5 w-5 text-white">{Spinner}</div>
+                      <div className="h-5 w-5 text-white mr-1">{Spinner}</div>
                       <span>{i18n.get('actions.downloading')}</span>
-                      <span className="font-normal text-blue-20">15%</span>
-                      {/* <span className="font-normal text-blue-20">{`${progress}%`}</span> */}
+                      <span className="font-normal text-blue-20">{progress}%</span>
                     </>
                   )
                   :
@@ -345,136 +287,11 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
 
     return (
       <>
-        {/* Preview */}
-        <Transition
-          appear
+        <FileViewer
+          file={this.state.fileViewerItem}
+          onClose={closePreview}
           show={this.state.openPreview}
-          as={Fragment}
-          enter="ease-out duration-150"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-100"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <Dialog
-            as="div"
-            className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden text-white hide-scroll"
-            onClose={closePreview}
-            onScroll={previewOnScroll}
-          >
-            <div className="min-h-screen w-screen flex flex-col items-center justify-start">
-
-            {/* Custom scroll */}
-            <div className="fixed top-0 right-0 w-3 h-screen bg-white bg-opacity-10 z-10">
-              <Draggable
-                axis="y"
-                bounds="parent"
-                defaultPosition={{x: 0, y: 0}}
-                onDrag={() => { console.log('dragged Y'); }}
-              >
-                <div
-                  className="w-full bg-white bg-opacity-80"
-                  style={{
-                    height: previewScroll.height
-                  }}
-                />
-              </Draggable>
-            </div>
-
-              {/* Close overlay */}
-              <Dialog.Overlay className="fixed inset-0 bg-cool-gray-100 bg-opacity-90 backdrop-filter
-                                        backdrop-blur-md" />
-
-              {/* Content */}
-              <div
-                tabIndex={0}
-                className="flex flex-col items-center justify-start min-h-screen"
-              >
-                <div
-                  className="relative z-10 my-24 outline-none"
-                >
-                  <div className="relative px-80 w-96 min-h-screen bg-white" />
-                  <div onClick={ () => { console.log(previewScroll.height); } }>HAZ CLICK PARA IMPRIMIR</div>
-                  <div className="w-full h-6" />
-                  <div className="relative px-80 w-96 min-h-screen bg-black" />
-                  <div className="w-full h-6" />
-                  <div className="relative px-80 w-96 min-h-screen bg-blue-60" />
-                </div>
-              </div>
-
-              {/* Background */}
-              <div className="fixed -top-6 -inset-x-20 h-16 bg-cool-gray-100 z-10 pointer-events-none
-                              filter blur-2xl" />
-
-              {/* Top bar controls */}
-              <div className="fixed top-0 left-0 w-screen h-0 flex flex-row items-start justify-between px-4 z-20
-                              select-none text-lg font-medium">
-                
-                {/* Close and title */}
-                <div className="flex flex-row items-center justify-start h-10 mt-3 space-x-4 z-10">
-                  <button
-                    onClick={closePreview}
-                    className="relative group flex flex-col items-center justify-center h-10 w-10 bg-white bg-opacity-0
-                                    hover:bg-opacity-10 focus:bg-opacity-5 transition duration-50 ease-in-out
-                                    rounded-full">
-                    <UilMultiply height="20" width="20" />
-                  </button>
-
-                  <Dialog.Title>{this.state.info && this.state.info['decryptedName']}</Dialog.Title>
-                </div>
-
-                {/* Download button */}
-                <div className="flex flex-row items-center justify-end h-10 mt-3 space-x-4 z-10">
-                  <button
-                    onClick={closePreview}
-                    className="flex flex-row items-center h-10 px-6 rounded-lg space-x-2 cursor-pointer
-                              font-medium bg-white bg-opacity-0 hover:bg-opacity-10 focus:bg-opacity-5
-                              transition duration-50 ease-in-out">
-                    <UilImport height="20" width="20" />
-                    <span className="font-medium">{i18n.get('actions.download')}</span>
-                  </button>
-                </div>
-              </div>
-              
-              {/* Preview bottom controls */}
-              <div className="fixed bottom-6 left-1/2 flex flex-row items-center h-12 px-1.5 text-lg
-                              font-medium z-10 transform -translate-x-1/2 rounded-xl overflow-hidden
-                              shadow-xl select-none">
-                <div className="absolute inset-0 h-full w-full backdrop-filter backdrop-blur-xl
-                                backdrop-contrast-50" />
-                <div className="absolute inset-0 h-full w-full bg-cool-gray-100 bg-opacity-80" />
-
-                <div className="flex flex-row items-center justify-center space-x-1.5 z-10">
-                  <span className="font-medium px-4 z-10">1 of 3</span>
-
-                  <div className="w-px h-8 bg-white bg-opacity-10" />
-                
-                  <div className="flex flex-row items-center justify-center">
-                    <button
-                      onClick={() => { console.log('zoom +'); }}
-                      disabled={false}
-                      className="flex flex-row items-center justify-center h-9 w-9 rounded-lg cursor-pointer
-                                 bg-white bg-opacity-0 hover:bg-opacity-10 active:bg-opacity-5 disabled:opacity-30
-                                 transition duration-50 ease-in-out disabled:pointer-events-none">
-                      <UilPlus height="24" width="24" className="pointer-events-none" />
-                    </button>
-
-                    <button
-                      onClick={() => { console.log('zoom -'); }}
-                      disabled={true}
-                      className="flex flex-row items-center justify-center h-9 w-9 rounded-lg cursor-pointer
-                                 bg-white bg-opacity-0 hover:bg-opacity-10 active:bg-opacity-5 disabled:opacity-30
-                                 transition duration-50 ease-in-out disabled:pointer-events-none">
-                      <UilMinus height="24" width="24" className="pointer-events-none" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-          </Dialog>
-        </Transition>
+        />
 
         {/* Content */}
         <div className="flex flex-row justify-center items-stretch h-screen bg-white text-cool-gray-90">
@@ -512,7 +329,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
                 </div>
               </div>
 
-              {!isAuthenticated && (
+              {!this.state.isAuthenticated && (
                 <Link to="/new" className="no-underline">
                   <div className="flex flex-row items-center justify-center rounded-xl no-underline ring-3 ring-blue-30
                                   p-1 cursor-pointer">
@@ -533,7 +350,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
             {/* Top bar */}
             <div className="flex flex-row justify-end items-center h-20 px-6">
               
-              {isAuthenticated ?
+              {this.state.isAuthenticated ?
                 (
                   <>
                     {/* User avatar */}

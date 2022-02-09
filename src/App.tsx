@@ -122,9 +122,13 @@ class App extends Component<AppProps> {
             <ToastContainer />
 
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
-            {isFileViewerOpen && (
-              <FileViewer file={fileViewerItem} onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))} />
-            )}
+
+            <FileViewer
+              file={fileViewerItem}
+              onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
+              show={isFileViewerOpen}
+            />
+
           </Router>
         </DndProvider>
       );

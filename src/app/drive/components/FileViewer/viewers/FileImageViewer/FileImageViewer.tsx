@@ -42,8 +42,14 @@ const FileImageViewer = (props: FormatFileViewerProps): JSX.Element => {
   }, []);
 
   return (
-    <div className="file-image-viewer text-white">
-      {props.isLoading ? <span>{i18n.get('drive.loadingFile')}</span> : <img src={fileUrl} className="shadow-lg" />}
+    <div className="flex flex-col items-center justify-center text-white max-h-screen max-w-full">
+      {props.isLoading ?
+        <span>{i18n.get('drive.loadingFile')}</span>
+        :
+        <div className="relative max-h-screen max-w-full">
+          <img src={fileUrl} className="relative object-contain max-h-screen" draggable={false} />
+        </div>
+      }
     </div>
   );
 };
