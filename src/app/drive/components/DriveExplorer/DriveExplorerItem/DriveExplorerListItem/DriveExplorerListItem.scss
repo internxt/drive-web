@@ -3,14 +3,14 @@
   .file-list-item {
     background-color: white;
 
-    @apply relative py-3.5 border-b border-neutral-30 text-base w-full flex;
+    @apply relative flex flex-row items-center h-16 border-b border-neutral-30 text-base w-full;
 
     &:hover {
-      @apply bg-neutral-20;
+      @apply bg-neutral-10;
     }
 
     &.selected {
-      @apply bg-blue-20;
+      @apply bg-blue-10;
     }
 
     &.is-dragging {

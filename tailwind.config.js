@@ -17,6 +17,9 @@ module.exports = {
         50: '50%',
         75: '75%',
       },
+      dropShadow: {
+        'soft': '0 6px 12px rgba(0, 0, 0, 0.04)',
+      },
       opacity: {
         0: '0',
         1: '.01',
@@ -342,7 +345,8 @@ module.exports = {
       ringColor: ['hover', 'active', 'focus', 'disabled'],
       borderWidth: ['hover', 'active', 'focus', 'disabled'],
       borderRadius: ['responsive', 'hover', 'active', 'focus', 'disabled'],
-      backgroundColor: ['active', 'hover', 'focus', 'disabled', 'group-hover', 'group-focus', 'focus-within'],
+      borderColor: ['active', 'hover', 'focus', 'disabled', 'group-hover', 'group-focus', 'focus-within', 'checked'],
+      backgroundColor: ['active', 'hover', 'focus', 'disabled', 'group-hover', 'group-focus', 'focus-within', 'checked'],
       backgroundOpacity: ['active', 'hover', 'focus', 'disabled', 'group-hover', 'group-focus', 'focus-within'],
       visibility: ['group-hover', 'disabled'],
       opacity: ['disabled', 'group-hover', 'group-focus', 'focus-within'],

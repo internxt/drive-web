@@ -33,8 +33,7 @@ const DeviceList = (props: Props): JSX.Element => {
   return isLoading || items.length ? (
     <div className="flex flex-col flex-grow bg-white h-1">
       <div
-        className="files-list font-semibold flex border-b\
-       border-neutral-30 bg-white text-neutral-400 py-3 text-sm"
+        className="files-list font-semibold flex border-b border-neutral-30 bg-white text-neutral-400 py-3 text-sm"
       >
         <div className="w-0.5/12 pl-3 flex items-center justify-start box-content"></div>
         <div className="flex-grow flex items-center px-3">{i18n.get('backups.devices-list.columns.name')}</div>
