@@ -8,6 +8,7 @@ import BackupsList from '../../components/BackupList/BackupList';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import { backupsActions, backupsThunks } from 'app/store/slices/backups';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 
 export default function BackupsView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -38,16 +39,18 @@ export default function BackupsView(): JSX.Element {
       : []),
   );
   const backupsBreadcrumbs = <Breadcrumbs items={breadcrumbsItems} />;
-  const onDeviceSelected = (target: Device) => {
-    dispatch(backupsActions.setCurrentDevice(target));
-    dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
+  const onDeviceSelected = (target: Device | DriveFolderData) => {
+    if ('mac' in target) {
+      dispatch(backupsActions.setCurrentDevice(target));
+      dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
+    }
   };
   const goBack = () => {
     dispatch(backupsActions.setCurrentDevice(null));
   };
 
-  const onDeviceDeleted = (target: Device) => {
-    dispatch(backupsThunks.deleteDeviceThunk(target));
+  const onDeviceDeleted = (target: Device | DriveFolderData) => {
+    if ('mac' in target) dispatch(backupsThunks.deleteDeviceThunk(target));
   };
 
   useEffect(() => {

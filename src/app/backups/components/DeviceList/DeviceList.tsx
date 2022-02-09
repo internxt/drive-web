@@ -5,12 +5,13 @@ import DeviceListItem from './DeviceListItem';
 import desktopService from '../../../core/services/desktop.service';
 import { Device } from '../../types';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 
 interface Props {
-  items: Device[];
+  items: (Device | DriveFolderData)[];
   isLoading: boolean;
-  onDeviceSelected: (device: Device) => void;
-  onDeviceDeleted: (device: Device) => void;
+  onDeviceSelected: (device: Device | DriveFolderData) => void;
+  onDeviceDeleted: (device: Device | DriveFolderData) => void;
 }
 
 const DeviceList = (props: Props): JSX.Element => {
@@ -21,7 +22,7 @@ const DeviceList = (props: Props): JSX.Element => {
       .map((n, i) => <DriveListItemSkeleton key={i} />);
   };
 
-  const items = props.items.map((item: Device) => (
+  const items = props.items.map((item) => (
     <DeviceListItem
       key={item.id}
       device={item}
