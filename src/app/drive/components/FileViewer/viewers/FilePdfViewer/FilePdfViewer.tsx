@@ -2,6 +2,7 @@ import UilArrowLeft from '@iconscout/react-unicons/icons/uil-angle-left-b';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-angle-right-b';
 import UilMinus from '@iconscout/react-unicons/icons/uil-minus';
 import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
+import spinnerIcon from '../../../../../../assets/icons/spinner.svg';
 
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useEffect, useState, Fragment } from 'react';
@@ -82,7 +83,14 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   return (
     <div className="flex justify-center items-center max-h-full" >
       {props.isLoading ? (
-        <span>{i18n.get('drive.loadingFile')}</span>
+        <div
+          tabIndex={0}
+          className="flex flex-row items-center justify-center h-12 px-6 bg-white bg-opacity-5 font-medium
+                      rounded-xl z-10 pointer-events-none outline-none space-x-2 select-none"
+        >
+          <img className="animate-spin mr-2" src={spinnerIcon} alt="" />
+          <span>{i18n.get('drive.loadingFile')}</span>
+        </div>
       ) : (
         <Fragment>
 

@@ -91,10 +91,10 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
           ) : (
             <div
               tabIndex={0}
-              className="flex flex-col items-center justify-center h-12 px-8 bg-white bg-opacity-5 font-medium
-                         rounded-xl z-10 pointer-events-none outline-none"
+              className="flex flex-row items-center justify-center h-12 px-6 bg-white bg-opacity-5 font-medium
+                          rounded-xl z-10 pointer-events-none outline-none space-x-2 select-none"
             >
-              {i18n.get('error.noFilePreview')}
+              <span>{i18n.get('error.noFilePreview')}</span>
             </div>
           )}
 
