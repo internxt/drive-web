@@ -16,23 +16,26 @@ export async function putDirectoryFilesInsideZip(
   bucket: string,
   bucketToken: string,
   payload: Omit<ShareTypes.GetSharedDirectoryFilesPayload, 'offset'>,
+  updateBytesDownloaded: (bytes: number) => void,
 ) {
   const network = new Network('NONE', 'NONE', 'NONE');
   let offset = 0;
   let allFilesDownloaded = false;
 
+  const downloads: Record<number, number> = {};
+
   while (!allFilesDownloaded) {
     const { files, last } = await getSharedDirectoryFiles({ ...payload, offset });
+    console.log('downloading files', JSON.stringify(files, null, 2));
 
     for (const file of files) {
       const [fileStreamPromise, actionState] = network.getFileDownloadStream(bucket, file.id, {
         fileEncryptionKey: Buffer.from(file.encryptionKey, 'hex'),
         fileToken: bucketToken,
         progressCallback: (fileProgress) => {
-          // downloadingSize[file.id] = file.size * fileProgress;
-          // const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
-          // const totalProgress = totalDownloadedSize / this.state.info.size;
-          // this.updateProgress(totalProgress);
+          downloads[file.id] = file.size * fileProgress;
+          const totalDownloadedSize = Object.values(downloads).reduce((t, x) => t + x, 0);
+          updateBytesDownloaded(totalDownloadedSize);
         },
       });
       const fileStream = await fileStreamPromise;
@@ -45,12 +48,19 @@ export async function putDirectoryFilesInsideZip(
 }
 
 export async function downloadSharedFolderUsingStreamSaver(
-  sharedFolderMeta: { name: string; id: number; token: string; code: string },
+  sharedFolderMeta: {
+    name: string;
+    id: number;
+    token: string;
+    code: string;
+    size: number;
+  },
   bucket: string,
   bucketToken: string,
   options: {
     foldersLimit: number;
     filesLimit: number;
+    progressCallback: (progress: number) => void;
   },
 ) {
   let currentOffset = 0;
@@ -64,13 +74,16 @@ export async function downloadSharedFolderUsingStreamSaver(
   };
   const pendingFolders: FolderPackage[] = [rootFolder];
 
-  let folderDownloadCompleted = false;
+  const { size: totalSize } = sharedFolderMeta;
+
+  const foldersDownloadedBytes: Record<number, number> = {};
 
   do {
     const folderToDownload = pendingFolders.shift() as FolderPackage;
 
     console.log('downloading folder %s', folderToDownload.folderId);
 
+    let folderDownloadCompleted = false;
     while (!folderDownloadCompleted) {
       const payload: ShareTypes.GetSharedDirectoryFoldersPayload = {
         token: sharedFolderMeta.token,
@@ -90,14 +103,33 @@ export async function downloadSharedFolderUsingStreamSaver(
         return foldersResponse;
       });
 
-      await putDirectoryFilesInsideZip(folderToDownload.pack, bucket, bucketToken, {
-        token: sharedFolderMeta.token,
-        code: sharedFolderMeta.code,
-        directoryId: folderToDownload.folderId,
-        limit: options.filesLimit,
-      });
+      putDirectoryFilesInsideZip(
+        folderToDownload.pack,
+        bucket,
+        bucketToken,
+        {
+          token: sharedFolderMeta.token,
+          code: sharedFolderMeta.code,
+          directoryId: folderToDownload.folderId,
+          limit: options.filesLimit,
+        },
+        (downloadedBytes) => {
+          foldersDownloadedBytes[folderToDownload.folderId] = downloadedBytes;
+          const totalDownloadedSize = Object.values(foldersDownloadedBytes).reduce((t, x) => t + x, 0);
+          options.progressCallback(totalDownloadedSize / totalSize);
+        },
+      );
 
       const { last } = await nextFoldersChunkPromise;
+
+      console.log(
+        'pending folders',
+        JSON.stringify(
+          pendingFolders.map((f) => f.folderId),
+          null,
+          2,
+        ),
+      );
 
       folderDownloadCompleted = last;
       currentOffset += options.foldersLimit;
@@ -111,8 +143,8 @@ export async function downloadSharedFolderUsingStreamSaver(
       compression: 'DEFLATE',
     }) as Readable;
     folderStream
-      ?.on('data', (chunk: Buffer) => {
-        console.log('folder data here');
+      .on('data', (chunk: Buffer) => {
+        console.log('data man');
         writer.write(chunk);
       })
       .on('error', (err) => {
@@ -120,6 +152,7 @@ export async function downloadSharedFolderUsingStreamSaver(
       })
       .on('end', () => {
         writer.close();
+        options.progressCallback(1);
         window.removeEventListener('unload', writer.abort);
         resolve();
       });
