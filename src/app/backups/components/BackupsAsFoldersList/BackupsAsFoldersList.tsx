@@ -63,19 +63,23 @@ export default function BackupsAsFoldersList({
     }
   }
 
+  const isEmpty = currentItems.length === 0;
+
   return (
     <div className={`${className}`}>
-      <div
-        className="files-list font-semibold flex border-b\
+      {(!isEmpty || isLoading) && (
+        <div
+          className="files-list font-semibold flex border-b\
        border-l-neutral-30 bg-white text-neutral-400 py-3 text-sm"
-      >
-        <div className="w-0.5/12 pl-3 flex items-center justify-start box-content"></div>
-        <div className="flex-grow flex items-center px-3">{i18n.get('drive.list.columns.name')}</div>
-        <div className="w-2/12 hidden items-center xl:flex"></div>
-        <div className="w-3/12 hidden items-center lg:flex">{i18n.get('drive.list.columns.modified')}</div>
-        <div className="w-2/12 flex items-center">{i18n.get('drive.list.columns.size')}</div>
-        <div className="w-1/12 flex items-center">Actions</div>
-      </div>
+        >
+          <div className="w-0.5/12 pl-3 flex items-center justify-start box-content"></div>
+          <div className="flex-grow flex items-center px-3">{i18n.get('drive.list.columns.name')}</div>
+          <div className="w-2/12 hidden items-center xl:flex"></div>
+          <div className="w-3/12 hidden items-center lg:flex">{i18n.get('drive.list.columns.modified')}</div>
+          <div className="w-2/12 flex items-center">{i18n.get('drive.list.columns.size')}</div>
+          <div className="w-1/12 flex items-center">Actions</div>
+        </div>
+      )}
       {!isLoading &&
         currentItems.map((item) => (
           <BackupsAsFoldersListItem
