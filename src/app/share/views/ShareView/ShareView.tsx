@@ -13,9 +13,10 @@ import { TaskProgress } from 'app/tasks/types';
 import { Network } from 'app/drive/services/network';
 import i18n from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
-import { DriveFileData } from '../../../../app/drive/types';
 // import { useAppSelector } from '../../../../app/store/hooks';
 import FileViewer from '../../../../app/drive/components/FileViewer/FileViewer';
+import fileExtensionService from '../../../drive/services/file-extension.service';
+import { fileExtensionPreviewableGroups } from '../../../drive/types/file-types';
 
 import bg from 'assets/images/shared-file/bg.png';
 import Shield from 'assets/images/shared-file/icons/shield.png';
@@ -38,7 +39,7 @@ export interface ShareViewProps {
 }
 
 interface GetShareInfoWithDecryptedName extends ShareTypes.GetShareInfoResponse {
-  decryptedName: string | null;
+  name: string | null;
 }
 
 interface ShareViewState {
@@ -49,7 +50,6 @@ interface ShareViewState {
   error: Error | null;
   accessedFile: boolean;
   openPreview: boolean;
-  fileViewerItem: DriveFileData | null;
   isAuthenticated: boolean;
   user: UserSettings | null;
 }
@@ -64,7 +64,6 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     accessedFile: false,
     user: null,
     openPreview: false,
-    fileViewerItem: null,
     isAuthenticated: false /* useAppSelector((state) => state.user.isAuthenticated) */,
   };
 
@@ -91,9 +90,14 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
       this.setState({
         info: {
           ...info,
-          decryptedName: this.getDecryptedName(info),
+          name: this.getDecryptedName(info),
         },
       });
+      
+      const updatedName: ShareViewState = { ...this.state };
+      if (updatedName.info) updatedName.info.fileMeta.name = this.getDecryptedName(info);
+      this.setState({ ...updatedName });
+
     } catch (err) {
       const castedError = errorService.castError(err);
 
@@ -120,12 +124,11 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
               ...this.state,
               progress: Math.max(MIN_PROGRESS, Math.round((progress * 100) * 1e2 ) / 1e2)
             });
-            console.log(progress);
           },
         });
         const fileBlob = await fileBlobPromise;
 
-        downloadService.downloadFileFromBlob(fileBlob, info.decryptedName as string);
+        downloadService.downloadFileFromBlob(fileBlob, info.name as string);
       }
     }
   };
@@ -133,9 +136,10 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
   getDecryptedName(info: ShareTypes.GetShareInfoResponse): string {
     const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.fileMeta.folderId.toString()}`;
     const decryptedFilename = aes.decrypt(info.fileMeta.name, salt);
-    const type = info.fileMeta.type;
+    // const type = info.fileMeta.type;
 
-    return `${decryptedFilename}${type ? `.${type}` : ''}`;
+    return decryptedFilename;
+    // return `${decryptedFilename}${type ? `.${type}` : ''}`;
   }
 
   componentDidMount() {
@@ -153,8 +157,15 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
   // user = useAppSelector((state) => state.user.user);
 
   render(): JSX.Element {
+    const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
     const error = this.state.error as unknown as Error;
-    let body;
+    let body: JSX.Element;
+    let isTypeAllowed = false;
+
+    for (const extensions of Object.entries(extensionsList)) {
+      isTypeAllowed = extensions[1].includes(this.state.info && this.state.info['fileMeta']['type'] || '');
+      if (isTypeAllowed) { break; }
+    }
 
     // useEffect(() => {
     //   if (this.state.isDownloading && this.state.progress < 100) {
@@ -200,8 +211,8 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
       body = (
         <>
           <div className="relative w-32 h-32">
-            <ItemIconComponent className="absolute -top-2.5 left-7 transform rotate-10" />
-            <ItemIconComponent className="absolute top-0.5 -left-7 transform rotate-10-" />
+            <ItemIconComponent className="absolute -top-2.5 left-7 transform rotate-10 filter drop-shadow-soft" />
+            <ItemIconComponent className="absolute top-0.5 -left-7 transform rotate-10- filter drop-shadow-soft" />
           </div>
 
           <div className="flex flex-col items-center justify-center">
@@ -231,13 +242,13 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
           {/* File info */}
           <div className="flex flex-col space-y-4 items-center justify-center">
 
-            <div className="h-32 w-32">
+            <div className="h-32 w-32 filter drop-shadow-soft">
               <ItemIconComponent />
             </div>
 
             <div className="flex flex-col justify-center items-center space-y-2">
               <div className="flex flex-col justify-center items-center font-medium">
-                <span className="text-xl">{info.decryptedName}</span>
+                <span className="text-xl">{`${info.name}.${info.fileMeta.type}`}</span>
                 <span className="text-cool-gray-60">{formattedSize}</span>
               </div>
               
@@ -252,14 +263,16 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
 
           {/* Actions */}
           <div className="flex flex-row space-x-3 items-center justify-center">
-            <button
-              onClick={openPreview}
-              className="flex flex-row items-center h-10 px-6 rounded-lg bg-blue-10 text-blue-60 space-x-2
-                         font-medium cursor-pointer active:bg-blue-20 active:bg-opacity-65"
-            >
-              <UilEye height="20" width="20" />
-              <span>{i18n.get('actions.view')}</span>
-            </button>
+            {isTypeAllowed && (
+              <button
+                onClick={openPreview}
+                className="flex flex-row items-center h-10 px-6 rounded-lg bg-blue-10 text-blue-60 space-x-2
+                          font-medium cursor-pointer active:bg-blue-20 active:bg-opacity-65"
+              >
+                <UilEye height="20" width="20" />
+                <span>{i18n.get('actions.view')}</span>
+              </button>
+            )}
 
             <button
               onClick={this.download}
@@ -303,7 +316,7 @@ class ShareView extends Component<ShareViewProps, ShareViewState> {
     return (
       <>
         <FileViewer
-          file={this.state.fileViewerItem}
+          file={this.state.info && this.state.info['fileMeta']}
           onClose={closePreview}
           show={this.state.openPreview}
         />

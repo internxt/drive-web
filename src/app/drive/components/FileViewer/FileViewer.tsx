@@ -38,6 +38,9 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
     file: props.file,
     setIsLoading: (value: boolean) => dispatch(fileViewerActions.setIsLoading(value))
   };
+
+  // console.log(props.file);
+
   let isTypeAllowed = false;
   let fileExtensionGroup: number | null = null;
 
@@ -103,24 +106,27 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
                           filter blur-2xl" />
 
           {/* Top bar controls */}
-          <div className="fixed top-0 left-0 w-screen h-0 flex flex-row items-start justify-between px-4 z-20
-                          select-none text-lg font-medium">
+          <div className="fixed top-0 inset-x-0 w-screen max-w-full h-0 flex flex-row items-start justify-between
+                          px-4 z-20 select-none text-lg font-medium">
             
             {/* Close and title */}
-            <div className="flex flex-row items-center justify-start h-10 mt-3 space-x-4 z-10">
+            <div className="flex flex-row items-center justify-start h-10 mt-3 space-x-4 z-10 mr-6 md:mr-32 truncate">
               <button
                 onClick={onClose}
                 className="relative group flex flex-col items-center justify-center h-10 w-10 bg-white bg-opacity-0
                                 hover:bg-opacity-10 focus:bg-opacity-5 transition duration-50 ease-in-out
-                                rounded-full">
+                                rounded-full flex-shrink-0">
                 <UilMultiply height="20" width="20" />
               </button>
 
-              <Dialog.Title>{props.file && `${props.file.name}.${props.file.type}`}</Dialog.Title>
+              <Dialog.Title className="truncate">
+                {props.file && `${props.file.name}.${props.file.type}`}
+              </Dialog.Title>
+              
             </div>
 
             {/* Download button */}
-            <div className="flex flex-row items-center justify-end h-10 mt-3 space-x-4 z-10">
+            <div className="flex flex-row items-center justify-end h-10 mt-3 space-x-4 z-10 flex-shrink-0">
               <button
                 onClick={onDownload}
                 className="flex flex-row items-center h-10 px-6 rounded-lg space-x-2 cursor-pointer
