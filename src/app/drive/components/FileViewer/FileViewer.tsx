@@ -44,7 +44,7 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
   let fileExtensionGroup: number | null = null;
 
   for (const [groupKey, extensions] of Object.entries(extensionsList)) {
-    isTypeAllowed = extensions.includes(props.file?.type || '');
+    isTypeAllowed = extensions.includes(props.file?.type.toLowerCase() || '');
 
     if (isTypeAllowed) {
       fileExtensionGroup = FileExtensionGroup[groupKey];
