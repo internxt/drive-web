@@ -43,11 +43,11 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
   }
 
   const writable = await handle.createWritable();
-  const { bucketId, bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isTeam);
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isTeam);
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
   const zip = new JSZip();
-
+  console.log('HEYYYYYYYYYYY');
   decryptedCallback?.();
 
   try {
@@ -69,7 +69,7 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
           name: fileDecryptedNames[file.id],
           type: file.type,
         });
-        const [fileStreamPromise, actionState] = network.getFileDownloadStream(bucketId, file.fileId, {
+        const [fileStreamPromise, actionState] = network.getFileDownloadStream(file.bucket, file.fileId, {
           progressCallback: (fileProgress) => {
             downloadingSize[file.id] = file.size * fileProgress;
             const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
