@@ -15,14 +15,14 @@ import i18n from '../../../i18n/services/i18n.service';
 
 export default function BackupsAsFoldersList({
   className = '',
-  rootFolder,
+  folderId,
+  onFolderPush,
 }: {
   className?: string;
-  rootFolder: DriveFolderData;
+  folderId: number;
+  onFolderPush: (folder: DriveFolderData) => void;
 }): JSX.Element {
   const dispatch = useDispatch();
-
-  const [currentFolderId, setCurrentFolderId] = useState(rootFolder.id);
 
   const [isLoading, setIsloading] = useState(true);
   const Skeleton = Array(10)
@@ -34,7 +34,7 @@ export default function BackupsAsFoldersList({
   async function refreshFolderContent() {
     setIsloading(true);
     const storageClient = SdkFactory.getInstance().createStorageClient();
-    const [responsePromise] = storageClient.getFolderContent(currentFolderId);
+    const [responsePromise] = storageClient.getFolderContent(folderId);
     const response = await responsePromise;
     const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
     const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
@@ -44,7 +44,7 @@ export default function BackupsAsFoldersList({
 
   useEffect(() => {
     refreshFolderContent();
-  }, [currentFolderId]);
+  }, [folderId]);
 
   function onDownload(item: DriveItemData) {
     dispatch(downloadItemsThunk([item]));
@@ -56,7 +56,7 @@ export default function BackupsAsFoldersList({
   }
 
   function onDoubleClick(item: DriveItemData) {
-    if (item.isFolder) setCurrentFolderId(item.id);
+    if (item.isFolder) onFolderPush(item);
     else {
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item));
