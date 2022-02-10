@@ -10,6 +10,8 @@ import { backupsActions, backupsThunks } from 'app/store/slices/backups';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
+import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
+import { DriveItemData } from '../../../drive/types';
 
 export default function BackupsView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -29,8 +31,12 @@ export default function BackupsView(): JSX.Element {
     dispatch(backupsActions.setCurrentDevice(null));
   };
 
-  const onDeviceDeleted = (target: Device | DriveFolderData) => {
+  const onDeviceDeleted = async (target: Device | DriveFolderData) => {
     if ('mac' in target) dispatch(backupsThunks.deleteDeviceThunk(target));
+    else {
+      await dispatch(deleteItemsThunk([target as DriveItemData])).unwrap();
+      dispatch(backupsThunks.fetchDevicesThunk());
+    }
   };
 
   useEffect(() => {

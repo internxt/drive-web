@@ -20,6 +20,7 @@ const backupsService = {
       return encryptedFolders.map(({ name, ...rest }: DriveFolderData) => ({
         name: aes.decrypt(name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${rest.bucket}`),
         ...rest,
+        isFolder: true,
       }));
     } else return [];
   },
