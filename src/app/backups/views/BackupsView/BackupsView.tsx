@@ -9,6 +9,7 @@ import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrum
 import { backupsActions, backupsThunks } from 'app/store/slices/backups';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 
 export default function BackupsView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -40,8 +41,8 @@ export default function BackupsView(): JSX.Element {
   );
   const backupsBreadcrumbs = <Breadcrumbs items={breadcrumbsItems} />;
   const onDeviceSelected = (target: Device | DriveFolderData) => {
+    dispatch(backupsActions.setCurrentDevice(target));
     if ('mac' in target) {
-      dispatch(backupsActions.setCurrentDevice(target));
       dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
     }
   };
@@ -57,21 +58,29 @@ export default function BackupsView(): JSX.Element {
     dispatch(backupsThunks.fetchDevicesThunk());
   }, []);
 
+  let body = <div></div>;
+
+  if (!currentDevice) {
+    body = (
+      <DeviceList
+        isLoading={isLoadingDevices}
+        items={devices}
+        onDeviceSelected={onDeviceSelected}
+        onDeviceDeleted={onDeviceDeleted}
+      />
+    );
+  } else if (currentDevice && 'mac' in currentDevice) {
+    body = <BackupsList isLoading={isLoadingDeviceBackups} items={currentDeviceBackups} />;
+  } else {
+    body = <BackupsAsFoldersList rootFolder={currentDevice} />;
+  }
+
   return (
     <div className="flex flex-col flex-grow pt-6 px-8 mb-5">
       <div className="pb-4 flex items-baseline">
         {currentDevice ? backupsBreadcrumbs : <p className="text-lg px-3 py-1"> {i18n.get('backups.your-devices')}</p>}
       </div>
-      {currentDevice ? (
-        <BackupsList isLoading={isLoadingDeviceBackups} items={currentDeviceBackups} />
-      ) : (
-        <DeviceList
-          isLoading={isLoadingDevices}
-          items={devices}
-          onDeviceSelected={onDeviceSelected}
-          onDeviceDeleted={onDeviceDeleted}
-        />
-      )}
+      {body}
     </div>
   );
 }

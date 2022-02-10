@@ -12,7 +12,7 @@ import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 interface BackupsState {
   isLoadingDevices: boolean;
   isLoadingDeviceBackups: boolean;
-  currentDevice: Device | null;
+  currentDevice: Device | DriveFolderData | null;
   devices: (Device | DriveFolderData)[];
   backups: DeviceBackup[];
 }
@@ -130,7 +130,7 @@ export const backupsSlice = createSlice({
   name: 'backups',
   initialState,
   reducers: {
-    setCurrentDevice: (state, action: PayloadAction<Device | null>) => {
+    setCurrentDevice: (state, action: PayloadAction<Device | null | DriveFolderData>) => {
       state.currentDevice = action.payload;
       state.backups = [];
     },
