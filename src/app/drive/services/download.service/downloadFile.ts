@@ -37,7 +37,7 @@ export default function downloadFile(
 
   trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
 
-  const [blobPromise, actionState] = fetchFileBlob(fileId, { isTeam, updateProgressCallback });
+  const [blobPromise, actionState] = fetchFileBlob(itemData, { isTeam, updateProgressCallback });
   const fileBlobPromise = blobPromise
     .then((fileBlob) => {
       downloadFileFromBlob(fileBlob, completeFilename);
