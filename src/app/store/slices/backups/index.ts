@@ -7,12 +7,13 @@ import downloadService from '../../../drive/services/download.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { DownloadBackupTask, TaskStatus, TaskType } from '../../../tasks/types';
 import tasksService from '../../../tasks/services/tasks.service';
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 
 interface BackupsState {
   isLoadingDevices: boolean;
   isLoadingDeviceBackups: boolean;
-  currentDevice: Device | null;
-  devices: Device[];
+  currentDevice: Device | DriveFolderData | null;
+  devices: (Device | DriveFolderData)[];
   backups: DeviceBackup[];
 }
 
@@ -24,10 +25,14 @@ const initialState: BackupsState = {
   backups: [],
 };
 
-export const fetchDevicesThunk = createAsyncThunk<Device[], void, { state: RootState }>(
+export const fetchDevicesThunk = createAsyncThunk<Array<Device | DriveFolderData>, void, { state: RootState }>(
   'backups/fetchDevices',
   async () => {
-    return backupsService.getAllDevices();
+    const [devices, folders] = await Promise.all([
+      backupsService.getAllDevices(),
+      backupsService.getAllDevicesAsFolders(),
+    ]);
+    return [...devices, ...folders];
   },
 );
 
@@ -125,7 +130,7 @@ export const backupsSlice = createSlice({
   name: 'backups',
   initialState,
   reducers: {
-    setCurrentDevice: (state, action: PayloadAction<Device | null>) => {
+    setCurrentDevice: (state, action: PayloadAction<Device | null | DriveFolderData>) => {
       state.currentDevice = action.payload;
       state.backups = [];
     },
