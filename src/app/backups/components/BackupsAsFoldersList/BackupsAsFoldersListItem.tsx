@@ -21,6 +21,8 @@ export default function BackupsAsFoldersListItem({
 }): JSX.Element {
   const Icon = iconService.getItemIcon(item.isFolder, item.type);
   const size = 'size' in item ? sizeService.bytesToString(item.size) : '';
+  const displayName = item.type ? `${item.name}.${item.type}` : item.name;
+
   return (
     <div
       className={'py-3.5 border-b border-l-neutral-30 flex items-center hover:bg-blue-20'}
@@ -29,7 +31,7 @@ export default function BackupsAsFoldersListItem({
       <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
         <Icon className={'w-8 h-8'} />
       </div>
-      <p className="flex-grow pr-3">{item.name}</p>
+      <p className="flex-grow pr-3">{displayName}</p>
       <div className="w-2/12 hidden items-center xl:flex"></div>
       <div className="w-3/12 hidden items-center lg:flex">
         {dateService.format(item.createdAt, 'DD MMMM YYYY. HH:mm')}
