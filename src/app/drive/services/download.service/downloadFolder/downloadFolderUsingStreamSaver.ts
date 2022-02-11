@@ -34,7 +34,7 @@ export default async function downloadFolderUsingStreamSaver({
   const downloadingSize: Record<number, number> = {};
   const fileStreams: { file: DriveFileData; stream: internal.Readable }[] = [];
   const actionStates: ActionState[] = [];
-  const { bucketId, bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isTeam);
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isTeam);
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
   const zip = new JSZip();
@@ -71,7 +71,7 @@ export default async function downloadFolderUsingStreamSaver({
           name: fileDecryptedNames[file.id],
           type: file.type,
         });
-        const [fileStreamPromise, actionState] = network.getFileDownloadStream(bucketId, file.fileId, {
+        const [fileStreamPromise, actionState] = network.getFileDownloadStream(file.bucket, file.fileId, {
           progressCallback: (fileProgress) => {
             downloadingSize[file.id] = file.size * fileProgress;
             const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);

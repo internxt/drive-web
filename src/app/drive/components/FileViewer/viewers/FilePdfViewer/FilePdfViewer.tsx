@@ -28,7 +28,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     if (props.file) {
       props.setIsLoading(true);
 
-      const [blobPromise, actionState] = downloadService.fetchFileBlob(props.file.fileId, {
+      const [blobPromise, actionState] = downloadService.fetchFileBlob(props.file, {
         updateProgressCallback: () => undefined,
         isTeam,
       });
