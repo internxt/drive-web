@@ -13,7 +13,9 @@ import { TaskProgress } from 'app/tasks/types';
 import { Network } from 'app/drive/services/network';
 import i18n from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../../../app/store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../app/store/hooks';
+import { userThunks } from '../../../../app/store/slices/user';
+import desktopService from '../../../../app/core/services/desktop.service';
 import FileViewer from '../../../../app/drive/components/FileViewer/FileViewer';
 import fileExtensionService from '../../../drive/services/file-extension.service';
 import { fileExtensionPreviewableGroups } from '../../../drive/types/file-types';
@@ -53,15 +55,6 @@ interface ShareViewState {
   isAuthenticated: boolean;
   user: UserSettings | null;
 }
-
-//   // const auth = useAppSelector((state) => state.user.isAuthenticated);
-//   // const user = useAppSelector((state) => state.user.user);
-
-
-//   // console.log(this.auth);
-//   // console.log(this.user && this.user.name);
-
-// };
 
 const ShareView = (props: ShareViewProps): JSX.Element => {
 
@@ -119,10 +112,27 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
   const getDecryptedName = (info: ShareTypes.GetShareInfoResponse):string => {
     const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.fileMeta.folderId.toString()}`;
     const decryptedFilename = aes.decrypt(info.fileMeta.name, salt);
-    // const type = info.fileMeta.type;
 
     return decryptedFilename;
-    // return `${decryptedFilename}${type ? `.${type}` : ''}`;
+  };
+
+  const getFormatFileName = ():string => {
+    const hasType = info['fileMeta']['type'] !== null;
+    const extension = hasType ? `.${info['fileMeta']['type']}` : '';
+    return `${info['fileMeta']['name']}${extension}`;
+  };
+
+  const getFormatFileSize = ():string => {
+    return sizeService.bytesToString(info['fileMeta']['size']);
+  };
+
+  const downloadDesktopApp = () => {
+    window.open(desktopService.getDownloadAppUrl(), '_self');
+  };
+
+  const dispatch = useAppDispatch();
+  const logout = () => {
+    dispatch(userThunks.logoutThunk());
   };
 
   const loadInfo = async () => {
@@ -176,7 +186,10 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
         });
         const fileBlob = await fileBlobPromise;
 
-        downloadService.downloadFileFromBlob(fileBlob, fileInfo.name as string);
+        downloadService.downloadFileFromBlob(
+          fileBlob,
+          getFormatFileName()
+        );
       }
     }
   };
@@ -224,29 +237,24 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
       </>
     );
   } else if (isLoaded) {
-    const formattedSize = sizeService.bytesToString(info['fileMeta']['size']);
-    const ItemIconComponent = iconService.getItemIcon(false, info['fileMeta']['type']);
+    const FileIcon = iconService.getItemIcon(false, info['fileMeta']['type']);
 
     body = (
       <>
         {/* File info */}
-        <div className="flex flex-col space-y-4 items-center justify-center">
+        <div className="flex flex-col space-y-4 items-center justify-center flex-grow-0">
 
           <div className="h-32 w-32 filter drop-shadow-soft">
-            <ItemIconComponent />
+            <FileIcon />
           </div>
 
           <div className="flex flex-col justify-center items-center space-y-2">
-            <div className="flex flex-col justify-center items-center font-medium">
-              <span className="text-xl">{`${info['fileMeta']['name']}.${info['fileMeta']['type']}`}</span>
-              <span className="text-cool-gray-60">{formattedSize}</span>
+            <div className="flex flex-col justify-center items-center font-medium text-center">
+              <abbr className="text-xl w-screen sm:w-full max-w-prose break-words px-10" title={getFormatFileName()}>
+                {getFormatFileName()}
+              </abbr>
+              <span className="text-cool-gray-60">{getFormatFileSize()}</span>
             </div>
-            
-            {/* <div className="text-cool-gray-60">
-              <span>Shared by:</span>
-              {' '}
-              <span className="font-medium text-cool-gray-70">{fileInfo.user}</span>
-            </div> */}
           </div>
 
         </div>
@@ -273,6 +281,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
               progress < 100 ?
                 (
                   <>
+                    {/* Download in progress */}
                     <div className="h-5 w-5 text-white mr-1">{Spinner}</div>
                     <span>{i18n.get('actions.downloading')}</span>
                     <span className="font-normal text-blue-20">{progress}%</span>
@@ -281,6 +290,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
                 :
                 (
                   <>
+                    {/* Download completed */}
                     <UilCheck height="24" width="24" />
                     <span className="font-medium">{i18n.get('actions.downloaded')}</span>
                   </>
@@ -288,6 +298,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
               :
               (
                 <>
+                  {/* Download button */}
                   <UilImport height="20" width="20" />
                   <span className="font-medium">{i18n.get('actions.download')}</span>
                 </>
@@ -315,7 +326,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
       <div className="flex flex-row justify-center items-stretch h-screen bg-white text-cool-gray-90">
         
         {/* Banner */}
-        <div className="relative flex flex-col w-96 h-full bg-blue-80 text-white">
+        <div className="relative hidden lg:flex flex-col w-96 h-full bg-blue-80 text-white flex-shrink-0">
           <img src={bg} className="absolute top-0 left-0 object-cover object-center h-full w-full" />
 
           <div className="flex flex-col space-y-12 p-12 h-full z-10">
@@ -417,6 +428,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
                           <Menu.Item>
                             {({ active }) => (
                               <button
+                                onClick={() => {downloadDesktopApp();}}
                                 className={`${active && 'bg-cool-gray-5'} group flex rounded-md items-center w-full
                                             px-4 py-2 font-medium`}
                               >
@@ -428,6 +440,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
                           <Menu.Item>
                             {({ active }) => (
                               <button
+                                onClick={() => {logout();}}
                                 className={`${active && 'bg-red-10 bg-opacity-50 text-red-60'} group flex rounded-md
                                             items-center w-full px-4 py-2 font-medium`}
                               >

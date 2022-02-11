@@ -59,7 +59,7 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
   };
 
   onDownloadAppButtonClicked = (): void => {
-    window.open(desktopService.getDownloadAppUrl(), '_blank');
+    window.open(desktopService.getDownloadAppUrl(), '_self');
   };
 
   onLogoClicked = (): void => {
@@ -80,7 +80,10 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
           {isCollapsed ? <UilAngleDoubleRight /> : <UilAngleDoubleLeft />}
         </button>
 
-        <div className="pl-6 py-1.5 cursor-pointer border-b border-neutral-30" onClick={this.onLogoClicked}>
+        <div
+          className="flex items-center flex-shrink-0 pl-6 h-14 cursor-pointer border-b border-neutral-30"
+          onClick={this.onLogoClicked}
+        >
           {isCollapsed ? (
             <img className="opacity-0 w-6 h-9" src={smallLogo} alt="" />
           ) : (

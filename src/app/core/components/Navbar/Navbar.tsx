@@ -87,18 +87,18 @@ class Navbar extends React.Component<NavbarProps> {
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
 
     return (
-      <div className="flex items-center justify-between w-full py-2.5 border-b border-neutral-30 px-8">
+      <div className="flex items-center justify-between w-full h-14 border-b border-neutral-30 px-8">
         <div className="pl-3 flex w-full">
           <input
             value={storageFilters.text}
             onChange={this.onSearchInputChange}
             type="text"
             placeholder="Search files"
-            className="right-icon semi-dense w-72 transform duration-200 no-ring bg-neutral-10 focus:w-full max-w-xl"
+            className="right-icon h-9 px-3 w-72 transform duration-200 no-ring bg-neutral-10 focus:w-full max-w-md"
           />
           <UilSearch
             onClick={this.onSearchButtonClicked}
-            className="text-blue-60 cursor-pointer right-7 relative w-4 top-0.5"
+            className="text-blue-60 cursor-pointer right-7 relative w-4 top-1.5"
           />
         </div>
         <Dropdown>

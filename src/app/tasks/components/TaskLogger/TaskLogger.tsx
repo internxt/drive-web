@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from 'react';
-import UilAngleDoubleDown from '@iconscout/react-unicons/icons/uil-angle-double-down';
+import UilAngleDown from '@iconscout/react-unicons/icons/uil-angle-down';
 import UilTimes from '@iconscout/react-unicons/icons/uil-times';
 
 import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
@@ -83,7 +83,7 @@ const TaskLogger = (): JSX.Element => {
               isMinimized ? 'rotate-180' : 'rotate-0'
             } cursor-pointer`}
           >
-            <UilAngleDoubleDown className="h-5" />
+            <UilAngleDown className="h-5" />
           </div>
 
           <div
