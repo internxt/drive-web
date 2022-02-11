@@ -89,7 +89,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
 
       {/* LIST */}
       {!isCollapsed && (
-        <div className="referrals-list mt-8 mb-4 overflow-y-auto">
+        <div className="mt-8 mb-4 overflow-y-auto">
           <div className="px-6">{referralsList}</div>
         </div>
       )}

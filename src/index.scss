@@ -230,7 +230,6 @@ code {
   /* INPUTS */
   input[type="checkbox"] {
     @apply border-2 border-neutral-500 rounded text-xs text-neutral-500 w-4 h-4;
-    // @apply appearance-none border border-neutral-50 rounded w-4 h-4 bg-neutral-10 bg-opacity-50 checked:bg-blue-60 checked:border-blue-60;
   }
 
   input:not([type]),

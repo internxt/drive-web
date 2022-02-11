@@ -319,7 +319,7 @@ const ShareView = (props: ShareViewProps): JSX.Element => {
       <FileViewer
         file={info['fileMeta']}
         onClose={closePreview}
-        show={openPreview}
+        showPreview={openPreview}
       />
 
       {/* Content */}

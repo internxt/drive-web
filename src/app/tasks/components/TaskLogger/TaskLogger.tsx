@@ -95,7 +95,7 @@ const TaskLogger = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="overflow-y-scroll scrollbar pt-2.5 h-full">{items}</div>
+      <div className="overflow-y-scroll pt-2.5 h-full">{items}</div>
     </div>
   );
 };

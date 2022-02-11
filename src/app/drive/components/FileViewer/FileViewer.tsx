@@ -15,7 +15,7 @@ import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 interface FileViewerProps {
   file: DriveFileData | null;
   onClose: () => void;
-  show: boolean;
+  showPreview: boolean;
 }
 
 export interface FormatFileViewerProps {
@@ -39,8 +39,6 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
     setIsLoading: (value: boolean) => dispatch(fileViewerActions.setIsLoading(value))
   };
 
-  // console.log(props.file);
-
   let isTypeAllowed = false;
   let fileExtensionGroup: number | null = null;
 
@@ -58,7 +56,7 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
   return (
     <Transition
       appear
-      show={props.show}
+      show={props.showPreview}
       as={Fragment}
       enter="ease-out duration-150"
       enterFrom="opacity-0"

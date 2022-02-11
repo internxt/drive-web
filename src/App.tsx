@@ -126,7 +126,7 @@ class App extends Component<AppProps> {
             <FileViewer
               file={fileViewerItem}
               onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
-              show={isFileViewerOpen}
+              showPreview={isFileViewerOpen}
             />
 
           </Router>
