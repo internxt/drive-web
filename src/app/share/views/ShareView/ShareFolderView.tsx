@@ -97,8 +97,8 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
     return 'showSaveFilePicker' in window ? this.downloadWithStreams() : this.downloadWithBlobs();
   };
 
-  downloadWithStreams(): Promise<void> {
-    return downloadSharedFolderUsingStreamSaver(
+  async downloadWithStreams(): Promise<void> {
+    const [ downloadPromise ] = await downloadSharedFolderUsingStreamSaver(
       {
         name: this.state.info.name,
         code: this.state.code,
@@ -119,6 +119,8 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
         },
       },
     );
+
+    return downloadPromise;
   }
 
   downloadWithBlobs(): Promise<void> {
