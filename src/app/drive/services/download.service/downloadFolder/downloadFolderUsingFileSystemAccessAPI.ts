@@ -47,7 +47,6 @@ export default async function downloadFolderUsingFileSystemAccessAPI({
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
   const zip = new JSZip();
-  console.log('HEYYYYYYYYYYY');
   decryptedCallback?.();
 
   try {
