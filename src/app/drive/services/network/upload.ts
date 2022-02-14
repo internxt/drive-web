@@ -2,6 +2,10 @@ import { Cipher, createHash } from 'crypto';
 import { request } from 'https';
 import { Sha256 } from 'asmcrypto.js';
 
+interface Abortable {
+  abort: () => void
+}
+
 export async function calculateEncryptedFileHash(plainFile: File, cipher: Cipher): Promise<string> {
   const readable = plainFile.stream().getReader();
   const hasher = new Sha256();
@@ -23,31 +27,68 @@ export async function calculateEncryptedFileHash(plainFile: File, cipher: Cipher
   return createHash('ripemd160').update(Buffer.from(hasher.result!)).digest('hex');
 }
 
-export async function uploadFile(plainFile: File, cipher: Cipher, url: string): Promise<void> {
+export function uploadFile(plainFile: File, cipher: Cipher, url: string): [Promise<void>, Abortable | null] {
   const readable = plainFile.stream().getReader();
   const formattedUrl = new URL(url);
-  const req = request({
-    headers: {
-      'Content-Type': 'application/octet-stream',
-    },
-    hostname: formattedUrl.hostname,
-    port: formattedUrl.port,
-    protocol: formattedUrl.protocol,
-    path: formattedUrl.pathname + '?' + formattedUrl.searchParams.toString(),
-    method: 'PUT',
+
+  let aborted = false;
+  let abortable: Abortable | null = null;
+
+  const uploadFinishedPromise = new Promise<void>((resolve, reject) => {
+    const req = request({
+      headers: {
+        'Content-Type': 'application/octet-stream',
+      },
+      hostname: formattedUrl.hostname,
+      port: formattedUrl.port,
+      protocol: formattedUrl.protocol,
+      path: formattedUrl.pathname + '?' + formattedUrl.searchParams.toString(),
+      method: 'PUT',
+    }, (res) => {
+      let rawResponse = '';
+
+      res.on('data', (chunk) => {
+        rawResponse += chunk;
+      }).once('end', () => {
+        res.statusCode !== 200 ? reject(JSON.parse(rawResponse)) : resolve();
+      });
+    });
+
+    abortable = {
+      abort: () => {
+        aborted = true;
+        req.abort();
+        readable.cancel();
+      }
+    };
+
+    let done = false;
+
+    try {
+      (async () => {
+        while (!done && !aborted) {
+          const status = await readable.read();
+
+          if (!status.done) {
+            const overloaded = !req.write(cipher.update(status.value));
+
+            if (overloaded) {
+              await new Promise(res => req.once('drain', res));
+            }
+          }
+
+          done = status.done;
+        }
+
+        req.end();
+      })();
+    } catch (err) {
+      if (aborted) {
+        return resolve();
+      }
+      reject(err);
+    }
   });
 
-  let done = false;
-
-  cipher.pipe(req);
-
-  while (!done) {
-    const status = await readable.read();
-
-    if (!status.done) {
-      cipher.update(status.value);
-    }
-
-    done = status.done;
-  }
+  return [uploadFinishedPromise, abortable];
 }

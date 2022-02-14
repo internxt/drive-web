@@ -16,7 +16,10 @@ export function createAES256Cipher(key: Buffer, iv: Buffer): Cipher {
   return createCipheriv('aes-256-ctr', key, iv);
 }
 
-export function generateHMAC(shardMetas: ShardMeta[], encryptionKey: Buffer): Buffer {
+export function generateHMAC(
+  shardMetas: Omit<ShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
+  encryptionKey: Buffer
+): Buffer {
   const shardHashesSorted = [...shardMetas].sort((sA, sB) => sA.index - sB.index);
   const hmac = sha512HmacBuffer(encryptionKey);
 

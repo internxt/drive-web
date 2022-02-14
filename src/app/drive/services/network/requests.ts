@@ -185,7 +185,7 @@ export async function finishUpload(
   filename: string,
   index: Buffer,
   encryptionKey: Buffer,
-  shardMeta: ShardMeta,
+  shardMeta: Omit<ShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>,
   creds: NetworkCredentials,
 ): Promise<string> {
   const payload: CreateEntryFromFramePayload = {

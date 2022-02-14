@@ -89,7 +89,7 @@ export class Network {
       setTimeout(() => rej(), 100000000);
     });
 
-    this.doUpload(bucketId, params);
+    return [this.doUpload(bucketId, params), undefined];
 
     // this.uploadTest(params.filecontent).then(() => {
     // const fileToHashStream = params.filecontent.stream().getReader();
@@ -227,8 +227,8 @@ export class Network {
     console.log('Frame ID %s', frameId);
 
     const index = randomBytes(32);
-    const key = await generateFileKey(this.mnemonic, bucketId, index);
     const iv = index.slice(0, 16);
+    const key = await generateFileKey(this.mnemonic, bucketId, index);
 
     console.log('INDEX %s', index.toString('hex'));
     console.log('KEY %s', key.toString('hex'));
@@ -249,11 +249,18 @@ export class Network {
     const uploadUrl = await getUploadUrl(frameId, shardMeta, this.creds);
 
     console.log('UPLOAD URL %s', uploadUrl);
-    return '';
-    await uploadFile(file, createAES256Cipher(key, iv), uploadUrl);
+    const [uploadPromise, abortable] = uploadFile(
+      file,
+      createAES256Cipher(key, iv),
+      'https://proxy01.api.internxt.com/' + uploadUrl
+    );
 
-    // const encryptedFilename = await encryptFilename(this.mnemonic, bucketId, v4());
-    // return finishUpload(this.mnemonic, bucketId, frameId, encryptedFilename, index, key, shardMeta, this.creds);
+    await uploadPromise;
+
+    const encryptedFilename = await encryptFilename(this.mnemonic, bucketId, v4());
+    console.log('encrypted filename', encryptedFilename);
+
+    return finishUpload(this.mnemonic, bucketId, frameId, encryptedFilename, index, key, shardMeta, this.creds);
   }
 
   getFileDownloadStream(
