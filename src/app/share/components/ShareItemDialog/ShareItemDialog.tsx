@@ -109,7 +109,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   }, [numberOfAttempts]);
 
   return (
-    <BaseDialog isOpen={isOpen} title={itemFullName} titleClasses="text-m-neutral-100 text-base" onClose={onClose}>
+    <BaseDialog isOpen={isOpen} title={itemFullName} titleClasses="text-neutral-100 text-base" onClose={onClose}>
       <div className="share-dialog flex flex-col mb-8">
         <hr className="border-t-1 border-l-neutral-50 mt-7 mb-6" />
 
@@ -120,7 +120,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
 
           <div className="flex mt-3">
             <span className="text-blue-60 mr-4">1.</span>
-            <div className="flex w-72 items-center rounded-md bg-l-neutral-20 px-4 py-3">
+            <div className="flex w-72 items-center rounded-md bg-neutral-20 px-4 py-3">
               <span className="text-neutral-500 text-sm">
                 Enter the number of times you'd like the link to be valid:
               </span>
@@ -141,7 +141,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
 
           <div
             className="flex w-72 items-center justify-between rounded-md \
-            bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text"
+            bg-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text"
             onClick={() => {
               navigator.clipboard.writeText(linkToCopy);
               notificationsService.show(i18n.get('success.linkCopied'), ToastType.Info);

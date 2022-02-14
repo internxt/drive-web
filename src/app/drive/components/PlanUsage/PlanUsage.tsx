@@ -31,7 +31,7 @@ export default function PlanUsage({
           {bytesToString(usage) || '0'} of {limitService.formatLimit(limit)}
         </p>
       )}
-      <div className="flex justify-start h-1.5 w-full bg-l-neutral-30 rounded-lg overflow-hidden mb-1.5">
+      <div className="flex justify-start h-1.5 w-full bg-neutral-30 rounded-lg overflow-hidden mb-1.5">
         <div className="h-full bg-blue-60" style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
       </div>
       <p onClick={onUpgradeButtonClicked} className="font-semibold text-blue-60 cursor-pointer">

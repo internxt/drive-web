@@ -28,7 +28,7 @@ const NumberInput = (props: NumberInputProps): JSX.Element => {
     <div
       className={`${
         props.className || ''
-      } h-8 relative flex items-center bg-white border border-l-neutral-30 rounded-lg`}
+      } h-8 relative flex items-center bg-white border border-neutral-30 rounded-lg`}
     >
       <button
         disabled={value <= min}

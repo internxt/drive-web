@@ -75,6 +75,7 @@ const codeExtensions: FileExtensionMap = {
 const imageExtensions: FileExtensionMap = {
   tiff: ['tif', 'tiff'],
   bmp: ['bmp'],
+  heic: ['heic'],
   jpg: ['jpg', 'jpeg'],
   gif: ['gif'],
   png: ['png'],
@@ -93,7 +94,7 @@ const pptExtensions: FileExtensionMap = {
 };
 
 const txtExtensions: FileExtensionMap = {
-  txt: ['txt', 'text', 'conf', 'def', 'list', 'log'],
+  txt: ['txt', 'text', 'conf', 'def', 'list', 'log', 'md', 'lock'],
 };
 
 const videoExtensions: FileExtensionMap = {
@@ -137,6 +138,10 @@ const xmlExtensions: FileExtensionMap = {
   svg: ['svg'],
 };
 
+const csvExtensions: FileExtensionMap = {
+  csv: ['csv']
+};
+
 const zipExtensions: FileExtensionMap = {
   zip: ['zip', 'zipx'],
 };
@@ -154,6 +159,7 @@ export enum FileExtensionGroup {
   Word,
   Xls,
   Xml,
+  Csv,
   Zip,
   Default,
 }
@@ -174,6 +180,7 @@ const fileExtensionGroups: fileExtensionsDictionary = {
   [FileExtensionGroup.Word]: WordExtensions,
   [FileExtensionGroup.Xls]: xlsExtensions,
   [FileExtensionGroup.Xml]: xmlExtensions,
+  [FileExtensionGroup.Csv]: csvExtensions,
   [FileExtensionGroup.Zip]: zipExtensions,
   [FileExtensionGroup.Default]: defaultExtensions,
 };
@@ -189,6 +196,7 @@ export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary
   [FileExtensionGroup.Word]: [],
   [FileExtensionGroup.Xls]: [],
   [FileExtensionGroup.Xml]: [],
+  [FileExtensionGroup.Csv]: [],
   [FileExtensionGroup.Zip]: [],
   [FileExtensionGroup.Default]: [],
 };

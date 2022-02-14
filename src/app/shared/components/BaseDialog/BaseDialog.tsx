@@ -23,7 +23,7 @@ const BaseDialog = ({
     <div
       className={`${isOpen ? 'flex' : 'hidden'} ${
         classes || ''
-      } absolute top-0 left-0 right-0 bottom-0 bg-m-neutral-100 bg-opacity-80 z-10`}
+      } absolute top-0 left-0 right-0 bottom-0 bg-neutral-100 bg-opacity-80 z-10`}
     >
       <div
         className={`${panelClasses || ''} text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \

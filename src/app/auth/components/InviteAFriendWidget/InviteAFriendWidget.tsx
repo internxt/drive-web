@@ -26,15 +26,15 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
 
   return (
     <div
-      className={`${props.className || ''} w-full max-w-lg rounded-lg border border-l-neutral-30 p-6 bg-l-neutral-10`}
+      className={`${props.className || ''} w-full max-w-lg rounded-lg border border-neutral-30 p-6 bg-neutral-10`}
     >
       <span className="mb-1 block w-full text-center font-semibold">{i18n.get('inviteAFriend.title')}</span>
-      <span className="block m-auto text-center text-m-neutral-100 text-sm max-w-xs">
+      <span className="block m-auto text-center text-neutral-100 text-sm max-w-xs">
         {i18n.get('inviteAFriend.description')}
       </span>
       <div className="mt-6 flex">
         <input
-          className="flex-grow no-ring mr-2 border border-l-neutral-30 semi-dense"
+          className="flex-grow no-ring mr-2 border border-neutral-30 semi-dense"
           placeholder={i18n.get('form.fields.email.placeholder')}
           type="email"
           value={email}

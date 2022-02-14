@@ -55,7 +55,7 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
         {i18n.get('drive.deleteItems.advice')}
       </span>
 
-      <div className="flex justify-center items-center bg-l-neutral-20 py-6 mt-6">
+      <div className="flex justify-center items-center bg-neutral-20 py-6 mt-6">
         <div className="flex w-64">
           <BaseButton onClick={() => onClose()} className="cancel w-full mr-2">
             {i18n.get('actions.cancel')}

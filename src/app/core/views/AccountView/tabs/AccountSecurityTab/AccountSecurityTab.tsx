@@ -122,7 +122,7 @@ const AccountSecurityTab = (): JSX.Element => {
               >
 
                 <div className="modal_title flex flex-col">
-                  <span className="text-sm font-medium text-m-neutral-100">
+                  <span className="text-sm font-medium text-neutral-100">
                     {i18n.get('views.account.tabs.security.two-factor-auth.stepsLabel',
                       { current: currentStep + 1, total: steps.length })
                     }
@@ -298,7 +298,7 @@ const AccountSecurityTab = (): JSX.Element => {
         )}
       </div>
 
-      <div className="flex flex-col w-full h-px bg-l-neutral-20 mb-16"></div>
+      <div className="flex flex-col w-full h-px bg-neutral-20 mb-16"></div>
 
       {/* Password */}
       <div className="w-full flex flex-col">

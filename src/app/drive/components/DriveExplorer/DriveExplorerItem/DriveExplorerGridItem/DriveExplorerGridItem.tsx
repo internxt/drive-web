@@ -109,7 +109,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
           />
         </Dropdown.Menu>
       </Dropdown>
-      <div className="file-grid-item-icon-container">
+      <div className="file-grid-item-icon-container filter drop-shadow-soft">
         <ItemIconComponent className="file-icon m-auto" />
       </div>
       <div className="text-center mt-3">

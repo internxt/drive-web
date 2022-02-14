@@ -56,7 +56,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
     return (
       <Fragment>
-        <div className={isEditingName ? 'flex' : 'hidden'}>
+        <div className={`${isEditingName ? 'flex' : 'hidden'}`}>
           <input
             className="dense border border-white no-ring rect select-text"
             onClick={(e) => e.stopPropagation()}
@@ -105,7 +105,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {/* ICON */}
       <div className="w-1/12 flex items-center px-3 box-content">
-        <div className="h-8 w-8 flex justify-center">
+        <div className="h-10 w-10 flex justify-center filter drop-shadow-soft">
           <ItemIconComponent className="h-full" />
         </div>
       </div>
@@ -155,7 +155,11 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {/* SIZE */}
       <div className="flex items-center w-1/12 whitespace-nowrap overflow-ellipsis">
-        {sizeService.bytesToString(item.size, false)}
+        {sizeService.bytesToString(item.size, false) === '' ?
+          <span className="opacity-25">—</span>
+          :
+          sizeService.bytesToString(item.size, false)
+        }
       </div>
 
       {/* ACTIONS BUTTON */}

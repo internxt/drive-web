@@ -19,8 +19,8 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   };
 
   return (
-    <div className={`${statusClassName} flex items-center pl-4`}>
-      <notification.icon className="flex items-center justify-center mr-2.5 w-6" />
+    <div className={`${statusClassName} flex items-center px-4`}>
+      <notification.icon className="flex items-center justify-center mr-2.5 w-6 h-6" />
 
       <div className="flex flex-col text-left w-40">
         <span className="text-sm text-neutral-900 truncate">{notification.title}</span>

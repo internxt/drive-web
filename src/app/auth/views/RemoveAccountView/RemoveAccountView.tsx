@@ -52,11 +52,11 @@ const RemoveAccount = (): JSX.Element => {
             1
           </div>
 
-          <div className={`h-px w-20 border-t ${step === 2 ? 'border-blue-60' : 'border-m-neutral-60'}`} />
+          <div className={`h-px w-20 border-t ${step === 2 ? 'border-blue-60' : 'border-neutral-60'}`} />
 
           <div
             className={`flex items-center justify-center w-9 h-9 rounded-full border ${
-              step === 2 ? 'border-blue-60 text-blue-60' : 'border-m-neutral-60 text-m-neutral-60'
+              step === 2 ? 'border-blue-60 text-blue-60' : 'border-neutral-60 text-neutral-60'
             }`}
           >
             2

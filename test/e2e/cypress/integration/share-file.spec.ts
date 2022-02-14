@@ -17,7 +17,6 @@ describe('Share file', () => {
       .invoke('text')
       .then((urlText) => {
         cy.visit(urlText.toString());
-        cy.contains('Access File').click();
         cy.contains('Download').click();
 
         cy.readFile(path.join(fixturesFolder as string, filename)).then((originalFile) => {

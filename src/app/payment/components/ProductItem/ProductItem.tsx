@@ -75,10 +75,10 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
       </div>
       <div
         className={`${sizeClassName} flex flex-col justify-center\
-         text-neutral-700 p-6 border border-l-neutral-30 rounded-lg bg-white`}
+         text-neutral-700 p-6 border border-neutral-30 rounded-lg bg-white`}
       >
         {/* SIMPLE NAME */}
-        <h4 className="mx-auto rounded-3xl px-4 py-1 bg-l-neutral-20 text-m-neutral-80 font-semibold mb-4 w-min">
+        <h4 className="mx-auto rounded-3xl px-4 py-1 bg-neutral-20 text-neutral-80 font-semibold mb-4 w-min">
           {props.product.metadata.simple_name}
         </h4>
 
@@ -90,7 +90,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
 
         {/* TOTAL AMOUNT */}
         {props.product.metadata.is_teams ? (
-          <div className="bg-l-neutral-10 border border-l-neutral-20 rounded-lg mt-6 mb-2 p-4">
+          <div className="bg-neutral-10 border border-neutral-20 rounded-lg mt-6 mb-2 p-4">
             <NumberInput
               className="mb-2"
               initialValue={teamMembersCount}
@@ -101,12 +101,12 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
 
             <div className="w-full flex justify-center items-center">
               {isLifetime ? (
-                <span className="text-xs text-m-neutral-100">{i18n.get('general.billing.oneTimePayment')}</span>
+                <span className="text-xs text-neutral-100">{i18n.get('general.billing.oneTimePayment')}</span>
               ) : (
                 <Fragment>
                   <span className="text-xs mr-1">{moneyService.getCurrencySymbol(props.product.price.currency)}</span>
                   <span className="mr-1">{totalAmount}</span>
-                  <span className="text-xs text-m-neutral-100">
+                  <span className="text-xs text-neutral-100">
                     /{i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase()}
                   </span>
                 </Fragment>
@@ -114,7 +114,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
             </div>
           </div>
         ) : (
-          <span className="text-center text-xs text-m-neutral-80 mt-2 mb-4">
+          <span className="text-center text-xs text-neutral-80 mt-2 mb-4">
             {isLifetime
               ? i18n.get('general.billing.oneTimePayment')
               : i18n.get('general.billing.billedEachPeriod', {
@@ -142,7 +142,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
           {isPlanActive && <UilCheck />}
         </div>
 
-        <span className={`${isPlanActive ? 'text-blue-60' : 'text-m-neutral-80'} block text-xs`}>
+        <span className={`${isPlanActive ? 'text-blue-60' : 'text-neutral-80'} block text-xs`}>
           {isLifetime
             ? i18n.get('general.billing.oneTimePayment')
             : i18n.get('general.billing.billedEachPeriod', {

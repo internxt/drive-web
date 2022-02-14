@@ -15,7 +15,7 @@ const TwoFactorAuthQRStep = (props: TwoFactorAuthStepProps): JSX.Element => {
       </div>
 
       <div className="relative flex flex-col justify-center items-center text-xs font-medium
-                      text-m-neutral-80 space-y-2"
+                      text-neutral-80 space-y-2"
       >
         <div className="flex flex-col w-px h-full bg-l-neutral-40"></div>
         <span>{i18n.get('views.account.tabs.security.two-factor-auth.steps.qr.description.line2')}</span>
@@ -24,7 +24,7 @@ const TwoFactorAuthQRStep = (props: TwoFactorAuthStepProps): JSX.Element => {
 
       <div className="flex flex-col items-center justify-center space-y-2">
         <div className="flex flex-row px-6 py-3 font-medium rounded-lg border border-l-neutral-50
-                      bg-l-neutral-10 select-all">
+                      bg-neutral-10 select-all">
           {props.backupKey}
         </div>
         <div className="text-sm font-medium text-center">
