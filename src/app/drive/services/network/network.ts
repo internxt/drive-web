@@ -4,13 +4,12 @@ import { Readable } from 'stream';
 import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
-import { Sha256 } from 'asmcrypto.js';
-import { createCipheriv, randomBytes } from 'crypto';
-import { request } from 'https';
-import { finishUpload, getUploadUrl, prepareUpload } from './requests';
+import { randomBytes } from 'crypto';
+import { finishUpload, getUploadUrl, prepareUpload, ShardMeta } from './requests';
 import { calculateEncryptedFileHash, uploadFile } from './upload';
 import { createAES256Cipher, encryptFilename } from './crypto';
 import { v4 } from 'uuid';
+import { EventEmitter } from 'events';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 50 * 1024 * 1024 * 1024;
 
@@ -33,6 +32,16 @@ interface EnvironmentConfig {
   encryptionKey: string;
   bucketId: string;
   useProxy: boolean;
+}
+
+interface Abortable {
+  stop: () => void
+}
+
+class UploadAbortedError extends Error {
+  constructor() {
+    super('Upload aborted');
+  }
 }
 
 export class Network {
@@ -79,105 +88,14 @@ export class Network {
    * @param params Required params for uploading a file
    * @returns Id of the created file
    */
-  uploadFile(bucketId: string, params: IUploadParams): [Promise<string>, ActionState | undefined] {
+  uploadFile(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
     let actionState: ActionState | undefined;
 
     if (!bucketId) {
       throw new Error('Bucket id not provided');
     }
-    const promise: Promise<string> = new Promise((res, rej) => {
-      setTimeout(() => rej(), 100000000);
-    });
 
-    return [this.doUpload(bucketId, params), undefined];
-
-    // this.uploadTest(params.filecontent).then(() => {
-    // const fileToHashStream = params.filecontent.stream().getReader();
-    // const fileToUploadStream = params.filecontent.stream().getReader();
-
-    // const sourceToHash = new PassThrough();
-    // const sourceToUpload = new PassThrough();
-
-    // (async () => {
-    //   let done = false;
-    //   let writeOk = false;
-
-    //   while (!done) {
-    //     const status = await fileToHashStream.read();
-
-    //     if (!status.done) {
-    //       writeOk = sourceToHash.write(status.value);
-    //       if (!writeOk) {
-    //         await new Promise(r => sourceToHash.once('drain', r));
-    //       }
-    //     }
-
-    //     done = status.done;
-    //   }
-
-    //   sourceToHash.end();
-    // })();
-
-    // (async () => {
-    //   let done = false;
-    //   let writeOk = false;
-
-    //   while (!done) {
-    //     const status = await fileToUploadStream.read();
-
-    //     if (!status.done) {
-    //       writeOk = sourceToUpload.write(status.value);
-    //       if (!writeOk) {
-    //         await new Promise(r => sourceToUpload.once('drain', r));
-    //       }
-    //     }
-
-    //     done = status.done;
-    //   }
-
-    //   sourceToUpload.end();
-    // })();
-
-    // promise = new Promise((resolve: (fileId: string) => void, reject) => {
-    //   actionState = this.environment.upload(
-    //     bucketId,
-    //     {
-    //       name: uuid.v4(),
-    //       progressCallback: params.progressCallback,
-    //       encryptProgressCallback: (progress: number) => {
-    //         console.log('Encrypt progress is %s%', (progress * 100).toFixed(2));
-    //       },
-    //       finishedCallback: (err, fileId) => {
-    //         if (err) {
-    //           return reject(err);
-    //         }
-
-    //         if (!fileId) {
-    //           return reject(Error('File not created'));
-    //         }
-
-    //         resolve(fileId);
-    //       },
-    //     },
-    //     {
-    //       label: 'OneShardOnly',
-    //       params: {
-    //         sourceToHash: {
-    //           stream: sourceToHash,
-    //           size: params.filesize,
-    //         },
-    //         sourceToUpload: {
-    //           stream: sourceToUpload,
-    //           size: params.filesize
-    //         },
-    //         useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true'
-    //       },
-    //     },
-    //   );
-    // });
-    // });
-
-    return [promise, actionState];
+    return this.doUpload(bucketId, params);
   }
 
   /**
@@ -222,45 +140,98 @@ export class Network {
 
   doUpload(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
     const file: File = params.filecontent;
+    const eventEmitter = new EventEmitter();
+
+    let aborted = false;
+    let uploadAbortable: Abortable;
+
+    let frameId: string;
+    let iv = Buffer.alloc(0);
+    let index = Buffer.alloc(0);
+    let encryptionKey = Buffer.alloc(0);
     let shardMeta: ShardMeta;
 
-    console.log('Frame ID %s', frameId);
+    eventEmitter.once('abort', () => {
+      aborted = true;
+      uploadAbortable?.stop();
+    });
 
-    const index = randomBytes(32);
-    const iv = index.slice(0, 16);
-    const key = await generateFileKey(this.mnemonic, bucketId, index);
+    const uploadPromise = prepareUpload(bucketId, this.creds).then((frame) => {
+      if (aborted) {
+        throw new UploadAbortedError();
+      }
 
-    console.log('INDEX %s', index.toString('hex'));
-    console.log('KEY %s', key.toString('hex'));
-    console.log('IV %s', iv.toString('hex'));
+      frameId = frame;
+      console.log('Frame ID %s', frameId);
 
-    const fileHash = await calculateEncryptedFileHash(file, createAES256Cipher(key, iv));
-    console.log('FILE_HASH %s', fileHash);
+      index = randomBytes(32);
+      iv = index.slice(0, 16);
 
-    const shardMeta = {
-      hash: fileHash,
-      index: 0,
-      parity: false,
-      size: params.filesize,
-    };
+      return generateFileKey(this.mnemonic, bucketId, index);
+    }).then((key) => {
+      if (aborted) {
+        throw new UploadAbortedError();
+      }
 
-    console.log('PARTIAL SHARD META', JSON.stringify(shardMeta));
+      encryptionKey = key;
 
-    const uploadUrl = await getUploadUrl(frameId, shardMeta, this.creds);
+      return calculateEncryptedFileHash(file, createAES256Cipher(encryptionKey, iv));
+    }).then((fileHash) => {
+      if (aborted) {
+        throw new UploadAbortedError();
+      }
 
-    console.log('UPLOAD URL %s', uploadUrl);
-    const [uploadPromise, abortable] = uploadFile(
-      file,
-      createAES256Cipher(key, iv),
-      'https://proxy01.api.internxt.com/' + uploadUrl
-    );
+      shardMeta = {
+        hash: fileHash,
+        index: 0,
+        parity: false,
+        size: params.filesize,
+      };
 
-    await uploadPromise;
+      console.log('PARTIAL SHARD META', JSON.stringify(shardMeta));
 
-    const encryptedFilename = await encryptFilename(this.mnemonic, bucketId, v4());
-    console.log('encrypted filename', encryptedFilename);
+      return getUploadUrl(frameId, shardMeta, this.creds);
+    }).then((uploadUrl) => {
+      if (aborted) {
+        throw new UploadAbortedError();
+      }
 
-    return finishUpload(this.mnemonic, bucketId, frameId, encryptedFilename, index, key, shardMeta, this.creds);
+      const [uploadPromise, uploadFileAbortable] = uploadFile(
+        file,
+        createAES256Cipher(encryptionKey, iv),
+        uploadUrl
+      );
+      uploadAbortable = uploadFileAbortable;
+
+      return uploadPromise;
+    }).then(() => {
+      if (aborted) {
+        throw new UploadAbortedError();
+      }
+
+      return encryptFilename(this.mnemonic, bucketId, v4());
+    }).then((encryptedFilename) => {
+      if (aborted) {
+        throw new UploadAbortedError();
+      }
+
+      return finishUpload(
+        this.mnemonic,
+        bucketId,
+        frameId,
+        encryptedFilename,
+        index,
+        encryptionKey,
+        shardMeta,
+        this.creds
+      );
+    });
+
+    return [uploadPromise, {
+      stop: () => {
+        eventEmitter.emit('abort');
+      }
+    }];
   }
 
   getFileDownloadStream(

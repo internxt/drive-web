@@ -1,6 +1,7 @@
 import { Cipher, createHash } from 'crypto';
 import { request } from 'https';
 import { Sha256 } from 'asmcrypto.js';
+import EventEmitter from 'events';
 
 export interface Abortable {
   stop: () => void
@@ -30,9 +31,9 @@ export async function calculateEncryptedFileHash(plainFile: File, cipher: Cipher
 export function uploadFile(plainFile: File, cipher: Cipher, url: string): [Promise<void>, Abortable] {
   const readable = plainFile.stream().getReader();
   const formattedUrl = new URL(url);
+  const eventEmitter = new EventEmitter();
 
   let aborted = false;
-  let abortable: Abortable | null = null;
 
   const uploadFinishedPromise = new Promise<void>((resolve, reject) => {
     const req = request({
@@ -54,13 +55,11 @@ export function uploadFile(plainFile: File, cipher: Cipher, url: string): [Promi
       });
     });
 
-    abortable = {
-      abort: () => {
-        aborted = true;
-        req.abort();
-        readable.cancel();
-      }
-    };
+    eventEmitter.once('abort', () => {
+      aborted = true;
+      req.abort();
+      readable.cancel();
+    });
 
     let done = false;
 
@@ -90,5 +89,9 @@ export function uploadFile(plainFile: File, cipher: Cipher, url: string): [Promi
     }
   });
 
-  return [uploadFinishedPromise, abortable];
+  return [uploadFinishedPromise, {
+    stop: () => {
+      eventEmitter.emit('abort');
+    }
+  }];
 }
