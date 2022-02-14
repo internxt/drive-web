@@ -1,4 +1,6 @@
+import { items } from '@internxt/lib';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
+import errorService from 'app/core/services/error.service';
 import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
 import fileDownload from 'js-file-download';
 import JSZip from 'jszip';
@@ -7,99 +9,100 @@ import { Network } from '../../network';
 
 interface FolderPackage {
   folderId: number;
+  name: string;
   pack: JSZip;
 }
 
-export async function putDirectoryFilesInsideZip(
-  zip: JSZip,
-  bucket: string,
-  bucketToken: string,
-  payload: Omit<ShareTypes.GetSharedDirectoryFilesPayload, 'offset'>,
-) {
-  const network = new Network('NONE', 'NONE', 'NONE');
-  let offset = 0;
-  let allFilesDownloaded = false;
-
-  while (!allFilesDownloaded) {
-    const { files, last } = await getSharedDirectoryFiles({ ...payload, offset });
-
-    for (const file of files) {
-      const [fileStreamPromise] = network.downloadFile(bucket, file.id, {
-        fileEncryptionKey: Buffer.from(file.encryptionKey, 'hex'),
-        fileToken: bucketToken,
-        progressCallback: (fileProgress) => {
-          // downloadingSize[file.id] = file.size * fileProgress;
-          // const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
-          // const totalProgress = totalDownloadedSize / this.state.info.size;
-          // this.updateProgress(totalProgress);
-        },
-      });
-      const fileBlob = await fileStreamPromise;
-      zip.file(`${file.name}.${file.type}`, fileBlob);
-    }
-
-    allFilesDownloaded = last;
-    offset += payload.limit;
-  }
-}
-
 export async function downloadSharedFolderUsingBlobs(
-  sharedFolderMeta: { name: string; id: number; token: string; code: string },
+  sharedFolderMeta: { name: string; id: number; token: string; code: string; size: number },
   bucket: string,
   bucketToken: string,
   options: {
     foldersLimit: number;
     filesLimit: number;
+    progressCallback: (progress: number) => void;
   },
-) {
-  let currentOffset = 0;
+): Promise<void> {
+  const downloadingSize: Record<number, number> = {};
+  const network = new Network('NONE', 'NONE', 'NONE');
   const zip = new JSZip();
 
   const rootFolder: FolderPackage = {
     folderId: sharedFolderMeta.id,
     pack: zip,
+    name: sharedFolderMeta.name
   };
   const pendingFolders: FolderPackage[] = [rootFolder];
 
-  let folderDownloadCompleted = false;
+  try {
+    let foldersOffset = 0;
+    // * Renames files iterating over folders
+    do {
+      const folderToDownload = pendingFolders.shift() as FolderPackage;
+      const currentFolderZip = folderToDownload.pack?.folder(folderToDownload.name) || zip;
 
-  do {
-    const folderToDownload = pendingFolders.shift() as FolderPackage;
+      let filesDownloadNotFinished = false;
+      let filesOffset = 0;
 
-    console.log('downloading folder %s', folderToDownload.folderId);
-
-    while (!folderDownloadCompleted) {
-      const payload: ShareTypes.GetSharedDirectoryFoldersPayload = {
-        token: sharedFolderMeta.token,
-        directoryId: folderToDownload.folderId,
-        offset: currentOffset,
-        limit: options.foldersLimit,
-      };
-
-      const nextFoldersChunkPromise = getSharedDirectoryFolders(payload).then((foldersResponse) => {
-        foldersResponse.folders.forEach(({ id, name }) => {
-          pendingFolders.push({
-            folderId: id,
-            pack: folderToDownload.pack.folder(name),
-          });
+      while (!filesDownloadNotFinished) {
+        const { files, last } = await getSharedDirectoryFiles({
+          token: sharedFolderMeta.token,
+          directoryId: folderToDownload.folderId,
+          offset: filesOffset,
+          limit: options.foldersLimit,
+          code: sharedFolderMeta.code
         });
 
-        return foldersResponse;
-      });
+        filesOffset += options.filesLimit;
+        filesDownloadNotFinished = last;
 
-      await putDirectoryFilesInsideZip(folderToDownload.pack, bucket, bucketToken, {
+        // * Downloads current folder files
+        for (const file of files) {
+          console.log('downloading file %s', file.name);
+          const displayFilename = items.getItemDisplayName({
+            name: file.name,
+            type: file.type,
+          });
+          const [fileStreamPromise] = network.downloadFile(bucket, file.id, {
+            fileEncryptionKey: Buffer.from(file.encryptionKey, 'hex'),
+            fileToken: bucketToken,
+            progressCallback: (fileProgress) => {
+              downloadingSize[file.id] = file.size * fileProgress;
+              const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
+              const totalProgress = totalDownloadedSize / sharedFolderMeta.size;
+
+              (options.progressCallback || (() => undefined))(totalProgress);
+            },
+          });
+          const fileBlob = await fileStreamPromise;
+          console.log('file %s downloaded', file.name);
+          currentFolderZip?.file(displayFilename, fileBlob);
+          console.log('file %s zipped', file.name);
+        }
+      }
+
+      const { folders } = await getSharedDirectoryFolders({
         token: sharedFolderMeta.token,
-        code: sharedFolderMeta.code,
         directoryId: folderToDownload.folderId,
-        limit: options.filesLimit,
+        offset: foldersOffset,
+        limit: options.foldersLimit,
       });
 
-      const { last } = await nextFoldersChunkPromise;
+      pendingFolders.push(
+        ...folders.map((data) => ({
+          pack: currentFolderZip,
+          folderId: data.id,
+          name: data.name
+        })),
+      );
 
-      folderDownloadCompleted = last;
-      currentOffset += options.foldersLimit;
-    }
-  } while (pendingFolders.length > 0);
+      foldersOffset += options.foldersLimit;
+    } while (pendingFolders.length > 0);
+  } catch (err) {
+    const castedError = errorService.castError(err);
+
+    throw castedError;
+  }
 
   return zip
     .generateAsync({
