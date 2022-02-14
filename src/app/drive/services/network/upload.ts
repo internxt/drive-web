@@ -2,8 +2,8 @@ import { Cipher, createHash } from 'crypto';
 import { request } from 'https';
 import { Sha256 } from 'asmcrypto.js';
 
-interface Abortable {
-  abort: () => void
+export interface Abortable {
+  stop: () => void
 }
 
 export async function calculateEncryptedFileHash(plainFile: File, cipher: Cipher): Promise<string> {
@@ -27,7 +27,7 @@ export async function calculateEncryptedFileHash(plainFile: File, cipher: Cipher
   return createHash('ripemd160').update(Buffer.from(hasher.result!)).digest('hex');
 }
 
-export function uploadFile(plainFile: File, cipher: Cipher, url: string): [Promise<void>, Abortable | null] {
+export function uploadFile(plainFile: File, cipher: Cipher, url: string): [Promise<void>, Abortable] {
   const readable = plainFile.stream().getReader();
   const formattedUrl = new URL(url);
 

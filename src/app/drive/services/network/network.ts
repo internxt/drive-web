@@ -220,7 +220,7 @@ export class Network {
     return [promise, actionState];
   }
 
-  async doUpload(bucketId: string, params: IUploadParams): Promise<string> {
+  doUpload(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
     const file: File = params.filecontent;
     const frameId = await prepareUpload(bucketId, this.creds);
 

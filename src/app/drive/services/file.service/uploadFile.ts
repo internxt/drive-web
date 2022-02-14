@@ -1,6 +1,5 @@
 import { toast } from 'react-toastify';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 import { DriveFileData } from '../../types';
 import analyticsService from '../../../analytics/services/analytics.service';
 import { AppView, DevicePlatform } from '../../../core/types';
@@ -10,6 +9,7 @@ import { getEnvironmentConfig, Network } from '../network/network';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { createStorageClient } from '../../../../factory/modules';
+import { Abortable } from '../network/upload';
 
 export interface ItemToUpload {
   name: string;
@@ -24,9 +24,9 @@ export function uploadFile(
   file: ItemToUpload,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-): [Promise<DriveFileData>, ActionState | undefined] {
+): [Promise<DriveFileData>, Abortable | undefined] {
   let promise: Promise<DriveFileData>;
-  let actionState: ActionState | undefined;
+  let actionState: Abortable | undefined;
 
   try {
     analyticsService.trackFileUploadStart({
