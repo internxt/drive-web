@@ -5,6 +5,7 @@ import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 import { getSharedFolderInfo } from 'app/share/services/share.service';
 
 import { ReactComponent as Spinner } from 'assets/icons/spinner.svg';
+import { ReactComponent as Logo } from 'assets/icons/big-logo.svg';
 import iconService from 'app/drive/services/icon.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import { TaskProgress } from 'app/tasks/types';
