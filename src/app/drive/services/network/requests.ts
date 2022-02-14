@@ -9,7 +9,7 @@ interface NetworkCredentials {
   pass: string;
 }
 
-interface ShardMeta {
+interface LegacyShardMeta {
   hash: string;
   size: number;
   index: number;
@@ -18,6 +18,8 @@ interface ShardMeta {
   challenges_as_str: string[];
   tree: string[];
 }
+
+export type ShardMeta = Omit<LegacyShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>;
 
 interface Contract {
   hash: string;
@@ -102,7 +104,7 @@ export function createFrame(creds: NetworkCredentials): Promise<Frame> {
   });
 }
 
-export function addShardToFrame(frameId: string, body: ShardMeta, creds: NetworkCredentials): Promise<Contract> {
+export function addShardToFrame(frameId: string, body: LegacyShardMeta, creds: NetworkCredentials): Promise<Contract> {
   const options: AxiosRequestConfig = {
     method: 'PUT',
     auth: getAuthFromCredentials(creds),

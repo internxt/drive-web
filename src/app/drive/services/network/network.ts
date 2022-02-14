@@ -222,7 +222,7 @@ export class Network {
 
   doUpload(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
     const file: File = params.filecontent;
-    const frameId = await prepareUpload(bucketId, this.creds);
+    let shardMeta: ShardMeta;
 
     console.log('Frame ID %s', frameId);
 
