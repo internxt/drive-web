@@ -141,7 +141,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           merge: {
             status: TaskStatus.Encrypting,
             stop: async () => {
-              task?.stop?.();
               actionState?.stop();
             },
           },
