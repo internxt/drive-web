@@ -5,7 +5,6 @@ import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 import { getSharedFolderInfo } from 'app/share/services/share.service';
 
 import { ReactComponent as Spinner } from 'assets/icons/spinner.svg';
-import { ReactComponent as Logo } from 'assets/icons/big-logo.svg';
 import iconService from 'app/drive/services/icon.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import { TaskProgress } from 'app/tasks/types';
@@ -19,6 +18,8 @@ import './ShareView.scss';
 import { downloadSharedFolderUsingStreamSaver } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingStreamSaver';
 // eslint-disable-next-line max-len
 import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
+// eslint-disable-next-line max-len
+import { downloadSharedFolderUsingFileSystemAPI } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingFileSystemAPI';
 
 export interface ShareViewProps {
   match: match<{
@@ -52,7 +53,7 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
     },
   };
 
-  componentDidMount(): void {
+  componentDidMount(): void {    
     this.loadFolderInfo()
       .then((folderInfo) => {
         this.setState({
@@ -92,10 +93,41 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
    * Triggered when user starts the shared folder download
    * Decides if download should happen using streams or BLOBs
    */
-  download = (): Promise<void> => {
-    console.log('download');
-    return 'showSaveFilePicker' in window ? this.downloadWithStreams() : this.downloadWithBlobs();
+  download = async (): Promise<void> => {    
+    const directoryPickerIsSupported = 
+      window.showDirectoryPicker as unknown as Promise<FileSystemDirectoryHandle> | undefined;
+
+    if (directoryPickerIsSupported) {
+      return this.downloadAndStoreThroughFileSystemAPI();
+    } else {
+      return this.downloadWithBlobs();
+    }
+    // TODO
+    // this.downloadWithStreams()
   };
+
+  downloadAndStoreThroughFileSystemAPI(): Promise<void> {
+    return downloadSharedFolderUsingFileSystemAPI(
+      {
+        name: this.state.info.name,
+        code: this.state.code,
+        id: this.state.info.folderId,
+        token: this.state.token,
+        size: this.state.info.size,
+      },
+      this.state.info.bucket,
+      this.state.info.bucketToken,
+      {
+        filesLimit: this.FILES_LIMIT_BY_REQUEST,
+        foldersLimit: this.FOLDERS_LIMIT_BY_REQUEST,
+        progressCallback: (progress) => {
+          this.setState({
+            progress: progress * 100,
+          });
+        },
+      },
+    );
+  }
 
   async downloadWithStreams(): Promise<void> {
     const [ downloadPromise ] = await downloadSharedFolderUsingStreamSaver(
@@ -112,7 +144,6 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
         filesLimit: this.FILES_LIMIT_BY_REQUEST,
         foldersLimit: this.FOLDERS_LIMIT_BY_REQUEST,
         progressCallback: (progress) => {
-          // console.log('Progress: ', (progress * 100).toFixed(2));
           this.setState({
             progress: progress * 100,
           });
@@ -130,12 +161,18 @@ class ShareFolderView extends Component<ShareViewProps, ShareViewState> {
         code: this.state.code,
         id: this.state.info.folderId,
         token: this.state.token,
+        size: this.state.info.size
       },
       this.state.info.bucket,
       this.state.info.bucketToken,
       {
         filesLimit: this.FILES_LIMIT_BY_REQUEST,
         foldersLimit: this.FOLDERS_LIMIT_BY_REQUEST,
+        progressCallback: (progress) => {
+          this.setState({
+            progress: progress * 100,
+          });
+        },
       },
     );
   }
