@@ -52,7 +52,6 @@ export async function downloadSharedFolderUsingStreamSaver(
   const pendingFolders: (FolderPackage & { name: string })[] = [rootFolder];
 
   try {
-    let foldersOffset = 0;
     // * Renames files iterating over folders
     do {
       const folderToDownload = pendingFolders.shift() as FolderPackage & { name: string };
@@ -60,6 +59,8 @@ export async function downloadSharedFolderUsingStreamSaver(
 
       let filesDownloadNotFinished = false;
       let filesOffset = 0;
+      let foldersOffset = 0;
+      let lastFolderId = 0;
 
       while (!filesDownloadNotFinished) {
         const { files, last } = await getSharedDirectoryFiles({
@@ -96,12 +97,16 @@ export async function downloadSharedFolderUsingStreamSaver(
         }
       }
 
+      if( lastFolderId != folderToDownload.folderId ){
+        foldersOffset = 0;
+      }
       const { folders } = await getSharedDirectoryFolders({
         token: sharedFolderMeta.token,
         directoryId: folderToDownload.folderId,
         offset: foldersOffset,
         limit: options.foldersLimit,
       });
+      lastFolderId = folderToDownload.folderId;
 
       // * Adds current folder folders to pending
       pendingFolders.push(

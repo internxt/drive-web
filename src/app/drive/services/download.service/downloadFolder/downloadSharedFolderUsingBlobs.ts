@@ -1,5 +1,4 @@
 import { items } from '@internxt/lib';
-import { ShareTypes } from '@internxt/sdk/dist/drive';
 import errorService from 'app/core/services/error.service';
 import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
 import fileDownload from 'js-file-download';
@@ -35,14 +34,15 @@ export async function downloadSharedFolderUsingBlobs(
   const pendingFolders: FolderPackage[] = [rootFolder];
 
   try {
-    let foldersOffset = 0;
     // * Renames files iterating over folders
     do {
       const folderToDownload = pendingFolders.shift() as FolderPackage;
       const currentFolderZip = folderToDownload.pack?.folder(folderToDownload.name) || zip;
 
       let filesDownloadNotFinished = false;
+      let foldersOffset = 0;
       let filesOffset = 0;
+      let lastFolderId = 0;
 
       while (!filesDownloadNotFinished) {
         const { files, last } = await getSharedDirectoryFiles({
@@ -81,12 +81,16 @@ export async function downloadSharedFolderUsingBlobs(
         }
       }
 
+      if( lastFolderId != folderToDownload.folderId ){
+        foldersOffset = 0;
+      }
       const { folders } = await getSharedDirectoryFolders({
         token: sharedFolderMeta.token,
         directoryId: folderToDownload.folderId,
         offset: foldersOffset,
         limit: options.foldersLimit,
       });
+      lastFolderId = folderToDownload.folderId;
 
       pendingFolders.push(
         ...folders.map((data) => ({

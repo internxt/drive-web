@@ -47,12 +47,13 @@ export async function downloadSharedFolderUsingFileSystemAPI(
   const pendingFolders: FolderRef[] = [rootFolder];
 
   try {
-    let foldersOffset = 0;
     // * Renames files iterating over folders
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
 
       let filesDownloadNotFinished = false;
+      let lastFolderId = 0;
+      let foldersOffset = 0;
       let filesOffset = 0;
 
       while (!filesDownloadNotFinished) {
@@ -93,12 +94,16 @@ export async function downloadSharedFolderUsingFileSystemAPI(
         }
       }
 
+      if( lastFolderId != folderToDownload.folderId ){
+        foldersOffset = 0;
+      }
       const { folders } = await getSharedDirectoryFolders({
         token: sharedFolderMeta.token,
         directoryId: folderToDownload.folderId,
         offset: foldersOffset,
         limit: options.foldersLimit,
       });
+      lastFolderId = folderToDownload.folderId;
 
       const nextFolders: FolderRef[] = await Promise.all(
         folders.map(async ({ id, name }) => ({
