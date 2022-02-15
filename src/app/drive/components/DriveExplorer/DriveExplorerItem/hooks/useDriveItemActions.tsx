@@ -89,17 +89,18 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
       dispatch(uiActions.setIsShareItemDialogOpen(true));
     };
 
-    if (item.isFolder) {
-      const maxAcceptableSize = 1024 * 1024 * 1000; // 1GB
-      const folderSize = await getFolderSize(item.id);
-      if (folderSize > maxAcceptableSize) {
-        dispatch(uiActions.setIsSharedFolderTooBigDialogOpen(true));
-      } else {
-        proceed();
-      }
-    } else {
-      proceed();
+    if (!item.isFolder) {
+      return proceed();
     }
+
+    const maxAcceptableSize = 1024 * 1024 * 1000; // 1GB
+    const folderSize = await getFolderSize(item.id);
+
+    if (folderSize <= maxAcceptableSize) {
+      return proceed();
+    }
+
+    dispatch(uiActions.setIsSharedFolderTooBigDialogOpen(true));
   };
   const getFolderSize = (folderId: number) => {
     const storageClient = SdkFactory.getInstance().createStorageClient();
