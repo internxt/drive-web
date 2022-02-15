@@ -59,8 +59,6 @@ export async function downloadSharedFolderUsingStreamSaver(
 
       let filesDownloadNotFinished = false;
       let filesOffset = 0;
-      let foldersOffset = 0;
-      let lastFolderId = 0;
 
       while (!filesDownloadNotFinished) {
         const { files, last } = await getSharedDirectoryFiles({
@@ -97,27 +95,28 @@ export async function downloadSharedFolderUsingStreamSaver(
         }
       }
 
-      if( lastFolderId != folderToDownload.folderId ){
-        foldersOffset = 0;
+      let foldersOffset = 0;
+      let completed = false;
+      while (!completed) {
+        const { folders, last } = await getSharedDirectoryFolders({
+          token: sharedFolderMeta.token,
+          directoryId: folderToDownload.folderId,
+          offset: foldersOffset,
+          limit: options.foldersLimit,
+        });
+
+        folders.map(async ({ id, name }) => {
+          pendingFolders.push({
+            folderId: id,
+            name: name,
+            pack: currentFolderZip,
+          });
+        });
+
+        completed = last;
+        foldersOffset += options.foldersLimit;
       }
-      const { folders } = await getSharedDirectoryFolders({
-        token: sharedFolderMeta.token,
-        directoryId: folderToDownload.folderId,
-        offset: foldersOffset,
-        limit: options.foldersLimit,
-      });
-      lastFolderId = folderToDownload.folderId;
-
-      // * Adds current folder folders to pending
-      pendingFolders.push(
-        ...folders.map((data) => ({
-          pack: currentFolderZip,
-          folderId: data.id,
-          name: data.name
-        })),
-      );
-
-      foldersOffset += options.foldersLimit;
+      
     } while (pendingFolders.length > 0);
 
     window.addEventListener('unload', onUnload);

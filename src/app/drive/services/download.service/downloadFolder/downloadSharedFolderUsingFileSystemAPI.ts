@@ -52,8 +52,6 @@ export async function downloadSharedFolderUsingFileSystemAPI(
       const folderToDownload = pendingFolders.shift() as FolderRef;
 
       let filesDownloadNotFinished = false;
-      let lastFolderId = 0;
-      let foldersOffset = 0;
       let filesOffset = 0;
 
       while (!filesDownloadNotFinished) {
@@ -94,28 +92,28 @@ export async function downloadSharedFolderUsingFileSystemAPI(
         }
       }
 
-      if( lastFolderId != folderToDownload.folderId ){
-        foldersOffset = 0;
+      let foldersOffset = 0;
+      let completed = false;
+      while (!completed) {
+        const { folders, last } = await getSharedDirectoryFolders({
+          token: sharedFolderMeta.token,
+          directoryId: folderToDownload.folderId,
+          offset: foldersOffset,
+          limit: options.foldersLimit,
+        });
+
+        folders.map(async ({ id, name }) => {
+          pendingFolders.push({
+            folderId: id,
+            name,
+            handle: await folderToDownload.handle.getDirectoryHandle(name, { create: true })
+          });
+        });
+
+        completed = last;
+        foldersOffset += options.foldersLimit;
       }
-      const { folders } = await getSharedDirectoryFolders({
-        token: sharedFolderMeta.token,
-        directoryId: folderToDownload.folderId,
-        offset: foldersOffset,
-        limit: options.foldersLimit,
-      });
-      lastFolderId = folderToDownload.folderId;
 
-      const nextFolders: FolderRef[] = await Promise.all(
-        folders.map(async ({ id, name }) => ({
-          folderId: id,
-          name,
-          handle: await folderToDownload.handle.getDirectoryHandle(name, { create: true })
-        }))
-      );
-
-      pendingFolders.push(...nextFolders);
-
-      foldersOffset += options.foldersLimit;
     } while (pendingFolders.length > 0);
   } catch (err) {
     const castedError = errorService.castError(err);
