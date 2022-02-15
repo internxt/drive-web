@@ -58,16 +58,19 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
   const [info, setInfo] = useState({});
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [errorMSG, setErrorMSG] = useState(Error);
+  const [errorMessage, setErrorMessage] = useState('');
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useAppSelector((state) => state.user.user);
   let body;
 
   useEffect(() => {
-    const getInfo = async () => {
-      await loadInfo();
-    };
-    getInfo();
+    loadInfo().then((sharedFolderInfo) => {
+      setIsLoaded(true);
+      setInfo(sharedFolderInfo);
+    }).catch((err) => {
+      setIsError(true);
+      setErrorMessage(errorService.castError(err).message);
+    });
   }, []);
 
   const getAvatarLetters = () => {
@@ -94,26 +97,20 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
     dispatch(userThunks.logoutThunk());
   };
 
-  const loadInfo = async () => {
+  const loadInfo = (): Promise<ShareTypes.SharedFolderInfo> => {
     // ! iOS Chrome is not supported
     if (navigator.userAgent.match('CriOS')) {
-      setIsError(true);
-      setErrorMSG(new Error('Chrome iOS not supported. Use Safari to proceed'));
+      throw new Error('Chrome iOS not supported. Use Safari to proceed');
     }
 
-    try {
-      const info = await getSharedFolderInfo(token)
-        .catch(() => {
-          setIsError(true);
-          throw new Error(i18n.get('error.linkExpired'));
-        });
-
-      setIsLoaded(true);
-      setInfo(info);
-    } catch (err) {
-      setIsError(true);
-      setErrorMSG(errorService.castError(err));
-    }
+    return getSharedFolderInfo(token)
+      .catch((err) => {
+        /**
+         * TODO: Check that the server returns proper error message instead
+         * of assuming that everything means that the link has expired
+         */
+        throw new Error(i18n.get('error.linkExpired'));
+      });
   };
 
   const updateProgress = (progress: number) => {
@@ -176,7 +173,6 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
   }, [progress]);
 
   if (isError) {
-    console.log(errorMSG.message);
     const ItemIconComponent = iconService.getItemIcon(false, 'default');
 
     body = (
@@ -188,7 +184,7 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
 
         <div className="flex flex-col items-center justify-center">
           <span className="text-2xl font-semibold">Shared files no longer available</span>
-          <span className="text-cool-gray-60">Link expired or files deleted</span>
+          <span className="text-cool-gray-60">{errorMessage}</span>
         </div>
 
         {isAuthenticated && (
