@@ -116,9 +116,8 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
     }
   };
 
-  const updateProgress = (progress) => {
-    const number = Number((progress * 100).toFixed(2));
-    setProgress(number);
+  const updateProgress = (progress: number) => {
+    setProgress(Number((progress * 100).toFixed(2)));
   };
 
   const download = async (): Promise<void> => {
