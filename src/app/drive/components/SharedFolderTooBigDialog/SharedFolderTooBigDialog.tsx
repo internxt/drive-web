@@ -5,7 +5,7 @@ import { uiActions } from 'app/store/slices/ui';
 import './SharedFolderTooBigDialog.scss';
 import i18n from 'app/i18n/services/i18n.service';
 
-const ReachedPlanLimitDialog = (): JSX.Element => {
+const SharedFolderTooBigDialog = (): JSX.Element => {
   const isOpen = useAppSelector((state) => state.ui.isSharedFolderTooBigDialogOpen);
   const dispatch = useAppDispatch();
 
@@ -31,4 +31,4 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
   );
 };
 
-export default ReachedPlanLimitDialog;
+export default SharedFolderTooBigDialog;
