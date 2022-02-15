@@ -32,7 +32,10 @@ export function uploadFile(plainFile: File, cipher: Cipher, url: string): [Promi
   const readable = plainFile.stream().getReader();
   const formattedUrl = new URL(url);
   const eventEmitter = new EventEmitter();
+  const { size: totalBytes } = plainFile;
 
+  let progress = 0;
+  let uploadedBytes = 0;
   let aborted = false;
 
   const uploadFinishedPromise = new Promise<void>((resolve, reject) => {
@@ -68,6 +71,8 @@ export function uploadFile(plainFile: File, cipher: Cipher, url: string): [Promi
         while (!done && !aborted) {
           const status = await readable.read();
 
+          uploadedBytes += (status.value as Uint8Array).length;
+
           if (!status.done) {
             const overloaded = !req.write(cipher.update(status.value));
 
@@ -75,6 +80,10 @@ export function uploadFile(plainFile: File, cipher: Cipher, url: string): [Promi
               await new Promise(res => req.once('drain', res));
             }
           }
+
+          progress = uploadedBytes / totalBytes;
+
+          console.log('Progress: ' + (progress * 100).toFixed(2) + '%');
 
           done = status.done;
         }
