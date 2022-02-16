@@ -16,7 +16,7 @@ interface IUploadParams {
   progressCallback: ProgressCallback;
 }
 
-interface IDownloadParams {
+export interface IDownloadParams {
   fileToken?: string;
   fileEncryptionKey?: Buffer;
   progressCallback: ProgressCallback;

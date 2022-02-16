@@ -171,6 +171,9 @@
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent",
     "noSpaceAvailable": "Your Internxt Drive is full. Get more space upgrading your account.",
+    "sharedFolderTooBig": "Internxt Drive does not support sharing folders of more than 1GB.",
+    "titleSharedFolderTooBig": "Unsupported Action",
+    "workingOnIt": "We are working to bring you a better experience.",
     "noFilePreview": "No file preview available",
     "browserNotSupported": "Browser not supported ({userAgent})",
     "inviteAFriend": "Error sending the invitation to a friend: {message}",
@@ -322,7 +325,8 @@
     "cancel": "Cancel",
     "sendInvitation": "Send invitation",
     "subscribe": "Subscribe",
-    "moreInfo": "More info"
+    "moreInfo": "More info",
+    "dismiss": "Dismiss"
   },
   "drive": {
     "usage": "Usage",

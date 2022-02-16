@@ -2,6 +2,7 @@ import errorService from '../../core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../core/factory/sdk';
 
+
 export function generateShareFileLink(params: ShareTypes.GenerateShareFileLinkPayload): Promise<string> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.createShareFileLink(params)
@@ -16,22 +17,39 @@ export function generateShareFolderLink(
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.createShareFolderLink(params)
     .then(response => {
-      return `${window.location.origin}/${response.token}?c=${code}`;
+      return `${window.location.origin}/folder/${response.token}/${code}`;
     });
 }
 
-export function getShareInfo(token: string): Promise<ShareTypes.GetShareInfoResponse> {
+export function getSharedFileInfo(token: string): Promise<ShareTypes.SharedFileInfo> {
   const shareClient = SdkFactory.getInstance().createShareClient();
-  return shareClient.getShareByToken(token)
+  return shareClient.getSharedFileByToken(token)
     .catch(error => {
       throw errorService.castError(error);
     });
 }
 
+export function getSharedFolderInfo(token: string): Promise<ShareTypes.SharedFolderInfo> {
+  const shareClient = SdkFactory.getInstance().createShareClient();
+  return shareClient.getSharedFolderByToken(token);
+}
+
+export function getSharedDirectoryFolders(payload: ShareTypes.GetSharedDirectoryFoldersPayload):
+  Promise<ShareTypes.SharedDirectoryFolders> {
+  const shareClient = SdkFactory.getInstance().createShareClient();
+  return shareClient.getSharedDirectoryFolders(payload);
+}
+
+export function getSharedDirectoryFiles(payload: ShareTypes.GetSharedDirectoryFilesPayload):
+  Promise<ShareTypes.SharedDirectoryFiles> {
+  const shareClient = SdkFactory.getInstance().createShareClient();
+  return shareClient.getSharedDirectoryFiles(payload);
+}
+
 const shareService = {
   generateShareFileLink,
   generateShareFolderLink,
-  getShareInfo,
+  getSharedFileInfo,
 };
 
 export default shareService;
