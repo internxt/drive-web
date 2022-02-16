@@ -63,7 +63,6 @@ export async function downloadSharedFolderUsingBlobs(
 
         // * Downloads current folder files
         for (const file of files) {
-          console.log('downloading file %s', file.name);
           const displayFilename = items.getItemDisplayName({
             name: file.name,
             type: file.type,
@@ -76,9 +75,7 @@ export async function downloadSharedFolderUsingBlobs(
             },
           });
           const fileBlob = await fileStreamPromise;
-          console.log('file %s downloaded', file.name);
           currentFolderZip?.file(displayFilename, fileBlob);
-          console.log('file %s zipped', file.name);
         }
       }
 
