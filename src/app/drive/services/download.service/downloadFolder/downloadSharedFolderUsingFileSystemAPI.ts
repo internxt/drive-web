@@ -34,19 +34,25 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
   }
 
-  const fsDirectoryHandle = await window.showDirectoryPicker({ startIn: 'downloads' });
+  const progressIntervalId = setInterval(() => {
+    const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
+    const totalProgress = totalDownloadedSize / sharedFolderMeta.size;
 
-  const sharedFolderDirectoryHandle = await fsDirectoryHandle
-    .getDirectoryHandle(sharedFolderMeta.name, { create: true });
-
-  const rootFolder: FolderRef = {
-    name: sharedFolderMeta.name,
-    folderId: sharedFolderMeta.id,
-    handle: sharedFolderDirectoryHandle
-  };
-  const pendingFolders: FolderRef[] = [rootFolder];
+    (options.progressCallback || (() => undefined))(totalProgress);
+  }, 1000);
 
   try {
+    const fsDirectoryHandle = await window.showDirectoryPicker({ startIn: 'downloads' });
+
+    const sharedFolderDirectoryHandle = await fsDirectoryHandle
+      .getDirectoryHandle(sharedFolderMeta.name, { create: true });
+
+    const rootFolder: FolderRef = {
+      name: sharedFolderMeta.name,
+      folderId: sharedFolderMeta.id,
+      handle: sharedFolderDirectoryHandle
+    };
+    const pendingFolders: FolderRef[] = [rootFolder];
     // * Renames files iterating over folders
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
@@ -77,10 +83,6 @@ export async function downloadSharedFolderUsingFileSystemAPI(
             fileToken: bucketToken,
             progressCallback: (fileProgress) => {
               downloadingSize[file.id] = file.size * fileProgress;
-              const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
-              const totalProgress = totalDownloadedSize / sharedFolderMeta.size;
-
-              (options.progressCallback || (() => undefined))(totalProgress);
             },
           });
           const fileBlob = await fileStreamPromise;
@@ -116,8 +118,8 @@ export async function downloadSharedFolderUsingFileSystemAPI(
 
     } while (pendingFolders.length > 0);
   } catch (err) {
-    const castedError = errorService.castError(err);
-
-    throw castedError;
+    throw errorService.castError(err);
+  } finally {
+    clearInterval(progressIntervalId);
   }
 }

@@ -26,6 +26,13 @@ export async function downloadSharedFolderUsingBlobs(
   const network = new Network('NONE', 'NONE', 'NONE');
   const zip = new JSZip();
 
+  const progressIntervalId = setInterval(() => {
+    const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
+    const totalProgress = (totalDownloadedSize / sharedFolderMeta.size) - 0.01;
+
+    (options.progressCallback || (() => undefined))(totalProgress >= 0 ? totalProgress : 0);
+  }, 1000);
+
   const rootFolder: FolderPackage = {
     folderId: sharedFolderMeta.id,
     pack: zip,
@@ -66,10 +73,6 @@ export async function downloadSharedFolderUsingBlobs(
             fileToken: bucketToken,
             progressCallback: (fileProgress) => {
               downloadingSize[file.id] = file.size * fileProgress;
-              const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
-              const totalProgress = totalDownloadedSize / sharedFolderMeta.size;
-
-              (options.progressCallback || (() => undefined))(totalProgress);
             },
           });
           const fileBlob = await fileStreamPromise;
@@ -104,6 +107,8 @@ export async function downloadSharedFolderUsingBlobs(
     } while (pendingFolders.length > 0);
   } catch (err) {
     throw errorService.castError(err);
+  } finally {
+    clearInterval(progressIntervalId);
   }
 
   return zip
@@ -111,6 +116,7 @@ export async function downloadSharedFolderUsingBlobs(
       type: 'blob',
     })
     .then((content) => {
+      options.progressCallback(1);
       fileDownload(content, `${sharedFolderMeta.name}.zip`, 'application/zip');
     });
 }
