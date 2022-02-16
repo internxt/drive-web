@@ -10,7 +10,7 @@ const SharedFolderTooBigDialog = (): JSX.Element => {
   const dispatch = useAppDispatch();
 
   const onClose = (): void => {
-    dispatch(uiActions.setIsShareItemDialogOpen(false));
+    dispatch(uiActions.setIsSharedFolderTooBigDialogOpen(false));
   };
 
   return (
