@@ -1,7 +1,7 @@
 import { items } from '@internxt/lib';
 
 import { MouseEvent, ChangeEvent, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
-import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../../drive/types';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../types';
 import dateService from '../../../../../core/services/date.service';
 import iconService from '../../../../services/icon.service';
 import sizeService from '../../../../../drive/services/size.service';
@@ -14,6 +14,7 @@ import { SdkFactory } from '../../../../../core/factory/sdk';
 
 interface DriveItemActions {
   isEditingName: boolean;
+  isRequestingFolderSize: boolean;
   dirtyName: string;
   nameInputRef: RefObject<HTMLInputElement>;
   onRenameButtonClicked: (e: MouseEvent) => void;
@@ -34,6 +35,7 @@ interface DriveItemActions {
 
 const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const [isEditingName, setIsEditingName] = useState(false);
+  const [isRequestingFolderSize, setIsRequestingFolderSize] = useState(false);
   const [dirtyName, setDirtyName] = useState('');
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
@@ -94,7 +96,9 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     }
 
     const maxAcceptableSize = 1024 * 1024 * 1024; // 1GB
+    setIsRequestingFolderSize(true);
     const folderSize = await getFolderSize(item.id);
+    setIsRequestingFolderSize(false);
 
     if (folderSize <= maxAcceptableSize) {
       return proceed();
@@ -173,6 +177,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   return {
     isEditingName,
+    isRequestingFolderSize,
     dirtyName,
     nameInputRef,
     onRenameButtonClicked,
