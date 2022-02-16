@@ -11,6 +11,7 @@ import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
 interface FileDropdownActionsProps {
   title?: string;
   hiddenActions: DriveItemAction[];
+  isRequestingFolderSize: boolean;
   onRenameButtonClicked: (e: MouseEvent) => void;
   onDownloadButtonClicked: (e: MouseEvent) => void;
   onShareButtonClicked: (e: MouseEvent) => void;
@@ -73,7 +74,7 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
           </Dropdown.Item>
         ) : null}
         {!hiddenActions.includes(DriveItemAction.Share) ? (
-          <Dropdown.Item id="share" onClick={this.onShareButtonClicked}>
+          <Dropdown.Item id="share" onClick={this.onShareButtonClicked} disabled={this.props.isRequestingFolderSize}>
             <UilShareAlt className="text-blue-60 h-5 mr-1" />
             <span>Share</span>
           </Dropdown.Item>

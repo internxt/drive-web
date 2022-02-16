@@ -1,7 +1,6 @@
 import UilClipboardAlt from '@iconscout/react-unicons/icons/uil-clipboard-alt';
 import { useState } from 'react';
 import { useEffect } from 'react';
-
 import { generateFileKey, Network } from 'app/drive/services/network';
 import { DriveItemData } from 'app/drive/types';
 import { uiActions } from 'app/store/slices/ui';
@@ -13,13 +12,14 @@ import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytic
 import { userThunks } from 'app/store/slices/user';
 import i18n from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { items } from '@internxt/lib';
+import { items, aes } from '@internxt/lib';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import errorService from 'app/core/services/error.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
+import crypto from 'crypto';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
@@ -64,23 +64,34 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         return;
       }
 
+      let link;
       const network = new Network(email, userId, mnemonic);
-      const { index } = await network.getFileInfo(bucket, fileId);
-      const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
-      const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
 
-      const payload: ShareTypes.GenerateShareLinkPayload = {
-        fileId,
-        bucket,
-        fileToken,
-        isFolder: false,
-        views,
-        encryptionKey: fileEncryptionKey.toString('hex'),
-      };
-
-      const link = await shareService.generateShareLink(payload);
-
-
+      if (item.isFolder) {
+        const code = crypto.randomBytes(32).toString('hex');
+        const encryptedMnemonic = aes.encrypt(mnemonic, code);
+        const bucketToken = await network.createFileToken(bucket, '', 'PULL');
+        const payload: ShareTypes.GenerateShareFolderLinkPayload = {
+          folderId: item.id,
+          bucket: bucket,
+          bucketToken: bucketToken,
+          views: views,
+          encryptedMnemonic: encryptedMnemonic
+        };
+        link = await shareService.generateShareFolderLink(payload, code);
+      } else {
+        const { index } = await network.getFileInfo(bucket, fileId);
+        const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
+        const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
+        const payload: ShareTypes.GenerateShareFileLinkPayload = {
+          fileId,
+          bucket,
+          fileToken,
+          views,
+          encryptionKey: fileEncryptionKey.toString('hex'),
+        };
+        link = await shareService.generateShareFileLink(payload);
+      }
       dispatch(referralsThunks.refreshUserReferrals());
 
       window.analytics.track('file-share');

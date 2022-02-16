@@ -51,7 +51,7 @@ export const icons = {
   LightFolder,
 };
 
-export const getItemIcon = (isFolder: boolean, itemExtension: string): FunctionComponent<SVGProps<SVGSVGElement>> => {
+export const getItemIcon = (isFolder: boolean, itemExtension?: string): FunctionComponent<SVGProps<SVGSVGElement>> => {
   let groupId: FileExtensionGroup = FileExtensionGroup.Default;
 
   if (itemExtension) {

@@ -12,6 +12,7 @@ import { AppView } from '../../types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
 import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemInfoMenu';
+import SharedFolderTooBigDialog from '../../../drive/components/SharedFolderTooBigDialog/SharedFolderTooBigDialog';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
@@ -26,6 +27,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const toggleIsSidenavCollapsed: () => void = () => dispatch(uiActions.setIsSidenavCollapsed(!isSidenavCollapsed));
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
+  const isSharedFolderTooBigDialogOpen = useAppSelector((state) => state.ui.isSharedFolderTooBigDialogOpen);
   const isInviteMemberDialogOpen = useAppSelector((state) => state.ui.isInviteMemberDialogOpen);
   const isGuestInviteDialogOpen = useAppSelector((state) => state.ui.isGuestInviteDialogOpen);
   const isDriveItemInfoMenuOpen = useAppSelector((state) => state.ui.isDriveItemInfoMenuOpen);
@@ -43,6 +45,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
     <div className="h-auto min-h-full flex flex-col">
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog item={itemToShare} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
+      {isSharedFolderTooBigDialogOpen && <SharedFolderTooBigDialog />}
       {isInviteMemberDialogOpen && <InviteTeamMemberDialog />}
       {isGuestInviteDialogOpen && <GuestDialog />}
 
