@@ -93,7 +93,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
       return proceed();
     }
 
-    const maxAcceptableSize = 1024 * 1024 * 1000; // 1GB
+    const maxAcceptableSize = 1024 * 1024 * 1024; // 1GB
     const folderSize = await getFolderSize(item.id);
 
     if (folderSize <= maxAcceptableSize) {
