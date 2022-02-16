@@ -355,6 +355,7 @@ async function getBodyPage(segmentName?: string) {
         medium: urlParams.get('utm_medium'),
         term: urlParams.get('utm_term'),
         content: urlParams.get('utm_content'),
+        name: urlParams.get('utm_name'),
         irclickid: urlParams.get('irclickid')
       },
       userAgent: navigator.userAgent,
