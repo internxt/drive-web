@@ -121,5 +121,6 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     throw errorService.castError(err);
   } finally {
     clearInterval(progressIntervalId);
+    options.progressCallback(1);
   }
 }
