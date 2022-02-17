@@ -38,12 +38,17 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
     file: props.file,
     setIsLoading: (value: boolean) => dispatch(fileViewerActions.setIsLoading(value))
   };
+  const getFileName = () => {
+    let extension = '';
+    if (props.file && props.file.type !== null) { extension = `.${props.file.type}`; }
+    return `${props.file && props.file.name}${extension}`;
+  };
 
   let isTypeAllowed = false;
   let fileExtensionGroup: number | null = null;
 
   for (const [groupKey, extensions] of Object.entries(extensionsList)) {
-    isTypeAllowed = extensions.includes(props.file?.type.toLowerCase() || '');
+    isTypeAllowed = extensions.includes(props.file && props.file.type !== null ? props.file.type.toLowerCase() : '');
 
     if (isTypeAllowed) {
       fileExtensionGroup = FileExtensionGroup[groupKey];
@@ -118,7 +123,7 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
               </button>
 
               <Dialog.Title className="truncate">
-                {props.file && `${props.file.name}.${props.file.type}`}
+                {getFileName()}
               </Dialog.Title>
               
             </div>
