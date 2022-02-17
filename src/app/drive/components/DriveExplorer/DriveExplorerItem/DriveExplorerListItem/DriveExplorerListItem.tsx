@@ -13,7 +13,7 @@ import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
 import { storageActions } from '../../../../../store/slices/storage';
 import iconService from '../../../../services/icon.service';
-import { DriveExplorerItemProps } from '..';
+import { DriveExplorerItemProps, DriveItemAction } from '..';
 import { useAppDispatch } from '../../../../../store/hooks';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
@@ -171,7 +171,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <DriveItemDropdownActions
-              hiddenActions={[]}
+              hiddenActions={item.isFolder ? [DriveItemAction.Share] : []}
               isRequestingFolderSize={isRequestingFolderSize}
               onRenameButtonClicked={onRenameButtonClicked}
               onDownloadButtonClicked={onDownloadButtonClicked}
