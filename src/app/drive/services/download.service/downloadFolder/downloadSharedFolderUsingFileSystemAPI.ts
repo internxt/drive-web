@@ -2,6 +2,7 @@ import { items } from '@internxt/lib';
 import errorService from 'app/core/services/error.service';
 import i18n from 'app/i18n/services/i18n.service';
 import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
+import { downloadFileToFileSystem } from '../../download';
 import { Network } from '../../network';
 
 interface FolderRef {
@@ -16,14 +17,13 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     id: number;
     token: string;
     code: string;
-    size: number;
   },
   bucket: string,
   bucketToken: string,
   options: {
     foldersLimit: number;
     filesLimit: number;
-    progressCallback: (progress: number) => void;
+    progressCallback: (downloadedBytes: number) => void;
   },
 ): Promise<void> {
   const downloadingSize: Record<number, number> = {};
@@ -34,11 +34,12 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
   }
 
-  const progressIntervalId = setInterval(() => {
-    const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
-    const totalProgress = totalDownloadedSize / sharedFolderMeta.size;
+  const getTotalDownloadedBytes = () => {
+    return Object.values(downloadingSize).reduce((t, x) => t + x, 0);
+  };
 
-    (options.progressCallback || (() => undefined))(totalProgress);
+  const progressIntervalId = setInterval(() => {
+    (options.progressCallback || (() => undefined))(getTotalDownloadedBytes());
   }, 1000);
 
   try {
@@ -78,19 +79,20 @@ export async function downloadSharedFolderUsingFileSystemAPI(
             name: file.name,
             type: file.type,
           });
-          const [fileStreamPromise] = network.downloadFile(bucket, file.id, {
-            fileEncryptionKey: Buffer.from(file.encryptionKey, 'hex'),
-            fileToken: bucketToken,
-            progressCallback: (fileProgress) => {
-              downloadingSize[file.id] = file.size * fileProgress;
-            },
-          });
-          const fileBlob = await fileStreamPromise;
+
           const downloadedFileHandle = await folderToDownload.handle.getFileHandle(displayFilename, { create: true });
           const downloadedFileWritable = await downloadedFileHandle.createWritable({ keepExistingData: false });
 
-          await downloadedFileWritable.write(fileBlob);
-          await downloadedFileWritable.close();
+
+          const [fileDownloaded, fileDownloadAbortable] = downloadFileToFileSystem({
+            bucketId: bucket,
+            fileId: file.id,
+            destination: downloadedFileWritable,
+            encryptionKey: Buffer.from(file.encryptionKey, 'hex'),
+            token: bucketToken
+          });
+
+          await fileDownloaded;
         }
       }
 
@@ -121,6 +123,6 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     throw errorService.castError(err);
   } finally {
     clearInterval(progressIntervalId);
-    options.progressCallback(1);
+    options.progressCallback(getTotalDownloadedBytes());
   }
 }
