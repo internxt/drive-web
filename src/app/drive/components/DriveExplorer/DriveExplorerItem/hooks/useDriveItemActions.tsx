@@ -10,11 +10,9 @@ import { storageActions } from '../../../../../store/slices/storage';
 import storageSelectors from '../../../../../store/slices/storage/storage.selectors';
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
-import { SdkFactory } from '../../../../../core/factory/sdk';
 
 interface DriveItemActions {
   isEditingName: boolean;
-  isRequestingFolderSize: boolean;
   dirtyName: string;
   nameInputRef: RefObject<HTMLInputElement>;
   onRenameButtonClicked: (e: MouseEvent) => void;
@@ -35,7 +33,6 @@ interface DriveItemActions {
 
 const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const [isEditingName, setIsEditingName] = useState(false);
-  const [isRequestingFolderSize, setIsRequestingFolderSize] = useState(false);
   const [dirtyName, setDirtyName] = useState('');
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
@@ -78,38 +75,20 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
       confirmNameChange();
     }
   };
+
   const onDownloadButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
 
     dispatch(storageThunks.downloadItemsThunk([item]));
   };
+
   const onShareButtonClicked = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
 
-    const proceed = () => {
-      dispatch(storageActions.setItemToShare(item));
-      dispatch(uiActions.setIsShareItemDialogOpen(true));
-    };
-
-    if (!item.isFolder) {
-      return proceed();
-    }
-
-    const maxAcceptableSize = 1024 * 1024 * 1024; // 1GB
-    setIsRequestingFolderSize(true);
-    const folderSize = await getFolderSize(item.id);
-    setIsRequestingFolderSize(false);
-
-    if (folderSize <= maxAcceptableSize) {
-      return proceed();
-    }
-
-    dispatch(uiActions.setIsSharedFolderTooBigDialogOpen(true));
+    dispatch(storageActions.setItemToShare(item));
+    dispatch(uiActions.setIsShareItemDialogOpen(true));
   };
-  const getFolderSize = (folderId: number) => {
-    const storageClient = SdkFactory.getInstance().createStorageClient();
-    return storageClient.getFolderSize(folderId);
-  };
+
   const onInfoButtonClicked = (e: React.MouseEvent): void => {
     const itemDisplayName = items.getItemDisplayName(item);
     const itemFullPath = `${currentFolderPath}${itemDisplayName}`;
@@ -177,7 +156,6 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   return {
     isEditingName,
-    isRequestingFolderSize,
     dirtyName,
     nameInputRef,
     onRenameButtonClicked,
