@@ -100,10 +100,17 @@ export async function downloadSharedFolderUsingReadableStream(
 
       while (!ended) {
         const { value, done } = await reader.read();
-        downloadedBytes += value.length;
-        controller.enqueue(value);
-        ended = done;
+
+        if (!done) {
+          downloadedBytes += value.length;
+          controller.enqueue(value);
+        } else {
+          ended = true;
+        }
       }
+
+      await reader.closed;
+      controller.close();
     }
   });
 
