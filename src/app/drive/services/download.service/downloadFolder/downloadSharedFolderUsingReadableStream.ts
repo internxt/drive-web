@@ -155,6 +155,7 @@ export async function downloadSharedFolderUsingReadableStream(
             downloadables[folderId] = { name, stream: undefined };
             onReadyEmitter.once('task-processed', onFolderDownloaded);
             onReadyEmitter.emit('folder-ready', folderId);
+            pendingFolders.push({ folderId, name });
           }
         }
       );
