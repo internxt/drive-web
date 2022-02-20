@@ -35,14 +35,10 @@ export async function downloadSharedFolderUsingReadableStream(
     progressCallback: (downloadedBytes: number) => void;
   },
 ): Promise<void> {
-  const downloads: { [key: SharedDirectoryFolder['id']]: number } = {};
-
-  const getTotalDownloadedBytes = () => {
-    return Object.values(downloads).reduce((t, x) => t + x, 0);
-  };
+  let downloadedBytes = 0;
 
   const progressIntervalId = setInterval(() => {
-    (options.progressCallback || (() => undefined))(getTotalDownloadedBytes());
+    options.progressCallback(downloadedBytes);
   }, 1000);
 
   const rootFolder: FolderRef = {
@@ -97,7 +93,21 @@ export async function downloadSharedFolderUsingReadableStream(
     },
   });
 
-  const zipDownloadPromise = readableZipStream.pipeTo(createWriteStream(rootFolder.name + '.zip'));
+  const passThrough = new ReadableStream({
+    async start(controller) {
+      let ended = false;
+      const reader = readableZipStream.getReader();
+
+      while (!ended) {
+        const { value, done } = await reader.read();
+        downloadedBytes += value.length;
+        controller.enqueue(value);
+        ended = done;
+      }
+    }
+  });
+
+  const zipDownloadPromise = passThrough.pipeTo(createWriteStream(rootFolder.name + '.zip'));
 
   try {
     const pendingFolders: FolderRef[] = [rootFolder];
@@ -150,7 +160,7 @@ export async function downloadSharedFolderUsingReadableStream(
     throw errorService.castError(err);
   } finally {
     clearInterval(progressIntervalId);
-    options.progressCallback(getTotalDownloadedBytes());
+    options.progressCallback(downloadedBytes);
   }
 }
 
