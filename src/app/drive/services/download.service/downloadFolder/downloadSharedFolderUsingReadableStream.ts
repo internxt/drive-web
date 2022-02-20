@@ -141,7 +141,9 @@ export async function downloadSharedFolderUsingReadableStream(
         bucketToken,
         {
           onFileRetrieved: ({ name, id, stream }, onFileDownloaded) => {
-            downloadables[id] = { name, stream };
+            const fullPath = folderToDownload.name + '/' + name;
+
+            downloadables[id] = { name: fullPath, stream };
             onReadyEmitter.once('task-processed', onFileDownloaded);
             onReadyEmitter.emit('file-ready', id);
           }
@@ -152,10 +154,12 @@ export async function downloadSharedFolderUsingReadableStream(
         sharedDirectoryFoldersIterator,
         {
           onFolderRetrieved: ({ name, folderId }: FolderRef, onFolderDownloaded) => {
-            downloadables[folderId] = { name, stream: undefined };
+            const fullPath = folderToDownload.name + '/' + name;
+
+            downloadables[folderId] = { name: fullPath, stream: undefined };
             onReadyEmitter.once('task-processed', onFolderDownloaded);
             onReadyEmitter.emit('folder-ready', folderId);
-            pendingFolders.push({ folderId, name });
+            pendingFolders.push({ folderId, name: fullPath });
           }
         }
       );
