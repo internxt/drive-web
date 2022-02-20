@@ -114,9 +114,13 @@ export async function downloadSharedFolderUsingReadableStream(
     }
   });
 
-  const zipDownloadPromise = passThrough.pipeTo(createWriteStream(rootFolder.name + '.zip'));
+  const abortable = new AbortController();
+  let error: Error = new Error();
 
   try {
+    const zipDownloadPromise = passThrough.pipeTo(createWriteStream(rootFolder.name + '.zip'), {
+      signal: abortable.signal
+    });
     const pendingFolders: FolderRef[] = [rootFolder];
 
     do {
@@ -148,7 +152,10 @@ export async function downloadSharedFolderUsingReadableStream(
             onReadyEmitter.emit('file-ready', id);
           }
         }
-      );
+      ).catch((err) => {
+        error = err;
+        abortable.abort();
+      });
 
       await downloadFolders(
         sharedDirectoryFoldersIterator,
@@ -162,17 +169,20 @@ export async function downloadSharedFolderUsingReadableStream(
             pendingFolders.push({ folderId, name: fullPath });
           }
         }
-      );
+      ).catch((err) => {
+        error = err;
+        abortable.abort();
+      });
     } while (pendingFolders.length > 0);
 
     onReadyEmitter.emit('end');
 
     await zipDownloadPromise;
-  } catch (err) {
-    throw errorService.castError(err);
+    options.progressCallback(downloadedBytes);
+  } catch {
+    throw errorService.castError(error);
   } finally {
     clearInterval(progressIntervalId);
-    options.progressCallback(downloadedBytes);
   }
 }
 
