@@ -1,9 +1,8 @@
-import { items } from '@internxt/lib';
-import { SharedDirectoryFile, SharedDirectoryFolder } from '@internxt/sdk/dist/drive/share/types';
-import errorService from 'app/core/services/error.service';
 import { EventEmitter } from 'events';
 import { createWriteStream } from 'streamsaver';
-import { downloadFile } from '../../download';
+
+import errorService from 'app/core/services/error.service';
+import { DownloadableFile, DownloadableFolder, FolderLevel } from './downloader';
 import { Iterator, SharedDirectoryFolderIterator, SharedFolderFilesIterator } from './utils';
 import createZipReadable from './zipStream';
 
@@ -46,7 +45,7 @@ export async function downloadSharedFolderUsingReadableStream(
     folderId: sharedFolderMeta.id,
   };
 
-  const onReadyEmitter = new EventEmitter();
+  const eventBus = new EventEmitter();
   const downloadables: Downloadables = {};
 
   const readableZipStream = createZipReadable({
@@ -59,22 +58,14 @@ export async function downloadSharedFolderUsingReadableStream(
       close: () => void
     }) {
 
-      onReadyEmitter.emit('task-processed');
+      eventBus.emit('task-processed');
 
       return new Promise((resolve: (fileOrFolderId: number | null, type: 'file' | 'folder') => void, reject) => {
-        onReadyEmitter
-          .once('file-ready', (fileId: number) => {
-            resolve(fileId, 'file');
-          })
-          .once('folder-ready', (folderId: number) => {
-            resolve(folderId, 'folder');
-          })
-          .once('end', () => {
-            resolve(null, 'file');
-          })
-          .once('error', (err) => {
-            reject(err);
-          });
+        eventBus
+          .once('file-ready', (fileId: number) => resolve(fileId, 'file'))
+          .once('folder-ready', (folderId: number) => resolve(folderId, 'folder'))
+          .once('end', () => resolve(null, 'file'))
+          .once('error', reject);
       }).then((fileOrFolderId) => {
         if (!fileOrFolderId) {
           return ctrl.close();
@@ -118,64 +109,58 @@ export async function downloadSharedFolderUsingReadableStream(
   let error: Error = new Error();
 
   try {
-    const zipDownloadPromise = passThrough.pipeTo(createWriteStream(rootFolder.name + '.zip'), {
-      signal: abortable.signal
-    });
+    const zipDownloadPromise = passThrough.pipeTo(
+      createWriteStream(rootFolder.name + '.zip'),
+      { signal: abortable.signal }
+    );
     const pendingFolders: FolderRef[] = [rootFolder];
 
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
 
-      const sharedDirectoryFilesIterator: Iterator<SharedDirectoryFile> =
+      const sharedDirectoryFilesIterator: Iterator<DownloadableFile> =
         new SharedFolderFilesIterator({
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
           code: sharedFolderMeta.code
         }, options.filesLimit);
 
-      const sharedDirectoryFoldersIterator: Iterator<SharedDirectoryFolder> =
+      const sharedDirectoryFoldersIterator: Iterator<DownloadableFolder> =
         new SharedDirectoryFolderIterator({
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
         }, options.foldersLimit);
 
-      await downloadFiles(
+      const folderLevel = new FolderLevel(
+        sharedDirectoryFoldersIterator,
         sharedDirectoryFilesIterator,
         bucket,
-        bucketToken,
-        {
-          onFileRetrieved: ({ name, id, stream }, onFileDownloaded) => {
-            const fullPath = folderToDownload.name + '/' + name;
+        bucketToken
+      );
 
-            downloadables[id] = { name: fullPath, stream };
-            onReadyEmitter.once('task-processed', onFileDownloaded);
-            onReadyEmitter.emit('file-ready', id);
-          }
+      await folderLevel.download({
+        onFileRetrieved: ({ name, id, stream }, onFileDownloaded) => {
+          const fullPath = folderToDownload.name + '/' + name;
+
+          downloadables[id] = { name: fullPath, stream };
+          eventBus.once('task-processed', onFileDownloaded);
+          eventBus.emit('file-ready', id);
+        },
+        onFolderRetrieved: ({ name, id }, onFolderDownloaded) => {
+          const fullPath = folderToDownload.name + '/' + name;
+
+          downloadables[id] = { name: fullPath, stream: undefined };
+          eventBus.once('task-processed', onFolderDownloaded);
+          eventBus.emit('folder-ready', id);
+          pendingFolders.push({ folderId: id, name: fullPath });
         }
-      ).catch((err) => {
-        error = err;
-        abortable.abort();
-      });
-
-      await downloadFolders(
-        sharedDirectoryFoldersIterator,
-        {
-          onFolderRetrieved: ({ name, folderId }: FolderRef, onFolderDownloaded) => {
-            const fullPath = folderToDownload.name + '/' + name;
-
-            downloadables[folderId] = { name: fullPath, stream: undefined };
-            onReadyEmitter.once('task-processed', onFolderDownloaded);
-            onReadyEmitter.emit('folder-ready', folderId);
-            pendingFolders.push({ folderId, name: fullPath });
-          }
-        }
-      ).catch((err) => {
+      }).catch((err) => {
         error = err;
         abortable.abort();
       });
     } while (pendingFolders.length > 0);
 
-    onReadyEmitter.emit('end');
+    eventBus.emit('end');
 
     await zipDownloadPromise;
     options.progressCallback(downloadedBytes);
@@ -184,104 +169,4 @@ export async function downloadSharedFolderUsingReadableStream(
   } finally {
     clearInterval(progressIntervalId);
   }
-}
-
-async function downloadFolders(
-  iterator: Iterator<SharedDirectoryFolder>,
-  opts: {
-    onFolderRetrieved: (folders: FolderRef, onFolderCreated: (err: Error) => void) => void
-  }
-): Promise<void> {
-  const { done, value } = await iterator.next();
-  let allFoldersDownloaded = done;
-  let folders: SharedDirectoryFolder[] = value;
-
-  do {
-    const moreFolders = iterator.next();
-
-    for (const folder of folders) {
-      await new Promise((resolve, reject) => {
-        opts.onFolderRetrieved({
-          folderId: folder.id,
-          name: folder.name
-        }, (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(null);
-          }
-        });
-      });
-    }
-
-    const { done, value } = await moreFolders;
-
-    folders = value;
-    allFoldersDownloaded = done;
-  } while (!allFoldersDownloaded);
-}
-
-async function downloadFiles(
-  iterator: Iterator<SharedDirectoryFile>,
-  bucket: string,
-  token: string,
-  opts: {
-    onFileRetrieved: (
-      file: {
-        id: string,
-        name: string,
-        stream: ReadableStream<any>
-      },
-      onFileDownloaded: (err: Error | null) => void
-    ) => void
-  }
-): Promise<void> {
-  const downloads: { [key: SharedDirectoryFile['id']]: number } = {};
-
-  const { value, done } = await iterator.next();
-  let allFilesDownloaded = done;
-
-  let files: SharedDirectoryFile[] = value;
-
-
-  do {
-    /* Load next chunk while downloading files */
-    const nextChunkPromise = iterator.next();
-
-    for (const file of files) {
-      const displayFilename = items.getItemDisplayName({
-        name: file.name,
-        type: file.type,
-      });
-
-      downloads[file.id] = 0;
-
-      const [readablePromise] = downloadFile({
-        bucketId: bucket,
-        fileId: file.id,
-        encryptionKey: Buffer.from(file.encryptionKey, 'hex'),
-        token
-      });
-
-      const readable = await readablePromise;
-
-      await new Promise((resolve, reject) => {
-        opts.onFileRetrieved({
-          id: file.id,
-          name: displayFilename,
-          stream: readable
-        }, (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(null);
-          }
-        });
-      });
-    }
-
-    const { done, value } = await nextChunkPromise;
-    allFilesDownloaded = done;
-    files = value;
-  } while (!allFilesDownloaded);
 }

@@ -131,7 +131,7 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
         const directoryPickerIsSupported =
           window.showDirectoryPicker as unknown as Promise<FileSystemDirectoryHandle> | undefined;
 
-        let downloadFolder;
+        let downloadFolder: (...args: any) => Promise<void>;
 
         if (directoryPickerIsSupported) {
           downloadFolder = downloadSharedFolderUsingFileSystemAPI;
@@ -159,8 +159,10 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
               }
             }
           }
-        );
-
+        ).catch((err) => {
+          setErrorMessage(err.message);
+          setIsError(true);
+        });
       }
     }
   };
