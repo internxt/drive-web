@@ -1,9 +1,9 @@
 import { items } from '@internxt/lib';
+import { SharedDirectoryFile, SharedDirectoryFolder } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'app/core/services/error.service';
 import i18n from 'app/i18n/services/i18n.service';
-import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
 import { downloadFileToFileSystem } from '../../download';
-import { Network } from '../../network';
+import { Iterator, SharedDirectoryFolderIterator, SharedFolderFilesIterator } from './utils';
 
 interface FolderRef {
   name: string
@@ -26,8 +26,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     progressCallback: (downloadedBytes: number) => void;
   },
 ): Promise<void> {
-  const downloadingSize: Record<number, number> = {};
-  const network = new Network('NONE', 'NONE', 'NONE');
+  const downloads: { [key: SharedDirectoryFolder['id']]: number } = {};
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
@@ -35,7 +34,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
   }
 
   const getTotalDownloadedBytes = () => {
-    return Object.values(downloadingSize).reduce((t, x) => t + x, 0);
+    return Object.values(downloads).reduce((t, x) => t + x, 0);
   };
 
   const progressIntervalId = setInterval(() => {
@@ -54,70 +53,46 @@ export async function downloadSharedFolderUsingFileSystemAPI(
       handle: sharedFolderDirectoryHandle
     };
     const pendingFolders: FolderRef[] = [rootFolder];
-    // * Renames files iterating over folders
+
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
 
-      let filesDownloadNotFinished = false;
-      let filesOffset = 0;
-
-      while (!filesDownloadNotFinished) {
-        const { files, last } = await getSharedDirectoryFiles({
+      const sharedDirectoryFilesIterator: Iterator<SharedDirectoryFile> =
+        new SharedFolderFilesIterator({
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
-          offset: filesOffset,
-          limit: options.foldersLimit,
           code: sharedFolderMeta.code
-        });
+        }, options.filesLimit);
 
-        filesOffset += options.filesLimit;
-        filesDownloadNotFinished = last;
-
-        // * Downloads current folder files
-        for (const file of files) {
-          const displayFilename = items.getItemDisplayName({
-            name: file.name,
-            type: file.type,
-          });
-
-          const downloadedFileHandle = await folderToDownload.handle.getFileHandle(displayFilename, { create: true });
-          const downloadedFileWritable = await downloadedFileHandle.createWritable({ keepExistingData: false });
-
-
-          const [fileDownloaded, fileDownloadAbortable] = downloadFileToFileSystem({
-            bucketId: bucket,
-            fileId: file.id,
-            destination: downloadedFileWritable,
-            encryptionKey: Buffer.from(file.encryptionKey, 'hex'),
-            token: bucketToken
-          });
-
-          await fileDownloaded;
-        }
-      }
-
-      let foldersOffset = 0;
-      let completed = false;
-      while (!completed) {
-        const { folders, last } = await getSharedDirectoryFolders({
+      const sharedDirectoryFoldersIterator: Iterator<SharedDirectoryFolder> =
+        new SharedDirectoryFolderIterator({
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
-          offset: foldersOffset,
-          limit: options.foldersLimit,
-        });
+        }, options.foldersLimit);
 
-        folders.map(async ({ id, name }) => {
-          pendingFolders.push({
-            folderId: id,
-            name,
-            handle: await folderToDownload.handle.getDirectoryHandle(name, { create: true })
-          });
-        });
+      await downloadFiles(
+        folderToDownload.handle,
+        sharedDirectoryFilesIterator,
+        bucket,
+        bucketToken,
+        {
+          onBytesDownloaded: (bytesDownloaded: number) => {
+            downloads[folderToDownload.folderId] = bytesDownloaded;
+          }
+        }
+      );
 
-        completed = last;
-        foldersOffset += options.foldersLimit;
-      }
-
+      await downloadFolders(
+        folderToDownload.handle,
+        sharedDirectoryFoldersIterator,
+        {
+          onFoldersRetrieved: (folders: FolderRef[]) => {
+            folders.map(folder => {
+              pendingFolders.push(folder);
+            });
+          }
+        }
+      );
     } while (pendingFolders.length > 0);
   } catch (err) {
     throw errorService.castError(err);
@@ -125,4 +100,99 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     clearInterval(progressIntervalId);
     options.progressCallback(getTotalDownloadedBytes());
   }
+}
+
+async function downloadFolders(
+  directory: FileSystemDirectoryHandle,
+  iterator: Iterator<SharedDirectoryFolder>,
+  opts: {
+    onFoldersRetrieved: (folders: FolderRef[]) => void
+  }
+): Promise<void> {
+  const { done, value } = await iterator.next();
+  let allFoldersDownloaded = done;
+  let folders: SharedDirectoryFolder[] = value;
+
+  do {
+    const moreFolders = iterator.next();
+
+    const foldersRefs: FolderRef[] = await Promise.all(folders.map(async ({ id, name }) => {
+      return {
+        folderId: id,
+        name,
+        handle: await directory.getDirectoryHandle(name, { create: true })
+      };
+    }));
+
+    opts.onFoldersRetrieved(foldersRefs);
+
+    const { done, value } = await moreFolders;
+
+    folders = value;
+    allFoldersDownloaded = done;
+  } while (!allFoldersDownloaded);
+}
+
+async function downloadFiles(
+  directory: FileSystemDirectoryHandle,
+  iterator: Iterator<SharedDirectoryFile>,
+  bucket: string,
+  token: string,
+  opts: {
+    onBytesDownloaded?: (bytesDownloaded: number) => void
+  }
+): Promise<void> {
+  const downloads: { [key: SharedDirectoryFile['id']]: number } = {};
+
+  const getTotalDownloadedBytes = () => {
+    return Object.values(downloads).reduce((t, x) => t + x, 0);
+  };
+
+  const { value, done } = await iterator.next();
+  let allFilesDownloaded = done;
+
+  let files: SharedDirectoryFile[] = value;
+
+
+  do {
+    /* Load next chunk while downloading files */
+    const nextChunkPromise = iterator.next();
+
+    for (const file of files) {
+      const displayFilename = items.getItemDisplayName({
+        name: file.name,
+        type: file.type,
+      });
+
+      const downloadedFileHandle = await directory.getFileHandle(displayFilename, { create: true });
+      const downloadedFileWritable = await downloadedFileHandle.createWritable({ keepExistingData: false });
+
+      downloads[file.id] = 0;
+
+      const progressStream = new TransformStream({
+        transform(chunk, controller) {
+          downloads[file.id] += chunk.length;
+          opts.onBytesDownloaded && opts.onBytesDownloaded(getTotalDownloadedBytes());
+
+          controller.enqueue(chunk);
+        }
+      });
+
+      progressStream.readable.pipeTo(downloadedFileWritable);
+
+      const [fileDownloaded] = downloadFileToFileSystem({
+        bucketId: bucket,
+        fileId: file.id,
+        destination: progressStream.writable,
+        encryptionKey: Buffer.from(file.encryptionKey, 'hex'),
+        token
+      });
+
+      await fileDownloaded;
+    }
+
+    const { done, value } = await nextChunkPromise;
+    allFilesDownloaded = done;
+    files = value;
+  } while (!allFilesDownloaded);
 }
