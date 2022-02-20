@@ -31,7 +31,8 @@ import {
 } from '../../../drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { SharedFolderInfo } from '@internxt/sdk/dist/drive/share/types';
-
+// eslint-disable-next-line max-len
+import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -135,7 +136,7 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
         if (directoryPickerIsSupported) {
           downloadFolder = downloadSharedFolderUsingFileSystemAPI;
         } else {
-          downloadFolder = downloadSharedFolderUsingBlobs;
+          downloadFolder = downloadSharedFolderUsingReadableStream;
         }
 
         downloadFolder({
