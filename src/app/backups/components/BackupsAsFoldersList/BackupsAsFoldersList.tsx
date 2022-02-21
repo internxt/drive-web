@@ -66,7 +66,7 @@ export default function BackupsAsFoldersList({
   const isEmpty = currentItems.length === 0;
 
   return (
-    <div className={`${className}`}>
+    <div className={`${className} flex flex-col flex-grow min-h-0`}>
       {(!isEmpty || isLoading) && (
         <div
           className="files-list font-semibold flex border-b\
@@ -80,24 +80,26 @@ export default function BackupsAsFoldersList({
           <div className="w-1/12 flex items-center">Actions</div>
         </div>
       )}
-      {!isLoading &&
-        currentItems.map((item) => (
-          <BackupsAsFoldersListItem
-            key={`${item.isFolder ? 'folder' : 'file'}-${item.id}`}
-            item={item}
-            onDeleteClicked={onDelete}
-            onDownloadClicked={onDownload}
-            onDoubleClick={onDoubleClick}
+      <div className="flex-grow overflow-y-auto">
+        {!isLoading &&
+          currentItems.map((item) => (
+            <BackupsAsFoldersListItem
+              key={`${item.isFolder ? 'folder' : 'file'}-${item.id}`}
+              item={item}
+              onDeleteClicked={onDelete}
+              onDownloadClicked={onDownload}
+              onDoubleClick={onDoubleClick}
+            />
+          ))}
+        {currentItems.length === 0 && !isLoading && (
+          <DriveExplorerOverlay
+            icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
+            title="This folder is empty"
+            subtitle="Use Internxt Desktop to upload your data"
           />
-        ))}
-      {currentItems.length === 0 && !isLoading && (
-        <DriveExplorerOverlay
-          icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
-          title="This folder is empty"
-          subtitle="Use Internxt Desktop to upload your data"
-        />
-      )}
-      {isLoading && Skeleton}
+        )}
+        {isLoading && Skeleton}
+      </div>
     </div>
   );
 }
