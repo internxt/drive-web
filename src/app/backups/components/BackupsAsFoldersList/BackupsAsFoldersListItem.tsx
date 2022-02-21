@@ -25,7 +25,7 @@ export default function BackupsAsFoldersListItem({
 
   return (
     <div
-      className={'py-3.5 border-b border-l-neutral-30 flex items-center hover:bg-blue-20'}
+      className={'py-3.5 border-b border-neutral-30 flex items-center hover:bg-blue-20'}
       onDoubleClick={() => onDoubleClick(item)}
     >
       <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
