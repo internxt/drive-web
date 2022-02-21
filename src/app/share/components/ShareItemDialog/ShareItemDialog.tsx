@@ -122,7 +122,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   return (
     <BaseDialog isOpen={isOpen} title={itemFullName} titleClasses="text-neutral-100 text-base" onClose={onClose}>
       <div className="share-dialog flex flex-col mb-8">
-        <hr className="border-t-1 border-l-neutral-50 mt-7 mb-6" />
+        <hr className="border-t-1 border-neutral-40 my-6" />
 
         <div className="px-8">
           <p className="w-full text-neutral-500 text-center">
