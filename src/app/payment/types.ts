@@ -60,5 +60,4 @@ export enum LifetimeTier {
 export enum RenewalPeriod {
   Monthly = 'monthly',
   Annually = 'annually',
-  Lifetime = 'lifetime',
 }
