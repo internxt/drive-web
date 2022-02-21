@@ -10,7 +10,7 @@ import NumberInput from 'app/shared/components/forms/inputs/NumberInput';
 import { planSelectors } from 'app/store/slices/plan';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { ProductData, RenewalPeriod } from '../../types';
+import { ProductData } from '../../types';
 import { paymentThunks } from 'app/store/slices/payment';
 import moneyService from '../../services/money.service';
 
@@ -27,7 +27,6 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
   const [teamMembersCount, setTeamMembersCount] = useState(2);
   const currentPriceId = useAppSelector((state) => state.payment.currentPriceId);
   const isCurrentProduct = currentPriceId === props.product.price.id;
-  const isLifetime = props.product.renewalPeriod === RenewalPeriod.Lifetime;
   const priceMultiplier = props.product.metadata.is_drive ? 1 : teamMembersCount;
   const isPlanActive = useAppSelector(planSelectors.isPlanActive)(props.product.price.id);
   const isBuyButtonDisabled = props.isBuyButtonDisabled || isPlanActive;
@@ -57,7 +56,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
   const tabletBuyButtonLabel =
     isBuyButtonDisabled && isCurrentProduct
       ? i18n.get('general.loading.redirecting')
-      : monthlyAmountFormatted + (isLifetime ? '' : '/' + i18n.get('general.time.month'));
+      : monthlyAmountFormatted + '/' + i18n.get('general.time.month');
   const sizeClassName = props.product.metadata.is_drive ? 'square' : '';
 
   useEffect(() => {
@@ -85,7 +84,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
         {/* MONTHLY AMOUNT */}
         <div className="flex justify-center items-center">
           <span className="text-3xl font-bold mr-2">{monthlyAmountFormatted}</span>
-          {!isLifetime && <span className="h-fit">/{i18n.get('general.time.month')}</span>}
+          <span className="h-fit">/{i18n.get('general.time.month')}</span>
         </div>
 
         {/* TOTAL AMOUNT */}
@@ -100,27 +99,23 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
             />
 
             <div className="w-full flex justify-center items-center">
-              {isLifetime ? (
-                <span className="text-xs text-neutral-100">{i18n.get('general.billing.oneTimePayment')}</span>
-              ) : (
-                <Fragment>
-                  <span className="text-xs mr-1">{moneyService.getCurrencySymbol(props.product.price.currency)}</span>
-                  <span className="mr-1">{totalAmount}</span>
-                  <span className="text-xs text-neutral-100">
-                    /{i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase()}
-                  </span>
-                </Fragment>
-              )}
+              <Fragment>
+                <span className="text-xs mr-1">{moneyService.getCurrencySymbol(props.product.price.currency)}</span>
+                <span className="mr-1">{totalAmount}</span>
+                <span className="text-xs text-neutral-100">
+                  /{i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase()}
+                </span>
+              </Fragment>
             </div>
           </div>
         ) : (
           <span className="text-center text-xs text-neutral-80 mt-2 mb-4">
-            {isLifetime
-              ? i18n.get('general.billing.oneTimePayment')
-              : i18n.get('general.billing.billedEachPeriod', {
-                  price: totalAmountFormatted,
-                  period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
-                })}
+            { 
+              i18n.get('general.billing.billedEachPeriod', {
+                price: totalAmountFormatted,
+                period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
+              })
+            }
           </span>
         )}
         <div />
@@ -143,12 +138,12 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
         </div>
 
         <span className={`${isPlanActive ? 'text-blue-60' : 'text-neutral-80'} block text-xs`}>
-          {isLifetime
-            ? i18n.get('general.billing.oneTimePayment')
-            : i18n.get('general.billing.billedEachPeriod', {
-                price: totalAmountFormatted,
-                period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
-              })}
+          { 
+            i18n.get('general.billing.billedEachPeriod', {
+              price: totalAmountFormatted,
+              period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
+            })
+          }
         </span>
       </div>
 
