@@ -170,7 +170,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <DriveItemDropdownActions
-              hiddenActions={[]}
+              hiddenActions={item.isFolder ? [DriveItemAction.Share] : []}
               onRenameButtonClicked={onRenameButtonClicked}
               onDownloadButtonClicked={onDownloadButtonClicked}
               onShareButtonClicked={onShareButtonClicked}
