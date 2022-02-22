@@ -3,7 +3,7 @@ import { Menu, Transition } from '@headlessui/react';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
 import { ReactComponent as Logo } from 'assets/icons/brand/x-white.svg';
-import { getSharedFolderInfo } from 'app/share/services/share.service';
+import { getSharedFolderInfo, getSharedFolderSize } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
@@ -26,11 +26,14 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import {
   downloadSharedFolderUsingFileSystemAPI
 } from '../../../drive/services/download.service/downloadFolder/downloadSharedFolderUsingFileSystemAPI';
-import {
-  downloadSharedFolderUsingBlobs
-} from '../../../drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import Spinner from '../../../shared/components/Spinner/Spinner';
-
+import { SharedFolderInfo } from '@internxt/sdk/dist/drive/share/types';
+import { 
+  downloadSharedFolderUsingReadableStream 
+} from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
+import { 
+  downloadSharedFolderUsingStreamSaver 
+} from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingStreamSaver';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -55,7 +58,8 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [info, setInfo] = useState({});
+  const [info, setInfo] = useState<Partial<SharedFolderInfo>>({});
+  const [size, setSize] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -67,6 +71,10 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
     loadInfo().then((sharedFolderInfo) => {
       setIsLoaded(true);
       setInfo(sharedFolderInfo);
+
+      return loadSize((sharedFolderInfo as any).shareId, sharedFolderInfo.folderId);
+    }).then((folderSize) => {
+      setSize(folderSize);
     }).catch((err) => {
       setIsError(true);
       setErrorMessage(errorService.castError(err).message);
@@ -75,17 +83,8 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
 
   const getAvatarLetters = () => {
     const initials = user && (`${user['name'].charAt(0)}${user['lastname'].charAt(0)}`).toUpperCase();
+
     return initials;
-  };
-
-  const getFormatFileName = (): string => {
-    const folderInfo = info as unknown as ShareTypes.SharedFolderInfo;
-    return folderInfo.name;
-  };
-
-  const getFormatFileSize = (): string => {
-    const folderInfo = info as unknown as ShareTypes.SharedFolderInfo;
-    return sizeService.bytesToString(folderInfo.size);
   };
 
   const downloadDesktopApp = () => {
@@ -113,6 +112,10 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
       });
   };
 
+  const loadSize = (shareId: number, folderId: number): Promise<number> => {
+    return getSharedFolderSize(shareId, folderId);
+  };
+
   const updateProgress = (progress: number) => {
     setProgress(Number((progress * 100).toFixed(2)));
   };
@@ -126,33 +129,46 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
 
-        const directoryPickerIsSupported =
-          window.showDirectoryPicker as unknown as Promise<FileSystemDirectoryHandle> | undefined;
+        const writableStreamIsSupported = 'WritableStream' in window;
+        const directoryPickerIsSupported = 'showDirectoryPicker' in window;
 
-        let downloadFolder;
+        let downloadFolder: (...args: any) => Promise<void>;
 
         if (directoryPickerIsSupported) {
+          /* LAST VERSION OF CHROMIUM: Chrome */
           downloadFolder = downloadSharedFolderUsingFileSystemAPI;
+        } else if (writableStreamIsSupported) {
+          /* CHROMIUM: Brave, Safari, Edge */
+          downloadFolder = downloadSharedFolderUsingReadableStream;
         } else {
-          downloadFolder = downloadSharedFolderUsingBlobs;
+          /* FIREFOX or OLD BROWSERS */
+          downloadFolder = downloadSharedFolderUsingStreamSaver;
         }
 
         downloadFolder({
             name: folderInfo.name,
             code: code,
             id: folderInfo.folderId,
-            token: token,
-            size: folderInfo.size,
+            token: token
           },
           folderInfo.bucket,
           folderInfo.bucketToken,
           {
             filesLimit: FILES_LIMIT_BY_REQUEST,
             foldersLimit: FOLDERS_LIMIT_BY_REQUEST,
-            progressCallback: updateProgress
+            progressCallback: (downloadedBytes) => {
+              console.log('downloaded', downloadedBytes);
+              console.log('size', size);
+              if (size > 0) {
+                console.log(downloadedBytes / size);
+                updateProgress(downloadedBytes / size);
+              }
+            }
           }
-        );
-
+        ).catch((err) => {
+          setErrorMessage(err.message);
+          setIsError(true);
+        });
       }
     }
   };
@@ -212,10 +228,10 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
 
           <div className="flex flex-col justify-center items-center space-y-2">
             <div className="flex flex-col justify-center items-center font-medium text-center">
-              <abbr className="text-xl w-screen sm:w-full max-w-prose break-words px-10" title={getFormatFileName()}>
-                {getFormatFileName()}
+              <abbr className="text-xl w-screen sm:w-full max-w-prose break-words px-10" title={info.name}>
+                {info.name}
               </abbr>
-              <span className="text-cool-gray-60">{getFormatFileSize()}</span>
+              <span className="text-cool-gray-60">{sizeService.bytesToString(info.size || 0)}</span>
             </div>
           </div>
 
