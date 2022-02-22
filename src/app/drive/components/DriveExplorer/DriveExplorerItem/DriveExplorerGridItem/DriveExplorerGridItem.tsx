@@ -19,7 +19,6 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const { isItemSelected } = useDriveItemStoreProps();
   const {
     isEditingName,
-    isRequestingFolderSize,
     dirtyName,
     nameInputRef,
     onNameChanged,
@@ -102,7 +101,6 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         <Dropdown.Menu>
           <DriveItemDropdownActions
             hiddenActions={item.isFolder ? [DriveItemAction.Download, DriveItemAction.Share] : []}
-            isRequestingFolderSize={isRequestingFolderSize}
             onRenameButtonClicked={onRenameButtonClicked}
             onDownloadButtonClicked={onDownloadButtonClicked}
             onShareButtonClicked={onShareButtonClicked}

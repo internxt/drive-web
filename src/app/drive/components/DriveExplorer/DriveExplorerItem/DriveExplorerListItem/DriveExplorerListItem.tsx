@@ -26,7 +26,6 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const { isItemSelected, isSomeItemSelected } = useDriveItemStoreProps();
   const {
     isEditingName,
-    isRequestingFolderSize,
     dirtyName,
     nameInputRef,
     onNameChanged,
@@ -172,7 +171,6 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           <Dropdown.Menu>
             <DriveItemDropdownActions
               hiddenActions={item.isFolder ? [DriveItemAction.Share] : []}
-              isRequestingFolderSize={isRequestingFolderSize}
               onRenameButtonClicked={onRenameButtonClicked}
               onDownloadButtonClicked={onDownloadButtonClicked}
               onShareButtonClicked={onShareButtonClicked}

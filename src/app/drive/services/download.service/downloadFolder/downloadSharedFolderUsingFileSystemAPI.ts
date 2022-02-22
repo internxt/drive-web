@@ -1,8 +1,9 @@
-import { items } from '@internxt/lib';
+import { SharedDirectoryFolder } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'app/core/services/error.service';
 import i18n from 'app/i18n/services/i18n.service';
-import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
-import { Network } from '../../network';
+import { DownloadableFile, DownloadableFolder, FolderLevel } from '../downloader';
+import { SharedDirectoryFolderIterator, SharedFolderFilesIterator } from '../../../../share/services/folder.service';
+import { Iterator } from 'app/core/collections';
 
 interface FolderRef {
   name: string
@@ -16,29 +17,28 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     id: number;
     token: string;
     code: string;
-    size: number;
   },
   bucket: string,
   bucketToken: string,
   options: {
     foldersLimit: number;
     filesLimit: number;
-    progressCallback: (progress: number) => void;
+    progressCallback: (downloadedBytes: number) => void;
   },
 ): Promise<void> {
-  const downloadingSize: Record<number, number> = {};
-  const network = new Network('NONE', 'NONE', 'NONE');
+  const downloads: { [key: SharedDirectoryFolder['id']]: number } = {};
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
     throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
   }
 
-  const progressIntervalId = setInterval(() => {
-    const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
-    const totalProgress = totalDownloadedSize / sharedFolderMeta.size;
+  const getTotalDownloadedBytes = () => {
+    return Object.values(downloads).reduce((t, x) => t + x, 0);
+  };
 
-    (options.progressCallback || (() => undefined))(totalProgress);
+  const progressIntervalId = setInterval(() => {
+    (options.progressCallback || (() => undefined))(getTotalDownloadedBytes());
   }, 1000);
 
   try {
@@ -53,74 +53,71 @@ export async function downloadSharedFolderUsingFileSystemAPI(
       handle: sharedFolderDirectoryHandle
     };
     const pendingFolders: FolderRef[] = [rootFolder];
-    // * Renames files iterating over folders
+
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
 
-      let filesDownloadNotFinished = false;
-      let filesOffset = 0;
-
-      while (!filesDownloadNotFinished) {
-        const { files, last } = await getSharedDirectoryFiles({
+      const sharedDirectoryFilesIterator: Iterator<DownloadableFile> =
+        new SharedFolderFilesIterator({
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
-          offset: filesOffset,
-          limit: options.foldersLimit,
           code: sharedFolderMeta.code
-        });
+        }, options.filesLimit);
 
-        filesOffset += options.filesLimit;
-        filesDownloadNotFinished = last;
-
-        // * Downloads current folder files
-        for (const file of files) {
-          const displayFilename = items.getItemDisplayName({
-            name: file.name,
-            type: file.type,
-          });
-          const [fileStreamPromise] = network.downloadFile(bucket, file.id, {
-            fileEncryptionKey: Buffer.from(file.encryptionKey, 'hex'),
-            fileToken: bucketToken,
-            progressCallback: (fileProgress) => {
-              downloadingSize[file.id] = file.size * fileProgress;
-            },
-          });
-          const fileBlob = await fileStreamPromise;
-          const downloadedFileHandle = await folderToDownload.handle.getFileHandle(displayFilename, { create: true });
-          const downloadedFileWritable = await downloadedFileHandle.createWritable({ keepExistingData: false });
-
-          await downloadedFileWritable.write(fileBlob);
-          await downloadedFileWritable.close();
-        }
-      }
-
-      let foldersOffset = 0;
-      let completed = false;
-      while (!completed) {
-        const { folders, last } = await getSharedDirectoryFolders({
+      const sharedDirectoryFoldersIterator: Iterator<DownloadableFolder> =
+        new SharedDirectoryFolderIterator({
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
-          offset: foldersOffset,
-          limit: options.foldersLimit,
-        });
+        }, options.foldersLimit);
 
-        folders.map(async ({ id, name }) => {
-          pendingFolders.push({
-            folderId: id,
-            name,
-            handle: await folderToDownload.handle.getDirectoryHandle(name, { create: true })
-          });
-        });
+      const folderLevel = new FolderLevel(
+        sharedDirectoryFoldersIterator,
+        sharedDirectoryFilesIterator,
+        bucket,
+        bucketToken
+      );
 
-        completed = last;
-        foldersOffset += options.foldersLimit;
-      }
+      const directory = folderToDownload.handle;
 
+      await folderLevel.download({
+        onFileRetrieved: async ({ name, id, stream }, onFileDownloaded) => {
+          try {
+            const downloadedFileHandle = await directory.getFileHandle(name, { create: true });
+            const downloadedFileWritable = await downloadedFileHandle.createWritable({ keepExistingData: false });
+
+            downloads[id] = 0;
+
+            const progressStream = new TransformStream({
+              transform(chunk, controller) {
+                downloads[id] += chunk.length;
+                controller.enqueue(chunk);
+              }
+            });
+
+            await stream.pipeThrough(progressStream).pipeTo(downloadedFileWritable);
+            onFileDownloaded(null);
+          } catch (err) {
+            onFileDownloaded(err as Error);
+          }
+        },
+        onFolderRetrieved: async ({ name, id }, onFolderDownloaded) => {
+          try {
+            pendingFolders.push({
+              folderId: id,
+              handle: await directory.getDirectoryHandle(name, { create: true }),
+              name
+            });
+            onFolderDownloaded(null);
+          } catch (err) {
+            onFolderDownloaded(err as Error);
+          }
+        }
+      });
     } while (pendingFolders.length > 0);
   } catch (err) {
     throw errorService.castError(err);
   } finally {
     clearInterval(progressIntervalId);
-    options.progressCallback(1);
+    options.progressCallback(getTotalDownloadedBytes());
   }
 }
