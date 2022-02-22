@@ -167,7 +167,7 @@ async function getRequiredFileMetadataWithAuth(
   return { fileMeta, mirrors };
 }
 
-function downloadFile(params: IDownloadParams): [
+export function downloadFile(params: IDownloadParams): [
   Promise<ReadableStream<Uint8Array>>,
   Abortable
 ] {
@@ -238,4 +238,3 @@ export function downloadFileToFileSystem(
     abortable
   ];
 }
-

@@ -19,7 +19,7 @@ async function downloadFolders(
   opts: {
     onFolderRetrieved: (
       folder: DownloadableFolder,
-      onFolderCreated: (err: Error) => void
+      onFolderCreated: (err: Error | null) => void
     ) => void
   }
 ): Promise<void> {
@@ -137,7 +137,7 @@ export class FolderLevel {
     ) => void,
     onFolderRetrieved: (
       folder: DownloadableFolder,
-      onFolderCreated: (err: Error) => void
+      onFolderCreated: (err: Error | null) => void
     ) => void
   }): Promise<void> {
     await downloadFiles(this.filesIterator, this.bucket, opts, this.token);
