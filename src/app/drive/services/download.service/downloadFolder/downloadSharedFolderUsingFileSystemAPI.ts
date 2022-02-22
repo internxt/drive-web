@@ -1,8 +1,9 @@
 import { SharedDirectoryFolder } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'app/core/services/error.service';
 import i18n from 'app/i18n/services/i18n.service';
-import { DownloadableFile, DownloadableFolder, FolderLevel } from './downloader';
-import { Iterator, SharedDirectoryFolderIterator, SharedFolderFilesIterator } from './utils';
+import { DownloadableFile, DownloadableFolder, FolderLevel } from '../downloader';
+import { SharedDirectoryFolderIterator, SharedFolderFilesIterator } from '../../../../share/services/folder.service';
+import { Iterator } from 'app/core/collections';
 
 interface FolderRef {
   name: string

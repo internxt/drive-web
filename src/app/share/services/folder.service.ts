@@ -1,9 +1,6 @@
 import { SharedDirectoryFile, SharedDirectoryFolder } from '@internxt/sdk/dist/drive/share/types';
+import { Iterator } from 'app/core/collections';
 import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
-
-export interface Iterator<T> {
-  next(): Promise<{ value: T[], done: boolean }>
-}
 
 interface RequiredQueryValues {
   token: string,

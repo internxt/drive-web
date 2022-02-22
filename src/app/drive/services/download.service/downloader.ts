@@ -1,6 +1,6 @@
 import { items } from '@internxt/lib';
-import { downloadFile } from '../../download';
-import { Iterator } from './utils';
+import { Iterator } from 'app/core/collections';
+import { downloadFile } from '../network.service/download';
 
 export interface DownloadableFolder {
   name: string;
@@ -75,6 +75,7 @@ async function downloadFiles(
     const nextChunkPromise = iterator.next();
 
     for (const file of files) {
+      console.log('FILES', JSON.stringify(files, null, 2));
       const displayFilename = items.getItemDisplayName({
         name: file.name,
         type: file.type,

@@ -1,7 +1,7 @@
 import { Environment } from '@internxt/inxt-js';
 import { createDecipheriv, Decipher } from 'crypto';
 import { EventEmitter } from 'events';
-import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './network.service/requests';
+import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
 const generateFileKey = Environment.utils.generateFileKey;
 
@@ -175,14 +175,19 @@ export function downloadFile(params: IDownloadParams): [
       throw new Error('Download error 1');
     }
 
+    console.log('METADATA', JSON.stringify(metadata, null, 2));
+
     const { mirrors, fileMeta } = metadata;
     const downloadUrls: string[] = mirrors.map(m => process.env.REACT_APP_PROXY + '/' + m.url);
 
-    
+    console.log('URLS', downloadUrls);
+
 
     const index = Buffer.from(fileMeta.index, 'hex');
     const iv = index.slice(0, 16);
     let key: Buffer;
+
+    console.log('encryptionKey', params.encryptionKey?.length);
 
     if (params.encryptionKey) {
       key = params.encryptionKey;

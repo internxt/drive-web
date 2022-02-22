@@ -2,9 +2,10 @@ import { EventEmitter } from 'events';
 import { createWriteStream } from 'streamsaver';
 
 import errorService from 'app/core/services/error.service';
-import { DownloadableFile, DownloadableFolder, FolderLevel } from './downloader';
-import { Iterator, SharedDirectoryFolderIterator, SharedFolderFilesIterator } from './utils';
+import { DownloadableFile, DownloadableFolder, FolderLevel } from '../downloader';
+import { SharedDirectoryFolderIterator, SharedFolderFilesIterator } from '../../../../share/services/folder.service';
 import createZipReadable from './zipStream';
+import { Iterator } from 'app/core/collections';
 
 interface FolderRef {
   name: string
