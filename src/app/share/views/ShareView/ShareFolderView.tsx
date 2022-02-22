@@ -26,13 +26,14 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import {
   downloadSharedFolderUsingFileSystemAPI
 } from '../../../drive/services/download.service/downloadFolder/downloadSharedFolderUsingFileSystemAPI';
-import {
-  downloadSharedFolderUsingBlobs
-} from '../../../drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { SharedFolderInfo } from '@internxt/sdk/dist/drive/share/types';
-// eslint-disable-next-line max-len
-import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
+import { 
+  downloadSharedFolderUsingReadableStream 
+} from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
+import { 
+  downloadSharedFolderUsingStreamSaver 
+} from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingStreamSaver';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -128,15 +129,20 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
 
-        const directoryPickerIsSupported =
-          window.showDirectoryPicker as unknown as Promise<FileSystemDirectoryHandle> | undefined;
+        const writableStreamIsSupported = 'WritableStream' in window;
+        const directoryPickerIsSupported = 'showDirectoryPicker' in window;
 
         let downloadFolder: (...args: any) => Promise<void>;
 
         if (directoryPickerIsSupported) {
+          /* LAST VERSION OF CHROMIUM: Chrome */
           downloadFolder = downloadSharedFolderUsingFileSystemAPI;
-        } else {
+        } else if (writableStreamIsSupported) {
+          /* CHROMIUM: Brave, Safari, Edge */
           downloadFolder = downloadSharedFolderUsingReadableStream;
+        } else {
+          /* FIREFOX or OLD BROWSERS */
+          downloadFolder = downloadSharedFolderUsingStreamSaver;
         }
 
         downloadFolder({
