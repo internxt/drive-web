@@ -28,7 +28,7 @@ export async function downloadSharedFolderUsingStreamSaver(
     filesLimit: number;
     progressCallback: (progress: number) => void;
   },
-): Promise<[Promise<void>, () => void]> {
+): Promise<void> {
   const downloadingSize: Record<number, number> = {};
   const network = new Network('NONE', 'NONE', 'NONE');
   const zip = new JSZip();
@@ -116,37 +116,32 @@ export async function downloadSharedFolderUsingStreamSaver(
         completed = last;
         foldersOffset += options.foldersLimit;
       }
-      
+
     } while (pendingFolders.length > 0);
 
     window.addEventListener('unload', onUnload);
 
-    return [
-      new Promise<void>((resolve, reject) => {
-        const folderStream = zip.generateInternalStream({
-          type: 'uint8array',
-          streamFiles: true,
-          compression: 'DEFLATE',
-        }) as Readable;
-        folderStream
-          ?.on('data', (chunk: Buffer) => {
-            writer.write(chunk);
-          })
-          .on('end', () => {
-            writer.close();
-            window.removeEventListener('unload', onUnload);
-            resolve();
-          })
-          .on('error', (err) => {
-            reject(err);
-          });
+    return new Promise<void>((resolve, reject) => {
+      const folderStream = zip.generateInternalStream({
+        type: 'uint8array',
+        streamFiles: true,
+        compression: 'DEFLATE',
+      }) as Readable;
+      folderStream
+        ?.on('data', (chunk: Buffer) => {
+          writer.write(chunk);
+        })
+        .on('end', () => {
+          writer.close();
+          window.removeEventListener('unload', onUnload);
+          resolve();
+        })
+        .on('error', (err) => {
+          reject(err);
+        });
 
-        folderStream.resume();
-      }),
-      () => {
-        writer.abort();
-      },
-    ];
+      folderStream.resume();
+    });
   } catch (err) {
     const castedError = errorService.castError(err);
 
