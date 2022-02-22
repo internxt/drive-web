@@ -23,7 +23,7 @@ interface FileInfo {
   index: string;
 }
 
-interface Mirror {
+export interface Mirror {
   index: number;
   replaceCount: number;
   hash: string;
@@ -39,6 +39,7 @@ interface Mirror {
     nodeID: string;
     lastSeen: Date;
   };
+  url: string;
   operation: string;
 }
 
@@ -170,12 +171,9 @@ export async function getMirrors(
   } while (results.length > 0);
 
   for (const mirror of mirrors) {
-    const mirrorIsOk = mirror.farmer
-      && mirror.farmer.nodeID
-      && mirror.farmer.port
-      && mirror.farmer.address ? true : false;
+    const farmerIsOk = isFarmerOk(mirror.farmer);
 
-    if (mirrorIsOk) {
+    if (farmerIsOk) {
       mirror.farmer.address = mirror.farmer.address.trim();
     } else {
       mirrors[mirror.index] = await replaceMirror(
@@ -185,8 +183,20 @@ export async function getMirrors(
         [],
         requestConfig
       );
+
+      if (!isFarmerOk(mirrors[mirror.index].farmer)) {
+        throw new Error('Missing pointer for shard %s' + mirror.hash);
+      }
+
+      if (!mirrors[mirror.index].url) {
+        throw new Error('Missing download url for shard %s' + mirror.hash);
+      }
     }
   }
 
   return mirrors;
+}
+
+function isFarmerOk(farmer?: Partial<Mirror['farmer']>) {
+  return farmer && farmer.nodeID && farmer.port && farmer.address;
 }

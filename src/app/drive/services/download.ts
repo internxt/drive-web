@@ -1,8 +1,7 @@
 import { Environment } from '@internxt/inxt-js';
-import axios from 'axios';
 import { createDecipheriv, Decipher } from 'crypto';
 import { EventEmitter } from 'events';
-import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors } from './network.service/requests';
+import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './network.service/requests';
 
 const generateFileKey = Environment.utils.generateFileKey;
 
@@ -26,25 +25,6 @@ interface FileInfo {
     type: string;
   };
   index: string;
-}
-
-interface Mirror {
-  index: number;
-  replaceCount: number;
-  hash: string;
-  size: number;
-  parity: boolean;
-  token: string;
-  healthy?: boolean;
-  farmer: {
-    userAgent: string;
-    protocol: string;
-    address: string;
-    port: number;
-    nodeID: string;
-    lastSeen: Date;
-  };
-  operation: string;
 }
 
 function getDecryptedStream(
@@ -196,11 +176,9 @@ export function downloadFile(params: IDownloadParams): [
     }
 
     const { mirrors, fileMeta } = metadata;
-    const downloadUrls: string[] = [];
+    const downloadUrls: string[] = mirrors.map(m => process.env.REACT_APP_PROXY + '/' + m.url);
 
-    for (const mirror of mirrors) {
-      downloadUrls.push(await getDownloadUrlFromMirror(mirror));
-    }
+    
 
     const index = Buffer.from(fileMeta.index, 'hex');
     const iv = index.slice(0, 16);
