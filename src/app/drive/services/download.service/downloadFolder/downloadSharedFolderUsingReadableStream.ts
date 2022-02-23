@@ -107,7 +107,7 @@ export async function downloadSharedFolderUsingReadableStream(
   });
 
   const abortable = new AbortController();
-  let error: Error = new Error();
+  let error: Error | null = null;
 
   try {
     const zipDownloadPromise = passThrough.pipeTo(
@@ -165,8 +165,8 @@ export async function downloadSharedFolderUsingReadableStream(
 
     await zipDownloadPromise;
     options.progressCallback(downloadedBytes);
-  } catch {
-    throw errorService.castError(error);
+  } catch (err) { 
+    throw errorService.castError(error ?? err);
   } finally {
     clearInterval(progressIntervalId);
   }
