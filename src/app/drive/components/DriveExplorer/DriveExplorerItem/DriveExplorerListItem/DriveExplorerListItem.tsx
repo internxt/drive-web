@@ -123,15 +123,13 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           >
             <UilCloudDownload className="h-5" />
           </button>
-          {!item.isFolder ? (
-            <button
-              onClick={onShareButtonClicked}
-              className="hover-action mr-3"
-              data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
-            >
-              <UilShareAlt className="h-5" />
-            </button>
-          ) : null}
+          <button
+            onClick={onShareButtonClicked}
+            className="hover-action mr-3"
+            data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
+          >
+            <UilShareAlt className="h-5" />
+          </button>
           <button
             onClick={onDeleteButtonClicked}
             className="hover-action"
@@ -170,7 +168,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <DriveItemDropdownActions
-              hiddenActions={item.isFolder ? [DriveItemAction.Share] : []}
+              hiddenActions={[]}
               onRenameButtonClicked={onRenameButtonClicked}
               onDownloadButtonClicked={onDownloadButtonClicked}
               onShareButtonClicked={onShareButtonClicked}
