@@ -35,6 +35,7 @@ import {
 import { 
   downloadSharedFolderUsingBlobs 
 } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
+import { loadWritableStreamPonyfill } from 'app/drive/services/network.service/download';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -68,9 +69,23 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
   const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
 
+  const canUseReadableStreamMethod = 
+    'WritableStream' in window &&
+    'ReadableStream' in window &&
+    new ReadableStream().pipeTo !== undefined &&
+    new ReadableStream().pipeThrough !== undefined &&
+    WritableStream !== undefined;
+
   let body, downloadButton;
 
   useEffect(() => {
+    if (!canUseReadableStreamMethod) {
+      // TODO: Hide inside download shared folder function
+      loadWritableStreamPonyfill().then(() => {
+        console.log('loaded ponyfill');
+      });
+    }
+
     loadInfo()
       .then((sharedFolderInfo) => {
         setIsLoaded(true);
@@ -130,15 +145,6 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
 
       if (folderInfo) {
         setIsDownloading(true);
-
-        const canUseReadableStreamMethod = 
-          'WritableStream' in window &&
-          'ReadableStream' in window &&
-          new ReadableStream().pipeTo !== undefined &&
-          new ReadableStream().pipeThrough !== undefined &&
-          WritableStream !== undefined;
-
-        console.log(canUseReadableStreamMethod);
 
         const directoryPickerIsSupported = 'showDirectoryPicker' in window;
 

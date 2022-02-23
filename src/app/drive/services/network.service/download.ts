@@ -3,6 +3,18 @@ import { createDecipheriv, Decipher } from 'crypto';
 import { EventEmitter } from 'events';
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
+export function loadWritableStreamPonyfill(): Promise<void> {
+  const script = document.createElement('script');
+  script.src = 'https://unpkg.com/web-streams-polyfill/dist/polyfill.min.js';
+  document.head.appendChild(script);
+
+  return new Promise((resolve) => {
+    script.onload = function () {
+      resolve();
+    };
+  });
+}
+
 const generateFileKey = Environment.utils.generateFileKey;
 
 interface Abortable {
