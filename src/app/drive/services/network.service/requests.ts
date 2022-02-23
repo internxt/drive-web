@@ -67,8 +67,6 @@ function getFileInfo(
     maxContentLength: Infinity
   };
 
-  console.log('AXIOS OPTS', { ...defaultOpts, ...opts });
-
   return axios.request<FileInfo>({ ...defaultOpts, ...opts }).then((res) => {
     return res.data;
   }).catch((err) => {

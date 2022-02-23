@@ -75,7 +75,6 @@ async function downloadFiles(
     const nextChunkPromise = iterator.next();
 
     for (const file of files) {
-      console.log('FILES', JSON.stringify(files, null, 2));
       const displayFilename = items.getItemDisplayName({
         name: file.name,
         type: file.type,

@@ -132,8 +132,6 @@ export const downloadFolderThunkExtraReducers = (builder: ActionReducerMapBuilde
       const options = { ...defaultDownloadFolderThunkOptions, ...action.meta.arg.options };
       const rejectedValue = action.payload as AppError;
 
-      console.log('DOWNLOAD FOLDER THUNK REJECTED!');
-
       if (options.showErrors) {
         const errorMessage = rejectedValue?.message || action.error.message;
 
