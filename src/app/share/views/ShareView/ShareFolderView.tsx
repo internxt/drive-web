@@ -1,4 +1,5 @@
 import { useState, useEffect, Fragment } from 'react';
+import { WritableStream } from 'streamsaver';
 import { Menu, Transition } from '@headlessui/react';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,8 +33,8 @@ import {
   downloadSharedFolderUsingReadableStream 
 } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
 import { 
-  downloadSharedFolderUsingStreamSaver 
-} from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingStreamSaver';
+  downloadSharedFolderUsingBlobs 
+} from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -130,7 +131,15 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
       if (folderInfo) {
         setIsDownloading(true);
 
-        const writableStreamIsSupported = 'WritableStream' in window;
+        const canUseReadableStreamMethod = 
+          'WritableStream' in window &&
+          'ReadableStream' in window &&
+          new ReadableStream().pipeTo !== undefined &&
+          new ReadableStream().pipeThrough !== undefined &&
+          WritableStream !== undefined;
+
+        console.log(canUseReadableStreamMethod);
+
         const directoryPickerIsSupported = 'showDirectoryPicker' in window;
 
         let downloadFolder: (...args: any) => Promise<void>;
@@ -138,12 +147,12 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
         if (directoryPickerIsSupported) {
           /* LAST VERSION OF CHROMIUM: Chrome */
           downloadFolder = downloadSharedFolderUsingFileSystemAPI;
-        } else if (writableStreamIsSupported) {
+        } else if (canUseReadableStreamMethod) {
           /* CHROMIUM: Brave, Safari, Edge */
           downloadFolder = downloadSharedFolderUsingReadableStream;
         } else {
           /* FIREFOX or OLD BROWSERS */
-          downloadFolder = downloadSharedFolderUsingStreamSaver;
+          downloadFolder = downloadSharedFolderUsingBlobs;
         }
 
         downloadFolder(
