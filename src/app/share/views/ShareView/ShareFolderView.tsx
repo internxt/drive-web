@@ -184,6 +184,10 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
             updateProgress(1);
           })
           .catch((err) => {
+            if (err && err.message && err.message.includes('user aborted')) {
+              setIsDownloading(false);
+              return;
+            }
             setErrorMessage(err.message);
             setIsError(true);
           });
@@ -221,7 +225,7 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
             <Spinner />
           </div>
           <span>{i18n.get('actions.downloading')}</span>
-          {size && size > 0 && <span className="font-normal text-blue-20">{progress}%</span>}
+          {!!size && size > 0 && <span className="font-normal text-blue-20">{progress}%</span>}
         </>
       ) : (
         <>
