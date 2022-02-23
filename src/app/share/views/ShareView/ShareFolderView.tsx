@@ -23,8 +23,8 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import './ShareView.scss';
 import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
-import {
-  downloadSharedFolderUsingFileSystemAPI
+import { 
+  downloadSharedFolderUsingFileSystemAPI 
 } from '../../../drive/services/download.service/downloadFolder/downloadSharedFolderUsingFileSystemAPI';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { SharedFolderInfo } from '@internxt/sdk/dist/drive/share/types';
@@ -59,30 +59,35 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState<Partial<SharedFolderInfo>>({});
-  const [size, setSize] = useState<number>(0);
+  const [size, setSize] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useAppSelector((state) => state.user.user);
-  let body;
+  const dispatch = useAppDispatch();
+
+  let body, downloadButton;
 
   useEffect(() => {
-    loadInfo().then((sharedFolderInfo) => {
-      setIsLoaded(true);
-      setInfo(sharedFolderInfo);
+    loadInfo()
+      .then((sharedFolderInfo) => {
+        setIsLoaded(true);
+        setInfo(sharedFolderInfo);
 
-      return loadSize((sharedFolderInfo as any).shareId, sharedFolderInfo.folderId);
-    }).then((folderSize) => {
-      setSize(folderSize);
-    }).catch((err) => {
-      setIsError(true);
-      setErrorMessage(errorService.castError(err).message);
-    });
+        return loadSize((sharedFolderInfo as any).shareId, sharedFolderInfo.folderId);
+      })
+      .then((folderSize) => {
+        setSize(folderSize);
+      })
+      .catch((err) => {
+        setIsError(true);
+        setErrorMessage(errorService.castError(err).message);
+      });
   }, []);
 
   const getAvatarLetters = () => {
-    const initials = user && (`${user['name'].charAt(0)}${user['lastname'].charAt(0)}`).toUpperCase();
+    const initials = user && `${user['name'].charAt(0)}${user['lastname'].charAt(0)}`.toUpperCase();
 
     return initials;
   };
@@ -91,7 +96,6 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
     window.open(desktopService.getDownloadAppUrl(), '_self');
   };
 
-  const dispatch = useAppDispatch();
   const logout = () => {
     dispatch(userThunks.logoutThunk());
   };
@@ -102,14 +106,13 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
       throw new Error('Chrome iOS not supported. Use Safari to proceed');
     }
 
-    return getSharedFolderInfo(token)
-      .catch(() => {
-        /**
-         * TODO: Check that the server returns proper error message instead
-         * of assuming that everything means that the link has expired
-         */
-        throw new Error(i18n.get('error.linkExpired'));
-      });
+    return getSharedFolderInfo(token).catch(() => {
+      /**
+       * TODO: Check that the server returns proper error message instead
+       * of assuming that everything means that the link has expired
+       */
+      throw new Error(i18n.get('error.linkExpired'));
+    });
   };
 
   const loadSize = (shareId: number, folderId: number): Promise<number> => {
@@ -123,10 +126,8 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
   const download = async (): Promise<void> => {
     if (!isDownloading) {
       const folderInfo = info as unknown as ShareTypes.SharedFolderInfo | null;
-      const MIN_PROGRESS = 0;
 
       if (folderInfo) {
-        setProgress(MIN_PROGRESS);
         setIsDownloading(true);
 
         const writableStreamIsSupported = 'WritableStream' in window;
@@ -145,11 +146,12 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
           downloadFolder = downloadSharedFolderUsingStreamSaver;
         }
 
-        downloadFolder({
+        downloadFolder(
+          {
             name: folderInfo.name,
             code: code,
             id: folderInfo.folderId,
-            token: token
+            token: token,
           },
           folderInfo.bucket,
           folderInfo.bucketToken,
@@ -157,18 +159,19 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
             filesLimit: FILES_LIMIT_BY_REQUEST,
             foldersLimit: FOLDERS_LIMIT_BY_REQUEST,
             progressCallback: (downloadedBytes) => {
-              console.log('downloaded', downloadedBytes);
-              console.log('size', size);
-              if (size > 0) {
-                console.log(downloadedBytes / size);
+              if (size && size > 0) {
                 updateProgress(downloadedBytes / size);
               }
-            }
-          }
-        ).catch((err) => {
-          setErrorMessage(err.message);
-          setIsError(true);
-        });
+            },
+          },
+        )
+          .then(() => {
+            updateProgress(1);
+          })
+          .catch((err) => {
+            setErrorMessage(err.message);
+            setIsError(true);
+          });
       }
     }
   };
@@ -188,6 +191,31 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
     }
   }, [progress]);
 
+  if (!isDownloading) {
+    downloadButton = (
+      <>
+        <UilImport height="20" width="20" />
+        <span className="font-medium">{i18n.get('actions.download')}</span>
+      </>
+    );
+  } else {
+    downloadButton =
+      progress < 100 ? (
+        <>
+          <div className="h-5 w-5 text-white mr-1">
+            <Spinner />
+          </div>
+          <span>{i18n.get('actions.downloading')}</span>
+          {size && size > 0 && <span className="font-normal text-blue-20">{progress}%</span>}
+        </>
+      ) : (
+        <>
+          <UilCheck height="24" width="24" />
+          <span className="font-medium">{i18n.get('actions.downloaded')}</span>
+        </>
+      );
+  }
+
   if (isError) {
     const ItemIconComponent = iconService.getItemIcon(false, 'default');
 
@@ -205,8 +233,10 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
 
         {isAuthenticated && (
           <Link to="/app" className="no-underline cursor-pointer text-cool-gray-90 hover:text-cool-gray-90">
-            <div className="flex flex-row items-center justify-center rounded-lg bg-cool-gray-10 h-10 px-6
-                          font-medium space-x-2">
+            <div
+              className="flex flex-row items-center justify-center rounded-lg bg-cool-gray-10 h-10 px-6
+                          font-medium space-x-2"
+            >
               <span>Open Internxt Drive</span>
               <UilArrowRight height="20" width="20" />
             </div>
@@ -221,7 +251,6 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
       <>
         {/* File info */}
         <div className="flex flex-col space-y-4 items-center justify-center flex-grow-0">
-
           <div className="h-32 w-32 filter drop-shadow-soft">
             <FileIcon />
           </div>
@@ -234,7 +263,6 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
               <span className="text-cool-gray-60">{sizeService.bytesToString(info.size || 0)}</span>
             </div>
           </div>
-
         </div>
 
         {/* Actions */}
@@ -244,35 +272,7 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
             className={`flex flex-row items-center h-10 px-6 rounded-lg text-white space-x-2 cursor-pointer
                         font-medium ${progress && !(progress < 100) ? 'bg-green-40' : 'bg-blue-60'}`}
           >
-            {isDownloading ?
-              progress < 100 ?
-                (
-                  <>
-                    {/* Download in progress */}
-                    <div className="h-5 w-5 text-white mr-1">
-                      <Spinner/>
-                    </div>
-                    <span>{i18n.get('actions.downloading')}</span>
-                    <span className="font-normal text-blue-20">{progress}%</span>
-                  </>
-                )
-                :
-                (
-                  <>
-                    {/* Download completed */}
-                    <UilCheck height="24" width="24" />
-                    <span className="font-medium">{i18n.get('actions.downloaded')}</span>
-                  </>
-                )
-              :
-              (
-                <>
-                  {/* Download button */}
-                  <UilImport height="20" width="20" />
-                  <span className="font-medium">{i18n.get('actions.download')}</span>
-                </>
-              )
-            }
+            {downloadButton}
           </button>
         </div>
       </>
@@ -280,7 +280,7 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
   } else {
     body = (
       <div className="h-8 w-8 text-cool-gray-30">
-        <Spinner/>
+        <Spinner />
       </div>
     );
   }
@@ -289,7 +289,6 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
     <>
       {/* Content */}
       <div className="flex flex-row justify-center items-stretch h-screen bg-white text-cool-gray-90">
-
         {/* Banner */}
         <div className="relative hidden lg:flex flex-col w-96 h-full bg-blue-80 text-white flex-shrink-0">
           <img src={bg} className="absolute top-0 left-0 object-cover object-center h-full w-full" />
@@ -307,153 +306,153 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
               </div>
 
               <div className="flex flex-col space-y-3 text-xl">
-                {
-                  [
-                    { icon: Shield, label: 'Privacy by design' },
-                    { icon: EndToEnd, label: 'End-to-end encryption' },
-                    { icon: Lock, label: 'Military-grade encryption' },
-                    { icon: EyeSlash, label: 'Zero-knowledge technology' },
-                  ].map((item) => (
-                    <div className="flex flex-row items-center space-x-3" key={item.icon}>
-                      <img src={item.icon} className="w-6 h-6" />
-                      <span>{item.label}</span>
-                    </div>
-                  ))
-                }
+                {[
+                  { icon: Shield, label: 'Privacy by design' },
+                  { icon: EndToEnd, label: 'End-to-end encryption' },
+                  { icon: Lock, label: 'Military-grade encryption' },
+                  { icon: EyeSlash, label: 'Zero-knowledge technology' },
+                ].map((item) => (
+                  <div className="flex flex-row items-center space-x-3" key={item.icon}>
+                    <img src={item.icon} className="w-6 h-6" />
+                    <span>{item.label}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
             {!isAuthenticated && (
               <Link to="/new" className="no-underline">
-                <div className="flex flex-row items-center justify-center rounded-xl no-underline ring-3 ring-blue-30
-                                p-1 cursor-pointer">
-                  <div className="flex flex-row items-center justify-center w-full h-12 bg-white text-blue-70
-                                  rounded-lg no-underline text-xl font-semibold px-6">
+                <div
+                  className="flex flex-row items-center justify-center rounded-xl no-underline ring-3 ring-blue-30
+                                p-1 cursor-pointer"
+                >
+                  <div
+                    className="flex flex-row items-center justify-center w-full h-12 bg-white text-blue-70
+                                  rounded-lg no-underline text-xl font-semibold px-6"
+                  >
                     <span>Get 10GB for FREE</span>
                   </div>
                 </div>
               </Link>
             )}
-
           </div>
         </div>
 
         {/* Download container */}
         <div className="flex flex-col flex-1">
-
           {/* Top bar */}
           <div className="flex flex-row justify-end items-center h-20 px-6 flex-shrink-0">
-
-            {isAuthenticated ?
-              (
-                <>
-                  {/* User avatar */}
-                  <Menu as="div" className="relative inline-block text-left">
-                    <div>
-                      <Menu.Button className="inline-flex justify-center w-full px-4 py-2 font-medium
+            {isAuthenticated ? (
+              <>
+                {/* User avatar */}
+                <Menu as="div" className="relative inline-block text-left">
+                  <div>
+                    <Menu.Button
+                      className="inline-flex justify-center w-full px-4 py-2 font-medium
                                               rounded-lg focus:outline-none focus-visible:ring-2
-                                              focus-visible:ring-blue-20 focus-visible:ring-opacity-75">
-                        <div className="flex flex-row space-x-3">
-                          <div className="flex flex-row items-center justify-center rounded-full bg-blue-10
-                                        text-blue-80 h-8 w-8">
-                            <span className="font-semibold text-sm">{getAvatarLetters()}</span>
-                          </div>
-                          <div className="flex flex-row items-center font-semibold">
-                            <span>{`${user && user['name']} ${user && user['lastname']}`}</span>
-                          </div>
-                        </div>
-                      </Menu.Button>
-                    </div>
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
+                                              focus-visible:ring-blue-20 focus-visible:ring-opacity-75"
                     >
-                      <Menu.Items className="absolute right-0 origin-top-right bg-white rounded-md shadow-lg ring-1
+                      <div className="flex flex-row space-x-3">
+                        <div
+                          className="flex flex-row items-center justify-center rounded-full bg-blue-10
+                                        text-blue-80 h-8 w-8"
+                        >
+                          <span className="font-semibold text-sm">{getAvatarLetters()}</span>
+                        </div>
+                        <div className="flex flex-row items-center font-semibold">
+                          <span>{`${user && user['name']} ${user && user['lastname']}`}</span>
+                        </div>
+                      </div>
+                    </Menu.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items
+                      className="absolute right-0 origin-top-right bg-white rounded-md shadow-lg ring-1
                                             ring-cool-gray-100 ring-opacity-5 focus:outline-none p-1 whitespace-nowrap
-                                            ">
-
-                        <Menu.Item>
-                          {({ active }) => (
-                            <Link to="/app" className="no-underline text-cool-gray-90 hover:text-cool-gray-90">
-                              <button
-                                className={`${active && 'bg-cool-gray-5'} group flex rounded-md items-center w-full
-                                            px-4 py-2 font-medium`}
-                              >
-                                Go to Internxt Drive
-                              </button>
-                            </Link>
-                          )}
-                        </Menu.Item>
-
-                        <Menu.Item>
-                          {({ active }) => (
+                                            "
+                    >
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link to="/app" className="no-underline text-cool-gray-90 hover:text-cool-gray-90">
                             <button
-                              onClick={() => {
-                                downloadDesktopApp();
-                              }}
                               className={`${active && 'bg-cool-gray-5'} group flex rounded-md items-center w-full
                                             px-4 py-2 font-medium`}
                             >
-                              Download Desktop App
+                              Go to Internxt Drive
                             </button>
-                          )}
-                        </Menu.Item>
+                          </Link>
+                        )}
+                      </Menu.Item>
 
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              onClick={() => {
-                                logout();
-                              }}
-                              className={`${active && 'bg-red-10 bg-opacity-50 text-red-60'} group flex rounded-md
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            onClick={() => {
+                              downloadDesktopApp();
+                            }}
+                            className={`${active && 'bg-cool-gray-5'} group flex rounded-md items-center w-full
+                                            px-4 py-2 font-medium`}
+                          >
+                            Download Desktop App
+                          </button>
+                        )}
+                      </Menu.Item>
+
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            onClick={() => {
+                              logout();
+                            }}
+                            className={`${active && 'bg-red-10 bg-opacity-50 text-red-60'} group flex rounded-md
                                             items-center w-full px-4 py-2 font-medium`}
-                            >
-                              Log out
-                            </button>
-                          )}
-                        </Menu.Item>
+                          >
+                            Log out
+                          </button>
+                        )}
+                      </Menu.Item>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              </>
+            ) : (
+              <>
+                {/* Login / Create account */}
+                <div className="flex flex-row space-x-3">
+                  <Link to="/login" className="no-underline">
+                    <div
+                      className="flex flex-row items-center justify-center rounded-lg h-9 px-4 font-medium
+                                    text-cool-gray-90 hover:text-cool-gray-90 cursor-pointer no-underline"
+                    >
+                      Login
+                    </div>
+                  </Link>
 
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
-                </>
-              ) : (
-                <>
-                  {/* Login / Create account */}
-                  <div className="flex flex-row space-x-3">
-                    <Link to="/login" className="no-underline">
-                      <div className="flex flex-row items-center justify-center rounded-lg h-9 px-4 font-medium
-                                    text-cool-gray-90 hover:text-cool-gray-90 cursor-pointer no-underline">
-                        Login
-                      </div>
-                    </Link>
-
-                    <Link to="/new" className="no-underline">
-                      <div className="flex flex-row items-center justify-center rounded-lg bg-cool-gray-10 h-9 px-4
+                  <Link to="/new" className="no-underline">
+                    <div
+                      className="flex flex-row items-center justify-center rounded-lg bg-cool-gray-10 h-9 px-4
                                     font-medium text-cool-gray-90 hover:text-cool-gray-90 cursor-pointer
-                                    no-underline">
-                        Create account
-                      </div>
-                    </Link>
-                  </div>
-                </>
-              )
-            }
-
+                                    no-underline"
+                    >
+                      Create account
+                    </div>
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
 
           {/* File container */}
-          <div className="flex flex-col items-center justify-center space-y-10 h-full mb-20">
-            {body}
-          </div>
-
+          <div className="flex flex-col items-center justify-center space-y-10 h-full mb-20">{body}</div>
         </div>
-
       </div>
     </>
   );
