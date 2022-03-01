@@ -5,7 +5,7 @@ import EventEmitter from 'events';
 import { v4 } from 'uuid';
 
 import { finishUpload, getUploadUrl, prepareUpload } from './requests';
-import { createAES256Cipher, encryptFilename } from './crypto';
+import { createAES256Cipher, encryptFilename, encryptReadable } from './crypto';
 
 export interface Abortable {
   stop: () => void;
@@ -57,35 +57,6 @@ async function getEncryptedFile(plainFile: File, cipher: Cipher): Promise<[Blob,
     new Blob(blobParts, { type: 'application/octet-stream' }),
     createHash('ripemd160').update(Buffer.from(hasher.result!)).digest('hex'),
   ];
-}
-
-/**
- * Given a stream and a cipher, encrypt its content
- * @param readable Readable stream
- * @param cipher Cipher used to encrypt the content
- * @returns A readable whose output is the encrypted content of the source stream
- */
-function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
-  const reader = readable.getReader();
-
-  const encryptedFileReadable = new ReadableStream({
-    async start(controller) {
-      let done = false;
-
-      while (!done) {
-        const status = await reader.read();
-
-        if (!status.done) {
-          controller.enqueue(cipher.update(status.value));
-        }
-
-        done = status.done;
-      }
-      controller.close();
-    },
-  });
-
-  return encryptedFileReadable;
 }
 
 function uploadFileBlob(
