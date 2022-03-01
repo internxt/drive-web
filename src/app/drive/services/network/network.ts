@@ -4,12 +4,7 @@ import { Readable } from 'stream';
 import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
-import { randomBytes } from 'crypto';
-import { finishUpload, getUploadUrl, prepareUpload } from './requests';
-import { getEncryptedFile, uploadFile } from './upload';
-import { createAES256Cipher, encryptFilename } from './crypto';
-import { v4 } from 'uuid';
-import { EventEmitter } from 'events';
+import { uploadFile } from '../network.service/upload';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 50 * 1024 * 1024 * 1024;
 
@@ -36,12 +31,6 @@ interface EnvironmentConfig {
 
 interface Abortable {
   stop: () => void;
-}
-
-class UploadAbortedError extends Error {
-  constructor() {
-    super('Upload aborted');
-  }
 }
 
 export class Network {
@@ -97,7 +86,11 @@ export class Network {
       throw new Error('File size can not be 0');
     }
 
-    return this.upload(bucketId, params);
+    return uploadFile(bucketId, {
+      ...params,
+      creds: this.creds,
+      mnemonic: this.mnemonic,
+    });
   }
 
   /**
@@ -140,86 +133,6 @@ export class Network {
     return [promise, actionState];
   }
 
-  upload(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
-    let aborted = false;
-    let uploadAbortable: Abortable;
-
-    const file: File = params.filecontent;
-    const eventEmitter = new EventEmitter().once('abort', () => {
-      aborted = true;
-      uploadAbortable?.stop();
-    });
-
-    const uploadPromise = (async () => {
-      const index = randomBytes(32);
-      const iv = index.slice(0, 16);
-
-      const frameId = await prepareUpload(bucketId, this.creds);
-      if (aborted) {
-        throw new UploadAbortedError();
-      }
-
-      const encryptionKey = await generateFileKey(this.mnemonic, bucketId, index);
-      if (aborted) {
-        throw new UploadAbortedError();
-      }
-
-      const [encryptedFile, fileHash] = await getEncryptedFile(file, createAES256Cipher(encryptionKey, iv));
-
-      const shardMeta = {
-        hash: fileHash,
-        index: 0,
-        parity: false,
-        size: params.filesize,
-      };
-      if (aborted) {
-        throw new UploadAbortedError();
-      }
-
-      const uploadUrl = await getUploadUrl(frameId, shardMeta, this.creds);
-      if (aborted) {
-        throw new UploadAbortedError();
-      }
-
-      // TODO: Remove proxy with incoming object storage migration
-      const [uploadPromise, uploadFileAbortable] = await uploadFile(
-        encryptedFile,
-        'https://proxy01.api.internxt.com/' + uploadUrl,
-        {
-          progressCallback: (progress) => params.progressCallback(progress, null, null),
-        },
-      );
-
-      uploadAbortable = uploadFileAbortable;
-
-      await uploadPromise;
-      const encryptedFilename = await encryptFilename(this.mnemonic, bucketId, v4());
-      if (aborted) {
-        throw new UploadAbortedError();
-      }
-
-      return finishUpload(
-        this.mnemonic,
-        bucketId,
-        frameId,
-        encryptedFilename,
-        index,
-        encryptionKey,
-        shardMeta,
-        this.creds,
-      );
-    })();
-
-    return [
-      uploadPromise,
-      {
-        stop: () => {
-          eventEmitter.emit('abort');
-        },
-      },
-    ];
-  }
-
   getFileDownloadStream(
     bucketId: string,
     fileId: string,
@@ -255,7 +168,7 @@ export class Network {
           },
         },
         {
-          label: 'Dynamic',
+          label: 'OneStreamOnly',
           params: {
             useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
             concurrency: 6,
