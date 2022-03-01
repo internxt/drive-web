@@ -17,7 +17,7 @@ const SidenavItem = ({ label, to, icon, isOpen, onClick }: SidenavItemProps): JS
     <Fragment>
       {icon}
 
-      {isOpen ? <span className="ml-2.5 text-base text-neutral-10">{label}</span> : null}
+      {isOpen ? <span className="ml-2.5 text-base">{label}</span> : null}
     </Fragment>
   );
   const overlay = (
@@ -38,7 +38,8 @@ const SidenavItem = ({ label, to, icon, isOpen, onClick }: SidenavItemProps): JS
           onClick={onClick}
         >
           {to ? (
-            <NavLink exact className={`${isOpen ? '' : 'justify-center'} nav-link flex items-center py-1.5`} to={to}>
+            <NavLink exact className={`${isOpen ? 'text-blue-60' : 'justify-center text-neutral-500'}
+                                       nav-link flex items-center py-1.5`} to={to}>
               {content}
             </NavLink>
           ) : (

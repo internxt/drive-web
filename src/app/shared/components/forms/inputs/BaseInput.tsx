@@ -54,7 +54,7 @@ const InputPrimary = ({
     />
 
     <div
-      className={`text-m-neutral-100 absolute ${
+      className={`text-neutral-100 absolute ${
         label === 'password' || label === 'confirmPassword'|| label === 'lastPassword' 
           ? 'right-3 bottom-2 cursor-pointer' 
           : 'right-3 bottom-2'

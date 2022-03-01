@@ -180,7 +180,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
               <div className="flex">
                 {this.hasAnyItemSelected ? (
-                  <BaseButton className="primary mr-2 flex items-center" onClick={this.onDownloadButtonClicked}>
+                  <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
                     <UilCloudDownload className="h-5 mr-1.5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
@@ -191,16 +191,16 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
-                  <BaseButton className="dark w-8 square mr-2" onClick={this.onCreateFolderButtonClicked}>
+                  <BaseButton className="tertiary w-8 square" onClick={this.onCreateFolderButtonClicked}>
                     <UilFolderPlus />
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
-                  <BaseButton className="dark w-8 square mr-2" onClick={this.onBulkDeleteButtonClicked}>
+                  <BaseButton className="tertiary w-8 square" onClick={this.onBulkDeleteButtonClicked}>
                     <UilTrashAlt />
                   </BaseButton>
                 ) : null}
-                <BaseButton className="dark square w-8" onClick={this.onViewModeButtonClicked}>
+                <BaseButton className="tertiary square w-8 ml-1.5" onClick={this.onViewModeButtonClicked}>
                   {viewModesIcons[viewMode]}
                 </BaseButton>
               </div>

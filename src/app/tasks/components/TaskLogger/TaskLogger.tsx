@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from 'react';
-import UilAngleDoubleDown from '@iconscout/react-unicons/icons/uil-angle-double-down';
+import UilAngleDown from '@iconscout/react-unicons/icons/uil-angle-down';
 import UilTimes from '@iconscout/react-unicons/icons/uil-times';
 
 import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
@@ -83,19 +83,19 @@ const TaskLogger = (): JSX.Element => {
               isMinimized ? 'rotate-180' : 'rotate-0'
             } cursor-pointer`}
           >
-            <UilAngleDoubleDown className="h-5" />
+            <UilAngleDown className="h-5" />
           </div>
 
           <div
             className={`${hasFinished ? 'cursor-pointer' : 'cursor-not-allowed'} cursor-pointer`}
             onClick={onCloseButtonClicked}
           >
-            <UilTimes className={`h-5 ${hasFinished ? 'text-white' : 'text-m-neutral-100'}`} />
+            <UilTimes className={`h-5 ${hasFinished ? 'text-white' : 'text-neutral-100'}`} />
           </div>
         </div>
       </div>
 
-      <div className="overflow-y-scroll scrollbar pt-2.5 h-full">{items}</div>
+      <div className="overflow-y-scroll pt-2.5 h-full">{items}</div>
     </div>
   );
 };

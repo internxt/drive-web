@@ -22,7 +22,7 @@ class DeviceDropdownActions extends React.Component<DeviceDropdownActionsProps> 
       <div>
         {title ? <span className="text-supporting-2 mb-1">{title}</span> : null}
 
-        {title && <hr className="text-l-neutral-30 my-1.5"></hr>}
+        {title && <hr className="text-neutral-30 my-1.5"></hr>}
         {!hiddenActions.includes(DriveItemAction.Delete) ? (
           <Dropdown.Item id="info" onClick={this.props.onDeleteButtonClicked}>
             <UilTrashAlt className="text-red-60 h-5 mr-1" />

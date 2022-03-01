@@ -3,12 +3,13 @@
     @apply relative bg-white p-4 box-border rounded-lg;
 
     &:hover, {
-      background-color: var(--color-blue-20);
+      @apply bg-neutral-10;
     }
 
     &.selected {
-      background-color: var(--color-blue-20);
-      box-shadow: inset 0 0 0 0.15rem var(--color-blue-40);
+      @apply bg-blue-10;
+
+      box-shadow: inset 0 0 0 2px var(--color-blue-50);
     }
 
     &.is-dragging {

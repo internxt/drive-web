@@ -13,13 +13,14 @@ import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytic
 import { userThunks } from 'app/store/slices/user';
 import i18n from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { items } from '@internxt/lib';
+import { items, aes } from '@internxt/lib';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import errorService from 'app/core/services/error.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
+import crypto from 'crypto';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
@@ -64,23 +65,36 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         return;
       }
 
+      let link;
       const network = new Network(email, userId, mnemonic);
-      const { index } = await network.getFileInfo(bucket, fileId);
-      const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
-      const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
 
-      const payload: ShareTypes.GenerateShareLinkPayload = {
-        fileId,
-        bucket,
-        fileToken,
-        isFolder: false,
-        views,
-        encryptionKey: fileEncryptionKey.toString('hex'),
-      };
-
-      const link = await shareService.generateShareLink(payload);
-
-
+      if (item.isFolder) {
+        const code = crypto.randomBytes(32).toString('hex');
+        const encryptedMnemonic = aes.encrypt(mnemonic, code);
+        const bucketToken = await network.createFileToken(bucket, '', 'PULL');
+        const payload: ShareTypes.GenerateShareLinkPayload = {
+          isFolder: true,
+          fileId: item.id.toString(),
+          bucket: bucket,
+          fileToken: bucketToken,
+          views: views,
+          encryptionKey: encryptedMnemonic
+        };
+        link = await shareService.generateShareFolderLink(payload, code);
+      } else {
+        const { index } = await network.getFileInfo(bucket, fileId);
+        const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
+        const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
+        const payload: ShareTypes.GenerateShareLinkPayload = {
+          isFolder: false,
+          fileId,
+          bucket,
+          fileToken,
+          views,
+          encryptionKey: fileEncryptionKey.toString('hex'),
+        };
+        link = await shareService.generateShareFileLink(payload);
+      }
       dispatch(referralsThunks.refreshUserReferrals());
 
       window.analytics.track('file-share');
@@ -109,9 +123,9 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   }, [numberOfAttempts]);
 
   return (
-    <BaseDialog isOpen={isOpen} title={itemFullName} titleClasses="text-m-neutral-100 text-base" onClose={onClose}>
+    <BaseDialog isOpen={isOpen} title={itemFullName} titleClasses="text-neutral-100 text-base" onClose={onClose}>
       <div className="share-dialog flex flex-col mb-8">
-        <hr className="border-t-1 border-l-neutral-50 mt-7 mb-6" />
+        <hr className="border-t-1 border-neutral-40 my-6" />
 
         <div className="px-8">
           <p className="w-full text-neutral-500 text-center">
@@ -120,7 +134,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
 
           <div className="flex mt-3">
             <span className="text-blue-60 mr-4">1.</span>
-            <div className="flex w-72 items-center rounded-md bg-l-neutral-20 px-4 py-3">
+            <div className="flex w-72 items-center rounded-md bg-neutral-20 px-4 py-3">
               <span className="text-neutral-500 text-sm">
                 Enter the number of times you'd like the link to be valid:
               </span>
@@ -141,7 +155,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
 
           <div
             className="flex w-72 items-center justify-between rounded-md \
-            bg-l-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text"
+            bg-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text"
             onClick={() => {
               navigator.clipboard.writeText(linkToCopy);
               notificationsService.show(i18n.get('success.linkCopied'), ToastType.Info);

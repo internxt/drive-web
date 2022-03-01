@@ -15,6 +15,7 @@ interface UISliceState {
   isDeleteItemsDialogOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
+  isSharedFolderTooBigDialogOpen: boolean,
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
@@ -34,6 +35,7 @@ const initialState: UISliceState = {
   isDeleteItemsDialogOpen: false,
   isNewsletterDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
+  isSharedFolderTooBigDialogOpen: false,
   isShareItemDialogOpen: false,
   isInviteMemberDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
@@ -71,6 +73,9 @@ export const uiSlice = createSlice({
     },
     setIsReachedPlanLimitDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isReachedPlanLimitDialogOpen = action.payload;
+    },
+    setIsSharedFolderTooBigDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isSharedFolderTooBigDialogOpen = action.payload;
     },
     setIsShareItemDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareItemDialogOpen = action.payload;
@@ -122,6 +127,7 @@ export const {
   setIsFileLoggerOpen,
   setIsFileInfoMenuOpen,
   setIsReachedPlanLimitDialogOpen,
+  setIsSharedFolderTooBigDialogOpen,
   setIsShareItemDialogOpen,
   setIsInviteMemberDialogOpen,
   setIsDriveItemInfoMenuOpen,

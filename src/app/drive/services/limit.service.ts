@@ -1,10 +1,11 @@
 import { bytesToString } from './size.service';
-import { createStorageClient } from '../../../factory/modules';
+import { SdkFactory } from '../../core/factory/sdk';
 
 export const INFINITE_LIMIT = 108851651149824;
 
 async function fetchLimit(): Promise<number> {
-  return createStorageClient().spaceLimit()
+  const storageClient = SdkFactory.getInstance().createStorageClient();
+  return storageClient.spaceLimit()
     .then(response => {
       return response.maxSpaceBytes;
     });

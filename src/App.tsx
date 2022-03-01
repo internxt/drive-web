@@ -12,7 +12,7 @@ import i18n from './app/i18n/services/i18n.service';
 import { AppViewConfig } from './app/core/types';
 import navigationService from './app/core/services/navigation.service';
 import layouts from './app/core/layouts';
-import { PATH_NAMES } from './app/analytics/services/analytics.service';
+import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
 import { sessionActions } from './app/store/slices/session';
 import { AppDispatch, RootState } from './app/store';
 import { initializeUserThunk } from './app/store/slices/user';
@@ -22,6 +22,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import views from './app/core/config/views';
 import FileViewer from './app/drive/components/FileViewer/FileViewer';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
+import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -88,11 +89,15 @@ class App extends Component<AppProps> {
     const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, fileViewerItem, dispatch } =
       this.props;
     const pathName = window.location.pathname.split('/')[1];
-    let template: JSX.Element = <div></div>;
+    let template = <PreparingWorkspaceAnimation />;
 
     if (window.location.pathname) {
       if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
         window.analytics.page(PATH_NAMES[window.location.pathname]);
+        serverPage(PATH_NAMES[window.location.pathname]).catch(() => {
+          // NO OP
+        });
+
       }
     }
 
@@ -121,9 +126,13 @@ class App extends Component<AppProps> {
             <ToastContainer />
 
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
-            {isFileViewerOpen && (
-              <FileViewer file={fileViewerItem} onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))} />
-            )}
+
+            <FileViewer
+              file={fileViewerItem}
+              onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
+              showPreview={isFileViewerOpen}
+            />
+
           </Router>
         </DndProvider>
       );

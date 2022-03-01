@@ -216,7 +216,7 @@ code {
     min-width: 175px;
     max-width: 250px;
 
-    @apply w-full no-underline py-1 px-5 hover:bg-l-neutral-20 active:bg-l-neutral-30 rounded-1px text-neutral-900 hover:text-neutral-900 text-base flex items-center;
+    @apply w-full no-underline py-1 px-5 hover:bg-neutral-20 active:bg-neutral-30 rounded-1px text-neutral-900 hover:text-neutral-900 text-base flex items-center;
 
     img {
       height: 14px;
@@ -229,17 +229,17 @@ code {
 
   /* INPUTS */
   input[type="checkbox"] {
-    @apply border-2 border-neutral-500 rounded-1px text-xs text-neutral-500 w-3 h-3;
+    @apply border-2 border-neutral-500 rounded text-xs text-neutral-500 w-4 h-4;
   }
 
   input:not([type]),
   input[type="text"],
   input[type="email"],
   input[type="password"] {
-    @apply ring-1 ring-m-neutral-100 rounded focus:ring-blue-60 text-neutral-500 placeholder-m-neutral-60 text-base px-3 py-2;
+    @apply ring-1 ring-neutral-100 rounded-md focus:ring-blue-60 text-neutral-500 placeholder-neutral-60 text-base px-3 py-2;
 
     &:disabled {
-      @apply bg-l-neutral-30;
+      @apply bg-neutral-30;
     }
 
     &:focus {
@@ -247,7 +247,7 @@ code {
     }
 
     &.error {
-      @apply border-l-8 focus:ring-pink-60 border-pink-60 ring-pink-60 bg-pink-10;
+      @apply border-l-8 focus:ring-pink-600 border-pink-600 ring-pink-600 bg-pink-100;
     }
 
     &.semi-dense {
@@ -272,7 +272,7 @@ code {
   }
 
   input[type="number"] {
-    @apply appearance-none border-m-neutral-60 outline-none text-center;
+    @apply appearance-none border-neutral-60 outline-none text-center;
 
     -moz-appearance: textfield;
   }
@@ -308,7 +308,7 @@ code {
     }
 
     &:disabled {
-      @apply bg-l-neutral-30 text-m-neutral-80 hover:bg-l-neutral-30;
+      @apply bg-neutral-30 text-neutral-80 hover:bg-neutral-30;
     }
   }
 
@@ -320,6 +320,11 @@ code {
   button.dark,
   .base-button.dark {
     @apply bg-white text-neutral-500 hover:bg-neutral-500 hover:text-white;
+  }
+
+  button.tertiary,
+  .base-button.tertiary {
+    @apply bg-white text-neutral-500 hover:bg-neutral-30;
   }
 
   button.cancel,
@@ -358,4 +363,9 @@ code {
 /* RECAPTCHA */
 .grecaptcha-badge {
   visibility: hidden;
+}
+
+/* Abbr */
+abbr[title] {
+  text-decoration: none !important;
 }

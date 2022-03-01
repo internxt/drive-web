@@ -1,7 +1,7 @@
 import { createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
-import { PATH_NAMES } from '../../analytics/services/analytics.service';
+import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView, AppViewConfig } from '../types';
 import configService from './config.service';
 
@@ -15,6 +15,9 @@ instance.listen((nav) => {
     const pageName = PATH_NAMES[keys[index]];
 
     window.analytics.page(pageName);
+    serverPage(pageName).catch(() => {
+      // NO OP
+    });
   }
 });
 

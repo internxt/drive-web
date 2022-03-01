@@ -5,6 +5,7 @@
 	"pluginsFile": "cypress/plugins/index.ts",
 	"testFiles": [
 		"signup.spec.ts",
+		"unauthorized.spec.ts",
 		"upload-file.spec.ts",
 		"download-file.spec.ts",
 		"share-file.spec.ts",

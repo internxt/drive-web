@@ -7,11 +7,11 @@ import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import uploadFile from './uploadFile';
 import * as uuid from 'uuid';
-import { createStorageClient } from '../../../../factory/modules';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { SdkFactory } from '../../../core/factory/sdk';
 
 export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {
-  const storageClient = createStorageClient();
+  const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.UpdateFilePayload = {
     fileId: fileId,
     metadata: metadata,
@@ -31,7 +31,7 @@ export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayloa
 }
 
 export function deleteFile(fileData: DriveFileData): Promise<void> {
-  const storageClient = createStorageClient();
+  const storageClient = SdkFactory.getInstance().createStorageClient();
   return storageClient.deleteFile({
     fileId: fileData.id,
     folderId: fileData.folderId
@@ -48,7 +48,7 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
 export async function moveFile(
   fileId: string, destination: number, bucketId: string
 ): Promise<StorageTypes.MoveFileResponse> {
-  const storageClient = createStorageClient();
+  const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.MoveFilePayload = {
     fileId: fileId,
     destination: destination,
@@ -75,7 +75,7 @@ export async function moveFile(
 }
 
 async function fetchRecents(limit: number): Promise<DriveFileData[]> {
-  const storageClient = createStorageClient();
+  const storageClient = SdkFactory.getInstance().createStorageClient();
   return storageClient.getRecentFiles(limit);
 }
 

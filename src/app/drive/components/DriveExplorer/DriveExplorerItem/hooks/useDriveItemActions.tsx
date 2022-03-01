@@ -1,7 +1,7 @@
 import { items } from '@internxt/lib';
 
 import { MouseEvent, ChangeEvent, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
-import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../../drive/types';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../types';
 import dateService from '../../../../../core/services/date.service';
 import iconService from '../../../../services/icon.service';
 import sizeService from '../../../../../drive/services/size.service';
@@ -75,17 +75,20 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
       confirmNameChange();
     }
   };
+
   const onDownloadButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
 
     dispatch(storageThunks.downloadItemsThunk([item]));
   };
-  const onShareButtonClicked = (e: React.MouseEvent): void => {
+
+  const onShareButtonClicked = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
 
     dispatch(storageActions.setItemToShare(item));
     dispatch(uiActions.setIsShareItemDialogOpen(true));
   };
+
   const onInfoButtonClicked = (e: React.MouseEvent): void => {
     const itemDisplayName = items.getItemDisplayName(item);
     const itemFullPath = `${currentFolderPath}${itemDisplayName}`;

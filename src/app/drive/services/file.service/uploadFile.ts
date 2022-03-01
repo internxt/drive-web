@@ -8,7 +8,7 @@ import navigationService from '../../../core/services/navigation.service';
 import { getEnvironmentConfig, Network } from '../network/network';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
-import { createStorageClient } from '../../../../factory/modules';
+import { SdkFactory } from '../../../core/factory/sdk';
 import { Abortable } from '../network/upload';
 
 export interface ItemToUpload {
@@ -60,7 +60,7 @@ export function uploadFile(
       const name = encryptFilename(file.name, file.parentFolderId);
       const folder_id = file.parentFolderId;
 
-      const storageClient = createStorageClient();
+      const storageClient = SdkFactory.getInstance().createStorageClient();
 
       const fileEntry: StorageTypes.FileEntry = {
         id: fileId,
