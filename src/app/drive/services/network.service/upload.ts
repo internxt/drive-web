@@ -34,7 +34,7 @@ type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBy
 
 type Hash = string;
 async function getEncryptedFile(plainFile: File, cipher: Cipher): Promise<[Blob, Hash]> {
-  const readable = plainFile.stream().getReader();
+  const readable = encryptReadable(plainFile.stream(), cipher).getReader();
   const hasher = new Sha256();
   const blobParts: ArrayBuffer[] = [];
 
@@ -44,9 +44,8 @@ async function getEncryptedFile(plainFile: File, cipher: Cipher): Promise<[Blob,
     const status = await readable.read();
 
     if (!status.done) {
-      const encryptedOutput = cipher.update(status.value);
-      hasher.process(encryptedOutput);
-      blobParts.push(encryptedOutput);
+      hasher.process(status.value);
+      blobParts.push(status.value);
     }
 
     done = status.done;
@@ -58,6 +57,35 @@ async function getEncryptedFile(plainFile: File, cipher: Cipher): Promise<[Blob,
     new Blob(blobParts, { type: 'application/octet-stream' }),
     createHash('ripemd160').update(Buffer.from(hasher.result!)).digest('hex'),
   ];
+}
+
+/**
+ * Given a stream and a cipher, encrypt its content
+ * @param readable Readable stream
+ * @param cipher Cipher used to encrypt the content
+ * @returns A readable whose output is the encrypted content of the source stream
+ */
+function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
+  const reader = readable.getReader();
+
+  const encryptedFileReadable = new ReadableStream({
+    async start(controller) {
+      let done = false;
+
+      while (!done) {
+        const status = await reader.read();
+
+        if (!status.done) {
+          controller.enqueue(cipher.update(status.value));
+        }
+
+        done = status.done;
+      }
+      controller.close();
+    },
+  });
+
+  return encryptedFileReadable;
 }
 
 function uploadFileBlob(
