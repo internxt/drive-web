@@ -4,7 +4,7 @@ import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/se
 import fileDownload from 'js-file-download';
 import JSZip from 'jszip';
 
-import { Network } from '../../network/network';
+import { Network } from '../../network.service';
 
 interface FolderPackage {
   folderId: number;

@@ -6,7 +6,7 @@ import { Readable } from 'stream';
 import streamSaver from 'streamsaver';
 import { items } from '@internxt/lib';
 
-import { Network } from '../../network/network';
+import { Network } from '../../network.service';
 
 interface FolderPackage {
   folderId: number;

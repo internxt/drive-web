@@ -2,7 +2,7 @@ import UilClipboardAlt from '@iconscout/react-unicons/icons/uil-clipboard-alt';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-import { generateFileKey, Network } from 'app/drive/services/network/network';
+import { generateFileKey, Network } from 'app/drive/services/network.service';
 import { DriveItemData } from 'app/drive/types';
 import { uiActions } from 'app/store/slices/ui';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';

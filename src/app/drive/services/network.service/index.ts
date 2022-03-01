@@ -4,9 +4,9 @@ import { Readable } from 'stream';
 import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
-import { uploadFile } from '../network.service/upload';
+import { uploadFile } from './upload';
 
-export const MAX_ALLOWED_UPLOAD_SIZE = 50 * 1024 * 1024 * 1024;
+export const MAX_ALLOWED_UPLOAD_SIZE = 3 * 1024 * 1024 * 1024;
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 interface IUploadParams {

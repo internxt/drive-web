@@ -1,6 +1,6 @@
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
-import { getEnvironmentConfig, Network } from '../network/network';
+import { getEnvironmentConfig, Network } from '../network.service';
 import { DeviceBackup } from '../../../backups/types';
 
 export default async function downloadBackup(

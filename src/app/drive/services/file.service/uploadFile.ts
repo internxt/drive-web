@@ -5,7 +5,7 @@ import analyticsService from '../../../analytics/services/analytics.service';
 import { AppView, DevicePlatform } from '../../../core/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
-import { getEnvironmentConfig, Network } from '../network/network';
+import { getEnvironmentConfig, Network } from '../network.service';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
@@ -69,19 +69,18 @@ export function uploadFile(
         name: name,
         bucket: bucketId,
         folder_id: folder_id,
-        encrypt_version: StorageTypes.EncryptionVersion.Aes03
+        encrypt_version: StorageTypes.EncryptionVersion.Aes03,
       };
 
-      return storageClient.createFileEntry(fileEntry)
-        .then(response => {
-          analyticsService.trackFileUploadFinished({
-            file_size: file.size,
-            file_id: response.id,
-            file_type: file.type,
-            email: userEmail,
-          });
-          return response;
+      return storageClient.createFileEntry(fileEntry).then((response) => {
+        analyticsService.trackFileUploadFinished({
+          file_size: file.size,
+          file_id: response.id,
+          file_type: file.type,
+          email: userEmail,
         });
+        return response;
+      });
     });
     actionState = uploadFileActionState;
   } catch (err: unknown) {
