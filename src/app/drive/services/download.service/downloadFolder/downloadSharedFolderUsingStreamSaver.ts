@@ -6,7 +6,7 @@ import { Readable } from 'stream';
 import streamSaver from 'streamsaver';
 import { items } from '@internxt/lib';
 
-import { Network } from '../../network';
+import { Network } from '../../network/network';
 
 interface FolderPackage {
   folderId: number;
@@ -66,7 +66,7 @@ export async function downloadSharedFolderUsingStreamSaver(
           directoryId: folderToDownload.folderId,
           offset: filesOffset,
           limit: options.foldersLimit,
-          code: sharedFolderMeta.code
+          code: sharedFolderMeta.code,
         });
 
         filesOffset += options.filesLimit;
@@ -116,7 +116,6 @@ export async function downloadSharedFolderUsingStreamSaver(
         completed = last;
         foldersOffset += options.foldersLimit;
       }
-
     } while (pendingFolders.length > 0);
 
     window.addEventListener('unload', onUnload);
