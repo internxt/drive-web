@@ -9,7 +9,7 @@ import { getSharedFileInfo } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
-import { Network } from 'app/drive/services/network';
+import { Network } from 'app/drive/services/network.service';
 import i18n from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../app/store/hooks';
