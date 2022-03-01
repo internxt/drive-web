@@ -72,21 +72,19 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         const code = crypto.randomBytes(32).toString('hex');
         const encryptedMnemonic = aes.encrypt(mnemonic, code);
         const bucketToken = await network.createFileToken(bucket, '', 'PULL');
-        const payload: ShareTypes.GenerateShareLinkPayload = {
-          isFolder: true,
-          fileId: item.id.toString(),
+        const payload: ShareTypes.GenerateShareFolderLinkPayload = {
+          folderId: item.id,
           bucket: bucket,
-          fileToken: bucketToken,
+          bucketToken: bucketToken,
           views: views,
-          encryptionKey: encryptedMnemonic
+          encryptedMnemonic: encryptedMnemonic,
         };
         link = await shareService.generateShareFolderLink(payload, code);
       } else {
         const { index } = await network.getFileInfo(bucket, fileId);
         const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
         const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
-        const payload: ShareTypes.GenerateShareLinkPayload = {
-          isFolder: false,
+        const payload: ShareTypes.GenerateShareFileLinkPayload = {
           fileId,
           bucket,
           fileToken,
