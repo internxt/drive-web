@@ -97,7 +97,6 @@ function uploadFileBlob(
 ): [Promise<void>, Abortable] {
   const uploadRequest = new XMLHttpRequest();
   const eventEmitter = new EventEmitter().once('abort', () => {
-    console.log('abort');
     uploadRequest.abort();
   });
 
@@ -109,7 +108,6 @@ function uploadFileBlob(
 
   const uploadFinishedPromise = new Promise<void>((resolve, reject) => {
     uploadRequest.onload = (e) => {
-      console.log('upload finished');
       if (uploadRequest.status !== 200) {
         return reject(
           new Error('Upload failed with code ' + uploadRequest.status + ' message ' + uploadRequest.response),
@@ -171,29 +169,28 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
       throw new UploadAbortedError();
     }
 
-    const uploadUrl = await getUploadUrl(frameId, shardMeta, params.creds);
+    const uploadUrl = new URL(await getUploadUrl(frameId, shardMeta, params.creds));
     if (aborted) {
       throw new UploadAbortedError();
     }
 
-    // TODO: Remove proxy with incoming object storage migration
+    const useProxy = !uploadUrl.hostname.includes('internxt');
+
     const [uploadPromise, uploadFileAbortable] = await uploadFileBlob(
       encryptedFile,
-      process.env.REACT_APP_PROXY + '/' + uploadUrl,
+      (useProxy && process.env.REACT_APP_PROXY + '/') + uploadUrl.toString(),
       {
         progressCallback: (progress) => params.progressCallback(progress, null, null),
       },
     );
 
     uploadAbortable = uploadFileAbortable;
-
     await uploadPromise;
+
     const encryptedFilename = await encryptFilename(params.mnemonic, bucketId, v4());
     if (aborted) {
       throw new UploadAbortedError();
     }
-
-    console.log('finishing upload');
 
     return finishUpload(
       params.mnemonic,
