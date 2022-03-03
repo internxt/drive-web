@@ -6,15 +6,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform } from 'app/core/types';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
-import fetchFileBlob from './fetchFileBlob';
 import fetchFileStream from './fetchFileStream';
-
-interface Writer<T> {
-  write: (chunk: T) => Promise<void>
-  close: () => Promise<void>
-}
-
-type Uint8ArrayWriter = Writer<Uint8Array>;
 
 const trackFileDownloadStart = (
   userEmail: string,
@@ -35,17 +27,70 @@ const trackFileDownloadError = (userEmail: string, file_id: string, msg: string)
   analyticsService.trackFileDownloadError(data);
 };
 
-function getBlobWriter(filename: string, onClose: (result: Blob) => void): Writer<Uint8Array> {
-  const blobParts: Uint8Array[] = [];
+interface BlobWritable {
+  getWriter: () => {
+    abort: () => Promise<void>
+    close: () => Promise<void>
+    closed: Promise<undefined>
+    desiredSize: number | null
+    ready: Promise<undefined>
+    releaseLock: () => void
+    write: (chunk: any) => Promise<void>
+  },
+  locked: boolean,
+  abort: () => Promise<void>
+  close: () => Promise<void>
+}
+
+function getBlobWritable(filename: string, onClose: (result: Blob) => void): BlobWritable {
+  let blobParts: Uint8Array[] = [];
 
   return {
-    write: async (chunk) => {
-      blobParts.push(chunk);
+    getWriter: () => {
+      return {
+        abort: async () => {
+          blobParts = [];
+        },
+        close: async () => {
+          onClose(new File(blobParts, filename));
+        },
+        closed: Promise.resolve(undefined),
+        desiredSize: 3 * 1024 * 1024,
+        ready: Promise.resolve(undefined),
+        releaseLock: () => { null; },
+        write: async (chunk) => {
+          blobParts.push(chunk);
+        }
+      };
+    },
+    locked: false,
+    abort: async () => {
+      blobParts = [];
     },
     close: async () => {
       onClose(new File(blobParts, filename));
     }
   };
+}
+
+async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
+  const reader = readable.getReader();
+  const writer = writable.getWriter();
+
+  let done = false;
+
+  while (!done) {
+    const status = await reader.read();
+
+    if (!status.done) {
+      await writer.write(status.value);
+    }
+
+    done = status.done;
+  } 
+
+  await reader.closed;
+  await writer.close();
 }
 
 export default function downloadFile(
@@ -72,7 +117,7 @@ export default function downloadFile(
   const writeToFsIsSupported = 'showSaveFilePicker' in window;
   const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
 
-  let writerPromise: Promise<Uint8ArrayWriter>;
+  let writerPromise: Promise<WritableStream>;
 
   if (writeToFsIsSupported) {
     writerPromise = window.showSaveFilePicker({
@@ -83,41 +128,48 @@ export default function downloadFile(
       return w.getWriter();
     });
   } else if (writableIsSupported) {
-    writerPromise = new Promise<Uint8ArrayWriter>((resolve) => {
+    writerPromise = new Promise((resolve) => {
       resolve(
-        streamSaver.createWriteStream(completeFilename, { size: itemData.size }).getWriter()
+        streamSaver.createWriteStream(completeFilename, { size: itemData.size })
       );
     });
   } else {
     writerPromise = new Promise((resolve) => {
-      resolve(getBlobWriter(completeFilename, (blob) => {
+      resolve(getBlobWritable(completeFilename, (blob) => {
         downloadFileFromBlob(blob, completeFilename);
       }));
     });
   }
 
   const downloadPromise = fileStreamPromise.then((readable) => {
-    return writerPromise.then(async (writer) => {
-      const reader = readable.getReader();
-
+    return writerPromise.then((writable) => {
       let downloadedBytes = 0;
-      let done = false;
 
-      while (!done) {
-        const status = await reader.read();
+      const passThrough = new ReadableStream({
+        async start(controller) {
+          const reader = readable.getReader();
+          let ended = false;
 
-        if (!status.done) {
-          await writer.write(status.value);
+          while (!ended) {
+            const { value, done } = await reader.read();
 
-          downloadedBytes += status.value.length;
+            if (!done) {
+              downloadedBytes += (value as Uint8Array).length;
+              console.log('progress', downloadedBytes / itemData.size);
 
-          updateProgressCallback(downloadedBytes / itemData.size);
+              updateProgressCallback(downloadedBytes / itemData.size);
+              controller.enqueue(value);
+            } else {
+              ended = true;
+            }
+          }
+
+          await reader.closed;
+          controller.close();
         }
+      });
 
-        done = status.done;
-      }
-
-      await writer.close();
+      return passThrough.pipeTo && passThrough.pipeTo(writable) || pipe(passThrough, writable);
     }).catch(handleError);
   });
 
