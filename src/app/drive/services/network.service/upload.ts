@@ -55,7 +55,7 @@ async function getEncryptedFile(plainFile: File, cipher: Cipher): Promise<[Blob,
 
   return [
     new Blob(blobParts, { type: 'application/octet-stream' }),
-    createHash('ripemd160').update(Buffer.from(hasher.result!)).digest('hex'),
+    createHash('ripemd160').update(Buffer.from(hasher.result as Uint8Array)).digest('hex'),
   ];
 }
 
@@ -78,7 +78,7 @@ function uploadFileBlob(
   uploadRequest.upload.addEventListener('loadend', () => opts.progressCallback(1));
 
   const uploadFinishedPromise = new Promise<void>((resolve, reject) => {
-    uploadRequest.onload = (e) => {
+    uploadRequest.onload = () => {
       if (uploadRequest.status !== 200) {
         return reject(
           new Error('Upload failed with code ' + uploadRequest.status + ' message ' + uploadRequest.response),

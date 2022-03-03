@@ -36,7 +36,7 @@ interface BlobWritable {
     desiredSize: number | null
     ready: Promise<undefined>
     releaseLock: () => void
-    write: (chunk: any) => Promise<void>
+    write: (chunk: Uint8Array) => Promise<void>
   },
   locked: boolean,
   abort: () => Promise<void>
@@ -107,7 +107,7 @@ export default function downloadFile(
 
   const [fileStreamPromise, actionState] = fetchFileStream(itemData, { isTeam, updateProgressCallback });
 
-  const handleError = (err: any) => {
+  const handleError = (err: unknown) => {
     const errMessage = err instanceof Error ? err.message : (err as string);
 
     trackFileDownloadError(userEmail, fileId, errMessage);

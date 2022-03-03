@@ -127,7 +127,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         }
       };
       const taskFn = async (): Promise<DriveFileData> => {
-        const task = tasksService.findTask(taskId);
         const [uploadFilePromise, actionState] = fileService.uploadFile(
           user.email,
           file,

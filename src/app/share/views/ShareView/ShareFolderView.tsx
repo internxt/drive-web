@@ -91,7 +91,7 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
         setIsLoaded(true);
         setInfo(sharedFolderInfo);
 
-        return loadSize((sharedFolderInfo as any).shareId, sharedFolderInfo.folderId);
+        return loadSize((sharedFolderInfo as unknown as { shareId: number }).shareId, sharedFolderInfo.folderId);
       })
       .then((folderSize) => {
         setSize(folderSize);
@@ -148,6 +148,7 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
 
         const directoryPickerIsSupported = 'showDirectoryPicker' in window;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let downloadFolder: (...args: any) => Promise<void>;
 
         if (directoryPickerIsSupported) {

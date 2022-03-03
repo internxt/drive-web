@@ -99,6 +99,7 @@ async function replaceMirror(
       newMirror.farmer && newMirror.farmer.nodeID && newMirror.farmer.port && newMirror.farmer.address ? true : false;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return mirror!;
 }
 
@@ -254,7 +255,7 @@ export function checkBucketExistence(bucketId: string, creds: NetworkCredentials
     url: `${networkApiUrl}/buckets/${bucketId}`,
   };
 
-  return axios.request<any>(options).then(() => {
+  return axios.request(options).then(() => {
     // If no error -> Bucket exists
     return true;
   });

@@ -13,7 +13,7 @@ import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
 import { storageActions } from '../../../../../store/slices/storage';
 import iconService from '../../../../services/icon.service';
-import { DriveExplorerItemProps, DriveItemAction } from '..';
+import { DriveExplorerItemProps } from '..';
 import { useAppDispatch } from '../../../../../store/hooks';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';

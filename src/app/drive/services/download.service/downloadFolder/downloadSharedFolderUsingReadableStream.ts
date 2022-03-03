@@ -53,9 +53,11 @@ export async function downloadSharedFolderUsingReadableStream(
     start(ctrl) {
       ctrl.enqueue({ name: rootFolder.name, directory: true });
     },
-    // eslint-disable-next-line max-len
     async pull(ctrl: {
-      enqueue: (content: { name: string, stream?: () => ReadableStream<any> | undefined, directory?: boolean }) => void,
+      enqueue: (content: {
+        name: string
+        stream?: () => ReadableStream<Uint8Array> | undefined, directory?: boolean
+      }) => void,
       close: () => void
     }) {
 
@@ -94,7 +96,7 @@ export async function downloadSharedFolderUsingReadableStream(
         const { value, done } = await reader.read();
 
         if (!done) {
-          downloadedBytes += value.length;
+          downloadedBytes += (value as Uint8Array).length;
           controller.enqueue(value);
         } else {
           ended = true;
@@ -165,7 +167,7 @@ export async function downloadSharedFolderUsingReadableStream(
 
     await zipDownloadPromise;
     options.progressCallback(downloadedBytes);
-  } catch (err) { 
+  } catch (err) {
     throw errorService.castError(error ?? err);
   } finally {
     clearInterval(progressIntervalId);

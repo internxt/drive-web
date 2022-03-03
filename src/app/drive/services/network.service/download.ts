@@ -48,8 +48,6 @@ function getDecryptedStream(
 
   const decryptedStream = new ReadableStream({
     async start(controller) {
-      let error: Error;
-
       try {
         for (const encryptedContentSlice of encryptedContentSlices) {
           const reader = encryptedContentSlice.getReader();
@@ -65,9 +63,6 @@ function getDecryptedStream(
             done = status.done;
           }
         }
-      } catch (err) {
-        // TODO
-        error = err as Error;
       } finally {
         controller.close();
       }
