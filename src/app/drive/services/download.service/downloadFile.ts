@@ -1,4 +1,4 @@
-import * as streamSaver from 'streamsaver';
+import streamSaver from 'streamsaver';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 import analyticsService from 'app/analytics/services/analytics.service';
@@ -7,6 +7,7 @@ import { DevicePlatform } from 'app/core/types';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
 import fetchFileStream from './fetchFileStream';
+import { loadWritableStreamPonyfill } from '../network.service/download';
 
 const trackFileDownloadStart = (
   userEmail: string,
@@ -87,7 +88,7 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
     }
 
     done = status.done;
-  } 
+  }
 
   await reader.closed;
   await writer.close();
@@ -124,20 +125,22 @@ export default function downloadFile(
       suggestedName: completeFilename
     }).then((fsHandle) => {
       return fsHandle.createWritable({ keepExistingData: false });
-    }).then((w) => {
-      return w.getWriter();
     });
   } else if (writableIsSupported) {
     writerPromise = new Promise((resolve) => {
-      resolve(
-        streamSaver.createWriteStream(completeFilename, { size: itemData.size })
-      );
+      resolve(streamSaver.createWriteStream(completeFilename));
     });
   } else {
     writerPromise = new Promise((resolve) => {
-      resolve(getBlobWritable(completeFilename, (blob) => {
-        downloadFileFromBlob(blob, completeFilename);
-      }));
+      return loadWritableStreamPonyfill().then(() => {
+        // TODO: Force streamSaver to use WritableStream ponyfill
+        streamSaver.WritableStream = window.WritableStream;
+        resolve(streamSaver.createWriteStream(completeFilename));
+      }).catch(() => {
+        resolve(getBlobWritable(completeFilename, (blob) => {
+          downloadFileFromBlob(blob, completeFilename);
+        }));
+      });
     });
   }
 
@@ -145,27 +148,19 @@ export default function downloadFile(
     return writerPromise.then((writable) => {
       let downloadedBytes = 0;
 
+      const reader = readable.getReader();
       const passThrough = new ReadableStream({
-        async start(controller) {
-          const reader = readable.getReader();
-          let ended = false;
+        async pull(controller) {
+          const { value, done } = await reader.read();
 
-          while (!ended) {
-            const { value, done } = await reader.read();
+          if (!done) {
+            downloadedBytes += (value as Uint8Array).length;
 
-            if (!done) {
-              downloadedBytes += (value as Uint8Array).length;
-              console.log('progress', downloadedBytes / itemData.size);
-
-              updateProgressCallback(downloadedBytes / itemData.size);
-              controller.enqueue(value);
-            } else {
-              ended = true;
-            }
+            updateProgressCallback(downloadedBytes / itemData.size);
+            controller.enqueue(value);
+          } else {
+            controller.close();
           }
-
-          await reader.closed;
-          controller.close();
         }
       });
 

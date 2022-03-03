@@ -5,7 +5,7 @@ import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from '.
 
 export function loadWritableStreamPonyfill(): Promise<void> {
   const script = document.createElement('script');
-  script.src = 'https://unpkg.com/web-streams-polyfill/dist/polyfill.min.js';
+  script.src = 'https://cdn.jsdelivr.net/npm/web-streams-polyfill@2.0.2/dist/ponyfill.min.js';
   document.head.appendChild(script);
 
   return new Promise((resolve) => {
