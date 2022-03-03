@@ -17,7 +17,7 @@ export function loadWritableStreamPonyfill(): Promise<void> {
 
 const generateFileKey = Environment.utils.generateFileKey;
 
-interface Abortable {
+export interface Abortable {
   abort: () => void;
 }
 
