@@ -1,18 +1,17 @@
 import { Environment } from '@internxt/inxt-js';
 import { ActionState, FileInfo } from '@internxt/inxt-js/build/api';
 import { Readable } from 'stream';
-import localStorageService from '../../core/services/local-storage.service';
+import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { TeamsSettings } from '../../teams/types';
-import * as blobToStream from 'blob-to-stream';
-import * as uuid from 'uuid';
+import { TeamsSettings } from '../../../teams/types';
+import { uploadFile } from './upload';
 
-export const MAX_ALLOWED_UPLOAD_SIZE = 1024 * 1024 * 1024;
+export const MAX_ALLOWED_UPLOAD_SIZE = 3 * 1024 * 1024 * 1024;
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 interface IUploadParams {
   filesize: number;
-  filecontent: Blob;
+  filecontent: File;
   progressCallback: ProgressCallback;
 }
 
@@ -30,8 +29,19 @@ interface EnvironmentConfig {
   useProxy: boolean;
 }
 
+interface Abortable {
+  stop: () => void;
+}
+
 export class Network {
   private environment: Environment;
+
+  private mnemonic: string;
+
+  private creds: {
+    user: string;
+    pass: string;
+  };
 
   constructor(bridgeUser: string, bridgePass: string, encryptionKey: string) {
     if (!bridgeUser) {
@@ -45,6 +55,13 @@ export class Network {
     if (!encryptionKey) {
       throw new Error('Mnemonic not provided');
     }
+
+    this.creds = {
+      user: bridgeUser,
+      pass: bridgePass,
+    };
+
+    this.mnemonic = encryptionKey;
 
     this.environment = new Environment({
       bridgePass,
@@ -60,43 +77,20 @@ export class Network {
    * @param params Required params for uploading a file
    * @returns Id of the created file
    */
-  uploadFile(bucketId: string, params: IUploadParams): [Promise<string>, ActionState | undefined] {
-    let actionState: ActionState | undefined;
-
+  uploadFile(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
     if (!bucketId) {
       throw new Error('Bucket id not provided');
     }
 
-    const promise = new Promise((resolve: (fileId: string) => void, reject) => {
-      actionState = this.environment.upload(
-        bucketId,
-        {
-          name: uuid.v4(),
-          progressCallback: params.progressCallback,
-          finishedCallback: (err, fileId) => {
-            if (err) {
-              return reject(err);
-            }
+    if (params.filesize === 0) {
+      throw new Error('File size can not be 0');
+    }
 
-            if (!fileId) {
-              return reject(Error('File not created'));
-            }
-
-            resolve(fileId);
-          },
-        },
-        {
-          label: 'OneStreamOnly',
-          params: {
-            source: { size: params.filesize, stream: blobToStream(params.filecontent) },
-            useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
-            concurrency: 6,
-          },
-        },
-      );
+    return uploadFile(bucketId, {
+      ...params,
+      creds: this.creds,
+      mnemonic: this.mnemonic,
     });
-
-    return [promise, actionState];
   }
 
   /**

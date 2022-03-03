@@ -5,7 +5,7 @@ import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 import internal from 'stream';
 
 import errorService from 'app/core/services/error.service';
-import { getEnvironmentConfig, Network } from '../../../services/network';
+import { getEnvironmentConfig, Network } from '../../network.service';
 import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
 import i18n from 'app/i18n/services/i18n.service';

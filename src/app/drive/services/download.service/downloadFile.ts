@@ -1,3 +1,4 @@
+import streamSaver from 'streamsaver';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 import analyticsService from 'app/analytics/services/analytics.service';
@@ -5,7 +6,8 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform } from 'app/core/types';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
-import fetchFileBlob from './fetchFileBlob';
+import fetchFileStream from './fetchFileStream';
+import { loadWritableStreamPonyfill } from '../network.service/download';
 
 const trackFileDownloadStart = (
   userEmail: string,
@@ -26,6 +28,72 @@ const trackFileDownloadError = (userEmail: string, file_id: string, msg: string)
   analyticsService.trackFileDownloadError(data);
 };
 
+interface BlobWritable {
+  getWriter: () => {
+    abort: () => Promise<void>
+    close: () => Promise<void>
+    closed: Promise<undefined>
+    desiredSize: number | null
+    ready: Promise<undefined>
+    releaseLock: () => void
+    write: (chunk: Uint8Array) => Promise<void>
+  },
+  locked: boolean,
+  abort: () => Promise<void>
+  close: () => Promise<void>
+}
+
+function getBlobWritable(filename: string, onClose: (result: Blob) => void): BlobWritable {
+  let blobParts: Uint8Array[] = [];
+
+  return {
+    getWriter: () => {
+      return {
+        abort: async () => {
+          blobParts = [];
+        },
+        close: async () => {
+          onClose(new File(blobParts, filename));
+        },
+        closed: Promise.resolve(undefined),
+        desiredSize: 3 * 1024 * 1024,
+        ready: Promise.resolve(undefined),
+        releaseLock: () => { null; },
+        write: async (chunk) => {
+          blobParts.push(chunk);
+        }
+      };
+    },
+    locked: false,
+    abort: async () => {
+      blobParts = [];
+    },
+    close: async () => {
+      onClose(new File(blobParts, filename));
+    }
+  };
+}
+
+async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
+  const reader = readable.getReader();
+  const writer = writable.getWriter();
+
+  let done = false;
+
+  while (!done) {
+    const status = await reader.read();
+
+    if (!status.done) {
+      await writer.write(status.value);
+    }
+
+    done = status.done;
+  }
+
+  await reader.closed;
+  await writer.close();
+}
+
 export default function downloadFile(
   itemData: DriveFileData,
   isTeam: boolean,
@@ -37,22 +105,73 @@ export default function downloadFile(
 
   trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
 
-  const [blobPromise, actionState] = fetchFileBlob(itemData, { isTeam, updateProgressCallback });
-  const fileBlobPromise = blobPromise
-    .then((fileBlob) => {
-      downloadFileFromBlob(fileBlob, completeFilename);
-      analyticsService.trackFileDownloadCompleted({
-        size: itemData.size,
-        extension: itemData.type,
-      });
-    })
-    .catch((err) => {
-      const errMessage = err instanceof Error ? err.message : (err as string);
+  const [fileStreamPromise, actionState] = fetchFileStream(itemData, { isTeam, updateProgressCallback });
 
-      trackFileDownloadError(userEmail, fileId, errMessage);
+  const handleError = (err: unknown) => {
+    const errMessage = err instanceof Error ? err.message : (err as string);
 
-      throw new Error(errMessage);
+    trackFileDownloadError(userEmail, fileId, errMessage);
+
+    throw new Error(errMessage);
+  };
+
+  const writeToFsIsSupported = 'showSaveFilePicker' in window;
+  const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
+
+  let writerPromise: Promise<WritableStream>;
+
+  if (writeToFsIsSupported) {
+    writerPromise = window.showSaveFilePicker({
+      suggestedName: completeFilename
+    }).then((fsHandle) => {
+      return fsHandle.createWritable({ keepExistingData: false });
     });
+  } else if (writableIsSupported) {
+    writerPromise = new Promise((resolve) => {
+      resolve(streamSaver.createWriteStream(completeFilename));
+    });
+  } else {
+    writerPromise = new Promise((resolve) => {
+      return loadWritableStreamPonyfill().then(() => {
+        // TODO: Force streamSaver to use WritableStream ponyfill
+        streamSaver.WritableStream = window.WritableStream;
+        resolve(streamSaver.createWriteStream(completeFilename));
+      }).catch(() => {
+        resolve(getBlobWritable(completeFilename, (blob) => {
+          downloadFileFromBlob(blob, completeFilename);
+        }));
+      });
+    });
+  }
 
-  return [fileBlobPromise.then(), actionState];
+  const downloadPromise = fileStreamPromise.then((readable) => {
+    return writerPromise.then((writable) => {
+      let downloadedBytes = 0;
+
+      const reader = readable.getReader();
+      const passThrough = new ReadableStream({
+        async pull(controller) {
+          const { value, done } = await reader.read();
+
+          if (!done) {
+            downloadedBytes += (value as Uint8Array).length;
+
+            updateProgressCallback(downloadedBytes / itemData.size);
+            controller.enqueue(value);
+          } else {
+            controller.close();
+          }
+        }
+      });
+
+      return passThrough.pipeTo && passThrough.pipeTo(writable) || pipe(passThrough, writable);
+    }).catch(handleError);
+  });
+
+  return [downloadPromise.then(() => {
+    analyticsService.trackFileDownloadCompleted({
+      size: itemData.size,
+      extension: itemData.type,
+    });
+  }), actionState];
 }

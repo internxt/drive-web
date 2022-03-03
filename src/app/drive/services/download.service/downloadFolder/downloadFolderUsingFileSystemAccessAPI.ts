@@ -3,7 +3,7 @@ import { items } from '@internxt/lib';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 import errorService from 'app/core/services/error.service';
-import { getEnvironmentConfig, Network } from '../../../services/network';
+import { getEnvironmentConfig, Network } from '../../network.service';
 import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
 import internal from 'stream';

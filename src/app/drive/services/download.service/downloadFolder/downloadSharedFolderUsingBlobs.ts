@@ -4,7 +4,7 @@ import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/se
 import fileDownload from 'js-file-download';
 import JSZip from 'jszip';
 
-import { Network } from '../../network';
+import { Network } from '../../network.service';
 
 interface FolderPackage {
   folderId: number;
@@ -28,7 +28,7 @@ export async function downloadSharedFolderUsingBlobs(
 
   const progressIntervalId = setInterval(() => {
     const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
-    const totalProgress = (totalDownloadedSize / sharedFolderMeta.size) - 0.01;
+    const totalProgress = totalDownloadedSize / sharedFolderMeta.size - 0.01;
 
     (options.progressCallback || (() => undefined))(totalProgress >= 0 ? totalProgress : 0);
   }, 1000);
@@ -36,7 +36,7 @@ export async function downloadSharedFolderUsingBlobs(
   const rootFolder: FolderPackage = {
     folderId: sharedFolderMeta.id,
     pack: zip,
-    name: sharedFolderMeta.name
+    name: sharedFolderMeta.name,
   };
   const pendingFolders: FolderPackage[] = [rootFolder];
 
@@ -55,7 +55,7 @@ export async function downloadSharedFolderUsingBlobs(
           directoryId: folderToDownload.folderId,
           offset: filesOffset,
           limit: options.foldersLimit,
-          code: sharedFolderMeta.code
+          code: sharedFolderMeta.code,
         });
 
         filesOffset += options.filesLimit;
@@ -100,7 +100,6 @@ export async function downloadSharedFolderUsingBlobs(
         completed = last;
         foldersOffset += options.foldersLimit;
       }
-
     } while (pendingFolders.length > 0);
   } catch (err) {
     throw errorService.castError(err);

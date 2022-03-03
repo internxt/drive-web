@@ -18,7 +18,7 @@ export function createAES256Cipher(key: Buffer, iv: Buffer): Cipher {
 
 export function generateHMAC(
   shardMetas: Omit<ShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
-  encryptionKey: Buffer
+  encryptionKey: Buffer,
 ): Buffer {
   const shardHashesSorted = [...shardMetas].sort((sA, sB) => sA.index - sB.index);
   const hmac = sha512HmacBuffer(encryptionKey);
@@ -56,4 +56,33 @@ export async function encryptFilename(mnemonic: string, bucketId: string, filena
   const encryptionIv = sha512HmacBufferFromHex(bucketKey).update(bucketId).update(filename).digest().slice(0, 32);
 
   return encryptMeta(filename, encryptionKey, encryptionIv);
+}
+
+/**
+ * Given a stream and a cipher, encrypt its content
+ * @param readable Readable stream
+ * @param cipher Cipher used to encrypt the content
+ * @returns A readable whose output is the encrypted content of the source stream
+ */
+export function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
+  const reader = readable.getReader();
+
+  const encryptedFileReadable = new ReadableStream({
+    async start(controller) {
+      let done = false;
+
+      while (!done) {
+        const status = await reader.read();
+
+        if (!status.done) {
+          controller.enqueue(cipher.update(status.value));
+        }
+
+        done = status.done;
+      }
+      controller.close();
+    },
+  });
+
+  return encryptedFileReadable;
 }

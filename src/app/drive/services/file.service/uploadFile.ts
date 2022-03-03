@@ -1,15 +1,15 @@
 import { toast } from 'react-toastify';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 import { DriveFileData } from '../../types';
 import analyticsService from '../../../analytics/services/analytics.service';
 import { AppView, DevicePlatform } from '../../../core/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
-import { getEnvironmentConfig, Network } from '../network';
+import { getEnvironmentConfig, Network } from '../network.service';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
+import { Abortable } from '../network.service/upload';
 
 export interface ItemToUpload {
   name: string;
@@ -24,9 +24,9 @@ export function uploadFile(
   file: ItemToUpload,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-): [Promise<DriveFileData>, ActionState | undefined] {
+): [Promise<DriveFileData>, Abortable | undefined] {
   let promise: Promise<DriveFileData>;
-  let actionState: ActionState | undefined;
+  let actionState: Abortable | undefined;
 
   try {
     analyticsService.trackFileUploadStart({
@@ -49,10 +49,10 @@ export function uploadFile(
     }
 
     const network = new Network(bridgeUser, bridgePass, encryptionKey);
-    const content = new Blob([file.content], { type: file.type });
+    // const content = new Blob([file.content], { type: file.type });
     const [uploadFilePromise, uploadFileActionState] = network.uploadFile(bucketId, {
       filesize: file.size,
-      filecontent: content,
+      filecontent: file.content,
       progressCallback: updateProgressCallback,
     });
 
@@ -69,19 +69,18 @@ export function uploadFile(
         name: name,
         bucket: bucketId,
         folder_id: folder_id,
-        encrypt_version: StorageTypes.EncryptionVersion.Aes03
+        encrypt_version: StorageTypes.EncryptionVersion.Aes03,
       };
 
-      return storageClient.createFileEntry(fileEntry)
-        .then(response => {
-          analyticsService.trackFileUploadFinished({
-            file_size: file.size,
-            file_id: response.id,
-            file_type: file.type,
-            email: userEmail,
-          });
-          return response;
+      return storageClient.createFileEntry(fileEntry).then((response) => {
+        analyticsService.trackFileUploadFinished({
+          file_size: file.size,
+          file_id: response.id,
+          file_type: file.type,
+          email: userEmail,
         });
+        return response;
+      });
     });
     actionState = uploadFileActionState;
   } catch (err: unknown) {

@@ -12,7 +12,7 @@ import errorService from 'app/core/services/error.service';
 import i18n from 'app/i18n/services/i18n.service';
 import { renameFile } from 'app/crypto/services/utils';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network';
+import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { ItemToUpload } from 'app/drive/services/file.service/uploadFile';
@@ -43,7 +43,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
   'storage/uploadItems',
   async ({ files, parentFolderId, options }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
-    const showSizeWarning = files.some((file) => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
+    const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
     const filesToUpload: ItemToUpload[] = [];
     const errors: Error[] = [];
@@ -127,7 +127,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         }
       };
       const taskFn = async (): Promise<DriveFileData> => {
-        const task = tasksService.findTask(taskId);
         const [uploadFilePromise, actionState] = fileService.uploadFile(
           user.email,
           file,
@@ -140,7 +139,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           merge: {
             status: TaskStatus.Encrypting,
             stop: async () => {
-              task?.stop?.();
               actionState?.stop();
             },
           },

@@ -5,7 +5,7 @@ import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from '.
 
 export function loadWritableStreamPonyfill(): Promise<void> {
   const script = document.createElement('script');
-  script.src = 'https://unpkg.com/web-streams-polyfill/dist/polyfill.min.js';
+  script.src = 'https://cdn.jsdelivr.net/npm/web-streams-polyfill@2.0.2/dist/ponyfill.min.js';
   document.head.appendChild(script);
 
   return new Promise((resolve) => {
@@ -17,7 +17,7 @@ export function loadWritableStreamPonyfill(): Promise<void> {
 
 const generateFileKey = Environment.utils.generateFileKey;
 
-interface Abortable {
+export interface Abortable {
   abort: () => void;
 }
 
@@ -48,8 +48,6 @@ function getDecryptedStream(
 
   const decryptedStream = new ReadableStream({
     async start(controller) {
-      let error: Error;
-
       try {
         for (const encryptedContentSlice of encryptedContentSlices) {
           const reader = encryptedContentSlice.getReader();
@@ -65,9 +63,6 @@ function getDecryptedStream(
             done = status.done;
           }
         }
-      } catch (err) {
-        // TODO
-        error = err as Error;
       } finally {
         controller.close();
       }

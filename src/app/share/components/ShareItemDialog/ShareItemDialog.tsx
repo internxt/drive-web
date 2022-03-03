@@ -1,7 +1,8 @@
 import UilClipboardAlt from '@iconscout/react-unicons/icons/uil-clipboard-alt';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { generateFileKey, Network } from 'app/drive/services/network';
+
+import { generateFileKey, Network } from 'app/drive/services/network.service';
 import { DriveItemData } from 'app/drive/types';
 import { uiActions } from 'app/store/slices/ui';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
@@ -76,7 +77,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
           bucket: bucket,
           bucketToken: bucketToken,
           views: views,
-          encryptedMnemonic: encryptedMnemonic
+          encryptedMnemonic: encryptedMnemonic,
         };
         link = await shareService.generateShareFolderLink(payload, code);
       } else {

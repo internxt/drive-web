@@ -1,14 +1,14 @@
 interface FileLike {
   name: string,
   lastModified?: Date,
-  directory: string,
-  comment: string
+  directory?: boolean,
+  comment?: string
 }
 
 interface ZipObject {
   level: number;
-  ctrl: any;
-  directory: any;
+  ctrl: ReadableStreamController<unknown>;
+  directory: boolean;
   nameBuf: Uint8Array;
   comment: Uint8Array;
   compressedLength: number;
@@ -86,13 +86,22 @@ const pump = zipObj => zipObj.reader.read().then(chunk => {
  * @param  {Object} underlyingSource [description]
  * @return {Boolean}                  [description]
  */
-export default function createZipReadable(underlyingSource: any): ReadableStream<any> {
+export default function createZipReadable(underlyingSource: {
+  start: (writer: {
+    enqueue: (fileLike: FileLike) => void
+    close: () => void
+  }) => void | undefined,
+  pull: (writer: {
+    enqueue: (fileLike: FileLike) => void
+    close: () => void
+  }) => void
+}): ReadableStream<Uint8Array> {
   const files: Record<string, ZipObject> = Object.create(null);
   const filenames: string[] = [];
   const encoder = new TextEncoder();
   let offset = 0;
   let activeZipIndex = 0;
-  let ctrl: ReadableStreamController<any>;
+  let ctrl: ReadableStreamController<Uint8Array>;
   let activeZipObject, closed;
 
   function next() {

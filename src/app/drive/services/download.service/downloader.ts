@@ -57,7 +57,7 @@ async function downloadFiles(
   opts: {
     onFileRetrieved: (
       file: DownloadableFile & {
-        stream: ReadableStream<any>
+        stream: ReadableStream<Uint8Array>
       },
       onFileDownloaded: (err: Error | null) => void
     ) => void
