@@ -43,7 +43,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
   'storage/uploadItems',
   async ({ files, parentFolderId, options }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
-    const showSizeWarning = files.some((file) => file.size >= MAX_ALLOWED_UPLOAD_SIZE);
+    const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
     const filesToUpload: ItemToUpload[] = [];
     const errors: Error[] = [];
