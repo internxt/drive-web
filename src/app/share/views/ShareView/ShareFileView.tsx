@@ -36,7 +36,10 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 export interface ShareViewProps extends ShareViewState {
-  match: match<{ token: string }>;
+  match: match<{
+    token: string;
+    code: string;
+  }>;
 }
 
 interface GetShareInfoWithDecryptedName extends ShareTypes.SharedFileInfo {
@@ -57,6 +60,7 @@ interface ShareViewState {
 
 const ShareFileView = (props: ShareViewProps): JSX.Element => {
   const token = props.match.params.token;
+  const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState({});
@@ -175,10 +179,12 @@ const ShareFileView = (props: ShareViewProps): JSX.Element => {
       if (fileInfo) {
         const network = new Network('NONE', 'NONE', 'NONE');
 
+        const encryptionKey = aes.decrypt(fileInfo.encryptionKey, code);
+
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
         const [fileBlobPromise] = network.downloadFile(fileInfo.bucket, fileInfo.file, {
-          fileEncryptionKey: Buffer.from(fileInfo.encryptionKey, 'hex'),
+          fileEncryptionKey: Buffer.from(encryptionKey, 'hex'),
           fileToken: fileInfo.fileToken,
           progressCallback: (progress) => {
             setProgress(Math.max(MIN_PROGRESS, Math.round(progress * 100 * 1e2) / 1e2));

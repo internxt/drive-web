@@ -67,9 +67,9 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
 
       let link;
       const network = new Network(email, userId, mnemonic);
+      const code = crypto.randomBytes(32).toString('hex');
 
       if (item.isFolder) {
-        const code = crypto.randomBytes(32).toString('hex');
         const encryptedMnemonic = aes.encrypt(mnemonic, code);
         const bucketToken = await network.createFileToken(bucket, '', 'PULL');
         const payload: ShareTypes.GenerateShareFolderLinkPayload = {
@@ -84,14 +84,15 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         const { index } = await network.getFileInfo(bucket, fileId);
         const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
         const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
+        const encryptedKey = aes.encrypt(fileEncryptionKey.toString('hex'), code);
         const payload: ShareTypes.GenerateShareFileLinkPayload = {
           fileId,
           bucket,
           fileToken,
           views,
-          encryptionKey: fileEncryptionKey.toString('hex'),
+          encryptionKey: encryptedKey,
         };
-        link = await shareService.generateShareFileLink(payload);
+        link = await shareService.generateShareFileLink(payload, code);
       }
       dispatch(referralsThunks.refreshUserReferrals());
 

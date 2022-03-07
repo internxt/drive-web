@@ -4,11 +4,13 @@ import { SdkFactory } from '../../core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 
 
-export function generateShareFileLink(params: ShareTypes.GenerateShareFileLinkPayload): Promise<string> {
+export function generateShareFileLink(
+  params: ShareTypes.GenerateShareFileLinkPayload, code: string
+): Promise<string> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.createShareFileLink(params)
     .then(response => {
-      return `${window.location.origin}/${response.token}`;
+      return `${window.location.origin}/${response.token}/${code}`;
     });
 }
 
