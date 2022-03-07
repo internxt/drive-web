@@ -179,7 +179,12 @@ const ShareFileView = (props: ShareViewProps): JSX.Element => {
       if (fileInfo) {
         const network = new Network('NONE', 'NONE', 'NONE');
 
-        const encryptionKey = aes.decrypt(fileInfo.encryptionKey, code);
+        let encryptionKey;
+        if (code) {
+          encryptionKey = aes.decrypt(fileInfo.encryptionKey, code);
+        } else {
+          encryptionKey = fileInfo.encryptionKey;
+        }
 
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
