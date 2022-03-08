@@ -24,16 +24,13 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import './ShareView.scss';
 import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
-import { 
-  downloadSharedFolderUsingFileSystemAPI 
-} from '../../../drive/services/download.service/downloadFolder/downloadSharedFolderUsingFileSystemAPI';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { SharedFolderInfo } from '@internxt/sdk/dist/drive/share/types';
-import { 
-  downloadSharedFolderUsingReadableStream 
+import {
+  downloadSharedFolderUsingReadableStream
 } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
-import { 
-  downloadSharedFolderUsingBlobs 
+import {
+  downloadSharedFolderUsingBlobs
 } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import { loadWritableStreamPonyfill } from 'app/drive/services/network.service/download';
 
@@ -69,7 +66,7 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
   const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
 
-  const canUseReadableStreamMethod = 
+  const canUseReadableStreamMethod =
     'WritableStream' in window &&
     'ReadableStream' in window &&
     new ReadableStream().pipeTo !== undefined &&
@@ -146,15 +143,10 @@ const ShareFolderView = (props: ShareViewProps): JSX.Element => {
       if (folderInfo) {
         setIsDownloading(true);
 
-        const directoryPickerIsSupported = 'showDirectoryPicker' in window;
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let downloadFolder: (...args: any) => Promise<void>;
 
-        if (directoryPickerIsSupported) {
-          /* LAST VERSION OF CHROMIUM: Chrome */
-          downloadFolder = downloadSharedFolderUsingFileSystemAPI;
-        } else if (canUseReadableStreamMethod) {
+        if (canUseReadableStreamMethod) {
           /* CHROMIUM: Brave, Safari, Edge */
           downloadFolder = downloadSharedFolderUsingReadableStream;
         } else {
