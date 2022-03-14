@@ -140,16 +140,23 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
       throw new UploadAbortedError();
     }
 
-    const uploadUrl = new URL(await getUploadUrl(frameId, shardMeta, params.creds));
-    if (aborted) {
-      throw new UploadAbortedError();
-    }
+    const getUploadFileUrl = async () => {
+      const uploadUrl = new URL(await getUploadUrl(frameId, shardMeta, params.creds));
+      if (aborted) {
+        throw new UploadAbortedError();
+      }
+      const useProxy = !uploadUrl.hostname.includes('internxt');
 
-    const useProxy = !uploadUrl.hostname.includes('internxt');
+      return useProxy
+        ? process.env.REACT_APP_PROXY + '/' + uploadUrl.toString()
+        : uploadUrl.toString();
+    };
 
-    const [uploadPromise, uploadFileAbortable] = await uploadFileBlob(
+    const uploadUrl = await getUploadFileUrl();
+
+    const [uploadPromise, uploadFileAbortable] = uploadFileBlob(
       encryptedFile,
-      (useProxy && process.env.REACT_APP_PROXY + '/') + uploadUrl.toString(),
+      uploadUrl,
       {
         progressCallback: (progress) => params.progressCallback(progress, null, null),
       },
