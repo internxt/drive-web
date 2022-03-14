@@ -33,6 +33,7 @@ interface IUploadParams {
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 
 type Hash = string;
+
 async function getEncryptedFile(plainFile: File, cipher: Cipher): Promise<[Blob, Hash]> {
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
   const hasher = new Sha256();
@@ -145,7 +146,8 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
       if (aborted) {
         throw new UploadAbortedError();
       }
-      const useProxy = !uploadUrl.hostname.includes('internxt');
+
+      const useProxy = process.env.REACT_APP_DONT_USE_PROXY === 'false' && !uploadUrl.hostname.includes('internxt');
 
       return useProxy
         ? process.env.REACT_APP_PROXY + '/' + uploadUrl.toString()
