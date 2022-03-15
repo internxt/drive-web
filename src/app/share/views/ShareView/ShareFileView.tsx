@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { useState, useEffect, Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { match } from 'react-router';
 import 'react-toastify/dist/ReactToastify.css';
@@ -9,7 +9,6 @@ import { getSharedFileInfo } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
-import { Network } from 'app/drive/services/network.service';
 import i18n from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../app/store/hooks';
@@ -30,10 +29,13 @@ import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 
 import './ShareView.scss';
-import downloadService from 'app/drive/services/download.service';
 import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { downloadFile, loadWritableStreamPonyfill } from '../../../drive/services/network.service/download';
+import { getBlobWritable, pipe } from '../../../drive/services/download.service/downloadFile';
+import streamSaver from 'streamsaver';
+import downloadFileFromBlob from '../../../drive/services/download.service/downloadFileFromBlob';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -94,8 +96,7 @@ const ShareFileView = (props: ShareViewProps): JSX.Element => {
   );
 
   const getAvatarLetters = () => {
-    const initials = user && `${user['name'].charAt(0)}${user['lastname'].charAt(0)}`.toUpperCase();
-    return initials;
+    return user && `${user['name'].charAt(0)}${user['lastname'].charAt(0)}`.toUpperCase();
   };
 
   const closePreview = () => {
@@ -116,9 +117,7 @@ const ShareFileView = (props: ShareViewProps): JSX.Element => {
 
   const getDecryptedName = (info: ShareTypes.SharedFileInfo): string => {
     const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.fileMeta.folderId.toString()}`;
-    const decryptedFilename = aes.decrypt(info.fileMeta.name, salt);
-
-    return decryptedFilename;
+    return aes.decrypt(info.fileMeta.name, salt);
   };
 
   const getFormatFileName = (): string => {
@@ -177,7 +176,6 @@ const ShareFileView = (props: ShareViewProps): JSX.Element => {
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
-        const network = new Network('NONE', 'NONE', 'NONE');
 
         let encryptionKey;
         if (code) {
@@ -188,16 +186,74 @@ const ShareFileView = (props: ShareViewProps): JSX.Element => {
 
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
-        const [fileBlobPromise] = network.downloadFile(fileInfo.bucket, fileInfo.file, {
-          fileEncryptionKey: Buffer.from(encryptionKey, 'hex'),
-          fileToken: fileInfo.fileToken,
-          progressCallback: (progress) => {
-            setProgress(Math.max(MIN_PROGRESS, Math.round(progress * 100 * 1e2) / 1e2));
-          },
-        });
-        const fileBlob = await fileBlobPromise;
 
-        downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
+        let writerPromise: Promise<WritableStream>;
+        const completeFilename = fileInfo.fileMeta.type
+          ? `${fileInfo.fileMeta.name}.${fileInfo.fileMeta.type}`
+          : `${fileInfo.fileMeta.name}`;
+
+        const writeToFsIsSupported = 'showSaveFilePicker' in window;
+        const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
+
+        if (writeToFsIsSupported) {
+          writerPromise = window.showSaveFilePicker({
+            suggestedName: completeFilename
+          }).then((fsHandle) => {
+            return fsHandle.createWritable({ keepExistingData: false });
+          });
+        } else if (writableIsSupported) {
+          writerPromise = new Promise((resolve) => {
+            resolve(streamSaver.createWriteStream(completeFilename));
+          });
+        } else {
+          writerPromise = new Promise((resolve) => {
+            return loadWritableStreamPonyfill().then(() => {
+              // TODO: Force streamSaver to use WritableStream ponyfill
+              streamSaver.WritableStream = window.WritableStream;
+              resolve(streamSaver.createWriteStream(completeFilename));
+            }).catch(() => {
+              resolve(getBlobWritable(completeFilename, (blob) => {
+                downloadFileFromBlob(blob, completeFilename);
+              }));
+            });
+          });
+        }
+
+        const [promise] = downloadFile({
+          bucketId: fileInfo.bucket,
+          encryptionKey: Buffer.from(encryptionKey, 'hex'),
+          fileId: fileInfo.file,
+          token: fileInfo.fileToken
+        });
+
+        const downloadPromise = promise.then((readable) => {
+          return writerPromise.then((writable) => {
+            let downloadedBytes = 0;
+
+            const reader = readable.getReader();
+            const passThrough = new ReadableStream({
+              async pull(controller) {
+                const { value, done } = await reader.read();
+
+                if (!done) {
+                  downloadedBytes += (value as Uint8Array).length;
+                  const percentage = (downloadedBytes / fileInfo.fileMeta.size) * 100;
+                  setProgress(Number(percentage.toFixed(2)));
+                  controller.enqueue(value);
+                } else {
+                  controller.close();
+                }
+              }
+            });
+
+            return passThrough.pipeTo && passThrough.pipeTo(writable) || pipe(passThrough, writable);
+          }).catch((err: unknown) => {
+            const errMessage = err instanceof Error ? err.message : (err as string);
+            throw new Error(errMessage);
+          });
+        });
+
+        await downloadPromise;
       }
     }
   };

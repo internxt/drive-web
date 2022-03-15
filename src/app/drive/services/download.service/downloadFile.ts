@@ -43,7 +43,7 @@ interface BlobWritable {
   close: () => Promise<void>
 }
 
-function getBlobWritable(filename: string, onClose: (result: Blob) => void): BlobWritable {
+export function getBlobWritable(filename: string, onClose: (result: Blob) => void): BlobWritable {
   let blobParts: Uint8Array[] = [];
 
   return {
@@ -74,7 +74,7 @@ function getBlobWritable(filename: string, onClose: (result: Blob) => void): Blo
   };
 }
 
-async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
+export async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
   const reader = readable.getReader();
   const writer = writable.getWriter();
 

@@ -122,7 +122,7 @@ interface NetworkCredentials {
   pass: string;
 }
 
-interface IDownloadParams {
+export interface IDownloadParams {
   bucketId: string;
   fileId: string;
   creds?: NetworkCredentials;
