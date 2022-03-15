@@ -1,6 +1,7 @@
 {
   "extends": "@internxt/eslint-config-internxt",
   "rules": {
-    "no-console": "off"
+    "no-console": "off",
+    "max-len": "off"
   }
 }

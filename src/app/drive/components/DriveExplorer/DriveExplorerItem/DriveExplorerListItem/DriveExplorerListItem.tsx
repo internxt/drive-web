@@ -153,11 +153,11 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {/* SIZE */}
       <div className="flex items-center w-1/12 whitespace-nowrap overflow-ellipsis">
-        {sizeService.bytesToString(item.size, false) === '' ?
+        {sizeService.bytesToString(item.size, false) === '' ? (
           <span className="opacity-25">—</span>
-          :
+        ) : (
           sizeService.bytesToString(item.size, false)
-        }
+        )}
       </div>
 
       {/* ACTIONS BUTTON */}
