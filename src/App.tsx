@@ -97,7 +97,6 @@ class App extends Component<AppProps> {
         serverPage(PATH_NAMES[window.location.pathname]).catch(() => {
           // NO OP
         });
-
       }
     }
 
@@ -116,7 +115,6 @@ class App extends Component<AppProps> {
             )}
 
             <Switch>
-              <Redirect from="//*" to="/*" />
               <Route exact path="/">
                 <Redirect to="/login" />
               </Route>
@@ -132,7 +130,6 @@ class App extends Component<AppProps> {
               onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
               showPreview={isFileViewerOpen}
             />
-
           </Router>
         </DndProvider>
       );

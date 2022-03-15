@@ -46,8 +46,8 @@ const views: Array<{
   { id: AppView.Remove, component: RemoveAccountView },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFolderToken, component: ShareFolderView },
-  { id: AppView.NotFound, component: NotFoundView },
   { id: AppView.RedirectToApp, component: RedirectToAppView },
+  { id: AppView.NotFound, component: NotFoundView },
 ];
 
 export default views;

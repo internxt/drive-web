@@ -116,24 +116,12 @@
       "id": "share-token",
       "layout": "empty",
       "path": "/s/file/:token([a-z0-9]{20})/:code?",
-      "exact": true
+      "exact": false
     },
     {
       "id": "share-folder-token",
       "layout": "empty",
       "path": "/s/folder/:token([a-z0-9]{20})/:code",
-      "exact": true
-    },
-    {
-      "id": "maintenance",
-      "layout": "empty",
-      "path": "",
-      "exact": true
-    },
-    {
-      "id": "not-found",
-      "layout": "empty",
-      "path": "",
       "exact": false
     },
     {
@@ -142,6 +130,24 @@
       "path": "/guest/invite",
       "exact": true,
       "auth": true
+    },
+    {
+      "id": "maintenance",
+      "layout": "empty",
+      "path": "/maintenance",
+      "exact": true
+    },
+    {
+      "id": "redirect-to-app",
+      "layout": "empty",
+      "path": "/redirect-to-app",
+      "exact": true
+    },
+    {
+      "id": "not-found",
+      "layout": "empty",
+      "path": "",
+      "exact": false
     }
   ],
   "database": {
