@@ -110,30 +110,18 @@
       "id": "remove",
       "layout": "empty",
       "path": "/remove",
-      "exact": true    
+      "exact": true
     },
     {
       "id": "share-token",
       "layout": "empty",
-      "path": "/:token([a-z0-9]{20})/:code?",
-      "exact": true
+      "path": "/s/file/:token([a-z0-9]{20})/:code?",
+      "exact": false
     },
     {
       "id": "share-folder-token",
       "layout": "empty",
-      "path": "/folder/:token([a-z0-9]{20})/:code",
-      "exact": true
-    },
-    {
-      "id": "maintenance",
-      "layout": "empty",
-      "path": "",
-      "exact": true
-    },
-    {
-      "id": "not-found",
-      "layout": "empty",
-      "path": "",
+      "path": "/s/folder/:token([a-z0-9]{20})/:code",
       "exact": false
     },
     {
@@ -142,6 +130,24 @@
       "path": "/guest/invite",
       "exact": true,
       "auth": true
+    },
+    {
+      "id": "maintenance",
+      "layout": "empty",
+      "path": "/maintenance",
+      "exact": true
+    },
+    {
+      "id": "redirect-to-app",
+      "layout": "empty",
+      "path": "/redirect-to-app",
+      "exact": true
+    },
+    {
+      "id": "not-found",
+      "layout": "empty",
+      "path": "",
+      "exact": false
     }
   ],
   "database": {

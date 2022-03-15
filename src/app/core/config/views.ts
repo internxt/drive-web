@@ -43,10 +43,10 @@ const views: Array<{
   { id: AppView.TeamSuccess, component: TeamSuccessView },
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
   { id: AppView.Checkout, component: CheckoutView },
-  { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.Remove, component: RemoveAccountView },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFolderToken, component: ShareFolderView },
+  { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 
