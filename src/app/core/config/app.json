@@ -110,18 +110,18 @@
       "id": "remove",
       "layout": "empty",
       "path": "/remove",
-      "exact": true    
+      "exact": true
     },
     {
       "id": "share-token",
       "layout": "empty",
-      "path": "/share/file/:token([a-z0-9]{20})/:code?",
+      "path": "/s/file/:token([a-z0-9]{20})/:code?",
       "exact": true
     },
     {
       "id": "share-folder-token",
       "layout": "empty",
-      "path": "/share/folder/:token([a-z0-9]{20})/:code",
+      "path": "/s/folder/:token([a-z0-9]{20})/:code",
       "exact": true
     },
     {

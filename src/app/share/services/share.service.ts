@@ -10,7 +10,7 @@ export function generateShareFileLink(
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.createShareFileLink(params)
     .then(response => {
-      return `${window.location.origin}/${response.token}/${code}`;
+      return `${window.location.origin}/s/file/${response.token}/${code}`;
     });
 }
 
@@ -20,7 +20,7 @@ export function generateShareFolderLink(
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.createShareFolderLink(params)
     .then(response => {
-      return `${window.location.origin}/folder/${response.token}/${code}`;
+      return `${window.location.origin}/s/folder/${response.token}/${code}`;
     });
 }
 
