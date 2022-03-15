@@ -115,13 +115,13 @@
     {
       "id": "share-token",
       "layout": "empty",
-      "path": "/:token([a-z0-9]{20})/:code?",
+      "path": "/share/file/:token([a-z0-9]{20})/:code?",
       "exact": true
     },
     {
       "id": "share-folder-token",
       "layout": "empty",
-      "path": "/folder/:token([a-z0-9]{20})/:code",
+      "path": "/share/folder/:token([a-z0-9]{20})/:code",
       "exact": true
     },
     {
