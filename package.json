@@ -25,6 +25,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "openpgp": "^4.10.10",
+    "phosphor-react": "^1.4.1",
     "prettysize": "^2.0.0",
     "query-string": "^6.13.8",
     "react": "^17.0.1",

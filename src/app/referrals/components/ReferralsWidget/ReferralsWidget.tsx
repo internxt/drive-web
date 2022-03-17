@@ -53,7 +53,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   };
 
   return isWidgetHidden || referralsList.length === 0 ? (
-    <div></div>
+    <div className="flex-grow"></div>
   ) : (
     <div
       className={`flex flex-col py-6 border-t border-b border-neutral-30 bg-neutral-10 overflow-y-hidden  ${
@@ -75,10 +75,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
             </span>
           </p>
         </div>
-        <div
-          className="flex-none rounded-full bg-neutral-30 w-4 h-4 cursor-pointer"
-          onClick={onCollapseButtonClicked}
-        >
+        <div className="flex-none rounded-full bg-neutral-30 w-4 h-4 cursor-pointer" onClick={onCollapseButtonClicked}>
           {isCollapsed ? (
             <UilAngleUp className="text-neutral-100 w-full h-full" />
           ) : (

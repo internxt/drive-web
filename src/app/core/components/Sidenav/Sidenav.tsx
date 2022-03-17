@@ -1,17 +1,11 @@
 import React from 'react';
-import UilAngleDoubleLeft from '@iconscout/react-unicons/icons/uil-angle-double-left';
-import UilAngleDoubleRight from '@iconscout/react-unicons/icons/uil-angle-double-right';
-import UilFolderMedical from '@iconscout/react-unicons/icons/uil-folder-medical';
-import UilHdd from '@iconscout/react-unicons/icons/uil-hdd';
-import UilClockEight from '@iconscout/react-unicons/icons/uil-clock-eight';
-import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
+import { Clock, ClockCounterClockwise, Desktop, Folder } from 'phosphor-react';
 import { connect } from 'react-redux';
 
 import { AppView } from '../../types';
 import navigationService from '../../services/navigation.service';
 import { RootState } from 'app/store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import smallLogo from 'assets/icons/small-logo.svg';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import SidenavItem from './SidenavItem/SidenavItem';
 import desktopService from 'app/core/services/desktop.service';
@@ -24,8 +18,6 @@ import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsW
 
 interface SidenavProps {
   user: UserSettings | undefined;
-  collapsed: boolean;
-  onCollapseButtonClicked: () => void;
   planUsage: number;
   planLimit: number;
   isLoadingPlanLimit: boolean;
@@ -67,67 +59,31 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
   };
 
   render(): JSX.Element {
-    const { collapsed, onCollapseButtonClicked, planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } =
-      this.props;
-    const isCollapsed = collapsed || !screenService.isLg();
+    const { planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = this.props;
 
     return (
-      <div className={`${isCollapsed ? 'collapsed' : ''} side-nav`}>
-        <button
-          className="hidden lg:flex items-center p-2 collapse-button cursor-pointer z-40 absolute transform"
-          onClick={onCollapseButtonClicked}
-        >
-          {isCollapsed ? <UilAngleDoubleRight /> : <UilAngleDoubleLeft />}
-        </button>
-
+      <div className="w-64 flex flex-col">
         <div
-          className="flex items-center flex-shrink-0 pl-6 h-14 cursor-pointer border-b border-neutral-30"
+          className="flex items-center flex-shrink-0 pl-8 h-14 cursor-pointer border-b border-neutral-30"
           onClick={this.onLogoClicked}
         >
-          {isCollapsed ? (
-            <img className="opacity-0 w-6 h-9" src={smallLogo} alt="" />
-          ) : (
-            <div
-              className="w-28 h-auto flex items-center"
-              onClick={() => {
-                navigationService.history.push('/');
-              }}
-            >
-              <InternxtLogo className="h-9 w-full" />
-            </div>
-          )}
+          <InternxtLogo className="h-auto w-28" />
         </div>
-
-        <div className="h-full flex flex-col pt-7 border-r border-neutral-30 justify-between">
-          <div className={`${isCollapsed ? '' : 'px-6'} pb-4`}>
-            <SidenavItem label="Drive" to="/app" icon={<UilFolderMedical className="w-5" />} isOpen={!isCollapsed} />
-            <SidenavItem label="Backups" to="/app/backups" icon={<UilHdd className="w-5" />} isOpen={!isCollapsed} />
-            <SidenavItem
-              label="Recents"
-              to="/app/recents"
-              icon={<UilClockEight className="w-5" />}
-              isOpen={!isCollapsed}
-            />
-            <SidenavItem
-              label="Download App"
-              icon={<UilDesktop className="w-5" />}
-              isOpen={!isCollapsed}
-              onClick={this.onDownloadAppButtonClicked}
-            />
+        <div className="flex-col flex flex-grow border-r border-neutral-30 px-2">
+          <div className="mt-2">
+            <SidenavItem label="Drive" to="/app" Icon={Folder} />
+            <SidenavItem label="Backups" to="/app/backups" Icon={ClockCounterClockwise} />
+            <SidenavItem label="Recents" to="/app/recents" Icon={Clock} />
+            <SidenavItem label="Desktop App" Icon={Desktop} onClick={this.onDownloadAppButtonClicked} />
           </div>
+          <ReferralsWidget />
 
-          <div className={isCollapsed ? 'opacity-0' : 'flex flex-col flex-grow justify-end h-1'}>
-            {/* REFERRALS WIDGET */}
-
-            <ReferralsWidget />
-
-            <div className="px-6 pt-8 pb-12">
-              <PlanUsage
-                limit={planLimit}
-                usage={planUsage}
-                isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
-              ></PlanUsage>
-            </div>
+          <div className="px-6 pt-8 pb-12">
+            <PlanUsage
+              limit={planLimit}
+              usage={planUsage}
+              isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
+            ></PlanUsage>
           </div>
         </div>
       </div>
