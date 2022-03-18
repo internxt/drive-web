@@ -23,7 +23,7 @@ export default function Toolbar({
   onDeleteClick: () => void;
 }) {
   return (
-    <div className={`${className} flex w-full items-center justify-end space-x-1 px-2`}>
+    <div className={`${className} flex w-full items-center justify-end space-x-1 px-1`}>
       <Icon Target={DownloadSimple} onClick={onDownloadClick} />
       <Icon Target={Share} onClick={onShareClick} />
       <Icon Target={Trash} onClick={onDeleteClick} />
