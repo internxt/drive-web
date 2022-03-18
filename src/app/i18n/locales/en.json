@@ -394,8 +394,8 @@
     },
     "rewards": {
       "title": "Get {creditSum} for free",
-      "progress": "{currentCredit} unlocked",
-      "limit": "(out of {creditSum})"
+      "progress": "Unlocked {currentCredit}",
+      "limit": "out of {creditSum}"
     }
   }
 }
