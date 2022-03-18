@@ -78,7 +78,7 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
           </div>
           <ReferralsWidget />
 
-          <div className="px-6 pt-8 pb-12">
+          <div className="px-5 mt-8 mb-11">
             <PlanUsage
               limit={planLimit}
               usage={planUsage}
