@@ -24,7 +24,7 @@ const SidenavItem = ({ label, to, Icon, onClick }: SidenavItemProps): JSX.Elemen
   return (
     <div
       onClick={onClick}
-      className={`text-gray-60 pl-6 cursor-pointer rounded-lg ${
+      className={`text-gray-60 font-medium pl-6 cursor-pointer rounded-lg ${
         isActive ? 'bg-primary bg-opacity-10' : 'hover:bg-gray-5'
       }`}
     >
