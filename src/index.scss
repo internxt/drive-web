@@ -24,64 +24,64 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 /* TEXT */
 @font-face {
-  font-family: "NeueEinstellung";
+  font-family: 'NeueEinstellung';
   font-weight: 400;
   font-style: normal;
   font-display: auto;
   src:
     // local("NeueEinstellung-Regular"),
-    url(./assets/fonts/NeueEinstellung-Regular.ttf) format("truetype"),
-    url(./assets/fonts/NeueEinstellung-Regular.woff) format("woff"),
-    url(./assets/fonts/NeueEinstellung-Regular.woff2) format("woff2");
+    url(./assets/fonts/NeueEinstellung-Regular.ttf) format('truetype'),
+    url(./assets/fonts/NeueEinstellung-Regular.woff) format('woff'),
+    url(./assets/fonts/NeueEinstellung-Regular.woff2) format('woff2');
 }
 
 @font-face {
-  font-family: "NeueEinstellung";
+  font-family: 'NeueEinstellung';
   font-weight: 500;
   font-style: normal;
   font-display: auto;
   src:
     // local("NeueEinstellung-Medium"),
-    url(./assets/fonts/NeueEinstellung-Medium.ttf) format("truetype"),
-    url(./assets/fonts/NeueEinstellung-Medium.woff) format("woff"),
-    url(./assets/fonts/NeueEinstellung-Medium.woff2) format("woff2");
+    url(./assets/fonts/NeueEinstellung-Medium.ttf) format('truetype'),
+    url(./assets/fonts/NeueEinstellung-Medium.woff) format('woff'),
+    url(./assets/fonts/NeueEinstellung-Medium.woff2) format('woff2');
 }
 
 @font-face {
-  font-family: "NeueEinstellung";
+  font-family: 'NeueEinstellung';
   font-weight: 600;
   font-style: normal;
   font-display: auto;
   src:
     // local("NeueEinstellung-Semibold"),
-    url(./assets/fonts/NeueEinstellung-Semibold.ttf) format("truetype"),
-    url(./assets/fonts/NeueEinstellung-Semibold.woff) format("woff"),
-    url(./assets/fonts/NeueEinstellung-Semibold.woff2) format("woff2");
+    url(./assets/fonts/NeueEinstellung-Semibold.ttf) format('truetype'),
+    url(./assets/fonts/NeueEinstellung-Semibold.woff) format('woff'),
+    url(./assets/fonts/NeueEinstellung-Semibold.woff2) format('woff2');
 }
 
 @font-face {
-  font-family: "NeueEinstellung";
+  font-family: 'NeueEinstellung';
   font-weight: 700;
   font-style: normal;
   font-display: auto;
   src:
     // local("NeueEinstellung-Bold"),
-    url(./assets/fonts/NeueEinstellung-Bold.ttf) format("truetype"),
-    url(./assets/fonts/NeueEinstellung-Bold.woff) format("woff"),
-    url(./assets/fonts/NeueEinstellung-Bold.woff2) format("woff2");
+    url(./assets/fonts/NeueEinstellung-Bold.ttf) format('truetype'),
+    url(./assets/fonts/NeueEinstellung-Bold.woff) format('woff'),
+    url(./assets/fonts/NeueEinstellung-Bold.woff2) format('woff2');
 }
 
 * {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
 }
 
 .text-6xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 60px;
   font-stretch: normal;
   font-style: normal;
@@ -90,7 +90,7 @@ code {
 }
 
 .text-5xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 48px;
   font-stretch: normal;
   font-style: normal;
@@ -99,7 +99,7 @@ code {
 }
 
 .text-4xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 36px;
   font-stretch: normal;
   font-style: normal;
@@ -108,7 +108,7 @@ code {
 }
 
 .text-3xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 30px;
   font-stretch: normal;
   font-style: normal;
@@ -117,7 +117,7 @@ code {
 }
 
 .text-2xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 24px;
   font-stretch: normal;
   font-style: normal;
@@ -126,7 +126,7 @@ code {
 }
 
 .text-xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 20px; // font-family: Gotham;
   font-stretch: normal;
   font-style: normal;
@@ -134,7 +134,7 @@ code {
 }
 
 .text-lg {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 18px;
   font-stretch: normal;
   font-style: normal;
@@ -143,7 +143,7 @@ code {
 }
 
 .text-base {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 16px;
   font-stretch: normal;
   font-style: normal;
@@ -152,7 +152,7 @@ code {
 }
 
 .text-sm {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 14px;
   font-stretch: normal;
   font-style: normal;
@@ -160,7 +160,7 @@ code {
 }
 
 .text-xs {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 12px;
   font-stretch: normal;
   font-style: normal;
@@ -168,7 +168,7 @@ code {
 }
 
 .text-supporting-2 {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 10px;
   font-stretch: normal;
   font-style: normal;
@@ -176,7 +176,7 @@ code {
 }
 
 .text-supporting-1 {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 8px;
   font-stretch: normal;
   font-style: normal;
@@ -228,14 +228,14 @@ code {
   }
 
   /* INPUTS */
-  input[type="checkbox"] {
+  input[type='checkbox'] {
     @apply border-2 border-neutral-500 rounded text-xs text-neutral-500 w-4 h-4;
   }
 
   input:not([type]),
-  input[type="text"],
-  input[type="email"],
-  input[type="password"] {
+  input[type='text'],
+  input[type='email'],
+  input[type='password'] {
     @apply ring-1 ring-neutral-100 rounded-md focus:ring-blue-60 text-neutral-500 placeholder-neutral-60 text-base px-3 py-2;
 
     &:disabled {
@@ -266,18 +266,22 @@ code {
       @apply ring-0 focus:ring-1 focus:ring-blue-60;
     }
 
+    &.no-ring-at-all {
+      @apply ring-0;
+    }
+
     &.rect {
       @apply rounded-none;
     }
   }
 
-  input[type="number"] {
+  input[type='number'] {
     @apply appearance-none border-neutral-60 outline-none text-center;
 
     -moz-appearance: textfield;
   }
 
-  input[type="number"]::-webkit-inner-spin-button,
+  input[type='number']::-webkit-inner-spin-button,
   ::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;

@@ -94,7 +94,7 @@ class Navbar extends React.Component<NavbarProps> {
             onChange={this.onSearchInputChange}
             type="text"
             placeholder="Search in this folder"
-            className="right-icon h-9 px-3 w-80 transform duration-200 no-ring bg-gray-5 focus:w-full max-w-md"
+            className="h-9 px-3 w-80 transform duration-200 no-ring-at-all focus:ring-0 bg-gray-5 focus:w-full max-w-md"
           />
           <MagnifyingGlass
             onClick={this.onSearchButtonClicked}
@@ -104,14 +104,14 @@ class Navbar extends React.Component<NavbarProps> {
         </div>
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">
-            <div className="flex items-center cursor-pointer">
+            <div className="flex items-center cursor-pointer pr-5">
               <div
-                className="h-6 w6 rounded-2xl mr-2 bg-neutral-20 \
-              p-1 flex justify-center items-center text-neutral-700 text-sm"
+                className="w-9 h-9 rounded-full bg-primary bg-opacity-10 \
+              flex justify-center items-center text-primary-dark font-medium"
               >
                 {nameLetters}
               </div>
-              <span className="hidden md:block text-neutral-500 text-base whitespace-nowrap">
+              <span className="ml-3 hidden md:block text-gray-80 font-medium whitespace-nowrap tracking-wide">
                 {isTeam ? 'Business' : userFullName}
               </span>
             </div>
