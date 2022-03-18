@@ -1,7 +1,6 @@
 import React, { Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import UilSearch from '@iconscout/react-unicons/icons/uil-search';
 import UilUserCircle from '@iconscout/react-unicons/icons/uil-user-circle';
 import UilUserPlus from '@iconscout/react-unicons/icons/uil-user-plus';
 import UilChatBubbleUser from '@iconscout/react-unicons/icons/uil-chat-bubble-user';
@@ -89,13 +88,13 @@ class Navbar extends React.Component<NavbarProps> {
 
     return (
       <div className="flex items-center justify-between w-full h-14 border-b border-neutral-30 text-gray-40">
-        <div className="flex w-full">
+        <div className="flex">
           <input
             value={storageFilters.text}
             onChange={this.onSearchInputChange}
             type="text"
             placeholder="Search in this folder"
-            className="right-icon h-9 px-3 w-64 transform duration-200 no-ring bg-gray-5 focus:w-full max-w-md"
+            className="right-icon h-9 px-3 w-80 transform duration-200 no-ring bg-gray-5 focus:w-full max-w-md"
           />
           <MagnifyingGlass
             onClick={this.onSearchButtonClicked}
