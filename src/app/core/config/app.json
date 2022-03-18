@@ -61,6 +61,13 @@
       "auth": true
     },
     {
+      "id": "photos",
+      "layout": "header-and-sidenav",
+      "path": "/app/photos",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "account",
       "layout": "header-and-sidenav",
       "path": "/account",

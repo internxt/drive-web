@@ -21,6 +21,7 @@ import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutS
 import RecoverView from '../../auth/views/RecoverView/RecoverView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
+import PhotosView from '../../photos/PhotosView';
 
 const views: Array<{
   id: string;
@@ -35,6 +36,7 @@ const views: Array<{
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Backups, component: BackupsView },
+  { id: AppView.Photos, component: PhotosView },
   { id: AppView.Account, component: AccountView },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },

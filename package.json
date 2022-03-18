@@ -115,6 +115,7 @@
     "husky": "^7.0.2",
     "postcss": "^7",
     "prettier": "^2.5.0",
+    "prettier-plugin-tailwindcss": "^0.1.8",
     "prop-types": "^15.7.2",
     "redux-devtools": "^3.7.0",
     "redux-devtools-extension": "^2.13.9",
