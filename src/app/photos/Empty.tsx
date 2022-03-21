@@ -1,4 +1,4 @@
-import icons from '../../assets/images/photos-empty.svg';
+import picture from '../../assets/images/empty-photos.png';
 
 export default function Empty({ className = '' }: { className?: string }): JSX.Element {
   const externalLinkIcon = (
@@ -22,20 +22,20 @@ export default function Empty({ className = '' }: { className?: string }): JSX.E
   );
 
   return (
-    <div className={`${className} flex w-full h-full items-center justify-center bg-white-rect`}>
+    <div className={`${className} bg-white-rect flex h-full w-full items-center justify-center`}>
       <div className="w-96 text-center">
-        <div className="mx-auto w-max">
-          <img src={icons} alt="Photos empty icon" />
+        <div className="mx-auto w-72">
+          <img src={picture} alt="Photos used in the Internxt app" />
         </div>
-        <h2 className="mt-5 text-3xl text-gray-100 font-semibold">Your gallery is empty</h2>
-        <p className="text-lg text-gray-60 mt-2" style={{ lineHeight: '1.35rem' }}>
+        <h2 className="mt-10 text-3xl font-semibold text-gray-100">Your gallery is empty</h2>
+        <p className="mt-2 text-lg text-gray-60" style={{ lineHeight: '1.35rem' }}>
           Start using Internxt Photos to sync all your memories from all your devices in one place
         </p>
         <a
           href=""
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center mt-5 no-underline text-primary text-lg font-medium hover:text-primary-dark"
+          className="mt-5 flex items-center justify-center text-lg font-medium text-primary no-underline hover:text-primary-dark"
         >
           <p className="mr-1">How to sync all my phone photos</p> {externalLinkIcon}
         </a>
