@@ -32,9 +32,11 @@ export default function PhotoThumbnail({
       <div
         onClick={onSelect}
         className={`${
-          selected
-            ? 'flex bg-primary active:bg-primary-dark'
-            : 'hidden  bg-white bg-opacity-25 active:bg-opacity-50 group-hover:flex'
+          src
+            ? selected
+              ? 'flex bg-primary active:bg-primary-dark'
+              : 'hidden  bg-white bg-opacity-25 active:bg-opacity-50 group-hover:flex'
+            : 'hidden'
         } absolute left-3 top-3 box-content h-6 w-6 items-center justify-center rounded-full border-2 border-white`}
       >
         <Check className={selected ? 'block' : 'hidden'} color="white" />

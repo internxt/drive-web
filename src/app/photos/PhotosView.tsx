@@ -20,6 +20,7 @@ export default function PhotosView({ className = '' }: { className?: string }) {
                 onClick={() => console.log('clicked')}
                 onSelect={() => setSelected(isSelected ? selected.filter((el) => el !== i) : selected.concat(i))}
                 selected={isSelected}
+                src="https://source.unsplash.com/random"
                 key={i}
               />
             );
