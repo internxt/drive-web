@@ -14,6 +14,9 @@ module.exports = {
         50: '50%',
         75: '75%',
       },
+      brightness: {
+        80: '.80',
+      },
       dropShadow: {
         soft: '0 6px 12px rgba(0, 0, 0, 0.04)',
       },
@@ -489,6 +492,7 @@ module.exports = {
     ringOpacity: ['responsive', 'dark', 'focus-within', 'focus-visible', 'focus', 'group-hover'],
     ringWidth: ['responsive', 'focus-within', 'focus-visible', 'focus', 'group-hover'],
     rotate: ['responsive', 'hover', 'focus', 'group-hover'],
+    borderRadius: ['active'],
     scale: ['responsive', 'hover', 'focus', 'group-hover'],
     skew: ['responsive', 'hover', 'focus', 'group-hover'],
     space: ['responsive', 'group-hover'],

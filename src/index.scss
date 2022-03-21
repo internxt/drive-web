@@ -196,7 +196,7 @@ code {
   /* LINKS */
   a,
   .link {
-    @apply text-blue-60 hover:text-blue-80 underline;
+    @apply text-blue-60 underline hover:text-blue-80;
   }
 
   a.secondary {
@@ -209,14 +209,14 @@ code {
     box-shadow: 0 2px 15px 0 rgba(179, 186, 197, 0.5);
     z-index: 100;
 
-    @apply bg-white py-2 flex flex-col;
+    @apply flex flex-col bg-white py-2;
   }
 
   .dropdown-item {
     min-width: 175px;
     max-width: 250px;
 
-    @apply w-full no-underline py-1 px-5 hover:bg-neutral-20 active:bg-neutral-30 rounded-1px text-neutral-900 hover:text-neutral-900 text-base flex items-center;
+    @apply flex w-full items-center rounded-1px py-1 px-5 text-base text-neutral-900 no-underline hover:bg-neutral-20 hover:text-neutral-900 active:bg-neutral-30;
 
     img {
       height: 14px;
@@ -229,14 +229,14 @@ code {
 
   /* INPUTS */
   input[type='checkbox'] {
-    @apply border-2 border-neutral-500 rounded text-xs text-neutral-500 w-4 h-4;
+    @apply h-4 w-4 rounded border-2 border-neutral-500 text-xs text-neutral-500;
   }
 
   input:not([type]),
   input[type='text'],
   input[type='email'],
   input[type='password'] {
-    @apply ring-1 ring-neutral-100 rounded-md focus:ring-blue-60 text-neutral-500 placeholder-neutral-60 text-base px-3 py-2;
+    @apply rounded-md px-3 py-2 text-base text-neutral-500 placeholder-neutral-60 ring-1 ring-neutral-100 focus:ring-blue-60;
 
     &:disabled {
       @apply bg-neutral-30;
@@ -247,7 +247,7 @@ code {
     }
 
     &.error {
-      @apply border-l-8 focus:ring-pink-600 border-pink-600 ring-pink-600 bg-pink-100;
+      @apply border-l-8 border-pink-600 bg-pink-100 ring-pink-600 focus:ring-pink-600;
     }
 
     &.semi-dense {
@@ -276,7 +276,7 @@ code {
   }
 
   input[type='number'] {
-    @apply appearance-none border-neutral-60 outline-none text-center;
+    @apply outline-none appearance-none border-neutral-60 text-center;
 
     -moz-appearance: textfield;
   }
@@ -305,7 +305,7 @@ code {
 
   button.primary,
   .base-button.primary {
-    @apply bg-blue-60 hover:bg-blue-80 text-white;
+    @apply bg-blue-60 text-white hover:bg-blue-80;
 
     &.inverse {
       @apply bg-blue-20 text-blue-60 hover:bg-blue-30;
@@ -337,7 +337,7 @@ code {
   }
 
   .base-button.square {
-    @apply px-2 py-0 flex justify-center items-center box-content;
+    @apply box-content flex items-center justify-center px-2 py-0;
   }
 
   /* EVENTS */
@@ -360,7 +360,7 @@ code {
   .drag-over-effect {
     box-shadow: inset 0 0 0 0.15rem var(--color-blue-40);
 
-    @apply bg-opacity-30 bg-blue-50 rounded-6px;
+    @apply rounded-6px bg-blue-50 bg-opacity-30;
   }
 }
 
@@ -372,4 +372,11 @@ code {
 /* Abbr */
 abbr[title] {
   text-decoration: none !important;
+}
+
+/* Photos skeleton animation */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
