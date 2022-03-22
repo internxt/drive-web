@@ -10,6 +10,10 @@ export const fetchThunk = createAsyncThunk<void, void, { state: RootState }>(
   'photos/fetch',
   async (payload: void, { dispatch, getState }) => {
     const state = getState();
+    if (state.photos.isLoading || !state.photos.thereIsMore) return;
+
+    dispatch(photosSlice.actions.setIsLoading(true));
+
     const { page } = state.photos;
 
     const { photos } = SdkFactory.getInstance().createPhotosClient();
@@ -30,9 +34,6 @@ export const fetchThunk = createAsyncThunk<void, void, { state: RootState }>(
 
 export const fetchThunkExtraReducers = (builder: ActionReducerMapBuilder<PhotosState>): void => {
   builder
-    .addCase(fetchThunk.pending, (state) => {
-      state.isLoading = true;
-    })
     .addCase(fetchThunk.fulfilled, (state) => {
       state.isLoading = false;
     })

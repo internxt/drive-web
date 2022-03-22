@@ -1,5 +1,5 @@
 import { Photo, PhotoId } from '@internxt/sdk/dist/photos';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { photosSlice, PhotosState } from '../store/slices/photos';
@@ -12,9 +12,11 @@ export default function PhotosView({ className = '' }: { className?: string }): 
   const dispatch = useDispatch();
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
 
-  useEffect(() => {
+  function fetchPhotos() {
     dispatch(photosThunks.fetchThunk());
-  }, []);
+  }
+
+  useEffect(fetchPhotos, []);
 
   return (
     <div className={`${className} h-full w-full overflow-y-auto px-5 pt-2`}>
@@ -22,16 +24,49 @@ export default function PhotosView({ className = '' }: { className?: string }): 
       {!photosState.isLoading && photosState.items.length === 0 ? (
         <Empty />
       ) : (
-        <Grid selected={photosState.selectedItems} photos={photosState.items} />
+        <Grid selected={photosState.selectedItems} photos={photosState.items} onUserScrolledToTheEnd={fetchPhotos} />
       )}
     </div>
   );
 }
 
-function Grid({ photos, selected }: { photos: Photo[]; selected: PhotoId[] }) {
+function Grid({
+  photos,
+  selected,
+  onUserScrolledToTheEnd,
+}: {
+  photos: Photo[];
+  selected: PhotoId[];
+  onUserScrolledToTheEnd: () => void;
+}) {
   const dispatch = useDispatch();
+
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const options = {};
+
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+
+      if (entry.isIntersecting) {
+        onUserScrolledToTheEnd();
+      }
+    }, options);
+
+    const lastChild = listRef.current?.lastElementChild;
+
+    if (lastChild) observer.observe(lastChild as Element);
+
+    return () => observer.disconnect();
+  }, [photos]);
+
   return (
-    <div className="mt-2 grid gap-1" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
+    <div
+      className="mt-2 grid gap-1"
+      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
+      ref={listRef}
+    >
       {photos.map((photo) => {
         const isSelected = selected.some((el) => photo.id === el);
 
