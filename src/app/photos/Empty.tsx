@@ -6,17 +6,17 @@ export default function Empty({ className = '' }: { className?: string }): JSX.E
       <path
         d="M20.75 9.875V4.25H15.125"
         stroke="#0066FF"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      <path d="M14 11L20.75 4.25" stroke="#0066FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M14 11L20.75 4.25" stroke="#0066FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       <path
         d="M17.75 14V20C17.75 20.1989 17.671 20.3897 17.5303 20.5303C17.3897 20.671 17.1989 20.75 17 20.75H5C4.80109 20.75 4.61032 20.671 4.46967 20.5303C4.32902 20.3897 4.25 20.1989 4.25 20V8C4.25 7.80109 4.32902 7.61032 4.46967 7.46967C4.61032 7.32902 4.80109 7.25 5 7.25H11"
         stroke="#0066FF"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
