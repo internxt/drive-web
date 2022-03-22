@@ -1,14 +1,12 @@
 import { Storage, Share, Users, Referrals, Payments, Backups } from '@internxt/sdk/dist/drive';
 import { Auth, Token } from '@internxt/sdk/dist/auth';
-import {
-  ApiSecurity, ApiUrl,
-  AppDetails
-} from '@internxt/sdk/dist/shared';
+import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import packageJson from '../../../../../package.json';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { Workspace } from '../../types';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
+import { Photos } from '@internxt/sdk/dist/photos';
 
 export class SdkFactory {
   private static instance: SdkFactory;
@@ -23,11 +21,7 @@ export class SdkFactory {
   }
 
   public static initialize(dispatch: AppDispatch, localStorage: LocalStorageService): void {
-    this.instance = new SdkFactory(
-      process.env.REACT_APP_API_URL,
-      dispatch,
-      localStorage
-    );
+    this.instance = new SdkFactory(process.env.REACT_APP_API_URL, dispatch, localStorage);
   }
 
   public static getInstance(): SdkFactory {
@@ -86,6 +80,10 @@ export class SdkFactory {
     return Backups.client(apiUrl, appDetails, apiSecurity);
   }
 
+  public createPhotosClient(): Photos {
+    return new Photos(process.env.REACT_APP_PHOTOS_API_URL, this.localStorage.get('xNewToken') as string);
+  }
+
   /** Helpers **/
 
   private getApiSecurity(): ApiSecurity {
@@ -95,7 +93,7 @@ export class SdkFactory {
       token: this.getToken(workspace),
       unauthorizedCallback: async () => {
         this.dispatch(userThunks.logoutThunk());
-      }
+      },
     };
   }
 
@@ -125,6 +123,4 @@ export class SdkFactory {
     };
     return tokenByWorkspace[workspace];
   }
-
 }
-

@@ -1,7 +1,8 @@
 import { Photo, PhotoId } from '@internxt/sdk/dist/photos';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { photosExtraReducers } from './thunks';
 
-interface PhotosState {
+export interface PhotosState {
   isLoading: boolean;
   page: number;
   thereIsMore: boolean;
@@ -37,7 +38,14 @@ export const photosSlice = createSlice({
         state.selectedItems.push(id);
       }
     },
+    setThereIsMore: (state: PhotosState, action: PayloadAction<boolean>) => {
+      state.thereIsMore = action.payload;
+    },
+    incrementPage: (state: PhotosState) => {
+      state.page++;
+    },
   },
+  extraReducers: photosExtraReducers,
 });
 
 export default photosSlice.reducer;
