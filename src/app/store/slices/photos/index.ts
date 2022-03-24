@@ -1,4 +1,4 @@
-import { Photo, PhotoId } from '@internxt/sdk/dist/photos';
+import { Photo, PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { photosExtraReducers } from './thunks';
 
@@ -6,7 +6,7 @@ export interface PhotosState {
   isLoading: boolean;
   page: number;
   thereIsMore: boolean;
-  items: Photo[];
+  items: PhotoWithDownloadLink[];
   selectedItems: PhotoId[];
 }
 
@@ -25,7 +25,7 @@ export const photosSlice = createSlice({
     setIsLoading: (state: PhotosState, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    push: (state: PhotosState, action: PayloadAction<Photo[]>) => {
+    push: (state: PhotosState, action: PayloadAction<PhotoWithDownloadLink[]>) => {
       state.items.push(...action.payload);
     },
     toggleSelect: (state: PhotosState, action: PayloadAction<PhotoId>) => {

@@ -1,6 +1,7 @@
-import { Photo, PhotoId } from '@internxt/sdk/dist/photos';
-import { useEffect, useRef } from 'react';
+import { PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { getPhotoPreview } from '../drive/services/network.service/download';
 import { RootState } from '../store';
 import { photosSlice, PhotosState } from '../store/slices/photos';
 import photosThunks from '../store/slices/photos/thunks';
@@ -35,7 +36,7 @@ function Grid({
   selected,
   onUserScrolledToTheEnd,
 }: {
-  photos: Photo[];
+  photos: PhotoWithDownloadLink[];
   selected: PhotoId[];
   onUserScrolledToTheEnd: () => void;
 }) {
@@ -71,15 +72,44 @@ function Grid({
         const isSelected = selected.some((el) => photo.id === el);
 
         return (
-          <PhotoThumbnail
+          <PhotoItem
             onClick={() => console.log('Clicked')}
             onSelect={() => dispatch(photosSlice.actions.toggleSelect(photo.id))}
             selected={isSelected}
-            src="https://source.unsplash.com/random"
+            downloadLink={photo.previewLink}
+            index={photo.previewIndex}
             key={photo.id}
           />
         );
       })}
     </div>
   );
+}
+
+function PhotoItem({
+  onClick,
+  onSelect,
+  selected,
+  downloadLink,
+  index,
+}: {
+  onClick: () => void;
+  onSelect: () => void;
+  selected: boolean;
+  downloadLink: string;
+  index: string;
+}) {
+  const [src, setSrc] = useState<string | undefined>(undefined);
+  const mnemonic = useSelector<RootState, string>((state) => state.user.user!.mnemonic);
+
+  useEffect(() => {
+    getPhotoPreview({
+      link: downloadLink,
+      index,
+      bucketId: '',
+      mnemonic,
+    }).then(setSrc);
+  }, []);
+
+  return <PhotoThumbnail onClick={onClick} onSelect={onSelect} selected={selected} src={src} />;
 }

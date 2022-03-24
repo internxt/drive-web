@@ -18,7 +18,7 @@ export const fetchThunk = createAsyncThunk<void, void, { state: RootState }>(
 
     const { photos } = SdkFactory.getInstance().createPhotosClient();
 
-    const data = await photos.getPhotos({}, page * PAGE_SIZE, PAGE_SIZE);
+    const data = await photos.getPhotos({}, page * PAGE_SIZE, PAGE_SIZE, true);
 
     dispatch(photosSlice.actions.push(data.results));
 
