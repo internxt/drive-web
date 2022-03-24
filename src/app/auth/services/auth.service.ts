@@ -104,7 +104,7 @@ export const doLogin = async (
   return authClient
     .login(loginDetails, cryptoProvider)
     .then(async (data) => {
-      const { user, token, newToken } = data as typeof data & { newToken: string };
+      const { user, token, newToken } = data;
 
       const publicKey = user.publicKey;
       const privateKey = user.privateKey;
