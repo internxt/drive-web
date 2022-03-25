@@ -1,54 +1,37 @@
-import { Suspense, Fragment } from 'react';
+import { Suspense, Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from '../../types/file-types';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
-import { fileViewerActions } from '../../../store/slices/fileViewer';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
 import i18n from '../../../i18n/services/i18n.service';
-import { DriveFileData, DriveItemData } from '../../types';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
+import spinnerIcon from '../../../../assets/icons/spinner.svg';
+import { ActionState } from '@internxt/inxt-js/build/api';
 
 interface FileViewerProps {
-  file: DriveFileData | null;
+  file?: { type: string | null; name: string };
   onClose: () => void;
-  showPreview: boolean;
+  onDownload: () => void;
+  downloader: () => [Promise<Blob>, ActionState | undefined];
+  show: boolean;
 }
 
 export interface FormatFileViewerProps {
-  file: DriveFileData | null;
-  setIsLoading: (value: boolean) => void;
-  isLoading: boolean;
+  blob: Blob;
 }
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-const FileViewer = (props: FileViewerProps): JSX.Element => {
-  const dispatch = useAppDispatch();
-  const isLoading = useAppSelector((state) => state.fileViewer.isLoading);
-  const onClose = () =>
-    props.onClose();
-  const onDownload = () =>
-    props.file && dispatch(storageThunks.downloadItemsThunk([props.file as DriveItemData]));
-  const viewerProps = {
-    isLoading,
-    file: props.file,
-    setIsLoading: (value: boolean) => dispatch(fileViewerActions.setIsLoading(value))
-  };
-  const getFileName = () => {
-    let extension = '';
-    if (props.file && props.file.type !== null) { extension = `.${props.file.type}`; }
-    return `${props.file && props.file.name}${extension}`;
-  };
+const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerProps): JSX.Element => {
+  const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
 
   let isTypeAllowed = false;
   let fileExtensionGroup: number | null = null;
 
   for (const [groupKey, extensions] of Object.entries(extensionsList)) {
-    isTypeAllowed = extensions.includes(props.file && props.file.type !== null ? props.file.type.toLowerCase() : '');
+    isTypeAllowed = extensions.includes(file && file.type ? file.type.toLowerCase() : '');
 
     if (isTypeAllowed) {
       fileExtensionGroup = FileExtensionGroup[groupKey];
@@ -58,10 +41,22 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
 
   const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
 
+  const [blob, setBlob] = useState<Blob | null>(null);
+
+  useEffect(() => {
+    if (isTypeAllowed && show) {
+      const [downloadPromise, actionState] = downloader();
+      downloadPromise.then(setBlob).catch(console.error);
+      return () => {
+        actionState?.stop();
+      };
+    } else if (!show) setBlob(null);
+  }, [show]);
+
   return (
     <Transition
+      show={show}
       appear
-      show={props.showPreview}
       as={Fragment}
       enter="ease-out duration-150"
       enterFrom="opacity-0"
@@ -72,75 +67,87 @@ const FileViewer = (props: FileViewerProps): JSX.Element => {
     >
       <Dialog
         as="div"
-        className="fixed flex flex-col items-center justify-start inset-0 z-50 text-white hide-scroll"
+        className="hide-scroll fixed inset-0 z-50 flex flex-col items-center justify-start text-white"
         onClose={onClose}
       >
-        <div className="h-screen w-screen flex flex-col items-center justify-center">
-
+        <div className="flex h-screen w-screen flex-col items-center justify-center">
           {/* Close overlay */}
-          <Dialog.Overlay className="fixed inset-0 bg-cool-gray-100 bg-opacity-90 backdrop-filter
-                                    backdrop-blur-md" />
+          <Dialog.Overlay
+            className="fixed inset-0 bg-cool-gray-100 bg-opacity-90 backdrop-blur-md
+                                    backdrop-filter"
+          />
 
           {/* Content */}
           {isTypeAllowed ? (
             <div
               tabIndex={0}
-              className="flex flex-col justify-start items-start z-10 outline-none max-w-full max-h-full overflow-auto"
+              className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
             >
-                <div onClick={(e) => e.stopPropagation()} className="" >
+              <div onClick={(e) => e.stopPropagation()} className="">
+                {blob ? (
                   <Suspense fallback={<div></div>}>
-                    <Viewer {...viewerProps} />
+                    <Viewer blob={blob} />
                   </Suspense>
-                </div>
+                ) : (
+                  <div
+                    tabIndex={0}
+                    className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
+                      space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
+                  >
+                    <img className="mr-2 animate-spin" src={spinnerIcon} alt="" />
+                    <span>{i18n.get('drive.loadingFile')}</span>
+                  </div>
+                )}
+              </div>
             </div>
-            
           ) : (
             <div
               tabIndex={0}
-              className="flex flex-row items-center justify-center h-12 px-6 bg-white bg-opacity-5 font-medium
-                          rounded-xl z-10 pointer-events-none outline-none space-x-2 select-none"
+              className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
+                          space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
             >
               <span>{i18n.get('error.noFilePreview')}</span>
             </div>
           )}
 
           {/* Background */}
-          <div className="fixed -top-6 -inset-x-20 h-16 bg-cool-gray-100 z-10 pointer-events-none
-                          filter blur-2xl" />
+          <div
+            className="pointer-events-none fixed -inset-x-20 -top-6 z-10 h-16 bg-cool-gray-100
+                          blur-2xl filter"
+          />
 
           {/* Top bar controls */}
-          <div className="fixed top-0 inset-x-0 w-screen max-w-full h-0 flex flex-row items-start justify-between
-                          px-4 z-20 select-none text-lg font-medium">
-            
+          <div
+            className="fixed inset-x-0 top-0 z-20 flex h-0 w-screen max-w-full select-none flex-row
+                          items-start justify-between px-4 text-lg font-medium"
+          >
             {/* Close and title */}
-            <div className="flex flex-row items-center justify-start h-10 mt-3 space-x-4 z-10 mr-6 md:mr-32 truncate">
+            <div className="z-10 mt-3 mr-6 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
               <button
                 onClick={onClose}
-                className="relative group flex flex-col items-center justify-center h-10 w-10 bg-white bg-opacity-0
-                                hover:bg-opacity-10 focus:bg-opacity-5 transition duration-50 ease-in-out
-                                rounded-full flex-shrink-0">
+                className="group relative flex h-10 w-10 flex-shrink-0 flex-col items-center justify-center rounded-full
+                                bg-white bg-opacity-0 transition duration-50 ease-in-out
+                                hover:bg-opacity-10 focus:bg-opacity-5"
+              >
                 <UilMultiply height="20" width="20" />
               </button>
 
-              <Dialog.Title className="truncate">
-                {getFileName()}
-              </Dialog.Title>
-              
+              <Dialog.Title className="truncate">{filename}</Dialog.Title>
             </div>
 
             {/* Download button */}
-            <div className="flex flex-row items-center justify-end h-10 mt-3 space-x-4 z-10 flex-shrink-0">
+            <div className="z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-4">
               <button
                 onClick={onDownload}
-                className="flex flex-row items-center h-10 px-6 rounded-lg space-x-2 cursor-pointer
-                          font-medium bg-white bg-opacity-0 hover:bg-opacity-10 focus:bg-opacity-5
-                          transition duration-50 ease-in-out">
+                className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white
+                          bg-opacity-0 px-6 font-medium transition duration-50
+                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+              >
                 <UilImport height="20" width="20" />
                 <span className="font-medium">{i18n.get('actions.download')}</span>
               </button>
             </div>
           </div>
-          
         </div>
       </Dialog>
     </Transition>
