@@ -20,6 +20,7 @@ export const fetchThunk = createAsyncThunk<void, void, { state: RootState }>(
 
     const data = await photos.getPhotos({}, page * PAGE_SIZE, PAGE_SIZE, true);
 
+    dispatch(photosSlice.actions.setBucketId(data.bucketId));
     dispatch(photosSlice.actions.push(data.results));
 
     const thereIsMore = data.results.length === PAGE_SIZE;

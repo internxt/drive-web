@@ -1,4 +1,4 @@
-import { Photo, PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
+import { PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { photosExtraReducers } from './thunks';
 
@@ -8,6 +8,7 @@ export interface PhotosState {
   thereIsMore: boolean;
   items: PhotoWithDownloadLink[];
   selectedItems: PhotoId[];
+  bucketId?: string;
 }
 
 const initialState: PhotosState = {
@@ -43,6 +44,9 @@ export const photosSlice = createSlice({
     },
     incrementPage: (state: PhotosState) => {
       state.page++;
+    },
+    setBucketId: (state: PhotosState, action: PayloadAction<string>) => {
+      state.bucketId = action.payload;
     },
   },
   extraReducers: photosExtraReducers,

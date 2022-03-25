@@ -101,12 +101,13 @@ function PhotoItem({
 }) {
   const [src, setSrc] = useState<string | undefined>(undefined);
   const mnemonic = useSelector<RootState, string>((state) => state.user.user!.mnemonic);
+  const bucketId = useSelector<RootState, string>((state) => state.photos.bucketId!);
 
   useEffect(() => {
     getPhotoPreview({
       link: downloadLink,
       index,
-      bucketId: '',
+      bucketId,
       mnemonic,
     }).then(setSrc);
   }, []);
