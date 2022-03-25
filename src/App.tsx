@@ -20,9 +20,9 @@ import { uiActions } from './app/store/slices/ui';
 import { DriveFileData } from './app/drive/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import views from './app/core/config/views';
-import FileViewer from './app/drive/components/FileViewer/FileViewer';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
+import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -106,9 +106,9 @@ class App extends Component<AppProps> {
           <Router history={navigationService.history}>
             {isDev && configService.getAppConfig().debug.enabled && (
               <span
-                className="absolute text-supporting-2 font-bold text-white text-center \
-               bg-red-50 w-28 px-3.5 py-1 top-5 -right-7 tracking-wider opacity-80 transform \
-               rotate-45 z-50 pointer-events-none drop-shadow-2xl"
+                className="\ \ pointer-events-none absolute top-5 -right-7
+               z-50 w-28 rotate-45 transform bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
+               tracking-wider text-white opacity-80 drop-shadow-2xl"
               >
                 {i18n.get('general.stage.development')}
               </span>
@@ -125,7 +125,7 @@ class App extends Component<AppProps> {
 
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
 
-            <FileViewer
+            <FileViewerWrapper
               file={fileViewerItem}
               onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
               showPreview={isFileViewerOpen}
