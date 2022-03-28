@@ -1,3 +1,4 @@
+import { PhotoStatus } from '@internxt/sdk/dist/photos';
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { photosSlice, PhotosState } from '..';
 
@@ -14,22 +15,22 @@ export const fetchThunk = createAsyncThunk<void, void, { state: RootState }>(
 
     dispatch(photosSlice.actions.setIsLoading(true));
 
-    const { page } = state.photos;
+    const { skipped } = state.photos;
 
     const { photos } = SdkFactory.getInstance().createPhotosClient();
 
-    const data = await photos.getPhotos({}, page * PAGE_SIZE, PAGE_SIZE, true);
+    const data = await photos.getPhotos({ status: PhotoStatus.Exists }, skipped, PAGE_SIZE, true);
 
     dispatch(photosSlice.actions.setBucketId(data.bucketId));
     dispatch(photosSlice.actions.push(data.results));
 
     const thereIsMore = data.results.length === PAGE_SIZE;
 
-    if (thereIsMore) {
-      dispatch(photosSlice.actions.incrementPage());
-    } else {
+    if (!thereIsMore) {
       dispatch(photosSlice.actions.setThereIsMore(false));
     }
+
+    dispatch(photosSlice.actions.setSkipped(skipped + data.results.length));
   },
 );
 

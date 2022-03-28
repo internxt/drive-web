@@ -24,9 +24,18 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   const showSkeleton = photosState.isLoading && photosState.items.length === 0;
 
+  const toolbarProps =
+    photosState.selectedItems.length === 0
+      ? {}
+      : {
+          onDeleteClick: () => dispatch(photosThunks.deleteThunk()),
+          onShareClick: () => undefined,
+          onDownloadClick: () => undefined,
+        };
+
   return (
     <div className={`${className} h-full w-full ${showSkeleton ? 'overflow-y-hidden' : 'overflow-y-auto'} px-5 pt-2`}>
-      <Toolbar onDeleteClick={console.log} onDownloadClick={console.log} onShareClick={console.log} />
+      <Toolbar {...toolbarProps} />
       {showEmpty ? (
         <Empty />
       ) : showSkeleton ? (

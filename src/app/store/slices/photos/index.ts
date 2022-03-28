@@ -4,7 +4,7 @@ import { photosExtraReducers } from './thunks';
 
 export interface PhotosState {
   isLoading: boolean;
-  page: number;
+  skipped: number;
   thereIsMore: boolean;
   items: PhotoWithDownloadLink[];
   selectedItems: PhotoId[];
@@ -13,7 +13,7 @@ export interface PhotosState {
 
 const initialState: PhotosState = {
   isLoading: false,
-  page: 0,
+  skipped: 0,
   thereIsMore: true,
   items: [],
   selectedItems: [],
@@ -42,11 +42,17 @@ export const photosSlice = createSlice({
     setThereIsMore: (state: PhotosState, action: PayloadAction<boolean>) => {
       state.thereIsMore = action.payload;
     },
-    incrementPage: (state: PhotosState) => {
-      state.page++;
+    setSkipped: (state: PhotosState, action: PayloadAction<number>) => {
+      state.skipped = action.payload;
     },
     setBucketId: (state: PhotosState, action: PayloadAction<string>) => {
       state.bucketId = action.payload;
+    },
+    removeItems: (state: PhotosState, action: PayloadAction<PhotoId[]>) => {
+      state.items = state.items.filter((item) => !action.payload.includes(item.id));
+    },
+    unselectAll: (state: PhotosState) => {
+      state.selectedItems = [];
     },
   },
   extraReducers: photosExtraReducers,
