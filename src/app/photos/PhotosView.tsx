@@ -5,6 +5,7 @@ import { getPhotoPreview } from '../drive/services/network.service/download';
 import { RootState } from '../store';
 import { photosSlice, PhotosState } from '../store/slices/photos';
 import photosThunks from '../store/slices/photos/thunks';
+import DeletePhotosDialog from './DeletePhotosDialog';
 import Empty from './Empty';
 import PhotoThumbnail from './PhotoThumbnail';
 import Skeleton from './Skeleton';
@@ -20,6 +21,13 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   useEffect(fetchPhotos, []);
 
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  function onConfirmDelete() {
+    setShowDeleteDialog(false);
+    dispatch(photosThunks.deleteThunk());
+  }
+
   const showEmpty = !photosState.isLoading && photosState.items.length === 0;
 
   const showSkeleton = photosState.isLoading && photosState.items.length === 0;
@@ -28,23 +36,31 @@ export default function PhotosView({ className = '' }: { className?: string }): 
     photosState.selectedItems.length === 0
       ? {}
       : {
-          onDeleteClick: () => dispatch(photosThunks.deleteThunk()),
+          onDeleteClick: () => setShowDeleteDialog(true),
           onShareClick: () => undefined,
           onDownloadClick: () => undefined,
           onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
         };
 
   return (
-    <div className={`${className} h-full w-full ${showSkeleton ? 'overflow-y-hidden' : 'overflow-y-auto'} px-5 pt-2`}>
-      <Toolbar {...toolbarProps} numberOfSelectedItems={photosState.selectedItems.length} />
-      {showEmpty ? (
-        <Empty />
-      ) : showSkeleton ? (
-        <Skeleton />
-      ) : (
-        <Grid selected={photosState.selectedItems} photos={photosState.items} onUserScrolledToTheEnd={fetchPhotos} />
-      )}
-    </div>
+    <>
+      <div className={`${className} h-full w-full ${showSkeleton ? 'overflow-y-hidden' : 'overflow-y-auto'} px-5 pt-2`}>
+        <Toolbar {...toolbarProps} numberOfSelectedItems={photosState.selectedItems.length} />
+        {showEmpty ? (
+          <Empty />
+        ) : showSkeleton ? (
+          <Skeleton />
+        ) : (
+          <Grid selected={photosState.selectedItems} photos={photosState.items} onUserScrolledToTheEnd={fetchPhotos} />
+        )}
+      </div>
+      <DeletePhotosDialog
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={onConfirmDelete}
+        isOpen={showDeleteDialog}
+        numberOfSelectedItems={photosState.selectedItems.length}
+      />
+    </>
   );
 }
 
