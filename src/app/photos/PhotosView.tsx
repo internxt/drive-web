@@ -31,11 +31,12 @@ export default function PhotosView({ className = '' }: { className?: string }): 
           onDeleteClick: () => dispatch(photosThunks.deleteThunk()),
           onShareClick: () => undefined,
           onDownloadClick: () => undefined,
+          onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
         };
 
   return (
     <div className={`${className} h-full w-full ${showSkeleton ? 'overflow-y-hidden' : 'overflow-y-auto'} px-5 pt-2`}>
-      <Toolbar {...toolbarProps} />
+      <Toolbar {...toolbarProps} numberOfSelectedItems={photosState.selectedItems.length} />
       {showEmpty ? (
         <Empty />
       ) : showSkeleton ? (
