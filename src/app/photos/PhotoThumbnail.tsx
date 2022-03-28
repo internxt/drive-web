@@ -10,8 +10,8 @@ export default function PhotoThumbnail({
   className?: string;
   src?: string;
   selected: boolean;
-  onSelect: () => void;
-  onClick: () => void;
+  onSelect?: () => void;
+  onClick?: () => void;
 }): JSX.Element {
   return (
     <div className={`${className} group relative ${src ? 'cursor-pointer' : ''}`} style={{ aspectRatio: '1/1' }}>
@@ -24,8 +24,8 @@ export default function PhotoThumbnail({
       ) : (
         <div className="relative h-full w-full overflow-hidden bg-gray-5">
           <div
-            className="absolute inset-0 h-full w-full -translate-x-full transform bg-gradient-to-r from-gray-5 via-white to-gray-5 opacity-30"
-            style={{ animation: 'shimmer 2s infinite' }}
+            className="absolute inset-0 h-full w-full -translate-x-full transform bg-gradient-to-r from-gray-5 via-white to-gray-5 opacity-40"
+            style={{ animation: 'shimmer 1s infinite' }}
           />
         </div>
       )}

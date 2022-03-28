@@ -7,6 +7,7 @@ import { photosSlice, PhotosState } from '../store/slices/photos';
 import photosThunks from '../store/slices/photos/thunks';
 import Empty from './Empty';
 import PhotoThumbnail from './PhotoThumbnail';
+import Skeleton from './Skeleton';
 import Toolbar from './Toolbar';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
@@ -19,11 +20,17 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   useEffect(fetchPhotos, []);
 
+  const showEmpty = !photosState.isLoading && photosState.items.length === 0;
+
+  const showSkeleton = photosState.isLoading && photosState.items.length === 0;
+
   return (
-    <div className={`${className} h-full w-full overflow-y-auto px-5 pt-2`}>
+    <div className={`${className} h-full w-full ${showSkeleton ? 'overflow-y-hidden' : 'overflow-y-auto'} px-5 pt-2`}>
       <Toolbar onDeleteClick={console.log} onDownloadClick={console.log} onShareClick={console.log} />
-      {!photosState.isLoading && photosState.items.length === 0 ? (
+      {showEmpty ? (
         <Empty />
+      ) : showSkeleton ? (
+        <Skeleton />
       ) : (
         <Grid selected={photosState.selectedItems} photos={photosState.items} onUserScrolledToTheEnd={fetchPhotos} />
       )}
