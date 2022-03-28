@@ -3,7 +3,9 @@ import { DownloadSimple, Share, Trash } from 'phosphor-react';
 function Icon({ Target, onClick }: { Target: typeof DownloadSimple; onClick?: () => void }) {
   return (
     <div
-      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-gray-80 hover:bg-gray-5 active:bg-gray-10"
+      className={`${
+        onClick ? 'cursor-pointer text-gray-80 hover:bg-gray-5 active:bg-gray-10' : 'text-gray-40'
+      } flex h-10 w-10 items-center justify-center rounded-lg `}
       onClick={onClick}
     >
       <Target size={24} />
