@@ -9,6 +9,7 @@ export interface PhotosState {
   items: PhotoWithDownloadLink[];
   selectedItems: PhotoId[];
   bucketId?: string;
+  previewIndex: number | null;
 }
 
 const initialState: PhotosState = {
@@ -17,6 +18,7 @@ const initialState: PhotosState = {
   thereIsMore: true,
   items: [],
   selectedItems: [],
+  previewIndex: null,
 };
 
 export const photosSlice = createSlice({
@@ -53,6 +55,9 @@ export const photosSlice = createSlice({
     },
     unselectAll: (state: PhotosState) => {
       state.selectedItems = [];
+    },
+    setPreviewIndex: (state: PhotosState, action: PayloadAction<PhotosState['previewIndex']>) => {
+      state.previewIndex = action.payload;
     },
   },
   extraReducers: photosExtraReducers,

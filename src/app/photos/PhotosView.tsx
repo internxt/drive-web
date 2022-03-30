@@ -8,6 +8,7 @@ import photosThunks from '../store/slices/photos/thunks';
 import DeletePhotosDialog from './DeletePhotosDialog';
 import Empty from './Empty';
 import PhotoThumbnail from './PhotoThumbnail';
+import Preview from './Preview';
 import Skeleton from './Skeleton';
 import Toolbar from './Toolbar';
 
@@ -60,6 +61,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         isOpen={showDeleteDialog}
         numberOfSelectedItems={photosState.selectedItems.length}
       />
+      <Preview />
     </>
   );
 }
@@ -101,16 +103,15 @@ function Grid({
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
       ref={listRef}
     >
-      {photos.map((photo) => {
+      {photos.map((photo, i) => {
         const isSelected = selected.some((el) => photo.id === el);
 
         return (
           <PhotoItem
-            onClick={() => console.log('Clicked')}
+            onClick={() => dispatch(photosSlice.actions.setPreviewIndex(i))}
             onSelect={() => dispatch(photosSlice.actions.toggleSelect(photo.id))}
             selected={isSelected}
-            downloadLink={photo.previewLink}
-            index={photo.previewIndex}
+            photo={photo}
             key={photo.id}
           />
         );
@@ -123,25 +124,20 @@ function PhotoItem({
   onClick,
   onSelect,
   selected,
-  downloadLink,
-  index,
+  photo,
 }: {
   onClick: () => void;
   onSelect: () => void;
   selected: boolean;
-  downloadLink: string;
-  index: string;
+  photo: PhotoWithDownloadLink;
 }) {
   const [src, setSrc] = useState<string | undefined>(undefined);
-  const mnemonic = useSelector<RootState, string>((state) => state.user.user!.mnemonic);
   const bucketId = useSelector<RootState, string>((state) => state.photos.bucketId!);
 
   useEffect(() => {
     getPhotoPreview({
-      link: downloadLink,
-      index,
+      photo,
       bucketId,
-      mnemonic,
     }).then(setSrc);
   }, []);
 

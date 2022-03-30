@@ -1,6 +1,9 @@
 import { Environment } from '@internxt/inxt-js';
+import { PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { createDecipheriv, Decipher } from 'crypto';
 import { EventEmitter } from 'events';
+import localStorageService from '../../../core/services/local-storage.service';
+import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
 export function loadWritableStreamPonyfill(): Promise<void> {
@@ -214,24 +217,29 @@ export function downloadFileToFileSystem(
 }
 
 export async function getPhotoPreview({
-  link,
-  index,
+  photo,
   bucketId,
-  mnemonic,
 }: {
-  link: string;
-  index: string;
+  photo: PhotoWithDownloadLink;
   bucketId: string;
-  mnemonic: string;
 }): Promise<string> {
-  const indexBuf = Buffer.from(index, 'hex');
-  const iv = indexBuf.slice(0, 16);
-  const key = await generateFileKey(mnemonic, bucketId, indexBuf);
-  const [downloadStreamPromise] = getFileDownloadStream([link], createDecipheriv('aes-256-ctr', key, iv));
+  const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
+  let blob: Blob;
 
-  const readable = await downloadStreamPromise;
+  if (previewInCache) blob = previewInCache.preview;
+  else {
+    const { previewLink: link, previewIndex: index } = photo;
+    const mnemonic = localStorageService.getUser()!.mnemonic;
+    const indexBuf = Buffer.from(index, 'hex');
+    const iv = indexBuf.slice(0, 16);
+    const key = await generateFileKey(mnemonic, bucketId, indexBuf);
+    const [downloadStreamPromise] = getFileDownloadStream([link], createDecipheriv('aes-256-ctr', key, iv));
 
-  const blob = await new Response(readable).blob();
+    const readable = await downloadStreamPromise;
+
+    blob = await new Response(readable).blob();
+    databaseService.put(DatabaseCollection.Photos, photo.id, { preview: blob });
+  }
 
   const url = URL.createObjectURL(blob);
 
