@@ -1,9 +1,11 @@
 import { Environment } from '@internxt/inxt-js';
+import { ActionState } from '@internxt/inxt-js/build/api';
 import { PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { createDecipheriv, Decipher } from 'crypto';
 import { EventEmitter } from 'events';
 import localStorageService from '../../../core/services/local-storage.service';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
+import fetchFileBlob from '../download.service/fetchFileBlob';
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
 export function loadWritableStreamPonyfill(): Promise<void> {
@@ -244,4 +246,34 @@ export async function getPhotoPreview({
   const url = URL.createObjectURL(blob);
 
   return url;
+}
+
+export async function getPhotoSource({
+  photo,
+  bucketId,
+}: {
+  photo: PhotoWithDownloadLink;
+  bucketId: string;
+}): Promise<[Promise<string>, ActionState | undefined]> {
+  const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
+  let promise: Promise<string>;
+  let actionState: ActionState | undefined;
+
+  if (previewInCache!.source) {
+    promise = Promise.resolve(URL.createObjectURL(previewInCache!.source));
+  } else {
+    const [blobPromise, blobActionState] = fetchFileBlob(
+      { fileId: photo.fileId, bucket: bucketId },
+      { updateProgressCallback: () => undefined },
+    );
+
+    promise = blobPromise.then((blob) => {
+      databaseService.put(DatabaseCollection.Photos, photo.id, { ...previewInCache!, source: blob });
+      return URL.createObjectURL(blob);
+    });
+
+    actionState = blobActionState;
+  }
+
+  return [promise, actionState];
 }

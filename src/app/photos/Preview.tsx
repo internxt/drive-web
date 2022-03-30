@@ -1,7 +1,8 @@
 import { DownloadSimple, Share, Trash, X } from 'phosphor-react';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPhotoPreview } from '../drive/services/network.service/download';
+import useEffectAsync from '../core/hooks/useEffectAsync';
+import { getPhotoPreview, getPhotoSource } from '../drive/services/network.service/download';
 import { RootState } from '../store';
 import { photosSlice, PhotosState } from '../store/slices/photos';
 
@@ -27,9 +28,20 @@ export default function Preview(): JSX.Element {
 
   const [src, setSrc] = useState<string | null>(null);
 
+  useEffectAsync(async () => {
+    if (previewIndex !== null) {
+      const photo = photosState.items[previewIndex];
+      const [srcPromise, actionState] = await getPhotoSource({ photo, bucketId });
+      srcPromise.then(setSrc);
+      return () => actionState?.stop();
+    } else {
+      setSrc(null);
+    }
+  }, [previewIndex]);
+
   return (
-    <div className={`absolute inset-0 bg-black ${photosState.previewIndex === null ? 'hidden' : 'block'}`}>
-      <div className="top-0 flex w-full items-center justify-between bg-transparent p-5">
+    <div className={`absolute inset-0 isolate bg-black ${photosState.previewIndex === null ? 'hidden' : 'block'}`}>
+      <div className="absolute top-0 z-10 flex w-full items-center justify-between bg-transparent p-5">
         <Icon Target={X} onClick={() => dispatch(photosSlice.actions.setPreviewIndex(null))} />
         <div className="flex">
           <Icon Target={DownloadSimple} onClick={console.log} />
@@ -37,13 +49,20 @@ export default function Preview(): JSX.Element {
           <Icon Target={Trash} onClick={console.log} />
         </div>
       </div>
-      <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
-        <img className={`h-64 w-64 rounded-xl object-cover ${previewSrc ? '' : 'opacity-0'}`} src={previewSrc ?? ''} />
-        <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
-          <Spinner />
-          <p className="ml-3">Loading...</p>
+      {src ? (
+        <img className="absolute inset-0 h-full w-full object-contain" src={src} />
+      ) : (
+        <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
+          <img
+            className={`h-64 w-64 rounded-xl object-cover ${previewSrc ? '' : 'opacity-0'}`}
+            src={previewSrc ?? ''}
+          />
+          <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
+            <Spinner />
+            <p className="ml-3">Loading...</p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
