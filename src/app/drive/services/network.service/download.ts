@@ -228,7 +228,7 @@ export async function getPhotoPreview({
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
   let blob: Blob;
 
-  if (previewInCache) blob = previewInCache.preview;
+  if (previewInCache && previewInCache.preview) blob = previewInCache.preview;
   else {
     const { previewLink: link, previewIndex: index } = photo;
     const mnemonic = localStorageService.getUser()!.mnemonic;
@@ -259,16 +259,17 @@ export async function getPhotoSource({
   let promise: Promise<string>;
   let actionState: ActionState | undefined;
 
-  if (previewInCache!.source) {
-    promise = Promise.resolve(URL.createObjectURL(previewInCache!.source));
+  if (previewInCache && previewInCache.source) {
+    promise = Promise.resolve(URL.createObjectURL(previewInCache.source));
   } else {
     const [blobPromise, blobActionState] = fetchFileBlob(
       { fileId: photo.fileId, bucket: bucketId },
       { updateProgressCallback: () => undefined },
     );
 
-    promise = blobPromise.then((blob) => {
-      databaseService.put(DatabaseCollection.Photos, photo.id, { ...previewInCache!, source: blob });
+    promise = blobPromise.then(async (blob) => {
+      const previewInCacheRefresh = await databaseService.get(DatabaseCollection.Photos, photo.id);
+      databaseService.put(DatabaseCollection.Photos, photo.id, { ...(previewInCacheRefresh ?? {}), source: blob });
       return URL.createObjectURL(blob);
     });
 

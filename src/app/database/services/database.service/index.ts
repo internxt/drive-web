@@ -20,7 +20,7 @@ export interface AppDatabase extends DBSchema {
   photos: {
     key: string;
     value: {
-      preview: Blob;
+      preview?: Blob;
       source?: Blob;
     };
   };

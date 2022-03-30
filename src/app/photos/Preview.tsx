@@ -1,7 +1,7 @@
+import { ActionState } from '@internxt/inxt-js/build/api';
 import { DownloadSimple, Share, Trash, X } from 'phosphor-react';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import useEffectAsync from '../core/hooks/useEffectAsync';
 import { getPhotoPreview, getPhotoSource } from '../drive/services/network.service/download';
 import { RootState } from '../store';
 import { photosSlice, PhotosState } from '../store/slices/photos';
@@ -15,28 +15,51 @@ export default function Preview(): JSX.Element {
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
 
   useEffect(() => {
+    setPreviewSrc(null);
     if (previewIndex !== null) {
       const photo = photosState.items[previewIndex];
       getPhotoPreview({
         photo,
         bucketId,
       }).then(setPreviewSrc);
-    } else {
-      setPreviewSrc(null);
     }
   }, [previewIndex]);
 
   const [src, setSrc] = useState<string | null>(null);
 
-  useEffectAsync(async () => {
+  useEffect(() => {
+    setSrc(null);
     if (previewIndex !== null) {
+      let actionState: ActionState | undefined;
       const photo = photosState.items[previewIndex];
-      const [srcPromise, actionState] = await getPhotoSource({ photo, bucketId });
-      srcPromise.then(setSrc);
-      return () => actionState?.stop();
-    } else {
-      setSrc(null);
+      getPhotoSource({ photo, bucketId })
+        .then(([srcPromise, srcActionState]) => {
+          actionState = srcActionState;
+          return srcPromise;
+        })
+        .then(setSrc)
+        .catch(console.log);
+      return () => {
+        actionState?.stop();
+      };
     }
+  }, [previewIndex]);
+
+  useEffect(() => {
+    const listener = (event) => {
+      if (previewIndex !== null) {
+        const { code } = event;
+        if (code === 'ArrowLeft' && previewIndex > 0) {
+          dispatch(photosSlice.actions.setPreviewIndex(previewIndex - 1));
+        } else if (code === 'ArrowRight' && previewIndex < photosState.items.length - 1) {
+          dispatch(photosSlice.actions.setPreviewIndex(previewIndex + 1));
+        } else if (code === 'Escape') {
+          dispatch(photosSlice.actions.setPreviewIndex(null));
+        }
+      }
+    };
+    document.addEventListener('keydown', listener);
+    return () => document.removeEventListener('keydown', listener);
   }, [previewIndex]);
 
   return (
