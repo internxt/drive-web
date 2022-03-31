@@ -5,7 +5,7 @@ import { photosSlice, PhotosState } from '..';
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 7;
 
 export const fetchThunk = createAsyncThunk<void, void, { state: RootState }>(
   'photos/fetch',

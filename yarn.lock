@@ -1324,10 +1324,10 @@
     "@typescript-eslint/parser" "^5.4.0"
     eslint-config-prettier "^8.3.0"
 
-"@internxt/inxt-js@=1.2.19":
-  version "1.2.19"
-  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.19/50d8ba84c9c5cdd62ce3822ba981ce8c916c28e11afe9b7d1fffabd72174ccbb#57bb7e6b27026b10104e84105d57c12cc6760d63"
-  integrity sha512-NmBGWZtGPUPADaY+Eric4Bs4gOlgf4WuWLoliJd3oJy4MDP9TDSb/3rrCgR++OmbJQhr2jVwr+DoAAO/xjZEug==
+"@internxt/inxt-js@=1.2.21":
+  version "1.2.21"
+  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.21/883109a0f779e8dc3d082a70605eaaf3af6bda64ac3ad2f70cdf6ea16893a765#bc9bbc18fbedaf030254856de7da283fb03a46b5"
+  integrity sha512-VqnEhB17/w1+u+kQN0WJ0ljSYdL5OYfY0QBwrogaJWbP/3Q2YbW28i9qFhxePJF1NSYltasvkIXVdoXLode1aw==
   dependencies:
     "@internxt/lib" "^1.1.6"
     async "^3.2.0"

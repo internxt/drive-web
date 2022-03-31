@@ -5,7 +5,7 @@
   "dependencies": {
     "@headlessui/react": "^1.4.2",
     "@iconscout/react-unicons": "^1.1.6",
-    "@internxt/inxt-js": "=1.2.19",
+    "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "1.1.2",
     "@internxt/sdk": "^0.6.1",
     "@reduxjs/toolkit": "^1.6.0",
