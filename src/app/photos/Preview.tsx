@@ -6,9 +6,17 @@ import { getPhotoPreview, getPhotoSource } from '../drive/services/network.servi
 import { RootState } from '../store';
 import { photosSlice, PhotosState } from '../store/slices/photos';
 
-export default function Preview(): JSX.Element {
+export default function Preview({
+  onDownloadClick,
+  onDeleteClick,
+  onShareClick,
+}: {
+  onDownloadClick?: () => void;
+  onShareClick?: () => void;
+  onDeleteClick?: () => void;
+}): JSX.Element {
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
-  const { previewIndex } = photosState;
+  const { previewIndex, items } = photosState;
   const bucketId = useSelector<RootState, string>((state) => state.photos.bucketId!);
   const dispatch = useDispatch();
 
@@ -17,13 +25,13 @@ export default function Preview(): JSX.Element {
   useEffect(() => {
     setPreviewSrc(null);
     if (previewIndex !== null) {
-      const photo = photosState.items[previewIndex];
+      const photo = items[previewIndex];
       getPhotoPreview({
         photo,
         bucketId,
       }).then(setPreviewSrc);
     }
-  }, [previewIndex]);
+  }, [previewIndex, items]);
 
   const [src, setSrc] = useState<string | null>(null);
 
@@ -31,7 +39,7 @@ export default function Preview(): JSX.Element {
     setSrc(null);
     if (previewIndex !== null) {
       let actionState: ActionState | undefined;
-      const photo = photosState.items[previewIndex];
+      const photo = items[previewIndex];
       getPhotoSource({ photo, bucketId })
         .then(([srcPromise, srcActionState]) => {
           actionState = srcActionState;
@@ -43,7 +51,7 @@ export default function Preview(): JSX.Element {
         actionState?.stop();
       };
     }
-  }, [previewIndex]);
+  }, [previewIndex, items]);
 
   useEffect(() => {
     const listener = (event) => {
@@ -69,7 +77,7 @@ export default function Preview(): JSX.Element {
         <div className="flex">
           <Icon Target={DownloadSimple} onClick={console.log} />
           <Icon Target={Share} onClick={console.log} />
-          <Icon Target={Trash} onClick={console.log} />
+          <Icon Target={Trash} onClick={onDeleteClick} />
         </div>
       </div>
       {src ? (

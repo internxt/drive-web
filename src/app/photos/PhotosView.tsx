@@ -22,11 +22,22 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   useEffect(fetchPhotos, []);
 
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deletePending, setDeletePending] = useState<null | 'selected' | 'preview'>(null);
 
   function onConfirmDelete() {
-    setShowDeleteDialog(false);
-    dispatch(photosThunks.deleteThunk());
+    if (deletePending === 'selected') {
+      dispatch(photosThunks.deleteThunk(photosState.selectedItems));
+      dispatch(photosSlice.actions.unselectAll());
+    } else if (deletePending === 'preview' && photosState.previewIndex !== null) {
+      const { items, previewIndex } = photosState;
+      const previewIndexIsOutOfBounds = previewIndex > items.length - 2;
+      if (previewIndexIsOutOfBounds) {
+        dispatch(photosSlice.actions.setPreviewIndex(items.length - 1 > 0 ? previewIndex - 1 : null));
+      }
+
+      dispatch(photosThunks.deleteThunk([items[previewIndex].id]));
+    }
+    setDeletePending(null);
   }
 
   const showEmpty = !photosState.isLoading && photosState.items.length === 0;
@@ -37,7 +48,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
     photosState.selectedItems.length === 0
       ? {}
       : {
-          onDeleteClick: () => setShowDeleteDialog(true),
+          onDeleteClick: () => setDeletePending('selected'),
           onShareClick: () => undefined,
           onDownloadClick: () => undefined,
           onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
@@ -55,13 +66,13 @@ export default function PhotosView({ className = '' }: { className?: string }): 
           <Grid selected={photosState.selectedItems} photos={photosState.items} onUserScrolledToTheEnd={fetchPhotos} />
         )}
       </div>
+      <Preview onDeleteClick={() => setDeletePending('preview')} />
       <DeletePhotosDialog
-        onClose={() => setShowDeleteDialog(false)}
+        onClose={() => setDeletePending(null)}
         onConfirm={onConfirmDelete}
-        isOpen={showDeleteDialog}
-        numberOfSelectedItems={photosState.selectedItems.length}
+        isOpen={!!deletePending}
+        numberOfSelectedItems={deletePending === 'selected' ? photosState.selectedItems.length : 1}
       />
-      <Preview />
     </>
   );
 }

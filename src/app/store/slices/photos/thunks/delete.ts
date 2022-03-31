@@ -1,21 +1,21 @@
+import { PhotoId } from '@internxt/sdk/dist/photos';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { photosSlice } from '..';
 
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 
-export const deleteThunk = createAsyncThunk<void, void, { state: RootState }>(
+export const deleteThunk = createAsyncThunk<void, PhotoId[], { state: RootState }>(
   'photos/delete',
-  async (payload: void, { dispatch, getState }) => {
+  async (payload: PhotoId[], { dispatch, getState }) => {
     const state = getState();
 
-    dispatch(photosSlice.actions.removeItems(state.photos.selectedItems));
-    dispatch(photosSlice.actions.setSkipped(state.photos.skipped - state.photos.selectedItems.length));
-    dispatch(photosSlice.actions.unselectAll());
+    dispatch(photosSlice.actions.removeItems(payload));
+    dispatch(photosSlice.actions.setSkipped(state.photos.skipped - payload.length));
 
     const { photos } = SdkFactory.getInstance().createPhotosClient();
 
-    const promises = state.photos.selectedItems.map((id) => photos.deletePhotoById(id));
+    const promises = payload.map((id) => photos.deletePhotoById(id));
 
     await Promise.all(promises);
   },
