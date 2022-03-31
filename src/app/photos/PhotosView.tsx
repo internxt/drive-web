@@ -50,7 +50,10 @@ export default function PhotosView({ className = '' }: { className?: string }): 
       : {
           onDeleteClick: () => setDeletePending('selected'),
           onShareClick: () => undefined,
-          onDownloadClick: () => undefined,
+          onDownloadClick: () => {
+            const photos = photosState.selectedItems.map((id) => photosState.items.find((item) => item.id === id)!);
+            dispatch(photosThunks.downloadThunk(photos));
+          },
           onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
         };
 

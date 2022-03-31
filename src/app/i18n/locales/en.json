@@ -251,6 +251,15 @@
       },
       "errors": {}
     },
+    "download-photos": {
+      "status": {
+        "pending": "Downloading {progress}%",
+        "success": "Downloaded",
+        "error": "Error during download",
+        "cancelled": "Download cancelled"
+      },
+      "errors": {}
+    },
     "download-backup": {
       "status": {
         "pending": "Pending to download",

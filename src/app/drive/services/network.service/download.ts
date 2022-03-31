@@ -1,6 +1,6 @@
 import { Environment } from '@internxt/inxt-js';
 import { ActionState } from '@internxt/inxt-js/build/api';
-import { PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
+import { Photo, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { createDecipheriv, Decipher } from 'crypto';
 import { EventEmitter } from 'events';
 import localStorageService from '../../../core/services/local-storage.service';
@@ -248,29 +248,30 @@ export async function getPhotoPreview({
   return url;
 }
 
-export async function getPhotoSource({
+export async function getPhotoBlob({
   photo,
   bucketId,
 }: {
-  photo: PhotoWithDownloadLink;
+  photo: Photo;
   bucketId: string;
-}): Promise<[Promise<string>, ActionState | undefined]> {
+}): Promise<[Promise<Blob>, ActionState | undefined]> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
-  let promise: Promise<string>;
+  let promise: Promise<Blob>;
   let actionState: ActionState | undefined;
 
   if (previewInCache && previewInCache.source) {
-    promise = Promise.resolve(URL.createObjectURL(previewInCache.source));
+    promise = Promise.resolve(previewInCache.source);
   } else {
     const [blobPromise, blobActionState] = fetchFileBlob(
       { fileId: photo.fileId, bucket: bucketId },
       { updateProgressCallback: () => undefined },
     );
 
-    promise = blobPromise.then(async (blob) => {
-      const previewInCacheRefresh = await databaseService.get(DatabaseCollection.Photos, photo.id);
-      databaseService.put(DatabaseCollection.Photos, photo.id, { ...(previewInCacheRefresh ?? {}), source: blob });
-      return URL.createObjectURL(blob);
+    promise = blobPromise.then((blob) => {
+      databaseService.get(DatabaseCollection.Photos, photo.id).then((previewInCacheRefresh) => {
+        databaseService.put(DatabaseCollection.Photos, photo.id, { ...(previewInCacheRefresh ?? {}), source: blob });
+      });
+      return blob;
     });
 
     actionState = blobActionState;

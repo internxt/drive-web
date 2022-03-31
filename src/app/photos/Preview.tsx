@@ -2,7 +2,7 @@ import { ActionState } from '@internxt/inxt-js/build/api';
 import { DownloadSimple, Share, Trash, X } from 'phosphor-react';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPhotoPreview, getPhotoSource } from '../drive/services/network.service/download';
+import { getPhotoBlob, getPhotoPreview } from '../drive/services/network.service/download';
 import { RootState } from '../store';
 import { photosSlice, PhotosState } from '../store/slices/photos';
 
@@ -40,12 +40,12 @@ export default function Preview({
     if (previewIndex !== null) {
       let actionState: ActionState | undefined;
       const photo = items[previewIndex];
-      getPhotoSource({ photo, bucketId })
-        .then(([srcPromise, srcActionState]) => {
+      getPhotoBlob({ photo, bucketId })
+        .then(([blobPromise, srcActionState]) => {
           actionState = srcActionState;
-          return srcPromise;
+          return blobPromise;
         })
-        .then(setSrc)
+        .then((blob) => setSrc(URL.createObjectURL(blob)))
         .catch(console.log);
       return () => {
         actionState?.stop();
