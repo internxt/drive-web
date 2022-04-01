@@ -53,6 +53,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
           onDownloadClick: () => {
             const photos = photosState.selectedItems.map((id) => photosState.items.find((item) => item.id === id)!);
             dispatch(photosThunks.downloadThunk(photos));
+            dispatch(photosSlice.actions.unselectAll());
           },
           onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
         };
@@ -69,7 +70,13 @@ export default function PhotosView({ className = '' }: { className?: string }): 
           <Grid selected={photosState.selectedItems} photos={photosState.items} onUserScrolledToTheEnd={fetchPhotos} />
         )}
       </div>
-      <Preview onDeleteClick={() => setDeletePending('preview')} />
+      <Preview
+        onDeleteClick={() => setDeletePending('preview')}
+        onDownloadClick={() =>
+          photosState.previewIndex &&
+          dispatch(photosThunks.downloadThunk([photosState.items[photosState.previewIndex]]))
+        }
+      />
       <DeletePhotosDialog
         onClose={() => setDeletePending(null)}
         onConfirm={onConfirmDelete}

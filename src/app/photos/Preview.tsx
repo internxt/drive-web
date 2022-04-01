@@ -75,7 +75,7 @@ export default function Preview({
       <div className="absolute top-0 z-10 flex w-full items-center justify-between bg-transparent p-5">
         <Icon Target={X} onClick={() => dispatch(photosSlice.actions.setPreviewIndex(null))} />
         <div className="flex">
-          <Icon Target={DownloadSimple} onClick={console.log} />
+          <Icon Target={DownloadSimple} onClick={onDownloadClick} />
           <Icon Target={Share} onClick={console.log} />
           <Icon Target={Trash} onClick={onDeleteClick} />
         </div>
