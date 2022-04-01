@@ -3,6 +3,8 @@ import { ActionState } from '@internxt/inxt-js/build/api';
 import { Photo, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { createDecipheriv, Decipher } from 'crypto';
 import { EventEmitter } from 'events';
+import { Readable } from 'stream';
+import { getEnvironmentConfig, Network } from '.';
 import localStorageService from '../../../core/services/local-storage.service';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import fetchFileBlob from '../download.service/fetchFileBlob';
@@ -278,4 +280,26 @@ export async function getPhotoBlob({
   }
 
   return [promise, actionState];
+}
+
+export async function getPhotoCachedOrStream({
+  photo,
+  bucketId,
+  onProgress,
+}: {
+  photo: Photo;
+  bucketId: string;
+  onProgress?: (progress: number) => void;
+}): Promise<Promise<Blob> | [Promise<Readable>, ActionState]> {
+  const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
+  if (previewInCache && previewInCache.source) {
+    onProgress?.(1);
+    return Promise.resolve(previewInCache.source);
+  } else {
+    const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig();
+    const network = new Network(bridgeUser, bridgePass, encryptionKey);
+    return network.getFileDownloadStream(bucketId, photo.fileId, {
+      progressCallback: onProgress ? onProgress : () => undefined,
+    });
+  }
 }
