@@ -9,6 +9,7 @@ import DeletePhotosDialog from './DeletePhotosDialog';
 import Empty from './Empty';
 import PhotoThumbnail from './PhotoThumbnail';
 import Preview from './Preview';
+import ShareDialog from './ShareDialog';
 import Skeleton from './Skeleton';
 import Toolbar from './Toolbar';
 
@@ -23,6 +24,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
   useEffect(fetchPhotos, []);
 
   const [deletePending, setDeletePending] = useState<null | 'selected' | 'preview'>(null);
+  const [sharePending, setSharePending] = useState<null | 'selected' | 'preview'>(null);
 
   function onConfirmDelete() {
     if (deletePending === 'selected') {
@@ -49,7 +51,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
       ? {}
       : {
           onDeleteClick: () => setDeletePending('selected'),
-          onShareClick: () => undefined,
+          onShareClick: () => setSharePending('selected'),
           onDownloadClick: () => {
             const photos = photosState.selectedItems.map((id) => photosState.items.find((item) => item.id === id)!);
             dispatch(photosThunks.downloadThunk(photos));
@@ -72,6 +74,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
       </div>
       <Preview
         onDeleteClick={() => setDeletePending('preview')}
+        onShareClick={() => setSharePending('preview')}
         onDownloadClick={() =>
           photosState.previewIndex &&
           dispatch(photosThunks.downloadThunk([photosState.items[photosState.previewIndex]]))
@@ -82,6 +85,17 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         onConfirm={onConfirmDelete}
         isOpen={!!deletePending}
         numberOfSelectedItems={deletePending === 'selected' ? photosState.selectedItems.length : 1}
+      />
+      <ShareDialog
+        onClose={() => setSharePending(null)}
+        isOpen={!!sharePending}
+        photos={
+          sharePending === 'selected'
+            ? photosState.selectedItems
+            : sharePending === 'preview'
+            ? [photosState.items[photosState.previewIndex!].id]
+            : []
+        }
       />
     </>
   );

@@ -76,7 +76,7 @@ export default function Preview({
         <Icon Target={X} onClick={() => dispatch(photosSlice.actions.setPreviewIndex(null))} />
         <div className="flex">
           <Icon Target={DownloadSimple} onClick={onDownloadClick} />
-          <Icon Target={Share} onClick={console.log} />
+          <Icon Target={Share} onClick={onShareClick} />
           <Icon Target={Trash} onClick={onDeleteClick} />
         </div>
       </div>
