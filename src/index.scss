@@ -275,7 +275,7 @@ code {
     }
   }
 
-  input[type='number'] {
+  .input-number {
     @apply outline-none appearance-none border-neutral-60 text-center;
 
     -moz-appearance: textfield;

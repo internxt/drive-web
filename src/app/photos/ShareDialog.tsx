@@ -21,7 +21,8 @@ export default function ShareDialog({
   isOpen: boolean;
 }): JSX.Element {
   const numberOfSelectedItems = photos.length;
-  const views = 10;
+  const DEFAULT_VIEWS = 10;
+  const [views, setViews] = useState(DEFAULT_VIEWS);
 
   const [status, setStatus] = useState<{ tag: 'ready' } | { tag: 'loading' } | { tag: 'done'; link: string }>({
     tag: 'ready',
@@ -61,21 +62,23 @@ export default function ShareDialog({
           size={24}
         />
         <h1 className="mt-4 text-xl font-semibold text-gray-80">Share {numberOfSelectedItems} photos</h1>
-        <div className=" mt-3 flex items-center justify-center rounded-lg bg-gray-5 p-5">
-          <div className="w-40 text-left">
-            <p className="font-medium text-gray-80">Open count limit</p>
-            <p className="text-gray-40">Limit number of times users can open this link</p>
-          </div>
-          <div className="flex flex-grow items-center justify-end">
-            <div className="h-10 w-24 rounded-lg border border-gray-10 bg-white leading-10">
-              <p className="font-medium text-gray-80">
-                {views}
-                <span className="text-gray-50"> times</span>
-              </p>
-            </div>
-          </div>
+        <p className="mt-3 ml-5 text-left font-medium text-gray-80">Link options</p>
+        <div className="mt-1 rounded-lg bg-gray-5 p-4 text-left">
+          <p className="font-medium text-gray-80">
+            Open count limit
+            <input
+              disabled={status.tag !== 'ready'}
+              className="outline-none mx-2 inline-block w-12 rounded-md border border-transparent bg-white px-1 font-medium text-gray-80 focus:border-primary-dark focus:ring-2 focus:ring-primary focus:ring-opacity-10 disabled:bg-gray-10"
+              style={{ textAlign: 'right' }}
+              type="number"
+              value={views}
+              onChange={(e) => setViews(parseInt(e.target.value))}
+            />
+            times
+          </p>
+          <p className="text-gray-40">Limit number of times users can open this link</p>
         </div>
-        <div className="mt-7 flex h-10 space-x-2">
+        <div className="mt-3 flex h-10 space-x-2">
           {status.tag === 'ready' ? (
             <>
               <button

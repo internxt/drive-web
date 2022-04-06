@@ -399,7 +399,17 @@ module.exports = {
     appearance: ['responsive'],
     backgroundAttachment: ['responsive', 'group-hover'],
     backgroundClip: ['responsive', 'group-hover'],
-    backgroundColor: ['responsive', 'dark', 'group-hover', 'focus-within', 'focus-visible', 'hover', 'focus', 'active'],
+    backgroundColor: [
+      'responsive',
+      'dark',
+      'group-hover',
+      'focus-within',
+      'focus-visible',
+      'hover',
+      'focus',
+      'active',
+      'disabled',
+    ],
     backgroundImage: ['responsive', 'group-hover'],
     backgroundOpacity: [
       'responsive',

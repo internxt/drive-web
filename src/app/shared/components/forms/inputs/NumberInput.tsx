@@ -26,23 +26,21 @@ const NumberInput = (props: NumberInputProps): JSX.Element => {
 
   return (
     <div
-      className={`${
-        props.className || ''
-      } h-8 relative flex items-center bg-white border border-neutral-30 rounded-lg`}
+      className={`${props.className || ''} relative flex h-8 items-center rounded-lg border border-neutral-30 bg-white`}
     >
       <button
         disabled={value <= min}
-        className="h-full w-10 primary flex items-center justify-center font-semibold rounded-l-lg"
+        className="primary flex h-full w-10 items-center justify-center rounded-l-lg font-semibold"
         onClick={() => onValueChanged(value - 1)}
       >
         -
       </button>
-      <div className="flex-grow flex items-center justify-center py-1 px-3">
+      <div className="flex flex-grow items-center justify-center py-1 px-3">
         <input
           type="number"
           min={min}
           max={max}
-          className="w-6 mr-1 bg-white"
+          className="input-number mr-1 w-6 bg-white"
           value={value}
           onChange={(e) => onValueChanged(parseInt(e.target.value))}
         />
@@ -50,7 +48,7 @@ const NumberInput = (props: NumberInputProps): JSX.Element => {
       </div>
       <button
         disabled={max !== undefined && value >= max}
-        className="h-full w-10 primary flex items-center justify-center font-semibold rounded-r-lg"
+        className="primary flex h-full w-10 items-center justify-center rounded-r-lg font-semibold"
         onClick={() => onValueChanged(value + 1)}
       >
         +
