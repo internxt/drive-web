@@ -9,7 +9,7 @@ import { getEnvironmentConfig, Network } from '../network.service';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
-import { Abortable } from '../network.service/upload';
+import { Abortable } from 'app/network/upload';
 
 export interface ItemToUpload {
   name: string;

@@ -4,7 +4,7 @@ import { Readable } from 'stream';
 import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
-import { uploadFile } from './upload';
+import { uploadFile } from 'app/network/upload';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 3 * 1024 * 1024 * 1024;
 
@@ -88,6 +88,11 @@ export class Network {
 
     return uploadFile(bucketId, {
       ...params,
+      ...{
+        progressCallback: (totalBytes, uploadedBytes) => {
+          params.progressCallback(uploadedBytes / totalBytes, totalBytes, uploadedBytes);
+        }
+      },
       creds: this.creds,
       mnemonic: this.mnemonic,
     });
