@@ -7,11 +7,9 @@ import { Network } from '@internxt/sdk/dist/network';
 import { createAES256Cipher, encryptFilename, getEncryptedFile, sha256 } from './crypto';
 import { NetworkFacade } from '.';
 import { finishUpload, getUploadUrl, prepareUpload } from './requests';
+import { Abortable } from './Abortable';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
-export interface Abortable {
-  stop: () => void;
-}
 
 class UploadAbortedError extends Error {
   constructor() {
@@ -71,7 +69,7 @@ export function uploadFileBlob(
   return [
     uploadFinishedPromise,
     {
-      stop: () => {
+      abort: () => {
         eventEmitter.emit('abort');
       },
     },
@@ -92,7 +90,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
   const file: File = params.filecontent;
   const eventEmitter = new EventEmitter().once('abort', () => {
     aborted = true;
-    uploadAbortable?.stop();
+    uploadAbortable?.abort();
   });
 
   const uploadPromise = (async () => {
@@ -159,7 +157,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
   return [
     uploadPromise,
     {
-      stop: () => {
+      abort: () => {
         eventEmitter.emit('abort');
       },
     },
@@ -173,7 +171,7 @@ function uploadFileV2(bucketId: string, params: IUploadParams): [Promise<string>
   const file: File = params.filecontent;
   const eventEmitter = new EventEmitter().once('abort', () => {
     aborted = true;
-    uploadAbortable?.stop();
+    uploadAbortable?.abort();
   });
 
   const uploadPromise = (() => {
@@ -207,7 +205,7 @@ function uploadFileV2(bucketId: string, params: IUploadParams): [Promise<string>
   return [
     uploadPromise,
     {
-      stop: () => {
+      abort: () => {
         eventEmitter.emit('abort');
       },
     },

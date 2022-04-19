@@ -106,7 +106,7 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
       tasksService.updateTask({
         taskId,
         merge: {
-          stop: async () => actionState?.stop(),
+          stop: async () => actionState?.abort(),
         },
       });
     } catch (err) {

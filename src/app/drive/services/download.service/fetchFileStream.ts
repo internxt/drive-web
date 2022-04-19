@@ -1,6 +1,7 @@
 import { ActionState } from '@internxt/inxt-js/build/api';
 import { getEnvironmentConfig } from '../network.service';
-import { downloadFile, Abortable, Downloadable } from 'app/network/download';
+import { downloadFile, Downloadable } from 'app/network/download';
+import { Abortable } from 'app/network/Abortable';
 
 type FetchFileStreamOptions = { updateProgressCallback: (progress: number) => void; isTeam?: boolean };
 

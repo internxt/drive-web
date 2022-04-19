@@ -2,6 +2,7 @@ import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 import { getEnvironmentConfig, Network } from '../network.service';
 import { DeviceBackup } from '../../../backups/types';
+import { Abortable } from 'app/network/Abortable';
 
 export default async function downloadBackup(
   backup: DeviceBackup,
@@ -14,7 +15,7 @@ export default async function downloadBackup(
     finishedCallback: () => void;
     errorCallback: () => void;
   },
-): Promise<ActionState | undefined> {
+): Promise<Abortable | undefined> {
   if (!('showSaveFilePicker' in window)) {
     const err = new Error('File System Access API not available');
     err.name = 'FILE_SYSTEM_API_NOT_AVAILABLE';
@@ -55,5 +56,5 @@ export default async function downloadBackup(
     });
   }
 
-  return actionState;
+  return abortable;
 }

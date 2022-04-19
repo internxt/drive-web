@@ -8,6 +8,7 @@ import { NetworkFacade } from 'app/network';
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
 import { sha256 } from './crypto';
+import { Abortable } from './Abortable';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string, bucketId: string };
@@ -25,10 +26,6 @@ export function loadWritableStreamPonyfill(): Promise<void> {
 }
 
 const generateFileKey = Environment.utils.generateFileKey;
-
-export interface Abortable {
-  abort: () => void;
-}
 
 interface FileInfo {
   bucket: string;
@@ -55,7 +52,11 @@ export function getDecryptedStream(
   const eventEmitter = new EventEmitter();
   const reader = joinReadableBinaryStreams(encryptedContentSlices).getReader();
 
-  let aborted = false;
+  const abortable: Abortable = {
+    abort: () => {
+      eventEmitter.emit('abort');
+    }
+  };
 
   const decryptedStream = new ReadableStream({
     async pull(controller) {
@@ -73,19 +74,16 @@ export function getDecryptedStream(
   });
 
   eventEmitter.once('abort', () => {
-    aborted = true;
     decryptedStream.cancel();
   });
 
-  return [decryptedStream, {
-    abort: () => {
-      eventEmitter.emit('abort');
-    }
-  }];
+  return [decryptedStream, abortable];
 }
 
 function getFileDownloadStream(downloadUrls: string[], decipher: Decipher): [Promise<ReadableStream>, Abortable] {
-  let abortable: Abortable;
+  let abortable: Abortable = {
+    abort: () => null
+  };
 
   const downloadPromise = (async () => {
     const encryptedContentParts: ReadableStream<Uint8Array>[] = [];
@@ -113,11 +111,7 @@ function getFileDownloadStream(downloadUrls: string[], decipher: Decipher): [Pro
     return decryptedStream;
   })();
 
-  return [downloadPromise, {
-    abort: () => {
-      abortable.abort();
-    }
-  }];
+  return [downloadPromise, abortable];
 }
 
 interface NetworkCredentials {

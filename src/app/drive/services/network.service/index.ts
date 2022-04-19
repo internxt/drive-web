@@ -5,6 +5,7 @@ import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { uploadFile } from 'app/network/upload';
+import { Abortable } from 'app/network/Abortable';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 3 * 1024 * 1024 * 1024;
 
@@ -27,10 +28,6 @@ interface EnvironmentConfig {
   encryptionKey: string;
   bucketId: string;
   useProxy: boolean;
-}
-
-interface Abortable {
-  stop: () => void;
 }
 
 export class Network {

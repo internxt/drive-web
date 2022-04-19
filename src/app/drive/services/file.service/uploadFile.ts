@@ -9,7 +9,7 @@ import { getEnvironmentConfig, Network } from '../network.service';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
-import { Abortable } from 'app/network/upload';
+import { Abortable } from 'app/network/Abortable';
 
 export interface ItemToUpload {
   name: string;
@@ -26,7 +26,7 @@ export function uploadFile(
   updateProgressCallback: (progress: number) => void,
 ): [Promise<DriveFileData>, Abortable | undefined] {
   let promise: Promise<DriveFileData>;
-  let actionState: Abortable | undefined;
+  let abortable: Abortable | undefined;
 
   try {
     analyticsService.trackFileUploadStart({
@@ -82,7 +82,7 @@ export function uploadFile(
         return response;
       });
     });
-    actionState = uploadFileActionState;
+    abortable = uploadAbortable;
   } catch (err: unknown) {
     const castedError = errorService.castError(err);
 
@@ -98,7 +98,7 @@ export function uploadFile(
     throw err;
   }
 
-  return [promise, actionState];
+  return [promise, abortable];
 }
 
 export default uploadFile;
