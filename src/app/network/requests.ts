@@ -1,7 +1,6 @@
-import { sha256 } from '@internxt/inxt-js/build/lib/utils/crypto';
 import errorService from 'app/core/services/error.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
-import { encryptFilename, generateHMAC } from './crypto';
+import { encryptFilename, generateHMAC, sha256 } from './crypto';
 
 // TODO: Make this injectable
 const networkApiUrl = process.env.REACT_APP_STORJ_BRIDGE;
