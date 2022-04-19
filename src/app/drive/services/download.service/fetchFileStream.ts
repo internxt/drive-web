@@ -1,25 +1,31 @@
 import { ActionState } from '@internxt/inxt-js/build/api';
 import { getEnvironmentConfig } from '../network.service';
-import { downloadFile, Abortable } from '../network.service/download';
+import { downloadFile, Abortable, Downloadable } from 'app/network/download';
+
+type FetchFileStreamOptions = { updateProgressCallback: (progress: number) => void; isTeam?: boolean };
 
 export default function fetchFileStream(
-  item: { fileId: string; bucket: string },
-  options: { updateProgressCallback: (progress: number) => void; isTeam?: boolean },
+  item: Downloadable,
+  options: FetchFileStreamOptions,
 ): [Promise<ReadableStream<Uint8Array>>, ActionState | undefined] {
-
   let abortable: Abortable;
 
   const downloadPromise = (async () => {
     const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isTeam);
 
     const [fileStreamPromise, fileStreamAbortable] = downloadFile({
-      bucketId: item.bucket,
+      bucketId: item.bucketId,
       fileId: item.fileId,
       creds: {
         pass: bridgePass,
         user: bridgeUser
       },
-      mnemonic: encryptionKey
+      mnemonic: encryptionKey,
+      options: {
+        notifyProgress: (totalBytes: number, downloadedBytes: number) => {
+          options.updateProgressCallback(downloadedBytes / totalBytes);
+        }
+      }
     });
 
     abortable = fileStreamAbortable;
