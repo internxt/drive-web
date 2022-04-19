@@ -165,3 +165,51 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
     },
   ];
 }
+
+function uploadFileV2(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
+  let aborted = false;
+  let uploadAbortable: Abortable;
+
+  const file: File = params.filecontent;
+  const eventEmitter = new EventEmitter().once('abort', () => {
+    aborted = true;
+    uploadAbortable?.stop();
+  });
+
+  const uploadPromise = (() => {
+    const auth = getAuthFromCredentials({
+      user: params.creds.user,
+      pass: params.creds.pass
+    });
+
+    return new NetworkFacade(
+      Network.client(
+        process.env.REACT_APP_STORJ_BRIDGE as string,
+        {
+          clientName: 'drive-web',
+          clientVersion: '1.0'
+        },
+        {
+          bridgeUser: auth.username,
+          userId: auth.password
+        }
+      ),
+    ).upload(
+      bucketId,
+      params.mnemonic,
+      file,
+      {
+        uploadingCallback: params.progressCallback
+      }
+    );
+  })();
+
+  return [
+    uploadPromise,
+    {
+      stop: () => {
+        eventEmitter.emit('abort');
+      },
+    },
+  ];
+}
