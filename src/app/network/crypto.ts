@@ -4,6 +4,7 @@ import {
   sha512HmacBuffer,
   sha512HmacBufferFromHex,
 } from '@internxt/inxt-js/build/lib/utils/crypto';
+import { Sha256 } from 'asmcrypto.js';
 import { mnemonicToSeed } from 'bip39';
 import { Cipher, CipherCCM, createCipheriv, createHash } from 'crypto';
 
@@ -87,7 +88,10 @@ export function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Ci
   return encryptedFileReadable;
 }
 
-export async function getEncryptedFile(plainFile: File, cipher: Cipher): Promise<[Blob, Hash]> {
+export async function getEncryptedFile(
+  plainFile: { stream(): ReadableStream<Uint8Array> },
+  cipher: Cipher
+): Promise<[Blob, string]> {
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
   const hasher = new Sha256();
   const blobParts: ArrayBuffer[] = [];
@@ -111,4 +115,8 @@ export async function getEncryptedFile(plainFile: File, cipher: Cipher): Promise
     new Blob(blobParts, { type: 'application/octet-stream' }),
     createHash('ripemd160').update(Buffer.from(hasher.result as Uint8Array)).digest('hex'),
   ];
+}
+
+export function sha256(input: Buffer): Buffer {
+  return createHash('sha256').update(input).digest();
 }
