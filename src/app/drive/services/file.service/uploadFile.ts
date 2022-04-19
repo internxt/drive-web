@@ -5,11 +5,12 @@ import analyticsService from '../../../analytics/services/analytics.service';
 import { AppView, DevicePlatform } from '../../../core/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
-import { getEnvironmentConfig, Network } from '../network.service';
+import { getEnvironmentConfig } from '../network.service';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
 import { Abortable } from 'app/network/Abortable';
+import { uploadFile as upload } from 'app/network/upload';
 
 export interface ItemToUpload {
   name: string;
@@ -48,12 +49,15 @@ export function uploadFile(
       throw new Error('Bucket not found!');
     }
 
-    const network = new Network(bridgeUser, bridgePass, encryptionKey);
-    // const content = new Blob([file.content], { type: file.type });
-    const [uploadFilePromise, uploadFileActionState] = network.uploadFile(bucketId, {
-      filesize: file.size,
+    const [uploadFilePromise, uploadAbortable] = upload(bucketId, {
+      creds: {
+        pass: bridgePass,
+        user: bridgeUser
+      },
       filecontent: file.content,
-      progressCallback: updateProgressCallback,
+      filesize: file.size,
+      mnemonic: encryptionKey,
+      progressCallback: updateProgressCallback
     });
 
     promise = uploadFilePromise.then(async (fileId) => {
