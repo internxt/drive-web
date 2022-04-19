@@ -164,13 +164,11 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
   ];
 }
 
-function uploadFileV2(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
-  let aborted = false;
+export function uploadFileV2(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
   let uploadAbortable: Abortable;
 
   const file: File = params.filecontent;
   const eventEmitter = new EventEmitter().once('abort', () => {
-    aborted = true;
     uploadAbortable?.abort();
   });
 

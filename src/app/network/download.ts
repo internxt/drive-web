@@ -252,7 +252,8 @@ function _downloadFileV2(params: IDownloadParams): [
   Promise<ReadableStream<Uint8Array>>,
   Abortable
 ] {
-  const { bucketId, fileId, token, creds } = params;
+  // TODO: Use 'token' to download shared files
+  const { bucketId, fileId, creds } = params;
   const abortable: Abortable = {
     abort: () => null
   };
