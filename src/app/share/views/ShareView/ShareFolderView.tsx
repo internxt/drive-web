@@ -32,7 +32,7 @@ import {
 import {
   downloadSharedFolderUsingBlobs
 } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
-import { loadWritableStreamPonyfill } from 'app/drive/services/network.service/download';
+import { loadWritableStreamPonyfill } from 'app/network/download';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{

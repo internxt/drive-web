@@ -19,7 +19,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const downloader = file
     ? () =>
-        downloadService.fetchFileBlob(file, {
+        downloadService.fetchFileBlob({ ...file, bucketId: file.bucket }, {
           updateProgressCallback: () => undefined,
           isTeam,
         })

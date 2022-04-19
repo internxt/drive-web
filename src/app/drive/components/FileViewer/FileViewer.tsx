@@ -8,13 +8,12 @@ import i18n from '../../../i18n/services/i18n.service';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import spinnerIcon from '../../../../assets/icons/spinner.svg';
-import { ActionState } from '@internxt/inxt-js/build/api';
 
 interface FileViewerProps {
   file?: { type: string | null; name: string };
   onClose: () => void;
   onDownload: () => void;
-  downloader: () => [Promise<Blob>, ActionState | undefined];
+  downloader: () => [Promise<Blob>, { stop: () => void } | undefined];
   show: boolean;
 }
 
