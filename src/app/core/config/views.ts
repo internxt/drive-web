@@ -20,6 +20,7 @@ import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import RecoverView from '../../auth/views/RecoverView/RecoverView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
+import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import PhotosView from '../../photos/PhotosView';
 
@@ -48,6 +49,7 @@ const views: Array<{
   { id: AppView.Remove, component: RemoveAccountView },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFolderToken, component: ShareFolderView },
+  { id: AppView.SharePhotosToken, component: SharePhotosView },
   { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.NotFound, component: NotFoundView },
 ];

@@ -115,6 +115,7 @@ export enum AppView {
   Remove = 'remove',
   ShareFileToken = 'share-token',
   ShareFolderToken = 'share-folder-token',
+  SharePhotosToken = 'share-photos-token',
   GuestAcceptInvite = 'guest-accept-invite',
   RedirectToApp = 'redirect-to-app',
   NotFound = 'not-found',

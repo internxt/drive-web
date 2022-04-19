@@ -132,6 +132,12 @@
       "exact": false
     },
     {
+      "id": "share-photos-token",
+      "layout": "empty",
+      "path": "/s/photos/:token([a-z0-9]{24})/:code",
+      "exact": false
+    },
+    {
       "id": "guest-accept-invite",
       "layout": "empty",
       "path": "/guest/invite",
