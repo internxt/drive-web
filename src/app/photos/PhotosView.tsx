@@ -135,7 +135,7 @@ function Grid({
 
   return (
     <div
-      className="mt-2 grid gap-1"
+      className="mt-2 grid gap-1 mb-5"
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
       ref={listRef}
     >

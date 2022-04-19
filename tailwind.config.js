@@ -165,6 +165,7 @@ module.exports = {
       },
       boxShadow: {
         b: '2px 1px 3px 0 rgba(0,0,0,0.1),2px 1px 2px 0 rgba(0,0,0,0.06)',
+        'photo-select': '0px 12px 24px rgba(0, 0, 0, 0.16)',
         subtle: '0 32px 40px 0 rgba(18, 22, 25, 0.04)',
         'subtle-hard': '0 32px 40px 0 rgba(18, 22, 25, 0.08)',
       },
@@ -487,7 +488,7 @@ module.exports = {
     outline: ['responsive', 'focus-within', 'focus-visible', 'focus', 'group-hover'],
     overflow: ['responsive', 'group-hover'],
     overscrollBehavior: ['responsive', 'group-hover'],
-    padding: ['responsive', 'group-hover', 'focus-visible'],
+    padding: ['responsive', 'hover', 'active', 'focus', 'group-hover', 'focus-visible'],
     placeContent: ['responsive', 'group-hover'],
     placeItems: ['responsive', 'group-hover'],
     placeSelf: ['responsive', 'group-hover'],

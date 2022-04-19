@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Check } from 'phosphor-react';
 
 export default function PhotoThumbnail({
@@ -5,7 +6,7 @@ export default function PhotoThumbnail({
   src,
   selected,
   onSelect,
-  onClick,
+  onClick
 }: {
   className?: string;
   src?: string;
@@ -13,13 +14,19 @@ export default function PhotoThumbnail({
   onSelect?: () => void;
   onClick?: () => void;
 }): JSX.Element {
+  const [selectMouseDown, setSelectMouseDown] = useState(false);
   return (
-    <div className={`${className} group relative ${src ? 'cursor-pointer' : ''}`} style={{ aspectRatio: '1/1' }}>
+    <div
+      className={`${className} group relative ${src ? 'cursor-pointer' : ''} ${selected && 'p-1'} ${selectMouseDown && 'p-1.5'} transition-all duration-100 ease-in-out`}
+      style={{ aspectRatio: '1/1' }}
+      onMouseLeave={() => selectMouseDown && setSelectMouseDown(false)}
+    >
       {src ? (
         <img
           onClick={onClick}
-          className={`h-full w-full object-cover ${selected ? 'rounded-lg brightness-80 filter' : 'active:rounded-lg'}`}
+          className={`h-full w-full object-cover ${(selected || selectMouseDown) && 'rounded-lg brightness-80 filter'} transition-all duration-100 ease-in-out`}
           src={src}
+          draggable="false"
         />
       ) : (
         <div className="relative h-full w-full overflow-hidden bg-gray-5">
@@ -31,15 +38,17 @@ export default function PhotoThumbnail({
       )}
       <div
         onClick={onSelect}
+        onMouseDown={() => setSelectMouseDown(true)}
+        onMouseUp={() => setSelectMouseDown(false)}
         className={`${
           src
             ? selected
               ? 'flex bg-primary active:bg-primary-dark'
               : 'hidden  bg-white bg-opacity-25 active:bg-opacity-50 group-hover:flex'
             : 'hidden'
-        } absolute left-3 top-3 box-content h-6 w-6 items-center justify-center rounded-full border-2 border-white`}
+        } absolute left-3 top-3 box-content h-6 w-6 items-center justify-center rounded-full border-2 border-white shadow-photo-select`}
       >
-        <Check className={selected ? 'block' : 'hidden'} color="white" />
+        <Check className={selected ? 'block' : 'hidden'} color="white" weight="bold" size={18} />
       </div>
     </div>
   );
