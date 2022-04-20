@@ -110,12 +110,7 @@ export default function Preview({
             enterFrom="opacity-0"
             enterTo="opacity-100"
           >
-            <img
-              className="will-change absolute inset-0 h-full w-full object-contain"
-              loading="lazy"
-              draggable="false"
-              src={src}
-            />
+            <img className="will-change absolute inset-0 h-full w-full object-contain" draggable="false" src={src} />
           </Transition.Child>
         ) : (
           <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
