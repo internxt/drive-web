@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, ClockCounterClockwise, Desktop, Folder, ImageSquare } from 'phosphor-react';
+import { Clock, ClockCounterClockwise, Desktop, FolderSimple, ImageSquare } from 'phosphor-react';
 import { connect } from 'react-redux';
 
 import { AppView } from '../../types';
@@ -62,16 +62,16 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
     const { planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = this.props;
 
     return (
-      <div className="w-64 flex flex-col">
+      <div className="flex w-64 flex-col">
         <div
-          className="flex items-center flex-shrink-0 pl-8 h-14 cursor-pointer border-b border-neutral-30"
+          className="flex h-14 flex-shrink-0 cursor-pointer items-center border-b border-neutral-30 pl-8"
           onClick={this.onLogoClicked}
         >
           <InternxtLogo className="h-auto w-28" />
         </div>
-        <div className="flex-col flex flex-grow border-r border-neutral-30 px-2">
+        <div className="flex flex-grow flex-col border-r border-neutral-30 px-2">
           <div className="mt-2">
-            <SidenavItem label="Drive" to="/app" Icon={Folder} />
+            <SidenavItem label="Drive" to="/app" Icon={FolderSimple} />
             <SidenavItem label="Photos" to="/app/photos" Icon={ImageSquare} showNew />
             <SidenavItem label="Backups" to="/app/backups" Icon={ClockCounterClockwise} />
             <SidenavItem label="Recents" to="/app/recents" Icon={Clock} />
@@ -79,7 +79,7 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
           </div>
           <ReferralsWidget />
 
-          <div className="px-5 mt-8 mb-11">
+          <div className="mt-8 mb-11 px-5">
             <PlanUsage
               limit={planLimit}
               usage={planUsage}
