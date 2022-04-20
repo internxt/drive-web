@@ -23,6 +23,17 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   useEffect(fetchPhotos, []);
 
+  useEffect(() => {
+    const listener = (e) => {
+      if (e.code === 'Escape' && photosState.previewIndex === null) {
+        dispatch(photosSlice.actions.unselectAll());
+      }
+    };
+
+    document.addEventListener('keydown', listener);
+    return () => document.removeEventListener('keydown', listener);
+  }, [photosState.previewIndex]);
+
   const [deletePending, setDeletePending] = useState<null | 'selected' | 'preview'>(null);
   const [sharePending, setSharePending] = useState<null | 'selected' | 'preview'>(null);
 
@@ -135,7 +146,7 @@ function Grid({
 
   return (
     <div
-      className="mt-2 grid gap-1 mb-5"
+      className="mt-2 mb-5 grid gap-1"
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
       ref={listRef}
     >
