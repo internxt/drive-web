@@ -1,6 +1,7 @@
 import { ActionState } from '@internxt/inxt-js/build/api';
 import { DownloadSimple, Share, Trash, X } from 'phosphor-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
+import { Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPhotoBlob, getPhotoPreview } from '../drive/services/network.service/download';
 import { RootState } from '../store';
@@ -71,30 +72,59 @@ export default function Preview({
   }, [previewIndex]);
 
   return (
-    <div className={`absolute inset-0 isolate bg-black ${photosState.previewIndex === null ? 'hidden' : 'block'}`}>
-      <div className="absolute top-0 z-10 flex w-full items-center justify-between bg-transparent p-5">
-        <Icon Target={X} onClick={() => dispatch(photosSlice.actions.setPreviewIndex(null))} />
-        <div className="flex">
-          <Icon Target={DownloadSimple} onClick={onDownloadClick} />
-          <Icon Target={Share} onClick={onShareClick} />
-          <Icon Target={Trash} onClick={onDeleteClick} />
-        </div>
-      </div>
-      {src ? (
-        <img className="absolute inset-0 h-full w-full object-contain" src={src} />
-      ) : (
-        <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
-          <img
-            className={`h-64 w-64 rounded-xl object-cover ${previewSrc ? '' : 'opacity-0'}`}
-            src={previewSrc ?? ''}
-          />
-          <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
-            <Spinner />
-            <p className="ml-3">Loading...</p>
+    <Transition
+      as={Fragment}
+      show={photosState.previewIndex !== null}
+      enter="transform origin-center overflow-hidden transition-all duration-100 ease-out"
+      enterFrom="opacity-0 scale-95"
+      enterTo="opacity-100 scale-100"
+      leave="transform origin-center overflow-hidden transition-all duration-100 ease-in"
+      leaveFrom="opacity-100 scale-100"
+      leaveTo="opacity-0 scale-95"
+    >
+      <div className="absolute inset-0 isolate">
+        <Transition.Child
+          as={Fragment}
+          enter="transition-all duration-200 ease-out"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-all duration-100 ease-in"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="absolute inset-0 h-screen w-screen bg-black" />
+        </Transition.Child>
+
+        <div className="absolute top-0 z-10 flex w-full items-center justify-between bg-transparent p-5">
+          <Icon Target={X} onClick={() => dispatch(photosSlice.actions.setPreviewIndex(null))} />
+          <div className="flex">
+            <Icon Target={DownloadSimple} onClick={onDownloadClick} />
+            <Icon Target={Share} onClick={onShareClick} />
+            <Icon Target={Trash} onClick={onDeleteClick} />
           </div>
         </div>
-      )}
-    </div>
+        {src ? (
+          <Transition.Child
+            as={Fragment}
+            enter="transition-all will-change duration-50 ease-out"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+          >
+            <img className="absolute inset-0 h-full w-full object-contain will-change" loading="lazy" draggable="false" src={src} />
+          </Transition.Child>
+        ) : (
+          <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
+            {previewSrc && (
+              <img className="h-64 w-64 rounded-xl object-cover" src={previewSrc} />
+            )}
+            <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
+              <Spinner />
+              <p className="ml-3">Loading...</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </Transition>
   );
 }
 
