@@ -152,11 +152,20 @@ function Grid({
     >
       {photos.map((photo, i) => {
         const isSelected = selected.some((el) => photo.id === el);
-
+        const thereAreSelected = selected.length > 0;
+        function onSelect() {
+          dispatch(photosSlice.actions.toggleSelect(photo.id));
+        }
         return (
           <PhotoItem
-            onClick={() => dispatch(photosSlice.actions.setPreviewIndex(i))}
-            onSelect={() => dispatch(photosSlice.actions.toggleSelect(photo.id))}
+            onClick={() => {
+              if (thereAreSelected) {
+                onSelect();
+              } else {
+                dispatch(photosSlice.actions.setPreviewIndex(i));
+              }
+            }}
+            onSelect={onSelect}
             selected={isSelected}
             photo={photo}
             key={photo.id}
