@@ -53,8 +53,11 @@ export default function ShareDialog({
   }
 
   return (
-    <div className={`absolute inset-0 bg-black bg-opacity-40 ${isOpen ? 'block' : 'hidden'}`}>
-      <div className="absolute left-1/2 top-1/2 w-96 -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-3 text-center">
+    <div className={`absolute inset-0 bg-black bg-opacity-40 ${isOpen ? 'block' : 'hidden'}`} onClick={onClose}>
+      <div
+        className="absolute left-1/2 top-1/2 w-96 -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-3 text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
         <XCircle
           className="absolute top-2 right-2 cursor-pointer text-gray-20"
           onClick={onClose}
