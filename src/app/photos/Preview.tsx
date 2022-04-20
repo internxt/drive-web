@@ -95,7 +95,7 @@ export default function Preview({
           <div className="absolute inset-0 h-screen w-screen bg-black" />
         </Transition.Child>
 
-        <div className="absolute top-0 z-10 flex w-full items-center justify-between bg-transparent p-5">
+        <div className="absolute top-0 z-10 flex h-32 w-full items-start justify-between bg-gradient-to-b from-black-75 to-transparent p-5">
           <Icon Target={X} onClick={() => dispatch(photosSlice.actions.setPreviewIndex(null))} />
           <div className="flex">
             <Icon Target={DownloadSimple} onClick={onDownloadClick} />
@@ -110,13 +110,16 @@ export default function Preview({
             enterFrom="opacity-0"
             enterTo="opacity-100"
           >
-            <img className="absolute inset-0 h-full w-full object-contain will-change" loading="lazy" draggable="false" src={src} />
+            <img
+              className="will-change absolute inset-0 h-full w-full object-contain"
+              loading="lazy"
+              draggable="false"
+              src={src}
+            />
           </Transition.Child>
         ) : (
           <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
-            {previewSrc && (
-              <img className="h-64 w-64 rounded-xl object-cover" src={previewSrc} />
-            )}
+            {previewSrc && <img className="h-64 w-64 rounded-xl object-cover" src={previewSrc} />}
             <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
               <Spinner />
               <p className="ml-3">Loading...</p>

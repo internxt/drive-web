@@ -175,6 +175,7 @@ module.exports = {
       transparentw: 'rgb(255,255,255,0)',
       current: 'currentColor',
       black: 'rgb(0,0,0)',
+      'black-75': 'rgba(0,0,0,.75)',
       white: 'rgb(255,255,255)',
       // NEW DESIGN SYSTEM
       primary: 'rgb(0,102,255)',
