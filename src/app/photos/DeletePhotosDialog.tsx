@@ -10,8 +10,11 @@ export default function DeletePhotosDialog({
   numberOfSelectedItems: number;
 }): JSX.Element {
   return (
-    <div className={`absolute inset-0 bg-black bg-opacity-40 ${isOpen ? 'block' : 'hidden'}`}>
-      <div className="absolute left-1/2 top-1/2 w-80 -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-3 text-center">
+    <div className={`absolute inset-0 bg-black bg-opacity-40 ${isOpen ? 'block' : 'hidden'}`} onClick={onClose}>
+      <div
+        className="absolute left-1/2 top-1/2 w-80 -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-3 text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h1 className="mt-4 text-xl font-semibold text-gray-80">Delete {numberOfSelectedItems} selected items?</h1>
         <p className="font-medium text-gray-50">You can't undo this action</p>
         <div className="mt-6 flex h-10 space-x-2">
