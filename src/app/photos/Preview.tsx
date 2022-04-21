@@ -222,13 +222,21 @@ function Arrows({
     };
   }, []);
 
-  return isIdle ? (
-    <div></div>
-  ) : (
-    <div className={`${className} flex w-full justify-between px-10`}>
-      {hideLeft ? <div /> : <Arrow pointsTo="left" onClick={onClickLeft} />}
-      {hideRight ? <div /> : <Arrow pointsTo="right" onClick={onClickRight} />}
-    </div>
+  return (
+    <Transition
+      enter="ease-out duration-10"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="ease-in duration-200"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
+      show={!isIdle}
+    >
+      <div className={`${className} flex w-full justify-between px-10`}>
+        {hideLeft ? <div /> : <Arrow pointsTo="left" onClick={onClickLeft} />}
+        {hideRight ? <div /> : <Arrow pointsTo="right" onClick={onClickRight} />}
+      </div>
+    </Transition>
   );
 }
 
