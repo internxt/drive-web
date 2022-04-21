@@ -1,11 +1,12 @@
 import { ActionState } from '@internxt/inxt-js/build/api';
-import { DownloadSimple, Share, Trash, X } from 'phosphor-react';
+import { CaretLeft, DownloadSimple, Share, Trash, X } from 'phosphor-react';
 import { useState, useEffect, Fragment } from 'react';
 import { Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPhotoBlob, getPhotoPreview } from '../drive/services/network.service/download';
 import { RootState } from '../store';
 import { photosSlice, PhotosState } from '../store/slices/photos';
+import _ from 'lodash';
 
 export default function Preview({
   onDownloadClick,
@@ -54,14 +55,24 @@ export default function Preview({
     }
   }, [previewIndex, items]);
 
+  const canGoRight = previewIndex !== null && previewIndex < photosState.items.length - 1;
+  const canGoLeft = previewIndex !== null && previewIndex > 0;
+
+  function goRight() {
+    if (previewIndex !== null) dispatch(photosSlice.actions.setPreviewIndex(previewIndex + 1));
+  }
+  function goLeft() {
+    if (previewIndex !== null) dispatch(photosSlice.actions.setPreviewIndex(previewIndex - 1));
+  }
+
   useEffect(() => {
     const listener = (event) => {
       if (previewIndex !== null) {
         const { code } = event;
-        if (code === 'ArrowLeft' && previewIndex > 0) {
-          dispatch(photosSlice.actions.setPreviewIndex(previewIndex - 1));
-        } else if (code === 'ArrowRight' && previewIndex < photosState.items.length - 1) {
-          dispatch(photosSlice.actions.setPreviewIndex(previewIndex + 1));
+        if (code === 'ArrowLeft' && canGoLeft) {
+          goLeft();
+        } else if (code === 'ArrowRight' && canGoRight) {
+          goRight();
         } else if (code === 'Escape') {
           dispatch(photosSlice.actions.setPreviewIndex(null));
         }
@@ -121,6 +132,13 @@ export default function Preview({
             </div>
           </div>
         )}
+        <Arrows
+          className="absolute top-1/2 -translate-y-1/2"
+          hideLeft={!canGoLeft}
+          hideRight={!canGoRight}
+          onClickLeft={goLeft}
+          onClickRight={goRight}
+        />
       </div>
     </Transition>
   );
@@ -155,5 +173,80 @@ function Spinner() {
         d="M2.333 7A4.667 4.667 0 017 2.333V0a7 7 0 00-7 7h2.333zM3.5 10.086A4.644 4.644 0 012.333 7H0a6.98 6.98 0 001.75 4.63l1.75-1.544z"
       ></path>
     </svg>
+  );
+}
+
+function Arrows({
+  onClickLeft,
+  onClickRight,
+  hideLeft,
+  hideRight,
+  className,
+}: {
+  className: string;
+  onClickLeft: () => void;
+  onClickRight: () => void;
+  hideLeft: boolean;
+  hideRight: boolean;
+}) {
+  const MS_TO_BE_IDLE = 5000;
+
+  const [isIdle, setIsIdle] = useState(false);
+
+  useEffect(() => {
+    let timeout;
+
+    function setUpTimeout() {
+      timeout = setTimeout(() => {
+        setIsIdle(true);
+      }, MS_TO_BE_IDLE);
+    }
+
+    function listener() {
+      setIsIdle(false);
+      if (timeout) clearTimeout(timeout);
+      setUpTimeout();
+    }
+
+    const throttledListener = _.throttle(listener, 100);
+
+    document.addEventListener('mousemove', throttledListener);
+    document.addEventListener('keydown', throttledListener);
+
+    setUpTimeout();
+
+    return () => {
+      if (timeout) clearTimeout(timeout);
+      document.removeEventListener('mousemove', throttledListener);
+      document.removeEventListener('keydown', throttledListener);
+    };
+  }, []);
+
+  return isIdle ? (
+    <div></div>
+  ) : (
+    <div className={`${className} flex w-full justify-between px-10`}>
+      {hideLeft ? <div /> : <Arrow pointsTo="left" onClick={onClickLeft} />}
+      {hideRight ? <div /> : <Arrow pointsTo="right" onClick={onClickRight} />}
+    </div>
+  );
+}
+
+function Arrow({
+  className = '',
+  pointsTo,
+  onClick,
+}: {
+  className?: string;
+  pointsTo: 'left' | 'right';
+  onClick: () => void;
+}) {
+  return (
+    <div
+      className={`${className} flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-black bg-opacity-50 text-white backdrop-blur backdrop-filter`}
+      onClick={onClick}
+    >
+      <CaretLeft size={40} className={pointsTo === 'right' ? ' rotate-180 transform' : ''} />
+    </div>
   );
 }
