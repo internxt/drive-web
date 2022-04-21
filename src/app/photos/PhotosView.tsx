@@ -99,11 +99,18 @@ export default function PhotosView({ className = '' }: { className?: string }): 
           dispatch(photosThunks.downloadThunk([photosState.items[photosState.previewIndex]]))
         }
       />
+      {/* These dialogs are duplicated to avoid flickering while using headless ui transitions */}
       <DeletePhotosDialog
         onClose={() => setDeletePending(null)}
         onConfirm={onConfirmDelete}
-        isOpen={!!deletePending}
-        numberOfSelectedItems={deletePending === 'selected' ? photosState.selectedItems.length : 1}
+        isOpen={deletePending === 'selected'}
+        numberOfSelectedItems={photosState.selectedItems.length}
+      />
+      <DeletePhotosDialog
+        onClose={() => setDeletePending(null)}
+        onConfirm={onConfirmDelete}
+        isOpen={deletePending === 'preview'}
+        numberOfSelectedItems={1}
       />
       <ShareDialog
         onClose={() => setSharePending(null)}
