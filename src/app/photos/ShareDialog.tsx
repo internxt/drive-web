@@ -30,10 +30,14 @@ export default function ShareDialog({
     DEFAULT_STATUS,
   );
 
+  function goBackToStart() {
+    setViews(DEFAULT_VIEWS);
+    setStatus(DEFAULT_STATUS);
+  }
+
   useEffect(() => {
     if (isOpen) {
-      setViews(DEFAULT_VIEWS);
-      setStatus(DEFAULT_STATUS);
+      goBackToStart();
     }
   }, [isOpen]);
 
@@ -92,8 +96,8 @@ export default function ShareDialog({
         <h1 className="mt-4 text-xl font-semibold text-gray-80">Share {numberOfSelectedItems} photos</h1>
         <p className="mt-3 ml-5 text-left font-medium text-gray-80">Link options</p>
         <div className="mt-1 rounded-lg bg-gray-5 p-4 text-left">
-          <p className="font-medium text-gray-80">
-            Open count limit
+          <div className="flex font-medium text-gray-80">
+            <p>Open count limit</p>
             <input
               disabled={status.tag !== 'ready'}
               className="outline-none mx-2 inline-block w-12 rounded-md border border-transparent bg-white px-1 font-medium text-gray-80 focus:border-primary-dark focus:ring-2 focus:ring-primary focus:ring-opacity-10 disabled:bg-gray-10"
@@ -102,9 +106,14 @@ export default function ShareDialog({
               value={views}
               onChange={(e) => setViews(parseInt(e.target.value))}
             />
-            times
-          </p>
-          <p className="text-gray-40">Limit number of times users can open this link</p>
+            <p>times</p>
+            {status.tag === 'done' && (
+              <button className="ml-4 text-sm font-medium text-primary" onClick={goBackToStart}>
+                Change
+              </button>
+            )}
+          </div>
+          <p className="text-sm text-gray-40">Limit number of times users can open this link</p>
         </div>
         <div className="mt-3 flex h-10 space-x-2">
           {status.tag === 'ready' ? (
