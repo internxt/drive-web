@@ -244,7 +244,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
       </>
     );
   } else if (info) {
-    const FileIcon = info.photos.length > 1 ? iconService.getItemIcon(true) : iconService.getItemIcon(false, 'png');
+    const FileIcon = info.photos.length > 1 ? ImagesIcon : iconService.getItemIcon(false, 'png');
     const title =
       info.photos.length === 1 ? `${info.photos[0].name}.${info.photos[0].type}` : `${info.photos.length} photos`;
     const size = info.photos.reduce((prev, current) => prev + current.size, 0);
@@ -459,4 +459,15 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     </>
   );
 };
+
+function ImagesIcon() {
+  const Icon = iconService.getItemIcon(false, 'png');
+  return (
+    <div className="relative h-32 w-32">
+      <Icon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
+      <Icon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+    </div>
+  );
+}
+
 export default SharePhotosView;
