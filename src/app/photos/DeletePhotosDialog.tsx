@@ -1,3 +1,5 @@
+import { Transition } from '@headlessui/react';
+
 export default function DeletePhotosDialog({
   isOpen,
   onClose,
@@ -10,10 +12,25 @@ export default function DeletePhotosDialog({
   numberOfSelectedItems: number;
 }): JSX.Element {
   return (
-    <div className={`absolute inset-0 bg-black bg-opacity-40 ${isOpen ? 'block' : 'hidden'}`} onClick={onClose}>
-      <div
+    <Transition show={isOpen}>
+      <Transition.Child
+        enter="ease-out duration-150"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="ease-in duration-100"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+        className={'absolute inset-0 bg-black bg-opacity-40'}
+        onClick={onClose}
+      ></Transition.Child>
+      <Transition.Child
+        enter="ease-out duration-150"
+        enterFrom="opacity-0 scale-95"
+        enterTo="opacity-100 scale-100"
+        leave="ease-in duration-100"
+        leaveFrom="opacity-100 scale-100"
+        leaveTo="opacity-0 scale-95"
         className="absolute left-1/2 top-1/2 w-80 -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-3 text-center"
-        onClick={(e) => e.stopPropagation()}
       >
         <h1 className="mt-4 text-xl font-semibold text-gray-80">Delete {numberOfSelectedItems} selected items?</h1>
         <p className="font-medium text-gray-50">You can't undo this action</p>
@@ -25,7 +42,7 @@ export default function DeletePhotosDialog({
             Delete
           </button>
         </div>
-      </div>
-    </div>
+      </Transition.Child>
+    </Transition>
   );
 }
