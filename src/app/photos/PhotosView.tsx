@@ -74,13 +74,21 @@ export default function PhotosView({ className = '' }: { className?: string }): 
   return (
     <>
       <div className={`${className} h-full w-full ${showSkeleton ? 'overflow-y-hidden' : 'overflow-y-auto'} px-5 pt-2`}>
-        <Toolbar {...toolbarProps} numberOfSelectedItems={photosState.selectedItems.length} />
         {showEmpty ? (
           <Empty />
-        ) : showSkeleton ? (
-          <Skeleton />
         ) : (
-          <Grid selected={photosState.selectedItems} photos={photosState.items} onUserScrolledToTheEnd={fetchPhotos} />
+          <>
+            <Toolbar {...toolbarProps} numberOfSelectedItems={photosState.selectedItems.length} />
+            {showSkeleton ? (
+              <Skeleton />
+            ) : (
+              <Grid
+                selected={photosState.selectedItems}
+                photos={photosState.items}
+                onUserScrolledToTheEnd={fetchPhotos}
+              />
+            )}
+          </>
         )}
       </div>
       <Preview
