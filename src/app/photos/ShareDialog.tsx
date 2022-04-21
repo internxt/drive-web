@@ -1,6 +1,6 @@
 import { PhotoId } from '@internxt/sdk/dist/photos';
 import { Copy, Link, XCircle } from 'phosphor-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { SdkFactory } from '../core/factory/sdk';
 import i18n from '../i18n/services/i18n.service';
@@ -10,6 +10,7 @@ import crypto from 'crypto';
 import { useAppSelector } from '../store/hooks';
 import { aes } from '@internxt/lib';
 import { Network } from '../drive/services/network.service';
+import { Transition } from '@headlessui/react';
 
 export default function ShareDialog({
   onClose,
@@ -21,12 +22,21 @@ export default function ShareDialog({
   isOpen: boolean;
 }): JSX.Element {
   const numberOfSelectedItems = photos.length;
-  const DEFAULT_VIEWS = 10;
-  const [views, setViews] = useState(DEFAULT_VIEWS);
 
-  const [status, setStatus] = useState<{ tag: 'ready' } | { tag: 'loading' } | { tag: 'done'; link: string }>({
-    tag: 'ready',
-  });
+  const DEFAULT_VIEWS = 10;
+  const DEFAULT_STATUS = { tag: 'ready' } as const;
+  const [views, setViews] = useState(DEFAULT_VIEWS);
+  const [status, setStatus] = useState<{ tag: 'ready' } | { tag: 'loading' } | { tag: 'done'; link: string }>(
+    DEFAULT_STATUS,
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      setViews(DEFAULT_VIEWS);
+      setStatus(DEFAULT_STATUS);
+    }
+  }, [isOpen]);
+
   const bucket = useSelector<RootState, string>((state) => state.photos.bucketId!);
   const { mnemonic, email, userId } = useAppSelector((state) => state.user.user)!;
 
@@ -53,10 +63,25 @@ export default function ShareDialog({
   }
 
   return (
-    <div className={`absolute inset-0 bg-black bg-opacity-40 ${isOpen ? 'block' : 'hidden'}`} onClick={onClose}>
-      <div
+    <Transition show={isOpen}>
+      <Transition.Child
+        enter="ease-out duration-150"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="ease-in duration-100"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+        className={'absolute inset-0 bg-black bg-opacity-40'}
+        onClick={onClose}
+      ></Transition.Child>
+      <Transition.Child
+        enter="ease-out duration-150"
+        enterFrom="opacity-0 scale-95"
+        enterTo="opacity-100 scale-100"
+        leave="ease-in duration-100"
+        leaveFrom="opacity-100 scale-100"
+        leaveTo="opacity-0 scale-95"
         className="absolute left-1/2 top-1/2 w-96 -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-3 text-center"
-        onClick={(e) => e.stopPropagation()}
       >
         <XCircle
           className="absolute top-2 right-2 cursor-pointer text-gray-20"
@@ -110,7 +135,7 @@ export default function ShareDialog({
             </button>
           )}
         </div>
-      </div>
-    </div>
+      </Transition.Child>
+    </Transition>
   );
 }
