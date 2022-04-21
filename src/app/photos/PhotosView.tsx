@@ -73,7 +73,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   return (
     <>
-      <div className={`${className} h-full w-full ${showSkeleton ? 'overflow-y-hidden' : 'overflow-y-auto'} px-5 pt-2`}>
+      <div className={`${className} h-full w-full ${showSkeleton ? 'overflow-y-hidden' : 'overflow-y-auto'}`}>
         {showEmpty ? (
           <Empty />
         ) : (
@@ -159,7 +159,7 @@ function Grid({
 
   return (
     <div
-      className="mt-2 mb-5 grid gap-1"
+      className="mb-5 grid gap-1 px-5"
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
       ref={listRef}
     >

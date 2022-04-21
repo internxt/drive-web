@@ -16,7 +16,7 @@ export default function Toolbar({
   numberOfSelectedItems: number;
 }) {
   return (
-    <div className={`${className} flex w-full items-center justify-between space-x-1 px-1`}>
+    <div className={`${className} flex w-full items-center justify-between space-x-1 px-5 py-2`}>
       <div className={`flex items-center ${numberOfSelectedItems === 0 ? 'opacity-0' : ''}`}>
         <Icon Target={X} onClick={onUnselectClick} />
         <p style={{ paddingTop: '1px' }} className="ml-2 font-medium text-gray-80">
