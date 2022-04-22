@@ -1,6 +1,6 @@
 import PhotoThumbnail from './PhotoThumbnail';
 
-export default function Skeleton({ className = '' }: { className?: string }) {
+export default function Skeleton({ className = '' }: { className?: string }): JSX.Element {
   return (
     <div
       className={`${className} grid gap-1 px-5`}

@@ -11,6 +11,7 @@ import { useAppSelector } from '../store/hooks';
 import { aes } from '@internxt/lib';
 import { Network } from '../drive/services/network.service';
 import { Transition } from '@headlessui/react';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 export default function ShareDialog({
   onClose,
@@ -41,21 +42,23 @@ export default function ShareDialog({
     }
   }, [isOpen]);
 
-  const bucket = useSelector<RootState, string>((state) => state.photos.bucketId!);
-  const { mnemonic, email, userId } = useAppSelector((state) => state.user.user)!;
+  const bucket = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
+  const { mnemonic, email, userId } = useAppSelector((state) => state.user.user) as UserSettings;
 
   async function onCreateShare() {
-    setStatus({ tag: 'loading' });
+    if (bucket) {
+      setStatus({ tag: 'loading' });
 
-    const network = new Network(email, userId, mnemonic);
-    const token = await network.createFileToken(bucket, '', 'PULL');
+      const network = new Network(email, userId, mnemonic);
+      const token = await network.createFileToken(bucket, '', 'PULL');
 
-    const { shares } = await SdkFactory.getInstance().createPhotosClient();
-    const code = crypto.randomBytes(32).toString('hex');
-    const encryptedMnemonic = aes.encrypt(mnemonic, code);
-    const share = await shares.createShare({ bucket, encryptedMnemonic, photoIds: photos, token, views });
-    const link = `${window.location.origin}/s/photos/${share.id}/${code}`;
-    setStatus({ tag: 'done', link });
+      const { shares } = await SdkFactory.getInstance().createPhotosClient();
+      const code = crypto.randomBytes(32).toString('hex');
+      const encryptedMnemonic = aes.encrypt(mnemonic, code);
+      const share = await shares.createShare({ bucket, encryptedMnemonic, photoIds: photos, token, views });
+      const link = `${window.location.origin}/s/photos/${share.id}/${code}`;
+      setStatus({ tag: 'done', link });
+    }
   }
 
   function onCopy() {

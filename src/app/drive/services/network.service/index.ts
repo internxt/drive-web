@@ -134,7 +134,7 @@ export class Network {
   }
 
   getFileDownloadStream(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Readable>, ActionState] {
-    let actionState: ActionState;
+    let actionState!: ActionState;
 
     if (!bucketId) {
       throw new Error('Bucket id not provided');
@@ -173,7 +173,7 @@ export class Network {
       );
     });
 
-    return [promise, actionState!];
+    return [promise, actionState];
   }
 
   getFileInfo(bucketId: string, fileId: string): Promise<FileInfo> {

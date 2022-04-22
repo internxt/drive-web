@@ -233,7 +233,7 @@ export async function getPhotoPreview({
   if (previewInCache && previewInCache.preview) blob = previewInCache.preview;
   else {
     const { previewLink: link, previewIndex: index } = photo;
-    const mnemonic = localStorageService.getUser()!.mnemonic;
+    const mnemonic = localStorageService.getUser()?.mnemonic as string;
     const indexBuf = Buffer.from(index, 'hex');
     const iv = indexBuf.slice(0, 16);
     const key = await generateFileKey(mnemonic, bucketId, indexBuf);

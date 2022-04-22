@@ -19,14 +19,14 @@ export default function Preview({
 }): JSX.Element {
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
   const { previewIndex, items } = photosState;
-  const bucketId = useSelector<RootState, string>((state) => state.photos.bucketId!);
+  const bucketId = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
   const dispatch = useDispatch();
 
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
 
   useEffect(() => {
     setPreviewSrc(null);
-    if (previewIndex !== null) {
+    if (previewIndex !== null && bucketId) {
       const photo = items[previewIndex];
       getPhotoPreview({
         photo,
@@ -39,7 +39,7 @@ export default function Preview({
 
   useEffect(() => {
     setSrc(null);
-    if (previewIndex !== null) {
+    if (previewIndex !== null && bucketId) {
       let actionState: ActionState | undefined;
       const photo = items[previewIndex];
       getPhotoBlob({ photo, bucketId })

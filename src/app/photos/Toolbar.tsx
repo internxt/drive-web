@@ -14,7 +14,7 @@ export default function Toolbar({
   onDeleteClick?: () => void;
   onUnselectClick?: () => void;
   numberOfSelectedItems: number;
-}) {
+}): JSX.Element {
   return (
     <div className={`${className} flex w-full items-center justify-between space-x-1 px-5 py-2`}>
       <div className={`flex items-center ${numberOfSelectedItems === 0 ? 'opacity-0' : ''}`}>

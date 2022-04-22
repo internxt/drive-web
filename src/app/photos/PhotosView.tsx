@@ -1,4 +1,4 @@
-import { PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
+import { Photo, PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPhotoPreview } from '../drive/services/network.service/download';
@@ -63,7 +63,9 @@ export default function PhotosView({ className = '' }: { className?: string }): 
           onDeleteClick: () => setDeletePending('selected'),
           onShareClick: () => setSharePending('selected'),
           onDownloadClick: () => {
-            const photos = photosState.selectedItems.map((id) => photosState.items.find((item) => item.id === id)!);
+            const photos = photosState.selectedItems.map(
+              (id) => photosState.items.find((item) => item.id === id) as Photo,
+            );
             dispatch(photosThunks.downloadThunk(photos));
             dispatch(photosSlice.actions.unselectAll());
           },
@@ -130,7 +132,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
       <ShareDialog
         onClose={() => setSharePending(null)}
         isOpen={sharePending === 'preview'}
-        photos={photosState.previewIndex !== null ? [photosState.items[photosState.previewIndex!].id] : []}
+        photos={photosState.previewIndex !== null ? [photosState.items[photosState.previewIndex].id] : []}
       />
     </>
   );
@@ -211,13 +213,15 @@ function PhotoItem({
   photo: PhotoWithDownloadLink;
 }) {
   const [src, setSrc] = useState<string | undefined>(undefined);
-  const bucketId = useSelector<RootState, string>((state) => state.photos.bucketId!);
+  const bucketId = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
 
   useEffect(() => {
-    getPhotoPreview({
-      photo,
-      bucketId,
-    }).then(setSrc);
+    if (bucketId) {
+      getPhotoPreview({
+        photo,
+        bucketId,
+      }).then(setSrc);
+    }
   }, []);
 
   return <PhotoThumbnail onClick={onClick} onSelect={onSelect} selected={selected} src={src} />;
