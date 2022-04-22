@@ -2,10 +2,10 @@ import { PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPhotoPreview } from '../drive/services/network.service/download';
+import Dialog from '../shared/components/Dialog/Dialog';
 import { RootState } from '../store';
 import { photosSlice, PhotosState } from '../store/slices/photos';
 import photosThunks from '../store/slices/photos/thunks';
-import DeletePhotosDialog from './DeletePhotosDialog';
 import Empty from './Empty';
 import PhotoThumbnail from './PhotoThumbnail';
 import Preview from './Preview';
@@ -100,17 +100,27 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         }
       />
       {/* These dialogs are duplicated to avoid flickering while using headless ui transitions */}
-      <DeletePhotosDialog
+      <Dialog
         onClose={() => setDeletePending(null)}
-        onConfirm={onConfirmDelete}
+        onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'selected'}
-        numberOfSelectedItems={photosState.selectedItems.length}
+        title={`Delete ${photosState.selectedItems.length} selected items?`}
+        subtitle="You can't undo this action"
+        onSecondaryAction={() => setDeletePending(null)}
+        primaryAction="Delete"
+        secondaryAction="Cancel"
+        primaryActionColor="danger"
       />
-      <DeletePhotosDialog
+      <Dialog
         onClose={() => setDeletePending(null)}
-        onConfirm={onConfirmDelete}
+        onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'preview'}
-        numberOfSelectedItems={1}
+        title="Delete this item?"
+        subtitle="You can't undo this action"
+        onSecondaryAction={() => setDeletePending(null)}
+        primaryAction="Delete"
+        secondaryAction="Cancel"
+        primaryActionColor="danger"
       />
       <ShareDialog
         onClose={() => setSharePending(null)}
