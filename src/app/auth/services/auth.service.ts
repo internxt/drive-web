@@ -27,6 +27,7 @@ import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
+import httpService from '../../core/services/http.service';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -234,6 +235,19 @@ export const deactivate2FA = (
   return authClient.disableTwoFactorAuth(encPass, deactivationCode);
 };
 
+export async function getNewToken(): Promise<string> {
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/api/new-token`, {
+    headers: httpService.getHeaders(true, false),
+  });
+  if (!res.ok) {
+    throw new Error('Bad response while getting new token');
+  }
+
+  const { newToken } = await res.json();
+
+  return newToken;
+}
+
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   return authClient.storeTwoFactorAuthKey(code, twoFactorCode);
@@ -246,6 +260,7 @@ const authService = {
   readReferalCookie,
   cancelAccount,
   store2FA,
+  getNewToken,
 };
 
 export default authService;

@@ -50,7 +50,7 @@ export default function ShareDialog({
     const network = new Network(email, userId, mnemonic);
     const token = await network.createFileToken(bucket, '', 'PULL');
 
-    const { shares } = SdkFactory.getInstance().createPhotosClient();
+    const { shares } = await SdkFactory.getInstance().createPhotosClient();
     const code = crypto.randomBytes(32).toString('hex');
     const encryptedMnemonic = aes.encrypt(mnemonic, code);
     const share = await shares.createShare({ bucket, encryptedMnemonic, photoIds: photos, token, views });

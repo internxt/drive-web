@@ -17,7 +17,7 @@ export const fetchThunk = createAsyncThunk<void, void, { state: RootState }>(
 
     const { skipped } = state.photos;
 
-    const { photos } = SdkFactory.getInstance().createPhotosClient();
+    const { photos } = await SdkFactory.getInstance().createPhotosClient();
 
     const data = await photos.getPhotos({ status: PhotoStatus.Exists }, skipped, PAGE_SIZE, true);
 

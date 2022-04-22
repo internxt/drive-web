@@ -7,6 +7,7 @@ import { Workspace } from '../../types';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { Photos } from '@internxt/sdk/dist/photos';
+import authService from '../../../auth/services/auth.service';
 
 export class SdkFactory {
   private static instance: SdkFactory;
@@ -80,8 +81,14 @@ export class SdkFactory {
     return Backups.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createPhotosClient(): Photos {
-    return new Photos(process.env.REACT_APP_PHOTOS_API_URL, this.localStorage.get('xNewToken') as string);
+  public async createPhotosClient(): Promise<Photos> {
+    let newToken = this.localStorage.get('xNewToken');
+
+    if (!newToken) {
+      newToken = await authService.getNewToken();
+      this.localStorage.set('xNewToken', newToken);
+    }
+    return new Photos(process.env.REACT_APP_PHOTOS_API_URL, newToken);
   }
 
   /** Helpers **/

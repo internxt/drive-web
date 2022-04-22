@@ -74,13 +74,13 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     dispatch(userThunks.logoutThunk());
   };
 
-  const loadInfo = (): Promise<GetPhotoShareResponse> => {
+  const loadInfo = async (): Promise<GetPhotoShareResponse> => {
     // ! iOS Chrome is not supported
     if (navigator.userAgent.match('CriOS')) {
       throw new Error('Chrome iOS not supported. Use Safari to proceed');
     }
 
-    const { shares } = SdkFactory.getInstance().createPhotosClient();
+    const { shares } = await SdkFactory.getInstance().createPhotosClient();
 
     return shares.getShare(token, code).catch(() => {
       /**

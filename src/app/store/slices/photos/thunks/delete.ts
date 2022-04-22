@@ -13,7 +13,7 @@ export const deleteThunk = createAsyncThunk<void, PhotoId[], { state: RootState 
     dispatch(photosSlice.actions.removeItems(payload));
     dispatch(photosSlice.actions.setSkipped(state.photos.skipped - payload.length));
 
-    const { photos } = SdkFactory.getInstance().createPhotosClient();
+    const { photos } = await SdkFactory.getInstance().createPhotosClient();
 
     const promises = payload.map((id) => photos.deletePhotoById(id));
 
