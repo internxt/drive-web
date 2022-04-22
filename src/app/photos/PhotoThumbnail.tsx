@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Check } from 'phosphor-react';
 
 export default function PhotoThumbnail({
@@ -14,17 +13,15 @@ export default function PhotoThumbnail({
   onSelect?: () => void;
   onClick?: () => void;
 }): JSX.Element {
-  const [selectMouseDown, setSelectMouseDown] = useState(false);
   return (
     <div
-      className={`${className} group relative ${src ? 'cursor-pointer' : ''} ${selected && 'p-1'} ${selectMouseDown && 'p-1.5'} transition-all duration-100 ease-in-out`}
+      className={`${className} group relative ${src ? 'cursor-pointer' : ''} ${selected && 'p-1.5'} transition-all duration-100 ease-in-out`}
       style={{ aspectRatio: '1/1' }}
-      onMouseLeave={() => selectMouseDown && setSelectMouseDown(false)}
     >
       {src ? (
         <img
           onClick={onClick}
-          className={`h-full w-full object-cover ${(selected || selectMouseDown) && 'rounded-lg brightness-80 filter'} transition-all duration-100 ease-in-out`}
+          className={`h-full w-full object-cover ${selected && 'rounded-lg brightness-80 filter'} transition-all duration-100 ease-in-out`}
           src={src}
           draggable="false"
         />
@@ -38,8 +35,6 @@ export default function PhotoThumbnail({
       )}
       <div
         onClick={onSelect}
-        onMouseDown={() => setSelectMouseDown(true)}
-        onMouseUp={() => setSelectMouseDown(false)}
         className={`${
           src
             ? selected
