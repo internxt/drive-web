@@ -17,31 +17,34 @@ export default function Preview({
   onShareClick?: () => void;
   onDeleteClick?: () => void;
 }): JSX.Element {
+  const dispatch = useDispatch();
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
   const { previewIndex, items } = photosState;
   const bucketId = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
-  const dispatch = useDispatch();
 
-  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const [thumbnailSrc, setThumbnailSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    setPreviewSrc(null);
     if (previewIndex !== null && bucketId) {
+      setThumbnailSrc(null);
+
       const photo = items[previewIndex];
       getPhotoPreview({
         photo,
         bucketId,
-      }).then(setPreviewSrc);
+      }).then(setThumbnailSrc);
     }
   }, [previewIndex, items]);
 
   const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    setSrc(null);
     if (previewIndex !== null && bucketId) {
+      setSrc(null);
+
       let actionState: ActionState | undefined;
       const photo = items[previewIndex];
+
       getPhotoBlob({ photo, bucketId })
         .then(([blobPromise, srcActionState]) => {
           actionState = srcActionState;
@@ -49,6 +52,7 @@ export default function Preview({
         })
         .then((blob) => setSrc(URL.createObjectURL(blob)))
         .catch(console.log);
+
       return () => {
         actionState?.stop();
       };
@@ -107,11 +111,11 @@ export default function Preview({
         </Transition.Child>
 
         <div className="absolute top-0 z-10 flex h-32 w-full items-start justify-between bg-gradient-to-b from-black-75 to-transparent p-5">
-          <Icon Target={X} onClick={() => dispatch(photosSlice.actions.setPreviewIndex(null))} />
+          <TopIcon Target={X} onClick={() => dispatch(photosSlice.actions.setPreviewIndex(null))} />
           <div className="flex">
-            <Icon Target={DownloadSimple} onClick={onDownloadClick} />
-            <Icon Target={Share} onClick={onShareClick} />
-            <Icon Target={Trash} onClick={onDeleteClick} />
+            <TopIcon Target={DownloadSimple} onClick={onDownloadClick} />
+            <TopIcon Target={Share} onClick={onShareClick} />
+            <TopIcon Target={Trash} onClick={onDeleteClick} />
           </div>
         </div>
         {src ? (
@@ -125,7 +129,7 @@ export default function Preview({
           </Transition.Child>
         ) : (
           <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
-            {previewSrc && <img className="h-64 w-64 rounded-xl object-cover" src={previewSrc} />}
+            {thumbnailSrc && <img className="h-64 w-64 rounded-xl object-cover" src={thumbnailSrc} />}
             <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
               <Spinner />
               <p className="ml-3">Loading...</p>
@@ -144,7 +148,7 @@ export default function Preview({
   );
 }
 
-function Icon({ Target, onClick }: { Target: typeof DownloadSimple; onClick?: () => void }) {
+function TopIcon({ Target, onClick }: { Target: typeof DownloadSimple; onClick?: () => void }) {
   return (
     <div
       className={`${
