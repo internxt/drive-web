@@ -26,6 +26,7 @@ export default function ShareDialog({
 
   const DEFAULT_VIEWS = 10;
   const DEFAULT_STATUS = { tag: 'ready' } as const;
+
   const [views, setViews] = useState(DEFAULT_VIEWS);
   const [status, setStatus] = useState<{ tag: 'ready' } | { tag: 'loading' } | { tag: 'done'; link: string }>(
     DEFAULT_STATUS,
@@ -53,10 +54,13 @@ export default function ShareDialog({
       const token = await network.createFileToken(bucket, '', 'PULL');
 
       const { shares } = await SdkFactory.getInstance().createPhotosClient();
+
       const code = crypto.randomBytes(32).toString('hex');
       const encryptedMnemonic = aes.encrypt(mnemonic, code);
       const share = await shares.createShare({ bucket, encryptedMnemonic, photoIds: photos, token, views });
+
       const link = `${window.location.origin}/s/photos/${share.id}/${code}`;
+
       setStatus({ tag: 'done', link });
     }
   }
