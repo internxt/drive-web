@@ -23,19 +23,19 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   useEffect(fetchPhotos, []);
 
+  const [deletePending, setDeletePending] = useState<null | 'selected' | 'preview'>(null);
+  const [sharePending, setSharePending] = useState<null | 'selected' | 'preview'>(null);
+
   useEffect(() => {
     const listener = (e) => {
-      if (e.code === 'Escape' && photosState.previewIndex === null) {
+      if (e.code === 'Escape' && photosState.previewIndex === null && deletePending === null && sharePending === null) {
         dispatch(photosSlice.actions.unselectAll());
       }
     };
 
     document.addEventListener('keydown', listener);
     return () => document.removeEventListener('keydown', listener);
-  }, [photosState.previewIndex]);
-
-  const [deletePending, setDeletePending] = useState<null | 'selected' | 'preview'>(null);
-  const [sharePending, setSharePending] = useState<null | 'selected' | 'preview'>(null);
+  }, [photosState.previewIndex, deletePending, sharePending]);
 
   function onConfirmDelete() {
     if (deletePending === 'selected') {
