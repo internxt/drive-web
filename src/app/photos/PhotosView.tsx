@@ -58,9 +58,8 @@ export default function PhotosView({ className = '' }: { className?: string }): 
   const showSkeleton = photosState.isLoading && photosState.items.length === 0;
 
   const toolbarProps =
-    photosState.selectedItems.length === 0
-      ? {}
-      : {
+    photosState.selectedItems.length !== 0
+      ? {
           onDeleteClick: () => setDeletePending('selected'),
           onShareClick: () => setSharePending('selected'),
           onDownloadClick: () => {
@@ -69,7 +68,8 @@ export default function PhotosView({ className = '' }: { className?: string }): 
             dispatch(photosSlice.actions.unselectAll());
           },
           onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
-        };
+        }
+      : {};
 
   return (
     <>
