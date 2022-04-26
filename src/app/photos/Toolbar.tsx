@@ -20,7 +20,7 @@ export default function Toolbar({
       <div className={`flex items-center ${numberOfSelectedItems === 0 ? 'opacity-0' : ''}`}>
         <Icon Target={X} onClick={onUnselectClick} />
         <p style={{ paddingTop: '1px' }} className="ml-2 font-medium text-gray-80">
-          {numberOfSelectedItems} Items selected
+          {`${numberOfSelectedItems} ${numberOfSelectedItems > 1 ? 'Items' : 'Item'} selected`}
         </p>
       </div>
 

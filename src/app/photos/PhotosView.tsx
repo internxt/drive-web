@@ -57,8 +57,10 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   const showSkeleton = photosState.isLoading && photosState.items.length === 0;
 
+  const numberOfSelectedItems = photosState.selectedItems.length;
+
   const toolbarProps =
-    photosState.selectedItems.length !== 0
+    numberOfSelectedItems !== 0
       ? {
           onDeleteClick: () => setDeletePending('selected'),
           onShareClick: () => setSharePending('selected'),
@@ -80,7 +82,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
           <Empty />
         ) : (
           <>
-            <Toolbar {...toolbarProps} numberOfSelectedItems={photosState.selectedItems.length} />
+            <Toolbar {...toolbarProps} numberOfSelectedItems={numberOfSelectedItems} />
             {showSkeleton ? (
               <Skeleton />
             ) : (
@@ -106,7 +108,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         onClose={() => setDeletePending(null)}
         onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'selected'}
-        title={`Delete ${photosState.selectedItems.length} selected items?`}
+        title={`Delete ${numberOfSelectedItems} selected ${numberOfSelectedItems > 1 ? 'items' : 'item'}?`}
         subtitle="You can't undo this action"
         onSecondaryAction={() => setDeletePending(null)}
         primaryAction="Delete"

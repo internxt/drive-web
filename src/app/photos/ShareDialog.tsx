@@ -100,7 +100,9 @@ export default function ShareDialog({
           weight="fill"
           size={24}
         />
-        <h1 className="mt-4 text-xl font-semibold text-gray-80">Share {numberOfSelectedItems} photos</h1>
+        <h1 className="mt-4 text-xl font-semibold text-gray-80">{`Share ${numberOfSelectedItems} ${
+          numberOfSelectedItems > 1 ? 'photos' : 'photo'
+        }`}</h1>
         <p className="mt-3 ml-5 text-left font-medium text-gray-80">Link options</p>
         <div className="mt-1 rounded-lg bg-gray-5 p-4 text-left">
           <div className="flex font-medium text-gray-80">
