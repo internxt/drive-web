@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getPhotoBlob, getPhotoPreview } from '../drive/services/network.service/download';
 import { RootState } from '../store';
 import { photosSlice, PhotosState } from '../store/slices/photos';
-import _ from 'lodash';
+import useIdle from '../core/hooks/useIdle';
 
 export default function Preview({
   onDownloadClick,
@@ -194,37 +194,7 @@ function Arrows({
   hideRight: boolean;
 }) {
   const MS_TO_BE_IDLE = 5000;
-
-  const [isIdle, setIsIdle] = useState(false);
-
-  useEffect(() => {
-    let timeout;
-
-    function setUpTimeout() {
-      timeout = setTimeout(() => {
-        setIsIdle(true);
-      }, MS_TO_BE_IDLE);
-    }
-
-    function listener() {
-      setIsIdle(false);
-      if (timeout) clearTimeout(timeout);
-      setUpTimeout();
-    }
-
-    const throttledListener = _.throttle(listener, 100);
-
-    document.addEventListener('mousemove', throttledListener);
-    document.addEventListener('keydown', throttledListener);
-
-    setUpTimeout();
-
-    return () => {
-      if (timeout) clearTimeout(timeout);
-      document.removeEventListener('mousemove', throttledListener);
-      document.removeEventListener('keydown', throttledListener);
-    };
-  }, []);
+  const isIdle = useIdle(MS_TO_BE_IDLE);
 
   return (
     <Transition
