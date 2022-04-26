@@ -17,6 +17,9 @@ export default function Preview({
   onShareClick?: () => void;
   onDeleteClick?: () => void;
 }): JSX.Element {
+  const MS_TO_BE_IDLE = 5000;
+  const isIdle = useIdle(MS_TO_BE_IDLE);
+
   const dispatch = useDispatch();
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
   const { previewIndex, items } = photosState;
@@ -109,15 +112,13 @@ export default function Preview({
         >
           <div className="absolute inset-0 h-screen w-screen bg-black" />
         </Transition.Child>
-
-        <div className="absolute top-0 z-10 flex h-32 w-full items-start justify-between bg-gradient-to-b from-black-75 to-transparent p-5">
-          <TopIcon Target={X} onClick={() => dispatch(photosSlice.actions.setPreviewIndex(null))} />
-          <div className="flex">
-            <TopIcon Target={DownloadSimple} onClick={onDownloadClick} />
-            <TopIcon Target={Share} onClick={onShareClick} />
-            <TopIcon Target={Trash} onClick={onDeleteClick} />
-          </div>
-        </div>
+        <Toolbar
+          onDeleteClick={onDeleteClick}
+          onDownloadClick={onDownloadClick}
+          onExit={() => dispatch(photosSlice.actions.setPreviewIndex(null))}
+          onShareClick={onShareClick}
+          isIdle={isIdle}
+        />
         {src ? (
           <Transition.Child
             as={Fragment}
@@ -142,7 +143,43 @@ export default function Preview({
           hideRight={!canGoRight}
           onClickLeft={goLeft}
           onClickRight={goRight}
+          isIdle={isIdle}
         />
+      </div>
+    </Transition>
+  );
+}
+
+function Toolbar({
+  onDownloadClick,
+  onDeleteClick,
+  onShareClick,
+  onExit,
+  isIdle,
+}: {
+  onDownloadClick?: () => void;
+  onShareClick?: () => void;
+  onDeleteClick?: () => void;
+  onExit?: () => void;
+  isIdle: boolean;
+}) {
+  return (
+    <Transition
+      enter="ease-out duration-10"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="ease-in duration-200"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
+      show={!isIdle}
+    >
+      <div className="absolute top-0 z-10 flex h-32 w-full items-start justify-between bg-gradient-to-b from-black-75 to-transparent p-5">
+        <TopIcon Target={X} onClick={onExit} />
+        <div className="flex">
+          <TopIcon Target={DownloadSimple} onClick={onDownloadClick} />
+          <TopIcon Target={Share} onClick={onShareClick} />
+          <TopIcon Target={Trash} onClick={onDeleteClick} />
+        </div>
       </div>
     </Transition>
   );
@@ -186,16 +223,15 @@ function Arrows({
   hideLeft,
   hideRight,
   className,
+  isIdle,
 }: {
   className: string;
   onClickLeft: () => void;
   onClickRight: () => void;
   hideLeft: boolean;
   hideRight: boolean;
+  isIdle: boolean;
 }) {
-  const MS_TO_BE_IDLE = 5000;
-  const isIdle = useIdle(MS_TO_BE_IDLE);
-
   return (
     <Transition
       enter="ease-out duration-10"
