@@ -22,6 +22,27 @@ export function loadWritableStreamPonyfill(): Promise<void> {
   });
 }
 
+type BinaryStream = ReadableStream<Uint8Array>;
+
+export async function binaryStreamToBlob(stream: BinaryStream): Promise<Blob> {
+  const reader = stream.getReader();
+  const slices: Uint8Array[] = [];
+
+  let finish = false;
+
+  while (!finish) {
+    const { done, value } = await reader.read();
+
+    if (!done) {
+      slices.push(value as Uint8Array);
+    }
+
+    finish = done;
+  }
+
+  return new Blob(slices);
+}
+
 const generateFileKey = Environment.utils.generateFileKey;
 
 export interface Abortable {
@@ -241,7 +262,7 @@ export async function getPhotoPreview({
 
     const readable = await downloadStreamPromise;
 
-    blob = await new Response(readable).blob();
+    blob = await binaryStreamToBlob(readable);
     databaseService.put(DatabaseCollection.Photos, photo.id, { preview: blob });
   }
 
