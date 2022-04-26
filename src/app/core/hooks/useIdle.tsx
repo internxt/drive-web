@@ -22,6 +22,7 @@ export default function useIdle(ms: number): boolean {
     const throttledListener = _.throttle(listener, 100);
 
     document.addEventListener('mousemove', throttledListener);
+    document.addEventListener('click', throttledListener);
     document.addEventListener('keydown', throttledListener);
 
     setUpTimeout();
@@ -29,6 +30,7 @@ export default function useIdle(ms: number): boolean {
     return () => {
       if (timeout) clearTimeout(timeout);
       document.removeEventListener('mousemove', throttledListener);
+      document.removeEventListener('click', throttledListener);
       document.removeEventListener('keydown', throttledListener);
     };
   }, []);
