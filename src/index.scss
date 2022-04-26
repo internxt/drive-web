@@ -24,64 +24,68 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.will-change {
+  will-change: auto;
 }
 
 /* TEXT */
 @font-face {
-  font-family: "NeueEinstellung";
+  font-family: 'NeueEinstellung';
   font-weight: 400;
   font-style: normal;
   font-display: auto;
   src:
     // local("NeueEinstellung-Regular"),
-    url(./assets/fonts/NeueEinstellung-Regular.ttf) format("truetype"),
-    url(./assets/fonts/NeueEinstellung-Regular.woff) format("woff"),
-    url(./assets/fonts/NeueEinstellung-Regular.woff2) format("woff2");
+    url(./assets/fonts/NeueEinstellung-Regular.ttf) format('truetype'),
+    url(./assets/fonts/NeueEinstellung-Regular.woff) format('woff'),
+    url(./assets/fonts/NeueEinstellung-Regular.woff2) format('woff2');
 }
 
 @font-face {
-  font-family: "NeueEinstellung";
+  font-family: 'NeueEinstellung';
   font-weight: 500;
   font-style: normal;
   font-display: auto;
   src:
     // local("NeueEinstellung-Medium"),
-    url(./assets/fonts/NeueEinstellung-Medium.ttf) format("truetype"),
-    url(./assets/fonts/NeueEinstellung-Medium.woff) format("woff"),
-    url(./assets/fonts/NeueEinstellung-Medium.woff2) format("woff2");
+    url(./assets/fonts/NeueEinstellung-Medium.ttf) format('truetype'),
+    url(./assets/fonts/NeueEinstellung-Medium.woff) format('woff'),
+    url(./assets/fonts/NeueEinstellung-Medium.woff2) format('woff2');
 }
 
 @font-face {
-  font-family: "NeueEinstellung";
+  font-family: 'NeueEinstellung';
   font-weight: 600;
   font-style: normal;
   font-display: auto;
   src:
     // local("NeueEinstellung-Semibold"),
-    url(./assets/fonts/NeueEinstellung-Semibold.ttf) format("truetype"),
-    url(./assets/fonts/NeueEinstellung-Semibold.woff) format("woff"),
-    url(./assets/fonts/NeueEinstellung-Semibold.woff2) format("woff2");
+    url(./assets/fonts/NeueEinstellung-Semibold.ttf) format('truetype'),
+    url(./assets/fonts/NeueEinstellung-Semibold.woff) format('woff'),
+    url(./assets/fonts/NeueEinstellung-Semibold.woff2) format('woff2');
 }
 
 @font-face {
-  font-family: "NeueEinstellung";
+  font-family: 'NeueEinstellung';
   font-weight: 700;
   font-style: normal;
   font-display: auto;
   src:
     // local("NeueEinstellung-Bold"),
-    url(./assets/fonts/NeueEinstellung-Bold.ttf) format("truetype"),
-    url(./assets/fonts/NeueEinstellung-Bold.woff) format("woff"),
-    url(./assets/fonts/NeueEinstellung-Bold.woff2) format("woff2");
+    url(./assets/fonts/NeueEinstellung-Bold.ttf) format('truetype'),
+    url(./assets/fonts/NeueEinstellung-Bold.woff) format('woff'),
+    url(./assets/fonts/NeueEinstellung-Bold.woff2) format('woff2');
 }
 
 * {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
 }
 
 .text-6xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 60px;
   font-stretch: normal;
   font-style: normal;
@@ -90,7 +94,7 @@ code {
 }
 
 .text-5xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 48px;
   font-stretch: normal;
   font-style: normal;
@@ -99,7 +103,7 @@ code {
 }
 
 .text-4xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 36px;
   font-stretch: normal;
   font-style: normal;
@@ -108,7 +112,7 @@ code {
 }
 
 .text-3xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 30px;
   font-stretch: normal;
   font-style: normal;
@@ -117,7 +121,7 @@ code {
 }
 
 .text-2xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 24px;
   font-stretch: normal;
   font-style: normal;
@@ -126,7 +130,7 @@ code {
 }
 
 .text-xl {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 20px; // font-family: Gotham;
   font-stretch: normal;
   font-style: normal;
@@ -134,7 +138,7 @@ code {
 }
 
 .text-lg {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 18px;
   font-stretch: normal;
   font-style: normal;
@@ -143,7 +147,7 @@ code {
 }
 
 .text-base {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 16px;
   font-stretch: normal;
   font-style: normal;
@@ -152,7 +156,7 @@ code {
 }
 
 .text-sm {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 14px;
   font-stretch: normal;
   font-style: normal;
@@ -160,7 +164,7 @@ code {
 }
 
 .text-xs {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 12px;
   font-stretch: normal;
   font-style: normal;
@@ -168,7 +172,7 @@ code {
 }
 
 .text-supporting-2 {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 10px;
   font-stretch: normal;
   font-style: normal;
@@ -176,7 +180,7 @@ code {
 }
 
 .text-supporting-1 {
-  font-family: "NeueEinstellung", sans-serif;
+  font-family: 'NeueEinstellung', sans-serif;
   font-size: 8px;
   font-stretch: normal;
   font-style: normal;
@@ -196,7 +200,7 @@ code {
   /* LINKS */
   a,
   .link {
-    @apply text-blue-60 hover:text-blue-80 underline;
+    @apply text-blue-60 underline hover:text-blue-80;
   }
 
   a.secondary {
@@ -209,14 +213,14 @@ code {
     box-shadow: 0 2px 15px 0 rgba(179, 186, 197, 0.5);
     z-index: 100;
 
-    @apply bg-white py-2 flex flex-col;
+    @apply flex flex-col bg-white py-2;
   }
 
   .dropdown-item {
     min-width: 175px;
     max-width: 250px;
 
-    @apply w-full no-underline py-1 px-5 hover:bg-neutral-20 active:bg-neutral-30 rounded-1px text-neutral-900 hover:text-neutral-900 text-base flex items-center;
+    @apply flex w-full items-center rounded-1px py-1 px-5 text-base text-neutral-900 no-underline hover:bg-neutral-20 hover:text-neutral-900 active:bg-neutral-30;
 
     img {
       height: 14px;
@@ -228,15 +232,15 @@ code {
   }
 
   /* INPUTS */
-  input[type="checkbox"] {
-    @apply border-2 border-neutral-500 rounded text-xs text-neutral-500 w-4 h-4;
+  input[type='checkbox'] {
+    @apply h-4 w-4 rounded border-2 border-neutral-500 text-xs text-neutral-500;
   }
 
   input:not([type]),
-  input[type="text"],
-  input[type="email"],
-  input[type="password"] {
-    @apply ring-1 ring-neutral-100 rounded-md focus:ring-blue-60 text-neutral-500 placeholder-neutral-60 text-base px-3 py-2;
+  input[type='text'],
+  input[type='email'],
+  input[type='password'] {
+    @apply rounded-md px-3 py-2 text-base text-neutral-500 placeholder-neutral-60 ring-1 ring-neutral-100 focus:ring-blue-60;
 
     &:disabled {
       @apply bg-neutral-30;
@@ -247,7 +251,7 @@ code {
     }
 
     &.error {
-      @apply border-l-8 focus:ring-pink-600 border-pink-600 ring-pink-600 bg-pink-100;
+      @apply border-l-8 border-pink-600 bg-pink-100 ring-pink-600 focus:ring-pink-600;
     }
 
     &.semi-dense {
@@ -266,18 +270,22 @@ code {
       @apply ring-0 focus:ring-1 focus:ring-blue-60;
     }
 
+    &.no-ring-at-all {
+      @apply ring-0;
+    }
+
     &.rect {
       @apply rounded-none;
     }
   }
 
-  input[type="number"] {
-    @apply appearance-none border-neutral-60 outline-none text-center;
+  .input-number {
+    @apply outline-none appearance-none border-neutral-60 text-center;
 
     -moz-appearance: textfield;
   }
 
-  input[type="number"]::-webkit-inner-spin-button,
+  input[type='number']::-webkit-inner-spin-button,
   ::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
@@ -301,7 +309,7 @@ code {
 
   button.primary,
   .base-button.primary {
-    @apply bg-blue-60 hover:bg-blue-80 text-white;
+    @apply bg-blue-60 text-white hover:bg-blue-80;
 
     &.inverse {
       @apply bg-blue-20 text-blue-60 hover:bg-blue-30;
@@ -333,7 +341,7 @@ code {
   }
 
   .base-button.square {
-    @apply px-2 py-0 flex justify-center items-center box-content;
+    @apply box-content flex items-center justify-center px-2 py-0;
   }
 
   /* EVENTS */
@@ -356,7 +364,7 @@ code {
   .drag-over-effect {
     box-shadow: inset 0 0 0 0.15rem var(--color-blue-40);
 
-    @apply bg-opacity-30 bg-blue-50 rounded-6px;
+    @apply rounded-6px bg-blue-50 bg-opacity-30;
   }
 }
 
@@ -368,4 +376,11 @@ code {
 /* Abbr */
 abbr[title] {
   text-decoration: none !important;
+}
+
+/* Photos skeleton animation */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }

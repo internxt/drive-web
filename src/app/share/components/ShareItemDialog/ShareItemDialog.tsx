@@ -123,44 +123,44 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
 
   return (
     <BaseDialog isOpen={isOpen} title={itemFullName} titleClasses="text-neutral-100 text-base" onClose={onClose}>
-      <div className="share-dialog flex flex-col mb-8">
-        <hr className="border-t-1 border-neutral-40 my-6" />
+      <div className="share-dialog mb-8 flex flex-col">
+        <hr className="border-t-1 my-6 border-neutral-40" />
 
         <div className="px-8">
-          <p className="w-full text-neutral-500 text-center">
+          <p className="w-full text-center text-neutral-500">
             Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link
           </p>
 
-          <div className="flex mt-3">
-            <span className="text-blue-60 mr-4">1.</span>
+          <div className="mt-3 flex">
+            <span className="mr-4 text-blue-60">1.</span>
             <div className="flex w-72 items-center rounded-md bg-neutral-20 px-4 py-3">
-              <span className="text-neutral-500 text-sm">
+              <span className="text-sm text-neutral-500">
                 Enter the number of times you'd like the link to be valid:
               </span>
               <input
                 type="number"
                 value={numberOfAttempts}
                 min={1}
-                className="w-12 content-center text-blue-60"
+                className="input-number w-12 content-center text-blue-60"
                 onChange={(e) => setNumberOfAttempts(parseInt(e.target.value))}
               />
             </div>
           </div>
 
-          <div className="self-start mt-4">
-            <span className="text-blue-60 mr-4">2.</span>
+          <div className="mt-4 self-start">
+            <span className="mr-4 text-blue-60">2.</span>
             <span className="text-neutral-500">Get link to share</span>
           </div>
 
           <div
-            className="flex w-72 items-center justify-between rounded-md \
-            bg-neutral-20 px-4 py-2 ml-8 mt-3 cursor-pointer select-text"
+            className="\ ml-8 mt-3 flex w-72 cursor-pointer
+            select-text items-center justify-between rounded-md bg-neutral-20 px-4 py-2"
             onClick={() => {
               navigator.clipboard.writeText(linkToCopy);
               notificationsService.show(i18n.get('success.linkCopied'), ToastType.Info);
             }}
           >
-            <span className="text-neutral-900 text-xs w-56 truncate overflow-hidden">
+            <span className="w-56 overflow-hidden truncate text-xs text-neutral-900">
               {isLoading ? 'Loading link...' : linkToCopy}
             </span>
             <UilClipboardAlt className="text-blue-60" />

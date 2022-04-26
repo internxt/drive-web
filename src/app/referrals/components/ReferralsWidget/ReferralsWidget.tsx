@@ -1,16 +1,13 @@
-import UilAngleUp from '@iconscout/react-unicons/icons/uil-angle-up';
-import UilAngleDown from '@iconscout/react-unicons/icons/uil-angle-down';
-
 import i18n from 'app/i18n/services/i18n.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 
-import './ReferralsWidget.scss';
 import { userSelectors } from 'app/store/slices/user';
 import { referralsThunks } from 'app/store/slices/referrals';
 import usersReferralsService from 'app/referrals/services/users-referrals.service';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import sizeService from 'app/drive/services/size.service';
+import { CaretDown, CaretUp } from 'phosphor-react';
 
 const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -29,18 +26,20 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   const referralsList = referrals.map((referral) => (
     <div
       key={referral.key}
-      className={`${referral.isCompleted ? 'active' : ''} ${
-        usersReferralsService.hasClickAction(referral.key) && !referral.isCompleted ? 'interactive' : ''
-      } referral-item flex items-center mb-4`}
+      className={` ${
+        usersReferralsService.hasClickAction(referral.key) && !referral.isCompleted ? 'cursor-pointer' : ''
+      } flex items-center`}
       onClick={() => onReferralItemClicked(referral)}
     >
       <div
-        className="referral-item-bullet flex-none h-4 w-8 py-1 px-2\
-       text-xs rounded-lg bg-neutral-30 flex justify-center items-center mr-2"
+        className={`flex-none h-5 w-10\
+       text-xs font-medium rounded-lg flex justify-center ${
+         referral.isCompleted ? 'bg-green-10 text-green-dark' : 'bg-gray-5 text-gray-60'
+       }`}
       >
-        <span>{sizeService.bytesToString(referral.credit * referral.steps)}</span>
+        <p className="leading-5">{sizeService.bytesToString(referral.credit * referral.steps)}</p>
       </div>
-      <span className="referral-item-label text-sm">
+      <span className={`text-sm ml-2 ${referral.isCompleted ? 'text-gray-40' : 'text-gray-80'}`}>
         {i18n.get(`referrals.items.${referral.key}`, {
           steps: referral.steps,
           completedSteps: referral.completedSteps,
@@ -53,60 +52,48 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   };
 
   return isWidgetHidden || referralsList.length === 0 ? (
-    <div></div>
+    <div className="flex-grow"></div>
   ) : (
-    <div
-      className={`flex flex-col py-6 border-t border-b border-neutral-30 bg-neutral-10 overflow-y-hidden  ${
-        isCollapsed ? '' : 'h-full max-h-120'
-      } ${props.className || ''}`}
-    >
-      {/* HEADER */}
-      <div className="flex items-center px-6">
-        <div className="mr-3">
-          <span className="font-semibold">
-            {i18n.get('referrals.rewards.title', { creditSum: sizeService.bytesToString(creditSum) })}
-          </span>
-          <p className="text-supporting-2 m-0">
-            <span className="text-green-50">
-              {i18n.get('referrals.rewards.progress', { currentCredit: sizeService.bytesToString(currentCredit) })}
+    <div className="flex-grow flex flex-col justify-end">
+      <div
+        className={`flex flex-col p-5 border border-gray-10 rounded-xl overflow-y-hidden shadow-subtle ${
+          props.className || ''
+        }`}
+      >
+        {/* HEADER */}
+        <div className="flex items-center justify-between">
+          <div className="">
+            <span className="font-medium text-gray-80">
+              {i18n.get('referrals.rewards.title', { creditSum: sizeService.bytesToString(creditSum) })}
             </span>
-            <span className="text-neutral-500">
-              {' ' + i18n.get('referrals.rewards.limit', { creditSum: sizeService.bytesToString(creditSum) })}
-            </span>
-          </p>
+            <p className="text-xs font-medium">
+              <span className="text-green-dark">
+                {i18n.get('referrals.rewards.progress', { currentCredit: sizeService.bytesToString(currentCredit) }) +
+                  ' ' +
+                  i18n.get('referrals.rewards.limit', { creditSum: sizeService.bytesToString(creditSum) })}
+              </span>
+            </p>
+          </div>
+          <div className="cursor-pointer text-gray-40" onClick={onCollapseButtonClicked}>
+            {isCollapsed ? <CaretUp size={20} className="" /> : <CaretDown size={20} className="" />}
+          </div>
         </div>
-        <div
-          className="flex-none rounded-full bg-neutral-30 w-4 h-4 cursor-pointer"
-          onClick={onCollapseButtonClicked}
-        >
-          {isCollapsed ? (
-            <UilAngleUp className="text-neutral-100 w-full h-full" />
-          ) : (
-            <UilAngleDown className="text-neutral-100 w-full h-full" />
-          )}
-        </div>
-      </div>
 
-      {/* LIST */}
-      {!isCollapsed && (
-        <div className="mt-8 mb-4 overflow-y-auto">
-          <div className="px-6">{referralsList}</div>
-        </div>
-      )}
+        {/* LIST */}
+        {!isCollapsed && <div className="mt-6 overflow-y-auto space-y-3">{referralsList}</div>}
 
-      {/* TERMS AND CONDITIONS */}
-      {!isCollapsed && (
-        <div className="px-6">
+        {/* TERMS AND CONDITIONS */}
+        {!isCollapsed && (
           <a
-            className="text-xs text-neutral-60 hover:text-neutral-100"
+            className="mt-7 text-xs text-gray-40 hover:text-gray-50 font-medium no-underline"
             target="_blank"
             href="https://help.internxt.com/"
             rel="noopener noreferrer"
           >
             {i18n.get('actions.moreInfo')}
           </a>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

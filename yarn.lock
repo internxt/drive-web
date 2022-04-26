@@ -1324,10 +1324,10 @@
     "@typescript-eslint/parser" "^5.4.0"
     eslint-config-prettier "^8.3.0"
 
-"@internxt/inxt-js@=1.2.19":
-  version "1.2.19"
-  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.19/50d8ba84c9c5cdd62ce3822ba981ce8c916c28e11afe9b7d1fffabd72174ccbb#57bb7e6b27026b10104e84105d57c12cc6760d63"
-  integrity sha512-NmBGWZtGPUPADaY+Eric4Bs4gOlgf4WuWLoliJd3oJy4MDP9TDSb/3rrCgR++OmbJQhr2jVwr+DoAAO/xjZEug==
+"@internxt/inxt-js@=1.2.21":
+  version "1.2.21"
+  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.21/883109a0f779e8dc3d082a70605eaaf3af6bda64ac3ad2f70cdf6ea16893a765#bc9bbc18fbedaf030254856de7da283fb03a46b5"
+  integrity sha512-VqnEhB17/w1+u+kQN0WJ0ljSYdL5OYfY0QBwrogaJWbP/3Q2YbW28i9qFhxePJF1NSYltasvkIXVdoXLode1aw==
   dependencies:
     "@internxt/lib" "^1.1.6"
     async "^3.2.0"
@@ -1350,13 +1350,14 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/9a19de23e3330a81c0e2bace1a6a0325fc8633197cf677e44ea75e54df315b5e"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@0.4.0":
-  version "0.4.0"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/0.4.0/949ad68b6e54b16f3c8926b536875b1e1a0453d189bb409f028967e75cad9c5b#6c30892df061604fdf21dceac8c6c7ae61267e8d"
-  integrity sha512-7ljqJuMlfKzUI9Zf+MPojcAIj9FFeQGhThco/KNvVQVcDWqjoMjnspsl/s5MQS4ngCTA92Dg+Y7m7ri9o9zhyQ==
+"@internxt/sdk@^0.7.6":
+  version "0.7.6"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/0.7.6/3f301979a8293b63425e24ce50f8297d7d8cfb931e5ba89d547f87053755bbf6#36300034285e3e5aac94f57c454bd6200cd72513"
+  integrity sha512-zjTn8ukPBK4zNTx4Nzz0HpKWjfV5lXpvP+VMlD7nnPcO2nqXVoeLtO+3dqLLAUepaGZgm/ECnX71nL0BdVk+mw==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
+    uuid "^8.3.2"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -6237,9 +6238,9 @@ follow-redirects@^1.0.0, follow-redirects@^1.14.0:
   integrity sha512-fhUl5EwSJbbl8AR+uYL2KQDxLkdSjZGR36xy46AO7cOMTrCMON6Sa28FmAnC2tRTDbd/Uuzz3aJBv7EBN7JH8A==
 
 follow-redirects@^1.14.4:
-  version "1.14.8"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.8.tgz#016996fb9a11a100566398b1c6839337d7bfa8fc"
-  integrity sha512-1x0S9UVJHsQprFcEC/qnNzBLcIxsjAV905f/UkQxbclCsoTWlacCNOpQa/anodLl2uaEKFhfWOvM2Qg77+15zA==
+  version "1.14.9"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.9.tgz#dd4ea157de7bfaf9ea9b3fbd85aa16951f78d8d7"
+  integrity sha512-MQDfihBQYMcyy5dhRDJUHcw7lb2Pv/TuE6xP1vyraLukNDHKbDxDNaOE3NbCAdKQApno+GPRyo1YAp89yCjK4w==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -9798,6 +9799,11 @@ performance-now@^2.1.0:
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
+phosphor-react@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/phosphor-react/-/phosphor-react-1.4.1.tgz#97b0e034d9937db9b97fe53b186e9646464fd4e7"
+  integrity sha512-gO5j7U0xZrdglTAYDYPACU4xDOFBTJmptrrB/GeR+tHhCZF3nUMyGmV/0hnloKjuTrOmpSFlbfOY78H39rgjUQ==
+
 picocolors@^0.2.1:
   version "0.2.1"
   resolved "https://registry.npmjs.org/picocolors/-/picocolors-0.2.1.tgz"
@@ -10664,6 +10670,11 @@ prepend-http@^1.0.0:
   version "1.0.4"
   resolved "https://registry.npmjs.org/prepend-http/-/prepend-http-1.0.4.tgz"
   integrity sha1-1PRWKwzjaW5BrFLQ4ALlemNdxtw=
+
+prettier-plugin-tailwindcss@^0.1.8:
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-tailwindcss/-/prettier-plugin-tailwindcss-0.1.8.tgz#ba0f606ed91959ede670303d905b99106e9e6293"
+  integrity sha512-hwarSBCswAXa+kqYtaAkFr3Vop9o04WOyZs0qo3NyvW8L7f1rif61wRyq0+ArmVThOuRBcJF5hjGXYk86cwemg==
 
 prettier@^2.5.0:
   version "2.5.1"

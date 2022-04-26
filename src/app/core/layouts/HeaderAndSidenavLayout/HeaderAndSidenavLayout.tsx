@@ -22,9 +22,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const dispatch = useAppDispatch();
   const { children } = props;
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
-  const isSidenavCollapsed = useAppSelector((state) => state.ui.isSidenavCollapsed);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
-  const toggleIsSidenavCollapsed: () => void = () => dispatch(uiActions.setIsSidenavCollapsed(!isSidenavCollapsed));
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const isSharedFolderTooBigDialogOpen = useAppSelector((state) => state.ui.isSharedFolderTooBigDialogOpen);
@@ -50,7 +48,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
       {isGuestInviteDialogOpen && <GuestDialog />}
 
       <div className="flex-grow flex h-1">
-        <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />
+        <Sidenav />
 
         <div className="flex flex-col flex-grow bg-white w-1">
           <Navbar />

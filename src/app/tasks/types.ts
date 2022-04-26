@@ -20,6 +20,7 @@ export enum TaskType {
   UploadFolder = 'upload-folder',
   MoveFile = 'move-file',
   MoveFolder = 'move-folder',
+  DownloadPhotos = 'download-photos',
 }
 
 export enum TaskProgress {
@@ -100,6 +101,12 @@ export interface MoveFolderTask extends BaseTask {
   destinationFolderId: number;
 }
 
+export interface DownloadPhotosTask extends BaseTask {
+  action: TaskType.DownloadPhotos;
+  cancellable: true;
+  numberOfPhotos: number;
+}
+
 export type TaskData =
   | CreateFolderTask
   | DownloadFileTask
@@ -108,7 +115,8 @@ export type TaskData =
   | UploadFileTask
   | UploadFolderTask
   | MoveFileTask
-  | MoveFolderTask;
+  | MoveFolderTask
+  | DownloadPhotosTask;
 
 export interface TaskNotification {
   taskId: string;

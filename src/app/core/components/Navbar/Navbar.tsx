@@ -1,7 +1,6 @@
 import React, { Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import UilSearch from '@iconscout/react-unicons/icons/uil-search';
 import UilUserCircle from '@iconscout/react-unicons/icons/uil-user-circle';
 import UilUserPlus from '@iconscout/react-unicons/icons/uil-user-plus';
 import UilChatBubbleUser from '@iconscout/react-unicons/icons/uil-chat-bubble-user';
@@ -22,6 +21,7 @@ import navigationService from '../../services/navigation.service';
 import { AppView, Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
+import { MagnifyingGlass } from 'phosphor-react';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -87,30 +87,31 @@ class Navbar extends React.Component<NavbarProps> {
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
 
     return (
-      <div className="flex items-center justify-between w-full h-14 border-b border-neutral-30 px-8">
-        <div className="pl-3 flex w-full">
+      <div className="flex items-center justify-between w-full h-14 border-b border-neutral-30 text-gray-40">
+        <div className="flex">
           <input
             value={storageFilters.text}
             onChange={this.onSearchInputChange}
             type="text"
-            placeholder="Search files"
-            className="right-icon h-9 px-3 w-72 transform duration-200 no-ring bg-neutral-10 focus:w-full max-w-md"
+            placeholder="Search in this folder"
+            className="h-9 px-3 w-80 transform duration-200 no-ring-at-all focus:ring-0 bg-gray-5 focus:w-full max-w-md"
           />
-          <UilSearch
+          <MagnifyingGlass
             onClick={this.onSearchButtonClicked}
-            className="text-blue-60 cursor-pointer right-7 relative w-4 top-1.5"
+            className="cursor-pointer right-7 relative top-2.5"
+            size={16}
           />
         </div>
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">
-            <div className="flex items-center cursor-pointer">
+            <div className="flex items-center cursor-pointer pr-5">
               <div
-                className="h-6 w6 rounded-2xl mr-2 bg-neutral-20 \
-              p-1 flex justify-center items-center text-neutral-700 text-sm"
+                className="w-9 h-9 rounded-full bg-primary bg-opacity-10 \
+              flex justify-center items-center text-primary-dark font-medium"
               >
                 {nameLetters}
               </div>
-              <span className="hidden md:block text-neutral-500 text-base whitespace-nowrap">
+              <span className="ml-3 hidden md:block text-gray-80 font-medium whitespace-nowrap tracking-wide">
                 {isTeam ? 'Business' : userFullName}
               </span>
             </div>

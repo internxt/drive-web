@@ -4,7 +4,7 @@ import { getEnvironmentConfig, Network } from '../network.service';
 export default function fetchFileBlob(
   item: { fileId: string; bucket: string },
   options: { updateProgressCallback: (progress: number) => void; isTeam?: boolean },
-): [Promise<Blob>, ActionState | undefined] {
+): [Promise<Blob>, ActionState] {
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isTeam);
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
 

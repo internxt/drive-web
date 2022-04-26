@@ -61,6 +61,13 @@
       "auth": true
     },
     {
+      "id": "photos",
+      "layout": "header-and-sidenav",
+      "path": "/app/photos",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "account",
       "layout": "header-and-sidenav",
       "path": "/account",
@@ -125,6 +132,12 @@
       "exact": false
     },
     {
+      "id": "share-photos-token",
+      "layout": "empty",
+      "path": "/s/photos/:token([a-z0-9]{24})/:code",
+      "exact": false
+    },
+    {
       "id": "guest-accept-invite",
       "layout": "empty",
       "path": "/guest/invite",
@@ -152,7 +165,7 @@
   ],
   "database": {
     "name": "app-database",
-    "version": 1.0,
+    "version": 2.0,
     "provider": "indexed-db"
   }
 }

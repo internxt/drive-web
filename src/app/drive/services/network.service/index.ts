@@ -100,7 +100,7 @@ export class Network {
    * @param params Required params for downloading a file
    * @returns
    */
-  downloadFile(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Blob>, ActionState | undefined] {
+  downloadFile(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Blob>, ActionState] {
     const [downloadStreamPromise, actionState] = this.getFileDownloadStream(bucketId, fileId, params);
 
     let errored = false;
@@ -133,12 +133,8 @@ export class Network {
     return [promise, actionState];
   }
 
-  getFileDownloadStream(
-    bucketId: string,
-    fileId: string,
-    params: IDownloadParams,
-  ): [Promise<Readable>, ActionState | undefined] {
-    let actionState: ActionState | undefined;
+  getFileDownloadStream(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Readable>, ActionState] {
+    let actionState!: ActionState;
 
     if (!bucketId) {
       throw new Error('Bucket id not provided');

@@ -251,6 +251,15 @@
       },
       "errors": {}
     },
+    "download-photos": {
+      "status": {
+        "pending": "Downloading {progress}%",
+        "success": "Downloaded",
+        "error": "Error during download",
+        "cancelled": "Download cancelled"
+      },
+      "errors": {}
+    },
     "download-backup": {
       "status": {
         "pending": "Pending to download",
@@ -321,7 +330,7 @@
     "downloaded": "Downloaded",
     "view": "View",
     "accessFile": "Access File",
-    "upgradeNow": "Upgrade now!",
+    "upgradeNow": "Upgrade now",
     "upgrade": "Upgrade",
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
@@ -394,8 +403,8 @@
     },
     "rewards": {
       "title": "Get {creditSum} for free",
-      "progress": "{currentCredit} unlocked",
-      "limit": "(out of {creditSum})"
+      "progress": "Unlocked {currentCredit}",
+      "limit": "out of {creditSum}"
     }
   }
 }

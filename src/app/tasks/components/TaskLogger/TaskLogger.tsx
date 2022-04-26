@@ -59,17 +59,17 @@ const TaskLogger = (): JSX.Element => {
 
   return (
     <div
-      className={`file-logger-modal mr-6 mb-6 z-50 absolute bottom-0 right-0 flex flex-col transform duration-300 ${
+      className={`file-logger-modal absolute bottom-0 right-0 z-50 mr-6 mb-6 flex transform flex-col duration-300 ${
         isMinimized ? 'h-10' : 'h-64'
-      } bg-white rounded-md border border-gray-30 overflow-hidden ${!isOpen ? 'hidden' : ''}`}
+      } overflow-hidden rounded-md border border-gray-30 bg-white ${!isOpen ? 'hidden' : ''}`}
     >
-      <div className="flex justify-between bg-neutral-900 px-4 py-2.5 rounded-t-md select-none">
-        <div className="flex items-center w-max text-sm text-white font-semibold">
+      <div className="flex select-none justify-between rounded-t-md bg-neutral-900 px-4 py-2.5">
+        <div className="flex w-max items-center text-sm font-semibold text-white">
           {hasFinished ? (
             <span>{i18n.get('tasks.messages.allProcessesHaveFinished')}</span>
           ) : (
             <Fragment>
-              <img className="animate-spin mr-2" src={spinnerIcon} alt="" />
+              <img className="mr-2 animate-spin" src={spinnerIcon} alt="" />
 
               <span>{`Processing ${Object.values(finishedNotifications).length} of ${allNotifications.length}`}</span>
             </Fragment>
@@ -79,7 +79,7 @@ const TaskLogger = (): JSX.Element => {
         <div className="flex items-center">
           <div
             onClick={() => setIsMinized(!isMinimized)}
-            className={`mr-2 transform duration-300 text-white ${
+            className={`mr-2 transform text-white duration-300 ${
               isMinimized ? 'rotate-180' : 'rotate-0'
             } cursor-pointer`}
           >
@@ -95,7 +95,7 @@ const TaskLogger = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="overflow-y-scroll pt-2.5 h-full">{items}</div>
+      <div className="h-full overflow-y-scroll pt-2.5">{items}</div>
     </div>
   );
 };
