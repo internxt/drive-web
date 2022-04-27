@@ -3,6 +3,7 @@ import { AppViewLayout } from '../types';
 
 import EmptyLayout, { EmptyLayoutProps } from './EmptyLayout/EmptyLayout';
 import HeaderAndSidenavLayout, { HeaderAndSidenavLayoutProps } from './HeaderAndSidenavLayout/HeaderAndSidenavLayout';
+import ShareLayout from './ShareLayout/ShareLayout';
 
 type AnyLayoutProps = EmptyLayoutProps | HeaderAndSidenavLayoutProps;
 
@@ -17,6 +18,10 @@ const layouts: Array<{
   {
     id: AppViewLayout.HeaderAndSidenav,
     component: HeaderAndSidenavLayout,
+  },
+  {
+    id: AppViewLayout.Share,
+    component: ShareLayout,
   },
 ];
 

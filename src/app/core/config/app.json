@@ -133,7 +133,7 @@
     },
     {
       "id": "share-photos-token",
-      "layout": "empty",
+      "layout": "share",
       "path": "/s/photos/:token([a-z0-9]{24})/:code",
       "exact": false
     },
