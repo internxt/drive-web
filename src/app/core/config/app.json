@@ -121,7 +121,7 @@
     },
     {
       "id": "share-token",
-      "layout": "empty",
+      "layout": "share",
       "path": "/s/file/:token([a-z0-9]{20})/:code?",
       "exact": false
     },
