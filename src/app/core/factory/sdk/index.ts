@@ -82,6 +82,10 @@ export class SdkFactory {
   }
 
   public async createPhotosClient(): Promise<Photos> {
+    if (!this.localStorage.get('xToken')) {
+      return new Photos(process.env.REACT_APP_PHOTOS_API_URL);
+    }
+
     let newToken = this.localStorage.get('xNewToken');
 
     if (!newToken) {
