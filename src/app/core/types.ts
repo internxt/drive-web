@@ -94,6 +94,7 @@ export enum TimeInterval {
 export enum AppViewLayout {
   Empty = 'empty',
   HeaderAndSidenav = 'header-and-sidenav',
+  Share = 'share',
 }
 
 export enum AppView {
