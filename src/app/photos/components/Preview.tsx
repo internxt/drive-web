@@ -3,10 +3,10 @@ import { CaretLeft, DownloadSimple, Share, Trash, X } from 'phosphor-react';
 import { useState, useEffect, Fragment } from 'react';
 import { Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPhotoBlob, getPhotoPreview } from '../drive/services/network.service/download';
-import { RootState } from '../store';
-import { photosSlice, PhotosState } from '../store/slices/photos';
-import useIdle from '../core/hooks/useIdle';
+import { getPhotoBlob, getPhotoPreview } from '../../drive/services/network.service/download';
+import { RootState } from '../../store';
+import { photosSlice, PhotosState } from '../../store/slices/photos';
+import useIdle from '../../core/hooks/useIdle';
 
 export default function Preview({
   onDownloadClick,
