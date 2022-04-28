@@ -1,4 +1,4 @@
-import { Photo, PhotoId } from '@internxt/sdk/dist/photos';
+import { PhotoId } from '@internxt/sdk/dist/photos';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { RootState } from '../../..';
@@ -12,10 +12,11 @@ import { Readable } from 'stream';
 import i18n from '../../../../i18n/services/i18n.service';
 import streamSaver from 'streamsaver';
 import { ActionState } from '@internxt/inxt-js/build/api';
+import { SerializablePhoto } from '..';
 
-export const downloadThunk = createAsyncThunk<void, Photo[], { state: RootState }>(
+export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state: RootState }>(
   'photos/delete',
-  async (payload: Photo[], { getState }) => {
+  async (payload: SerializablePhoto[], { getState }) => {
     const state = getState();
     const { bucketId } = state.photos;
     if (!bucketId) return;

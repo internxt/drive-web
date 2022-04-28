@@ -1,12 +1,12 @@
 import { Environment } from '@internxt/inxt-js';
 import { ActionState } from '@internxt/inxt-js/build/api';
-import { Photo, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { createDecipheriv, Decipher } from 'crypto';
 import { EventEmitter } from 'events';
 import { Readable } from 'stream';
 import { getEnvironmentConfig, Network } from '.';
 import localStorageService from '../../../core/services/local-storage.service';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
+import { SerializablePhoto } from '../../../store/slices/photos';
 import fetchFileBlob from '../download.service/fetchFileBlob';
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
@@ -245,7 +245,7 @@ export async function getPhotoPreview({
   photo,
   bucketId,
 }: {
-  photo: PhotoWithDownloadLink;
+  photo: SerializablePhoto;
   bucketId: string;
 }): Promise<string> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
@@ -275,7 +275,7 @@ export async function getPhotoBlob({
   photo,
   bucketId,
 }: {
-  photo: Photo;
+  photo: SerializablePhoto;
   bucketId: string;
 }): Promise<[Promise<Blob>, ActionState | undefined]> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
@@ -308,7 +308,7 @@ export async function getPhotoCachedOrStream({
   bucketId,
   onProgress,
 }: {
-  photo: Photo;
+  photo: SerializablePhoto;
   bucketId: string;
   onProgress?: (progress: number) => void;
 }): Promise<Promise<Blob> | [Promise<Readable>, ActionState]> {

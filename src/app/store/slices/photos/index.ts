@@ -2,11 +2,12 @@ import { PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { photosExtraReducers } from './thunks';
 
+export type SerializablePhoto = Omit<PhotoWithDownloadLink, 'statusChangedAt' | 'takenAt' | 'createdAt' | 'updatedAt'>;
 export interface PhotosState {
   isLoading: boolean;
   skipped: number;
   thereIsMore: boolean;
-  items: PhotoWithDownloadLink[];
+  items: SerializablePhoto[];
   selectedItems: PhotoId[];
   bucketId?: string;
   previewIndex: number | null;
@@ -28,7 +29,7 @@ export const photosSlice = createSlice({
     setIsLoading: (state: PhotosState, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    push: (state: PhotosState, action: PayloadAction<PhotoWithDownloadLink[]>) => {
+    push: (state: PhotosState, action: PayloadAction<SerializablePhoto[]>) => {
       state.items.push(...action.payload);
     },
     toggleSelect: (state: PhotosState, action: PayloadAction<PhotoId>) => {

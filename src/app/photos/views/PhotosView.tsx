@@ -1,10 +1,10 @@
-import { Photo, PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
+import { PhotoId } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPhotoPreview } from '../../drive/services/network.service/download';
 import Dialog from '../../shared/components/Dialog/Dialog';
 import { RootState } from '../../store';
-import { photosSlice, PhotosState } from '../../store/slices/photos';
+import { photosSlice, PhotosState, SerializablePhoto } from '../../store/slices/photos';
 import photosThunks from '../../store/slices/photos/thunks';
 import Empty from '../components/Empty';
 import PhotoThumbnail from '../components/PhotoThumbnail';
@@ -66,7 +66,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
           onShareClick: () => setSharePending('selected'),
           onDownloadClick: () => {
             const photos = photosState.selectedItems.map(
-              (id) => photosState.items.find((item) => item.id === id) as Photo,
+              (id) => photosState.items.find((item) => item.id === id) as SerializablePhoto,
             );
             dispatch(photosThunks.downloadThunk(photos));
             dispatch(photosSlice.actions.unselectAll());
@@ -145,7 +145,7 @@ function Grid({
   selected,
   onUserScrolledToTheEnd,
 }: {
-  photos: PhotoWithDownloadLink[];
+  photos: SerializablePhoto[];
   selected: PhotoId[];
   onUserScrolledToTheEnd: () => void;
 }) {
@@ -212,7 +212,7 @@ function PhotoItem({
   onClick: () => void;
   onSelect: () => void;
   selected: boolean;
-  photo: PhotoWithDownloadLink;
+  photo: SerializablePhoto;
 }) {
   const [src, setSrc] = useState<string | undefined>(undefined);
   const bucketId = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
