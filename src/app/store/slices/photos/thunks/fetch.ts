@@ -1,6 +1,6 @@
-import { PhotoStatus } from '@internxt/sdk/dist/photos';
+import { PhotoStatus, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import { photosSlice, PhotosState } from '..';
+import { photosSlice, PhotosState, SerializablePhoto } from '..';
 
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
@@ -22,7 +22,9 @@ export const fetchThunk = createAsyncThunk<void, void, { state: RootState }>(
     const data = await photos.getPhotos({ status: PhotoStatus.Exists }, skipped, PAGE_SIZE, true);
 
     dispatch(photosSlice.actions.setBucketId(data.bucketId));
-    dispatch(photosSlice.actions.push(data.results));
+
+    const serializablePhotos = makePhotosSerializable(data.results);
+    dispatch(photosSlice.actions.push(serializablePhotos));
 
     const thereIsMore = data.results.length === PAGE_SIZE;
 
@@ -43,3 +45,8 @@ export const fetchThunkExtraReducers = (builder: ActionReducerMapBuilder<PhotosS
       state.isLoading = false;
     });
 };
+
+function makePhotosSerializable(photos: PhotoWithDownloadLink[]): SerializablePhoto[] {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return photos.map(({ takenAt, statusChangedAt, createdAt, updatedAt, ...rest }) => rest);
+}
