@@ -22,7 +22,7 @@ import RecoverView from '../../auth/views/RecoverView/RecoverView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
-import PhotosView from '../../photos/PhotosView';
+import PhotosView from '../../photos/views/PhotosView';
 
 const views: Array<{
   id: string;

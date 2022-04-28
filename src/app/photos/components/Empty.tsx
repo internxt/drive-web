@@ -1,4 +1,4 @@
-import picture from '../../assets/images/empty-photos.png';
+import picture from '../../../assets/images/empty-photos.png';
 
 export default function Empty({ className = '' }: { className?: string }): JSX.Element {
   return (

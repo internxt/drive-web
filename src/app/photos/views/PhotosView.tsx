@@ -1,17 +1,17 @@
 import { Photo, PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPhotoPreview } from '../drive/services/network.service/download';
-import Dialog from '../shared/components/Dialog/Dialog';
-import { RootState } from '../store';
-import { photosSlice, PhotosState } from '../store/slices/photos';
-import photosThunks from '../store/slices/photos/thunks';
-import Empty from './Empty';
-import PhotoThumbnail from './PhotoThumbnail';
-import Preview from './Preview';
-import ShareDialog from './ShareDialog';
-import Skeleton from './Skeleton';
-import Toolbar from './Toolbar';
+import { getPhotoPreview } from '../../drive/services/network.service/download';
+import Dialog from '../../shared/components/Dialog/Dialog';
+import { RootState } from '../../store';
+import { photosSlice, PhotosState } from '../../store/slices/photos';
+import photosThunks from '../../store/slices/photos/thunks';
+import Empty from '../components/Empty';
+import PhotoThumbnail from '../components/PhotoThumbnail';
+import Preview from '../components/Preview';
+import ShareDialog from '../components/ShareDialog';
+import Skeleton from '../components/Skeleton';
+import Toolbar from '../components/Toolbar';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useDispatch();
