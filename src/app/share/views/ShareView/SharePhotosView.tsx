@@ -20,6 +20,7 @@ import { Network } from '../../../drive/services/network.service';
 import downloadService from '../../../drive/services/download.service';
 import JSZip from 'jszip';
 import { Readable } from 'stream';
+import { loadWritableStreamPonyfill } from '../../../drive/services/network.service/download';
 
 interface SharePhotosProps {
   match: match<{
@@ -90,6 +91,16 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
 
         if (isBrave) {
           throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
+        }
+        const canUseReadableStreamMethod =
+          'WritableStream' in window &&
+          'ReadableStream' in window &&
+          new ReadableStream().pipeTo !== undefined &&
+          new ReadableStream().pipeThrough !== undefined &&
+          WritableStream !== undefined;
+
+        if (!canUseReadableStreamMethod) {
+          await loadWritableStreamPonyfill();
         }
 
         const zip = new JSZip();
