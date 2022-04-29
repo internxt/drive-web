@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { WritableStream } from 'streamsaver';
 import { match } from 'react-router';
-import 'react-toastify/dist/ReactToastify.css';
 import { getSharedFolderInfo, getSharedFolderSize } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';

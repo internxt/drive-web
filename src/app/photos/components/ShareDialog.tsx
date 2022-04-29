@@ -68,7 +68,7 @@ export default function ShareDialog({
   function onCopy() {
     if (status.tag === 'done') {
       navigator.clipboard.writeText(status.link);
-      notificationsService.show(i18n.get('success.linkCopied'), ToastType.Success);
+      notificationsService.show({ text: i18n.get('success.linkCopied'), type: ToastType.Success });
       onClose();
     }
   }

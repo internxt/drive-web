@@ -51,6 +51,6 @@ export const updateItemMetadataThunkExtraReducers = (builder: ActionReducerMapBu
         ? i18n.get('error.fileAlreadyExists')
         : i18n.get('error.changingName');
 
-      notificationsService.show(errorMessage, ToastType.Error);
+      notificationsService.show({ text: errorMessage, type: ToastType.Error });
     });
 };

@@ -26,9 +26,9 @@ const RemoveAccount = (): JSX.Element => {
     try {
       setIsLoading(true);
       await userService.sendDeactivationEmail(email);
-      notificationsService.show(i18n.get('success.accountDeactivationEmailSent'), ToastType.Success);
+      notificationsService.show({ text: i18n.get('success.accountDeactivationEmailSent'), type: ToastType.Success });
     } catch (err: unknown) {
-      notificationsService.show(i18n.get('error.deactivatingAccount'), ToastType.Error);
+      notificationsService.show({ text: i18n.get('error.deactivatingAccount'), type: ToastType.Error });
     } finally {
       setIsLoading(false);
       setStep(2);
@@ -40,11 +40,11 @@ const RemoveAccount = (): JSX.Element => {
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
-      <div className="flex flex-col w-96 items-center">
-        <div className="flex justify-around items-center w-2/3">
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="flex w-96 flex-col items-center">
+        <div className="flex w-2/3 items-center justify-around">
           <div
-            className={`flex items-center justify-center w-9 h-9 rounded-full border border-blue-60 text-blue-60 ${
+            className={`flex h-9 w-9 items-center justify-center rounded-full border border-blue-60 text-blue-60 ${
               step === 2 && 'cursor-pointer'
             }`}
             onClick={() => setStep(1)}
@@ -55,7 +55,7 @@ const RemoveAccount = (): JSX.Element => {
           <div className={`h-px w-20 border-t ${step === 2 ? 'border-blue-60' : 'border-neutral-60'}`} />
 
           <div
-            className={`flex items-center justify-center w-9 h-9 rounded-full border ${
+            className={`flex h-9 w-9 items-center justify-center rounded-full border ${
               step === 2 ? 'border-blue-60 text-blue-60' : 'border-neutral-60 text-neutral-60'
             }`}
           >
@@ -63,11 +63,11 @@ const RemoveAccount = (): JSX.Element => {
           </div>
         </div>
 
-        <span className="text-neutral-900 font-semibold mt-14">Internxt security</span>
+        <span className="mt-14 font-semibold text-neutral-900">Internxt security</span>
 
         {step === 1 ? (
           <Fragment>
-            <p className="text-neutral-500 text-base my-6 text-center">
+            <p className="my-6 text-center text-base text-neutral-500">
               As specified during the sign up process, Internxt Drive encrypts your files, and only you have access to
               those. We never know your password, and thus, that way, only you can decrypt your account. For that
               reason, if you forget your password, we can't restore your account. What we can do, however, is to delete
@@ -100,7 +100,7 @@ const RemoveAccount = (): JSX.Element => {
           </Fragment>
         ) : (
           <Fragment>
-            <p className="text-neutral-500 text-xs my-6 text-center">
+            <p className="my-6 text-center text-xs text-neutral-500">
               Please check your email and follow the instructions to deactivate your account so you can start using
               Internxt Drive again. Once you deactivate your account, you will be able to sign up using the same email
               address. Please store your password somewhere safe. With Internxt Drive, only you are the true owner of

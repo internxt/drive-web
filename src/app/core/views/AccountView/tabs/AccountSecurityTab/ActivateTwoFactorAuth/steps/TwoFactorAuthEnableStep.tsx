@@ -7,15 +7,11 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { TwoFactorAuthStepProps } from '.';
 
 const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => {
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [enabledSubmit2FA, setEnabledSubmit2FA] = useState(true);
 
-  const {
-    register,
-    handleSubmit
-  } = useForm();
+  const { register, handleSubmit } = useForm();
 
   const onSubmit = async (formData) => {
     if (!isLoading) {
@@ -27,7 +23,7 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
         setIsLoading(true);
 
         await authService.store2FA(props.backupKey, formData.twoFactorCode);
-        notificationsService.show(i18n.get('success.twoFactorAuthActivated'), ToastType.Success);
+        notificationsService.show({ text: i18n.get('success.twoFactorAuthActivated'), type: ToastType.Success });
         props.setHas2FA(true);
       } catch (err: unknown) {
         const castedError = errorService.castError(err);
@@ -40,18 +36,15 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
   };
 
   return (
-    <form
-      className="flex flex-col items-center justify-center space-y-4"
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <form className="flex flex-col items-center justify-center space-y-4" onSubmit={handleSubmit(onSubmit)}>
       <span className="text-base font-medium">
         {i18n.get('views.account.tabs.security.two-factor-auth.steps.enable.description.line1')}
       </span>
 
       <div className="hidden flex-col space-y-0.5">
-        <label className="text-sm font-medium text-neutral-100 mb-0.5">Backup key (from previous step)</label>
+        <label className="mb-0.5 text-sm font-medium text-neutral-100">Backup key (from previous step)</label>
         <input
-          {... register('backupKey')}
+          {...register('backupKey')}
           className="pointer-events-none mb-4"
           type="text"
           value={props.backupKey}
@@ -61,22 +54,24 @@ const TwoFactorAuthEnableStep = (props: TwoFactorAuthStepProps): JSX.Element => 
       </div>
 
       <div className="flex flex-col space-y-0.5">
-        <label className="text-sm font-medium text-neutral-100 mb-0.5">Two-factor authenticacion code</label>
+        <label className="mb-0.5 text-sm font-medium text-neutral-100">Two-factor authenticacion code</label>
         <input
-          {... register('twoFactorCode')}
+          {...register('twoFactorCode')}
           id="input2fa"
           type="text"
           placeholder="App generated code"
           required
           autoComplete="false"
           minLength={1}
-          onChange={(e) => { e.target.value.length >= 6 && setEnabledSubmit2FA(false); }}
+          onChange={(e) => {
+            e.target.value.length >= 6 && setEnabledSubmit2FA(false);
+          }}
         />
       </div>
 
       {error && (
-        <div className="flex flex-col items-center justify-center text-red-60 text-sm font-medium">
-          <span className="px-3 py-1.5 bg-red-10 rounded-md">{error}</span>
+        <div className="flex flex-col items-center justify-center text-sm font-medium text-red-60">
+          <span className="rounded-md bg-red-10 px-3 py-1.5">{error}</span>
         </div>
       )}
 

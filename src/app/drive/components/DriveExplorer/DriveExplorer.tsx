@@ -6,7 +6,6 @@ import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download'
 import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
 import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
-import 'react-toastify/dist/ReactToastify.css';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -169,46 +168,46 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     const ViewModeComponent = viewModes[viewMode];
 
     return connectDropTarget(
-      <div className="flex flex-col flex-grow h-full px-8" data-test="drag-and-drop-area">
+      <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
-        <div className="flex flex-grow h-full max-w-full w-full">
-          <div className="flex-grow flex flex-col w-1 pt-6">
+        <div className="flex h-full w-full max-w-full flex-grow">
+          <div className="flex w-1 flex-grow flex-col pt-6">
             <div className="flex justify-between pb-4">
               <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
 
               <div className="flex">
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <UilCloudDownload className="h-5 mr-1.5" />
+                    <UilCloudDownload className="mr-1.5 h-5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <UilCloudUpload className="h-5 mr-1.5" />
+                    <UilCloudUpload className="mr-1.5 h-5" />
                     <span>{i18n.get('actions.upload')}</span>
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
-                  <BaseButton className="tertiary w-8 square" onClick={this.onCreateFolderButtonClicked}>
+                  <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
                     <UilFolderPlus />
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
-                  <BaseButton className="tertiary w-8 square" onClick={this.onBulkDeleteButtonClicked}>
+                  <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
                     <UilTrashAlt />
                   </BaseButton>
                 ) : null}
-                <BaseButton className="tertiary square w-8 ml-1.5" onClick={this.onViewModeButtonClicked}>
+                <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
                   {viewModesIcons[viewMode]}
                 </BaseButton>
               </div>
             </div>
 
-            <div className="h-full flex flex-col justify-between flex-grow overflow-y-hidden mb-5">
+            <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
               {this.hasItems && (
-                <div className="flex flex-col justify-between flex-grow overflow-hidden">
+                <div className="flex flex-grow flex-col justify-between overflow-hidden">
                   <ViewModeComponent items={items} isLoading={isLoading} />
                 </div>
               )}
@@ -237,7 +236,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 /* EMPTY FOLDER */
                 !this.hasFilters && !this.hasItems && !isLoading ? (
                   <DriveExplorerOverlay
-                    icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
+                    icon={<img alt="" src={folderEmptyImage} className="m-auto w-full" />}
                     title="This folder is empty"
                     subtitle="Drag and drop here or click on upload button"
                   />
@@ -248,7 +247,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 /* NO SEARCH RESULTS */
                 this.hasFilters && !this.hasItems && !isLoading ? (
                   <DriveExplorerOverlay
-                    icon={<img alt="" src={noResultsSearchImage} className="w-full m-auto" />}
+                    icon={<img alt="" src={noResultsSearchImage} className="m-auto w-full" />}
                     title="There are no results for this search"
                     subtitle="Drag and drop here or click on upload button"
                   />
@@ -260,7 +259,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 isOver ? (
                   <div
                     className="drag-over-effect pointer-events-none\
-                   absolute h-full w-full flex justify-center items-end"
+                   absolute flex h-full w-full items-end justify-center"
                   ></div>
                 ) : null
               }

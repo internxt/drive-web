@@ -158,6 +158,6 @@ export const uploadFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
         errorMessage = action.error.message || action.error + '';
       }
 
-      notificationsService.show(errorMessage, ToastType.Error);
+      notificationsService.show({ text: errorMessage, type: ToastType.Error });
     });
 };

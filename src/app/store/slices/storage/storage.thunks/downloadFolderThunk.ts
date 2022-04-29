@@ -135,10 +135,10 @@ export const downloadFolderThunkExtraReducers = (builder: ActionReducerMapBuilde
       if (options.showErrors) {
         const errorMessage = rejectedValue?.message || action.error.message;
 
-        notificationsService.show(
-          i18n.get('error.downloadingFolder', { message: errorMessage || '' }),
-          ToastType.Error,
-        );
+        notificationsService.show({
+          text: i18n.get('error.downloadingFolder', { message: errorMessage || '' }),
+          type: ToastType.Error,
+        });
       }
     });
 };

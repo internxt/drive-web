@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { Alert, Container } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import 'react-toastify/dist/ReactToastify.css';
 import { isMobile } from 'react-device-detect';
-import { toast } from 'react-toastify';
 
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
@@ -35,7 +33,7 @@ class DeactivationView extends React.Component<DeactivationViewProps> {
     this.props.dispatch(userThunks.logoutThunk());
 
     if (!isMobile) {
-      notificationsService.show('Your account has been deactivated', ToastType.Info);
+      notificationsService.show({ text: 'Your account has been deactivated', type: ToastType.Info });
       navigationService.push(AppView.Login);
     } else {
       this.setState({ result: this.confirmDeactivation() });
@@ -44,13 +42,14 @@ class DeactivationView extends React.Component<DeactivationViewProps> {
 
   ConfirmDeactivateUser = (token: string) => {
     const authClient = SdkFactory.getInstance().createAuthClient();
-    return authClient.confirmDeactivation(token)
+    return authClient
+      .confirmDeactivation(token)
       .then(() => {
         this.ClearAndRedirect();
       })
       .catch(() => {
         if (!isMobile) {
-          toast.warn('Invalid token');
+          notificationsService.show({ text: 'Invalid token', type: ToastType.Warning });
           navigationService.push(AppView.Login);
         } else {
           this.setState({ result: this.invalidDeactivationToken() });
@@ -63,7 +62,7 @@ class DeactivationView extends React.Component<DeactivationViewProps> {
       this.ConfirmDeactivateUser(this.state.token);
     } else {
       if (!isMobile) {
-        toast.warn('Invalid token');
+        notificationsService.show({ text: 'Invalid token', type: ToastType.Warning });
         navigationService.push(AppView.Login);
       } else {
         this.setState({ result: this.invalidDeactivationToken() });
