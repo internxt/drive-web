@@ -44,7 +44,7 @@ const NotificationToast = ({
     >
       <div
         className="flex items-center space-x-2 rounded-lg border border-gray-10 bg-white p-3 shadow-subtle-hard"
-        style={{ maxWidth: '80vw' }}
+        style={{ width: '350px' }}
       >
         {Icon && <Icon weight="fill" className={`${IconColor}`} size={24} />}
         {subtitle ? (
