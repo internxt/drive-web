@@ -1,17 +1,14 @@
 import { Fragment, useState, useEffect } from 'react';
-import UilAngleDown from '@iconscout/react-unicons/icons/uil-angle-down';
-import UilTimes from '@iconscout/react-unicons/icons/uil-times';
 
 import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
-import spinnerIcon from '../../../../assets/icons/spinner.svg';
 import { TaskStatus } from '../../types';
 import { useTaskManagerGetNotifications } from '../../hooks';
 import tasksService from '../../services/tasks.service';
 import i18n from '../../../i18n/services/i18n.service';
 
-import './TaskLogger.scss';
 import { uiActions } from '../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { CaretDown, CircleNotch, X } from 'phosphor-react';
 
 const TaskLogger = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -59,43 +56,41 @@ const TaskLogger = (): JSX.Element => {
 
   return (
     <div
-      className={`file-logger-modal absolute bottom-0 right-0 z-50 mr-6 mb-6 flex transform flex-col duration-300 ${
-        isMinimized ? 'h-10' : 'h-64'
-      } overflow-hidden rounded-md border border-gray-30 bg-white ${!isOpen ? 'hidden' : ''}`}
+      className={`absolute bottom-0 right-0 z-50 mr-6 mb-6 flex w-80 flex-col shadow-subtle-hard transition-all duration-350  ${
+        isMinimized ? 'h-11' : 'h-64'
+      } overflow-hidden rounded-lg border border-gray-10 bg-white ${!isOpen ? 'hidden' : ''}`}
     >
-      <div className="flex select-none justify-between rounded-t-md bg-neutral-900 px-4 py-2.5">
-        <div className="flex w-max items-center text-sm font-semibold text-white">
+      <div className="flex select-none justify-between border-b border-gray-10 bg-gray-5 px-3 py-2.5">
+        <div className="flex w-max items-center text-sm font-medium text-gray-60">
           {hasFinished ? (
             <span>{i18n.get('tasks.messages.allProcessesHaveFinished')}</span>
           ) : (
             <Fragment>
-              <img className="mr-2 animate-spin" src={spinnerIcon} alt="" />
+              <CircleNotch size={16} className="mr-2 animate-spin text-gray-60" weight="bold" />
 
               <span>{`Processing ${Object.values(finishedNotifications).length} of ${allNotifications.length}`}</span>
             </Fragment>
           )}
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center text-gray-60">
           <div
             onClick={() => setIsMinized(!isMinimized)}
-            className={`mr-2 transform text-white duration-300 ${
-              isMinimized ? 'rotate-180' : 'rotate-0'
-            } cursor-pointer`}
+            className={`transform  duration-300 ${isMinimized ? 'rotate-180' : 'rotate-0'} cursor-pointer`}
           >
-            <UilAngleDown className="h-5" />
+            <CaretDown size={24} />
           </div>
 
           <div
-            className={`${hasFinished ? 'cursor-pointer' : 'cursor-not-allowed'} cursor-pointer`}
+            className={`${hasFinished ? 'cursor-pointer' : 'cursor-not-allowed'} ml-4 cursor-pointer`}
             onClick={onCloseButtonClicked}
           >
-            <UilTimes className={`h-5 ${hasFinished ? 'text-white' : 'text-neutral-100'}`} />
+            <X size={24} />
           </div>
         </div>
       </div>
 
-      <div className="h-full overflow-y-scroll pt-2.5">{items}</div>
+      <div className="h-full space-y-2 overflow-y-scroll pt-2">{items}</div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import UilTimes from '@iconscout/react-unicons/icons/uil-times';
+import { XCircle } from 'phosphor-react';
 
 import tasksService from '../../services/tasks.service';
 import { TaskNotification, TaskStatus } from '../../types';
@@ -10,28 +10,27 @@ interface TaskLoggerItemProps {
 const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   const isTaskFinished = tasksService.isTaskFinished(notification.taskId);
   const isTaskProgressCompleted = tasksService.isTaskProgressCompleted(notification.taskId);
-  const statusClassName = isTaskFinished ? '' : 'opacity-50';
   const messageClassName = [TaskStatus.Error, TaskStatus.Cancelled].includes(notification.status)
     ? 'text-red-50'
-    : 'text-neutral-500';
+    : notification.status === TaskStatus.Success
+    ? 'text-gray-50'
+    : 'text-primary';
   const onCancelButtonClicked = () => {
     tasksService.cancelTask(notification.taskId);
   };
 
   return (
-    <div className={`${statusClassName} flex items-center px-4`}>
-      <notification.icon className="flex items-center justify-center mr-2.5 w-6 h-6" />
+    <div className={'flex items-center space-x-2 px-2'}>
+      <notification.icon className="h-8 w-8" />
 
-      <div className="flex flex-col text-left w-40">
-        <span className="text-sm text-neutral-900 truncate">{notification.title}</span>
+      <div className="flex flex-1 flex-col overflow-hidden text-left">
+        <span className="truncate text-sm font-medium text-gray-80">{notification.title}</span>
 
-        <span className={`text-xs ${messageClassName}`}>{notification.subtitle}</span>
+        <span className={`text-sm ${messageClassName}`}>{notification.subtitle}</span>
       </div>
 
       {notification.isTaskCancellable && !isTaskProgressCompleted && !isTaskFinished && (
-        <div className="text-red-60 ml-auto cursor-pointer" onClick={onCancelButtonClicked}>
-          <UilTimes />
-        </div>
+        <XCircle size={24} weight="fill" className="cursor-pointer text-gray-60" onClick={onCancelButtonClicked} />
       )}
     </div>
   );
