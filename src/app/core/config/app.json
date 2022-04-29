@@ -65,14 +65,16 @@
       "layout": "header-and-sidenav",
       "path": "/app/photos",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "account",
       "layout": "header-and-sidenav",
       "path": "/account",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "teams-join",
