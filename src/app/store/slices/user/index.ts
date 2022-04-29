@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { toast } from 'react-toastify';
 import { RootState } from '../..';
 
 import { teamActions } from '../team';
@@ -17,6 +16,7 @@ import { InitializeUserResponse } from '@internxt/sdk/dist/drive/users/types';
 import { storeTeamsInfo } from '../../../teams/services/teams.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { referralsActions } from '../referrals';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
 interface UserState {
   isInitializing: boolean;
@@ -137,8 +137,7 @@ export const userSlice = createSlice({
         const errorMsg = action.payload ? action.payload : '';
 
         state.isInitializing = false;
-
-        toast.warn('User initialization error ' + errorMsg);
+        notificationsService.show({ text: 'User initialization error ' + errorMsg, type: ToastType.Warning });
         navigationService.push(AppView.Login);
       });
 

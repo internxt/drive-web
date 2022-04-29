@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import streamSaver from 'streamsaver';
 import { match } from 'react-router';
-import 'react-toastify/dist/ReactToastify.css';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';

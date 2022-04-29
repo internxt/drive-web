@@ -42,10 +42,10 @@ export function cancelAccount(): Promise<void> {
   return authClient
     .sendDeactivationEmail(<string>email)
     .then(() => {
-      notificationsService.show(i18n.get('success.accountDeactivationEmailSent'), ToastType.Info);
+      notificationsService.show({ text: i18n.get('success.accountDeactivationEmailSent'), type: ToastType.Info });
     })
     .catch(() => {
-      notificationsService.show(i18n.get('error.deactivatingAccount'), ToastType.Warning);
+      notificationsService.show({ text: i18n.get('error.deactivatingAccount'), type: ToastType.Warning });
     });
 }
 

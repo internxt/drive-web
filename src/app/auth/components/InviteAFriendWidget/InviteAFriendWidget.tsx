@@ -15,26 +15,27 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
       setIsLoading(true);
       await userService.inviteAFriend(email);
       setEmail('');
-      notificationsService.show(i18n.get('success.inviteAFriend', { email }), ToastType.Info);
+      notificationsService.show({ text: i18n.get('success.inviteAFriend', { email }), type: ToastType.Info });
     } catch (err) {
       const castedError = errorService.castError(err);
-      notificationsService.show(i18n.get('error.inviteAFriend', { message: castedError.message }), ToastType.Error);
+      notificationsService.show({
+        text: i18n.get('error.inviteAFriend', { message: castedError.message }),
+        type: ToastType.Error,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div
-      className={`${props.className || ''} w-full max-w-lg rounded-lg border border-neutral-30 p-6 bg-neutral-10`}
-    >
+    <div className={`${props.className || ''} w-full max-w-lg rounded-lg border border-neutral-30 bg-neutral-10 p-6`}>
       <span className="mb-1 block w-full text-center font-semibold">{i18n.get('inviteAFriend.title')}</span>
-      <span className="block m-auto text-center text-neutral-100 text-sm max-w-xs">
+      <span className="m-auto block max-w-xs text-center text-sm text-neutral-100">
         {i18n.get('inviteAFriend.description')}
       </span>
       <div className="mt-6 flex">
         <input
-          className="flex-grow no-ring mr-2 border border-neutral-30 semi-dense"
+          className="no-ring semi-dense mr-2 flex-grow border border-neutral-30"
           placeholder={i18n.get('form.fields.email.placeholder')}
           type="email"
           value={email}

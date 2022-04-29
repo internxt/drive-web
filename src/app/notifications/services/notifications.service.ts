@@ -1,11 +1,5 @@
-import UilCheckCircle from '@iconscout/react-unicons/icons/uil-check-circle';
-import UilTimesCircle from '@iconscout/react-unicons/icons/uil-times-circle';
-import UilExclamationTriangle from '@iconscout/react-unicons/icons/uil-exclamation-triangle';
-import UilInfoCircle from '@iconscout/react-unicons/icons/uil-info-circle';
-import { uniqueId } from 'lodash';
 import { createElement } from 'react';
-import { toast } from 'react-toastify';
-
+import toast from 'react-hot-toast';
 import NotificationToast from '../components/NotificationToast/NotificationToast';
 
 export enum ToastType {
@@ -15,41 +9,29 @@ export enum ToastType {
   Info = 'info',
 }
 
-const notificationsService = {
-  show: (text: string, type: ToastType, duration = 3000): void => {
-    const configByType = {
-      success: {
-        icon: UilCheckCircle,
-      },
-      error: {
-        icon: UilTimesCircle,
-      },
-      warning: {
-        icon: UilExclamationTriangle,
-      },
-      info: {
-        icon: UilInfoCircle,
-      },
-    };
+export type ToastShowProps = {
+  text: string;
+  type?: ToastType;
+  subtitle?: string;
+  action?: { text: string; onClick: () => void };
+  duration?: number;
+};
 
-    toast(
-      createElement(NotificationToast, {
-        text,
-        IconComponent: configByType[type].icon,
-      }),
-      {
-        toastId: uniqueId(),
-        autoClose: duration,
-        position: 'bottom-right',
-        closeButton: false,
-        hideProgressBar: true,
-        type,
-        style: {
-          height: 'auto',
-        },
-      },
+const notificationsService = {
+  show: ({ text, type, subtitle, action, duration = 3000 }: ToastShowProps): string => {
+    return toast.custom(
+      (t) =>
+        createElement(NotificationToast, {
+          text,
+          type,
+          visible: t.visible,
+          subtitle,
+          action,
+        }),
+      { duration },
     );
   },
+  dismiss: toast.dismiss,
 };
 
 export default notificationsService;

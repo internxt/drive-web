@@ -59,7 +59,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       if (!bucket) {
         trackShareLinkBucketIdUndefined({ email });
         close();
-        notificationsService.show(i18n.get('error.shareLinkMissingBucket'), ToastType.Error);
+        notificationsService.show({ text: i18n.get('error.shareLinkMissingBucket'), type: ToastType.Error });
         dispatch(userThunks.logoutThunk());
 
         return;
@@ -104,7 +104,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
       }
-      notificationsService.show(castedError.message, ToastType.Error);
+      notificationsService.show({ text: castedError.message, type: ToastType.Error });
 
       setLinkToCopy(i18n.get('error.unavailableLink'));
     } finally {
@@ -157,7 +157,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
             select-text items-center justify-between rounded-md bg-neutral-20 px-4 py-2"
             onClick={() => {
               navigator.clipboard.writeText(linkToCopy);
-              notificationsService.show(i18n.get('success.linkCopied'), ToastType.Info);
+              notificationsService.show({ text: i18n.get('success.linkCopied'), type: ToastType.Info });
             }}
           >
             <span className="w-56 overflow-hidden truncate text-xs text-neutral-900">

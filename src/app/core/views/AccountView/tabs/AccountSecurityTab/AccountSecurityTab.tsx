@@ -42,7 +42,10 @@ const AccountSecurityTab = (): JSX.Element => {
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
-      notificationsService.show(i18n.get('error.genericError', { reason: castedError.message }), ToastType.Error);
+      notificationsService.show({
+        text: i18n.get('error.genericError', { reason: castedError.message }),
+        type: ToastType.Error,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +54,7 @@ const AccountSecurityTab = (): JSX.Element => {
     const submit = document.getElementById('submit2fa');
     submit !== null && submit.click();
   };
-  const steps = Object.values(TwoFactorAuthStep).map(stepKey => stepKey);
+  const steps = Object.values(TwoFactorAuthStep).map((stepKey) => stepKey);
   const CurrentActivateStepComponent = activateSteps[currentStep].component;
   const currentActivateStepProps = {
     qr,
@@ -69,28 +72,28 @@ const AccountSecurityTab = (): JSX.Element => {
       <div className="flex flex-col items-center justify-center">
         <button
           type="button"
-          onClick={() => { setModal2FA(true); }}
-          className="flex flex-row px-6 py-2 bg-blue-60 text-white font-medium rounded-lg"
+          onClick={() => {
+            setModal2FA(true);
+          }}
+          className="flex flex-row rounded-lg bg-blue-60 px-6 py-2 font-medium text-white"
         >
           Enable 2FA
         </button>
       </div>
 
-      <Transition
-        appear
-        show={modal2FA}
-        as={Fragment}
-        key="enableModal"
-      >
+      <Transition appear show={modal2FA} as={Fragment} key="enableModal">
         <Dialog
           as="div"
-          className="fixed flex flex-col w-full h-full items-center justify-center inset-0 z-10 overflow-y-auto"
+          className="fixed inset-0 z-10 flex h-full w-full flex-col items-center justify-center overflow-y-auto"
           onClose={() => {
             setModal2FA(false);
-            setTimeout(() => { setCurrentStep(0); setDisableSubmit(false); }, 200);
+            setTimeout(() => {
+              setCurrentStep(0);
+              setDisableSubmit(false);
+            }, 200);
           }}
         >
-          <div className="flex flex-col min-h-screen px-4 items-center justify-center">
+          <div className="flex min-h-screen flex-col items-center justify-center px-4">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-200"
@@ -116,22 +119,21 @@ const AccountSecurityTab = (): JSX.Element => {
               leaveTo="opacity-0 scale-95"
             >
               <div
-                className="relative flex flex-col w-full md:w-156 max-w-lg transition-all transform bg-white
-                           p-6 shadow-xl rounded-2xl space-y-6"
-                onKeyUp={() => { currentStep === steps.length - 1 && check2FALenght(); }}
+                className="relative flex w-full max-w-lg transform flex-col space-y-6 rounded-2xl bg-white
+                           p-6 shadow-xl transition-all md:w-156"
+                onKeyUp={() => {
+                  currentStep === steps.length - 1 && check2FALenght();
+                }}
               >
-
                 <div className="modal_title flex flex-col">
                   <span className="text-sm font-medium text-neutral-100">
-                    {i18n.get('views.account.tabs.security.two-factor-auth.stepsLabel',
-                      { current: currentStep + 1, total: steps.length })
-                    }
+                    {i18n.get('views.account.tabs.security.two-factor-auth.stepsLabel', {
+                      current: currentStep + 1,
+                      total: steps.length,
+                    })}
                   </span>
 
-                  <Dialog.Title
-                    as="h3"
-                    className="text-xl font-medium text-neutral-700"
-                  >
+                  <Dialog.Title as="h3" className="text-xl font-medium text-neutral-700">
                     {i18n.get(`views.account.tabs.security.two-factor-auth.steps.${steps[currentStep]}.title`)}
                   </Dialog.Title>
                 </div>
@@ -143,47 +145,50 @@ const AccountSecurityTab = (): JSX.Element => {
                 <div className="modal_actions flex flex-row items-center justify-between">
                   <button
                     type="button"
-                    className="flex flex-row px-3.5 py-1.5 bg-red-10 text-red-60 text-sm font-medium rounded-md
-                               border border-red-20"
+                    className="flex flex-row rounded-md border border-red-20 bg-red-10 px-3.5 py-1.5 text-sm
+                               font-medium text-red-60"
                     onClick={() => {
                       setModal2FA(false);
-                      setTimeout(() => { setCurrentStep(0); setDisableSubmit(false); }, 200);
+                      setTimeout(() => {
+                        setCurrentStep(0);
+                        setDisableSubmit(false);
+                      }, 200);
                     }}
                   >
                     Cancel
                   </button>
 
                   <div className="flex flex-row space-x-2">
-                    { currentStep >= 1 &&
+                    {currentStep >= 1 && (
                       <button
                         type="button"
-                        className="flex flex-row px-3.5 py-1.5 bg-white text-neutral-500 text-sm font-medium rounded-md
-                                  border border-l-neutral-40"
-                        onClick={() => { currentStep >= 1 && setCurrentStep(currentStep -1); }}
+                        className="flex flex-row rounded-md border border-l-neutral-40 bg-white px-3.5 py-1.5 text-sm
+                                  font-medium text-neutral-500"
+                        onClick={() => {
+                          currentStep >= 1 && setCurrentStep(currentStep - 1);
+                        }}
                       >
                         Back
                       </button>
-                    }
+                    )}
 
                     <button
                       type="button"
                       className={`flex flex-row px-3.5 py-1.5
                                   ${
-                                    (currentStep === steps.length - 1 && !disableSubmit) ?
-                                    'cursor-not-allowed bg-blue-30 border-blue-30'
-                                    :
-                                    'bg-blue-60 border-blue-60'
+                                    currentStep === steps.length - 1 && !disableSubmit
+                                      ? 'cursor-not-allowed border-blue-30 bg-blue-30'
+                                      : 'border-blue-60 bg-blue-60'
                                   }
-                                 text-white text-sm font-medium rounded-md border`}
+                                 rounded-md border text-sm font-medium text-white`}
                       onClick={() => {
-                        currentStep < (steps.length - 1) ?
-                        setCurrentStep(currentStep + 1)
-                        :
-                        disableSubmit && handleSubmit();
+                        currentStep < steps.length - 1
+                          ? setCurrentStep(currentStep + 1)
+                          : disableSubmit && handleSubmit();
                       }}
                       disabled={currentStep === steps.length - 1 ? !disableSubmit : false}
                     >
-                      { currentStep < steps.length - 1 ? 'Next' : 'Enable 2FA'}
+                      {currentStep < steps.length - 1 ? 'Next' : 'Enable 2FA'}
                     </button>
                   </div>
                 </div>
@@ -200,26 +205,25 @@ const AccountSecurityTab = (): JSX.Element => {
       <div className="flex flex-col items-center justify-center">
         <button
           type="button"
-          onClick={() => { setDisableModal2FA(true); }}
-          className="flex flex-row px-6 py-2 bg-red-10 hover:bg-red-20 hover:bg-opacity-50
-                     text-red-60 font-medium rounded-lg"
+          onClick={() => {
+            setDisableModal2FA(true);
+          }}
+          className="flex flex-row rounded-lg bg-red-10 px-6 py-2 font-medium
+                     text-red-60 hover:bg-red-20 hover:bg-opacity-50"
         >
           Disable 2FA
         </button>
       </div>
 
-      <Transition
-        appear
-        show={disableModal2FA}
-        as={Fragment}
-        key="diableModal"
-      >
+      <Transition appear show={disableModal2FA} as={Fragment} key="diableModal">
         <Dialog
           as="div"
-          className="fixed flex flex-col w-full h-full items-center justify-center inset-0 z-10 overflow-y-auto"
-          onClose={() => { setDisableModal2FA(false); }}
+          className="fixed inset-0 z-10 flex h-full w-full flex-col items-center justify-center overflow-y-auto"
+          onClose={() => {
+            setDisableModal2FA(false);
+          }}
         >
-          <div className="flex flex-col min-h-screen px-4 items-center justify-center">
+          <div className="flex min-h-screen flex-col items-center justify-center px-4">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-200"
@@ -245,15 +249,11 @@ const AccountSecurityTab = (): JSX.Element => {
               leaveTo="opacity-0 scale-95"
             >
               <div
-                className="relative flex flex-col w-full md:w-156 max-w-lg transition-all transform bg-white
-                           p-6 shadow-xl rounded-2xl space-y-6"
+                className="relative flex w-full max-w-lg transform flex-col space-y-6 rounded-2xl bg-white
+                           p-6 shadow-xl transition-all md:w-156"
               >
-
                 <div className="modal_title flex flex-col">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-xl font-medium text-neutral-700"
-                  >
+                  <Dialog.Title as="h3" className="text-xl font-medium text-neutral-700">
                     {i18n.get('views.account.tabs.security.two-factor-auth.steps.disable.title')}
                   </Dialog.Title>
                 </div>
@@ -278,31 +278,31 @@ const AccountSecurityTab = (): JSX.Element => {
   return (
     <>
       {/* Two-Factor Authentication */}
-      <div className="w-full flex flex-col mt-10 mb-16">
-        {has2FA &&
-          <div className="flex flex-row self-start items-center justify-center pl-2 px-2.5 py-1 bg-green-10
-                        text-green-60 text-sm font-medium rounded-md mb-2 space-x-2">
-            <UilCheckCircle className="w-4 h-4" />
+      <div className="mt-10 mb-16 flex w-full flex-col">
+        {has2FA && (
+          <div
+            className="mb-2 flex flex-row items-center justify-center space-x-2 self-start rounded-md bg-green-10
+                        px-2.5 py-1 pl-2 text-sm font-medium text-green-60"
+          >
+            <UilCheckCircle className="h-4 w-4" />
             <span>Enabled</span>
           </div>
-        }
-        <h3 className="font-semibold mb-2">{i18n.get('views.account.tabs.security.advice.title')}</h3>
+        )}
+        <h3 className="mb-2 font-semibold">{i18n.get('views.account.tabs.security.advice.title')}</h3>
         <p className="mb-6">{i18n.get('views.account.tabs.security.advice.description')}</p>
 
         {isLoading ? (
           <ActivateTwoFactorAuthSkeleton />
         ) : (
-          <div className="flex flex-col w-full items-center">
-            {has2FA ? disableModal : enableModal}
-          </div>
+          <div className="flex w-full flex-col items-center">{has2FA ? disableModal : enableModal}</div>
         )}
       </div>
 
-      <div className="flex flex-col w-full h-px bg-neutral-20 mb-16"></div>
+      <div className="mb-16 flex h-px w-full flex-col bg-neutral-20"></div>
 
       {/* Password */}
-      <div className="w-full flex flex-col">
-          <AccountPasswordTab />
+      <div className="flex w-full flex-col">
+        <AccountPasswordTab />
       </div>
     </>
   );

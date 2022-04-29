@@ -92,7 +92,7 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
           ? i18n.get('error.folderAlreadyExists')
           : i18n.get('error.creatingFolder');
 
-        notificationsService.show(errorMessage, ToastType.Error);
+        notificationsService.show({ text: errorMessage, type: ToastType.Error });
       }
     });
 };

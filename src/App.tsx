@@ -1,7 +1,7 @@
 import { Component, createElement } from 'react';
 import { Switch, Route, Redirect, Router, RouteProps } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'react-hot-toast';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import TagManager from 'react-gtm-module';
@@ -123,7 +123,7 @@ class App extends Component<AppProps> {
               {this.routes}
             </Switch>
 
-            <ToastContainer />
+            <Toaster position="bottom-center" />
 
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
 

@@ -1,6 +1,5 @@
 import { Component, ReactNode } from 'react';
 import { match } from 'react-router';
-import 'react-toastify/dist/ReactToastify.css';
 import { AppView } from '../../../core/types';
 
 import httpService from '../../../core/services/http.service';
@@ -25,7 +24,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
     console.log('Clear and redirect');
     localStorage.clear();
 
-    notificationsService.show('Your account has been deactivated', ToastType.Info);
+    notificationsService.show({ text: 'Your account has been deactivated', type: ToastType.Info });
     navigationService.push(AppView.Login);
   };
 
@@ -38,7 +37,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
         this.ClearAndRedirect();
       })
       .catch(() => {
-        notificationsService.show('Invalid token', ToastType.Warning);
+        notificationsService.show({ text: 'Invalid token', type: ToastType.Warning });
         navigationService.push(AppView.Login);
       });
   };
@@ -48,7 +47,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
     if (this.IsValidToken(this.state.token)) {
       this.confirmDeactivation(this.state.token);
     } else {
-      notificationsService.show('Invalid token', ToastType.Warning);
+      notificationsService.show({ text: 'Invalid token', type: ToastType.Warning });
       navigationService.push(AppView.Login);
     }
   }

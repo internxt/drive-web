@@ -38,12 +38,12 @@ const AccountPasswordTab = (): JSX.Element => {
 
       setIsLoading(true);
       await changePassword(formData.password, formData.currentPassword, formData.email);
-      notificationsService.show(i18n.get('success.passwordChanged'), ToastType.Success);
+      notificationsService.show({ text: i18n.get('success.passwordChanged'), type: ToastType.Success });
       reset();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
-      notificationsService.show(castedError.message, ToastType.Error);
+      notificationsService.show({ text: castedError.message, type: ToastType.Error });
     } finally {
       setIsLoading(false);
     }
@@ -57,12 +57,12 @@ const AccountPasswordTab = (): JSX.Element => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="flex h-full w-full flex-col">
       <h2 className="mb-2 font-semibold">{i18n.get('views.account.tabs.password.advice1.title')}</h2>
       <p className="mb-10">{i18n.get('views.account.tabs.password.advice1.description')}</p>
 
       <div className="flex justify-center">
-        <form className="w-full max-w-sm grid grid-cols-1 gap-6 mb-14" onSubmit={handleSubmit(onSubmit)}>
+        <form className="mb-14 grid w-full max-w-sm grid-cols-1 gap-6" onSubmit={handleSubmit(onSubmit)}>
           <BaseInput
             placeholder="Current password"
             label="currentPassword"
@@ -133,8 +133,8 @@ const AccountPasswordTab = (): JSX.Element => {
           />
 
           {bottomInfoError && (
-            <div className="flex my-1">
-              <span className="block  w-full text-red-60 text-sm font-medium">{bottomInfoError}</span>
+            <div className="my-1 flex">
+              <span className="block  w-full text-sm font-medium text-red-60">{bottomInfoError}</span>
             </div>
           )}
 
@@ -146,7 +146,7 @@ const AccountPasswordTab = (): JSX.Element => {
 
       <span className="mb-9">{i18n.get('views.account.tabs.password.advice2.title')}</span>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 w-full justify-around mb-14">
+      <div className="mb-14 grid w-full grid-cols-1 justify-around gap-14 lg:grid-cols-2">
         <TextBlock
           icon={UilShieldPlus}
           title={i18n.get('views.account.tabs.password.advice3.title')}

@@ -1,6 +1,5 @@
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import 'react-toastify/dist/ReactToastify.css';
 import { ReactComponent as Logo } from 'assets/icons/brand/x-white.svg';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
