@@ -99,7 +99,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         onDeleteClick={() => setDeletePending('preview')}
         onShareClick={() => setSharePending('preview')}
         onDownloadClick={() =>
-          photosState.previewIndex &&
+          photosState.previewIndex !== null &&
           dispatch(photosThunks.downloadThunk([photosState.items[photosState.previewIndex]]))
         }
       />
