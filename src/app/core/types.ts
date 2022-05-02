@@ -61,6 +61,7 @@ export interface AppViewConfig {
   path: string;
   exact: boolean;
   auth?: boolean;
+  hideSearch?: boolean;
 }
 
 export default class AppError extends Error {
