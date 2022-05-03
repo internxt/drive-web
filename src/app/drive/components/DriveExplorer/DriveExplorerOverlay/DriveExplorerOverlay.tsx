@@ -32,7 +32,7 @@ function DriveExplorerOverlay({ icon, title, subtitle, action }: DriveExplorerOv
 
   return (
     <div className="h-full w-full  p-8">
-      <div className="flex h-full items-center justify-center rounded-12px">
+      <div className="flex h-full items-center justify-center">
         <div className="mb-28">
           <div className="mx-auto mb-10 w-max">{icon}</div>
           <div className="pointer-events-none text-center">
