@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { SdkFactory } from '../../../core/factory/sdk';
-import Empty from '../../../core/components/Empty/Empty';
+import Empty from '../../../shared/components/Empty/Empty';
 import { DriveItemData } from '../../../drive/types';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';

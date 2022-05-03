@@ -1,4 +1,5 @@
 import { Transition } from '@headlessui/react';
+import { useEffect } from 'react';
 
 export default function Dialog({
   isOpen,
@@ -21,6 +22,19 @@ export default function Dialog({
   secondaryAction: string;
   primaryActionColor: 'primary' | 'danger';
 }): JSX.Element {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const listener = (e) => {
+      if (e.code === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', listener);
+    return () => document.removeEventListener('keydown', listener);
+  }, [isOpen]);
+
   return (
     <Transition show={isOpen}>
       <Transition.Child

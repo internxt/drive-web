@@ -22,6 +22,19 @@ export default function ShareDialog({
   photos: PhotoId[];
   isOpen: boolean;
 }): JSX.Element {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const listener = (e) => {
+      if (e.code === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', listener);
+    return () => document.removeEventListener('keydown', listener);
+  }, [isOpen]);
+
   const numberOfSelectedItems = photos.length;
 
   const DEFAULT_VIEWS = 10;

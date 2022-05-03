@@ -1,7 +1,7 @@
 import { PhotoId } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Empty from '../../core/components/Empty/Empty';
+import Empty from '../../shared/components/Empty/Empty';
 import { getPhotoPreview } from '../../drive/services/network.service/download';
 import Dialog from '../../shared/components/Dialog/Dialog';
 import { RootState } from '../../store';
@@ -109,6 +109,10 @@ export default function PhotosView({ className = '' }: { className?: string }): 
           photosState.previewIndex !== null &&
           dispatch(photosThunks.downloadThunk([photosState.items[photosState.previewIndex]]))
         }
+        onClose={() => {
+          if (photosState.previewIndex !== null && deletePending === null && sharePending === null)
+            dispatch(photosSlice.actions.setPreviewIndex(null));
+        }}
       />
       {/* These dialogs are duplicated to avoid flickering while using headless ui transitions */}
       <Dialog
