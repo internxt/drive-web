@@ -12,10 +12,12 @@ export default function Preview({
   onDownloadClick,
   onDeleteClick,
   onShareClick,
+  onClose,
 }: {
   onDownloadClick?: () => void;
   onShareClick?: () => void;
   onDeleteClick?: () => void;
+  onClose: () => void;
 }): JSX.Element {
   const MS_TO_BE_IDLE = 5000;
   const isIdle = useIdle(MS_TO_BE_IDLE);
@@ -81,13 +83,13 @@ export default function Preview({
         } else if (code === 'ArrowRight' && canGoRight) {
           goRight();
         } else if (code === 'Escape') {
-          dispatch(photosSlice.actions.setPreviewIndex(null));
+          onClose();
         }
       }
     };
     document.addEventListener('keydown', listener);
     return () => document.removeEventListener('keydown', listener);
-  }, [previewIndex]);
+  }, [previewIndex, onClose]);
 
   return (
     <Transition
@@ -115,7 +117,7 @@ export default function Preview({
         <Toolbar
           onDeleteClick={onDeleteClick}
           onDownloadClick={onDownloadClick}
-          onExit={() => dispatch(photosSlice.actions.setPreviewIndex(null))}
+          onExit={onClose}
           onShareClick={onShareClick}
           isIdle={isIdle}
         />

@@ -109,6 +109,10 @@ export default function PhotosView({ className = '' }: { className?: string }): 
           photosState.previewIndex !== null &&
           dispatch(photosThunks.downloadThunk([photosState.items[photosState.previewIndex]]))
         }
+        onClose={() => {
+          if (photosState.previewIndex !== null && deletePending === null && sharePending === null)
+            dispatch(photosSlice.actions.setPreviewIndex(null));
+        }}
       />
       {/* These dialogs are duplicated to avoid flickering while using headless ui transitions */}
       <Dialog
