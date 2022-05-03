@@ -13,7 +13,7 @@ import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import filesEmptyImage from 'assets/icons/light/files.svg';
-import DriveExplorerOverlay from './DriveExplorerOverlay/DriveExplorerOverlay';
+import DriveExplorerOverlay from '../../../core/components/Empty/Empty';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
 import { AppDispatch, RootState } from 'app/store';

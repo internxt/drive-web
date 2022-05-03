@@ -6,7 +6,7 @@ import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkelet
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from 'phosphor-react';
-import DriveExplorerOverlay from '../../../drive/components/DriveExplorer/DriveExplorerOverlay/DriveExplorerOverlay';
+import DriveExplorerOverlay from '../../../core/components/Empty/Empty';
 
 interface Props {
   items: (Device | DriveFolderData)[];

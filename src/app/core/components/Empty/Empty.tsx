@@ -1,7 +1,7 @@
 import { Upload } from 'phosphor-react';
 import { ReactNode } from 'react';
 
-interface DriveExplorerOverlayProps {
+interface EmptyProps {
   icon: JSX.Element;
   title: string;
   subtitle: string;
@@ -13,7 +13,7 @@ interface DriveExplorerOverlayProps {
   };
 }
 
-function DriveExplorerOverlay({ icon, title, subtitle, action }: DriveExplorerOverlayProps): JSX.Element {
+export default function Empty({ icon, title, subtitle, action }: EmptyProps): JSX.Element {
   let button: ReactNode = null;
 
   if (action) {
@@ -45,5 +45,3 @@ function DriveExplorerOverlay({ icon, title, subtitle, action }: DriveExplorerOv
     </div>
   );
 }
-
-export default DriveExplorerOverlay;

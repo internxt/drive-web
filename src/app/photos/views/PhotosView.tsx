@@ -1,7 +1,7 @@
 import { PhotoId } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import DriveExplorerOverlay from '../../drive/components/DriveExplorer/DriveExplorerOverlay/DriveExplorerOverlay';
+import DriveExplorerOverlay from '../../core/components/Empty/Empty';
 import { getPhotoPreview } from '../../drive/services/network.service/download';
 import Dialog from '../../shared/components/Dialog/Dialog';
 import { RootState } from '../../store';
