@@ -12,7 +12,7 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
-import DriveExplorerOverlay from '../../../core/components/Empty/Empty';
+import Empty from '../../../core/components/Empty/Empty';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
 import { AppDispatch, RootState } from 'app/store';
@@ -247,7 +247,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 /* EMPTY FOLDER */
                 !this.hasItems && !isLoading ? (
                   this.hasFilters ? (
-                    <DriveExplorerOverlay
+                    <Empty
                       icon={filesEmptyImage}
                       title="There are no results for this search"
                       subtitle="Drag and drop here or click on upload button"
@@ -259,13 +259,13 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                       }}
                     />
                   ) : isRecents ? (
-                    <DriveExplorerOverlay
+                    <Empty
                       icon={filesEmptyImage}
                       title="No recents files to show"
                       subtitle="Recent uploads or files you recently interacted with will show up here automatically"
                     />
                   ) : (
-                    <DriveExplorerOverlay
+                    <Empty
                       icon={<img className="w-36" alt="" src={folderEmptyImage} />}
                       title="This folder is empty"
                       subtitle="Drag and drop files or click to select files and upload"

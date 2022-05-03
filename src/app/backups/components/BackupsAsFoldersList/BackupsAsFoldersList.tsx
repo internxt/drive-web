@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { SdkFactory } from '../../../core/factory/sdk';
-import DriveExplorerOverlay from '../../../core/components/Empty/Empty';
+import Empty from '../../../core/components/Empty/Empty';
 import { DriveItemData } from '../../../drive/types';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
@@ -92,7 +92,7 @@ export default function BackupsAsFoldersList({
             />
           ))}
         {currentItems.length === 0 && !isLoading && (
-          <DriveExplorerOverlay
+          <Empty
             icon={<img className="w-36" alt="" src={folderEmptyImage} />}
             title="This folder is empty"
             subtitle="Use Internxt Desktop to upload your data"

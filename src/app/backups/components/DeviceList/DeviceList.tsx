@@ -6,7 +6,7 @@ import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkelet
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from 'phosphor-react';
-import DriveExplorerOverlay from '../../../core/components/Empty/Empty';
+import Empty from '../../../core/components/Empty/Empty';
 
 interface Props {
   items: (Device | DriveFolderData)[];
@@ -45,7 +45,7 @@ const DeviceList = (props: Props): JSX.Element => {
       <div className="h-full overflow-y-auto">{isLoading ? getLoadingSkeleton() : items}</div>
     </div>
   ) : (
-    <DriveExplorerOverlay
+    <Empty
       icon={<img className="w-36" alt="" src={folderEmptyImage} />}
       title="You don't have backups yet"
       subtitle="Set up your bakups on the desktop app"

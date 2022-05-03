@@ -1,7 +1,7 @@
 import { PhotoId } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import DriveExplorerOverlay from '../../core/components/Empty/Empty';
+import Empty from '../../core/components/Empty/Empty';
 import { getPhotoPreview } from '../../drive/services/network.service/download';
 import Dialog from '../../shared/components/Dialog/Dialog';
 import { RootState } from '../../store';
@@ -80,7 +80,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
     <>
       <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`}>
         {showEmpty ? (
-          <DriveExplorerOverlay
+          <Empty
             title="Your gallery is empty"
             subtitle="Start using Internxt mobile app to sync all your photos"
             icon={
