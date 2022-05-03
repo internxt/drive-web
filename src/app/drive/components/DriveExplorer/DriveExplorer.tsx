@@ -12,7 +12,6 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
-import filesEmptyImage from 'assets/icons/light/files.svg';
 import DriveExplorerOverlay from '../../../core/components/Empty/Empty';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
@@ -33,6 +32,7 @@ import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UploadSimple } from 'phosphor-react';
+import iconService from '../../services/icon.service';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -170,6 +170,14 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
     const isRecents = title === 'Recents';
 
+    const FileIcon = iconService.getItemIcon(false);
+    const filesEmptyImage = (
+      <div className="relative h-32 w-32">
+        <FileIcon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
+        <FileIcon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+      </div>
+    );
+
     return connectDropTarget(
       <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
@@ -240,7 +248,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 !this.hasItems && !isLoading ? (
                   this.hasFilters ? (
                     <DriveExplorerOverlay
-                      icon={<img className="w-36" alt="" src={filesEmptyImage} />}
+                      icon={filesEmptyImage}
                       title="There are no results for this search"
                       subtitle="Drag and drop here or click on upload button"
                       action={{
@@ -252,7 +260,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                     />
                   ) : isRecents ? (
                     <DriveExplorerOverlay
-                      icon={<img className="w-36" alt="" src={filesEmptyImage} />}
+                      icon={filesEmptyImage}
                       title="No recents files to show"
                       subtitle="Recent uploads or files you recently interacted with will show up here automatically"
                     />
