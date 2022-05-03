@@ -11,9 +11,8 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
-import folderEmptyImage from 'assets/images/folder-empty.svg';
-import noResultsSearchImage from 'assets/images/no-results-search.svg';
-import DriveExplorerOverlay from './DriveExplorerOverlay/DriveExplorerOverlay';
+import folderEmptyImage from 'assets/icons/light/folder-open.svg';
+import Empty from '../../../core/components/Empty/Empty';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
 import { AppDispatch, RootState } from 'app/store';
@@ -32,6 +31,8 @@ import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { UploadSimple } from 'phosphor-react';
+import iconService from '../../services/icon.service';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -167,6 +168,16 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     };
     const ViewModeComponent = viewModes[viewMode];
 
+    const isRecents = title === 'Recents';
+
+    const FileIcon = iconService.getItemIcon(false);
+    const filesEmptyImage = (
+      <div className="relative h-32 w-32">
+        <FileIcon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
+        <FileIcon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+      </div>
+    );
+
     return connectDropTarget(
       <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
@@ -234,23 +245,38 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
               {
                 /* EMPTY FOLDER */
-                !this.hasFilters && !this.hasItems && !isLoading ? (
-                  <DriveExplorerOverlay
-                    icon={<img alt="" src={folderEmptyImage} className="m-auto w-full" />}
-                    title="This folder is empty"
-                    subtitle="Drag and drop here or click on upload button"
-                  />
-                ) : null
-              }
-
-              {
-                /* NO SEARCH RESULTS */
-                this.hasFilters && !this.hasItems && !isLoading ? (
-                  <DriveExplorerOverlay
-                    icon={<img alt="" src={noResultsSearchImage} className="m-auto w-full" />}
-                    title="There are no results for this search"
-                    subtitle="Drag and drop here or click on upload button"
-                  />
+                !this.hasItems && !isLoading ? (
+                  this.hasFilters ? (
+                    <Empty
+                      icon={filesEmptyImage}
+                      title="There are no results for this search"
+                      subtitle="Drag and drop here or click on upload button"
+                      action={{
+                        icon: UploadSimple,
+                        style: 'elevated',
+                        text: 'Upload files',
+                        onClick: this.onUploadButtonClicked,
+                      }}
+                    />
+                  ) : isRecents ? (
+                    <Empty
+                      icon={filesEmptyImage}
+                      title="No recents files to show"
+                      subtitle="Recent uploads or files you recently interacted with will show up here automatically"
+                    />
+                  ) : (
+                    <Empty
+                      icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+                      title="This folder is empty"
+                      subtitle="Drag and drop files or click to select files and upload"
+                      action={{
+                        icon: UploadSimple,
+                        style: 'elevated',
+                        text: 'Upload files',
+                        onClick: this.onUploadButtonClicked,
+                      }}
+                    />
+                  )
                 ) : null
               }
 

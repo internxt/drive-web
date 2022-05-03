@@ -1,12 +1,13 @@
 import { PhotoId } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Empty from '../../core/components/Empty/Empty';
 import { getPhotoPreview } from '../../drive/services/network.service/download';
 import Dialog from '../../shared/components/Dialog/Dialog';
 import { RootState } from '../../store';
 import { photosSlice, PhotosState, SerializablePhoto } from '../../store/slices/photos';
 import photosThunks from '../../store/slices/photos/thunks';
-import Empty from '../components/Empty';
+import EmptyPicture from '../../../assets/images/empty-photos.png';
 import PhotoThumbnail from '../components/PhotoThumbnail';
 import Preview from '../components/Preview';
 import ShareDialog from '../components/ShareDialog';
@@ -79,7 +80,13 @@ export default function PhotosView({ className = '' }: { className?: string }): 
     <>
       <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`}>
         {showEmpty ? (
-          <Empty />
+          <Empty
+            title="Your gallery is empty"
+            subtitle="Start using Internxt mobile app to sync all your photos"
+            icon={
+              <img className="h-auto w-72" src={EmptyPicture} draggable="false" alt="Photos used in the Internxt app" />
+            }
+          />
         ) : (
           <>
             <Toolbar {...toolbarProps} numberOfSelectedItems={numberOfSelectedItems} />
@@ -173,7 +180,7 @@ function Grid({
 
   return (
     <div
-      className="grid flex-shrink gap-1 overflow-y-auto px-5"
+      className="grid gap-1 overflow-y-auto px-5"
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
       ref={listRef}
     >

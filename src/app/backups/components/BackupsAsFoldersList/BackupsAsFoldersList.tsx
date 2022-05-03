@@ -3,10 +3,10 @@ import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { SdkFactory } from '../../../core/factory/sdk';
-import DriveExplorerOverlay from '../../../drive/components/DriveExplorer/DriveExplorerOverlay/DriveExplorerOverlay';
+import Empty from '../../../core/components/Empty/Empty';
 import { DriveItemData } from '../../../drive/types';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
-import folderEmptyImage from 'assets/images/folder-empty.svg';
+import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { uiActions } from '../../../store/slices/ui';
 import BackupsAsFoldersListItem from './BackupsAsFoldersListItem';
@@ -66,18 +66,18 @@ export default function BackupsAsFoldersList({
   const isEmpty = currentItems.length === 0;
 
   return (
-    <div className={`${className} flex flex-col flex-grow min-h-0`}>
+    <div className={`${className} flex min-h-0 flex-grow flex-col`}>
       {(!isEmpty || isLoading) && (
         <div
-          className="files-list font-semibold flex border-b\
-       border-l-neutral-30 bg-white text-neutral-400 py-3 text-sm"
+          className="files-list border-b\ flex border-l-neutral-30
+       bg-white py-3 text-sm font-semibold text-neutral-400"
         >
-          <div className="w-0.5/12 pl-3 flex items-center justify-start box-content"></div>
-          <div className="flex-grow flex items-center px-3">{i18n.get('drive.list.columns.name')}</div>
-          <div className="w-2/12 hidden items-center xl:flex"></div>
-          <div className="w-3/12 hidden items-center lg:flex">{i18n.get('drive.list.columns.modified')}</div>
-          <div className="w-2/12 flex items-center">{i18n.get('drive.list.columns.size')}</div>
-          <div className="w-1/12 flex items-center">Actions</div>
+          <div className="box-content flex w-0.5/12 items-center justify-start pl-3"></div>
+          <div className="flex flex-grow items-center px-3">{i18n.get('drive.list.columns.name')}</div>
+          <div className="hidden w-2/12 items-center xl:flex"></div>
+          <div className="hidden w-3/12 items-center lg:flex">{i18n.get('drive.list.columns.modified')}</div>
+          <div className="flex w-2/12 items-center">{i18n.get('drive.list.columns.size')}</div>
+          <div className="flex w-1/12 items-center">Actions</div>
         </div>
       )}
       <div className="flex-grow overflow-y-auto">
@@ -92,8 +92,8 @@ export default function BackupsAsFoldersList({
             />
           ))}
         {currentItems.length === 0 && !isLoading && (
-          <DriveExplorerOverlay
-            icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
+          <Empty
+            icon={<img className="w-36" alt="" src={folderEmptyImage} />}
             title="This folder is empty"
             subtitle="Use Internxt Desktop to upload your data"
           />
