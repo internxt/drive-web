@@ -1,10 +1,18 @@
-export default function Avatar({ fullName, diameter }: { fullName: string; diameter: number }): JSX.Element {
+export default function DefaultAvatar({
+  fullName,
+  diameter,
+  className = '',
+}: {
+  fullName: string;
+  diameter: number;
+  className?: string;
+}): JSX.Element {
   const initials = nameToInitials(fullName);
 
   return (
     <div
-      style={{ width: diameter, height: diameter, fontSize: diameter / 4 }}
-      className="flex items-center justify-center rounded-full bg-primary-dark bg-opacity-5 font-medium text-primary-dark"
+      style={{ width: diameter, height: diameter, fontSize: diameter / 2.1 }}
+      className={`${className} flex items-center justify-center rounded-full bg-primary-dark bg-opacity-15 font-medium text-primary-dark`}
     >
       <p>{initials}</p>
     </div>
