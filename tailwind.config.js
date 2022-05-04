@@ -180,7 +180,7 @@ module.exports = {
       // NEW DESIGN SYSTEM
       primary: 'rgb(0,102,255)',
       'primary-dark': 'rgb(0,88,219)',
-      red: 'rgb(255,13,0)',
+      'red-std': 'rgb(255,13,0)',
       'red-dark': 'rgb(230,11,0)',
       orange: 'rgb(255,149,0)',
       'orange-dark': 'rgb(230,134,0)',
