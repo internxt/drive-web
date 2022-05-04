@@ -77,6 +77,14 @@
       "hideSearch": true
     },
     {
+      "id": "new-account",
+      "layout": "header-and-sidenav",
+      "path": "/new-account",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
+    },
+    {
       "id": "teams-join",
       "layout": "empty",
       "path": "/teams/join/:token",
