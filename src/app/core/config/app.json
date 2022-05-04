@@ -77,9 +77,9 @@
       "hideSearch": true
     },
     {
-      "id": "new-account",
+      "id": "preferences",
       "layout": "header-and-sidenav",
-      "path": "/new-account",
+      "path": "/preferences",
       "exact": true,
       "auth": true,
       "hideSearch": true

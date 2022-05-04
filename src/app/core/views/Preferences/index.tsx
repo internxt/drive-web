@@ -1,20 +1,25 @@
 import { useState } from 'react';
-
-const TABS: { id: AccountTabID; label: string }[] = [
-  { id: 'account', label: 'Account' },
-  { id: 'billing', label: 'Billing' },
-  { id: 'plans', label: 'Plans' },
-  { id: 'security', label: 'Security' },
-];
+import AccountTab from './tabs/Account';
 
 type AccountTabID = 'account' | 'billing' | 'plans' | 'security';
 
-export default function AccountView(): JSX.Element {
+export default function Preferences(): JSX.Element {
+  const TABS: { id: AccountTabID; label: string; component: React.FunctionComponent<{ isHidden: boolean }> | null }[] =
+    [
+      { id: 'account', label: 'Account', component: AccountTab },
+      { id: 'billing', label: 'Billing', component: null },
+      { id: 'plans', label: 'Plans', component: null },
+      { id: 'security', label: 'Security', component: null },
+    ];
+
   const [activeTab, setActiveTab] = useState<AccountTabID>('account');
 
   return (
     <div className="h-full w-full">
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+      <div className="p-8">
+        {TABS.map(({ component: Component, id }) => Component && <Component isHidden={activeTab !== id} />)}
+      </div>
     </div>
   );
 }

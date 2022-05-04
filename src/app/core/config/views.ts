@@ -6,7 +6,7 @@ import DriveView from 'app/drive/views/DriveView/DriveView';
 import RecentsView from 'app/drive/views/RecentsView/RecentsView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
 import AccountView from 'app/core/views/AccountView/AccountView';
-import NewAccountView from 'app/core/views/NewAccountView';
+import Preferences from 'app/core/views/Preferences';
 import DeactivationView from 'app/core/views/DeactivationView/DeactivationView';
 import JoinTeamView from 'app/teams/views/JoinTeamView/JoinTeamView';
 import TeamSuccessView from 'app/teams/views/TeamSuccessView/TeamSuccessView';
@@ -40,7 +40,7 @@ const views: Array<{
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Account, component: AccountView },
-  { id: AppView.NewAccount, component: NewAccountView },
+  { id: AppView.Preferences, component: Preferences },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },
