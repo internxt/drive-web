@@ -34,18 +34,19 @@ export const newsletterSlice = createSlice({
       .addCase(subscribeToNewsletterThunk.fulfilled, (state, action) => {
         state.isSubscribing = false;
 
-        notificationsService.show(
-          i18n.get('success.subscribeToNewsletter', { email: action.meta.arg.email }),
-          ToastType.Info,
-        );
+        notificationsService.show({
+          text: i18n.get('success.subscribeToNewsletter', { email: action.meta.arg.email }),
+
+          type: ToastType.Info,
+        });
       })
       .addCase(subscribeToNewsletterThunk.rejected, (state, action) => {
         state.isSubscribing = false;
 
-        notificationsService.show(
-          i18n.get('error.subscribeToNewsletter', { message: action.error.message }),
-          ToastType.Error,
-        );
+        notificationsService.show({
+          text: i18n.get('error.subscribeToNewsletter', { message: action.error.message }),
+          type: ToastType.Error,
+        });
       });
   },
 });

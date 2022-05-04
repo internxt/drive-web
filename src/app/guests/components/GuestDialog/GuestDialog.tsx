@@ -43,23 +43,23 @@ const GuestInviteDialog = () => {
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       await sendGuestInvitation(formData.email);
-      notificationsService.show('Invitation created for ' + formData.email, ToastType.Success);
+      notificationsService.show({ text: 'Invitation created for ' + formData.email, type: ToastType.Success });
       onClose();
     } catch (e) {
       const err = e as Error;
-      notificationsService.show(err.message, ToastType.Error);
+      notificationsService.show({ text: err.message, type: ToastType.Error });
       console.error(err);
     }
   };
 
   return (
     <BaseDialog isOpen={isOpen} title="Invite a Guest" panelClasses="w-156" onClose={onClose}>
-      <div className="flex mt-2 items-center justify-center text-center px-12">
+      <div className="mt-2 flex items-center justify-center px-12 text-center">
         <span>Here you can add members to your personal workspace.</span>
       </div>
 
-      <div className="flex flex-col self-center my-6 items-start w-96">
-        <form className="flex w-full m" onSubmit={handleSubmit(onSubmit)}>
+      <div className="my-6 flex w-96 flex-col items-start self-center">
+        <form className="m flex w-full" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex-1">
             <BaseInput
               placeholder="Type email: jhondoe@internxt.com"
@@ -72,7 +72,7 @@ const GuestInviteDialog = () => {
             />
           </div>
 
-          <div className="w-16 ml-2.5">
+          <div className="ml-2.5 w-16">
             <AuthButton text="Invite" textWhenDisabled={isValid ? 'Inviting...' : 'Invite'} isDisabled={!isValid} />
           </div>
         </form>

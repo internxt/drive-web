@@ -38,13 +38,13 @@ const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Ele
       setIsLoading(true);
       await deactivate2FA(passwordSalt, formData.password, formData.twoFactorCode);
 
-      notificationsService.show(i18n.get('success.twoFactorAuthDisabled'), ToastType.Success);
+      notificationsService.show({ text: i18n.get('success.twoFactorAuthDisabled'), type: ToastType.Success });
       setHas2FA(false);
       reset();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
-      notificationsService.show(castedError.message || i18n.get('error.serverError'), ToastType.Error);
+      notificationsService.show({ text: castedError.message || i18n.get('error.serverError'), type: ToastType.Error });
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +52,6 @@ const Deactivate2FA = ({ passwordSalt, setHas2FA }: Deactivate2FAProps): JSX.Ele
 
   return (
     <form className="flex w-full flex-col space-y-4" onSubmit={handleSubmit(onSubmit)}>
-
       <BaseInput
         label="password"
         placeholder="Password"

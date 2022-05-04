@@ -25,7 +25,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
     const promises: Promise<void>[] = [];
 
     if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
-      return notificationsService.show(i18n.get('error.movingItemInsideItself'), ToastType.Error);
+      return void notificationsService.show({ text: i18n.get('error.movingItemInsideItself'), type: ToastType.Error });
     }
 
     for (const [index, item] of items.entries()) {
@@ -102,6 +102,6 @@ export const moveItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<Sto
     .addCase(moveItemsThunk.pending, () => undefined)
     .addCase(moveItemsThunk.fulfilled, () => undefined)
     .addCase(moveItemsThunk.rejected, (state, action) => {
-      notificationsService.show(action.error.message || i18n.get('error.movingItem'), ToastType.Error);
+      notificationsService.show({ text: action.error.message || i18n.get('error.movingItem'), type: ToastType.Error });
     });
 };

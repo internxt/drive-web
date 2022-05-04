@@ -54,14 +54,14 @@ class JoinTeamView extends React.Component<JoinTeamViewProps, JoinTeamViewState>
         if (response.status === 200) {
           this.setState({ isTeamActivated: true });
           localStorage.setItem('teamActivation', 'true');
-          notificationsService.show(i18n.get('success.joinedToTheTeam'), ToastType.Success);
+          notificationsService.show({ text: i18n.get('success.joinedToTheTeam'), type: ToastType.Success });
           navigationService.push(AppView.Login);
 
           dispatch(userThunks.initializeUserThunk());
         } else {
           // Wrong activation
           this.setState({ isTeamActivated: false });
-          notificationsService.show(i18n.get('error.invalidActivationCode'), ToastType.Error);
+          notificationsService.show({ text: i18n.get('error.invalidActivationCode'), type: ToastType.Error });
         }
       })
       .catch((err: unknown) => {

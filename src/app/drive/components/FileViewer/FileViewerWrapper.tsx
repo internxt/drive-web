@@ -25,8 +25,8 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         })
     : null;
 
-  return file ? (
-    <FileViewer show={showPreview} file={file} onClose={onClose} onDownload={onDownload} downloader={downloader!} />
+  return file && downloader ? (
+    <FileViewer show={showPreview} file={file} onClose={onClose} onDownload={onDownload} downloader={downloader} />
   ) : (
     <div className="hidden" />
   );

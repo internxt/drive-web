@@ -77,12 +77,12 @@ export const downloadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder
       const errors = action.payload as unknown[];
 
       if (errors && errors.length > 0) {
-        notificationsService.show(i18n.get('error.downloadingItems'), ToastType.Error);
+        notificationsService.show({ text: i18n.get('error.downloadingItems'), type: ToastType.Error });
       } else {
-        notificationsService.show(
-          i18n.get('error.downloadingFile', { reason: action.error.message || '' }),
-          ToastType.Error,
-        );
+        notificationsService.show({
+          text: i18n.get('error.downloadingFile', { reason: action.error.message || '' }),
+          type: ToastType.Error,
+        });
       }
     });
 };

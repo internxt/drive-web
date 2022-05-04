@@ -13,6 +13,7 @@ import fileViewerReducer from './slices/fileViewer';
 import taskManagerReducer from './slices/taskManager';
 import referralsReducer from './slices/referrals';
 import newsletterReducer from './slices/newsletter';
+import photosReducer from './slices/photos';
 
 export const store = configureStore({
   reducer: {
@@ -29,6 +30,7 @@ export const store = configureStore({
     taskManager: taskManagerReducer,
     referrals: referralsReducer,
     newsletter: newsletterReducer,
+    photos: photosReducer,
   },
 });
 

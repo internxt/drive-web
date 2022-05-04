@@ -1,4 +1,4 @@
-import { DBSchema, StoreKey, StoreNames, StoreValue } from 'idb';
+import { DBSchema } from 'idb';
 import configService from '../../../core/services/config.service';
 import { DriveItemData } from '../../../drive/types';
 import indexedDBService from './indexed-db.service';
@@ -9,6 +9,7 @@ export enum DatabaseProvider {
 
 export enum DatabaseCollection {
   Levels = 'levels',
+  Photos = 'photos',
 }
 
 export interface AppDatabase extends DBSchema {
@@ -16,19 +17,26 @@ export interface AppDatabase extends DBSchema {
     key: number;
     value: DriveItemData[];
   };
+  photos: {
+    key: string;
+    value: {
+      preview?: Blob;
+      source?: Blob;
+    };
+  };
 }
 
 export interface DatabaseService {
   (databaseName: string, databaseVersion: number): {
-    put: <Name extends StoreNames<AppDatabase>>(
-      collectionName: DatabaseCollection,
-      key: StoreKey<AppDatabase, Name>,
-      value: StoreValue<AppDatabase, Name>,
+    put: <Name extends DatabaseCollection>(
+      collectionName: Name,
+      key: AppDatabase[Name]['key'],
+      value: AppDatabase[Name]['value'],
     ) => Promise<void>;
-    get: <Name extends StoreNames<AppDatabase>>(
-      collectionName: DatabaseCollection,
-      key: StoreKey<AppDatabase, Name>,
-    ) => Promise<StoreValue<AppDatabase, Name> | undefined>;
+    get: <Name extends DatabaseCollection>(
+      collectionName: Name,
+      key: AppDatabase[Name]['key'],
+    ) => Promise<AppDatabase[Name]['value'] | undefined>;
     clear: () => Promise<void>;
   };
 }

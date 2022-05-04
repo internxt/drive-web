@@ -47,7 +47,10 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
     try {
       if (team && team.isAdmin) {
         await sendEmailTeamsMember(formData.email);
-        notificationsService.show(i18n.get('success.teamInvitationSent', { email: formData.email }), ToastType.Success);
+        notificationsService.show({
+          text: i18n.get('success.teamInvitationSent', { email: formData.email }),
+          type: ToastType.Success,
+        });
         const userExists = members.some((userObj) => userObj.user === formData.email);
 
         if (!userExists) {
@@ -60,7 +63,7 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-      notificationsService.show(castedError.message, ToastType.Error);
+      notificationsService.show({ text: castedError.message, type: ToastType.Error });
     }
   };
 
@@ -72,20 +75,20 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
       const filterRemovedMember = members.filter((member) => member.user !== memberToDelete.user);
 
       setMembers(filterRemovedMember);
-      notificationsService.show(i18n.get('success.deletedTeamMember', { resource }), ToastType.Success);
+      notificationsService.show({ text: i18n.get('success.deletedTeamMember', { resource }), type: ToastType.Success });
     } catch (err: unknown) {
-      notificationsService.show(i18n.get('error.deleteTeamMember'), ToastType.Error);
+      notificationsService.show({ text: i18n.get('error.deleteTeamMember'), type: ToastType.Error });
     }
   };
 
   return (
     <BaseDialog isOpen={isOpen} title="Manage your team" panelClasses="w-156" onClose={onClose}>
-      <div className="flex mt-2 items-center justify-center text-center px-12">
+      <div className="mt-2 flex items-center justify-center px-12 text-center">
         <span>Welcome to your Business Drive Account. Here you can add and remove team members and invitations</span>
       </div>
 
-      <div className="flex flex-col self-center my-6 items-start w-96">
-        <form className="flex w-full m" onSubmit={handleSubmit(onSubmit)}>
+      <div className="my-6 flex w-96 flex-col items-start self-center">
+        <form className="m flex w-full" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex-1">
             <BaseInput
               placeholder="Type email: jhondoe@internxt.com"
@@ -98,27 +101,27 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
             />
           </div>
 
-          <div className="w-16 ml-2.5">
+          <div className="ml-2.5 w-16">
             <AuthButton text="Invite" textWhenDisabled={isValid ? 'Inviting...' : 'Invite'} isDisabled={!isValid} />
           </div>
         </form>
 
         {members.length > 0 && (
-          <div className="flex flex-col mt-6 w-full overflow-y-auto h-16 mb-8">
+          <div className="mt-6 mb-8 flex h-16 w-full flex-col overflow-y-auto">
             {Object.values(members).map((member) => {
               console.log(member);
               return (
-                <div className="flex justify-between mb-2.5" key={member.user}>
+                <div className="mb-2.5 flex justify-between" key={member.user}>
                   {member.isInvitation ? (
-                    <UilUserPlus className="text-gray-50 h-5 mr-1" />
+                    <UilUserPlus className="mr-1 h-5 text-gray-50" />
                   ) : (
-                    <UilUserPlus className="text-green-40 h-5 mr-1" />
+                    <UilUserPlus className="mr-1 h-5 text-green-40" />
                   )}
                   <div className="flex flex-1 justify-start px-5">
-                    <span className="truncate overflow-ellipsis w-72">{member.user}</span>
+                    <span className="w-72 truncate overflow-ellipsis">{member.user}</span>
                   </div>
                   <UilTrashAlt
-                    className="cursor-pointer text-blue-60 h-5 transition duration-300 hover:text-blue-80"
+                    className="h-5 cursor-pointer text-blue-60 transition duration-300 hover:text-blue-80"
                     onClick={() => deleteMembers(member)}
                   />
                 </div>

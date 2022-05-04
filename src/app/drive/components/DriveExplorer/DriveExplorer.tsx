@@ -6,15 +6,13 @@ import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download'
 import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
 import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
-import 'react-toastify/dist/ReactToastify.css';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
-import folderEmptyImage from 'assets/images/folder-empty.svg';
-import noResultsSearchImage from 'assets/images/no-results-search.svg';
-import DriveExplorerOverlay from './DriveExplorerOverlay/DriveExplorerOverlay';
+import folderEmptyImage from 'assets/icons/light/folder-open.svg';
+import Empty from '../../../shared/components/Empty/Empty';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
 import { AppDispatch, RootState } from 'app/store';
@@ -33,6 +31,8 @@ import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { UploadSimple } from 'phosphor-react';
+import iconService from '../../services/icon.service';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -168,47 +168,57 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     };
     const ViewModeComponent = viewModes[viewMode];
 
+    const isRecents = title === 'Recents';
+
+    const FileIcon = iconService.getItemIcon(false);
+    const filesEmptyImage = (
+      <div className="relative h-32 w-32">
+        <FileIcon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
+        <FileIcon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+      </div>
+    );
+
     return connectDropTarget(
-      <div className="flex flex-col flex-grow h-full px-8" data-test="drag-and-drop-area">
+      <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
-        <div className="flex flex-grow h-full max-w-full w-full">
-          <div className="flex-grow flex flex-col w-1 pt-6">
+        <div className="flex h-full w-full max-w-full flex-grow">
+          <div className="flex w-1 flex-grow flex-col pt-6">
             <div className="flex justify-between pb-4">
               <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
 
               <div className="flex">
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <UilCloudDownload className="h-5 mr-1.5" />
+                    <UilCloudDownload className="mr-1.5 h-5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <UilCloudUpload className="h-5 mr-1.5" />
+                    <UilCloudUpload className="mr-1.5 h-5" />
                     <span>{i18n.get('actions.upload')}</span>
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
-                  <BaseButton className="tertiary w-8 square" onClick={this.onCreateFolderButtonClicked}>
+                  <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
                     <UilFolderPlus />
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
-                  <BaseButton className="tertiary w-8 square" onClick={this.onBulkDeleteButtonClicked}>
+                  <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
                     <UilTrashAlt />
                   </BaseButton>
                 ) : null}
-                <BaseButton className="tertiary square w-8 ml-1.5" onClick={this.onViewModeButtonClicked}>
+                <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
                   {viewModesIcons[viewMode]}
                 </BaseButton>
               </div>
             </div>
 
-            <div className="h-full flex flex-col justify-between flex-grow overflow-y-hidden mb-5">
+            <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
               {this.hasItems && (
-                <div className="flex flex-col justify-between flex-grow overflow-hidden">
+                <div className="flex flex-grow flex-col justify-between overflow-hidden">
                   <ViewModeComponent items={items} isLoading={isLoading} />
                 </div>
               )}
@@ -235,23 +245,38 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
               {
                 /* EMPTY FOLDER */
-                !this.hasFilters && !this.hasItems && !isLoading ? (
-                  <DriveExplorerOverlay
-                    icon={<img alt="" src={folderEmptyImage} className="w-full m-auto" />}
-                    title="This folder is empty"
-                    subtitle="Drag and drop here or click on upload button"
-                  />
-                ) : null
-              }
-
-              {
-                /* NO SEARCH RESULTS */
-                this.hasFilters && !this.hasItems && !isLoading ? (
-                  <DriveExplorerOverlay
-                    icon={<img alt="" src={noResultsSearchImage} className="w-full m-auto" />}
-                    title="There are no results for this search"
-                    subtitle="Drag and drop here or click on upload button"
-                  />
+                !this.hasItems && !isLoading ? (
+                  this.hasFilters ? (
+                    <Empty
+                      icon={filesEmptyImage}
+                      title="There are no results for this search"
+                      subtitle="Drag and drop here or click on upload button"
+                      action={{
+                        icon: UploadSimple,
+                        style: 'elevated',
+                        text: 'Upload files',
+                        onClick: this.onUploadButtonClicked,
+                      }}
+                    />
+                  ) : isRecents ? (
+                    <Empty
+                      icon={filesEmptyImage}
+                      title="No recents files to show"
+                      subtitle="Recent uploads or files you recently interacted with will show up here automatically"
+                    />
+                  ) : (
+                    <Empty
+                      icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+                      title="This folder is empty"
+                      subtitle="Drag and drop files or click to select files and upload"
+                      action={{
+                        icon: UploadSimple,
+                        style: 'elevated',
+                        text: 'Upload files',
+                        onClick: this.onUploadButtonClicked,
+                      }}
+                    />
+                  )
                 ) : null
               }
 
@@ -260,7 +285,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 isOver ? (
                   <div
                     className="drag-over-effect pointer-events-none\
-                   absolute h-full w-full flex justify-center items-end"
+                   absolute flex h-full w-full items-end justify-center"
                   ></div>
                 ) : null
               }

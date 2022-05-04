@@ -34,7 +34,9 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
     const body: CreatePaymentSessionPayload = {
       test: envService.isProduction() ? undefined : true,
       // eslint-disable-next-line max-len
-      successUrl: process.env.REACT_APP_HOSTNAME + `/checkout/success?price_id=${payload.product.price.id}&cs_id={CHECKOUT_SESSION_ID}`,
+      successUrl:
+        process.env.REACT_APP_HOSTNAME +
+        `/checkout/success?price_id=${payload.product.price.id}&cs_id={CHECKOUT_SESSION_ID}`,
       mode:
         payload.product.price.type === ProductPriceType.OneTime
           ? StripeSessionMode.Payment
@@ -52,12 +54,12 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
-      notificationsService.show(
-        i18n.get('error.redirectToStripe', {
+      notificationsService.show({
+        text: i18n.get('error.redirectToStripe', {
           reason: castedError.message,
         }),
-        ToastType.Error,
-      );
+        type: ToastType.Error,
+      });
     }
   },
 );
@@ -75,12 +77,12 @@ export const teamsCheckoutThunk = createAsyncThunk<void, TeamsCheckoutThunkPaylo
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
-      notificationsService.show(
-        i18n.get('error.redirectToStripe', {
+      notificationsService.show({
+        text: i18n.get('error.redirectToStripe', {
           reason: castedError.message,
         }),
-        ToastType.Error,
-      );
+        type: ToastType.Error,
+      });
     }
   },
 );

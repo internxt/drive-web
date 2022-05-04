@@ -61,11 +61,20 @@
       "auth": true
     },
     {
+      "id": "photos",
+      "layout": "header-and-sidenav",
+      "path": "/app/photos",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
+    },
+    {
       "id": "account",
       "layout": "header-and-sidenav",
       "path": "/account",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "teams-join",
@@ -114,14 +123,20 @@
     },
     {
       "id": "share-token",
-      "layout": "empty",
+      "layout": "share",
       "path": "/s/file/:token([a-z0-9]{20})/:code?",
       "exact": false
     },
     {
       "id": "share-folder-token",
-      "layout": "empty",
+      "layout": "share",
       "path": "/s/folder/:token([a-z0-9]{20})/:code",
+      "exact": false
+    },
+    {
+      "id": "share-photos-token",
+      "layout": "share",
+      "path": "/s/photos/:token([a-z0-9]{24})/:code",
       "exact": false
     },
     {
@@ -152,7 +167,7 @@
   ],
   "database": {
     "name": "app-database",
-    "version": 1.0,
+    "version": 2.0,
     "provider": "indexed-db"
   }
 }

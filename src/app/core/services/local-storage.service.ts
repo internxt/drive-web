@@ -38,6 +38,7 @@ function clear(): void {
   localStorage.removeItem('xUser');
   localStorage.removeItem('xMnemonic');
   localStorage.removeItem('xToken');
+  localStorage.removeItem('xNewToken');
   localStorage.removeItem('xTeam');
   localStorage.removeItem('xTokenTeam');
   localStorage.removeItem('workspace');
@@ -57,12 +58,12 @@ const localStorageService = {
 export default localStorageService;
 
 export interface LocalStorageService {
-  set: (key: string, value: string) => void
-  get: (key: string) => string | null
-  getUser: () => UserSettings | null
-  getTeams: () => TeamsSettings | null
-  getWorkspace: () => string
-  removeItem: (key: string) => void
-  exists: (key: string) => boolean
-  clear: () => void
+  set: (key: string, value: string) => void;
+  get: (key: string) => string | null;
+  getUser: () => UserSettings | null;
+  getTeams: () => TeamsSettings | null;
+  getWorkspace: () => string;
+  removeItem: (key: string) => void;
+  exists: (key: string) => boolean;
+  clear: () => void;
 }

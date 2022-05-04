@@ -13,6 +13,7 @@ import {
   TaskFilter,
   UpdateTaskPayload,
   BaseTask,
+  DownloadPhotosTask,
 } from '../../types';
 import iconService from 'app/drive/services/icon.service';
 import i18n from 'app/i18n/services/i18n.service';
@@ -29,9 +30,9 @@ class TaskManagerService {
   public create<T extends BaseTask>(data: Omit<T, 'id' | 'status' | 'progress'>) {
     const task = this.taskFactory(data);
 
-    this.eventEmitter.emit(TaskEvent.TaskAdded, task);
-
     this.tasks.push(task);
+
+    this.eventEmitter.emit(TaskEvent.TaskAdded, task);
 
     return task.id;
   }
@@ -174,6 +175,11 @@ class TaskManagerService {
         title = itemsLib.getItemDisplayName(task.folder);
         break;
       }
+      case TaskType.DownloadPhotos: {
+        const { numberOfPhotos } = task as DownloadPhotosTask;
+        title = `${numberOfPhotos} ${numberOfPhotos > 1 ? 'Photos' : 'Photo'}`;
+        break;
+      }
     }
 
     return title;
@@ -219,6 +225,10 @@ class TaskManagerService {
       }
       case TaskType.MoveFolder: {
         icon = iconService.getItemIcon(true, '');
+        break;
+      }
+      case TaskType.DownloadPhotos: {
+        icon = iconService.getItemIcon(false, 'jpeg');
         break;
       }
     }

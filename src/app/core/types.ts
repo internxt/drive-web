@@ -61,6 +61,7 @@ export interface AppViewConfig {
   path: string;
   exact: boolean;
   auth?: boolean;
+  hideSearch?: boolean;
 }
 
 export default class AppError extends Error {
@@ -94,6 +95,7 @@ export enum TimeInterval {
 export enum AppViewLayout {
   Empty = 'empty',
   HeaderAndSidenav = 'header-and-sidenav',
+  Share = 'share',
 }
 
 export enum AppView {
@@ -104,6 +106,7 @@ export enum AppView {
   Drive = 'drive',
   Recents = 'recents',
   Backups = 'backups',
+  Photos = 'photos',
   Account = 'account',
   TeamsJoin = 'teams-join',
   Deactivation = 'deactivation',
@@ -114,6 +117,7 @@ export enum AppView {
   Remove = 'remove',
   ShareFileToken = 'share-token',
   ShareFolderToken = 'share-folder-token',
+  SharePhotosToken = 'share-photos-token',
   GuestAcceptInvite = 'guest-accept-invite',
   RedirectToApp = 'redirect-to-app',
   NotFound = 'not-found',

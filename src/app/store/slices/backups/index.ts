@@ -111,17 +111,17 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
       });
     } catch (err) {
       if (err instanceof Error && err.name === 'FILE_SYSTEM_API_NOT_AVAILABLE')
-        notificationsService.show(
-          'To download backups you need to use a Chromium based browser\
+        notificationsService.show({
+          text: 'To download backups you need to use a Chromium based browser\
            (such as Chrome or Edge but not Brave) with a version above 86',
-          ToastType.Error,
-          8000,
-        );
+          type: ToastType.Error,
+          duration: 8000,
+        });
       else
-        notificationsService.show(
-          'An error has ocurred while trying to download your backup, please try again',
-          ToastType.Error,
-        );
+        notificationsService.show({
+          text: 'An error has ocurred while trying to download your backup, please try again',
+          type: ToastType.Error,
+        });
     }
   },
 );

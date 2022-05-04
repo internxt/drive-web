@@ -31,7 +31,7 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
     }
 
     responsePromise.then((response) => {
-      const folders = response.children.map(folder => ({ ...folder, isFolder: true }));
+      const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
       const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
       dispatch(
         storageActions.setItems({
@@ -54,6 +54,6 @@ export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBu
     })
     .addCase(fetchFolderContentThunk.rejected, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
-      notificationsService.show(i18n.get('error.fetchingFolderContent'), ToastType.Error);
+      notificationsService.show({ text: i18n.get('error.fetchingFolderContent'), type: ToastType.Error });
     });
 };

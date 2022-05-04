@@ -1,7 +1,6 @@
 import React, { Fragment, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import UilSearch from '@iconscout/react-unicons/icons/uil-search';
 import UilUserCircle from '@iconscout/react-unicons/icons/uil-user-circle';
 import UilUserPlus from '@iconscout/react-unicons/icons/uil-user-plus';
 import UilChatBubbleUser from '@iconscout/react-unicons/icons/uil-chat-bubble-user';
@@ -22,6 +21,7 @@ import navigationService from '../../services/navigation.service';
 import { AppView, Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
+import { MagnifyingGlass } from 'phosphor-react';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -32,6 +32,7 @@ interface NavbarProps {
   storageFilters: StorageFilters;
   currentFolderId: number;
   dispatch: AppDispatch;
+  hideSearch?: boolean;
 }
 
 class Navbar extends React.Component<NavbarProps> {
@@ -83,63 +84,68 @@ class Navbar extends React.Component<NavbarProps> {
   };
 
   render(): ReactNode {
-    const { user, isTeam, storageFilters, team, nameLetters } = this.props;
+    const { user, isTeam, storageFilters, team, nameLetters, hideSearch } = this.props;
     const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
 
     return (
-      <div className="flex items-center justify-between w-full h-14 border-b border-neutral-30 px-8">
-        <div className="pl-3 flex w-full">
-          <input
-            value={storageFilters.text}
-            onChange={this.onSearchInputChange}
-            type="text"
-            placeholder="Search files"
-            className="right-icon h-9 px-3 w-72 transform duration-200 no-ring bg-neutral-10 focus:w-full max-w-md"
-          />
-          <UilSearch
-            onClick={this.onSearchButtonClicked}
-            className="text-blue-60 cursor-pointer right-7 relative w-4 top-1.5"
-          />
-        </div>
+      <div className="flex h-14 w-full items-center justify-between border-b border-neutral-30 text-gray-40">
+        {hideSearch ? (
+          <div />
+        ) : (
+          <div className="flex">
+            <input
+              value={storageFilters.text}
+              onChange={this.onSearchInputChange}
+              type="text"
+              placeholder="Search in this folder"
+              className="no-ring-at-all h-9 w-80 max-w-md transform bg-gray-5 px-3 duration-200 focus:w-full focus:ring-0"
+            />
+            <MagnifyingGlass
+              onClick={this.onSearchButtonClicked}
+              className="relative right-7 top-2.5 cursor-pointer"
+              size={16}
+            />
+          </div>
+        )}
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">
-            <div className="flex items-center cursor-pointer">
+            <div className="flex cursor-pointer items-center pr-5">
               <div
-                className="h-6 w6 rounded-2xl mr-2 bg-neutral-20 \
-              p-1 flex justify-center items-center text-neutral-700 text-sm"
+                className="\ flex h-9 w-9 items-center justify-center
+              rounded-full bg-primary bg-opacity-10 font-medium text-primary-dark"
               >
                 {nameLetters}
               </div>
-              <span className="hidden md:block text-neutral-500 text-base whitespace-nowrap">
+              <span className="ml-3 hidden whitespace-nowrap font-medium tracking-wide text-gray-80 md:block">
                 {isTeam ? 'Business' : userFullName}
               </span>
             </div>
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item id="account" onClick={this.onAccountButtonClicked}>
-              <UilUserCircle className="h-5 mr-1" />
+              <UilUserCircle className="mr-1 h-5" />
               <span>Account</span>
             </Dropdown.Item>
             {user && user.sharedWorkspace && (
               <Dropdown.Item id="guest-invite" onClick={this.onGuestInviteCliked}>
-                <UilUserPlus className="text-blue-60 h-5 mr-1" />
+                <UilUserPlus className="mr-1 h-5 text-blue-60" />
                 <span>Guest</span>
               </Dropdown.Item>
             )}
             <Dropdown.Item id="info" onClick={this.onSupportButtonClicked}>
-              <UilChatBubbleUser className="h-5 mr-1" />
+              <UilChatBubbleUser className="mr-1 h-5" />
               <span>Support</span>
             </Dropdown.Item>
             {team && (
               <Dropdown.Item id="business" onClick={this.onChangeWorkspaceButtonClicked}>
                 {!isTeam ? (
                   <Fragment>
-                    <UilBuilding className="h-5 mr-1" />
+                    <UilBuilding className="mr-1 h-5" />
                     <span>Business</span>
                   </Fragment>
                 ) : (
                   <Fragment>
-                    <UilUser className="h-5 mr-1" />
+                    <UilUser className="mr-1 h-5" />
                     <span>Personal</span>
                   </Fragment>
                 )}
@@ -147,16 +153,16 @@ class Navbar extends React.Component<NavbarProps> {
             )}
             {team?.isAdmin && isTeam && (
               <Fragment>
-                <hr className="text-neutral-30 my-1.5"></hr>
+                <hr className="my-1.5 text-neutral-30"></hr>
                 <Dropdown.Item onClick={this.onInviteMemberClick}>
-                  <UilUserPlus className="text-blue-60 h-5 mr-1" />
+                  <UilUserPlus className="mr-1 h-5 text-blue-60" />
                   <span>Invite members</span>
                 </Dropdown.Item>
               </Fragment>
             )}
-            <hr className="text-neutral-30 my-1.5"></hr>
+            <hr className="my-1.5 text-neutral-30"></hr>
             <Dropdown.Item id="logout" className="text-red-60 hover:text-red-60" onClick={this.onLogoutButtonClicked}>
-              <UilSignout className="h-5 mr-1" />
+              <UilSignout className="mr-1 h-5" />
               <span>Log out</span>
             </Dropdown.Item>
           </Dropdown.Menu>

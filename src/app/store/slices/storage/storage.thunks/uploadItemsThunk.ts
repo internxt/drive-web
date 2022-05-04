@@ -64,10 +64,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     }
 
     if (showSizeWarning) {
-      notificationsService.show(
-        'File too large.\nYou can only upload or download files of up to 1GB through the web app',
-        ToastType.Warning,
-      );
+      notificationsService.show({
+        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        type: ToastType.Warning,
+      });
       return;
     }
 
@@ -195,7 +195,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show(error.message, ToastType.Error);
+        notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
       throw new Error(i18n.get('error.uploadingItems'));
@@ -211,10 +211,10 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
       const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options || {});
 
       if (requestOptions?.showErrors) {
-        notificationsService.show(
-          i18n.get('error.uploadingFile', { reason: action.error.message || '' }),
-          ToastType.Error,
-        );
+        notificationsService.show({
+          text: i18n.get('error.uploadingFile', { reason: action.error.message || '' }),
+          type: ToastType.Error,
+        });
       }
     });
 };

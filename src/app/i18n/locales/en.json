@@ -89,7 +89,7 @@
           "description": "Manage Two-Factor Authentication (2FA) and change your password",
           "advice": {
             "title": "Two-Factor Authentication (2FA)",
-            "description": "Two-factor authentication provides an extra layer of security by requiring an extra verification when you log in. In adittion to your password, you’ll also need a generated code."
+            "description": "Two-factor authentication provides an extra layer of security by requiring an extra verification when you log in. In addition to your password, you’ll also need a generated code."
           },
           "two-factor-auth": {
             "stepsLabel": "{current} of {total}",
@@ -251,6 +251,15 @@
       },
       "errors": {}
     },
+    "download-photos": {
+      "status": {
+        "pending": "Downloading {progress}%",
+        "success": "Downloaded",
+        "error": "Error during download",
+        "cancelled": "Download cancelled"
+      },
+      "errors": {}
+    },
     "download-backup": {
       "status": {
         "pending": "Pending to download",
@@ -321,7 +330,7 @@
     "downloaded": "Downloaded",
     "view": "View",
     "accessFile": "Access File",
-    "upgradeNow": "Upgrade now!",
+    "upgradeNow": "Upgrade now",
     "upgrade": "Upgrade",
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
@@ -394,8 +403,8 @@
     },
     "rewards": {
       "title": "Get {creditSum} for free",
-      "progress": "{currentCredit} unlocked",
-      "limit": "(out of {creditSum})"
+      "progress": "Unlocked {currentCredit}",
+      "limit": "out of {creditSum}"
     }
   }
 }

@@ -27,14 +27,14 @@ export default function PlanUsage({
       {isLoading ? (
         <p className="text-sm">{i18n.get('general.loading.default')}</p>
       ) : (
-        <p className="text-sm text-m-neutral-70 m-0">
+        <p className="text-sm text-gray-60 font-medium">
           {bytesToString(usage) || '0'} of {limitService.formatLimit(limit)}
         </p>
       )}
-      <div className="flex justify-start h-1.5 w-full bg-neutral-30 rounded-lg overflow-hidden mb-1.5">
-        <div className="h-full bg-blue-60" style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
+      <div className="mt-1 flex justify-start h-1.5 w-full bg-gray-5 rounded-lg overflow-hidden">
+        <div className="h-full bg-primary" style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
       </div>
-      <p onClick={onUpgradeButtonClicked} className="font-semibold text-blue-60 cursor-pointer">
+      <p onClick={onUpgradeButtonClicked} className="font-medium text-sm text-blue-60 cursor-pointer mt-3">
         {i18n.get('actions.upgradeNow')}
       </p>
     </div>

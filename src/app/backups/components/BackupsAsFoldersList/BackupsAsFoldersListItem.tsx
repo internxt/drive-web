@@ -25,22 +25,21 @@ export default function BackupsAsFoldersListItem({
 
   return (
     <div
-      className={'py-3.5 border-b border-neutral-30 flex items-center hover:bg-blue-20'}
+      className={'flex items-center border-b border-neutral-30 py-3.5 hover:bg-blue-20'}
       onDoubleClick={() => onDoubleClick(item)}
     >
-      <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
-        <Icon className={'w-8 h-8'} />
+      <div className="box-content flex w-0.5/12 items-center justify-center px-3">
+        <Icon className={'h-8 w-8'} />
       </div>
-      <p className="flex-grow pr-3">{displayName}</p>
-      <div className="w-2/12 hidden items-center xl:flex"></div>
-      <div className="w-3/12 hidden items-center lg:flex">
+      <p className="flex-1 truncate pr-3">{displayName}</p>
+      <div className="hidden w-3/12 items-center lg:flex">
         {dateService.format(item.createdAt, 'DD MMMM YYYY. HH:mm')}
       </div>
-      <div className="w-2/12 flex items-center">{size}</div>
-      <div className="w-1/12 flex items-center rounded-tr-4px">
+      <div className="flex w-2/12 items-center">{size}</div>
+      <div className="flex w-1/12 items-center rounded-tr-4px">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
-            <UilEllipsisH className="w-full h-full" />
+            <UilEllipsisH className="h-full w-full" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <BackupDropdownActions

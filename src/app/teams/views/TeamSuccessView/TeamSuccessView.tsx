@@ -12,11 +12,11 @@ export default function Success(props: { match: match<{ sessionId: string }> }):
 
   teamsService.checkSessionStripe(props.match.params.sessionId).then(() => {
     dispatch(userThunks.logoutThunk());
-    notificationsService.show(i18n.get('success.teamsSubscriptionRedeemed'), ToastType.Info);
+    notificationsService.show({ text: i18n.get('success.teamsSubscriptionRedeemed'), type: ToastType.Info });
   });
 
   return (
-    <div className="flex jutify-center content-center mt-3">
+    <div className="jutify-center mt-3 flex content-center">
       <LoadingPulse />
     </div>
   );

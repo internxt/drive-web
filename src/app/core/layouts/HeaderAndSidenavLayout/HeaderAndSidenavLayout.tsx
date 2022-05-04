@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import Navbar from '../../components/Navbar/Navbar';
 import Sidenav from '../../components/Sidenav/Sidenav';
@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
 import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemInfoMenu';
 import SharedFolderTooBigDialog from '../../../drive/components/SharedFolderTooBigDialog/SharedFolderTooBigDialog';
+import { getAppConfig } from '../../services/config.service';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
@@ -22,9 +23,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const dispatch = useAppDispatch();
   const { children } = props;
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
-  const isSidenavCollapsed = useAppSelector((state) => state.ui.isSidenavCollapsed);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
-  const toggleIsSidenavCollapsed: () => void = () => dispatch(uiActions.setIsSidenavCollapsed(!isSidenavCollapsed));
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const isSharedFolderTooBigDialogOpen = useAppSelector((state) => state.ui.isSharedFolderTooBigDialogOpen);
@@ -36,25 +35,27 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
     dispatch(uiActions.setFileInfoItem(null));
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
   };
+  const location = useLocation();
+  const hideSearch = getAppConfig().views.find((view) => view.path === location.pathname)?.hideSearch;
 
   if (!isAuthenticated) {
     navigationService.push(AppView.Login);
   }
 
   return isAuthenticated ? (
-    <div className="h-auto min-h-full flex flex-col">
+    <div className="flex h-auto min-h-full flex-col">
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog item={itemToShare} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
       {isSharedFolderTooBigDialogOpen && <SharedFolderTooBigDialog />}
       {isInviteMemberDialogOpen && <InviteTeamMemberDialog />}
       {isGuestInviteDialogOpen && <GuestDialog />}
 
-      <div className="flex-grow flex h-1">
-        <Sidenav collapsed={isSidenavCollapsed} onCollapseButtonClicked={toggleIsSidenavCollapsed} />
+      <div className="flex h-1 flex-grow">
+        <Sidenav />
 
-        <div className="flex flex-col flex-grow bg-white w-1">
-          <Navbar />
-          <div className="flex-grow flex w-full h-1">
+        <div className="flex w-1 flex-grow flex-col bg-white">
+          <Navbar hideSearch={hideSearch} />
+          <div className="flex h-1 w-full flex-grow">
             {children}
 
             {isDriveItemInfoMenuOpen && driveItemInfo && (

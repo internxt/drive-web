@@ -65,10 +65,11 @@ export default function GuestAcceptInvitationView(): JSX.Element {
 
       await httpService.post('/api/guest/accept', { payload, details });
 
-      notificationsService.show(
-        'Invitation to workspace accepted. Log in again to start using the workspace',
-        ToastType.Success,
-      );
+      notificationsService.show({
+        text: 'Invitation to workspace accepted. Log in again to start using the workspace',
+
+        type: ToastType.Success,
+      });
 
       await dispatch(userThunks.logoutThunk());
     } catch (err) {
@@ -77,7 +78,7 @@ export default function GuestAcceptInvitationView(): JSX.Element {
   }
 
   return (
-    <div className="flex flex-col m-10 h-full justify-center">
+    <div className="m-10 flex h-full flex-col justify-center">
       <h1>You have been invited</h1>
       <p className="my-3">By joining this workspace all your data will be lost.</p>
       <p className="my-3">
@@ -89,7 +90,7 @@ export default function GuestAcceptInvitationView(): JSX.Element {
       </p>
       <p className="my-3">Please, confirm your password to start the workspace migration.</p>
 
-      <div className="flex flex-col my-10 items-center">
+      <div className="my-10 flex flex-col items-center">
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Control
             type="password"
@@ -109,10 +110,10 @@ export default function GuestAcceptInvitationView(): JSX.Element {
                 setInvitationAccepted(true);
               })
               .catch((err) => {
-                notificationsService.show(
-                  `${err.message || 'Error accepting invitation'}. Please, try again`,
-                  ToastType.Error,
-                );
+                notificationsService.show({
+                  text: `${err.message || 'Error accepting invitation'}. Please, try again`,
+                  type: ToastType.Error,
+                });
                 setPassword('');
               })
               .finally(() => {

@@ -1,4 +1,3 @@
-import { toast } from 'react-toastify';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { DriveFileData } from '../../types';
 import analyticsService from '../../../analytics/services/analytics.service';
@@ -11,6 +10,7 @@ import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
 import { Abortable } from 'app/network/Abortable';
 import { uploadFile as upload } from 'app/network/upload';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
 export interface ItemToUpload {
   name: string;
@@ -42,7 +42,7 @@ export function uploadFile(
 
     if (!bucketId) {
       analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
-      toast.warn('Login again to start uploading files');
+      notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
       localStorageService.clear();
       navigationService.push(AppView.Login);
 
