@@ -17,7 +17,7 @@ export default function Preferences(): JSX.Element {
   return (
     <div className="h-full w-full">
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
-      <div className="p-8">
+      <div className="p-8" style={{ maxWidth: '872px' }}>
         {TABS.map(({ component: Component, id }) => Component && <Component isHidden={activeTab !== id} />)}
       </div>
     </div>
