@@ -6,12 +6,14 @@ export default function Button({
   className = '',
   disabled = false,
   onClick = () => undefined,
+  size = 'default',
 }: {
   variant?: 'primary' | 'accent' | 'secondary';
   children: ReactNode;
   className?: string;
   disabled?: boolean;
   onClick?: () => void;
+  size?: 'medium' | 'default';
 }): JSX.Element {
   let styles = '';
 
@@ -33,7 +35,9 @@ export default function Button({
       onClick={onClick}
       disabled={disabled}
       type="button"
-      className={`h-10 select-none rounded-lg px-5 text-base font-medium ${styles} ${className}`}
+      className={`${
+        size === 'default' ? 'h-10 px-5' : 'h-8 px-3.5'
+      } select-none rounded-lg text-base font-medium ${styles} ${className}`}
     >
       {children}
       <div className=""></div>
