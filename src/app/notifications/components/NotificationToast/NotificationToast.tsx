@@ -15,7 +15,7 @@ const NotificationToast = ({
   switch (type) {
     case ToastType.Success:
       Icon = CheckCircle;
-      IconColor = 'text-green-50';
+      IconColor = 'text-green';
       break;
     case ToastType.Error:
       Icon = WarningOctagon;
@@ -27,7 +27,7 @@ const NotificationToast = ({
       break;
     case ToastType.Warning:
       Icon = Warning;
-      IconColor = 'text-yellow-30';
+      IconColor = 'text-yellow';
       break;
   }
 

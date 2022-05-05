@@ -251,7 +251,7 @@ code {
     }
 
     &.error {
-      @apply border-l-8 border-pink-600 bg-pink-100 ring-pink-600 focus:ring-pink-600;
+      @apply border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
     }
 
     &.semi-dense {

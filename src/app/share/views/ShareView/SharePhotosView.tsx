@@ -257,7 +257,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
           <button
             onClick={download}
             className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
-                        text-white ${progress && !(progress < 100) ? 'bg-green-40' : 'bg-blue-60'}`}
+                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
           >
             {downloadButton}
           </button>

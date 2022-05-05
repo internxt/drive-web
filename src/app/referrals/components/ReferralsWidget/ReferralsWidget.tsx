@@ -32,14 +32,14 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
       onClick={() => onReferralItemClicked(referral)}
     >
       <div
-        className={`flex-none h-5 w-10\
-       text-xs font-medium rounded-lg flex justify-center ${
-         referral.isCompleted ? 'bg-green-10 text-green-dark' : 'bg-gray-5 text-gray-60'
+        className={`flex h-5 w-10
+       flex-none justify-center rounded-lg text-xs font-medium ${
+         referral.isCompleted ? 'bg-green bg-opacity-10 text-green-dark' : 'bg-gray-5 text-gray-60'
        }`}
       >
         <p className="leading-5">{sizeService.bytesToString(referral.credit * referral.steps)}</p>
       </div>
-      <span className={`text-sm ml-2 ${referral.isCompleted ? 'text-gray-40' : 'text-gray-80'}`}>
+      <span className={`ml-2 text-sm ${referral.isCompleted ? 'text-gray-40' : 'text-gray-80'}`}>
         {i18n.get(`referrals.items.${referral.key}`, {
           steps: referral.steps,
           completedSteps: referral.completedSteps,
@@ -54,9 +54,9 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   return isWidgetHidden || referralsList.length === 0 ? (
     <div className="flex-grow"></div>
   ) : (
-    <div className="flex-grow flex flex-col justify-end">
+    <div className="flex flex-grow flex-col justify-end">
       <div
-        className={`flex flex-col p-5 border border-gray-10 rounded-xl overflow-y-hidden shadow-subtle ${
+        className={`flex flex-col overflow-y-hidden rounded-xl border border-gray-10 p-5 shadow-subtle ${
           props.className || ''
         }`}
       >
@@ -80,12 +80,12 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
         </div>
 
         {/* LIST */}
-        {!isCollapsed && <div className="mt-6 overflow-y-auto space-y-3">{referralsList}</div>}
+        {!isCollapsed && <div className="mt-6 space-y-3 overflow-y-auto">{referralsList}</div>}
 
         {/* TERMS AND CONDITIONS */}
         {!isCollapsed && (
           <a
-            className="mt-7 text-xs text-gray-40 hover:text-gray-50 font-medium no-underline"
+            className="mt-7 text-xs font-medium text-gray-40 no-underline hover:text-gray-50"
             target="_blank"
             href="https://help.internxt.com/"
             rel="noopener noreferrer"
