@@ -4,7 +4,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../../..';
 import errorService from '../../../../core/services/error.service';
 import downloadFileFromBlob from '../../../../drive/services/download.service/downloadFileFromBlob';
-import { getPhotoBlob, getPhotoCachedOrStream } from '../../../../drive/services/network.service/download';
 import tasksService from '../../../../tasks/services/tasks.service';
 import { DownloadPhotosTask, TaskStatus, TaskType } from '../../../../tasks/types';
 import JSZip from 'jszip';
@@ -13,6 +12,7 @@ import i18n from '../../../../i18n/services/i18n.service';
 import streamSaver from 'streamsaver';
 import { ActionState } from '@internxt/inxt-js/build/api';
 import { SerializablePhoto } from '..';
+import { getPhotoBlob, getPhotoCachedOrStream } from 'app/network/download';
 
 export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state: RootState }>(
   'photos/delete',

@@ -2,7 +2,7 @@ import { PhotoId } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Empty from '../../shared/components/Empty/Empty';
-import { getPhotoPreview } from '../../drive/services/network.service/download';
+import { getPhotoPreview } from 'app/network/download';
 import Dialog from '../../shared/components/Dialog/Dialog';
 import { RootState } from '../../store';
 import { photosSlice, PhotosState, SerializablePhoto } from '../../store/slices/photos';
