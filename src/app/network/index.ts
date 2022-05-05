@@ -1,35 +1,21 @@
 import { Environment } from '@internxt/inxt-js';
 import { Network as NetworkModule } from '@internxt/sdk';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { validateMnemonic } from 'bip39';
+import { uploadFile } from '@internxt/sdk/dist/network/upload';
+import { downloadFile } from '@internxt/sdk/dist/network/download';
 
-import { encryptFilename, getEncryptedFile } from './crypto';
-import { uploadFile, downloadFile } from './toSdk';
+import { getEncryptedFile } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
-
-// START TODO: Move to SDK
-type Hash = string;
-interface IBuffer {
-  slice: (from: number, to: number) => IBuffer;
-  toString(encoding: 'hex'): string;
-}
-
-interface CryptoLibrary {
-  randomBytes: (bytesLength: number) => IBuffer;
-  generateFileKey: (mnemonic: string, bucketId: string, index: IBuffer | string) => Promise<IBuffer>;
-  encryptFilename: (mnemonic: string, bucketId: string, uniqueFileId: string) => Promise<string>;
-}
-
-// END TODO: Move to SDK
-
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
 }
 
 interface DownloadOptions {
-  key?: IBuffer;
+  key?: Buffer;
   downloadingCallback?: DownloadProgressCallback;
 }
 
@@ -41,11 +27,14 @@ interface DownloadOptions {
  * 
  */
 export class NetworkFacade {
-  private cryptoLib: CryptoLibrary;
+  private cryptoLib: NetworkModule.Crypto;
 
   constructor(private network: NetworkModule.Network) {
     this.cryptoLib = {
-      encryptFilename,
+      algorithm: NetworkModule.ALGORITHMS.AES256CTR,
+      validateMnemonic: (mnemonic) => {
+        return validateMnemonic(mnemonic);
+      },
       generateFileKey: (mnemonic, bucketId, index) => {
         return Environment.utils.generateFileKey(
           mnemonic,
@@ -59,7 +48,7 @@ export class NetworkFacade {
 
   upload(bucketId: string, mnemonic: string, file: File, options: UploadOptions): Promise<string> {
     let fileToUpload: Blob;
-    let fileHash: Hash;
+    let fileHash: string;
 
     return uploadFile(
       this.network,
@@ -102,15 +91,15 @@ export class NetworkFacade {
     let fileStream: ReadableStream<Uint8Array>;
 
     await downloadFile(
-      this.network,
-      bucketId,
       fileId,
+      bucketId,
       mnemonic,
+      this.network,
       this.cryptoLib,
       Buffer.from,
       async (downloadables) => {
         for (const downloadable of downloadables) {
-          const encryptedContentStream = await fetch(downloadable.link)
+          const encryptedContentStream = await fetch(downloadable.url)
             .then((res) => {
               if (!res.body) {
                 throw new Error('No content received');
@@ -134,6 +123,7 @@ export class NetworkFacade {
       }
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return fileStream!;
   }
 }
