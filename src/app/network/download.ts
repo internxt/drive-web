@@ -386,7 +386,7 @@ export async function getPhotoCachedOrStream({
   photo: SerializablePhoto;
   bucketId: string;
   onProgress?: (progress: number) => void;
-}): Promise<Promise<Blob> | [Promise<ReadableStream<Uint8Array>>, Abortable]> {
+}): Promise<Promise<Blob> | [Promise<ReadableStream<Uint8Array>>, ActionState]> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
   if (previewInCache && previewInCache.source) {
     onProgress?.(1);
@@ -395,7 +395,7 @@ export async function getPhotoCachedOrStream({
 
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig();
 
-  return downloadFile({
+  const [promise, abortable] = downloadFile({
     bucketId,
     fileId: photo.fileId,
     creds: {
@@ -407,4 +407,10 @@ export async function getPhotoCachedOrStream({
       notifyProgress: (progress) => onProgress && onProgress(progress)
     }
   });
+
+  return [promise, {
+    stop: () => {
+      abortable.abort();
+    }
+  } as ActionState];
 }
