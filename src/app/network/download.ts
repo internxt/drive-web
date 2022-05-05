@@ -14,6 +14,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import { SerializablePhoto } from 'app/store/slices/photos';
 import { getEnvironmentConfig } from 'app/drive/services/network.service';
+import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string, bucketId: string };
@@ -77,12 +78,6 @@ export function getDecryptedStream(
 ): [ReadableStream<Uint8Array>, Abortable] {
   const eventEmitter = new EventEmitter();
   const reader = joinReadableBinaryStreams(encryptedContentSlices).getReader();
-
-  const abortable: Abortable = {
-    abort: () => {
-      eventEmitter.emit('abort');
-    }
-  };
 
   const decryptedStream = new ReadableStream({
     async pull(controller) {
@@ -213,7 +208,7 @@ export function downloadFile(params: IDownloadParams): [
   const response: DownloadFileResponse = {
     abortable: downloadFileV2Abortable,
     promise: downloadFileV2Promise.catch((err) => {
-      if (err.message === 'File with version 1') {
+      if (err instanceof FileVersionOneError) {
         const [downloadFilePromise, downloadFileAbortable] = _downloadFile(params);
 
         response.abortable = downloadFileAbortable;
