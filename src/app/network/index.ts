@@ -57,7 +57,7 @@ export class NetworkFacade {
       mnemonic,
       file.size,
       async (algorithm, key, iv) => {
-        const cipher = createCipheriv(algorithm, (key as Buffer), (iv as Buffer));
+        const cipher = createCipheriv('aes-256-ctr', (key as Buffer), (iv as Buffer));
         const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
 
         fileToUpload = encryptedFile;
@@ -114,7 +114,7 @@ export class NetworkFacade {
       async (algorithm, key, iv, fileSize) => {
         const [decryptedStream] = getDecryptedStream(
           encryptedContentStreams,
-          createDecipheriv(algorithm, (key as Buffer), (iv as Buffer)),
+          createDecipheriv('aes-256-ctr', (key as Buffer), (iv as Buffer)),
         );
 
         fileStream = buildProgressStream(decryptedStream, (readBytes) => {
