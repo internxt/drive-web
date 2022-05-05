@@ -96,7 +96,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
           }
         }
         if (abortController.signal.aborted) {
-          new Error('Download aborted');
+          throw new Error('Download aborted');
         }
         await new Promise<void>((resolve, reject) => {
           window.addEventListener('unload', onUnload);
