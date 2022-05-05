@@ -18,7 +18,7 @@ export default function Preferences(): JSX.Element {
     <div className="h-full w-full">
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
       <div className="p-8" style={{ maxWidth: '872px' }}>
-        {TABS.map(({ component: Component, id }) => Component && <Component isHidden={activeTab !== id} />)}
+        {TABS.map(({ component: Component, id }) => Component && <Component key={id} isHidden={activeTab !== id} />)}
       </div>
     </div>
   );
@@ -38,6 +38,7 @@ function TabSelector({
       <div className="flex space-x-5 border-b border-gray-5 px-2">
         {tabs.map((tab) => (
           <button
+            key={tab.id}
             className={`flex h-10 items-center border-b-2 px-2 font-medium ${
               tab.id === activeTab
                 ? 'border-primary text-primary'
