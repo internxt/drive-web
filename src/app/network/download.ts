@@ -404,7 +404,7 @@ export async function getPhotoCachedOrStream({
     },
     mnemonic: encryptionKey,
     options: {
-      notifyProgress: (progress) => onProgress && onProgress(progress)
+      notifyProgress: (totalBytes, downloadedBytes) => onProgress && onProgress(downloadedBytes / totalBytes)
     }
   });
 
