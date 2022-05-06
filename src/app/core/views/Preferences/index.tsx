@@ -15,9 +15,9 @@ export default function Preferences(): JSX.Element {
   const [activeTab, setActiveTab] = useState<AccountTabID>('account');
 
   return (
-    <div className="h-full w-full">
+    <div className="flex h-full w-full flex-col">
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
-      <div className="p-8" style={{ maxWidth: '872px' }}>
+      <div className="flex-grow overflow-y-auto overflow-x-hidden p-8" style={{ maxWidth: '872px' }}>
         {TABS.map(({ component: Component, id }) => Component && <Component key={id} isHidden={activeTab !== id} />)}
       </div>
     </div>
