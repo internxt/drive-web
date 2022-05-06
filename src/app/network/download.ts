@@ -286,6 +286,9 @@ function _downloadFileV2(params: IDownloadParams): [
   };
 
   const downloadFilePromise = (async () => {
+    if (params.token) {
+      throw new FileVersionOneError();
+    }
     const auth = getAuthFromCredentials(creds as NetworkCredentials);
 
     return new NetworkFacade(
