@@ -190,7 +190,6 @@ export default function createZipReadable(underlyingSource: {
       }
     },
     close() {
-      console.log('CLOSING ZIP STREAM', closed, activeZipObject);
       if (closed) throw new TypeError('Cannot close a readable stream that has already been requested to be closed');
       if (!activeZipObject) closeZip();
       closed = true;
