@@ -1,3 +1,4 @@
+import AccountDetails from './AccountDetails';
 import DeleteAccount from './DeleteAccount';
 import Usage from './Usage';
 import UserHeader from './UserHeader';
@@ -8,6 +9,7 @@ export default function AccountTab({ isHidden }: { isHidden: boolean }): JSX.Ele
       <UserHeader />
       <div className="mt-8 grid gap-10" style={{ gridTemplateColumns: 'repeat(auto-fill,24rem)' }}>
         <Usage />
+        <AccountDetails />
         <DeleteAccount />
       </div>
     </div>

@@ -60,7 +60,7 @@ export default function Tooltip({
         }`}
         ref={tipRef}
       >
-        <div className={`w-max rounded-md px-3 py-1.5 ${style === 'dark' ? 'bg-gray-90' : 'bg-white'}`}>
+        <div className={`w-max rounded-md px-3 py-1.5 text-center ${style === 'dark' ? 'bg-gray-90' : 'bg-white'}`}>
           <h1 className={`text-sm ${style === 'dark' ? 'text-white' : 'text-gray-80'}`}>{title}</h1>
           {subtitle && (
             <h2 className={`text-xs ${style === 'dark' ? 'text-white opacity-50' : 'text-gray-50'}`}>{subtitle}</h2>
