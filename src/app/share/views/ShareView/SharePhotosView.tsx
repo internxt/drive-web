@@ -19,7 +19,7 @@ import { Network } from '../../../drive/services/network.service';
 import downloadService from '../../../drive/services/download.service';
 import JSZip from 'jszip';
 import { Readable } from 'stream';
-import { loadWritableStreamPonyfill } from '../../../drive/services/network.service/download';
+import { loadWritableStreamPonyfill } from 'app/network/download';
 
 interface SharePhotosProps {
   match: match<{

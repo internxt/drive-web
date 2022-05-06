@@ -91,7 +91,7 @@ export default function createZipReadable(underlyingSource: {
     enqueue: (fileLike: FileLike) => void
     close: () => void
   }) => void | undefined,
-  pull: (writer: {
+  pull?: (writer: {
     enqueue: (fileLike: FileLike) => void
     close: () => void
   }) => void

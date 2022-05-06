@@ -1,21 +1,22 @@
-import { Cipher, createHash, randomBytes } from 'crypto';
-import { Environment } from '@internxt/inxt-js';
-import { Sha256 } from 'asmcrypto.js';
-import EventEmitter from 'events';
 import { v4 } from 'uuid';
+import EventEmitter from 'events';
+import { randomBytes } from 'crypto';
+import { Environment } from '@internxt/inxt-js';
+import { Network } from '@internxt/sdk/dist/network';
 
+import { createAES256Cipher, encryptFilename, getEncryptedFile, sha256 } from './crypto';
+import { NetworkFacade } from '.';
 import { finishUpload, getUploadUrl, prepareUpload } from './requests';
-import { createAES256Cipher, encryptFilename, encryptReadable } from './crypto';
+import { Abortable } from './Abortable';
 
-export interface Abortable {
-  stop: () => void;
-}
+export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
 class UploadAbortedError extends Error {
   constructor() {
     super('Upload aborted');
   }
 }
+
 
 interface NetworkCredentials {
   user: string;
@@ -27,43 +28,14 @@ interface IUploadParams {
   filecontent: File;
   creds: NetworkCredentials;
   mnemonic: string;
-  progressCallback: ProgressCallback;
+  progressCallback: UploadProgressCallback;
 }
 
-type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
-
-type Hash = string;
-async function getEncryptedFile(plainFile: File, cipher: Cipher): Promise<[Blob, Hash]> {
-  const readable = encryptReadable(plainFile.stream(), cipher).getReader();
-  const hasher = new Sha256();
-  const blobParts: ArrayBuffer[] = [];
-
-  let done = false;
-
-  while (!done) {
-    const status = await readable.read();
-
-    if (!status.done) {
-      hasher.process(status.value);
-      blobParts.push(status.value);
-    }
-
-    done = status.done;
-  }
-
-  hasher.finish();
-
-  return [
-    new Blob(blobParts, { type: 'application/octet-stream' }),
-    createHash('ripemd160').update(Buffer.from(hasher.result as Uint8Array)).digest('hex'),
-  ];
-}
-
-function uploadFileBlob(
+export function uploadFileBlob(
   encryptedFile: Blob,
   url: string,
   opts: {
-    progressCallback: (progress: number) => void;
+    progressCallback: UploadProgressCallback
   },
 ): [Promise<void>, Abortable] {
   const uploadRequest = new XMLHttpRequest();
@@ -72,10 +44,10 @@ function uploadFileBlob(
   });
 
   uploadRequest.upload.addEventListener('progress', (e) => {
-    opts.progressCallback(e.loaded / e.total);
+    opts.progressCallback(e.total, e.loaded);
   });
-  uploadRequest.upload.addEventListener('loadstart', () => opts.progressCallback(0));
-  uploadRequest.upload.addEventListener('loadend', () => opts.progressCallback(1));
+  uploadRequest.upload.addEventListener('loadstart', (e) => opts.progressCallback(e.total, 0));
+  uploadRequest.upload.addEventListener('loadend', (e) => opts.progressCallback(e.total, e.total));
 
   const uploadFinishedPromise = new Promise<void>((resolve, reject) => {
     uploadRequest.onload = () => {
@@ -97,11 +69,18 @@ function uploadFileBlob(
   return [
     uploadFinishedPromise,
     {
-      stop: () => {
+      abort: () => {
         eventEmitter.emit('abort');
       },
     },
   ];
+}
+
+function getAuthFromCredentials(creds: NetworkCredentials): { username: string, password: string } {
+  return {
+    username: creds.user,
+    password: sha256(Buffer.from(creds.pass)).toString('hex'),
+  };
 }
 
 export function uploadFile(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
@@ -111,7 +90,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
   const file: File = params.filecontent;
   const eventEmitter = new EventEmitter().once('abort', () => {
     aborted = true;
-    uploadAbortable?.stop();
+    uploadAbortable?.abort();
   });
 
   const uploadPromise = (async () => {
@@ -151,7 +130,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
       encryptedFile,
       (useProxy && process.env.REACT_APP_PROXY + '/') + uploadUrl.toString(),
       {
-        progressCallback: (progress) => params.progressCallback(progress, null, null),
+        progressCallback: (totalBytes, uploadedBytes) => params.progressCallback(totalBytes, uploadedBytes),
       },
     );
 
@@ -178,7 +157,53 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
   return [
     uploadPromise,
     {
-      stop: () => {
+      abort: () => {
+        eventEmitter.emit('abort');
+      },
+    },
+  ];
+}
+
+export function uploadFileV2(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
+  let uploadAbortable: Abortable;
+
+  const file: File = params.filecontent;
+  const eventEmitter = new EventEmitter().once('abort', () => {
+    uploadAbortable?.abort();
+  });
+
+  const uploadPromise = (() => {
+    const auth = getAuthFromCredentials({
+      user: params.creds.user,
+      pass: params.creds.pass
+    });
+
+    return new NetworkFacade(
+      Network.client(
+        process.env.REACT_APP_STORJ_BRIDGE as string,
+        {
+          clientName: 'drive-web',
+          clientVersion: '1.0'
+        },
+        {
+          bridgeUser: auth.username,
+          userId: auth.password
+        }
+      ),
+    ).upload(
+      bucketId,
+      params.mnemonic,
+      file,
+      {
+        uploadingCallback: params.progressCallback
+      }
+    );
+  })();
+
+  return [
+    uploadPromise,
+    {
+      abort: () => {
         eventEmitter.emit('abort');
       },
     },

@@ -7,7 +7,7 @@ import { DevicePlatform } from 'app/core/types';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
 import fetchFileStream from './fetchFileStream';
-import { loadWritableStreamPonyfill } from '../network.service/download';
+import { loadWritableStreamPonyfill } from 'app/network/download';
 
 const trackFileDownloadStart = (
   userEmail: string,
@@ -105,7 +105,7 @@ export default function downloadFile(
 
   trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
 
-  const [fileStreamPromise, actionState] = fetchFileStream(itemData, { isTeam, updateProgressCallback });
+  const [fileStreamPromise, actionState] = fetchFileStream({ ...itemData, bucketId: itemData.bucket }, { isTeam, updateProgressCallback });
 
   const handleError = (err: unknown) => {
     const errMessage = err instanceof Error ? err.message : (err as string);
@@ -146,25 +146,8 @@ export default function downloadFile(
 
   const downloadPromise = fileStreamPromise.then((readable) => {
     return writerPromise.then((writable) => {
-      let downloadedBytes = 0;
 
-      const reader = readable.getReader();
-      const passThrough = new ReadableStream({
-        async pull(controller) {
-          const { value, done } = await reader.read();
-
-          if (!done) {
-            downloadedBytes += (value as Uint8Array).length;
-
-            updateProgressCallback(downloadedBytes / itemData.size);
-            controller.enqueue(value);
-          } else {
-            controller.close();
-          }
-        }
-      });
-
-      return passThrough.pipeTo && passThrough.pipeTo(writable) || pipe(passThrough, writable);
+      return readable.pipeTo && readable.pipeTo(writable) || pipe(readable, writable);
     }).catch(handleError);
   });
 

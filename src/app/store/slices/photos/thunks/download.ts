@@ -4,15 +4,13 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../../..';
 import errorService from '../../../../core/services/error.service';
 import downloadFileFromBlob from '../../../../drive/services/download.service/downloadFileFromBlob';
-import { getPhotoBlob, getPhotoCachedOrStream } from '../../../../drive/services/network.service/download';
 import tasksService from '../../../../tasks/services/tasks.service';
 import { DownloadPhotosTask, TaskStatus, TaskType } from '../../../../tasks/types';
-import JSZip from 'jszip';
-import { Readable } from 'stream';
 import i18n from '../../../../i18n/services/i18n.service';
-import streamSaver from 'streamsaver';
 import { ActionState } from '@internxt/inxt-js/build/api';
 import { SerializablePhoto } from '..';
+import { getPhotoBlob, getPhotoCachedOrStream } from 'app/network/download';
+import { FlatFolderZip } from 'app/core/services/stream.service';
 
 export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state: RootState }>(
   'photos/delete',
@@ -43,21 +41,26 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
           await downloadFileFromBlob(src, `${photo.name}.${photo.type}`);
         }
       } else {
-        const zip = new JSZip();
         const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
         if (isBrave) {
           throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
         }
 
-        const writableStream = streamSaver.createWriteStream('photos.zip', {});
-        const writer = writableStream.getWriter();
-        const onUnload = () => {
-          writer.abort();
-        };
-        abortController.signal.addEventListener('abort', onUnload);
-
+        const folder = new FlatFolderZip('photos', { abortController });
         const actionStates: ActionState[] = [];
+        const addFileToFolder = (file: { name: string, source: ReadableStream<Uint8Array> }) => {
+          if (!abortController.signal.aborted) {
+            folder.addFile(file.name, file.source);
+          }
+        };
+        const addActionState = (actionState: ActionState) => {
+          if (abortController.signal.aborted) {
+            actionState.stop();
+          } else {
+            actionStates.push(actionState);
+          }
+        };
 
         abortController.signal.addEventListener('abort', () => {
           actionStates.forEach((actionState) => actionState.stop());
@@ -87,40 +90,20 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
               updateTaskProgress();
             },
           });
+
           if (photoSource instanceof Blob) {
-            zip.file(photoName, photoSource, { compression: 'DEFLATE' });
+            addFileToFolder({ name: photoName, source: photoSource.stream() });
           } else {
             const [readable, abortable] = photoSource;
-            actionStates.push(abortable);
-            zip.file(photoName, await readable, { compression: 'DEFLATE' });
+            addActionState(abortable);
+            addFileToFolder({ name: photoName, source: await readable });
           }
         }
         if (abortController.signal.aborted) {
-          new Error('Download aborted');
+          throw new Error('Download aborted');
         }
-        await new Promise<void>((resolve, reject) => {
-          window.addEventListener('unload', onUnload);
-          abortController.signal.addEventListener('abort', () => reject(new Error('Download aborted')));
 
-          const zipStream = zip.generateInternalStream({
-            type: 'uint8array',
-            streamFiles: true,
-            compression: 'DEFLATE',
-          }) as Readable;
-          zipStream
-            ?.on('data', (chunk: Buffer) => {
-              writer.write(chunk);
-            })
-            .on('end', () => {
-              writer.close();
-              window.removeEventListener('unload', onUnload);
-              resolve();
-            })
-            .on('error', (err) => {
-              reject(err);
-            });
-          zipStream.resume();
-        });
+        await folder.close();
       }
       tasksService.updateTask({ taskId, merge: { status: TaskStatus.Success } });
     } catch (err) {

@@ -1,14 +1,23 @@
+import { Network } from '@internxt/sdk/dist/network';
+import { NetworkFacade } from 'app/network';
 import { Environment } from '@internxt/inxt-js';
 import { ActionState } from '@internxt/inxt-js/build/api';
 import { createDecipheriv, Decipher } from 'crypto';
 import { EventEmitter } from 'events';
-import { Readable } from 'stream';
-import { getEnvironmentConfig, Network } from '.';
-import localStorageService from '../../../core/services/local-storage.service';
-import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
-import { SerializablePhoto } from '../../../store/slices/photos';
-import fetchFileBlob from '../download.service/fetchFileBlob';
+
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
+import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
+import { sha256 } from './crypto';
+import { Abortable } from './Abortable';
+import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
+import localStorageService from 'app/core/services/local-storage.service';
+import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+import { SerializablePhoto } from 'app/store/slices/photos';
+import { getEnvironmentConfig } from 'app/drive/services/network.service';
+import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
+
+export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
+export type Downloadable = { fileId: string, bucketId: string };
 
 export function loadWritableStreamPonyfill(): Promise<void> {
   const script = document.createElement('script');
@@ -45,10 +54,6 @@ export async function binaryStreamToBlob(stream: BinaryStream): Promise<Blob> {
 
 const generateFileKey = Environment.utils.generateFileKey;
 
-export interface Abortable {
-  abort: () => void;
-}
-
 interface FileInfo {
   bucket: string;
   mimetype: string;
@@ -67,38 +72,29 @@ interface FileInfo {
   index: string;
 }
 
-function getDecryptedStream(
+export function getDecryptedStream(
   encryptedContentSlices: ReadableStream<Uint8Array>[],
-  decipher: Decipher,
-): [ReadableStream, Abortable] {
+  decipher: Decipher
+): [ReadableStream<Uint8Array>, Abortable] {
   const eventEmitter = new EventEmitter();
-  let aborted = false;
+  const reader = joinReadableBinaryStreams(encryptedContentSlices).getReader();
 
   const decryptedStream = new ReadableStream({
-    async start(controller) {
-      try {
-        for (const encryptedContentSlice of encryptedContentSlices) {
-          const reader = encryptedContentSlice.getReader();
-          let done = false;
+    async pull(controller) {
+      const status = await reader.read();
 
-          while (!done && !aborted) {
-            const status = await reader.read();
-
-            if (!status.done) {
-              controller.enqueue(decipher.update(status.value));
-            }
-
-            done = status.done;
-          }
-        }
-      } finally {
+      if (status.done) {
         controller.close();
+      } else {
+        controller.enqueue(decipher.update(status.value));
       }
     },
+    cancel() {
+      reader.cancel();
+    }
   });
 
   eventEmitter.once('abort', () => {
-    aborted = true;
     decryptedStream.cancel();
   });
 
@@ -113,7 +109,9 @@ function getDecryptedStream(
 }
 
 function getFileDownloadStream(downloadUrls: string[], decipher: Decipher): [Promise<ReadableStream>, Abortable] {
-  let abortable: Abortable;
+  let abortable: Abortable = {
+    abort: () => null
+  };
 
   const downloadPromise = (async () => {
     const encryptedContentParts: ReadableStream<Uint8Array>[] = [];
@@ -159,6 +157,9 @@ interface IDownloadParams {
   mnemonic?: string;
   encryptionKey?: Buffer;
   token?: string;
+  options?: {
+    notifyProgress: DownloadProgressCallback
+  }
 }
 
 interface MetadataRequiredForDownload {
@@ -188,7 +189,44 @@ async function getRequiredFileMetadataWithAuth(
   return { fileMeta, mirrors };
 }
 
-export function downloadFile(params: IDownloadParams): [Promise<ReadableStream<Uint8Array>>, Abortable] {
+function getAuthFromCredentials(creds: NetworkCredentials): { username: string, password: string } {
+  return {
+    username: creds.user,
+    password: sha256(Buffer.from(creds.pass)).toString('hex'),
+  };
+}
+
+type DownloadFileResponse = { abortable: Abortable, promise: DownloadFilePromise };
+type DownloadFilePromise = Promise<ReadableStream<Uint8Array>>;
+
+export function downloadFile(params: IDownloadParams): [
+  Promise<ReadableStream<Uint8Array>>,
+  Abortable
+] {
+  const [downloadFileV2Promise, downloadFileV2Abortable] = _downloadFileV2(params);
+
+  const response: DownloadFileResponse = {
+    abortable: downloadFileV2Abortable,
+    promise: downloadFileV2Promise.catch((err) => {
+      if (err instanceof FileVersionOneError) {
+        const [downloadFilePromise, downloadFileAbortable] = _downloadFile(params);
+
+        response.abortable = downloadFileAbortable;
+
+        return downloadFilePromise;
+      } else {
+        throw err;
+      }
+    })
+  };
+
+  return [response.promise, response.abortable];
+}
+
+function _downloadFile(params: IDownloadParams): [
+  Promise<ReadableStream<Uint8Array>>,
+  Abortable
+] {
   const { bucketId, fileId, token, creds } = params;
   let abortable: Abortable = {
     abort: () => null,
@@ -227,7 +265,44 @@ export function downloadFile(params: IDownloadParams): [Promise<ReadableStream<U
 
     abortable = downloadAbortable;
 
-    return downloadStreamPromise;
+    return downloadStreamPromise.then((readable) => {
+      return buildProgressStream(readable, (readBytes) => {
+        params.options?.notifyProgress(metadata.fileMeta.size, readBytes);
+      });
+    });
+  })();
+
+  return [downloadFilePromise, abortable];
+}
+
+function _downloadFileV2(params: IDownloadParams): [
+  Promise<ReadableStream<Uint8Array>>,
+  Abortable
+] {
+  // TODO: Use 'token' to download shared files
+  const { bucketId, fileId, creds } = params;
+  const abortable: Abortable = {
+    abort: () => null
+  };
+
+  const downloadFilePromise = (async () => {
+    const auth = getAuthFromCredentials(creds as NetworkCredentials);
+
+    return new NetworkFacade(
+      Network.client(
+        process.env.REACT_APP_STORJ_BRIDGE as string,
+        {
+          clientName: 'drive-web',
+          clientVersion: '1.0'
+        },
+        {
+          bridgeUser: auth.username,
+          userId: auth.password
+        }
+      )
+    ).download(bucketId, fileId, params.mnemonic as string, {
+      downloadingCallback: params.options?.notifyProgress,
+    });
   })();
 
   return [downloadFilePromise, abortable];
@@ -286,7 +361,7 @@ export async function getPhotoBlob({
     promise = Promise.resolve(previewInCache.source);
   } else {
     const [blobPromise, blobActionState] = fetchFileBlob(
-      { fileId: photo.fileId, bucket: bucketId },
+      { fileId: photo.fileId, bucketId },
       { updateProgressCallback: () => undefined },
     );
 
@@ -297,7 +372,7 @@ export async function getPhotoBlob({
       return blob;
     });
 
-    actionState = blobActionState;
+    actionState = blobActionState as ActionState;
   }
 
   return [promise, actionState];
@@ -311,16 +386,31 @@ export async function getPhotoCachedOrStream({
   photo: SerializablePhoto;
   bucketId: string;
   onProgress?: (progress: number) => void;
-}): Promise<Promise<Blob> | [Promise<Readable>, ActionState]> {
+}): Promise<Promise<Blob> | [Promise<ReadableStream<Uint8Array>>, ActionState]> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
   if (previewInCache && previewInCache.source) {
     onProgress?.(1);
     return Promise.resolve(previewInCache.source);
-  } else {
-    const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig();
-    const network = new Network(bridgeUser, bridgePass, encryptionKey);
-    return network.getFileDownloadStream(bucketId, photo.fileId, {
-      progressCallback: onProgress ? onProgress : () => undefined,
-    });
   }
+
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig();
+
+  const [promise, abortable] = downloadFile({
+    bucketId,
+    fileId: photo.fileId,
+    creds: {
+      pass: bridgePass,
+      user: bridgeUser
+    },
+    mnemonic: encryptionKey,
+    options: {
+      notifyProgress: (totalBytes, downloadedBytes) => onProgress && onProgress(downloadedBytes / totalBytes)
+    }
+  });
+
+  return [promise, {
+    stop: () => {
+      abortable.abort();
+    }
+  } as ActionState];
 }

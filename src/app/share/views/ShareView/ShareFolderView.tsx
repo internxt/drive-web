@@ -16,9 +16,13 @@ import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { SharedFolderInfo } from '@internxt/sdk/dist/drive/share/types';
-import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
-import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
-import { loadWritableStreamPonyfill } from 'app/drive/services/network.service/download';
+import {
+  downloadSharedFolderUsingReadableStream
+} from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
+import {
+  downloadSharedFolderUsingBlobs
+} from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
+import { loadWritableStreamPonyfill } from 'app/network/download';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
