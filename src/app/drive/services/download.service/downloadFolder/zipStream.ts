@@ -91,7 +91,7 @@ export default function createZipReadable(underlyingSource: {
     enqueue: (fileLike: FileLike) => void
     close: () => void
   }) => void | undefined,
-  pull: (writer: {
+  pull?: (writer: {
     enqueue: (fileLike: FileLike) => void
     close: () => void
   }) => void
@@ -190,6 +190,7 @@ export default function createZipReadable(underlyingSource: {
       }
     },
     close() {
+      console.log('CLOSING ZIP STREAM', closed, activeZipObject);
       if (closed) throw new TypeError('Cannot close a readable stream that has already been requested to be closed');
       if (!activeZipObject) closeZip();
       closed = true;
