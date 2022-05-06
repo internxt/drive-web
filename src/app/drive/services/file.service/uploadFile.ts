@@ -57,7 +57,9 @@ export function uploadFile(
       filecontent: file.content,
       filesize: file.size,
       mnemonic: encryptionKey,
-      progressCallback: updateProgressCallback
+      progressCallback: (totalBytes, uploadedBytes) => {
+        updateProgressCallback(uploadedBytes / totalBytes);
+      }
     });
 
     promise = uploadFilePromise.then(async (fileId) => {

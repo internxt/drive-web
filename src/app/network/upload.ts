@@ -130,7 +130,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): [Promise<st
       encryptedFile,
       (useProxy && process.env.REACT_APP_PROXY + '/') + uploadUrl.toString(),
       {
-        progressCallback: (progress) => params.progressCallback(progress, 0),
+        progressCallback: (totalBytes, uploadedBytes) => params.progressCallback(totalBytes, uploadedBytes),
       },
     );
 
