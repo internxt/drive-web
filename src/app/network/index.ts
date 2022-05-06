@@ -20,11 +20,7 @@ interface DownloadOptions {
 }
 
 /**
- * This class has these responsabilities:
- * - Encrypting / Decrypting files
- * - Uploading / Downloading files 
- * - Provide feedback about the progress of this actions.
- * 
+ * The entry point for interacting with the network 
  */
 export class NetworkFacade {
   private cryptoLib: NetworkModule.Crypto;
@@ -89,6 +85,8 @@ export class NetworkFacade {
   ): Promise<ReadableStream> {
     const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
     let fileStream: ReadableStream<Uint8Array>;
+
+    // TODO: Check hash when downloaded
 
     await downloadFile(
       fileId,
