@@ -83,11 +83,13 @@ type FlatFolderZipOpts = {
   progress?: (loadedBytes: number) => void;
 }
 
+type AddFileToZipFunction = (name: string, source: ReadableStream<Uint8Array>) => void
+
 export class FlatFolderZip {
   private finished!: Promise<void>;
   private zip: {
-    addFile: (name: string, source: ReadableStream<Uint8Array>) => void,
-    stream: ReadableStream<Uint8Array>,
+    addFile: AddFileToZipFunction
+    stream: ReadableStream<Uint8Array>
     end: () => void
   }
 
@@ -128,7 +130,7 @@ export class FlatFolderZip {
 }
 
 function createFolderWithFilesWritable(): ({
-  addFile: (name: string, source: ReadableStream<Uint8Array>) => void,
+  addFile: AddFileToZipFunction,
   stream: ReadableStream<Uint8Array>,
   end: () => void
 }) {
