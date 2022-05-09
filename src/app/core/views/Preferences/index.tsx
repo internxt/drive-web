@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
 import SecurityTab from './tabs/Security';
 
-type AccountTabID = 'account' | 'billing' | 'plans' | 'security';
+const PREFERENCES_TABS = ['account', 'billing', 'plans', 'security'] as const;
+type PreferencesTabID = typeof PREFERENCES_TABS[number];
 
 export default function Preferences(): JSX.Element {
   const TABS: {
-    id: AccountTabID;
+    id: PreferencesTabID;
     label: string;
     component: React.FunctionComponent<{ className?: string }> | null;
   }[] = [
@@ -17,7 +19,34 @@ export default function Preferences(): JSX.Element {
     { id: 'security', label: 'Security', component: SecurityTab },
   ];
 
-  const [activeTab, setActiveTab] = useState<AccountTabID>('account');
+  const [activeTab, setActiveTab] = useState<PreferencesTabID>('account');
+
+  const history = useHistory();
+
+  function updateUrlWithState() {
+    history.replace({ search: new URLSearchParams({ tab: activeTab }).toString() });
+  }
+
+  const firstRun = useRef(true);
+
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+    updateUrlWithState();
+  }, [activeTab]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+
+    if (tab && PREFERENCES_TABS.includes(tab as PreferencesTabID)) {
+      setActiveTab(tab as PreferencesTabID);
+    } else if (!tab) {
+      updateUrlWithState();
+    }
+  }, []);
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -40,9 +69,9 @@ function TabSelector({
   onChange,
   tabs,
 }: {
-  tabs: { id: AccountTabID; label: string }[];
-  activeTab: AccountTabID;
-  onChange: (newActiveTab: AccountTabID) => void;
+  tabs: { id: PreferencesTabID; label: string }[];
+  activeTab: PreferencesTabID;
+  onChange: (newActiveTab: PreferencesTabID) => void;
 }): JSX.Element {
   return (
     <div className="px-8 pt-5">
