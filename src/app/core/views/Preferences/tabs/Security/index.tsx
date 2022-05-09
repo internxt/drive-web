@@ -1,6 +1,7 @@
 import { useReducer } from 'react';
 import ChangePassword from './ChangePassword';
 import Lock from './Lock';
+import TwoFA from './TwoFA';
 
 export default function SecurityTab({ className = '' }: { className?: string }): JSX.Element {
   const [unlocked, unlock] = useReducer(() => true, false);
@@ -12,6 +13,7 @@ export default function SecurityTab({ className = '' }: { className?: string }):
           {unlocked ? (
             <>
               <ChangePassword />
+              <TwoFA />
             </>
           ) : (
             <Lock onUnlock={unlock} />
