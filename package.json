@@ -85,6 +85,7 @@
     "@craco/craco": "^6.2.0",
     "@internxt/eslint-config-internxt": "^1.0.3",
     "@internxt/prettier-config": "^1.0.1",
+    "@tailwindcss/line-clamp": "^0.4.0",
     "@testing-library/dom": "^7.26.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
