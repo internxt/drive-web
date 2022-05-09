@@ -97,7 +97,9 @@ export class NetworkFacade {
       Buffer.from,
       async (downloadables) => {
         for (const downloadable of downloadables) {
-          const encryptedContentStream = await fetch(downloadable.url)
+          const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadable.url).hostname.includes('internxt');
+
+          const encryptedContentStream = await fetch((useProxy ? process.env.REACT_APP_PROXY + '/' : '') + downloadable.url)
             .then((res) => {
               if (!res.body) {
                 throw new Error('No content received');
