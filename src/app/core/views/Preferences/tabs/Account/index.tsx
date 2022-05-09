@@ -4,11 +4,11 @@ import InviteAFriend from './InviteAFriend';
 import Usage from './Usage';
 import UserHeader from './UserHeader';
 
-export default function AccountTab({ isHidden }: { isHidden: boolean }): JSX.Element {
+export default function AccountTab({ className = '' }: { className?: string }): JSX.Element {
   return (
-    <div className={`${isHidden ? 'hidden' : ''}`}>
+    <div className={className}>
       <UserHeader />
-      <div className="flex flex-wrap gap-y-8 gap-x-10 py-8">
+      <div className="mt-8 flex flex-wrap gap-y-8 gap-x-10">
         <div className="flex w-96 flex-col space-y-8">
           <Usage />
           <InviteAFriend />

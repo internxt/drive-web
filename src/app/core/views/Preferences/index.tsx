@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import AccountTab from './tabs/Account';
+import BillingTab from './tabs/Billing';
 
 type AccountTabID = 'account' | 'billing' | 'plans' | 'security';
 
 export default function Preferences(): JSX.Element {
-  const TABS: { id: AccountTabID; label: string; component: React.FunctionComponent<{ isHidden: boolean }> | null }[] =
-    [
-      { id: 'account', label: 'Account', component: AccountTab },
-      { id: 'billing', label: 'Billing', component: null },
-      { id: 'plans', label: 'Plans', component: null },
-      { id: 'security', label: 'Security', component: null },
-    ];
+  const TABS: {
+    id: AccountTabID;
+    label: string;
+    component: React.FunctionComponent<{ className?: string }> | null;
+  }[] = [
+    { id: 'account', label: 'Account', component: AccountTab },
+    { id: 'billing', label: 'Billing', component: BillingTab },
+    { id: 'plans', label: 'Plans', component: null },
+    { id: 'security', label: 'Security', component: null },
+  ];
 
   const [activeTab, setActiveTab] = useState<AccountTabID>('account');
 
@@ -19,8 +23,11 @@ export default function Preferences(): JSX.Element {
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
       {/* overflow-y-auto and overflow-x-visible is not a valid combination in the same element */}
       <div className="flex-grow overflow-y-auto">
-        <div className="h-full overflow-x-visible p-8" style={{ maxWidth: '872px' }}>
-          {TABS.map(({ component: Component, id }) => Component && <Component key={id} isHidden={activeTab !== id} />)}
+        <div className="overflow-x-visible" style={{ maxWidth: '872px' }}>
+          {TABS.map(
+            ({ component: Component, id }) =>
+              Component && <Component className={`p-8 ${activeTab !== id ? 'hidden' : ''}`} key={id} />,
+          )}
         </div>
       </div>
     </div>
