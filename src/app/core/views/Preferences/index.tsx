@@ -17,8 +17,11 @@ export default function Preferences(): JSX.Element {
   return (
     <div className="flex h-full w-full flex-col">
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
-      <div className="flex-grow overflow-y-auto overflow-x-hidden p-8" style={{ maxWidth: '872px' }}>
-        {TABS.map(({ component: Component, id }) => Component && <Component key={id} isHidden={activeTab !== id} />)}
+      {/* overflow-y-auto and overflow-x-visible is not a valid combination in the same element */}
+      <div className="flex-grow overflow-y-auto">
+        <div className="h-full overflow-x-visible p-8" style={{ maxWidth: '872px' }}>
+          {TABS.map(({ component: Component, id }) => Component && <Component key={id} isHidden={activeTab !== id} />)}
+        </div>
       </div>
     </div>
   );

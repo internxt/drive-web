@@ -8,7 +8,7 @@ export default function AccountTab({ isHidden }: { isHidden: boolean }): JSX.Ele
   return (
     <div className={`${isHidden ? 'hidden' : ''}`}>
       <UserHeader />
-      <div className="mt-8 flex flex-wrap gap-y-8 gap-x-10">
+      <div className="flex flex-wrap gap-y-8 gap-x-10 py-8">
         <div className="flex w-96 flex-col space-y-8">
           <Usage />
           <InviteAFriend />
