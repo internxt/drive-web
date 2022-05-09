@@ -1,4 +1,5 @@
 import { useReducer } from 'react';
+import BackupKey from './BackupKey';
 import ChangePassword from './ChangePassword';
 import Lock from './Lock';
 import TwoFA from './TwoFA';
@@ -14,6 +15,7 @@ export default function SecurityTab({ className = '' }: { className?: string }):
             <>
               <ChangePassword />
               <TwoFA />
+              <BackupKey />
             </>
           ) : (
             <Lock onUnlock={unlock} />
