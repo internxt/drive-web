@@ -14,12 +14,7 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
   return (
     <Section className={className} title="Usage">
       <Card>
-        <CurrentPlan
-          button="upgrade"
-          bytesInPlan={4294967296}
-          planName="Free plan"
-          planSubtitle={{ mainLabel: '0.99 €/month', beforeMainLabelCrossed: 'Free' }}
-        />
+        <CurrentPlan button="upgrade" bytesInPlan={4294967296} planName="Free plan" />
         <UsageDetails className="mt-5" planLimitInBytes={4294967296} products={products} />
       </Card>
     </Section>
