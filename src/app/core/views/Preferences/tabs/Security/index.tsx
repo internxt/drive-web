@@ -1,4 +1,5 @@
 import { useReducer } from 'react';
+import ChangePassword from './ChangePassword';
 import Lock from './Lock';
 
 export default function SecurityTab({ className = '' }: { className?: string }): JSX.Element {
@@ -7,7 +8,15 @@ export default function SecurityTab({ className = '' }: { className?: string }):
   return (
     <div className={className}>
       <div className="flex flex-wrap gap-y-8 gap-x-10">
-        <div className="flex w-96 flex-col space-y-8">{!unlocked && <Lock onUnlock={unlock} />}</div>
+        <div className="flex w-96 flex-col space-y-8">
+          {unlocked ? (
+            <>
+              <ChangePassword />
+            </>
+          ) : (
+            <Lock onUnlock={unlock} />
+          )}
+        </div>
         <div className="flex w-96 flex-col space-y-8"></div>
       </div>
     </div>
