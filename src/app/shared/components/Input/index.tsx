@@ -136,7 +136,7 @@ export default function Input({
         input
       )}
       {message && (
-        <div className={`flex items-center ${messageColor}`}>
+        <div className={`mt-0.5 flex items-center ${messageColor}`}>
           {MessageIcon && <MessageIcon size={16} />}
           <p className="ml-1 text-sm">{message}</p>
         </div>

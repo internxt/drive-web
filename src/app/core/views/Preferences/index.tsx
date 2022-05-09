@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
+import SecurityTab from './tabs/Security';
 
 type AccountTabID = 'account' | 'billing' | 'plans' | 'security';
 
@@ -13,7 +14,7 @@ export default function Preferences(): JSX.Element {
     { id: 'account', label: 'Account', component: AccountTab },
     { id: 'billing', label: 'Billing', component: BillingTab },
     { id: 'plans', label: 'Plans', component: null },
-    { id: 'security', label: 'Security', component: null },
+    { id: 'security', label: 'Security', component: SecurityTab },
   ];
 
   const [activeTab, setActiveTab] = useState<AccountTabID>('account');
