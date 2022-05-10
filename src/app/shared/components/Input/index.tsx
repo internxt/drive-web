@@ -12,6 +12,8 @@ export default function Input({
   onChange,
   onClear,
   message,
+  onFocus,
+  onBlur,
 }: {
   className?: string;
   label?: string;
@@ -22,6 +24,8 @@ export default function Input({
   value?: string;
   onChange?: (v: string) => void;
   onClear?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
   message?: string;
 }): JSX.Element {
   let focusColor: string;
@@ -65,8 +69,14 @@ export default function Input({
         type={variant === 'password' && !showPassword ? 'password' : 'text'}
         placeholder={placeholder}
         onChange={(e) => onChange && onChange(e.target.value)}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onFocus={() => {
+          if (onFocus) onFocus();
+          setIsFocused(true);
+        }}
+        onBlur={() => {
+          if (onBlur) onBlur();
+          setIsFocused(false);
+        }}
         value={value}
       />
       {variant === 'password' && isFocused && (
