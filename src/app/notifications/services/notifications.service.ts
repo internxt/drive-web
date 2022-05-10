@@ -12,24 +12,28 @@ export enum ToastType {
 export type ToastShowProps = {
   text: string;
   type?: ToastType;
-  subtitle?: string;
   action?: { text: string; onClick: () => void };
   duration?: number;
+  closable?: boolean;
 };
 
 const notificationsService = {
-  show: ({ text, type, subtitle, action, duration = 3000 }: ToastShowProps): string => {
-    return toast.custom(
+  show: ({ text, type, action, duration = 5000, closable = true }: ToastShowProps): string => {
+    const id = toast.custom(
       (t) =>
         createElement(NotificationToast, {
           text,
           type,
           visible: t.visible,
-          subtitle,
           action,
+          closable,
+          onClose() {
+            toast.dismiss(id);
+          },
         }),
       { duration },
     );
+    return id;
   },
   dismiss: toast.dismiss,
 };
