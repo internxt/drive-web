@@ -36,7 +36,7 @@ export default function Modal({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel
-                className="w-full max-w-lg transform rounded-lg bg-white p-5 transition-all"
+                className="w-full max-w-lg transform rounded-lg bg-white p-5 shadow-subtle-hard transition-all"
                 style={{ maxHeight: '50vh' }}
               >
                 {children}
