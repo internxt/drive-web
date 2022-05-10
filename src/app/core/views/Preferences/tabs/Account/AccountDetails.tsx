@@ -1,11 +1,16 @@
 import { CheckCircle, Warning } from 'phosphor-react';
+import { useState } from 'react';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
+import Input from '../../../../../shared/components/Input';
+import Modal from '../../../../../shared/components/Modal';
 import Tooltip from '../../../../../shared/components/Tooltip';
 import Section from '../../components/Section';
 
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const isVerified = false;
 
   function onResend() {
@@ -20,7 +25,9 @@ export default function AccountDetails({ className = '' }: { className?: string 
             <Detail label="Name" value="John" />
             <Detail label="Lastname" value="Appleseed" className="ml-8" />
           </div>
-          <Button variant="secondary">Edit</Button>
+          <Button variant="secondary" onClick={() => setIsModalOpen(true)}>
+            Edit
+          </Button>
         </div>
         <div className="mt-5 flex items-center justify-between">
           <div>
@@ -45,6 +52,17 @@ export default function AccountDetails({ className = '' }: { className?: string 
           </Tooltip>
         </div>
       </Card>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <h1 className="text-2xl font-medium text-gray-80">Account details</h1>
+        <Input className="mt-4" label="Name" />
+        <Input className="mt-3" label="Lastname" />
+        <div className="mt-3 flex justify-end">
+          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
+            Cancel
+          </Button>
+          <Button className="ml-2">Save</Button>
+        </div>
+      </Modal>
     </Section>
   );
 }
