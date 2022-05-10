@@ -65,28 +65,36 @@ export default function InviteAFriend({ className = '' }: { className?: string }
             </div>
           </div>
         </div>
-        <div className="mt-4 flex justify-between border-b border-gray-5 px-3 pb-1 font-medium text-gray-80">
-          <div className="flex items-center">
-            <Info size={20} />
-            <p className="ml-2">Email</p>
-          </div>
-          <p>Total: {invites.length}</p>
-        </div>
-        {invites.map((invite) => (
-          <div className="group flex h-9 items-center justify-between rounded-md px-3 hover:bg-gray-5">
-            <div className="flex items-center">
-              {invite.status === 'accepted' ? (
-                <CheckCircle className="text-green" weight="fill" size={20} />
-              ) : (
-                <Question className="text-gray-40" size={20} />
-              )}
-              <p className="ml-2 text-lg">{invite.email}</p>
+        {invites.length !== 0 ? (
+          <>
+            <div className="mt-4 flex justify-between border-b border-gray-5 px-3 pb-1 font-medium text-gray-80">
+              <div className="flex items-center">
+                <Info size={20} />
+                <p className="ml-2">Email</p>
+              </div>
+              <p>Total: {invites.length}</p>
             </div>
-            {invite.status === 'pending' && (
-              <button className="hidden font-medium text-primary group-hover:block">Resend invitation</button>
-            )}
+            {invites.map((invite) => (
+              <div className="group flex h-9 items-center justify-between rounded-md px-3 hover:bg-gray-5">
+                <div className="flex items-center">
+                  {invite.status === 'accepted' ? (
+                    <CheckCircle className="text-green" weight="fill" size={20} />
+                  ) : (
+                    <Question className="text-gray-40" size={20} />
+                  )}
+                  <p className="ml-2 text-lg">{invite.email}</p>
+                </div>
+                {invite.status === 'pending' && (
+                  <button className="hidden font-medium text-primary group-hover:block">Resend invitation</button>
+                )}
+              </div>
+            ))}
+          </>
+        ) : (
+          <div className="flex h-32 items-center justify-center">
+            <p className="font-medium text-gray-50">You have not invited anyone yet</p>
           </div>
-        ))}
+        )}
       </Modal>
     </Section>
   );
