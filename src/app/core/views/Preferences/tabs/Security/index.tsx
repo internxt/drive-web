@@ -1,6 +1,7 @@
 import { useReducer } from 'react';
 import BackupKey from './BackupKey';
 import ChangePassword from './ChangePassword';
+import Faq from './Faq';
 import Lock from './Lock';
 import TwoFA from './TwoFA';
 
@@ -21,7 +22,7 @@ export default function SecurityTab({ className = '' }: { className?: string }):
             <Lock onUnlock={unlock} />
           )}
         </div>
-        <div className="flex w-96 flex-col space-y-8"></div>
+        <div className="flex w-96 flex-col space-y-8">{unlocked && <Faq />}</div>
       </div>
     </div>
   );
