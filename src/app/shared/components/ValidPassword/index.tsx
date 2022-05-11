@@ -9,12 +9,14 @@ export default function ValidPassword({
   username,
   onChange,
   value,
+  disabled,
 }: {
   className?: string;
   label?: string;
   username: string;
   onChange: (payload: { valid: boolean; password: string }) => void;
   value: string;
+  disabled?: boolean;
 }): JSX.Element {
   const [state, setState] = useState<{ tag: 'error' | 'warning' | 'success'; label: string } | null>(null);
 
@@ -49,6 +51,7 @@ export default function ValidPassword({
         onBlur={() => setShowIndicator(false)}
         value={value}
         accent={state?.tag}
+        disabled={disabled}
       />
       {showIndicator && state && (
         <PasswordStrengthIndicator className="mt-2" strength={state.tag} label={state.label} />
