@@ -1335,15 +1335,15 @@
     bip39 "^3.0.2"
     winston "^3.3.3"
 
-"@internxt/lib@1.1.2":
-  version "1.1.2"
-  resolved "https://npm.pkg.github.com/download/@internxt/lib/1.1.2/84b10d2de5b8171daecd881a7794ff7e240327a18a297f4453102d03454c206e"
-  integrity sha512-7ZXqABYdVheVYW5TxzwuLCMtyeOHEMaGWH5/KC+d+/41YuvBwPyysymtbKnR+kZ46peo/9fyVWVVNB5TIUcNwQ==
-
 "@internxt/lib@^1.1.6":
   version "1.1.6"
   resolved "https://npm.pkg.github.com/download/@internxt/lib/1.1.6/f756c6d77338d351ab797f40cc1bf3c25ecccf9ac0c8298c939ee5000ebc42d1"
   integrity sha512-xpnSpDsWr+jemV2aI71B39LGfXnNCsyv2VKND0JAgrOeyHXjnChH+IHxGLq/8f73HT47mpkNXrK4nfpzH4OaaQ==
+
+"@internxt/lib@^1.2.0":
+  version "1.2.0"
+  resolved "https://npm.pkg.github.com/download/@internxt/lib/1.2.0/283c36f4d8c443ca4d4bf41a856f43de94b290a3ea50d72cdaf1d6cb778ca838#172d7929abb3dc34fda044ad9977875791f7a471"
+  integrity sha512-14byNxSU0S0KSc3g+BWiJb7/fcHUfqxkHQRz9fwJhAHNmgOo+Bhx13xXk07KKUzeNX1JymSGEZkVCk0AOQiM+Q==
 
 "@internxt/prettier-config@^1.0.1":
   version "1.0.2"

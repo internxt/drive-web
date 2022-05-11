@@ -18,7 +18,7 @@ export default function Input({
   className?: string;
   label?: string;
   variant?: 'default' | 'search' | 'password';
-  accent?: 'error' | 'warning' | 'valid';
+  accent?: 'error' | 'warning' | 'success';
   disabled?: boolean;
   placeholder?: string;
   value?: string;
@@ -37,7 +37,7 @@ export default function Input({
     case 'warning':
       focusColor = 'focus:border-orange ring-orange';
       break;
-    case 'valid':
+    case 'success':
       focusColor = 'focus:border-green ring-green';
       break;
     default:
@@ -120,7 +120,7 @@ export default function Input({
   let MessageIcon: typeof WarningOctagon | undefined;
 
   switch (accent) {
-    case 'valid':
+    case 'success':
       messageColor = 'text-green';
       MessageIcon = CheckCircle;
       break;
