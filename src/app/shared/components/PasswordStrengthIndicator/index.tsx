@@ -35,7 +35,7 @@ export default function PasswordStrengthIndicator({
         <div className={`${pillClassName} ${strength !== 'error' ? activeBackground : inactiveBackground}`} />
         <div className={`${pillClassName} ${strength === 'success' ? activeBackground : inactiveBackground}`} />
       </div>
-      <p className={`mt-2 text-sm font-medium ${labelColor}`}>{label}</p>
+      <p className={`mt-1 text-sm font-medium ${labelColor}`}>{label}</p>
     </div>
   );
 }
