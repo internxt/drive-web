@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
+import PlansTab from './tabs/Plans';
 import SecurityTab from './tabs/Security';
 
 const PREFERENCES_TABS = ['account', 'billing', 'plans', 'security'] as const;
@@ -11,11 +12,11 @@ export default function Preferences(): JSX.Element {
   const TABS: {
     id: PreferencesTabID;
     label: string;
-    component: React.FunctionComponent<{ className?: string }> | null;
+    component: React.FunctionComponent<{ className?: string }>;
   }[] = [
     { id: 'account', label: 'Account', component: AccountTab },
     { id: 'billing', label: 'Billing', component: BillingTab },
-    { id: 'plans', label: 'Plans', component: null },
+    { id: 'plans', label: 'Plans', component: PlansTab },
     { id: 'security', label: 'Security', component: SecurityTab },
   ];
 
