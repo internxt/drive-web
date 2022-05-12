@@ -15,11 +15,12 @@ import errorService from 'app/core/services/error.service';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { GetPhotoShareResponse, PhotoId } from '@internxt/sdk/dist/photos';
 import { SdkFactory } from '../../../core/factory/sdk';
-import { Network } from '../../../drive/services/network.service';
+import network from 'app/network';
 import downloadService from '../../../drive/services/download.service';
 import JSZip from 'jszip';
 import { Readable } from 'stream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
 
 interface SharePhotosProps {
   match: match<{
@@ -72,17 +73,20 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
 
   const download = async (): Promise<void> => {
     setIsDownloading(true);
-    const network = new Network('NONE', 'NONE', 'NONE');
     const fileToken = info?.token;
     try {
       if (info?.photos.length === 1) {
-        const photo = info.photos[0];
-        const [fileBlobPromise] = network.downloadFile(info.bucket, photo.fileId, {
-          fileEncryptionKey: Buffer.from(photo.decryptionKey, 'hex'),
-          fileToken,
-          progressCallback: updateProgress,
+        const [photo] = info.photos;
+        const [readablePromise] = network.downloadFile({
+          bucketId: info.bucket,
+          fileId: photo.fileId,
+          encryptionKey: Buffer.from(photo.decryptionKey, 'hex'),
+          token: fileToken,
+          options: {
+            notifyProgress: updateProgress
+          }
         });
-        const fileBlob = await fileBlobPromise;
+        const fileBlob = await binaryStreamToBlob(await readablePromise);
 
         downloadService.downloadFileFromBlob(fileBlob, `${photo.name}.${photo.type}`);
       } else if (info && info.photos.length > 1) {
@@ -121,17 +125,20 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
 
         for (const photo of info.photos) {
           const photoName = `${photo.name}.${photo.type}`;
-          const photoSource = network.getFileDownloadStream(info.bucket, photo.fileId, {
-            progressCallback: (progress) => {
-              generalProgress[photo.fileId] = progress;
-              updateTaskProgress();
-            },
-            fileEncryptionKey: Buffer.from(photo.decryptionKey, 'hex'),
-            fileToken,
+          const [photoStreamPromise] = network.downloadFile({
+            bucketId: info.bucket,
+            fileId: photo.fileId,
+            encryptionKey: Buffer.from(photo.decryptionKey, 'hex'),
+            token: fileToken, 
+            options: {
+              notifyProgress: (progress) => {
+                generalProgress[photo.fileId] = progress;
+                updateTaskProgress();
+              }
+            }
           });
 
-          const [readable] = photoSource;
-          zip.file(photoName, await readable, { compression: 'DEFLATE' });
+          zip.file(photoName, await photoStreamPromise, { compression: 'DEFLATE' });
         }
         await new Promise<void>((resolve, reject) => {
           const zipStream = zip.generateInternalStream({
