@@ -6,12 +6,14 @@ export default function Tooltip({
   subtitle,
   popsFrom,
   style = 'light',
+  className,
 }: {
   children: ReactNode;
   title: string;
   subtitle?: string;
   popsFrom: 'right' | 'left' | 'top' | 'bottom';
   style?: 'dark' | 'light';
+  className?: string;
 }): JSX.Element {
   const tipRef = useRef<HTMLDivElement>(null);
   function handleMouseEnter() {
@@ -53,7 +55,12 @@ export default function Tooltip({
   }
 
   return (
-    <div className="relative w-max" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div
+      className={`relative w-max ${className}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{ lineHeight: 0 }}
+    >
       <div
         className={`absolute transform ${tooltipPosition} flex items-center ${trianglePosition} opacity-0 transition-all duration-150 ${
           style === 'light' ? 'drop-shadow-tooltip filter' : ''
