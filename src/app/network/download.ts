@@ -1,5 +1,3 @@
-import { Network } from '@internxt/sdk/dist/network';
-import { NetworkFacade } from 'app/network';
 import { Environment } from '@internxt/inxt-js';
 import { ActionState } from '@internxt/inxt-js/build/api';
 import { createDecipheriv, Decipher } from 'crypto';
@@ -7,7 +5,6 @@ import { EventEmitter } from 'events';
 
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
-import { sha256 } from './crypto';
 import { Abortable } from './Abortable';
 import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -15,6 +12,7 @@ import databaseService, { DatabaseCollection } from 'app/database/services/datab
 import { SerializablePhoto } from 'app/store/slices/photos';
 import { getEnvironmentConfig } from 'app/drive/services/network.service';
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
+import downloadFileV2 from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string, bucketId: string };
@@ -189,13 +187,6 @@ async function getRequiredFileMetadataWithAuth(
   return { fileMeta, mirrors };
 }
 
-function getAuthFromCredentials(creds: NetworkCredentials): { username: string, password: string } {
-  return {
-    username: creds.user,
-    password: sha256(Buffer.from(creds.pass)).toString('hex'),
-  };
-}
-
 type DownloadFileResponse = { abortable: Abortable, promise: DownloadFilePromise };
 type DownloadFilePromise = Promise<ReadableStream<Uint8Array>>;
 
@@ -203,7 +194,7 @@ export function downloadFile(params: IDownloadParams): [
   Promise<ReadableStream<Uint8Array>>,
   Abortable
 ] {
-  const [downloadFileV2Promise, downloadFileV2Abortable] = _downloadFileV2(params);
+  const [downloadFileV2Promise, downloadFileV2Abortable] = downloadFileV2(params as any);
 
   const response: DownloadFileResponse = {
     abortable: downloadFileV2Abortable,
@@ -269,42 +260,6 @@ function _downloadFile(params: IDownloadParams): [
       return buildProgressStream(readable, (readBytes) => {
         params.options?.notifyProgress(metadata.fileMeta.size, readBytes);
       });
-    });
-  })();
-
-  return [downloadFilePromise, abortable];
-}
-
-function _downloadFileV2(params: IDownloadParams): [
-  Promise<ReadableStream<Uint8Array>>,
-  Abortable
-] {
-  // TODO: Use 'token' to download shared files
-  const { bucketId, fileId, creds } = params;
-  const abortable: Abortable = {
-    abort: () => null
-  };
-
-  const downloadFilePromise = (async () => {
-    if (params.token) {
-      throw new FileVersionOneError();
-    }
-    const auth = getAuthFromCredentials(creds as NetworkCredentials);
-
-    return new NetworkFacade(
-      Network.client(
-        process.env.REACT_APP_STORJ_BRIDGE as string,
-        {
-          clientName: 'drive-web',
-          clientVersion: '1.0'
-        },
-        {
-          bridgeUser: auth.username,
-          userId: auth.password
-        }
-      )
-    ).download(bucketId, fileId, params.mnemonic as string, {
-      downloadingCallback: params.options?.notifyProgress,
     });
   })();
 
