@@ -5,7 +5,7 @@ import { Environment } from '@internxt/inxt-js';
 import { Network } from '@internxt/sdk/dist/network';
 
 import { createAES256Cipher, encryptFilename, getEncryptedFile, sha256 } from './crypto';
-import { NetworkFacade } from '.';
+import { NetworkFacade } from './NetworkFacade';
 import { finishUpload, getUploadUrl, prepareUpload } from './requests';
 import { Abortable } from './Abortable';
 
