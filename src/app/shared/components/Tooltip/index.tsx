@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 
 export default function Tooltip({
   children,
@@ -7,6 +7,7 @@ export default function Tooltip({
   popsFrom,
   style = 'light',
   className,
+  delayInMs,
 }: {
   children: ReactNode;
   title: string;
@@ -14,16 +15,34 @@ export default function Tooltip({
   popsFrom: 'right' | 'left' | 'top' | 'bottom';
   style?: 'dark' | 'light';
   className?: string;
+  delayInMs?: number;
 }): JSX.Element {
-  const tipRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  const timeoutRef = useRef<null | number>(null);
+
+  function show() {
+    setVisible(true);
+  }
+
+  function hide() {
+    setVisible(false);
+  }
+
   function handleMouseEnter() {
-    if (tipRef.current) {
-      tipRef.current.style.opacity = '1';
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
     }
+    show();
   }
   function handleMouseLeave() {
-    if (tipRef.current) {
-      tipRef.current.style.opacity = '0';
+    if (delayInMs) {
+      timeoutRef.current = setTimeout(() => {
+        timeoutRef.current = null;
+        hide();
+      }, delayInMs) as unknown as number;
+    } else {
+      hide();
     }
   }
 
@@ -62,10 +81,9 @@ export default function Tooltip({
       style={{ lineHeight: 0 }}
     >
       <div
-        className={`absolute transform ${tooltipPosition} flex items-center ${trianglePosition} opacity-0 transition-all duration-150 ${
+        className={`absolute transform ${tooltipPosition} flex items-center ${trianglePosition} transition-all duration-150 ${
           style === 'light' ? 'drop-shadow-tooltip filter' : ''
-        }`}
-        ref={tipRef}
+        } ${visible ? 'opacity-100' : 'opacity-0'}`}
       >
         <div className={`w-max rounded-md px-3 py-1.5 text-center ${style === 'dark' ? 'bg-gray-90' : 'bg-white'}`}>
           <h1 className={`text-sm ${style === 'dark' ? 'text-white' : 'text-gray-80'}`}>{title}</h1>
