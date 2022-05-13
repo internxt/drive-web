@@ -11,6 +11,7 @@ import { TaskStatus } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import AppError from 'app/core/types';
 import { DriveFolderData } from 'app/drive/types';
+import downloadFolderUsingBlobs from 'app/drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
 
 interface DownloadFolderThunkOptions {
   taskId: string;
@@ -76,7 +77,11 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
         },
       });
 
-      await downloadService.downloadFolder({ folder, updateProgressCallback, isTeam, abortController });
+      if (navigator.brave?.isBrave()) {
+        await downloadFolderUsingBlobs({ folder, updateProgressCallback, isTeam });
+      } else {
+        await downloadService.downloadFolder({ folder, updateProgressCallback, isTeam, abortController });
+      }
 
       tasksService.updateTask({
         taskId: options.taskId,
