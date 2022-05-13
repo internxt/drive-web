@@ -14,7 +14,7 @@ export default function SecurityTab({ className = '' }: { className?: string }):
         <div className="flex w-96 flex-col space-y-8">
           {state.tag === 'unlocked' ? (
             <>
-              <ChangePassword />
+              <ChangePassword currentPassword={state.password} />
               <TwoFA password={state.password} />
               <BackupKey />
             </>

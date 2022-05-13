@@ -1,6 +1,8 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { changePassword } from '../../../../../auth/services/auth.service';
+import i18n from '../../../../../i18n/services/i18n.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
@@ -11,7 +13,13 @@ import { RootState } from '../../../../../store';
 import errorService from '../../../../services/error.service';
 import Section from '../../components/Section';
 
-export default function ChangePassword({ className = '' }: { className?: string }): JSX.Element {
+export default function ChangePassword({
+  className = '',
+  currentPassword,
+}: {
+  className?: string;
+  currentPassword: string;
+}): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -25,12 +33,24 @@ export default function ChangePassword({ className = '' }: { className?: string 
           Change password
         </Button>
       </Card>
-      <ChangePasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ChangePasswordModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        currentPassword={currentPassword}
+      />
     </Section>
   );
 }
 
-function ChangePasswordModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function ChangePasswordModal({
+  isOpen,
+  onClose,
+  currentPassword,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  currentPassword: string;
+}) {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   if (!user) throw new Error('User is not defined');
   const { email } = user;
@@ -47,8 +67,8 @@ function ChangePasswordModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
   async function handleSubmit() {
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      notificationsService.show({ text: 'Password updated successfully', type: ToastType.Success });
+      await changePassword(passwordPayload.password, currentPassword, email);
+      notificationsService.show({ text: i18n.get('success.passwordChanged'), type: ToastType.Success });
       onClose();
     } catch (err) {
       const error = errorService.castError(err);
