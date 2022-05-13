@@ -239,6 +239,14 @@ export async function getNewToken(): Promise<string> {
   return newToken;
 }
 
+export async function areCredentialsCorrect(email: string, password: string): Promise<boolean> {
+  const salt = await getSalt();
+  const { hash: hashedPassword } = passToHash({ password, salt });
+  const authClient = SdkFactory.getInstance().createAuthClient();
+
+  return authClient.areCredentialsCorrect(email, hashedPassword);
+}
+
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   return authClient.storeTwoFactorAuthKey(code, twoFactorCode);
