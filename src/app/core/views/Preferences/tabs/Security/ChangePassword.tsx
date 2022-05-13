@@ -16,9 +16,11 @@ import Section from '../../components/Section';
 export default function ChangePassword({
   className = '',
   currentPassword,
+  onPasswordChanged,
 }: {
   className?: string;
   currentPassword: string;
+  onPasswordChanged: (newPassword: string) => void;
 }): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -37,6 +39,7 @@ export default function ChangePassword({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         currentPassword={currentPassword}
+        onPasswordChanged={onPasswordChanged}
       />
     </Section>
   );
@@ -46,10 +49,12 @@ function ChangePasswordModal({
   isOpen,
   onClose,
   currentPassword,
+  onPasswordChanged,
 }: {
   isOpen: boolean;
   onClose: () => void;
   currentPassword: string;
+  onPasswordChanged: (newPassword: string) => void;
 }) {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   if (!user) throw new Error('User is not defined');
@@ -69,6 +74,7 @@ function ChangePasswordModal({
     try {
       await changePassword(passwordPayload.password, currentPassword, email);
       notificationsService.show({ text: i18n.get('success.passwordChanged'), type: ToastType.Success });
+      onPasswordChanged(passwordPayload.password);
       onClose();
     } catch (err) {
       const error = errorService.castError(err);
