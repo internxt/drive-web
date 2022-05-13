@@ -17,6 +17,7 @@ interface UploadOptions {
 interface DownloadOptions {
   key?: Buffer;
   token?: string;
+  abortController?: AbortController;
   downloadingCallback?: DownloadProgressCallback;
 }
 
