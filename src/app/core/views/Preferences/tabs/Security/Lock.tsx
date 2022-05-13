@@ -4,7 +4,13 @@ import Card from '../../../../../shared/components/Card';
 import Input from '../../../../../shared/components/Input';
 import Section from '../../components/Section';
 
-export default function Lock({ className = '', onUnlock }: { className?: string; onUnlock: () => void }): JSX.Element {
+export default function Lock({
+  className = '',
+  onUnlock,
+}: {
+  className?: string;
+  onUnlock: (password: string) => void;
+}): JSX.Element {
   const [password, setPassword] = useState('');
   const [formState, setFormState] = useState<
     { tag: 'ready' } | { tag: 'error'; errorMessage: string } | { tag: 'loading' }
@@ -12,7 +18,7 @@ export default function Lock({ className = '', onUnlock }: { className?: string;
 
   function onAccess() {
     setFormState({ tag: 'loading' });
-    setTimeout(onUnlock, 1000);
+    setTimeout(() => onUnlock(password), 1000);
   }
 
   return (
