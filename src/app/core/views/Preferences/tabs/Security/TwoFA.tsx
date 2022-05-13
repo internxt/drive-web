@@ -56,12 +56,24 @@ export default function TwoFA({ className = '' }: { className?: string }): JSX.E
           )}
         </div>
       </Card>
-      <EnableModal isOpen={enableModalOpen} onClose={() => setEnableModalOpen(false)} />
+      <EnableModal
+        isOpen={enableModalOpen}
+        onClose={() => setEnableModalOpen(false)}
+        onEnabled={() => setStatus('enabled')}
+      />
     </Section>
   );
 }
 
-function EnableModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }): JSX.Element {
+function EnableModal({
+  isOpen,
+  onClose,
+  onEnabled,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onEnabled: () => void;
+}): JSX.Element {
   useEffect(() => {
     if (isOpen) {
       setStep(0);
@@ -140,6 +152,7 @@ function EnableModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
         setActivateState('loading');
         await authService.store2FA(qr.key, activateValue);
         notificationsService.show({ text: i18n.get('success.twoFactorAuthActivated'), type: ToastType.Success });
+        onEnabled();
         onClose();
       } catch (err) {
         setActivateState('error');
