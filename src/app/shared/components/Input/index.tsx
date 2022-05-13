@@ -53,8 +53,6 @@ export default function Input({
 
   const placeholderColor = variant === 'search' ? 'placeholder-gray-40' : 'placeholder-gray-30';
 
-  const textWeight = variant === 'search' ? 'font-normal' : 'font-medium';
-
   const padding = variant === 'search' ? 'pr-4 pl-10' : 'px-4';
 
   const [showPassword, setShowPassword] = useState(false);
@@ -64,8 +62,8 @@ export default function Input({
     <div className="relative">
       <input
         disabled={disabled}
-        className={`inxt-input outline-none h-11 w-full rounded-md border text-lg text-gray-80 ring-opacity-10 focus:ring-2 disabled:text-gray-40 disabled:placeholder-gray-20 
-				${borderColor} ${focusColor} ${placeholderColor} ${backgroundColor} ${textWeight} ${padding}`}
+        className={`inxt-input outline-none h-11 w-full rounded-md border text-lg font-normal text-gray-80 ring-opacity-10 focus:ring-2 disabled:text-gray-40 disabled:placeholder-gray-20 
+				${borderColor} ${focusColor} ${placeholderColor} ${backgroundColor} ${padding}`}
         type={variant === 'password' && !showPassword ? 'password' : 'text'}
         placeholder={placeholder}
         onChange={(e) => onChange && onChange(e.target.value)}
