@@ -9,7 +9,7 @@
   "fileExplorer": {
     "download": {
       "folder": {
-        "method": "stream-saver"
+        "method": "file-system-access-api"
       }
     },
     "recentsLimit": 10
