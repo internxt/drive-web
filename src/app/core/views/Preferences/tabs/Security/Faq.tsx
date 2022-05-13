@@ -17,7 +17,7 @@ export default function Faq({ className = '' }: { className?: string }): JSX.Ele
   return (
     <Section className={className} title="Did you miss anything?">
       {questions.map((question, i) => (
-        <Disclosure defaultOpen={i === 0}>
+        <Disclosure defaultOpen={i === 0} key={i}>
           {({ open }) => (
             <>
               <Disclosure.Button
