@@ -41,7 +41,7 @@ export function buildProgressStream(source: BinaryStream, onRead: (readBytes: nu
       }
     },
     cancel() {
-      source.cancel();
+      return reader.cancel();
     }
   });
 }
@@ -84,17 +84,23 @@ type FlatFolderZipOpts = {
 }
 
 type AddFileToZipFunction = (name: string, source: ReadableStream<Uint8Array>) => void
+type AddFolderToZipFunction = (name: string) => void
+
+interface ZipStream {
+  addFile: AddFileToZipFunction,
+  addFolder: AddFolderToZipFunction,
+  stream: ReadableStream<Uint8Array>,
+  end: () => void
+}
 
 export class FlatFolderZip {
   private finished!: Promise<void>;
-  private zip: {
-    addFile: AddFileToZipFunction
-    stream: ReadableStream<Uint8Array>
-    end: () => void
-  }
+  private zip: ZipStream;
+  private abortController?: AbortController;
 
   constructor(folderName: string, opts: FlatFolderZipOpts) {
     this.zip = createFolderWithFilesWritable();
+    this.abortController = opts.abortController;
 
     const passThrough = opts.progress ?
       buildProgressStream(this.zip.stream, opts.progress) :
@@ -120,20 +126,30 @@ export class FlatFolderZip {
   }
 
   addFile(name: string, source: ReadableStream<Uint8Array>): void {
+    if (this.abortController?.signal.aborted) return;
+
     this.zip.addFile(name, source);
   }
 
+  addFolder(name: string): void {
+    if (this.abortController?.signal.aborted) return;
+
+    this.zip.addFolder(name);
+  }
+
   async close(): Promise<void> {
+    if (this.abortController?.signal.aborted) return;
+
     this.zip.end();
     await this.finished;
   }
+
+  abort(): void {
+    this.abortController?.abort();
+  }
 }
 
-function createFolderWithFilesWritable(): ({
-  addFile: AddFileToZipFunction,
-  stream: ReadableStream<Uint8Array>,
-  end: () => void
-}) {
+function createFolderWithFilesWritable(): ZipStream {
   let controller;
 
   const zipStream = createZipReadable({ start(ctrl) { controller = ctrl; } });
@@ -141,6 +157,9 @@ function createFolderWithFilesWritable(): ({
   return {
     addFile: (name: string, source: ReadableStream<Uint8Array>): void => {
       controller.enqueue({ name, stream: () => source });
+    },
+    addFolder: (name: string): void => {
+      controller.enqueue({ name, directory: true });
     },
     stream: zipStream,
     end: () => {
