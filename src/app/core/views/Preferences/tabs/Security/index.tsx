@@ -15,7 +15,7 @@ export default function SecurityTab({ className = '' }: { className?: string }):
           {state.tag === 'unlocked' ? (
             <>
               <ChangePassword />
-              <TwoFA />
+              <TwoFA password={state.password} />
               <BackupKey />
             </>
           ) : (

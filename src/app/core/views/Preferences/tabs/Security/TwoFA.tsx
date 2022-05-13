@@ -1,6 +1,10 @@
 import { CheckCircle, Warning } from 'phosphor-react';
 import { useEffect, useState } from 'react';
-import authService, { generateNew2FA, userHas2FAStored } from '../../../../../auth/services/auth.service';
+import authService, {
+  deactivate2FA,
+  generateNew2FA,
+  userHas2FAStored,
+} from '../../../../../auth/services/auth.service';
 import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
 import Modal from '../../../../../shared/components/Modal';
@@ -13,8 +17,9 @@ import Copyable from '../../../../../shared/components/Copyable';
 import i18n from '../../../../../i18n/services/i18n.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Input from '../../../../../shared/components/Input';
+import errorService from '../../../../services/error.service';
 
-export default function TwoFA({ className = '' }: { className?: string }): JSX.Element {
+export default function TwoFA({ className = '', password }: { className?: string; password: string }): JSX.Element {
   const [status, setStatus] = useState<'loading' | 'enabled' | 'disabled'>('loading');
 
   useEffect(() => {
@@ -29,6 +34,8 @@ export default function TwoFA({ className = '' }: { className?: string }): JSX.E
 
   const [enableModalOpen, setEnableModalOpen] = useState(false);
 
+  const [disableModalOpen, setDisableModalOpen] = useState(false);
+
   return (
     <Section className={className} title="Two Factor Authentication (2FA)">
       <Card>
@@ -42,7 +49,7 @@ export default function TwoFA({ className = '' }: { className?: string }): JSX.E
               <div className="flex items-center font-medium text-green">
                 <CheckCircle size={20} weight="fill" />
                 <p className="ml-1">Enabled</p>
-                <Button className="ml-4" variant="secondary">
+                <Button className="ml-4" variant="secondary" onClick={() => setDisableModalOpen(true)}>
                   Disable
                 </Button>
               </div>
@@ -60,6 +67,12 @@ export default function TwoFA({ className = '' }: { className?: string }): JSX.E
         isOpen={enableModalOpen}
         onClose={() => setEnableModalOpen(false)}
         onEnabled={() => setStatus('enabled')}
+      />
+      <DisableModal
+        isOpen={disableModalOpen}
+        onClose={() => setDisableModalOpen(false)}
+        onDisabled={() => setStatus('disabled')}
+        password={password}
       />
     </Section>
   );
@@ -204,6 +217,69 @@ function EnableModal({
             </Button>
           )}
         </div>
+      </div>
+    </Modal>
+  );
+}
+
+function DisableModal({
+  isOpen,
+  onClose,
+  onDisabled,
+  password,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onDisabled: () => void;
+  password: string;
+}): JSX.Element {
+  useEffect(() => {
+    if (isOpen) {
+      setStatus('ready');
+      setAuthCode('');
+    }
+  }, [isOpen]);
+
+  const [status, setStatus] = useState<'ready' | 'error' | 'loading'>('ready');
+  const [authCode, setAuthCode] = useState('');
+
+  async function handleDisable() {
+    setStatus('loading');
+    try {
+      const { encryptedSalt } = await userHas2FAStored();
+
+      await deactivate2FA(encryptedSalt, password, authCode);
+
+      notificationsService.show({ text: i18n.get('success.twoFactorAuthDisabled'), type: ToastType.Success });
+      onDisabled();
+      onClose();
+    } catch (err) {
+      setStatus('error');
+      const castedError = errorService.castError(err);
+
+      notificationsService.show({ text: castedError.message || i18n.get('error.serverError'), type: ToastType.Error });
+    }
+  }
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <h1 className="text-2xl font-medium text-gray-80">Disable Two-Factor Authentication</h1>
+      <Input
+        className="mt-4"
+        label="Two-Factor Authentication code"
+        disabled={status === 'loading'}
+        accent={status === 'error' ? 'error' : undefined}
+        message={status === 'error' ? 'The code is not correct, try again' : undefined}
+        value={authCode}
+        onChange={setAuthCode}
+      />
+      <div className="mt-4 flex justify-end">
+        <Button onClick={onClose} variant="secondary" disabled={status === 'loading'}>
+          Cancel
+        </Button>
+        <Button className="ml-2" loading={status === 'loading'} onClick={handleDisable} disabled={authCode.length < 6}>
+          Disable
+        </Button>
       </div>
     </Modal>
   );
