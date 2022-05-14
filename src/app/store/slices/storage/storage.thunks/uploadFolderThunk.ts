@@ -107,8 +107,6 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         levels.push(...level.childrenFolders);
       }
 
-      console.timeEnd('folder');
-
       tasksService.updateTask({
         taskId: taskId,
         merge: {
