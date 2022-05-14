@@ -2,15 +2,15 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { getEnvironmentConfig } from '../network.service';
 import { Downloadable, downloadFile } from 'app/network/download';
 
-type FetchFileBlobOptions = { updateProgressCallback: (progress: number) => void; isTeam?: boolean };
+type FetchFileBlobOptions = { updateProgressCallback: (progress: number) => void; isTeam?: boolean, abortController?: AbortController };
 
-export default function fetchFileBlob(
+export default async function fetchFileBlob(
   item: Downloadable,
   options: FetchFileBlobOptions,
-): [Promise<Blob>, { stop: () => void } | undefined] {
+): Promise<Blob> {
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isTeam);
 
-  const [streamPromise, abortable] = downloadFile({
+  const fileStream = await downloadFile({
     bucketId: item.bucketId,
     fileId: item.fileId,
     creds: {
@@ -21,9 +21,10 @@ export default function fetchFileBlob(
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
         options.updateProgressCallback(downloadedBytes / totalBytes);
-      }
+      },
+      abortController: options.abortController
     }
   });
 
-  return [streamPromise.then(binaryStreamToBlob), { stop: () => abortable.abort() }];
+  return binaryStreamToBlob(fileStream);
 }
