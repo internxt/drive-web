@@ -16,8 +16,6 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
     const taskGroupId = requestId;
     const tasksIds: string[] = [];
 
-    console.log('downloadITEEEEMs');
-
     // * 1. Creates tasks
     for (const item of items) {
       if (item.isFolder) {
