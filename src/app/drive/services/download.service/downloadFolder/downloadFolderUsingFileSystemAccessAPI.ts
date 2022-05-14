@@ -70,18 +70,21 @@ async function downloadFolder(
         type: file.type,
       });
 
-      const [fileStreamPromise, abortable] = network.downloadFile({
+      const fileStreamPromise = network.downloadFile({
         bucketId: file.bucket,
         fileId: file.fileId,
         creds: {
           pass: bridgePass,
           user: bridgeUser
         },
-        mnemonic: encryptionKey
+        mnemonic: encryptionKey,
+        options: {
+          notifyProgress: () => null,
+          abortController: opts.abortController
+        }
       });
 
       zip.addFile(folderPath + '/' + displayFilename, await fileStreamPromise);
-      abortables && abortables.push(abortable);
     }
 
     pendingFolders.push(...folders.map(tree => ({ path: folderPath, data: tree })));
