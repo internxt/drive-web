@@ -99,6 +99,8 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
         });
       }
 
+      (abortController as { abort: (message: string) => void }).abort((err as Error).message);
+
       const castedError = errorService.castError(err);
       const task = tasksService.findTask(options.taskId);
 
