@@ -99,9 +99,14 @@ export class NetworkFacade {
       Buffer.from,
       async (downloadables) => {
         for (const downloadable of downloadables) {
-          const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadable.url).hostname.includes('internxt');
+          if (options?.abortController?.signal.aborted) {
+            throw new Error('Download aborted');
+          }
 
-          const encryptedContentStream = await fetch((useProxy ? process.env.REACT_APP_PROXY + '/' : '') + downloadable.url)
+          const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadable.url).hostname.includes('internxt');
+          const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + downloadable.url;
+
+          const encryptedContentStream = await fetch(fetchUrl, { signal: options?.abortController?.signal })
             .then((res) => {
               if (!res.body) {
                 throw new Error('No content received');
@@ -114,9 +119,10 @@ export class NetworkFacade {
         }
       },
       async (algorithm, key, iv, fileSize) => {
-        const [decryptedStream] = getDecryptedStream(
+        const decryptedStream = getDecryptedStream(
           encryptedContentStreams,
           createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), (iv as Buffer)),
+          options?.abortController
         );
 
         fileStream = buildProgressStream(decryptedStream, (readBytes) => {

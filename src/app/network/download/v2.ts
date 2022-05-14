@@ -1,12 +1,11 @@
 import { Network } from '@internxt/sdk/dist/network';
-import { Abortable } from '../Abortable';
 import { sha256 } from '../crypto';
 import { NetworkFacade } from '../NetworkFacade';
 
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 type FileStream = ReadableStream<Uint8Array>;
-type DownloadFileResponse = [Promise<FileStream>, Abortable];
-type DownloadFileOptions = { notifyProgress: DownloadProgressCallback };
+type DownloadFileResponse = Promise<FileStream>;
+type DownloadFileOptions = { notifyProgress: DownloadProgressCallback, abortController?: AbortController };
 interface NetworkCredentials {
   user: string;
   pass: string;
@@ -39,28 +38,24 @@ type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFileP
 const downloadSharedFile: DownloadSharedFileFunction = (params) => {
   const { bucketId, fileId, encryptionKey, token, options } = params;
 
-  const downloadFilePromise = (() => {
-    return new NetworkFacade(
-      Network.client(
-        process.env.REACT_APP_STORJ_BRIDGE as string,
-        {
-          clientName: 'drive-web',
-          clientVersion: '1.0'
-        },
-        {
-          bridgeUser: '',
-          userId: ''
-        }
-      )
-    ).download(bucketId, fileId, '', {
-      key: Buffer.from(encryptionKey, 'hex'),
-      token,
-      downloadingCallback: options?.notifyProgress,
-    });
-  })();
-
-  /* TODO: Abortable download */
-  return [downloadFilePromise, { abort: () => null }];
+  return new NetworkFacade(
+    Network.client(
+      process.env.REACT_APP_STORJ_BRIDGE as string,
+      {
+        clientName: 'drive-web',
+        clientVersion: '1.0'
+      },
+      {
+        bridgeUser: '',
+        userId: ''
+      }
+    )
+  ).download(bucketId, fileId, '', {
+    key: Buffer.from(encryptionKey, 'hex'),
+    token,
+    downloadingCallback: options?.notifyProgress,
+    abortController: options?.abortController
+  });
 };
 
 
@@ -76,26 +71,22 @@ const downloadOwnFile: DownloadOwnFileFunction = (params) => {
   const { bucketId, fileId, mnemonic, options } = params;
   const auth = getAuthFromCredentials(params.creds);
 
-  const downloadFilePromise = (() => {
-    return new NetworkFacade(
-      Network.client(
-        process.env.REACT_APP_STORJ_BRIDGE as string,
-        {
-          clientName: 'drive-web',
-          clientVersion: '1.0'
-        },
-        {
-          bridgeUser: auth.username,
-          userId: auth.password
-        }
-      )
-    ).download(bucketId, fileId, mnemonic, {
-      downloadingCallback: options?.notifyProgress,
-    });
-  })();
-
-  /* TODO: Abortable download */
-  return [downloadFilePromise, { abort: () => null }];
+  return new NetworkFacade(
+    Network.client(
+      process.env.REACT_APP_STORJ_BRIDGE as string,
+      {
+        clientName: 'drive-web',
+        clientVersion: '1.0'
+      },
+      {
+        bridgeUser: auth.username,
+        userId: auth.password
+      }
+    )
+  ).download(bucketId, fileId, mnemonic, {
+    downloadingCallback: options?.notifyProgress,
+    abortController: options?.abortController
+  });
 };
 
 const downloadFile: DownloadFileFunction = (params) => {
