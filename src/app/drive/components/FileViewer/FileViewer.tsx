@@ -13,7 +13,7 @@ interface FileViewerProps {
   file?: { type: string | null; name: string };
   onClose: () => void;
   onDownload: () => void;
-  downloader: () => [Promise<Blob>, { stop: () => void } | undefined];
+  downloader: (abortController: AbortController) => Promise<Blob>
   show: boolean;
 }
 
@@ -44,11 +44,17 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
 
   useEffect(() => {
     if (isTypeAllowed && show) {
-      const [downloadPromise, actionState] = downloader();
-      downloadPromise.then(setBlob).catch(console.error);
-      return () => {
-        actionState?.stop();
-      };
+      const abortController = new AbortController();
+
+      downloader(abortController).then(setBlob).catch((err) =>{
+        if (abortController.signal.aborted) {
+          return;
+        } 
+        
+        console.error(err);
+      });
+
+      return () => abortController.abort();
     } else if (!show) setBlob(null);
   }, [show]);
 

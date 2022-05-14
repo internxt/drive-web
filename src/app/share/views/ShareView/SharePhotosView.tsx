@@ -77,7 +77,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     try {
       if (info?.photos.length === 1) {
         const [photo] = info.photos;
-        const [readablePromise] = network.downloadFile({
+        const readablePromise = network.downloadFile({
           bucketId: info.bucket,
           fileId: photo.fileId,
           encryptionKey: Buffer.from(photo.decryptionKey, 'hex'),
@@ -125,7 +125,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
 
         for (const photo of info.photos) {
           const photoName = `${photo.name}.${photo.type}`;
-          const [photoStreamPromise] = network.downloadFile({
+          const photoStreamPromise = network.downloadFile({
             bucketId: info.bucket,
             fileId: photo.fileId,
             encryptionKey: Buffer.from(photo.decryptionKey, 'hex'),
