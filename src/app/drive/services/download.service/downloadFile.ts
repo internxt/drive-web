@@ -1,5 +1,4 @@
 import streamSaver from 'streamsaver';
-import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 import analyticsService from 'app/analytics/services/analytics.service';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -94,26 +93,22 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
   await writer.close();
 }
 
-export default function downloadFile(
+export default async function downloadFile(
   itemData: DriveFileData,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-): [Promise<void>, ActionState | undefined] {
+  abortController?: AbortController
+): Promise<void> {
   const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
 
   trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
 
-  const [fileStreamPromise, actionState] = fetchFileStream({ ...itemData, bucketId: itemData.bucket }, { isTeam, updateProgressCallback });
-
-  const handleError = (err: unknown) => {
-    const errMessage = err instanceof Error ? err.message : (err as string);
-
-    trackFileDownloadError(userEmail, fileId, errMessage);
-
-    throw new Error(errMessage);
-  };
+  const fileStream = await fetchFileStream(
+    { ...itemData, bucketId: itemData.bucket },
+    { isTeam, updateProgressCallback, abortController }
+  );
 
   const writeToFsIsSupported = 'showSaveFilePicker' in window;
   const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
@@ -144,17 +139,21 @@ export default function downloadFile(
     });
   }
 
-  const downloadPromise = fileStreamPromise.then((readable) => {
-    return writerPromise.then((writable) => {
+  const writable = await writerPromise;
 
-      return readable.pipeTo && readable.pipeTo(writable) || pipe(readable, writable);
-    }).catch(handleError);
+  await (
+    fileStream.pipeTo && fileStream.pipeTo(writable, { signal: abortController?.signal }) ||
+    pipe(fileStream, writable)
+  ).catch((err) => {
+    const errMessage = err instanceof Error ? err.message : (err as string);
+
+    trackFileDownloadError(userEmail, fileId, errMessage);
+
+    throw new Error(errMessage);
   });
 
-  return [downloadPromise.then(() => {
-    analyticsService.trackFileDownloadCompleted({
-      size: itemData.size,
-      extension: itemData.type,
-    });
-  }), actionState];
+  analyticsService.trackFileDownloadCompleted({
+    size: itemData.size,
+    extension: itemData.type,
+  });
 }

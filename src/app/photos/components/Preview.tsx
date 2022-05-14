@@ -1,4 +1,3 @@
-import { ActionState } from '@internxt/inxt-js/build/api';
 import { CaretLeft, DownloadSimple, Share, Trash, X } from 'phosphor-react';
 import { useState, useEffect, Fragment } from 'react';
 import { Transition } from '@headlessui/react';
@@ -47,19 +46,23 @@ export default function Preview({
     if (previewIndex !== null && bucketId) {
       setSrc(null);
 
-      let actionState: ActionState | undefined;
+      const abortController = new AbortController();
       const photo = items[previewIndex];
 
-      getPhotoBlob({ photo, bucketId })
-        .then(([blobPromise, srcActionState]) => {
-          actionState = srcActionState;
-          return blobPromise;
+      getPhotoBlob({ photo, bucketId, abortController })
+        .then((blob) => {
+          return setSrc(URL.createObjectURL(blob));
         })
-        .then((blob) => setSrc(URL.createObjectURL(blob)))
-        .catch(console.log);
+        .catch((err) => {
+          if (abortController.signal.aborted) {
+            return;
+          }
+
+          console.log(err);
+        });
 
       return () => {
-        actionState?.stop();
+        abortController.abort();
       };
     }
   }, [previewIndex, items]);

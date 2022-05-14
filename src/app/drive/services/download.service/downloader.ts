@@ -80,14 +80,12 @@ async function downloadFiles(
         type: file.type,
       });
 
-      const [readablePromise] = downloadFile({
+      const readable = await downloadFile({
         bucketId: bucket,
         fileId: file.id,
         encryptionKey: Buffer.from(file.encryptionKey, 'hex'),
         token
       });
-
-      const readable = await readablePromise;
 
       await new Promise((resolve, reject) => {
         opts.onFileRetrieved({

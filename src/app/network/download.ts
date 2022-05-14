@@ -1,7 +1,5 @@
 import { Environment } from '@internxt/inxt-js';
-import { ActionState } from '@internxt/inxt-js/build/api';
 import { createDecipheriv, Decipher } from 'crypto';
-import { EventEmitter } from 'events';
 
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
@@ -72,9 +70,9 @@ interface FileInfo {
 
 export function getDecryptedStream(
   encryptedContentSlices: ReadableStream<Uint8Array>[],
-  decipher: Decipher
-): [ReadableStream<Uint8Array>, Abortable] {
-  const eventEmitter = new EventEmitter();
+  decipher: Decipher,
+  abortController?: AbortController
+): ReadableStream<Uint8Array> {
   const reader = joinReadableBinaryStreams(encryptedContentSlices).getReader();
 
   const decryptedStream = new ReadableStream({
@@ -92,55 +90,31 @@ export function getDecryptedStream(
     }
   });
 
-  eventEmitter.once('abort', () => {
-    decryptedStream.cancel();
-  });
+  abortController?.signal.addEventListener('abort', () => decryptedStream.cancel(), { once: true });
 
-  return [
-    decryptedStream,
-    {
-      abort: () => {
-        eventEmitter.emit('abort');
-      },
-    },
-  ];
+  return decryptedStream;
 }
 
-function getFileDownloadStream(downloadUrls: string[], decipher: Decipher): [Promise<ReadableStream>, Abortable] {
-  let abortable: Abortable = {
-    abort: () => null
-  };
+async function getFileDownloadStream(
+  downloadUrls: string[],
+  decipher: Decipher,
+  abortController?: AbortController
+): Promise<ReadableStream> {
+  const encryptedContentParts: ReadableStream<Uint8Array>[] = [];
 
-  const downloadPromise = (async () => {
-    const encryptedContentParts: ReadableStream<Uint8Array>[] = [];
+  for (const downloadUrl of downloadUrls) {
+    const encryptedStream = await fetch(downloadUrl, { signal: abortController?.signal }).then((res) => {
+      if (!res.body) {
+        throw new Error('No content received');
+      }
 
-    for (const downloadUrl of downloadUrls) {
-      const encryptedStream = await fetch(downloadUrl).then((res) => {
-        if (!res.body) {
-          throw new Error('No content received');
-        }
+      return res.body;
+    });
 
-        return res.body;
-      });
+    encryptedContentParts.push(encryptedStream);
+  }
 
-      encryptedContentParts.push(encryptedStream);
-    }
-
-    const [decryptedStream, decryptAbortable] = getDecryptedStream(encryptedContentParts, decipher);
-
-    abortable = decryptAbortable;
-
-    return decryptedStream;
-  })();
-
-  return [
-    downloadPromise,
-    {
-      abort: () => {
-        abortable.abort();
-      },
-    },
-  ];
+  return getDecryptedStream(encryptedContentParts, decipher);
 }
 
 interface NetworkCredentials {
@@ -156,7 +130,8 @@ interface IDownloadParams {
   encryptionKey?: Buffer;
   token?: string;
   options?: {
-    notifyProgress: DownloadProgressCallback
+    notifyProgress: DownloadProgressCallback,
+    abortController?: AbortController
   }
 }
 
@@ -187,91 +162,63 @@ async function getRequiredFileMetadataWithAuth(
   return { fileMeta, mirrors };
 }
 
-type DownloadFileResponse = { abortable: Abortable, promise: DownloadFilePromise };
-type DownloadFilePromise = Promise<ReadableStream<Uint8Array>>;
+export function downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
+  const downloadFileV2Promise = downloadFileV2(params as any);
 
-export function downloadFile(params: IDownloadParams): [
-  Promise<ReadableStream<Uint8Array>>,
-  Abortable
-] {
-  const [downloadFileV2Promise, downloadFileV2Abortable] = downloadFileV2(params as any);
+  return downloadFileV2Promise.catch((err) => {
+    if (err instanceof FileVersionOneError) {
+      return _downloadFile(params);
+    }
 
-  const response: DownloadFileResponse = {
-    abortable: downloadFileV2Abortable,
-    promise: downloadFileV2Promise.catch((err) => {
-      if (err instanceof FileVersionOneError) {
-        const [downloadFilePromise, downloadFileAbortable] = _downloadFile(params);
-
-        response.abortable = downloadFileAbortable;
-
-        return downloadFilePromise;
-      } else {
-        throw err;
-      }
-    })
-  };
-
-  return [response.promise, response.abortable];
+    throw err;
+  });
 }
 
-function _downloadFile(params: IDownloadParams): [
-  Promise<ReadableStream<Uint8Array>>,
-  Abortable
-] {
+async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
   const { bucketId, fileId, token, creds } = params;
-  let abortable: Abortable = {
-    abort: () => null,
-  };
 
-  const downloadFilePromise = (async () => {
-    let metadata: MetadataRequiredForDownload;
+  let metadata: MetadataRequiredForDownload;
 
-    if (creds) {
-      metadata = await getRequiredFileMetadataWithAuth(bucketId, fileId, creds);
-    } else if (token) {
-      metadata = await getRequiredFileMetadataWithToken(bucketId, fileId, token);
-    } else {
-      throw new Error('Download error 1');
-    }
+  if (creds) {
+    metadata = await getRequiredFileMetadataWithAuth(bucketId, fileId, creds);
+  } else if (token) {
+    metadata = await getRequiredFileMetadataWithToken(bucketId, fileId, token);
+  } else {
+    throw new Error('Download error 1');
+  }
 
-    const { mirrors, fileMeta } = metadata;
-    const downloadUrls: string[] = mirrors.map((m) => process.env.REACT_APP_PROXY + '/' + m.url);
+  const { mirrors, fileMeta } = metadata;
+  const downloadUrls: string[] = mirrors.map((m) => process.env.REACT_APP_PROXY + '/' + m.url);
 
-    const index = Buffer.from(fileMeta.index, 'hex');
-    const iv = index.slice(0, 16);
-    let key: Buffer;
+  const index = Buffer.from(fileMeta.index, 'hex');
+  const iv = index.slice(0, 16);
+  let key: Buffer;
 
-    if (params.encryptionKey) {
-      key = params.encryptionKey;
-    } else if (params.mnemonic) {
-      key = await generateFileKey(params.mnemonic, bucketId, index);
-    } else {
-      throw new Error('Download error code 1');
-    }
+  if (params.encryptionKey) {
+    key = params.encryptionKey;
+  } else if (params.mnemonic) {
+    key = await generateFileKey(params.mnemonic, bucketId, index);
+  } else {
+    throw new Error('Download error code 1');
+  }
 
-    const [downloadStreamPromise, downloadAbortable] = await getFileDownloadStream(
-      downloadUrls,
-      createDecipheriv('aes-256-ctr', key, iv),
-    );
+  const downloadStream = await getFileDownloadStream(
+    downloadUrls,
+    createDecipheriv('aes-256-ctr', key, iv),
+    params.options?.abortController
+  );
 
-    abortable = downloadAbortable;
-
-    return downloadStreamPromise.then((readable) => {
-      return buildProgressStream(readable, (readBytes) => {
-        params.options?.notifyProgress(metadata.fileMeta.size, readBytes);
-      });
-    });
-  })();
-
-  return [downloadFilePromise, abortable];
+  return buildProgressStream(downloadStream, (readBytes) => {
+    params.options?.notifyProgress(metadata.fileMeta.size, readBytes);
+  });
 }
 
 export function downloadFileToFileSystem(
   params: IDownloadParams & { destination: WritableStream },
 ): [Promise<void>, Abortable] {
-  const [downloadStreamPromise, abortable] = downloadFile(params);
+  const downloadStreamPromise = downloadFile(params);
 
-  return [downloadStreamPromise.then((readable) => readable.pipeTo(params.destination)), abortable];
+  return [downloadStreamPromise.then((readable) => readable.pipeTo(params.destination)), { abort: () => null }];
 }
 
 export async function getPhotoPreview({
@@ -280,6 +227,8 @@ export async function getPhotoPreview({
 }: {
   photo: SerializablePhoto;
   bucketId: string;
+}, opts?: {
+  abortController: AbortController
 }): Promise<string> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
   let blob: Blob;
@@ -291,61 +240,55 @@ export async function getPhotoPreview({
     const indexBuf = Buffer.from(index, 'hex');
     const iv = indexBuf.slice(0, 16);
     const key = await generateFileKey(mnemonic, bucketId, indexBuf);
-    const [downloadStreamPromise] = getFileDownloadStream([link], createDecipheriv('aes-256-ctr', key, iv));
-
-    const readable = await downloadStreamPromise;
+    const readable = await getFileDownloadStream([link], createDecipheriv('aes-256-ctr', key, iv), opts?.abortController);
 
     blob = await binaryStreamToBlob(readable);
     databaseService.put(DatabaseCollection.Photos, photo.id, { preview: blob });
   }
 
-  const url = URL.createObjectURL(blob);
-
-  return url;
+  return URL.createObjectURL(blob);
 }
 
 export async function getPhotoBlob({
   photo,
   bucketId,
+  abortController
 }: {
   photo: SerializablePhoto;
   bucketId: string;
-}): Promise<[Promise<Blob>, ActionState | undefined]> {
+  abortController?: AbortController
+}): Promise<Blob> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
-  let promise: Promise<Blob>;
-  let actionState: ActionState | undefined;
 
   if (previewInCache && previewInCache.source) {
-    promise = Promise.resolve(previewInCache.source);
-  } else {
-    const [blobPromise, blobActionState] = fetchFileBlob(
-      { fileId: photo.fileId, bucketId },
-      { updateProgressCallback: () => undefined },
-    );
-
-    promise = blobPromise.then((blob) => {
-      databaseService.get(DatabaseCollection.Photos, photo.id).then((previewInCacheRefresh) => {
-        databaseService.put(DatabaseCollection.Photos, photo.id, { ...(previewInCacheRefresh ?? {}), source: blob });
-      });
-      return blob;
-    });
-
-    actionState = blobActionState as ActionState;
+    return Promise.resolve(previewInCache.source);
   }
 
-  return [promise, actionState];
+  const photoBlob = await fetchFileBlob(
+    { fileId: photo.fileId, bucketId },
+    { updateProgressCallback: () => undefined, abortController },
+  );
+
+  databaseService.get(DatabaseCollection.Photos, photo.id).then((previewInCacheRefresh) => {
+    databaseService.put(DatabaseCollection.Photos, photo.id, { ...(previewInCacheRefresh ?? {}), source: photoBlob });
+  });
+
+  return photoBlob;
 }
 
 export async function getPhotoCachedOrStream({
   photo,
   bucketId,
   onProgress,
+  abortController
 }: {
   photo: SerializablePhoto;
   bucketId: string;
   onProgress?: (progress: number) => void;
-}): Promise<Promise<Blob> | [Promise<ReadableStream<Uint8Array>>, ActionState]> {
+  abortController?: AbortController
+}): Promise<Blob | ReadableStream<Uint8Array>> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
+
   if (previewInCache && previewInCache.source) {
     onProgress?.(1);
     return Promise.resolve(previewInCache.source);
@@ -353,7 +296,7 @@ export async function getPhotoCachedOrStream({
 
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig();
 
-  const [promise, abortable] = downloadFile({
+  return downloadFile({
     bucketId,
     fileId: photo.fileId,
     creds: {
@@ -362,13 +305,8 @@ export async function getPhotoCachedOrStream({
     },
     mnemonic: encryptionKey,
     options: {
-      notifyProgress: (totalBytes, downloadedBytes) => onProgress && onProgress(downloadedBytes / totalBytes)
+      notifyProgress: (totalBytes, downloadedBytes) => onProgress && onProgress(downloadedBytes / totalBytes),
+      abortController
     }
   });
-
-  return [promise, {
-    stop: () => {
-      abortable.abort();
-    }
-  } as ActionState];
 }

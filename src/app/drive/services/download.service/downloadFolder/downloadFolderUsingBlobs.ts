@@ -47,7 +47,7 @@ export default async function downloadFolderUsingBlobs({
         name: fileDecryptedNames[file.id],
         type: file.type,
       });
-      const [fileBlobPromise] = fetchFileBlob({ ...file, bucketId: file.bucket }, {
+      const fileBlobPromise = fetchFileBlob({ ...file, bucketId: file.bucket }, {
         isTeam,
         updateProgressCallback: (fileProgress) => {
           const totalProgress = (downloadedSize + file.size * fileProgress) / size;

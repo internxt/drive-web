@@ -160,21 +160,25 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     return encryptionKey;
   }
 
-  function getBlob(): [Promise<Blob>, undefined] {
+  function getBlob(abortController: AbortController): Promise<Blob> {
     const fileInfo = info as unknown as ShareTypes.SharedFileInfo;
 
     const encryptionKey = getEncryptionKey();
 
-    const [readable] = network.downloadFile(
+    const readable = network.downloadFile(
       {
         bucketId: fileInfo.bucket,
         fileId: fileInfo.file,
         encryptionKey: Buffer.from(encryptionKey, 'hex'),
         token: fileInfo.fileToken,
+        options: {
+          abortController,
+          notifyProgress: () => null
+        }
       }
     );
 
-    return [readable.then(binaryStreamToBlob), undefined];
+    return readable.then(binaryStreamToBlob);
   }
 
   function onDownloadFromPreview() {
@@ -192,7 +196,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
-        const [readable] = network.downloadFile(
+        const readable = await network.downloadFile(
           {
             bucketId: fileInfo.bucket,
             fileId: fileInfo.file,
@@ -205,7 +209,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
             }
           }
         );
-        const fileBlob = await binaryStreamToBlob(await readable);
+        const fileBlob = await binaryStreamToBlob(readable);
 
         downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
       }

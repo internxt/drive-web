@@ -11,6 +11,7 @@ import { TaskStatus } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import AppError from 'app/core/types';
 import { DriveFolderData } from 'app/drive/types';
+import downloadFolderUsingBlobs from 'app/drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
 
 interface DownloadFolderThunkOptions {
   taskId: string;
@@ -35,14 +36,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
     const options = { ...defaultDownloadFolderThunkOptions, ...payload.options };
     const isTeam: boolean = sessionSelectors.isTeam(getState());
     const task = tasksService.findTask(options.taskId);
-    const decryptedCallback = () => {
-      tasksService.updateTask({
-        taskId: options.taskId,
-        merge: {
-          status: TaskStatus.InProcess,
-        },
-      });
-    };
+
     const updateProgressCallback = (progress: number) => {
       if (task?.status !== TaskStatus.Cancelled) {
         tasksService.updateTask({
@@ -68,58 +62,58 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       },
     });
 
+    const abortController = new AbortController();
+
     try {
-      const [downloadFolderPromise, stop] = (await downloadService.downloadFolder({
-        folder,
-        decryptedCallback,
-        updateProgressCallback,
-        isTeam,
-      })) as [Promise<void>, () => void];
+      const abort = () => {
+        (abortController as { abort: (message: string) => void }).abort('Download cancelled');
+      };
 
       tasksService.updateTask({
         taskId: options.taskId,
         merge: {
           cancellable: true,
-          stop: async () => stop(),
+          stop: async () => abort()
         },
       });
 
-      downloadFolderPromise
-        .then(() => {
-          tasksService.updateTask({
-            taskId: options.taskId,
-            merge: {
-              status: TaskStatus.Success,
-            },
-          });
-        })
-        .catch((err: unknown) => {
-          const castedError = errorService.castError(err);
-          const task = tasksService.findTask(options.taskId);
+      if (navigator.brave?.isBrave()) {
+        await downloadFolderUsingBlobs({ folder, updateProgressCallback, isTeam });
+      } else {
+        await downloadService.downloadFolder({ folder, updateProgressCallback, isTeam, abortController });
+      }
 
-          if (task?.status !== TaskStatus.Cancelled) {
-            tasksService.updateTask({
-              taskId: options.taskId,
-              merge: {
-                status: TaskStatus.Error,
-              },
-            });
-
-            rejectWithValue(castedError);
-          }
-        });
-
-      await downloadFolderPromise;
-    } catch (err) {
       tasksService.updateTask({
         taskId: options.taskId,
         merge: {
-          status: TaskStatus.Error,
-          cancellable: false,
+          status: TaskStatus.Success,
         },
       });
+    } catch (err) {
+      if (abortController.signal.aborted) {
+        return tasksService.updateTask({
+          taskId: options.taskId,
+          merge: {
+            status: TaskStatus.Cancelled
+          }
+        });
+      }
 
-      throw err;
+      (abortController as { abort: (message: string) => void }).abort((err as Error).message);
+
+      const castedError = errorService.castError(err);
+      const task = tasksService.findTask(options.taskId);
+
+      if (task?.status !== TaskStatus.Cancelled) {
+        tasksService.updateTask({
+          taskId: options.taskId,
+          merge: {
+            status: TaskStatus.Error,
+          },
+        });
+
+        rejectWithValue(castedError);
+      }
     }
   },
 );
