@@ -5,7 +5,6 @@ import { DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
 import { FlatFolderZip } from 'app/core/services/stream.service';
 import network from 'app/network';
-import { Abortable } from 'app/network/Abortable';
 
 /**
  * @description Downloads a folder using File System Access API
@@ -41,7 +40,6 @@ async function downloadFolder(
     updateProgress?: (progress: number) => void
   }
 ) {
-  const abortables: Abortable[] = [];
   const { abortController, updateProgress } = opts;
   const { bridgeUser, bridgePass, encryptionKey } = environment;
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
