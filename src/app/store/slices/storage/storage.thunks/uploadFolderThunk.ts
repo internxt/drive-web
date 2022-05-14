@@ -77,26 +77,22 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         rootFolderItem = createdFolder;
 
         if (level.childrenFiles) {
-          const slicesOf = 3;
+          for (const childrenFile of level.childrenFiles) {
+            await dispatch(
+              uploadItemsThunk({
+                files: [childrenFile],
+                parentFolderId: createdFolder.id,
+                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              }),
+            ).unwrap();
 
-          for (let i = 0; i < level.childrenFiles.length; i += slicesOf) {
-            await Promise.all(level.childrenFiles.slice(i, i + slicesOf).map((file) => {
-              return dispatch(
-                uploadItemsThunk({
-                  files: [file],
-                  parentFolderId: createdFolder.id,
-                  options: { relatedTaskId: taskId, showNotifications: false, showErrors: false }
-                }),
-              ).unwrap().then(() => {
-                tasksService.updateTask({
-                  taskId: taskId,
-                  merge: {
-                    status: TaskStatus.InProcess,
-                    progress: ++alreadyUploaded / itemsUnderRoot,
-                  },
-                });
-              });
-            }));
+            tasksService.updateTask({
+              taskId: taskId,
+              merge: {
+                status: TaskStatus.InProcess,
+                progress: ++alreadyUploaded / itemsUnderRoot,
+              },
+            });
           }
         }
 
