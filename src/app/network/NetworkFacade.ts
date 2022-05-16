@@ -122,7 +122,6 @@ export class NetworkFacade {
         const decryptedStream = getDecryptedStream(
           encryptedContentStreams,
           createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), (iv as Buffer)),
-          options?.abortController
         );
 
         fileStream = buildProgressStream(decryptedStream, (readBytes) => {
