@@ -70,13 +70,17 @@ interface FileInfo {
 
 export function getDecryptedStream(
   encryptedContentSlices: ReadableStream<Uint8Array>[],
-  decipher: Decipher,
-  abortController?: AbortController
+  decipher: Decipher
 ): ReadableStream<Uint8Array> {
-  const reader = joinReadableBinaryStreams(encryptedContentSlices).getReader();
+  const encryptedStream = joinReadableBinaryStreams(encryptedContentSlices);
+
+  let keepReading = true;
 
   const decryptedStream = new ReadableStream({
     async pull(controller) {
+      if (!keepReading) return;
+
+      const reader = encryptedStream.getReader();
       const status = await reader.read();
 
       if (status.done) {
@@ -84,13 +88,13 @@ export function getDecryptedStream(
       } else {
         controller.enqueue(decipher.update(status.value));
       }
+
+      reader.releaseLock();
     },
     cancel() {
-      reader.cancel();
+      keepReading = false;
     }
   });
-
-  abortController?.signal.addEventListener('abort', () => decryptedStream.cancel(), { once: true });
 
   return decryptedStream;
 }

@@ -48,9 +48,14 @@ export function buildProgressStream(source: BinaryStream, onRead: (readBytes: nu
 
 export function joinReadableBinaryStreams(streams: BinaryStream[]): ReadableStream {
   const streamsCopy = streams.map(s => s);
+  let keepReading = true;
+
+  const flush = () => streamsCopy.forEach(s => s.cancel());
 
   const stream = new ReadableStream({
     async pull(controller) {
+      if (!keepReading) return flush();
+
       const downStream = streamsCopy.shift();
 
       if (!downStream) {
@@ -60,7 +65,7 @@ export function joinReadableBinaryStreams(streams: BinaryStream[]): ReadableStre
       const reader = downStream.getReader();
       let done = false;
 
-      while (!done) {
+      while (!done && keepReading) {
         const status = await reader.read();
 
         if (!status.done) {
@@ -69,9 +74,11 @@ export function joinReadableBinaryStreams(streams: BinaryStream[]): ReadableStre
 
         done = status.done;
       }
+
+      reader.releaseLock();
     },
     cancel() {
-      streamsCopy.forEach(s => s.cancel());
+      keepReading = false;
     }
   });
 
