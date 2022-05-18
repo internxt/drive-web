@@ -24,7 +24,7 @@ function nameToInitials(fullName: string) {
   if (namesArray.length === 1) return `${namesArray[0].charAt(0)}`;
   else {
     const first = namesArray[0].charAt(0);
-    const second = namesArray[namesArray.length - 1].charAt(0);
+    const second = namesArray[1].charAt(0);
     return first + second;
   }
 }
