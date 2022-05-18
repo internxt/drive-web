@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
-import { InitializeUserResponse } from '@internxt/sdk/dist/drive/users/types';
+import { InitializeUserResponse, UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
   const usersClient = SdkFactory.getInstance().createUsersClient();
@@ -25,11 +25,17 @@ const refreshUser = async (): Promise<{ user: UserSettings; token: string }> => 
   return usersClient.refreshUser();
 };
 
+const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<void> => {
+  const usersClient = SdkFactory.getInstance().createUsersClient();
+  return usersClient.updateProfile(payload);
+};
+
 const userService = {
   initializeUser,
   refreshUser,
   sendDeactivationEmail,
   inviteAFriend,
+  updateUserProfile,
 };
 
 export default userService;

@@ -1,11 +1,16 @@
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { CheckCircle, Warning } from 'phosphor-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
 import Input from '../../../../../shared/components/Input';
 import Modal from '../../../../../shared/components/Modal';
 import Tooltip from '../../../../../shared/components/Tooltip';
+import { RootState } from '../../../../../store';
+import { useAppDispatch } from '../../../../../store/hooks';
+import { updateUserProfileThunk } from '../../../../../store/slices/user';
 import Section from '../../components/Section';
 
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
@@ -17,13 +22,16 @@ export default function AccountDetails({ className = '' }: { className?: string 
     notificationsService.show({ text: 'Verification email has been sent', type: ToastType.Success });
   }
 
+  const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
+  if (!user) throw new Error('User is not defined');
+
   return (
     <Section className={className} title="Account details">
       <Card>
         <div className="flex justify-between">
           <div className="flex">
-            <Detail label="Name" value="John" />
-            <Detail label="Lastname" value="Appleseed" className="ml-8" />
+            <Detail label="Name" value={user.name} />
+            <Detail label="Lastname" value={user.lastname} className="ml-8" />
           </div>
           <Button variant="secondary" onClick={() => setIsModalOpen(true)}>
             Edit
@@ -52,17 +60,12 @@ export default function AccountDetails({ className = '' }: { className?: string 
           </Tooltip>
         </div>
       </Card>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <h1 className="text-2xl font-medium text-gray-80">Account details</h1>
-        <Input className="mt-4" label="Name" />
-        <Input className="mt-3" label="Lastname" />
-        <div className="mt-3 flex justify-end">
-          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
-            Cancel
-          </Button>
-          <Button className="ml-2">Save</Button>
-        </div>
-      </Modal>
+      <AccountDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        name={user.name}
+        lastname={user.lastname}
+      />
     </Section>
   );
 }
@@ -73,5 +76,86 @@ function Detail({ className = '', label, value }: { className?: string; label: s
       <h2 className="text-sm ">{label}</h2>
       <h1 className="text-lg font-medium">{value}</h1>
     </div>
+  );
+}
+
+function AccountDetailsModal({
+  isOpen,
+  onClose,
+  name,
+  lastname,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  name: string;
+  lastname: string;
+}) {
+  useEffect(() => {
+    if (isOpen) {
+      setStatus({ tag: 'ready' });
+    }
+  }, [isOpen]);
+  const dispatch = useAppDispatch();
+  const [nameValue, setNameValue] = useState(name);
+  const [lastnameValue, setLastnameValue] = useState(lastname);
+
+  const [status, setStatus] = useState<
+    { tag: 'ready' } | { tag: 'loading' } | { tag: 'error'; type: 'NAME_INVALID' | 'LASTNAME_INVALID' | 'UNKNOWN' }
+  >({ tag: 'ready' });
+
+  const nameIsInvalid = status.tag === 'error' && status.type === 'NAME_INVALID';
+  const lastnameIsInvalid = status.tag === 'error' && status.type === 'LASTNAME_INVALID';
+
+  function validate(value: string) {
+    return value.length > 0 && value.length < 20;
+  }
+  async function onSave() {
+    if (!validate(nameValue)) {
+      setStatus({ tag: 'error', type: 'NAME_INVALID' });
+    } else if (!validate(lastnameValue)) {
+      setStatus({ tag: 'error', type: 'LASTNAME_INVALID' });
+    } else {
+      try {
+        setStatus({ tag: 'loading' });
+        await dispatch(updateUserProfileThunk({ name: nameValue, lastname: lastnameValue })).unwrap();
+        notificationsService.show({ text: 'Profile updated successfully', type: ToastType.Success });
+        onClose();
+      } catch {
+        setStatus({ tag: 'error', type: 'UNKNOWN' });
+        notificationsService.show({ text: 'We could not update your profile', type: ToastType.Error });
+      }
+    }
+  }
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <h1 className="text-2xl font-medium text-gray-80">Account details</h1>
+      <Input
+        disabled={status.tag === 'loading'}
+        className="mt-4"
+        label="Name"
+        value={nameValue}
+        onChange={setNameValue}
+        accent={nameIsInvalid ? 'error' : undefined}
+        message={nameIsInvalid ? 'This name is invalid' : undefined}
+      />
+      <Input
+        disabled={status.tag === 'loading'}
+        className="mt-3"
+        label="Lastname"
+        value={lastnameValue}
+        onChange={setLastnameValue}
+        accent={lastnameIsInvalid ? 'error' : undefined}
+        message={lastnameIsInvalid ? 'This lastname is invalid' : undefined}
+      />
+      <div className="mt-3 flex justify-end">
+        <Button disabled={status.tag === 'loading'} variant="secondary" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button loading={status.tag === 'loading'} className="ml-2" onClick={onSave}>
+          Save
+        </Button>
+      </div>
+    </Modal>
   );
 }
