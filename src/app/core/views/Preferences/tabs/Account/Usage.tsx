@@ -1,21 +1,35 @@
+import { useSelector } from 'react-redux';
 import Card from '../../../../../shared/components/Card';
 import CurrentPlan from '../../../../../shared/components/CurrentPlan';
+import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import UsageDetails from '../../../../../shared/components/UsageDetails';
+import { RootState } from '../../../../../store';
+import { PlanState } from '../../../../../store/slices/plan';
 import Section from '../../components/Section';
 
 export default function Usage({ className = '' }: { className?: string }): JSX.Element {
-  const products: Parameters<typeof UsageDetails>[0]['products'] = [
-    { name: 'Drive', usageInBytes: 450000000, color: 'primary' },
-    { name: 'Backups', usageInBytes: 900000000, color: 'indigo' },
-    { name: 'Photos', usageInBytes: 550000000, color: 'orange' },
-    { name: 'Trash', usageInBytes: 300000000, color: 'gray' },
-  ];
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
+
+  const products: Parameters<typeof UsageDetails>[0]['products'] | null = plan.usageDetails
+    ? [
+        { name: 'Drive', usageInBytes: plan.usageDetails.drive, color: 'primary' },
+        { name: 'Backups', usageInBytes: plan.usageDetails.backups, color: 'indigo' },
+      ]
+    : null;
 
   return (
     <Section className={className} title="Usage">
       <Card>
-        <CurrentPlan button="upgrade" bytesInPlan={4294967296} planName="Free plan" />
-        <UsageDetails className="mt-5" planLimitInBytes={4294967296} products={products} />
+        {products && plan.individualPlan ? (
+          <>
+            <CurrentPlan button="upgrade" bytesInPlan={plan.planLimit} planName={plan.individualPlan.name} />
+            <UsageDetails className="mt-5" planLimitInBytes={plan.planLimit} products={products} />
+          </>
+        ) : (
+          <div className="flex items-center justify-center" style={{ height: '122px' }}>
+            <Spinner className="h-7 w-7 text-primary" />
+          </div>
+        )}
       </Card>
     </Section>
   );

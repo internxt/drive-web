@@ -6,6 +6,7 @@ import limitService from 'app/drive/services/limit.service';
 import planService from 'app/drive/services/plan.service';
 import usageService from 'app/drive/services/usage.service';
 import { sessionSelectors } from '../session/session.selectors';
+import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
 
 export interface PlanState {
   isLoadingPlans: boolean;
@@ -15,6 +16,7 @@ export interface PlanState {
   teamPlan: StoragePlan | null;
   planLimit: number;
   planUsage: number;
+  usageDetails: UsageResponse | null;
 }
 
 interface FetchPlansResult {
@@ -30,6 +32,7 @@ const initialState: PlanState = {
   teamPlan: null,
   planLimit: 0,
   planUsage: 0,
+  usageDetails: null,
 };
 
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
@@ -79,19 +82,16 @@ export const fetchLimitThunk = createAsyncThunk<number, void, { state: RootState
   },
 );
 
-export const fetchUsageThunk = createAsyncThunk<number, void, { state: RootState }>(
+export const fetchUsageThunk = createAsyncThunk<UsageResponse | null, void, { state: RootState }>(
   'plan/fetchUsage',
   async (payload: void, { getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
-    let usage = 0;
 
     if (isAuthenticated) {
-      const usageResponse = await usageService.fetchUsage();
-
-      usage = usageResponse.total;
+      return await usageService.fetchUsage();
+    } else {
+      return null;
     }
-
-    return usage;
   },
 );
 
@@ -136,7 +136,10 @@ export const planSlice = createSlice({
       })
       .addCase(fetchUsageThunk.fulfilled, (state, action) => {
         state.isLoadingPlanUsage = false;
-        state.planUsage = action.payload;
+        if (action.payload !== null) {
+          state.planUsage = action.payload.total;
+          state.usageDetails = action.payload;
+        }
       })
       .addCase(fetchUsageThunk.rejected, (state) => {
         state.isLoadingPlanUsage = false;
