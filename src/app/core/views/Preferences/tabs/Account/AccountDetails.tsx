@@ -39,7 +39,7 @@ export default function AccountDetails({ className = '' }: { className?: string 
         </div>
         <div className="mt-5 flex items-center justify-between">
           <div>
-            <Detail label="Email" value="john.appleseed@internxt.com" />
+            <Detail label="Email" value={user.email} />
             {!isVerified && (
               <button onClick={onResend} className="font-medium text-primary hover:text-primary-dark">
                 Resend verification email
