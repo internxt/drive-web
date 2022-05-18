@@ -51,6 +51,8 @@ export default function UsageDetails({
 
   products.sort((a, b) => b.usageInBytes - a.usageInBytes);
 
+  const usedProducts = products.filter((product) => product.usageInBytes > 0);
+
   return (
     <div className={`${className}`}>
       <div className="flex justify-between">
@@ -60,7 +62,7 @@ export default function UsageDetails({
         <p className="text-gray-50">{percentageUsed}%</p>
       </div>
       <div className="mt-2 flex h-2 rounded-sm bg-gray-5" ref={barRef}>
-        {products.map((product, i) => (
+        {usedProducts.map((product, i) => (
           <Tooltip
             key={product.name}
             style="light"
