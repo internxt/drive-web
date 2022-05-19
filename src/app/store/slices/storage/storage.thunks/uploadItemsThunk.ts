@@ -110,8 +110,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       tasksIds.push(taskId);
     }
 
+    const abortController = new AbortController();
+
     // 2.
     for (const [index, file] of filesToUpload.entries()) {
+      if (abortController.signal.aborted) break;
+
       const taskId = tasksIds[index];
       const updateProgressCallback = (progress) => {
         const task = tasksService.findTask(taskId);
@@ -127,11 +131,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         }
       };
       const taskFn = async (): Promise<DriveFileData> => {
-        const [uploadFilePromise, actionState] = fileService.uploadFile(
+        const uploadFilePromise = fileService.uploadFile(
           user.email,
           file,
           isTeam,
           updateProgressCallback,
+          abortController
         );
 
         tasksService.updateTask({
@@ -139,7 +144,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           merge: {
             status: TaskStatus.Encrypting,
             stop: async () => {
-              actionState?.abort();
+              abortController.abort();
             },
           },
         });
