@@ -8,7 +8,6 @@ import { getEnvironmentConfig } from '../network.service';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
-import { Abortable } from 'app/network/Abortable';
 import { uploadFile as upload } from 'app/network/upload';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
@@ -25,10 +24,8 @@ export function uploadFile(
   file: ItemToUpload,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-): [Promise<DriveFileData>, Abortable | undefined] {
-  let promise: Promise<DriveFileData>;
-  let abortable: Abortable | undefined;
-
+  abortController?: AbortController
+): Promise<DriveFileData> {
   try {
     analyticsService.trackFileUploadStart({
       file_size: file.size,
@@ -49,7 +46,7 @@ export function uploadFile(
       throw new Error('Bucket not found!');
     }
 
-    const [uploadFilePromise, uploadAbortable] = upload(bucketId, {
+    return upload(bucketId, {
       creds: {
         pass: bridgePass,
         user: bridgeUser
@@ -59,10 +56,9 @@ export function uploadFile(
       mnemonic: encryptionKey,
       progressCallback: (totalBytes, uploadedBytes) => {
         updateProgressCallback(uploadedBytes / totalBytes);
-      }
-    });
-
-    promise = uploadFilePromise.then(async (fileId) => {
+      },
+      abortController
+    }).then((fileId) => {
       const name = encryptFilename(file.name, file.parentFolderId);
       const folder_id = file.parentFolderId;
 
@@ -88,7 +84,6 @@ export function uploadFile(
         return response;
       });
     });
-    abortable = uploadAbortable;
   } catch (err: unknown) {
     const castedError = errorService.castError(err);
 
@@ -103,8 +98,6 @@ export function uploadFile(
 
     throw err;
   }
-
-  return [promise, abortable];
 }
 
 export default uploadFile;
