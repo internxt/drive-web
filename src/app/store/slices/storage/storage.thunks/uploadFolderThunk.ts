@@ -77,8 +77,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         rootFolderItem = createdFolder;
 
         if (level.childrenFiles) {
-          const concurrency = 1;
-          const concurrentBytesLimit = 150 * 1024 * 1024;
+          const concurrency = 6;
+          const concurrentBytesLimit = 20 * 1024 * 1024;
 
           const uploadPacks: File[][] = [[]];
           let accumulatedBytes = 0;
