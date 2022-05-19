@@ -72,6 +72,12 @@ export class NetworkFacade {
           }
         );
 
+        /**
+         * TODO: Memory leak here, probably due to closures usage with this variable.
+         * Pending to be solved, do not remove this line unless the leak is solved.
+         */
+        fileToUpload = new Blob([]);
+
         return fileHash;
       }
     );
