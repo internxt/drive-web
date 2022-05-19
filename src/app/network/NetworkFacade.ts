@@ -12,6 +12,7 @@ import { buildProgressStream } from 'app/core/services/stream.service';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
+  abortController?: AbortController;
 }
 
 interface DownloadOptions {
@@ -62,17 +63,20 @@ export class NetworkFacade {
         fileHash = hash;
       },
       async (url: string) => {
-        const [uploadPromise] = uploadFileBlob(
+        await uploadFileBlob(
           fileToUpload,
           process.env.REACT_APP_PROXY + '/' + url,
           {
-            progressCallback: options.uploadingCallback
+            progressCallback: options.uploadingCallback,
+            abortController: options.abortController
           }
         );
 
-        await uploadPromise.catch((err) => {
-          console.error(err);
-        });
+        /**
+         * TODO: Memory leak here, probably due to closures usage with this variable.
+         * Pending to be solved, do not remove this line unless the leak is solved.
+         */
+        fileToUpload = new Blob([]);
 
         return fileHash;
       }

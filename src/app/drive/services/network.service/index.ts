@@ -83,7 +83,9 @@ export class Network {
       throw new Error('File size can not be 0');
     }
 
-    return uploadFile(bucketId, {
+    const abortController = new AbortController();
+
+    return [uploadFile(bucketId, {
       ...params,
       ...{
         progressCallback: (totalBytes, uploadedBytes) => {
@@ -92,7 +94,9 @@ export class Network {
       },
       creds: this.creds,
       mnemonic: this.mnemonic,
-    });
+    }), {
+      abort: () => abortController.abort()
+    }];
   }
 
   /**
