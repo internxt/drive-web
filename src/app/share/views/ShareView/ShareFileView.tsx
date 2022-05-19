@@ -203,8 +203,8 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
             encryptionKey: Buffer.from(encryptionKey, 'hex'),
             token: fileInfo.fileToken,
             options: {
-              notifyProgress: (progress) => {
-                setProgress(progress);
+              notifyProgress: (totalProgress, downloadedBytes) => {
+                setProgress(Math.trunc((downloadedBytes / totalProgress) * 100));
               }
             }
           }
