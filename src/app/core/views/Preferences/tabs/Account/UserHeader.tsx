@@ -3,7 +3,7 @@ import { Camera, Image } from 'phosphor-react';
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Button from '../../../../../shared/components/Button/Button';
-import DefaultAvatar from '../../../../../shared/components/DefaultAvatar';
+import Avatar from '../../../../../shared/components/Avatar';
 import Modal from '../../../../../shared/components/Modal';
 import { RootState } from '../../../../../store';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
@@ -24,7 +24,7 @@ export default function UserHeader({ className = '' }: { className?: string }): 
   return (
     <div className={`${className} flex h-44 flex-col items-center p-5`}>
       <div className="relative cursor-pointer" onClick={() => setOpenModal(true)}>
-        <DefaultAvatar diameter={80} fullName={fullName} />
+        <Avatar diameter={80} fullName={fullName} src={user.avatar} />
         <div className="absolute right-0 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full border-3 border-white bg-gray-5 text-gray-60">
           <Camera size={16} />
         </div>
