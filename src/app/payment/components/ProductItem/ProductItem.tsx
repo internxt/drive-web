@@ -68,28 +68,28 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
       <div
         className={`${
           isPlanActive ? 'visible' : 'invisible'
-        } py-2 font-semibold bg-blue-60 text-white text-xs flex justify-center items-center rounded-t-lg`}
+        } flex items-center justify-center rounded-t-lg bg-blue-60 py-2 text-xs font-semibold text-white`}
       >
         {i18n.get('drive.currentPlan')}
       </div>
       <div
-        className={`${sizeClassName} flex flex-col justify-center\
-         text-neutral-700 p-6 border border-neutral-30 rounded-lg bg-white`}
+        className={`${sizeClassName} flex flex-col justify-center
+         rounded-lg border border-neutral-30 bg-white p-6 text-neutral-700`}
       >
         {/* SIMPLE NAME */}
-        <h4 className="mx-auto rounded-3xl px-4 py-1 bg-neutral-20 text-neutral-80 font-semibold mb-4 w-min">
+        <h4 className="mx-auto mb-4 w-min rounded-3xl bg-neutral-20 px-4 py-1 font-semibold text-neutral-80">
           {props.product.metadata.simple_name}
         </h4>
 
         {/* MONTHLY AMOUNT */}
-        <div className="flex justify-center items-center">
-          <span className="text-3xl font-bold mr-2">{monthlyAmountFormatted}</span>
+        <div className="flex items-center justify-center">
+          <span className="mr-2 text-3xl font-bold">{monthlyAmountFormatted}</span>
           <span className="h-fit">/{i18n.get('general.time.month')}</span>
         </div>
 
         {/* TOTAL AMOUNT */}
         {props.product.metadata.is_teams ? (
-          <div className="bg-neutral-10 border border-neutral-20 rounded-lg mt-6 mb-2 p-4">
+          <div className="mt-6 mb-2 rounded-lg border border-neutral-20 bg-neutral-10 p-4">
             <NumberInput
               className="mb-2"
               initialValue={teamMembersCount}
@@ -98,10 +98,9 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
               onChange={setTeamMembersCount}
             />
 
-            <div className="w-full flex justify-center items-center">
+            <div className="flex w-full items-center justify-center">
               <Fragment>
-                <span className="text-xs mr-1">{moneyService.getCurrencySymbol(props.product.price.currency)}</span>
-                <span className="mr-1">{totalAmount}</span>
+                <span className="mr-1">{totalAmountFormatted}</span>
                 <span className="text-xs text-neutral-100">
                   /{i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase()}
                 </span>
@@ -109,18 +108,16 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
             </div>
           </div>
         ) : (
-          <span className="text-center text-xs text-neutral-80 mt-2 mb-4">
-            { 
-              i18n.get('general.billing.billedEachPeriod', {
-                price: totalAmountFormatted,
-                period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
-              })
-            }
+          <span className="mt-2 mb-4 text-center text-xs text-neutral-80">
+            {i18n.get('general.billing.billedEachPeriod', {
+              price: totalAmountFormatted,
+              period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
+            })}
           </span>
         )}
         <div />
         <BaseButton
-          className="w-full primary font-semibold"
+          className="primary w-full font-semibold"
           disabled={isBuyButtonDisabled}
           onClick={onBuyButtonClicked}
         >
@@ -133,17 +130,15 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
     <div className="product-item tablet">
       <div className="w-36">
         <div className={`${isPlanActive ? 'text-blue-60' : ''} flex`}>
-          <span className="block text-xl font-bold mr-3">{props.product.metadata.simple_name}</span>
+          <span className="mr-3 block text-xl font-bold">{props.product.metadata.simple_name}</span>
           {isPlanActive && <UilCheck />}
         </div>
 
         <span className={`${isPlanActive ? 'text-blue-60' : 'text-neutral-80'} block text-xs`}>
-          { 
-            i18n.get('general.billing.billedEachPeriod', {
-              price: totalAmountFormatted,
-              period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
-            })
-          }
+          {i18n.get('general.billing.billedEachPeriod', {
+            price: totalAmountFormatted,
+            period: i18n.get(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
+          })}
         </span>
       </div>
 
@@ -151,7 +146,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
         <NumberInput initialValue={teamMembersCount} min={2} unitLabel="users" onChange={setTeamMembersCount} />
       )}
 
-      <BaseButton onClick={onBuyButtonClicked} className="primary font-semibold w-36" disabled={isBuyButtonDisabled}>
+      <BaseButton onClick={onBuyButtonClicked} className="primary w-36 font-semibold" disabled={isBuyButtonDisabled}>
         {tabletBuyButtonLabel}
       </BaseButton>
     </div>
