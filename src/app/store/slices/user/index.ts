@@ -112,6 +112,17 @@ export const updateUserProfileThunk = createAsyncThunk<void, Required<UpdateProf
   },
 );
 
+export const updateUserAvatarThunk = createAsyncThunk<void, { avatar: Blob }, { state: RootState }>(
+  'user/updateAvatar',
+  async (payload, { dispatch, getState }) => {
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('User is not defined');
+
+    const { avatar } = await userService.updateUserAvatar(payload);
+    dispatch(userActions.setUser({ ...currentUser, avatar }));
+  },
+);
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,

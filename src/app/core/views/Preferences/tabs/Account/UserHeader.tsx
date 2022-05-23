@@ -10,7 +10,8 @@ import notificationsService, { ToastType } from '../../../../../notifications/se
 
 import type AvatarEditorType from 'react-avatar-editor';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
-import { SdkFactory } from '../../../../factory/sdk';
+import { updateUserAvatarThunk } from '../../../../../store/slices/user';
+import { useAppDispatch } from '../../../../../store/hooks';
 const AvatarEditor = lazy(() => import('react-avatar-editor'));
 
 export default function UserHeader({ className = '' }: { className?: string }): JSX.Element {
@@ -38,6 +39,7 @@ export default function UserHeader({ className = '' }: { className?: string }): 
 }
 
 function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const dispatch = useAppDispatch();
   const inputRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<AvatarEditorType>(null);
   const [state, setState] = useState<
@@ -83,8 +85,7 @@ function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
         editorRef.current?.getImageScaledToCanvas().toBlob((blob) => (blob ? resolve(blob) : reject())),
       );
 
-      const usersClient = SdkFactory.getInstance().createUsersClient();
-      await usersClient.updateAvatar({ avatar: avatarBlob });
+      await dispatch(updateUserAvatarThunk({ avatar: avatarBlob })).unwrap();
 
       notificationsService.show({ type: ToastType.Success, text: 'Avatar has been successfully updated' });
       onClose();

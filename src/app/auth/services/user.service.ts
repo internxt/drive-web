@@ -35,6 +35,11 @@ const getFriendInvites = (): Promise<FriendInvite[]> => {
   return usersClient.getFriendInvites();
 };
 
+const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }> => {
+  const usersClient = SdkFactory.getInstance().createUsersClient();
+  return usersClient.updateAvatar(payload);
+};
+
 const userService = {
   initializeUser,
   refreshUser,
@@ -42,6 +47,7 @@ const userService = {
   inviteAFriend,
   updateUserProfile,
   getFriendInvites,
+  updateUserAvatar,
 };
 
 export default userService;
