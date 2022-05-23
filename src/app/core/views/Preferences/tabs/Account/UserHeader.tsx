@@ -118,6 +118,7 @@ function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                   max={2}
                   step={0.01}
                   defaultValue={1}
+                  disabled={state.tag === 'loading'}
                   onChange={(e) => setState({ ...state, zoom: parseFloat(e.target.value) })}
                 />
               </div>
