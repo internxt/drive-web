@@ -1,4 +1,4 @@
-import PictureAvatar from '../../PictureAvatar';
+import PictureAvatar from '../PictureAvatar';
 import DefaultAvatar from '../DefaultAvatar';
 
 export default function Avatar({
