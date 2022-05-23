@@ -9,7 +9,7 @@ import UilUser from '@iconscout/react-unicons/icons/uil-user';
 import UilSignout from '@iconscout/react-unicons/icons/uil-signout';
 
 import { Dropdown } from 'react-bootstrap';
-import { userSelectors, userThunks } from '../../../store/slices/user';
+import { userThunks } from '../../../store/slices/user';
 import { uiActions } from '../../../store/slices/ui';
 import { storageActions, storageSelectors } from '../../../store/slices/storage';
 import validationService from '../../services/validation.service';
@@ -22,10 +22,10 @@ import { AppView, Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { MagnifyingGlass } from 'phosphor-react';
+import Avatar from '../../../shared/components/Avatar';
 
 interface NavbarProps {
   user: UserSettings | undefined;
-  nameLetters: string;
   team: TeamsSettings | undefined | null;
   workspace: Workspace;
   isTeam: boolean;
@@ -84,8 +84,10 @@ class Navbar extends React.Component<NavbarProps> {
   };
 
   render(): ReactNode {
-    const { user, isTeam, storageFilters, team, nameLetters, hideSearch } = this.props;
-    const userFullName: string = user ? `${user.name} ${user.lastname}` : '';
+    const { user, isTeam, storageFilters, team, hideSearch } = this.props;
+    if (!user) throw new Error('User is not defined');
+
+    const userFullName = `${user.name} ${user.lastname}`;
 
     return (
       <div className="flex h-14 w-full items-center justify-between border-b border-neutral-30 text-gray-40">
@@ -110,12 +112,7 @@ class Navbar extends React.Component<NavbarProps> {
         <Dropdown>
           <Dropdown.Toggle id="app-header-dropdown" className="flex">
             <div className="flex cursor-pointer items-center pr-5">
-              <div
-                className="\ flex h-9 w-9 items-center justify-center
-              rounded-full bg-primary bg-opacity-10 font-medium text-primary-dark"
-              >
-                {nameLetters}
-              </div>
+              <Avatar fullName={userFullName} src={user.avatar} diameter={36} />
               <span className="ml-3 hidden whitespace-nowrap font-medium tracking-wide text-gray-80 md:block">
                 {isTeam ? 'Business' : userFullName}
               </span>
@@ -177,7 +174,6 @@ export default connect((state: RootState) => {
 
   return {
     user: state.user.user,
-    nameLetters: userSelectors.nameLetters(state),
     team: state.team.team,
     workspace: state.session.workspace,
     isTeam,
