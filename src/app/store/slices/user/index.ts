@@ -68,7 +68,7 @@ export const initializeUserThunk = createAsyncThunk<
         localStorageService.removeItem('xTeam');
       }
     }
-
+    dispatch(refreshUserThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
     navigationService.push(AppView.Login);
