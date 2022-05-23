@@ -10,11 +10,13 @@ import notificationsService, { ToastType } from '../../../../../notifications/se
 
 import type AvatarEditorType from 'react-avatar-editor';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
-import { updateUserAvatarThunk } from '../../../../../store/slices/user';
+import { deleteUserAvatarThunk, updateUserAvatarThunk } from '../../../../../store/slices/user';
 import { useAppDispatch } from '../../../../../store/hooks';
+import Dropdown from '../../../../../shared/components/Dropdown';
 const AvatarEditor = lazy(() => import('react-avatar-editor'));
 
 export default function UserHeader({ className = '' }: { className?: string }): JSX.Element {
+  const dispatch = useAppDispatch();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   if (!user) throw new Error('User is not defined');
 
@@ -22,14 +24,27 @@ export default function UserHeader({ className = '' }: { className?: string }): 
 
   const [openModal, setOpenModal] = useState(false);
 
+  async function deleteAvatar() {
+    await dispatch(deleteUserAvatarThunk()).unwrap();
+    notificationsService.show({ type: ToastType.Success, text: 'Avatar successfully deleted' });
+  }
+
+  const dropdownOptions = [{ text: 'Upload new photo', onClick: () => setOpenModal(true) }];
+
+  if (user.avatar) {
+    dropdownOptions.push({ text: 'Delete photo', onClick: deleteAvatar });
+  }
+
   return (
     <div className={`${className} flex h-44 flex-col items-center p-5`}>
-      <div className="relative cursor-pointer" onClick={() => setOpenModal(true)}>
-        <Avatar diameter={80} fullName={fullName} src={user.avatar} />
-        <div className="absolute right-0 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full border-3 border-white bg-gray-5 text-gray-60">
-          <Camera size={16} />
+      <Dropdown options={dropdownOptions}>
+        <div className="relative">
+          <Avatar diameter={80} fullName={fullName} src={user.avatar} />
+          <div className="absolute right-0 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full border-3 border-white bg-gray-5 text-gray-60">
+            <Camera size={16} />
+          </div>
         </div>
-      </div>
+      </Dropdown>
 
       <h1 className="mt-3 text-xl font-medium text-gray-80">{fullName}</h1>
       <h2 className="leading-tight text-gray-50">{user.email}</h2>

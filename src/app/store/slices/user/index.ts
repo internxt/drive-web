@@ -123,6 +123,17 @@ export const updateUserAvatarThunk = createAsyncThunk<void, { avatar: Blob }, { 
   },
 );
 
+export const deleteUserAvatarThunk = createAsyncThunk<void, void, { state: RootState }>(
+  'user/deleteAvatar',
+  async (payload, { dispatch, getState }) => {
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('User is not defined');
+
+    await userService.deleteUserAvatar();
+    dispatch(userActions.setUser({ ...currentUser, avatar: null }));
+  },
+);
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,

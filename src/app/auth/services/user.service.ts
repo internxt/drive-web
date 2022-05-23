@@ -40,6 +40,11 @@ const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }
   return usersClient.updateAvatar(payload);
 };
 
+const deleteUserAvatar = (): Promise<void> => {
+  const usersClient = SdkFactory.getInstance().createUsersClient();
+  return usersClient.deleteAvatar();
+};
+
 const userService = {
   initializeUser,
   refreshUser,
@@ -48,6 +53,7 @@ const userService = {
   updateUserProfile,
   getFriendInvites,
   updateUserAvatar,
+  deleteUserAvatar,
 };
 
 export default userService;
