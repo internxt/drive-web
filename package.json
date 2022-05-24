@@ -7,7 +7,7 @@
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
-    "@internxt/sdk": "^0.12.0",
+    "@internxt/sdk": "^0.13.0",
     "@reduxjs/toolkit": "^1.6.0",
     "@stripe/stripe-js": "^1.21.1",
     "@types/uuid": "^8.3.4",
