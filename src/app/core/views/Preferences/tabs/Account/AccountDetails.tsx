@@ -2,6 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { CheckCircle, Warning } from 'phosphor-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import userService from '../../../../../auth/services/user.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
@@ -16,14 +17,19 @@ import Section from '../../components/Section';
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const isVerified = false;
+  const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false);
 
-  function onResend() {
+  async function onResend() {
+    setIsSendingVerificationEmail(true);
+    await userService.sendVerificationEmail();
     notificationsService.show({ text: 'Verification email has been sent', type: ToastType.Success });
+    setIsSendingVerificationEmail(false);
   }
 
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   if (!user) throw new Error('User is not defined');
+
+  const isVerified = user.emailVerified;
 
   return (
     <Section className={className} title="Account details">
@@ -41,7 +47,11 @@ export default function AccountDetails({ className = '' }: { className?: string 
           <div>
             <Detail label="Email" value={user.email} />
             {!isVerified && (
-              <button onClick={onResend} className="font-medium text-primary hover:text-primary-dark">
+              <button
+                onClick={onResend}
+                disabled={isSendingVerificationEmail}
+                className="font-medium text-primary hover:text-primary-dark disabled:text-gray-60"
+              >
                 Resend verification email
               </button>
             )}

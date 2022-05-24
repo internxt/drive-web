@@ -45,6 +45,11 @@ const deleteUserAvatar = (): Promise<void> => {
   return usersClient.deleteAvatar();
 };
 
+const sendVerificationEmail = (): Promise<void> => {
+  const usersClient = SdkFactory.getInstance().createUsersClient();
+  return usersClient.sendVerificationEmail();
+};
+
 const userService = {
   initializeUser,
   refreshUser,
@@ -54,6 +59,7 @@ const userService = {
   getFriendInvites,
   updateUserAvatar,
   deleteUserAvatar,
+  sendVerificationEmail,
 };
 
 export default userService;
