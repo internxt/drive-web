@@ -167,6 +167,12 @@
       "exact": true
     },
     {
+      "id": "verify-email",
+      "layout": "empty",
+      "path": "/verify-email/:token",
+      "exact": false
+    },
+    {
       "id": "not-found",
       "layout": "empty",
       "path": "",

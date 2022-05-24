@@ -24,6 +24,7 @@ import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import PhotosView from '../../photos/views/PhotosView';
+import VerifyEmailView from '../views/VerifyEmailView';
 
 const views: Array<{
   id: string;
@@ -53,6 +54,7 @@ const views: Array<{
   { id: AppView.ShareFolderToken, component: ShareFolderView },
   { id: AppView.SharePhotosToken, component: SharePhotosView },
   { id: AppView.RedirectToApp, component: RedirectToAppView },
+  { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 
