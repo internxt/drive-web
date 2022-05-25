@@ -35,11 +35,11 @@ export default function AccountDetails({ className = '' }: { className?: string 
     <Section className={className} title="Account details">
       <Card>
         <div className="flex justify-between">
-          <div className="flex">
+          <div className="flex min-w-0">
             <Detail label="Name" value={user.name} />
-            <Detail label="Lastname" value={user.lastname} className="ml-8" />
+            <Detail label="Lastname" value={user.lastname} className="ml-8 pr-2" />
           </div>
-          <Button variant="secondary" onClick={() => setIsModalOpen(true)}>
+          <Button className="flex-shrink-0" variant="secondary" onClick={() => setIsModalOpen(true)}>
             Edit
           </Button>
         </div>
@@ -82,9 +82,9 @@ export default function AccountDetails({ className = '' }: { className?: string 
 
 function Detail({ className = '', label, value }: { className?: string; label: string; value: string }): JSX.Element {
   return (
-    <div className={`${className} text-gray-80`}>
-      <h2 className="text-sm ">{label}</h2>
-      <h1 className="text-lg font-medium">{value}</h1>
+    <div className={`${className} min-w-0 text-gray-80`}>
+      <h2 className="truncate text-sm">{label}</h2>
+      <h1 className="truncate text-lg font-medium">{value}</h1>
     </div>
   );
 }
