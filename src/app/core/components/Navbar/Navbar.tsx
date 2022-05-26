@@ -1,14 +1,6 @@
-import React, { Fragment, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import UilUserCircle from '@iconscout/react-unicons/icons/uil-user-circle';
-import UilUserPlus from '@iconscout/react-unicons/icons/uil-user-plus';
-import UilChatBubbleUser from '@iconscout/react-unicons/icons/uil-chat-bubble-user';
-import UilBuilding from '@iconscout/react-unicons/icons/uil-building';
-import UilUser from '@iconscout/react-unicons/icons/uil-user';
-import UilSignout from '@iconscout/react-unicons/icons/uil-signout';
-
-import { Dropdown } from 'react-bootstrap';
 import { userThunks } from '../../../store/slices/user';
 import { uiActions } from '../../../store/slices/ui';
 import { storageActions, storageSelectors } from '../../../store/slices/storage';
@@ -22,7 +14,8 @@ import { AppView, Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { MagnifyingGlass } from 'phosphor-react';
-import Avatar from '../../../shared/components/Avatar';
+import AccountPopover from './AccountPopover';
+import { PlanState } from '../../../store/slices/plan';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -33,6 +26,7 @@ interface NavbarProps {
   currentFolderId: number;
   dispatch: AppDispatch;
   hideSearch?: boolean;
+  plan: PlanState;
 }
 
 class Navbar extends React.Component<NavbarProps> {
@@ -84,10 +78,8 @@ class Navbar extends React.Component<NavbarProps> {
   };
 
   render(): ReactNode {
-    const { user, isTeam, storageFilters, team, hideSearch } = this.props;
+    const { user, storageFilters, hideSearch } = this.props;
     if (!user) throw new Error('User is not defined');
-
-    const userFullName = `${user.name} ${user.lastname}`;
 
     return (
       <div className="flex h-14 w-full items-center justify-between border-b border-neutral-30 text-gray-40">
@@ -109,61 +101,15 @@ class Navbar extends React.Component<NavbarProps> {
             />
           </div>
         )}
-        <Dropdown>
-          <Dropdown.Toggle id="app-header-dropdown" className="flex">
-            <div className="flex cursor-pointer items-center pr-5">
-              <Avatar fullName={userFullName} src={user.avatar} diameter={36} />
-              <span className="ml-3 hidden whitespace-nowrap font-medium tracking-wide text-gray-80 md:block">
-                {isTeam ? 'Business' : userFullName}
-              </span>
-            </div>
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item id="account" onClick={this.onAccountButtonClicked}>
-              <UilUserCircle className="mr-1 h-5" />
-              <span>Account</span>
-            </Dropdown.Item>
-            {user && user.sharedWorkspace && (
-              <Dropdown.Item id="guest-invite" onClick={this.onGuestInviteCliked}>
-                <UilUserPlus className="mr-1 h-5 text-blue-60" />
-                <span>Guest</span>
-              </Dropdown.Item>
-            )}
-            <Dropdown.Item id="info" onClick={this.onSupportButtonClicked}>
-              <UilChatBubbleUser className="mr-1 h-5" />
-              <span>Support</span>
-            </Dropdown.Item>
-            {team && (
-              <Dropdown.Item id="business" onClick={this.onChangeWorkspaceButtonClicked}>
-                {!isTeam ? (
-                  <Fragment>
-                    <UilBuilding className="mr-1 h-5" />
-                    <span>Business</span>
-                  </Fragment>
-                ) : (
-                  <Fragment>
-                    <UilUser className="mr-1 h-5" />
-                    <span>Personal</span>
-                  </Fragment>
-                )}
-              </Dropdown.Item>
-            )}
-            {team?.isAdmin && isTeam && (
-              <Fragment>
-                <hr className="my-1.5 text-neutral-30"></hr>
-                <Dropdown.Item onClick={this.onInviteMemberClick}>
-                  <UilUserPlus className="mr-1 h-5 text-blue-60" />
-                  <span>Invite members</span>
-                </Dropdown.Item>
-              </Fragment>
-            )}
-            <hr className="my-1.5 text-neutral-30"></hr>
-            <Dropdown.Item id="logout" className="text-red-60 hover:text-red-60" onClick={this.onLogoutButtonClicked}>
-              <UilSignout className="mr-1 h-5" />
-              <span>Log out</span>
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+        <AccountPopover
+          className="mr-5"
+          user={user}
+          plan={{
+            ...this.props.plan,
+            showUpgrade:
+              (this.props.plan.individualPlan && this.props.plan.individualPlan.name === 'Free Plan') ?? false,
+          }}
+        />
       </div>
     );
   }
@@ -179,5 +125,6 @@ export default connect((state: RootState) => {
     isTeam,
     storageFilters: state.storage.filters,
     currentFolderId: storageSelectors.currentFolderId(state),
+    plan: state.plan,
   };
 })(Navbar);
