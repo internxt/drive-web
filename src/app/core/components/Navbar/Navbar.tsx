@@ -13,9 +13,10 @@ import navigationService from '../../services/navigation.service';
 import { AppView, Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
-import { MagnifyingGlass } from 'phosphor-react';
+import { Gear, MagnifyingGlass } from 'phosphor-react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
+import { Link } from 'react-router-dom';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -101,15 +102,23 @@ class Navbar extends React.Component<NavbarProps> {
             />
           </div>
         )}
-        <AccountPopover
-          className="mr-5"
-          user={user}
-          plan={{
-            ...this.props.plan,
-            showUpgrade:
-              (this.props.plan.individualPlan && this.props.plan.individualPlan.name === 'Free Plan') ?? false,
-          }}
-        />
+        <div className="flex">
+          <Link
+            to="/preferences"
+            className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:bg-gray-5 active:bg-gray-10"
+          >
+            <Gear size={24} />
+          </Link>
+          <AccountPopover
+            className="mr-5"
+            user={user}
+            plan={{
+              ...this.props.plan,
+              showUpgrade:
+                (this.props.plan.individualPlan && this.props.plan.individualPlan.name === 'Free Plan') ?? false,
+            }}
+          />
+        </div>
       </div>
     );
   }
