@@ -63,9 +63,12 @@ export class NetworkFacade {
         fileHash = hash;
       },
       async (url: string) => {
+        const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
+        const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
+
         await uploadFileBlob(
           fileToUpload,
-          process.env.REACT_APP_PROXY + '/' + url,
+          fetchUrl,
           {
             progressCallback: options.uploadingCallback,
             abortController: options.abortController
