@@ -1,5 +1,6 @@
 import CurrentPlanExtended from './CurrentPlanExtended';
 import Invoices from './Invoices';
+import PaymentMethod from './PaymentMethod';
 
 export default function BillingTab({ className = '' }: { className?: string }): JSX.Element {
   return (
@@ -9,6 +10,7 @@ export default function BillingTab({ className = '' }: { className?: string }): 
           <CurrentPlanExtended />
         </div>
         <div className="flex w-96 flex-col space-y-8">
+          <PaymentMethod />
           <Invoices />
         </div>
       </div>
