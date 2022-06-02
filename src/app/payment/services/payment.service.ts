@@ -27,24 +27,29 @@ export interface CreateTeamsPaymentSessionPayload {
 
 let stripe: Stripe;
 
-async function getStripe() {
-  if (!stripe) {
-    stripe = (await loadStripe(
-      envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK,
-    )) as Stripe;
-  }
-
-  return stripe;
-}
-
 const paymentService = {
+  async getStripe(): Promise<Stripe> {
+    if (!stripe) {
+      stripe = (await loadStripe(
+        envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK,
+      )) as Stripe;
+    }
+
+    return stripe;
+  },
+
   async createSession(payload: CreatePaymentSessionPayload): Promise<{ id: string }> {
-    const paymentsClient = SdkFactory.getInstance().createPaymentsClient();
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.createSession(payload);
   },
 
+  async createSetupIntent(): Promise<{ clientSecret: string }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.getSetupIntent();
+  },
+
   async redirectToCheckout(options: RedirectToCheckoutServerOptions): Promise<{ error: StripeError }> {
-    const stripe = await getStripe();
+    const stripe = await this.getStripe();
 
     return stripe.redirectToCheckout(options);
   },
@@ -77,7 +82,7 @@ const paymentService = {
       throw Error(response.error);
     }
 
-    const stripe = await getStripe();
+    const stripe = await this.getStripe();
 
     await stripe.redirectToCheckout({ sessionId: response.id });
   },

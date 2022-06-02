@@ -67,11 +67,19 @@ export class SdkFactory {
     return Referrals.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createPaymentsClient(): Payments {
-    const apiUrl = this.getApiUrl();
+  public async createPaymentsClient(): Promise<Payments> {
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
-    return Payments.client(apiUrl, appDetails, apiSecurity);
+
+    let newToken = this.localStorage.get('xNewToken');
+
+    if (!newToken) {
+      newToken = await authService.getNewToken();
+      this.localStorage.set('xNewToken', newToken);
+    }
+
+    const apiSecurity = { ...this.getApiSecurity(), token: newToken };
+
+    return Payments.client(process.env.REACT_APP_PAYMENTS_API_URL, appDetails, apiSecurity);
   }
 
   public createBackupsClient(): Backups {
