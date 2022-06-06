@@ -1,41 +1,52 @@
+import { Invoice } from '@internxt/sdk/dist/drive/payments/types';
 import { DownloadSimple } from 'phosphor-react';
+import { useEffect, useState } from 'react';
 import { bytesToString } from '../../../../../drive/services/size.service';
+import paymentService from '../../../../../payment/services/payment.service';
 import Card from '../../../../../shared/components/Card';
+import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import Section from '../../components/Section';
 
 export default function Invoices({ className = '' }: { className?: string }): JSX.Element {
-  const data: { date: string; bytesInPlan: number; downloadLink: string }[] = [
-    { date: 'Friday 22, May 2022', bytesInPlan: 214748364800, downloadLink: '' },
-    { date: 'Friday 22, May 2022', bytesInPlan: 214748364800, downloadLink: '' },
-  ];
+  const showEmpty = false;
+
+  const [invoices, setInvoices] = useState<Invoice[] | null>(null);
+
+  useEffect(() => {
+    paymentService.getInvoices().then(setInvoices);
+  }, []);
 
   function isLastInvoice(i: number) {
-    return i === data.length - 1;
+    return invoices && i === invoices.length - 1;
   }
 
-  const showEmpty = false;
+  function displayDate(unixSeconds: number) {
+    const date = new Date(unixSeconds * 1000);
+
+    return new Intl.DateTimeFormat(undefined, { dateStyle: 'full' }).format(date);
+  }
 
   const body = showEmpty ? (
     <Empty />
-  ) : (
+  ) : invoices ? (
     <div className="flex">
       <div className="flex flex-grow flex-col">
         <h1 className="mb-0.5 text-xs font-medium text-gray-80">Billing date</h1>
-        {data.map(({ date }, i) => (
-          <div className={`border-t border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'} text-sm text-gray-80`}>
-            {date}
+        {invoices.map(({ created, id }, i) => (
+          <div key={id} className={`border-t border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'} text-sm text-gray-80`}>
+            {displayDate(created)}
           </div>
         ))}
       </div>
       <div className="flex flex-col">
         <h1 className="mb-0.5 text-xs font-medium text-gray-80">Plan</h1>
-        {data.map(({ bytesInPlan, downloadLink }, i) => (
-          <div className={`border-t border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'}`}>
-            <div className="flex">
+        {invoices.map(({ bytesInPlan, pdf, id }, i) => (
+          <div key={id} className={`border-t border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'}`}>
+            <div className="flex justify-between">
               <p className="text-sm text-gray-50">{bytesToString(bytesInPlan)}</p>
               <a
                 className="ml-4 text-primary hover:text-primary-dark"
-                href={downloadLink}
+                href={pdf}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -45,6 +56,10 @@ export default function Invoices({ className = '' }: { className?: string }): JS
           </div>
         ))}
       </div>
+    </div>
+  ) : (
+    <div className="flex h-10 items-center justify-center">
+      <Spinner className="h-6 w-6" />
     </div>
   );
 

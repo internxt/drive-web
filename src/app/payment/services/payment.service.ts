@@ -5,7 +5,7 @@ import envService from '../../core/services/env.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
 import { loadStripe, RedirectToCheckoutServerOptions, Stripe, StripeError } from '@stripe/stripe-js';
 import { SdkFactory } from '../../core/factory/sdk';
-import { PaymentMethod } from '@internxt/sdk/dist/drive/payments/types';
+import { Invoice, PaymentMethod } from '@internxt/sdk/dist/drive/payments/types';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;
@@ -52,6 +52,11 @@ const paymentService = {
   async getDefaultPaymentMethod(): Promise<PaymentMethod> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.getDefaultPaymentMethod();
+  },
+
+  async getInvoices(): Promise<Invoice[]> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.getInvoices({});
   },
 
   async redirectToCheckout(options: RedirectToCheckoutServerOptions): Promise<{ error: StripeError }> {
