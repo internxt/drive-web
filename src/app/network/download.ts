@@ -206,35 +206,6 @@ async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
     throw new Error('Download error code 1');
   }
 
-  /* PATCH FOR MULTI-SHARD FILES: More than 6 streams will cause problems 
-    due to trying to open more than 6 connections (which does getFileDownloadStream)
-  */
-  if (downloadUrls.length > 6) {
-    console.info('[INTERNXT]: USING DOWNLOAD PATCH FOR FILE %s', params.fileId);
-
-    const isSharedFile = !!params.token;
-    let network: Network;
-
-    if (isSharedFile) {
-      network = new Network('NONE', 'NONE', 'NONE');
-    } else {
-      network = new Network(
-        params.creds!.user,
-        params.creds!.pass,
-        params.mnemonic!
-      );
-    }
-    const [blobPromise] = network.downloadFile(params.bucketId, params.fileId, {
-      progressCallback: (progress) => {
-        params.options?.notifyProgress(metadata.fileMeta.size, metadata.fileMeta.size * progress);
-      },
-      fileEncryptionKey: params.encryptionKey,
-      fileToken: params.token
-    });
-
-    return blobPromise.then(b => b.stream());
-  }
-
   const downloadStream = await getFileDownloadStream(
     downloadUrls,
     createDecipheriv('aes-256-ctr', key, iv),
