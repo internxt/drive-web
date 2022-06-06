@@ -1,5 +1,6 @@
+import { PaymentMethod } from '@internxt/sdk/dist/drive/payments/types';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
@@ -8,44 +9,58 @@ import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import useEffectAsync from '../../../../hooks/useEffectAsync';
 import Section from '../../components/Section';
 
-type CardDetails = {
-  last4Digits: string;
-  expiration: {
-    month: string;
-    year: string;
-  };
-  brand: string;
-};
+import visaIcon from '../../../../../../assets/icons/card-brands/visa.png';
+import amexIcon from '../../../../../../assets/icons/card-brands/amex.png';
+import dinersIcon from '../../../../../../assets/icons/card-brands/diners_club.png';
+import discoverIcon from '../../../../../../assets/icons/card-brands/discover.png';
+import jcbIcon from '../../../../../../assets/icons/card-brands/jcb.png';
+import mastercardIcon from '../../../../../../assets/icons/card-brands/mastercard.png';
+import unionpayIcon from '../../../../../../assets/icons/card-brands/unionpay.png';
+import unknownIcon from '../../../../../../assets/icons/card-brands/unknown.png';
 
-export default function PaymentMethod({ className = '' }: { className?: string }): JSX.Element {
+export default function PaymentMethodComponent({ className = '' }: { className?: string }): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [card, setCard] = useState<PaymentMethod['card'] | null>(null);
 
-  const card: CardDetails = {
-    last4Digits: '4242',
-    expiration: {
-      month: '06',
-      year: '25',
-    },
-    brand: 'Visa',
+  const cardBrands: Record<PaymentMethod['card']['brand'], string> = {
+    visa: visaIcon,
+    amex: amexIcon,
+    diners: dinersIcon,
+    discover: discoverIcon,
+    jcb: jcbIcon,
+    mastercard: mastercardIcon,
+    unionpay: unionpayIcon,
+    unknown: unknownIcon,
   };
+
+  useEffect(() => {
+    paymentService.getDefaultPaymentMethod().then((data) => setCard(data.card));
+  }, []);
+
   return (
     <Section className={className} title="Payment method">
       <Card>
-        <div className="flex">
-          <div className="flex h-9 items-center rounded-md bg-gray-5 px-4">{card.brand}</div>
-          <div className="ml-4 flex-1">
-            <div className="flex items-center text-gray-80">
-              <p style={{ lineHeight: 1 }} className="text-2xl font-bold">
-                {'···· ···· ····'}
-              </p>
-              <p className="ml-1.5 text-sm">{card.last4Digits}</p>
+        {card ? (
+          <div className="flex">
+            <img className="h-9 rounded-md" src={cardBrands[card.brand]} />
+            <div className="ml-4 flex-1">
+              <div className="flex items-center text-gray-80">
+                <p style={{ lineHeight: 1 }} className="text-2xl font-bold">
+                  {'···· ···· ····'}
+                </p>
+                <p className="ml-1.5 text-sm">{card.last4}</p>
+              </div>
+              <p className="text-xs text-gray-50">{`${card.exp_month}/${card.exp_year}`}</p>
             </div>
-            <p className="text-xs text-gray-50">{`${card.expiration.month}/${card.expiration.year}`}</p>
+            <Button variant="secondary" size="medium" onClick={() => setIsModalOpen(true)}>
+              Edit
+            </Button>
           </div>
-          <Button variant="secondary" size="medium" onClick={() => setIsModalOpen(true)}>
-            Edit
-          </Button>
-        </div>
+        ) : (
+          <div className="flex h-9 items-center justify-center">
+            <Spinner className="h-5 w-5" />
+          </div>
+        )}
       </Card>
 
       <PaymentMethodModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
