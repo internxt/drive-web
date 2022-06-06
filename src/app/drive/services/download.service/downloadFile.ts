@@ -103,16 +103,8 @@ export default async function downloadFile(
   const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
 
-  trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
-
-  const fileStream = await fetchFileStream(
-    { ...itemData, bucketId: itemData.bucket },
-    { isTeam, updateProgressCallback, abortController }
-  );
-
   const writeToFsIsSupported = 'showSaveFilePicker' in window;
   const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
-
   let writerPromise: Promise<WritableStream>;
 
   if (writeToFsIsSupported) {
@@ -140,6 +132,13 @@ export default async function downloadFile(
   }
 
   const writable = await writerPromise;
+
+  trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
+
+  const fileStream = await fetchFileStream(
+    { ...itemData, bucketId: itemData.bucket },
+    { isTeam, updateProgressCallback, abortController }
+  );
 
   await (
     fileStream.pipeTo && fileStream.pipeTo(writable, { signal: abortController?.signal }) ||
