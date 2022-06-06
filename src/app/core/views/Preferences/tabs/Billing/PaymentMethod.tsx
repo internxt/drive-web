@@ -57,7 +57,7 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
             </Button>
           </div>
         ) : (
-          <div className="flex h-9 items-center justify-center">
+          <div className="flex h-10 items-center justify-center">
             <Spinner className="h-5 w-5" />
           </div>
         )}
