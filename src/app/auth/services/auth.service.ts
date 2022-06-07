@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { aes } from '@internxt/lib';
 import {
   CryptoProvider,
@@ -129,10 +130,16 @@ export const doLogin = async (
         mnemonic: clearMnemonic,
         privateKey: clearPrivateKeyBase64,
       };
-
+        
       localStorageService.set('xToken', token);
       localStorageService.set('xMnemonic', clearMnemonic);
       localStorageService.set('xNewToken', newToken);
+
+      Sentry.setUser({
+        id: user.uuid,
+        email: user.email,
+        sharedWorkspace: user.sharedWorkspace
+       });
 
       return {
         user: clearUser,
