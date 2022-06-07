@@ -11,8 +11,9 @@ const axiosPlugin: AppPlugin = {
     axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
     axios.interceptors.request.use((requestConfig) => {
-      const user: any = localStorageService.get('xUser');
-      if(user) {
+      const user = localStorageService.getUser();
+
+      if (user) {
         Sentry.setUser({
           id: user.uuid,
           email: user.email,
