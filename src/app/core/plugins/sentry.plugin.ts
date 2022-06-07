@@ -8,7 +8,7 @@ const sentryPlugin: AppPlugin = {
       dsn: process.env.REACT_APP_SENTRY_DSN,
       integrations: [new BrowserTracing()],
       tracesSampleRate: 1.0,
-      debug: process.env.NODE_ENV !== 'production' ? true : false,
+      debug: process.env.NODE_ENV !== 'production',
       environment: process.env.NODE_ENV
     });
   },
