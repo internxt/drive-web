@@ -1,4 +1,7 @@
+import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import paymentService from '../../../../../payment/services/payment.service';
 import Card from '../../../../../shared/components/Card';
 import CurrentPlan from '../../../../../shared/components/CurrentPlan';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
@@ -17,12 +20,36 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
       ]
     : null;
 
+  const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
+
+  useEffect(() => {
+    paymentService.getUserSubscription().then(setUserSubscription);
+  }, []);
+
+  let planName = '';
+  let button: 'upgrade' | 'change' | undefined;
+
+  switch (userSubscription?.type) {
+    case 'free':
+      planName = 'Free plan';
+      button = 'upgrade';
+      break;
+    case 'lifetime':
+      planName = 'Lifetime';
+      button = undefined;
+      break;
+    case 'subscription':
+      planName = 'Subscription';
+      button = 'change';
+      break;
+  }
+
   return (
     <Section className={className} title="Usage">
       <Card>
-        {products && plan.individualPlan ? (
+        {products && plan.planLimit && planName ? (
           <>
-            <CurrentPlan button="upgrade" bytesInPlan={plan.planLimit} planName={plan.individualPlan.name} />
+            <CurrentPlan button={button} bytesInPlan={plan.planLimit} planName={planName} />
             <UsageDetails className="mt-5" planLimitInBytes={plan.planLimit} products={products} />
           </>
         ) : (

@@ -5,7 +5,7 @@ import envService from '../../core/services/env.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
 import { loadStripe, RedirectToCheckoutServerOptions, Stripe, StripeError } from '@stripe/stripe-js';
 import { SdkFactory } from '../../core/factory/sdk';
-import { Invoice, PaymentMethod } from '@internxt/sdk/dist/drive/payments/types';
+import { Invoice, PaymentMethod, UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;
@@ -63,6 +63,11 @@ const paymentService = {
     const stripe = await this.getStripe();
 
     return stripe.redirectToCheckout(options);
+  },
+
+  async getUserSubscription(): Promise<UserSubscription> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.getUserSubscription();
   },
 
   // TODO: refactor as individual
