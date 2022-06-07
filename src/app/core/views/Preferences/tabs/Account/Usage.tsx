@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import paymentService from '../../../../../payment/services/payment.service';
 import Card from '../../../../../shared/components/Card';
-import CurrentPlan from '../../../../../shared/components/CurrentPlan';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import UsageDetails from '../../../../../shared/components/UsageDetails';
 import { RootState } from '../../../../../store';
 import { PlanState } from '../../../../../store/slices/plan';
+import CurrentPlanWrapper from '../../components/CurrentPlanWrapper';
 import Section from '../../components/Section';
 
 export default function Usage({ className = '' }: { className?: string }): JSX.Element {
@@ -26,30 +26,12 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
     paymentService.getUserSubscription().then(setUserSubscription);
   }, []);
 
-  let planName = '';
-  let button: 'upgrade' | 'change' | undefined;
-
-  switch (userSubscription?.type) {
-    case 'free':
-      planName = 'Free plan';
-      button = 'upgrade';
-      break;
-    case 'lifetime':
-      planName = 'Lifetime';
-      button = undefined;
-      break;
-    case 'subscription':
-      planName = 'Subscription';
-      button = 'change';
-      break;
-  }
-
   return (
     <Section className={className} title="Usage">
       <Card>
-        {products && plan.planLimit && planName ? (
+        {products && plan.planLimit && userSubscription ? (
           <>
-            <CurrentPlan button={button} bytesInPlan={plan.planLimit} planName={planName} />
+            <CurrentPlanWrapper bytesInPlan={plan.planLimit} userSubscription={userSubscription} />
             <UsageDetails className="mt-5" planLimitInBytes={plan.planLimit} products={products} />
           </>
         ) : (
