@@ -75,6 +75,12 @@ const paymentService = {
     return paymentsClient.getPrices();
   },
 
+  async updateSubscriptionPrice(priceId: string): Promise<void> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+
+    return paymentsClient.updateSubscriptionPrice(priceId);
+  },
+
   // TODO: refactor as individual
   async handlePaymentTeams(priceId: string, quantity: number, mode: StripeSessionMode): Promise<void> {
     const mnemonicTeam = generateMnemonic(256);

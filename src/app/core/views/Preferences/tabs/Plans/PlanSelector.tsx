@@ -2,12 +2,16 @@ import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { bytesToString } from '../../../../../drive/services/size.service';
+import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';
 import { RootState } from '../../../../../store';
-import { PlanState } from '../../../../../store/slices/plan';
+import { useAppDispatch } from '../../../../../store/hooks';
+import { PlanState, planThunks } from '../../../../../store/slices/plan';
 
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
+  const dispatch = useAppDispatch();
+
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const { subscription } = plan;
 
@@ -23,6 +27,27 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const pricesFilteredAndSorted = prices
     ?.filter((price) => price.interval === interval)
     .sort((a, b) => a.amount - b.amount);
+
+  const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
+
+  async function onPlanClick(priceId: string) {
+    if (subscription?.type !== 'subscription') return;
+
+    setLoadingPlanAction(priceId);
+    try {
+      await paymentService.updateSubscriptionPrice(priceId);
+      await dispatch(planThunks.initializeThunk()).unwrap();
+      notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+    } catch (err) {
+      console.error(err);
+      notificationsService.show({
+        text: 'Something went wrong while updating your subscription',
+        type: ToastType.Error,
+      });
+    } finally {
+      setLoadingPlanAction(null);
+    }
+  }
 
   return (
     <div className={`${className}`}>
@@ -40,6 +65,9 @@ export default function PlanSelector({ className = '' }: { className?: string })
             button={
               subscription?.type === 'subscription' && subscription.priceId === price.id ? 'current' : priceButtons
             }
+            onClick={() => onPlanClick(price.id)}
+            loading={loadingPlanAction === price.id}
+            disabled={loadingPlanAction !== null}
           />
         ))}
       </div>
@@ -72,7 +100,16 @@ function Price({
   interval,
   button,
   className = '',
-}: DisplayPrice & { button: 'change' | 'current' | 'upgrade'; onClick?: () => void; className?: string }): JSX.Element {
+  onClick,
+  disabled,
+  loading,
+}: DisplayPrice & {
+  button: 'change' | 'current' | 'upgrade';
+  onClick?: () => void;
+  className?: string;
+  disabled: boolean;
+  loading: boolean;
+}): JSX.Element {
   let amountMonthly: number;
   let amountAnnually: number;
 
@@ -96,7 +133,13 @@ function Price({
       <div className="mt-5 border-t border-gray-10" />
       <p className="mt-5 text-2xl font-medium text-gray-100">{`${displayAmount(amountMonthly)} €/ month`}</p>
       <p className=" text-gray-50">{`${displayAmount(amountAnnually)}€ billed annually`}</p>
-      <Button disabled={button === 'current'} variant="primary" className="mt-5 w-full">
+      <Button
+        loading={loading}
+        onClick={onClick}
+        disabled={button === 'current' || disabled}
+        variant="primary"
+        className="mt-5 w-full"
+      >
         {displayButtonText}
       </Button>
     </div>

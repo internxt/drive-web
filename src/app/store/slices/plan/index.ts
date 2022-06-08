@@ -204,6 +204,7 @@ export const planThunks = {
   fetchPlans,
   fetchLimitThunk,
   fetchUsageThunk,
+  fetchSubscriptionThunk,
 };
 
 export default planSlice.reducer;
