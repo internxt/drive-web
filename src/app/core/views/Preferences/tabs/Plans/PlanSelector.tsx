@@ -31,21 +31,39 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
 
   async function onPlanClick(priceId: string) {
-    if (subscription?.type !== 'subscription') return;
-
     setLoadingPlanAction(priceId);
-    try {
-      await paymentService.updateSubscriptionPrice(priceId);
-      await dispatch(planThunks.initializeThunk()).unwrap();
-      notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
-    } catch (err) {
-      console.error(err);
-      notificationsService.show({
-        text: 'Something went wrong while updating your subscription',
-        type: ToastType.Error,
-      });
-    } finally {
-      setLoadingPlanAction(null);
+
+    if (subscription?.type !== 'subscription') {
+      try {
+        const response = await paymentService.createCheckoutSession({
+          price_id: priceId,
+          success_url: `${window.location.origin}/checkout/success`,
+          cancel_url: window.location.href,
+        });
+        await paymentService.redirectToCheckout(response);
+      } catch (err) {
+        console.error(err);
+        notificationsService.show({
+          text: 'Something went wrong while creating your subscription',
+          type: ToastType.Error,
+        });
+      } finally {
+        setLoadingPlanAction(null);
+      }
+    } else {
+      try {
+        await paymentService.updateSubscriptionPrice(priceId);
+        await dispatch(planThunks.initializeThunk()).unwrap();
+        notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+      } catch (err) {
+        console.error(err);
+        notificationsService.show({
+          text: 'Something went wrong while updating your subscription',
+          type: ToastType.Error,
+        });
+      } finally {
+        setLoadingPlanAction(null);
+      }
     }
   }
 

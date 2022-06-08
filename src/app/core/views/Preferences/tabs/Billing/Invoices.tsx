@@ -13,7 +13,7 @@ export default function Invoices({ className = '' }: { className?: string }): JS
   const [invoices, setInvoices] = useState<Invoice[] | null>(null);
 
   useEffect(() => {
-    paymentService.getInvoices().then(setInvoices);
+    paymentService.getInvoices().then(setInvoices).catch(console.error);
   }, []);
 
   function isLastInvoice(i: number) {

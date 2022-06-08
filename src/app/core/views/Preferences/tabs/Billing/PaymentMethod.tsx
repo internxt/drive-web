@@ -34,7 +34,10 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
   };
 
   useEffect(() => {
-    paymentService.getDefaultPaymentMethod().then((data) => setCard(data.card));
+    paymentService
+      .getDefaultPaymentMethod()
+      .then((data) => setCard(data.card))
+      .catch(console.error);
   }, []);
 
   return (
