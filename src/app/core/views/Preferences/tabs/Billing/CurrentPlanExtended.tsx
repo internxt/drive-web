@@ -1,7 +1,4 @@
-import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
-import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import paymentService from '../../../../../payment/services/payment.service';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import { RootState } from '../../../../../store';
@@ -11,10 +8,8 @@ import Section from '../../components/Section';
 
 export default function CurrentPlanExtended({ className = '' }: { className?: string }): JSX.Element {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
-  useEffect(() => {
-    paymentService.getUserSubscription().then(setUserSubscription);
-  }, []);
+
+  const userSubscription = plan.subscription;
 
   let subscriptionExtension:
     | { daysUntilRenewal: string; interval: 'monthly' | 'yearly'; renewDate: string }

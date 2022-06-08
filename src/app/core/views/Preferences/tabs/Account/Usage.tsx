@@ -1,7 +1,4 @@
-import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
-import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import paymentService from '../../../../../payment/services/payment.service';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import UsageDetails from '../../../../../shared/components/UsageDetails';
@@ -20,11 +17,7 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
       ]
     : null;
 
-  const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
-
-  useEffect(() => {
-    paymentService.getUserSubscription().then(setUserSubscription);
-  }, []);
+  const userSubscription = plan.subscription;
 
   return (
     <Section className={className} title="Usage">
