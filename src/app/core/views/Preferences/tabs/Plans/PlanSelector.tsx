@@ -1,10 +1,18 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { bytesToString } from '../../../../../drive/services/size.service';
 import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';
+import { RootState } from '../../../../../store';
+import { PlanState } from '../../../../../store/slices/plan';
 
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const { subscription } = plan;
+
+  const priceButtons = subscription?.type === 'subscription' ? 'change' : 'upgrade';
+
   const [prices, setPrices] = useState<DisplayPrice[] | null>(null);
   const [interval, setInterval] = useState<'month' | 'year'>('month');
 
@@ -26,7 +34,13 @@ export default function PlanSelector({ className = '' }: { className?: string })
       </div>
       <div className="mt-5 flex gap-x-5">
         {pricesFilteredAndSorted?.map((price) => (
-          <Price key={price.id} {...price} button="upgrade" />
+          <Price
+            key={price.id}
+            {...price}
+            button={
+              subscription?.type === 'subscription' && subscription.priceId === price.id ? 'current' : priceButtons
+            }
+          />
         ))}
       </div>
     </div>
@@ -82,7 +96,9 @@ function Price({
       <div className="mt-5 border-t border-gray-10" />
       <p className="mt-5 text-2xl font-medium text-gray-100">{`${displayAmount(amountMonthly)} €/ month`}</p>
       <p className=" text-gray-50">{`${displayAmount(amountAnnually)}€ billed annually`}</p>
-      <Button className="mt-5 w-full">{displayButtonText}</Button>
+      <Button disabled={button === 'current'} variant="primary" className="mt-5 w-full">
+        {displayButtonText}
+      </Button>
     </div>
   );
 }
