@@ -1,4 +1,6 @@
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import { useContext } from 'react';
+import { TabContext } from '..';
 import CurrentPlan from '../../../../shared/components/CurrentPlan';
 
 const CURRENCY_SYMBOLS = {
@@ -21,12 +23,10 @@ const CURRENCY_SYMBOLS = {
 
 export default function CurrentPlanWrapper({
   className = '',
-  onButtonClick,
   bytesInPlan,
   userSubscription,
 }: {
   className?: string;
-  onButtonClick?: () => void;
   bytesInPlan: number;
   userSubscription: UserSubscription;
 }): JSX.Element {
@@ -62,10 +62,16 @@ export default function CurrentPlanWrapper({
     planSubtitle = { mainLabel, beforeMainLabelCrossed };
   }
 
+  const tabContext = useContext(TabContext);
+
+  function onClick() {
+    tabContext.setActiveTab('plans');
+  }
+
   return (
     <CurrentPlan
       className={className}
-      onButtonClick={onButtonClick}
+      onButtonClick={onClick}
       bytesInPlan={bytesInPlan}
       planName={planName}
       button={button}

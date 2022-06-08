@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
@@ -7,6 +7,11 @@ import SecurityTab from './tabs/Security';
 
 const PREFERENCES_TABS = ['account', 'billing', 'plans', 'security'] as const;
 type PreferencesTabID = typeof PREFERENCES_TABS[number];
+
+export const TabContext = createContext<{
+  activeTab: PreferencesTabID;
+  setActiveTab: (value: PreferencesTabID) => void;
+}>({ activeTab: 'account', setActiveTab: () => undefined });
 
 export default function Preferences(): JSX.Element {
   const TABS: {
@@ -52,15 +57,17 @@ export default function Preferences(): JSX.Element {
   return (
     <div className="flex h-full w-full flex-col">
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
-      {/* overflow-y-auto and overflow-x-visible is not a valid combination in the same element */}
-      <div className="flex-grow overflow-y-auto">
-        <div className="overflow-x-visible" style={{ maxWidth: '872px' }}>
-          {TABS.map(
-            ({ component: Component, id }) =>
-              Component && <Component className={`p-8 ${activeTab !== id ? 'hidden' : ''}`} key={id} />,
-          )}
+      <TabContext.Provider value={{ activeTab, setActiveTab }}>
+        {/* overflow-y-auto and overflow-x-visible is not a valid combination in the same element */}
+        <div className="flex-grow overflow-y-auto">
+          <div className="overflow-x-visible" style={{ maxWidth: '872px' }}>
+            {TABS.map(
+              ({ component: Component, id }) =>
+                Component && <Component className={`p-8 ${activeTab !== id ? 'hidden' : ''}`} key={id} />,
+            )}
+          </div>
         </div>
-      </div>
+      </TabContext.Provider>
     </div>
   );
 }
