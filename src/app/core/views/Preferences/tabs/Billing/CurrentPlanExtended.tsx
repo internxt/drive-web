@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
+import paymentService from '../../../../../payment/services/payment.service';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import { RootState } from '../../../../../store';
-import { PlanState } from '../../../../../store/slices/plan';
+import { useAppDispatch } from '../../../../../store/hooks';
+import { PlanState, planThunks } from '../../../../../store/slices/plan';
 import CurrentPlanWrapper from '../../components/CurrentPlanWrapper';
 import Section from '../../components/Section';
 
@@ -27,6 +31,27 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     subscriptionExtension = { daysUntilRenewal, interval, renewDate };
   }
 
+  const [cancellingSubscription, setCancellingSubscription] = useState(false);
+
+  const dispatch = useAppDispatch();
+
+  async function cancelSubscription() {
+    setCancellingSubscription(true);
+    try {
+      await paymentService.cancelSubscription();
+      await dispatch(planThunks.initializeThunk()).unwrap();
+      notificationsService.show({ text: 'Your subscription has been cancelled' });
+    } catch (err) {
+      console.error(err);
+      notificationsService.show({
+        text: 'Something went wrong while cancelling your subscription',
+        type: ToastType.Error,
+      });
+    } finally {
+      setCancellingSubscription(false);
+    }
+  }
+
   return (
     <Section className={className} title="Current plan">
       <Card>
@@ -41,7 +66,13 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
                 <p className="text-xs text-gray-50">
                   Billed {subscriptionExtension.interval} {subscriptionExtension.renewDate}
                 </p>
-                <button className="mt-2 text-xs text-gray-60">Cancel subscription</button>
+                <button
+                  disabled={cancellingSubscription}
+                  onClick={cancelSubscription}
+                  className="mt-2 text-xs text-gray-60"
+                >
+                  Cancel subscription
+                </button>
               </div>
             )}
           </>

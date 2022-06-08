@@ -81,6 +81,12 @@ const paymentService = {
     return paymentsClient.updateSubscriptionPrice(priceId);
   },
 
+  async cancelSubscription(): Promise<void> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+
+    return paymentsClient.cancelSubscription();
+  },
+
   // TODO: refactor as individual
   async handlePaymentTeams(priceId: string, quantity: number, mode: StripeSessionMode): Promise<void> {
     const mnemonicTeam = generateMnemonic(256);
