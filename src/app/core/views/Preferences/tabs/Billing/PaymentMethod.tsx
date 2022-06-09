@@ -20,7 +20,9 @@ import unknownIcon from '../../../../../../assets/icons/card-brands/unknown.png'
 
 export default function PaymentMethodComponent({ className = '' }: { className?: string }): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [card, setCard] = useState<PaymentMethod['card'] | null>(null);
+  const [state, setState] = useState<{ tag: 'ready'; card: PaymentMethod['card'] } | { tag: 'loading' | 'empty' }>({
+    tag: 'loading',
+  });
 
   const cardBrands: Record<PaymentMethod['card']['brand'], string> = {
     visa: visaIcon,
@@ -36,14 +38,16 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
   useEffect(() => {
     paymentService
       .getDefaultPaymentMethod()
-      .then((data) => setCard(data.card))
-      .catch(console.error);
+      .then((data) => setState({ tag: 'ready', card: data.card }))
+      .catch(() => setState({ tag: 'empty' }));
   }, []);
+
+  const card = state.tag === 'ready' ? state.card : null;
 
   return (
     <Section className={className} title="Payment method">
       <Card>
-        {card ? (
+        {state.tag === 'ready' && card ? (
           <div className="flex">
             <img className="h-9 rounded-md" src={cardBrands[card.brand]} />
             <div className="ml-4 flex-1">
@@ -59,10 +63,12 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
               Edit
             </Button>
           </div>
-        ) : (
+        ) : state.tag === 'loading' ? (
           <div className="flex h-10 items-center justify-center">
             <Spinner className="h-5 w-5" />
           </div>
+        ) : (
+          <Empty />
         )}
       </Card>
 
@@ -134,5 +140,16 @@ function PaymentForm({ onClose }: { onClose: () => void }) {
         </Button>
       </div>
     </>
+  );
+}
+
+function Empty() {
+  return (
+    <div className="text-center">
+      <h1 className="font-medium text-gray-60">You are on free plan</h1>
+      <p className="text-sm text-gray-50">
+        Credit card information will appear here automatically when you have a paid subscription plan.
+      </p>
+    </div>
   );
 }
