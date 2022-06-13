@@ -5,12 +5,20 @@ import Section from '../../components/Section';
 export default function Faq({ className = '' }: { className?: string }): JSX.Element {
   const questions: { title: string; body: string }[] = [
     {
-      title: 'Why I lose all my files if I lose my password?',
-      body: 'Your password is the only way to access your account, even the Internxt team cannot access your account or change your password. This is to prevent anyone from accessing your account or steal your information.<br/> <br/> All your files, photos and videos are encrypted, that way only you, with your password, can access them.',
+      title: 'Why do I lose all my files if I lose my password?',
+      body: 'Your password is the only way to access your account, the Internxt team cannot access your account on change your password. This is to prevent anyone from accessing your account or steal your information. <br/><br/>Among other things your password is used to encrypt your encryption key so not even the Internxt has access to it. Every time you log in you need your password to decrypt this encryption key that way we ensure you are the only one holding the encryption keys.',
     },
     {
-      title: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ',
-      body: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Mollitia voluptates animi illo enim accusamus, odit dolor dolorem ea nam vitae ab, laborum nemo deleniti, nihil voluptas numquam asperiores officiis modi.',
+      title: 'How can I keep safe my credentials?',
+      body: 'We recommend to use a password manager to store your credentials safely not just for accessing the Internxt platform but to keep yourself safe and productive while browsing.',
+    },
+    {
+      title: 'Can I recover my account with the backup key?',
+      body: 'If you keep somewhere safe your encryption key, recover your data following the steps outlined in the email you will receive when clicking “forgot password”.',
+    },
+    {
+      title: 'Do I lose all my files if I change my password?',
+      body: 'No, since you are already logged in you can change your password without losing anything. Make sure you have chosen a strong password and it is not found in any data breach.',
     },
   ];
 
