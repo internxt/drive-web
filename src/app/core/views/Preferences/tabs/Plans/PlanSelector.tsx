@@ -70,7 +70,14 @@ export default function PlanSelector({ className = '' }: { className?: string })
   return (
     <div className={`${className}`}>
       <div className="flex justify-center">
-        <div className="flex h-9 w-56 rounded-lg bg-gray-5 p-0.5">
+        <div className="relative flex h-9 w-56 items-center rounded-lg bg-gray-5">
+          <div
+            className={`absolute h-full w-1/2 transform p-0.5 transition-transform ${
+              interval === 'month' ? 'translate-x-0' : 'translate-x-full'
+            }`}
+          >
+            <div className="h-full w-full rounded-lg bg-white" />
+          </div>
           <IntervalSwitch active={interval === 'month'} text="Monthly" onClick={() => setInterval('month')} />
           <IntervalSwitch active={interval === 'year'} text="Annually" onClick={() => setInterval('year')} />
         </div>
@@ -103,10 +110,7 @@ function IntervalSwitch({
   onClick?: () => void;
 }): JSX.Element {
   return (
-    <button
-      className={`${active ? 'bg-white text-gray-100' : 'text-gray-50'} w-1/2 rounded-lg font-medium`}
-      onClick={onClick}
-    >
+    <button className={`${active ? 'text-gray-100' : 'text-gray-50'} relative w-1/2 font-medium`} onClick={onClick}>
       {text}
     </button>
   );
