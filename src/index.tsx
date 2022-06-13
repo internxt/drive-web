@@ -9,7 +9,6 @@ import { store } from './app/store';
 import { userActions } from './app/store/slices/user';
 import { teamActions } from './app/store/slices/team';
 import { planThunks } from './app/store/slices/plan';
-import { productsThunks } from './app/store/slices/products';
 import storageThunks from './app/store/slices/storage/storage.thunks';
 import { taskManagerThunks } from './app/store/slices/taskManager';
 import { sessionActions } from './app/store/slices/session';
@@ -30,7 +29,6 @@ store.dispatch(teamActions.initialize());
 store.dispatch(sessionActions.initialize());
 store.dispatch(storageThunks.initializeThunk());
 store.dispatch(planThunks.initializeThunk());
-store.dispatch(productsThunks.initializeThunk());
 store.dispatch(taskManagerThunks.initializeThunk());
 store.dispatch(referralsThunks.initializeThunk());
 
