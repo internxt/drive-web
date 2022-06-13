@@ -1,4 +1,4 @@
-import { Disclosure } from '@headlessui/react';
+import { Disclosure, Transition } from '@headlessui/react';
 import { CaretUp } from 'phosphor-react';
 import Section from '../../components/Section';
 
@@ -29,7 +29,7 @@ export default function Faq({ className = '' }: { className?: string }): JSX.Ele
           {({ open }) => (
             <>
               <Disclosure.Button
-                className={`flex w-full justify-between px-5 text-left ${
+                className={`flex w-full justify-between px-5 text-left transition duration-100 ease-out ${
                   open ? ' rounded-t-lg bg-gray-5 pt-5 font-medium text-gray-80' : 'py-3 text-gray-60'
                 }`}
               >
@@ -40,10 +40,17 @@ export default function Faq({ className = '' }: { className?: string }): JSX.Ele
                   size={20}
                 />
               </Disclosure.Button>
-              <Disclosure.Panel
-                className="rounded-b-lg bg-gray-5 px-5 pt-2 pb-5 text-sm text-gray-60"
-                dangerouslySetInnerHTML={{ __html: question.body }}
-              />
+              <Transition
+                enterFrom="transform opacity-0"
+                enterTo="transform opacity-100"
+                leaveFrom="transform opacity-100"
+                leaveTo="transform opacity-0"
+              >
+                <Disclosure.Panel
+                  className="rounded-b-lg bg-gray-5 px-5 pt-2 pb-5 text-sm text-gray-60 transition duration-100 ease-out"
+                  dangerouslySetInnerHTML={{ __html: question.body }}
+                />
+              </Transition>
             </>
           )}
         </Disclosure>
