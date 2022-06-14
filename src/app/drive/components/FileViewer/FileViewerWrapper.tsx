@@ -18,10 +18,11 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const onDownload = () => file && dispatch(storageThunks.downloadItemsThunk([file as DriveItemData]));
 
   const downloader = file
-    ? () =>
-        downloadService.fetchFileBlob(file, {
+    ? (abortController: AbortController) => 
+        downloadService.fetchFileBlob({ ...file, bucketId: file.bucket }, {
           updateProgressCallback: () => undefined,
           isTeam,
+          abortController
         })
     : null;
 

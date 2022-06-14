@@ -33,6 +33,7 @@ interface DriveItemActions {
 
 const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const [isEditingName, setIsEditingName] = useState(false);
+  const [nameEditPending, setNameEditPending] = useState(false);
   const [dirtyName, setDirtyName] = useState('');
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
@@ -47,10 +48,13 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     setTimeout(() => nameInputRef.current?.focus(), 0);
   };
   const confirmNameChange = async () => {
-    const metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload = { itemName: dirtyName };
+    if (nameEditPending) return;
 
+    const metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload = { itemName: dirtyName };
     if (item.name !== dirtyName) {
+      setNameEditPending(true);
       await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }));
+      setNameEditPending(false);
     }
 
     nameInputRef.current?.blur();

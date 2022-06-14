@@ -2,7 +2,7 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
-import { uploadItemsThunk } from './uploadItemsThunk';
+import { uploadItemsParallelThunk } from './uploadItemsThunk';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import storageThunks from '.';
 import i18n from '../../../../i18n/services/i18n.service';
@@ -77,21 +77,47 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         rootFolderItem = createdFolder;
 
         if (level.childrenFiles) {
-          for (const childrenFile of level.childrenFiles) {
-            await dispatch(
-              uploadItemsThunk({
-                files: [childrenFile],
-                parentFolderId: createdFolder.id,
-                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
-              }),
-            ).unwrap();
+          const concurrency = 6;
+          const concurrentBytesLimit = 20 * 1024 * 1024;
 
-            tasksService.updateTask({
-              taskId: taskId,
-              merge: {
-                status: TaskStatus.InProcess,
-                progress: ++alreadyUploaded / itemsUnderRoot,
-              },
+          const uploadPacks: File[][] = [[]];
+          let accumulatedBytes = 0;
+          let currentPackFiles = 0;
+
+          for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
+            const concurrencyBytesLimitNotReached = accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
+            const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
+
+            if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
+              uploadPacks[j].push(level.childrenFiles[i]);
+            } else {
+              accumulatedBytes = 0;
+              currentPackFiles = 0;
+
+              uploadPacks[++j] = [];
+              uploadPacks[j].push(level.childrenFiles[i]);
+            }
+            currentPackFiles += 1;
+            accumulatedBytes += level.childrenFiles[i].size;
+          }
+
+          for (const pack of uploadPacks) {
+            await dispatch(
+              uploadItemsParallelThunk({
+                files: pack,
+                parentFolderId: createdFolder.id,
+                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false }
+              })
+            ).unwrap().then(() => {
+              alreadyUploaded += pack.length;
+
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: {
+                  status: TaskStatus.InProcess,
+                  progress: alreadyUploaded / itemsUnderRoot,
+                },
+              });
             });
           }
         }

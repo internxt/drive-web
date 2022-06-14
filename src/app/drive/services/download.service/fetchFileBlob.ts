@@ -1,14 +1,30 @@
-import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
-import { getEnvironmentConfig, Network } from '../network.service';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { getEnvironmentConfig } from '../network.service';
+import { Downloadable, downloadFile } from 'app/network/download';
 
-export default function fetchFileBlob(
-  item: { fileId: string; bucket: string },
-  options: { updateProgressCallback: (progress: number) => void; isTeam?: boolean },
-): [Promise<Blob>, ActionState] {
+type FetchFileBlobOptions = { updateProgressCallback: (progress: number) => void; isTeam?: boolean, abortController?: AbortController };
+
+export default async function fetchFileBlob(
+  item: Downloadable,
+  options: FetchFileBlobOptions,
+): Promise<Blob> {
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isTeam);
-  const network = new Network(bridgeUser, bridgePass, encryptionKey);
 
-  return network.downloadFile(item.bucket, item.fileId, {
-    progressCallback: options.updateProgressCallback,
+  const fileStream = await downloadFile({
+    bucketId: item.bucketId,
+    fileId: item.fileId,
+    creds: {
+      pass: bridgePass,
+      user: bridgeUser
+    },
+    mnemonic: encryptionKey,
+    options: {
+      notifyProgress: (totalBytes, downloadedBytes) => {
+        options.updateProgressCallback(downloadedBytes / totalBytes);
+      },
+      abortController: options.abortController
+    }
   });
+
+  return binaryStreamToBlob(fileStream);
 }

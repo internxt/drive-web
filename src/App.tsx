@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
-import TagManager from 'react-gtm-module';
 
 import configService from './app/core/services/config.service';
 import errorService from './app/core/services/error.service';
@@ -86,7 +85,6 @@ class App extends Component<AppProps> {
   }
 
   render(): JSX.Element {
-    TagManager.initialize({ gtmId: 'GTM-TH667N7' });
     const isDev = !envService.isProduction();
     const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, fileViewerItem, dispatch } =
       this.props;

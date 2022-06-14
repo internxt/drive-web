@@ -4,15 +4,12 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../../..';
 import errorService from '../../../../core/services/error.service';
 import downloadFileFromBlob from '../../../../drive/services/download.service/downloadFileFromBlob';
-import { getPhotoBlob, getPhotoCachedOrStream } from '../../../../drive/services/network.service/download';
 import tasksService from '../../../../tasks/services/tasks.service';
 import { DownloadPhotosTask, TaskStatus, TaskType } from '../../../../tasks/types';
-import JSZip from 'jszip';
-import { Readable } from 'stream';
 import i18n from '../../../../i18n/services/i18n.service';
-import streamSaver from 'streamsaver';
-import { ActionState } from '@internxt/inxt-js/build/api';
 import { SerializablePhoto } from '..';
+import { getPhotoBlob, getPhotoCachedOrStream } from 'app/network/download';
+import { FlatFolderZip } from 'app/core/services/stream.service';
 
 export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state: RootState }>(
   'photos/delete',
@@ -23,46 +20,32 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
 
     const abortController = new AbortController();
 
-    const taskId = tasksService.create({
-      action: TaskType.DownloadPhotos,
-      cancellable: true,
-      showNotification: true,
-      numberOfPhotos: payload.length,
-      stop: () => abortController.abort(),
-    } as DownloadPhotosTask);
+    let taskId = '';
 
     try {
+      taskId = tasksService.create({
+        action: TaskType.DownloadPhotos,
+        cancellable: true,
+        showNotification: true,
+        numberOfPhotos: payload.length,
+        stop: () => (abortController as { abort: (reason?: string) => void }).abort('Download cancelled'),
+      } as DownloadPhotosTask);
+
       if (payload.length === 1) {
-        const photo = payload[0];
-        const [promise, actionState] = await getPhotoBlob({ photo, bucketId });
-        if (actionState) {
-          abortController.signal.addEventListener('abort', () => actionState.stop());
-        }
-        const src = await promise;
+        const [photo] = payload;
+        const photoBlob = await getPhotoBlob({ photo, bucketId, abortController });
+
         if (!abortController.signal.aborted) {
-          await downloadFileFromBlob(src, `${photo.name}.${photo.type}`);
+          await downloadFileFromBlob(photoBlob, `${photo.name}.${photo.type}`);
         }
       } else {
-        const zip = new JSZip();
         const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
         if (isBrave) {
           throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
         }
 
-        const writableStream = streamSaver.createWriteStream('photos.zip', {});
-        const writer = writableStream.getWriter();
-        const onUnload = () => {
-          writer.abort();
-        };
-        abortController.signal.addEventListener('abort', onUnload);
-
-        const actionStates: ActionState[] = [];
-
-        abortController.signal.addEventListener('abort', () => {
-          actionStates.forEach((actionState) => actionState.stop());
-        });
-
+        const folder = new FlatFolderZip('photos', { abortController });
         const generalProgress: Record<PhotoId, number> = {};
 
         const updateTaskProgress = () => {
@@ -86,46 +69,26 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
               generalProgress[photo.id] = progress;
               updateTaskProgress();
             },
+            abortController
           });
+
           if (photoSource instanceof Blob) {
-            zip.file(photoName, photoSource, { compression: 'DEFLATE' });
+            folder.addFile(photoName, photoSource.stream());
           } else {
-            const [readable, abortable] = photoSource;
-            actionStates.push(abortable);
-            zip.file(photoName, await readable, { compression: 'DEFLATE' });
+            folder.addFile(photoName, await photoSource);
           }
         }
         if (abortController.signal.aborted) {
-          new Error('Download aborted');
+          throw new Error('Download aborted');
         }
-        await new Promise<void>((resolve, reject) => {
-          window.addEventListener('unload', onUnload);
-          abortController.signal.addEventListener('abort', () => reject(new Error('Download aborted')));
 
-          const zipStream = zip.generateInternalStream({
-            type: 'uint8array',
-            streamFiles: true,
-            compression: 'DEFLATE',
-          }) as Readable;
-          zipStream
-            ?.on('data', (chunk: Buffer) => {
-              writer.write(chunk);
-            })
-            .on('end', () => {
-              writer.close();
-              window.removeEventListener('unload', onUnload);
-              resolve();
-            })
-            .on('error', (err) => {
-              reject(err);
-            });
-          zipStream.resume();
-        });
+        await folder.close();
       }
       tasksService.updateTask({ taskId, merge: { status: TaskStatus.Success } });
     } catch (err) {
       const error = errorService.castError(err);
-      if (error.message === 'Download aborted')
+
+      if (abortController.signal.aborted)
         tasksService.updateTask({ taskId, merge: { status: TaskStatus.Cancelled } });
       else {
         console.error(error);

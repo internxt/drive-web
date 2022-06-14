@@ -1,7 +1,6 @@
-import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
-
-import { getEnvironmentConfig, Network } from '../network.service';
+import { getEnvironmentConfig } from '../network.service';
 import { DeviceBackup } from '../../../backups/types';
+import { downloadFile } from 'app/network/download';
 
 export default async function downloadBackup(
   backup: DeviceBackup,
@@ -9,12 +8,14 @@ export default async function downloadBackup(
     progressCallback,
     finishedCallback,
     errorCallback,
+    abortController
   }: {
     progressCallback: (progress: number) => void;
     finishedCallback: () => void;
-    errorCallback: () => void;
+    errorCallback: (err: Error) => void;
+    abortController?: AbortController
   },
-): Promise<ActionState | undefined> {
+): Promise<void> {
   if (!('showSaveFilePicker' in window)) {
     const err = new Error('File System Access API not available');
     err.name = 'FILE_SYSTEM_API_NOT_AVAILABLE';
@@ -30,30 +31,28 @@ export default async function downloadBackup(
     types: [{ accept: { 'application/zip': ['.zip'] } }],
   });
 
-  let actionState: ActionState | undefined;
+  const writable = await handle.createWritable();
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig();
 
-  if (handle) {
-    const writable = await handle.createWritable();
-    const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig();
-    const network = new Network(bridgeUser, bridgePass, encryptionKey);
-    const [downloadStreamPromise, _actionState] = network.getFileDownloadStream(backup.bucket, backup.fileId, {
-      progressCallback,
-    });
-    actionState = _actionState;
-    const downloadStream = await downloadStreamPromise;
+  const downloadStream = await downloadFile({
+    bucketId: backup.bucket,
+    fileId: backup.fileId,
+    creds: {
+      pass: bridgePass,
+      user: bridgeUser
+    },
+    mnemonic: encryptionKey,
+    options: {
+      notifyProgress: (totalBytes, downloadedBytes) => {
+        progressCallback(downloadedBytes / totalBytes);
+      },
+      abortController
+    }
+  });
 
-    downloadStream.on('data', (chunk: Buffer) => {
-      writable.write(chunk);
-    });
-    downloadStream.once('end', () => {
-      writable.close();
-      finishedCallback();
-    });
-    downloadStream.once('error', () => {
-      writable.abort();
-      errorCallback();
-    });
-  }
-
-  return actionState;
+  downloadStream.pipeTo(writable).then(() => {
+    finishedCallback();
+  }).catch((err) => {
+    errorCallback(err);
+  });
 }

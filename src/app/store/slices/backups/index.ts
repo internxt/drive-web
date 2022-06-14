@@ -68,7 +68,12 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
       showNotification: true,
       cancellable: true,
     });
+
+    const abortController = new AbortController();
+
     const onProgress = (progress: number) => {
+      if (abortController.signal.aborted) return;
+
       tasksService.updateTask({
         taskId,
         merge: {
@@ -79,6 +84,8 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
     };
 
     const onFinished = () => {
+      if (abortController.signal.aborted) return;
+
       tasksService.updateTask({
         taskId,
         merge: {
@@ -88,6 +95,8 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
     };
 
     const onError = () => {
+      if (abortController.signal.aborted) return;
+
       tasksService.updateTask({
         taskId,
         merge: {
@@ -97,19 +106,28 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
     };
 
     try {
-      const actionState = await downloadService.downloadBackup(backup, {
-        progressCallback: onProgress,
-        finishedCallback: onFinished,
-        errorCallback: onError,
-      });
-
       tasksService.updateTask({
         taskId,
         merge: {
-          stop: async () => actionState?.stop(),
+          stop: async () => abortController.abort()
         },
       });
+
+      await downloadService.downloadBackup(backup, {
+        progressCallback: onProgress,
+        finishedCallback: onFinished,
+        errorCallback: onError,
+        abortController
+      });
     } catch (err) {
+      if (abortController.signal.aborted) {
+        return tasksService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Cancelled
+          },
+        });
+      }
       if (err instanceof Error && err.name === 'FILE_SYSTEM_API_NOT_AVAILABLE')
         notificationsService.show({
           text: 'To download backups you need to use a Chromium based browser\

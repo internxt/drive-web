@@ -1,5 +1,4 @@
 import streamSaver from 'streamsaver';
-import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
 
 import analyticsService from 'app/analytics/services/analytics.service';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -7,7 +6,7 @@ import { DevicePlatform } from 'app/core/types';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
 import fetchFileStream from './fetchFileStream';
-import { loadWritableStreamPonyfill } from '../network.service/download';
+import { loadWritableStreamPonyfill } from 'app/network/download';
 
 const trackFileDownloadStart = (
   userEmail: string,
@@ -94,84 +93,119 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
   await writer.close();
 }
 
-export default function downloadFile(
+export default async function downloadFile(
   itemData: DriveFileData,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-): [Promise<void>, ActionState | undefined] {
+  abortController?: AbortController
+): Promise<void> {
   const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
+  const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
+
+  const writeToFsIsSupported = 'showSaveFilePicker' in window;
+  const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
+
+  let support: DownloadSupport;
+
+  if (isBrave) {
+    support = DownloadSupport.Blob;
+  } else if (writeToFsIsSupported) {
+    support = DownloadSupport.StreamApi;
+  } else if (writableIsSupported) {
+    support = DownloadSupport.PartialStreamApi;
+  } else {
+    support = DownloadSupport.PatchedStreamApi;
+  }
 
   trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
 
-  const [fileStreamPromise, actionState] = fetchFileStream(itemData, { isTeam, updateProgressCallback });
+  const fileStreamPromise = fetchFileStream(
+    { ...itemData, bucketId: itemData.bucket },
+    { isTeam, updateProgressCallback, abortController }
+  );
 
-  const handleError = (err: unknown) => {
+  await downloadToFs(
+    completeFilename,
+    fileStreamPromise,
+    support,
+    abortController
+  ).catch((err) => {
     const errMessage = err instanceof Error ? err.message : (err as string);
 
     trackFileDownloadError(userEmail, fileId, errMessage);
 
     throw new Error(errMessage);
-  };
-
-  const writeToFsIsSupported = 'showSaveFilePicker' in window;
-  const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
-
-  let writerPromise: Promise<WritableStream>;
-
-  if (writeToFsIsSupported) {
-    writerPromise = window.showSaveFilePicker({
-      suggestedName: completeFilename
-    }).then((fsHandle) => {
-      return fsHandle.createWritable({ keepExistingData: false });
-    });
-  } else if (writableIsSupported) {
-    writerPromise = new Promise((resolve) => {
-      resolve(streamSaver.createWriteStream(completeFilename));
-    });
-  } else {
-    writerPromise = new Promise((resolve) => {
-      return loadWritableStreamPonyfill().then(() => {
-        // TODO: Force streamSaver to use WritableStream ponyfill
-        streamSaver.WritableStream = window.WritableStream;
-        resolve(streamSaver.createWriteStream(completeFilename));
-      }).catch(() => {
-        resolve(getBlobWritable(completeFilename, (blob) => {
-          downloadFileFromBlob(blob, completeFilename);
-        }));
-      });
-    });
-  }
-
-  const downloadPromise = fileStreamPromise.then((readable) => {
-    return writerPromise.then((writable) => {
-      let downloadedBytes = 0;
-
-      const reader = readable.getReader();
-      const passThrough = new ReadableStream({
-        async pull(controller) {
-          const { value, done } = await reader.read();
-
-          if (!done) {
-            downloadedBytes += (value as Uint8Array).length;
-
-            updateProgressCallback(downloadedBytes / itemData.size);
-            controller.enqueue(value);
-          } else {
-            controller.close();
-          }
-        }
-      });
-
-      return passThrough.pipeTo && passThrough.pipeTo(writable) || pipe(passThrough, writable);
-    }).catch(handleError);
   });
 
-  return [downloadPromise.then(() => {
-    analyticsService.trackFileDownloadCompleted({
-      size: itemData.size,
-      extension: itemData.type,
-    });
-  }), actionState];
+  analyticsService.trackFileDownloadCompleted({
+    size: itemData.size,
+    extension: itemData.type,
+  });
+}
+
+async function downloadFileAsBlob(
+  filename: string,
+  source: ReadableStream
+): Promise<void> {
+  const destination: BlobWritable = getBlobWritable(filename, (blob) => {
+    downloadFileFromBlob(blob, filename);
+  });
+
+  await pipe(source, destination);
+}
+
+function downloadFileUsingStreamApi(
+  source: ReadableStream,
+  destination: WritableStream,
+  abortController?: AbortController
+): Promise<void> {
+  return (
+    source.pipeTo && source.pipeTo(destination, { signal: abortController?.signal }) ||
+    pipe(source, destination)
+  );
+}
+
+enum DownloadSupport {
+  StreamApi = 'StreamApi',
+  PartialStreamApi = 'PartialStreamApi',
+  PatchedStreamApi = 'PartialStreamApi',
+  Blob = 'Blob'
+}
+
+async function downloadToFs(
+  filename: string,
+  source: Promise<ReadableStream>,
+  supports: DownloadSupport,
+  abortController?: AbortController
+): Promise<void> {
+  switch (supports) {
+    case DownloadSupport.StreamApi:
+      // eslint-disable-next-line no-case-declarations
+      const fsHandle = await window.showSaveFilePicker({ suggestedName: filename });
+      // eslint-disable-next-line no-case-declarations
+      const destination = await fsHandle.createWritable({ keepExistingData: false });
+
+      return downloadFileUsingStreamApi(await source, destination, abortController);
+    case DownloadSupport.PatchedStreamApi:
+      await loadWritableStreamPonyfill();
+
+      streamSaver.WritableStream = window.WritableStream;
+
+      return downloadFileUsingStreamApi(
+        await source,
+        streamSaver.createWriteStream(filename),
+        abortController
+      );
+    case DownloadSupport.PartialStreamApi:
+      return downloadFileUsingStreamApi(
+        await source,
+        streamSaver.createWriteStream(filename),
+        abortController
+      );
+
+    default:
+      return downloadFileAsBlob(filename, await source);
+  }
 }

@@ -4,11 +4,11 @@ import analyticsService from '../../../analytics/services/analytics.service';
 import { AppView, DevicePlatform } from '../../../core/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
-import { getEnvironmentConfig, Network } from '../network.service';
+import { getEnvironmentConfig } from '../network.service';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
-import { Abortable } from '../network.service/upload';
+import { uploadFile as upload } from 'app/network/upload';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
 export interface ItemToUpload {
@@ -24,10 +24,8 @@ export function uploadFile(
   file: ItemToUpload,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-): [Promise<DriveFileData>, Abortable | undefined] {
-  let promise: Promise<DriveFileData>;
-  let actionState: Abortable | undefined;
-
+  abortController?: AbortController
+): Promise<DriveFileData> {
   try {
     analyticsService.trackFileUploadStart({
       file_size: file.size,
@@ -48,15 +46,19 @@ export function uploadFile(
       throw new Error('Bucket not found!');
     }
 
-    const network = new Network(bridgeUser, bridgePass, encryptionKey);
-    // const content = new Blob([file.content], { type: file.type });
-    const [uploadFilePromise, uploadFileActionState] = network.uploadFile(bucketId, {
-      filesize: file.size,
+    return upload(bucketId, {
+      creds: {
+        pass: bridgePass,
+        user: bridgeUser
+      },
       filecontent: file.content,
-      progressCallback: updateProgressCallback,
-    });
-
-    promise = uploadFilePromise.then(async (fileId) => {
+      filesize: file.size,
+      mnemonic: encryptionKey,
+      progressCallback: (totalBytes, uploadedBytes) => {
+        updateProgressCallback(uploadedBytes / totalBytes);
+      },
+      abortController
+    }).then((fileId) => {
       const name = encryptFilename(file.name, file.parentFolderId);
       const folder_id = file.parentFolderId;
 
@@ -82,7 +84,6 @@ export function uploadFile(
         return response;
       });
     });
-    actionState = uploadFileActionState;
   } catch (err: unknown) {
     const castedError = errorService.castError(err);
 
@@ -97,8 +98,6 @@ export function uploadFile(
 
     throw err;
   }
-
-  return [promise, actionState];
 }
 
 export default uploadFile;

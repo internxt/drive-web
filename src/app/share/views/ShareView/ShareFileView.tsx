@@ -6,7 +6,7 @@ import { getSharedFileInfo } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
-import { Network } from 'app/drive/services/network.service';
+import network from 'app/network';
 import i18n from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../../app/store/hooks';
@@ -24,6 +24,7 @@ import downloadService from 'app/drive/services/download.service';
 import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -159,19 +160,25 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     return encryptionKey;
   }
 
-  function getBlob() {
+  function getBlob(abortController: AbortController): Promise<Blob> {
     const fileInfo = info as unknown as ShareTypes.SharedFileInfo;
-    const network = new Network('NONE', 'NONE', 'NONE');
 
     const encryptionKey = getEncryptionKey();
 
-    return network.downloadFile(fileInfo.bucket, fileInfo.file, {
-      fileEncryptionKey: Buffer.from(encryptionKey, 'hex'),
-      fileToken: fileInfo.fileToken,
-      progressCallback: (progress) => {
-        console.log(`Preview download progress ${progress}`);
-      },
-    });
+    const readable = network.downloadFile(
+      {
+        bucketId: fileInfo.bucket,
+        fileId: fileInfo.file,
+        encryptionKey: Buffer.from(encryptionKey, 'hex'),
+        token: fileInfo.fileToken,
+        options: {
+          abortController,
+          notifyProgress: () => null
+        }
+      }
+    );
+
+    return readable.then(binaryStreamToBlob);
   }
 
   function onDownloadFromPreview() {
@@ -185,20 +192,24 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
-        const network = new Network('NONE', 'NONE', 'NONE');
-
         const encryptionKey = getEncryptionKey();
 
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
-        const [fileBlobPromise] = network.downloadFile(fileInfo.bucket, fileInfo.file, {
-          fileEncryptionKey: Buffer.from(encryptionKey, 'hex'),
-          fileToken: fileInfo.fileToken,
-          progressCallback: (progress) => {
-            setProgress(Math.max(MIN_PROGRESS, Math.round(progress * 100 * 1e2) / 1e2));
-          },
-        });
-        const fileBlob = await fileBlobPromise;
+        const readable = await network.downloadFile(
+          {
+            bucketId: fileInfo.bucket,
+            fileId: fileInfo.file,
+            encryptionKey: Buffer.from(encryptionKey, 'hex'),
+            token: fileInfo.fileToken,
+            options: {
+              notifyProgress: (totalProgress, downloadedBytes) => {
+                setProgress(Math.trunc((downloadedBytes / totalProgress) * 100));
+              }
+            }
+          }
+        );
+        const fileBlob = await binaryStreamToBlob(readable);
 
         downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
       }

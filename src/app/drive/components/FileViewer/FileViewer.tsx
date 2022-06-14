@@ -8,13 +8,12 @@ import i18n from '../../../i18n/services/i18n.service';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import spinnerIcon from '../../../../assets/icons/spinner.svg';
-import { ActionState } from '@internxt/inxt-js/build/api';
 
 interface FileViewerProps {
   file?: { type: string | null; name: string };
   onClose: () => void;
   onDownload: () => void;
-  downloader: () => [Promise<Blob>, ActionState | undefined];
+  downloader: (abortController: AbortController) => Promise<Blob>
   show: boolean;
 }
 
@@ -45,11 +44,17 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
 
   useEffect(() => {
     if (isTypeAllowed && show) {
-      const [downloadPromise, actionState] = downloader();
-      downloadPromise.then(setBlob).catch(console.error);
-      return () => {
-        actionState?.stop();
-      };
+      const abortController = new AbortController();
+
+      downloader(abortController).then(setBlob).catch((err) =>{
+        if (abortController.signal.aborted) {
+          return;
+        } 
+        
+        console.error(err);
+      });
+
+      return () => abortController.abort();
     } else if (!show) setBlob(null);
   }, [show]);
 

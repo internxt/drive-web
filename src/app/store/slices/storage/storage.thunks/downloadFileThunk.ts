@@ -52,41 +52,46 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
       return;
     }
 
-    const [downloadFilePromise, actionState] = downloadService.downloadFile(file, isTeam, updateProgressCallback);
+    const abortController = new AbortController();
 
-    tasksService.updateTask({
-      taskId: options.taskId,
-      merge: {
-        status: TaskStatus.Decrypting,
-        stop: async () => actionState?.stop(),
-      },
-    });
-
-    downloadFilePromise
-      .then(() => {
-        tasksService.updateTask({
-          taskId: options.taskId,
-          merge: {
-            status: TaskStatus.Success,
-          },
-        });
-      })
-      .catch((err: unknown) => {
-        const castedError = errorService.castError(err);
-
-        if (task?.status !== TaskStatus.Cancelled) {
-          tasksService.updateTask({
-            taskId: options.taskId,
-            merge: {
-              status: TaskStatus.Error,
-            },
-          });
-
-          rejectWithValue(castedError);
-        }
+    try {
+      tasksService.updateTask({
+        taskId: options.taskId,
+        merge: {
+          status: TaskStatus.Decrypting,
+          stop: async () => (abortController as { abort: (reason?: string) => void }).abort('Download cancelled')
+        },
       });
 
-    await downloadFilePromise;
+      await downloadService.downloadFile(file, isTeam, updateProgressCallback, abortController);
+
+      tasksService.updateTask({
+        taskId: options.taskId,
+        merge: {
+          status: TaskStatus.Success,
+        },
+      });
+    } catch (err) {
+      if (abortController.signal.aborted) {
+        return tasksService.updateTask({
+          taskId: options.taskId,
+          merge: {
+            status: TaskStatus.Cancelled,
+          },
+        });
+      }
+
+      const castedError = errorService.castError(err);
+
+      tasksService.updateTask({
+        taskId: options.taskId,
+        merge: {
+          status: TaskStatus.Error,
+        },
+      });
+
+      rejectWithValue(castedError);
+    }
   },
 );
 
