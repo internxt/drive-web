@@ -77,10 +77,15 @@ export const initializeUserThunk = createAsyncThunk<
 
 export const refreshUserThunk = createAsyncThunk<void, void, { state: RootState }>(
   'user/refresh',
-  async (payload: void, { dispatch }) => {
+  async (payload: void, { dispatch, getState }) => {
     const { user, token } = await userService.refreshUser();
 
-    dispatch(userActions.setUser(user));
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('Current user is not defined');
+
+    const { avatar, emailVerified, name, lastname } = user;
+
+    dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
     dispatch(userActions.setToken(token));
   },
 );

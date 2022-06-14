@@ -10,7 +10,6 @@ import Input from '../../../../../shared/components/Input';
 import Modal from '../../../../../shared/components/Modal';
 import ValidPassword from '../../../../../shared/components/ValidPassword';
 import { RootState } from '../../../../../store';
-import errorService from '../../../../services/error.service';
 import Section from '../../components/Section';
 
 export default function ChangePassword({
@@ -71,15 +70,10 @@ function ChangePasswordModal({
 
   async function handleSubmit() {
     setIsLoading(true);
-    try {
-      await changePassword(passwordPayload.password, currentPassword, email);
-      notificationsService.show({ text: i18n.get('success.passwordChanged'), type: ToastType.Success });
-      onPasswordChanged(passwordPayload.password);
-      onClose();
-    } catch (err) {
-      const error = errorService.castError(err);
-      notificationsService.show({ text: error.message, type: ToastType.Error });
-    }
+    await changePassword(passwordPayload.password, currentPassword, email);
+    notificationsService.show({ text: i18n.get('success.passwordChanged'), type: ToastType.Success });
+    onPasswordChanged(passwordPayload.password);
+    onClose();
     setIsLoading(false);
   }
 
