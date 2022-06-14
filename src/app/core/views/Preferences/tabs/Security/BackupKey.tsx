@@ -7,7 +7,7 @@ import Section from '../../components/Section';
 
 export default function BackupKey({ className = '' }: { className?: string }): JSX.Element {
   function handleExport() {
-    const mnemonic = localStorageService.getUser()?.mnemonic;
+    const mnemonic = localStorageService.get('xMnemonic');
     if (!mnemonic) {
       notificationsService.show({ text: 'We could not generate your backup key', type: ToastType.Error });
     } else {
