@@ -1,4 +1,5 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { bytesToString } from '../../../../../drive/services/size.service';
@@ -13,6 +14,9 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const dispatch = useAppDispatch();
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
+  if (user === undefined) throw new Error('User is not defined');
+
   const { subscription } = plan;
 
   const priceButtons = subscription?.type === 'subscription' ? 'change' : 'upgrade';
@@ -39,6 +43,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           price_id: priceId,
           success_url: `${window.location.origin}/checkout/success`,
           cancel_url: window.location.href,
+          customer_email: user.email,
         });
         await paymentService.redirectToCheckout(response);
       } catch (err) {
