@@ -236,10 +236,10 @@ code {
     @apply h-4 w-4 rounded border-2 border-neutral-500 text-xs text-neutral-500;
   }
 
-  input:not([type]),
-  input[type='text'],
-  input[type='email'],
-  input[type='password'] {
+  input:not([type]):not(.inxt-input),
+  input[type='text']:not(.inxt-input),
+  input[type='email']:not(.inxt-input),
+  input[type='password']:not(.inxt-input) {
     @apply rounded-md px-3 py-2 text-base text-neutral-500 placeholder-neutral-60 ring-1 ring-neutral-100 focus:ring-blue-60;
 
     &:disabled {
@@ -251,7 +251,7 @@ code {
     }
 
     &.error {
-      @apply border-l-8 border-pink-600 bg-pink-100 ring-pink-600 focus:ring-pink-600;
+      @apply border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
     }
 
     &.semi-dense {
@@ -289,6 +289,10 @@ code {
   ::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+
+  .inxt-input::placeholder {
+    @apply font-normal;
   }
 
   /* BUTTONS */

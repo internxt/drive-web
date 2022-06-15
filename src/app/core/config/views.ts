@@ -6,6 +6,7 @@ import DriveView from 'app/drive/views/DriveView/DriveView';
 import RecentsView from 'app/drive/views/RecentsView/RecentsView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
 import AccountView from 'app/core/views/AccountView/AccountView';
+import Preferences from 'app/core/views/Preferences';
 import DeactivationView from 'app/core/views/DeactivationView/DeactivationView';
 import JoinTeamView from 'app/teams/views/JoinTeamView/JoinTeamView';
 import TeamSuccessView from 'app/teams/views/TeamSuccessView/TeamSuccessView';
@@ -23,6 +24,7 @@ import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import PhotosView from '../../photos/views/PhotosView';
+import VerifyEmailView from '../views/VerifyEmailView';
 
 const views: Array<{
   id: string;
@@ -39,6 +41,7 @@ const views: Array<{
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Account, component: AccountView },
+  { id: AppView.Preferences, component: Preferences },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },
@@ -51,6 +54,7 @@ const views: Array<{
   { id: AppView.ShareFolderToken, component: ShareFolderView },
   { id: AppView.SharePhotosToken, component: SharePhotosView },
   { id: AppView.RedirectToApp, component: RedirectToAppView },
+  { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 

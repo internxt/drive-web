@@ -1,5 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { useEffect } from 'react';
+import Button from '../Button/Button';
 
 export default function Dialog({
   isOpen,
@@ -11,6 +12,7 @@ export default function Dialog({
   primaryAction,
   secondaryAction,
   primaryActionColor,
+  isLoading,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -21,6 +23,7 @@ export default function Dialog({
   primaryAction: string;
   secondaryAction: string;
   primaryActionColor: 'primary' | 'danger';
+  isLoading?: boolean;
 }): JSX.Element {
   useEffect(() => {
     if (!isOpen) return;
@@ -59,20 +62,17 @@ export default function Dialog({
         <h1 className="mt-4 text-xl font-semibold text-gray-80">{title}</h1>
         <p className="font-medium text-gray-50">{subtitle}</p>
         <div className="mt-6 flex h-10 space-x-2">
-          <button
-            onClick={onSecondaryAction}
-            className="flex-1 rounded-lg bg-gray-5 font-medium text-gray-80 active:bg-gray-10"
-          >
+          <Button className="flex-1" variant="secondary" onClick={onSecondaryAction} disabled={isLoading}>
             {secondaryAction}
-          </button>
-          <button
+          </Button>
+          <Button
+            className="flex-1"
             onClick={onPrimaryAction}
-            className={`flex-1 rounded-lg  font-medium text-white  ${
-              primaryActionColor === 'primary' ? 'bg-primary active:bg-primary-dark' : 'bg-red-60 active:bg-red-70'
-            }`}
+            loading={isLoading}
+            variant={primaryActionColor === 'primary' ? 'primary' : 'accent'}
           >
             {primaryAction}
-          </button>
+          </Button>
         </div>
       </Transition.Child>
     </Transition>

@@ -1,22 +1,9 @@
-import { v4 } from 'uuid';
-import EventEmitter from 'events';
-import { randomBytes } from 'crypto';
-import { Environment } from '@internxt/inxt-js';
 import { Network } from '@internxt/sdk/dist/network';
 
-import { createAES256Cipher, encryptFilename, getEncryptedFile, sha256 } from './crypto';
+import { sha256 } from './crypto';
 import { NetworkFacade } from './NetworkFacade';
-import { finishUpload, getUploadUrl, prepareUpload } from './requests';
-import { Abortable } from './Abortable';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
-
-class UploadAbortedError extends Error {
-  constructor() {
-    super('Upload aborted');
-  }
-}
-
 
 interface NetworkCredentials {
   user: string;
@@ -36,16 +23,20 @@ export function uploadFileBlob(
   encryptedFile: Blob,
   url: string,
   opts: {
-    progressCallback: UploadProgressCallback,
-    abortController?: AbortController
+    progressCallback: UploadProgressCallback;
+    abortController?: AbortController;
   },
 ): Promise<void> {
   const uploadRequest = new XMLHttpRequest();
 
-  opts.abortController?.signal.addEventListener('abort', () => {
-    console.log('aborting');
-    uploadRequest.abort();
-  }, { once: true });
+  opts.abortController?.signal.addEventListener(
+    'abort',
+    () => {
+      console.log('aborting');
+      uploadRequest.abort();
+    },
+    { once: true },
+  );
 
   uploadRequest.upload.addEventListener('progress', (e) => {
     opts.progressCallback(e.total, e.loaded);
@@ -73,7 +64,7 @@ export function uploadFileBlob(
   return uploadFinishedPromise;
 }
 
-function getAuthFromCredentials(creds: NetworkCredentials): { username: string, password: string } {
+function getAuthFromCredentials(creds: NetworkCredentials): { username: string; password: string } {
   return {
     username: creds.user,
     password: sha256(Buffer.from(creds.pass)).toString('hex'),
@@ -85,7 +76,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
 
   const auth = getAuthFromCredentials({
     user: params.creds.user,
-    pass: params.creds.pass
+    pass: params.creds.pass,
   });
 
   return new NetworkFacade(
@@ -93,20 +84,15 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
       process.env.REACT_APP_STORJ_BRIDGE as string,
       {
         clientName: 'drive-web',
-        clientVersion: '1.0'
+        clientVersion: '1.0',
       },
       {
         bridgeUser: auth.username,
-        userId: auth.password
-      }
+        userId: auth.password,
+      },
     ),
-  ).upload(
-    bucketId,
-    params.mnemonic,
-    file,
-    {
-      uploadingCallback: params.progressCallback,
-      abortController: params.abortController
-    }
-  );
+  ).upload(bucketId, params.mnemonic, file, {
+    uploadingCallback: params.progressCallback,
+    abortController: params.abortController,
+  });
 }
