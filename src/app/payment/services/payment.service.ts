@@ -81,7 +81,7 @@ const paymentService = {
     return paymentsClient.getPrices();
   },
 
-  async updateSubscriptionPrice(priceId: string): Promise<void> {
+  async updateSubscriptionPrice(priceId: string): Promise<UserSubscription> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
     return paymentsClient.updateSubscriptionPrice(priceId);

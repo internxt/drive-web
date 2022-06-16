@@ -79,7 +79,11 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
             <SidenavItem label="Recents" to="/app/recents" Icon={Clock} />
             <SidenavItem label="Desktop App" Icon={Desktop} onClick={this.onDownloadAppButtonClicked} />
           </div>
-          {this.props.subscription && this.props.subscription.type === 'free' && <ReferralsWidget />}
+          {this.props.subscription && this.props.subscription.type === 'free' ? (
+            <ReferralsWidget />
+          ) : (
+            <div className="flex-grow"></div>
+          )}
 
           <div className="mt-8 mb-11 px-5">
             <PlanUsage
