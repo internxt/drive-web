@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { RootState } from '../..';
 import { StoragePlan } from 'app/drive/types';
@@ -116,7 +116,11 @@ export const fetchSubscriptionThunk = createAsyncThunk<UserSubscription | null, 
 export const planSlice = createSlice({
   name: 'plan',
   initialState,
-  reducers: {},
+  reducers: {
+    setSubscription: (state: PlanState, action: PayloadAction<UserSubscription>) => {
+      state.subscription = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(initializeThunk.pending, () => undefined)

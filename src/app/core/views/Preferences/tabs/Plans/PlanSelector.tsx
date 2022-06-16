@@ -8,7 +8,7 @@ import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';
 import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
-import { PlanState, planThunks } from '../../../../../store/slices/plan';
+import { planActions, PlanState } from '../../../../../store/slices/plan';
 
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useAppDispatch();
@@ -57,8 +57,8 @@ export default function PlanSelector({ className = '' }: { className?: string })
       }
     } else {
       try {
-        await paymentService.updateSubscriptionPrice(priceId);
-        await dispatch(planThunks.initializeThunk()).unwrap();
+        const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+        dispatch(planActions.setSubscription(updatedSubscription));
         notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
       } catch (err) {
         console.error(err);
