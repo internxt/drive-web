@@ -1,10 +1,11 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { Desktop, SignOut } from 'phosphor-react';
+import { Desktop, SignOut, UserPlus } from 'phosphor-react';
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import Avatar from '../../../shared/components/Avatar';
 import Popover from '../../../shared/components/Popover';
 import { useAppDispatch } from '../../../store/hooks';
+import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../services/desktop.service';
 
@@ -33,6 +34,10 @@ export default function AccountPopover({
     dispatch(userThunks.logoutThunk());
   }
 
+  function onGuestInviteClick() {
+    dispatch(uiActions.setIsGuestInvitationDialogOpen(true));
+  }
+
   const panel = (
     <div className="w-52">
       <div className="flex items-center p-3">
@@ -57,6 +62,12 @@ export default function AccountPopover({
         <Desktop size={20} />
         <p className="ml-3">Download app</p>
       </Item>
+      {user && user.sharedWorkspace && (
+        <Item onClick={onGuestInviteClick}>
+          <UserPlus size={20} />
+          <p className="ml-3">Guest</p>
+        </Item>
+      )}
       <Item onClick={onLogout}>
         <SignOut size={20} />
         <p className="ml-3">Log out</p>

@@ -74,10 +74,6 @@ class Navbar extends React.Component<NavbarProps> {
     }
   };
 
-  onGuestInviteCliked = (): void => {
-    this.props.dispatch(uiActions.setIsGuestInvitationDialogOpen(true));
-  };
-
   render(): ReactNode {
     const { user, storageFilters, hideSearch } = this.props;
     if (!user) throw new Error('User is not defined');
