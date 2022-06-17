@@ -87,22 +87,6 @@ export async function uploadFile(
     const castedError = errorService.castError(err);
 
     if (!abortController?.signal.aborted) {
-      Sentry.captureException(err, {
-        extra: {
-          file: {
-            name: file.name,
-            size: file.size,
-            type: file.type
-          },
-          networkCredentials: {
-            user: bridgeUser,
-            pass: bridgePass,
-            bucket: bucketId,
-            encryptionKey
-          }
-        }
-      });
-
       analyticsService.trackFileUploadError({
         file_size: file.size,
         file_type: file.type,
