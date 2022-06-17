@@ -1,4 +1,6 @@
+import * as Sentry from '@sentry/react';
 import { Network } from '@internxt/sdk/dist/network';
+import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 
 import { sha256 } from './crypto';
 import { NetworkFacade } from './NetworkFacade';
@@ -94,5 +96,9 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   ).upload(bucketId, params.mnemonic, file, {
     uploadingCallback: params.progressCallback,
     abortController: params.abortController,
+  }).catch((err: ErrorWithContext) => {
+    Sentry.captureException(err, { extra: err.context });
+
+    throw err;
   });
 }

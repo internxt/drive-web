@@ -1,5 +1,6 @@
 import { Environment } from '@internxt/inxt-js';
 import { createDecipheriv, Decipher } from 'crypto';
+import * as Sentry from '@sentry/react';
 
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
@@ -10,6 +11,7 @@ import databaseService, { DatabaseCollection } from 'app/database/services/datab
 import { SerializablePhoto } from 'app/store/slices/photos';
 import { getEnvironmentConfig } from 'app/drive/services/network.service';
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
+import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 import downloadFileV2 from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
@@ -319,5 +321,9 @@ export async function getPhotoCachedOrStream({
       notifyProgress: (totalBytes, downloadedBytes) => onProgress && onProgress(downloadedBytes / totalBytes),
       abortController,
     },
+  }).catch((err: ErrorWithContext) => {
+    Sentry.captureException(err, { extra: err.context });
+
+    throw err;
   });
 }
