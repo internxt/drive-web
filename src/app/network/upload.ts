@@ -28,7 +28,7 @@ export function uploadFileBlob(
     progressCallback: UploadProgressCallback;
     abortController?: AbortController;
   },
-): Promise<void> {
+): Promise<XMLHttpRequest> {
   const uploadRequest = new XMLHttpRequest();
 
   opts.abortController?.signal.addEventListener(
@@ -46,14 +46,14 @@ export function uploadFileBlob(
   uploadRequest.upload.addEventListener('loadstart', (e) => opts.progressCallback(e.total, 0));
   uploadRequest.upload.addEventListener('loadend', (e) => opts.progressCallback(e.total, e.total));
 
-  const uploadFinishedPromise = new Promise<void>((resolve, reject) => {
+  const uploadFinishedPromise = new Promise<XMLHttpRequest>((resolve, reject) => {
     uploadRequest.onload = () => {
       if (uploadRequest.status !== 200) {
         return reject(
           new Error('Upload failed with code ' + uploadRequest.status + ' message ' + uploadRequest.response),
         );
       }
-      resolve();
+      resolve(uploadRequest);
     };
     uploadRequest.onerror = reject;
     uploadRequest.onabort = () => reject(new Error('Upload aborted'));
