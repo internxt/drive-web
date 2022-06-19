@@ -69,6 +69,8 @@ export function uploadFileBlob(
   });
 
   uploadRequest.open('PUT', url);
+  // ! Uncomment this line for multipart to work:
+  // uploadRequest.setRequestHeader('Content-Type', '');
   uploadRequest.send(encryptedFile);
 
   return uploadFinishedPromise;
