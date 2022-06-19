@@ -16,9 +16,7 @@ import {
   encryptTextWithKey,
   passToHash,
 } from 'app/crypto/services/utils';
-import i18n from 'app/i18n/services/i18n.service';
 import databaseService from 'app/database/services/database.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import navigationService from 'app/core/services/navigation.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
@@ -40,14 +38,7 @@ export async function logOut(): Promise<void> {
 export function cancelAccount(): Promise<void> {
   const email = localStorageService.getUser()?.email;
   const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient
-    .sendDeactivationEmail(<string>email)
-    .then(() => {
-      notificationsService.show({ text: i18n.get('success.accountDeactivationEmailSent'), type: ToastType.Info });
-    })
-    .catch(() => {
-      notificationsService.show({ text: i18n.get('error.deactivatingAccount'), type: ToastType.Warning });
-    });
+  return authClient.sendDeactivationEmail(<string>email);
 }
 
 export const is2FANeeded = async (email: string): Promise<boolean> => {
@@ -253,6 +244,14 @@ export async function getNewToken(): Promise<string> {
   const { newToken } = await res.json();
 
   return newToken;
+}
+
+export async function areCredentialsCorrect(email: string, password: string): Promise<boolean> {
+  const salt = await getSalt();
+  const { hash: hashedPassword } = passToHash({ password, salt });
+  const authClient = SdkFactory.getInstance().createAuthClient();
+
+  return authClient.areCredentialsCorrect(email, hashedPassword);
 }
 
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {

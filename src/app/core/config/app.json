@@ -77,6 +77,14 @@
       "hideSearch": true
     },
     {
+      "id": "preferences",
+      "layout": "header-and-sidenav",
+      "path": "/preferences",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
+    },
+    {
       "id": "teams-join",
       "layout": "empty",
       "path": "/teams/join/:token",
@@ -157,6 +165,12 @@
       "layout": "empty",
       "path": "/redirect-to-app",
       "exact": true
+    },
+    {
+      "id": "verify-email",
+      "layout": "empty",
+      "path": "/verify-email/:token",
+      "exact": false
     },
     {
       "id": "not-found",

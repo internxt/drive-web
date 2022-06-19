@@ -12,7 +12,7 @@ import tasksService from '../../../tasks/services/tasks.service';
 import authService from '../../../auth/services/auth.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import userService from '../../../auth/services/user.service';
-import { InitializeUserResponse } from '@internxt/sdk/dist/drive/users/types';
+import { InitializeUserResponse, UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
 import { storeTeamsInfo } from '../../../teams/services/teams.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { referralsActions } from '../referrals';
@@ -68,7 +68,7 @@ export const initializeUserThunk = createAsyncThunk<
         localStorageService.removeItem('xTeam');
       }
     }
-
+    dispatch(refreshUserThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
     navigationService.push(AppView.Login);
@@ -77,10 +77,15 @@ export const initializeUserThunk = createAsyncThunk<
 
 export const refreshUserThunk = createAsyncThunk<void, void, { state: RootState }>(
   'user/refresh',
-  async (payload: void, { dispatch }) => {
+  async (payload: void, { dispatch, getState }) => {
     const { user, token } = await userService.refreshUser();
 
-    dispatch(userActions.setUser(user));
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('Current user is not defined');
+
+    const { avatar, emailVerified, name, lastname } = user;
+
+    dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
     dispatch(userActions.setToken(token));
   },
 );
@@ -98,6 +103,39 @@ export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
     dispatch(referralsActions.resetState());
 
     tasksService.clearTasks();
+  },
+);
+
+export const updateUserProfileThunk = createAsyncThunk<void, Required<UpdateProfilePayload>, { state: RootState }>(
+  'user/updateProfile',
+  async (payload, { dispatch, getState }) => {
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('User is not defined');
+
+    await userService.updateUserProfile(payload);
+    dispatch(userActions.setUser({ ...currentUser, ...payload }));
+  },
+);
+
+export const updateUserAvatarThunk = createAsyncThunk<void, { avatar: Blob }, { state: RootState }>(
+  'user/updateAvatar',
+  async (payload, { dispatch, getState }) => {
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('User is not defined');
+
+    const { avatar } = await userService.updateUserAvatar(payload);
+    dispatch(userActions.setUser({ ...currentUser, avatar }));
+  },
+);
+
+export const deleteUserAvatarThunk = createAsyncThunk<void, void, { state: RootState }>(
+  'user/deleteAvatar',
+  async (payload, { dispatch, getState }) => {
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('User is not defined');
+
+    await userService.deleteUserAvatar();
+    dispatch(userActions.setUser({ ...currentUser, avatar: null }));
   },
 );
 

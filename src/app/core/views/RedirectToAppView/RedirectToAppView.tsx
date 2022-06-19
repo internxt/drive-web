@@ -15,13 +15,13 @@ const RedirectToAppView = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="px-10 pt-10 text-center flex flex-col justify-center items-center h-full">
-      <div className="mb-4 bg-green-40 rounded-1/2">
-        <UilCheckCircle size={50} className="text-white transform scale-125" />
+    <div className="flex h-full flex-col items-center justify-center px-10 pt-10 text-center">
+      <div className="mb-4 rounded-1/2 bg-green">
+        <UilCheckCircle size={50} className="scale-125 transform text-white" />
       </div>
       <h1 className="mb-6 text-xl font-semibold">{i18n.get('views.redirectToApp.message')}</h1>
       <a
-        className="bg-blue-60 no-underline py-2 px-4 rounded-lg w-full max-w-sm hover:bg-blue-70 text-white hover:text-white"
+        className="w-full max-w-sm rounded-lg bg-blue-60 py-2 px-4 text-white no-underline hover:bg-blue-70 hover:text-white"
         ref={anchorRef}
         href={appUrl}
       >

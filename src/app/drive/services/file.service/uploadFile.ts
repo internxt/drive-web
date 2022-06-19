@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { DriveFileData } from '../../types';
 import analyticsService from '../../../analytics/services/analytics.service';
@@ -19,13 +20,15 @@ export interface ItemToUpload {
   parentFolderId: number;
 }
 
-export function uploadFile(
+export async function uploadFile(
   userEmail: string,
   file: ItemToUpload,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController
 ): Promise<DriveFileData> {
+  const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
+
   try {
     analyticsService.trackFileUploadStart({
       file_size: file.size,
@@ -34,8 +37,6 @@ export function uploadFile(
       email: userEmail,
       platform: DevicePlatform.Web,
     });
-
-    const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
     if (!bucketId) {
       analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
@@ -46,7 +47,7 @@ export function uploadFile(
       throw new Error('Bucket not found!');
     }
 
-    return upload(bucketId, {
+    const fileId = await upload(bucketId, {
       creds: {
         pass: bridgePass,
         user: bridgeUser
@@ -58,43 +59,43 @@ export function uploadFile(
         updateProgressCallback(uploadedBytes / totalBytes);
       },
       abortController
-    }).then((fileId) => {
-      const name = encryptFilename(file.name, file.parentFolderId);
-      const folder_id = file.parentFolderId;
-
-      const storageClient = SdkFactory.getInstance().createStorageClient();
-
-      const fileEntry: StorageTypes.FileEntry = {
-        id: fileId,
-        type: file.type,
-        size: file.size,
-        name: name,
-        bucket: bucketId,
-        folder_id: folder_id,
-        encrypt_version: StorageTypes.EncryptionVersion.Aes03,
-      };
-
-      return storageClient.createFileEntry(fileEntry).then((response) => {
-        analyticsService.trackFileUploadFinished({
-          file_size: file.size,
-          file_id: response.id,
-          file_type: file.type,
-          email: userEmail,
-        });
-        return response;
-      });
     });
+
+    const name = encryptFilename(file.name, file.parentFolderId);
+    const storageClient = SdkFactory.getInstance().createStorageClient();
+    const fileEntry: StorageTypes.FileEntry = {
+      id: fileId,
+      type: file.type,
+      size: file.size,
+      name: name,
+      bucket: bucketId,
+      folder_id: file.parentFolderId,
+      encrypt_version: StorageTypes.EncryptionVersion.Aes03,
+    };
+
+    const response = await storageClient.createFileEntry(fileEntry);
+
+    analyticsService.trackFileUploadFinished({
+      file_size: file.size,
+      file_id: response.id,
+      file_type: file.type,
+      email: userEmail,
+    });
+
+    return response;
   } catch (err: unknown) {
     const castedError = errorService.castError(err);
 
-    analyticsService.trackFileUploadError({
-      file_size: file.size,
-      file_type: file.type,
-      folder_id: file.parentFolderId,
-      email: userEmail,
-      msg: castedError.message,
-      platform: DevicePlatform.Web,
-    });
+    if (!abortController?.signal.aborted) {
+      analyticsService.trackFileUploadError({
+        file_size: file.size,
+        file_type: file.type,
+        folder_id: file.parentFolderId,
+        email: userEmail,
+        msg: castedError.message,
+        platform: DevicePlatform.Web,
+      });
+    }
 
     throw err;
   }

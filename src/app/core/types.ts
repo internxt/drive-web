@@ -108,6 +108,7 @@ export enum AppView {
   Backups = 'backups',
   Photos = 'photos',
   Account = 'account',
+  Preferences = 'preferences',
   TeamsJoin = 'teams-join',
   Deactivation = 'deactivation',
   TeamsDeactivation = 'teams-deactivation',
@@ -121,6 +122,7 @@ export enum AppView {
   GuestAcceptInvite = 'guest-accept-invite',
   RedirectToApp = 'redirect-to-app',
   NotFound = 'not-found',
+  VerifyEmail = 'verify-email',
 }
 
 export enum SignupDeviceSource {

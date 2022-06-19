@@ -115,7 +115,7 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
                   {member.isInvitation ? (
                     <UilUserPlus className="mr-1 h-5 text-gray-50" />
                   ) : (
-                    <UilUserPlus className="mr-1 h-5 text-green-40" />
+                    <UilUserPlus className="text-green mr-1 h-5" />
                   )}
                   <div className="flex flex-1 justify-start px-5">
                     <span className="w-72 truncate overflow-ellipsis">{member.user}</span>

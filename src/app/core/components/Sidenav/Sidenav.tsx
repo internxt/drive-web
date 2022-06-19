@@ -15,9 +15,11 @@ import screenService from 'app/core/services/screen.service';
 
 import './Sidenav.scss';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
+import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 
 interface SidenavProps {
   user: UserSettings | undefined;
+  subscription: UserSubscription | null;
   planUsage: number;
   planLimit: number;
   isLoadingPlanLimit: boolean;
@@ -77,7 +79,11 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
             <SidenavItem label="Recents" to="/app/recents" Icon={Clock} />
             <SidenavItem label="Desktop App" Icon={Desktop} onClick={this.onDownloadAppButtonClicked} />
           </div>
-          <ReferralsWidget />
+          {this.props.subscription && this.props.subscription.type === 'free' ? (
+            <ReferralsWidget />
+          ) : (
+            <div className="flex-grow"></div>
+          )}
 
           <div className="mt-8 mb-11 px-5">
             <PlanUsage
@@ -95,6 +101,7 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
 export default connect((state: RootState) => ({
   user: state.user.user,
   planUsage: state.plan.planUsage,
+  subscription: state.plan.subscription,
   planLimit: planSelectors.planLimitToShow(state),
   isLoadingPlanLimit: state.plan.isLoadingPlanLimit,
   isLoadingPlanUsage: state.plan.isLoadingPlanUsage,

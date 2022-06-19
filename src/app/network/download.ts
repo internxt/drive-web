@@ -1,5 +1,6 @@
 import { Environment } from '@internxt/inxt-js';
 import { createDecipheriv, Decipher } from 'crypto';
+import * as Sentry from '@sentry/react';
 
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
@@ -8,12 +9,13 @@ import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import localStorageService from 'app/core/services/local-storage.service';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import { SerializablePhoto } from 'app/store/slices/photos';
-import { getEnvironmentConfig, Network } from 'app/drive/services/network.service';
+import { getEnvironmentConfig } from 'app/drive/services/network.service';
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
+import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 import downloadFileV2 from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
-export type Downloadable = { fileId: string, bucketId: string };
+export type Downloadable = { fileId: string; bucketId: string };
 
 export function loadWritableStreamPonyfill(): Promise<void> {
   const script = document.createElement('script');
@@ -70,7 +72,7 @@ interface FileInfo {
 
 export function getDecryptedStream(
   encryptedContentSlices: ReadableStream<Uint8Array>[],
-  decipher: Decipher
+  decipher: Decipher,
 ): ReadableStream<Uint8Array> {
   const encryptedStream = joinReadableBinaryStreams(encryptedContentSlices);
 
@@ -93,7 +95,7 @@ export function getDecryptedStream(
     },
     cancel() {
       keepReading = false;
-    }
+    },
   });
 
   return decryptedStream;
@@ -102,7 +104,7 @@ export function getDecryptedStream(
 async function getFileDownloadStream(
   downloadUrls: string[],
   decipher: Decipher,
-  abortController?: AbortController
+  abortController?: AbortController,
 ): Promise<ReadableStream> {
   const encryptedContentParts: ReadableStream<Uint8Array>[] = [];
 
@@ -134,9 +136,9 @@ interface IDownloadParams {
   encryptionKey?: Buffer;
   token?: string;
   options?: {
-    notifyProgress: DownloadProgressCallback,
-    abortController?: AbortController
-  }
+    notifyProgress: DownloadProgressCallback;
+    abortController?: AbortController;
+  };
 }
 
 interface MetadataRequiredForDownload {
@@ -209,7 +211,7 @@ async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
   const downloadStream = await getFileDownloadStream(
     downloadUrls,
     createDecipheriv('aes-256-ctr', key, iv),
-    params.options?.abortController
+    params.options?.abortController,
   );
 
   return buildProgressStream(downloadStream, (readBytes) => {
@@ -225,15 +227,18 @@ export function downloadFileToFileSystem(
   return [downloadStreamPromise.then((readable) => readable.pipeTo(params.destination)), { abort: () => null }];
 }
 
-export async function getPhotoPreview({
-  photo,
-  bucketId,
-}: {
-  photo: SerializablePhoto;
-  bucketId: string;
-}, opts?: {
-  abortController: AbortController
-}): Promise<string> {
+export async function getPhotoPreview(
+  {
+    photo,
+    bucketId,
+  }: {
+    photo: SerializablePhoto;
+    bucketId: string;
+  },
+  opts?: {
+    abortController: AbortController;
+  },
+): Promise<string> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
   let blob: Blob;
 
@@ -244,7 +249,11 @@ export async function getPhotoPreview({
     const indexBuf = Buffer.from(index, 'hex');
     const iv = indexBuf.slice(0, 16);
     const key = await generateFileKey(mnemonic, bucketId, indexBuf);
-    const readable = await getFileDownloadStream([link], createDecipheriv('aes-256-ctr', key, iv), opts?.abortController);
+    const readable = await getFileDownloadStream(
+      [link],
+      createDecipheriv('aes-256-ctr', key, iv),
+      opts?.abortController,
+    );
 
     blob = await binaryStreamToBlob(readable);
     databaseService.put(DatabaseCollection.Photos, photo.id, { preview: blob });
@@ -256,11 +265,11 @@ export async function getPhotoPreview({
 export async function getPhotoBlob({
   photo,
   bucketId,
-  abortController
+  abortController,
 }: {
   photo: SerializablePhoto;
   bucketId: string;
-  abortController?: AbortController
+  abortController?: AbortController;
 }): Promise<Blob> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
 
@@ -284,12 +293,12 @@ export async function getPhotoCachedOrStream({
   photo,
   bucketId,
   onProgress,
-  abortController
+  abortController,
 }: {
   photo: SerializablePhoto;
   bucketId: string;
   onProgress?: (progress: number) => void;
-  abortController?: AbortController
+  abortController?: AbortController;
 }): Promise<Blob | ReadableStream<Uint8Array>> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
 
@@ -305,12 +314,16 @@ export async function getPhotoCachedOrStream({
     fileId: photo.fileId,
     creds: {
       pass: bridgePass,
-      user: bridgeUser
+      user: bridgeUser,
     },
     mnemonic: encryptionKey,
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => onProgress && onProgress(downloadedBytes / totalBytes),
-      abortController
-    }
+      abortController,
+    },
+  }).catch((err: ErrorWithContext) => {
+    Sentry.captureException(err, { extra: err.context });
+
+    throw err;
   });
 }

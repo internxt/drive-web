@@ -1,22 +1,11 @@
-import { v4 } from 'uuid';
-import EventEmitter from 'events';
-import { randomBytes } from 'crypto';
-import { Environment } from '@internxt/inxt-js';
+import * as Sentry from '@sentry/react';
 import { Network } from '@internxt/sdk/dist/network';
+import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 
-import { createAES256Cipher, encryptFilename, getEncryptedFile, sha256 } from './crypto';
+import { sha256 } from './crypto';
 import { NetworkFacade } from './NetworkFacade';
-import { finishUpload, getUploadUrl, prepareUpload } from './requests';
-import { Abortable } from './Abortable';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
-
-class UploadAbortedError extends Error {
-  constructor() {
-    super('Upload aborted');
-  }
-}
-
 
 interface NetworkCredentials {
   user: string;
@@ -37,16 +26,20 @@ export function uploadFileBlob(
   encryptedFile: Blob,
   url: string,
   opts: {
-    progressCallback: UploadProgressCallback,
-    abortController?: AbortController
+    progressCallback: UploadProgressCallback;
+    abortController?: AbortController;
   },
 ): Promise<XMLHttpRequest> {
   const uploadRequest = new XMLHttpRequest();
 
-  opts.abortController?.signal.addEventListener('abort', () => {
-    console.log('aborting');
-    uploadRequest.abort();
-  }, { once: true });
+  opts.abortController?.signal.addEventListener(
+    'abort',
+    () => {
+      console.log('aborting');
+      uploadRequest.abort();
+    },
+    { once: true },
+  );
 
   uploadRequest.upload.addEventListener('progress', (e) => {
     opts.progressCallback(e.total, e.loaded);
@@ -76,7 +69,7 @@ export function uploadFileBlob(
   return uploadFinishedPromise;
 }
 
-function getAuthFromCredentials(creds: NetworkCredentials): { username: string, password: string } {
+function getAuthFromCredentials(creds: NetworkCredentials): { username: string; password: string } {
   return {
     username: creds.user,
     password: sha256(Buffer.from(creds.pass)).toString('hex'),
@@ -88,7 +81,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
 
   const auth = getAuthFromCredentials({
     user: params.creds.user,
-    pass: params.creds.pass
+    pass: params.creds.pass,
   });
 
   const facade = new NetworkFacade(
@@ -106,15 +99,27 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   );
 
   if (params.parts) {
-    return facade.uploadMultipart(bucketId, params.mnemonic, file, {
+    return facade
+      .uploadMultipart(bucketId, params.mnemonic, file, {
+        uploadingCallback: params.progressCallback,
+        abortController: params.abortController,
+        parts: params.parts,
+      })
+      .catch((err: ErrorWithContext) => {
+        Sentry.captureException(err, { extra: err.context });
+
+        throw err;
+      });
+  }
+
+  return facade
+    .upload(bucketId, params.mnemonic, file, {
       uploadingCallback: params.progressCallback,
       abortController: params.abortController,
-      parts: params.parts,
-    });
-    }
+    })
+    .catch((err: ErrorWithContext) => {
+      Sentry.captureException(err, { extra: err.context });
 
-  return facade.upload(bucketId, params.mnemonic, file, {
-    uploadingCallback: params.progressCallback,
-    abortController: params.abortController,
-  });
+      throw err;
+    });
 }
