@@ -30,6 +30,7 @@ interface IUploadParams {
   mnemonic: string;
   progressCallback: UploadProgressCallback;
   abortController?: AbortController;
+  parts?: number;
 }
 
 export function uploadFileBlob(
@@ -88,25 +89,30 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
     pass: params.creds.pass
   });
 
-  return new NetworkFacade(
+  const facade = new NetworkFacade(
     Network.client(
       process.env.REACT_APP_STORJ_BRIDGE as string,
       {
         clientName: 'drive-web',
-        clientVersion: '1.0'
+        clientVersion: '1.0',
       },
       {
         bridgeUser: auth.username,
-        userId: auth.password
-      }
+        userId: auth.password,
+      },
     ),
-  ).upload(
-    bucketId,
-    params.mnemonic,
-    file,
-    {
-      uploadingCallback: params.progressCallback,
-      abortController: params.abortController
-    }
   );
+
+  if (params.parts) {
+    return facade.uploadMultipart(bucketId, params.mnemonic, file, {
+      uploadingCallback: params.progressCallback,
+      abortController: params.abortController,
+      parts: params.parts,
+    });
+    }
+
+  return facade.upload(bucketId, params.mnemonic, file, {
+    uploadingCallback: params.progressCallback,
+    abortController: params.abortController,
+  });
 }
