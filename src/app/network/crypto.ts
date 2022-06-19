@@ -139,6 +139,19 @@ export async function getEncryptedFile(
   ];
 }
 
+export function encryptAndUploadMultipartFileReadable(
+  plainFile: { size: number; stream(): ReadableStream<Uint8Array> },
+  cipher: Cipher,
+  parts: number,
+): ReadableStream<Uint8Array> {
+  // We include a marginChunkSize because if we split the chunk directly, there will always be one more chunk left, this will cause a mismatch with the urls provided
+  const marginChunkSize = 1024;
+  const chunkSize = plainFile.size / parts + marginChunkSize;
+  const readableFileChunks = streamFileIntoChunks(plainFile.stream(), chunkSize);
+  const readableChunkedEncrypted = encryptReadablePull(readableFileChunks, cipher);
+  return readableChunkedEncrypted;
+}
+
 export function sha256(input: Buffer): Buffer {
   return createHash('sha256').update(input).digest();
 }
