@@ -1,7 +1,6 @@
 import createZipReadable from 'app/drive/services/download.service/downloadFolder/zipStream';
 import streamSaver from 'streamsaver';
 import { loadWritableStreamPonyfill } from 'app/network/download';
-import { mergeBuffers } from 'app/crypto/services/utils';
 
 type BinaryStream = ReadableStream<Uint8Array>;
 
@@ -187,36 +186,34 @@ export function streamFileIntoChunks(
   chunkSize: number,
 ): ReadableStream<Uint8Array> {
   const reader = readable.getReader();
-
-  let buffer: Uint8Array;
+  let buffer = new Uint8Array(0);
 
   return new ReadableStream({
     async pull(controller) {
-      let fulfilledChunkQuotaOrFinished = false;
+      function handleDone() {
+        if (buffer.byteLength > 0) {
+          controller.enqueue(buffer);
+        }
+        return controller.close();
+      }
 
-      while (!fulfilledChunkQuotaOrFinished) {
         const status = await reader.read();
 
-        if (!status.done) {
+      if (status.done) return handleDone();
+
           const chunk = status.value;
-          buffer = buffer ? mergeBuffers(buffer, chunk) : chunk;
+      buffer = mergeBuffers(buffer, chunk);
 
-          while (buffer.byteLength >= chunkSize) {
-            const chunkToSend = buffer.slice(0, chunkSize);
-            controller.enqueue(chunkToSend);
-            buffer = new Uint8Array(buffer.slice(chunkSize));
-            fulfilledChunkQuotaOrFinished = true;
-          }
+      while (buffer.byteLength < chunkSize) {
+        const status = await reader.read();
+
+        if (status.done) return handleDone();
+
+        buffer = mergeBuffers(buffer, status.value);
         }
 
-        if (status.done) {
-          fulfilledChunkQuotaOrFinished = true;
-          if (buffer.byteLength > 0) {
-            controller.enqueue(buffer);
-          }
-          controller.close();
-        }
-      }
+      controller.enqueue(buffer.slice(0, chunkSize));
+      buffer = new Uint8Array(buffer.slice(chunkSize));
     },
   });
 }
