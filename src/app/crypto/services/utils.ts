@@ -68,13 +68,6 @@ function renameFile(file: File, newName: string): File {
   return new File([file], newName);
 }
 
-function mergeBuffers(buffer1: Uint8Array, buffer2: Uint8Array): Uint8Array {
-  const mergedBuffer = new Uint8Array(buffer1.length + buffer2.length);
-  mergedBuffer.set(buffer1);
-  mergedBuffer.set(buffer2, buffer1.length);
-  return mergedBuffer;
-}
-
 export {
   passToHash,
   encryptText,
@@ -84,5 +77,4 @@ export {
   decryptTextWithKey,
   excludeHiddenItems,
   renameFile,
-  mergeBuffers,
 };
