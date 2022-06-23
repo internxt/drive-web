@@ -118,12 +118,6 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   };
 
   const loadInfo = async () => {
-    // ! iOS Chrome is not supported
-    if (navigator.userAgent.match('CriOS')) {
-      setIsError(true);
-      setErrorMSG(new Error('Chrome iOS not supported. Use Safari to proceed'));
-    }
-
     try {
       const info = await getSharedFileInfo(token).catch(() => {
         setIsError(true);
@@ -165,18 +159,16 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
     const encryptionKey = getEncryptionKey();
 
-    const readable = network.downloadFile(
-      {
-        bucketId: fileInfo.bucket,
-        fileId: fileInfo.file,
-        encryptionKey: Buffer.from(encryptionKey, 'hex'),
-        token: fileInfo.fileToken,
-        options: {
-          abortController,
-          notifyProgress: () => null
-        }
-      }
-    );
+    const readable = network.downloadFile({
+      bucketId: fileInfo.bucket,
+      fileId: fileInfo.file,
+      encryptionKey: Buffer.from(encryptionKey, 'hex'),
+      token: fileInfo.fileToken,
+      options: {
+        abortController,
+        notifyProgress: () => null,
+      },
+    });
 
     return readable.then(binaryStreamToBlob);
   }
@@ -196,19 +188,17 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
-        const readable = await network.downloadFile(
-          {
-            bucketId: fileInfo.bucket,
-            fileId: fileInfo.file,
-            encryptionKey: Buffer.from(encryptionKey, 'hex'),
-            token: fileInfo.fileToken,
-            options: {
-              notifyProgress: (totalProgress, downloadedBytes) => {
-                setProgress(Math.trunc((downloadedBytes / totalProgress) * 100));
-              }
-            }
-          }
-        );
+        const readable = await network.downloadFile({
+          bucketId: fileInfo.bucket,
+          fileId: fileInfo.file,
+          encryptionKey: Buffer.from(encryptionKey, 'hex'),
+          token: fileInfo.fileToken,
+          options: {
+            notifyProgress: (totalProgress, downloadedBytes) => {
+              setProgress(Math.trunc((downloadedBytes / totalProgress) * 100));
+            },
+          },
+        });
         const fileBlob = await binaryStreamToBlob(readable);
 
         downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
