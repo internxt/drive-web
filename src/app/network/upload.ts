@@ -19,7 +19,6 @@ interface IUploadParams {
   mnemonic: string;
   progressCallback: UploadProgressCallback;
   abortController?: AbortController;
-  parts?: number;
 }
 
 export function uploadFileBlob(
@@ -82,7 +81,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
     pass: params.creds.pass,
   });
 
-  const facade = new NetworkFacade(
+  return new NetworkFacade(
     Network.client(
       process.env.REACT_APP_STORJ_BRIDGE as string,
       {
@@ -94,18 +93,12 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
         userId: auth.password,
       },
     ),
-  );
-
-  if (params.parts) {
-    return facade.uploadMultipart(bucketId, params.mnemonic, file, {
-      uploadingCallback: params.progressCallback,
-      abortController: params.abortController,
-      parts: params.parts,
-    });
-    }
-
-  return facade.upload(bucketId, params.mnemonic, file, {
+  ).upload(bucketId, params.mnemonic, file, {
     uploadingCallback: params.progressCallback,
     abortController: params.abortController,
+  }).catch((err: ErrorWithContext) => {
+    Sentry.captureException(err, { extra: err.context });
+
+    throw err;
   });
 }
