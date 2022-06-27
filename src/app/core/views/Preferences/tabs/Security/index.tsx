@@ -10,22 +10,26 @@ export default function SecurityTab({ className = '' }: { className?: string }):
 
   return (
     <div className={className}>
-      <div className="flex flex-wrap gap-y-8 gap-x-10">
-        <div className="flex w-96 flex-col space-y-8">
+      <div className="flex flex-row justify-center flex-wrap gap-y-8 gap-x-10">
+        
           {state.tag === 'unlocked' ? (
             <>
-              <ChangePassword
-                onPasswordChanged={(newPassword) => setState({ tag: 'unlocked', password: newPassword })}
-                currentPassword={state.password}
-              />
-              <TwoFA password={state.password} />
-              <BackupKey />
+              <div className="flex flex-1 flex-col space-y-8">
+                <ChangePassword
+                  onPasswordChanged={(newPassword) => setState({ tag: 'unlocked', password: newPassword })}
+                  currentPassword={state.password}
+                />
+                <TwoFA password={state.password} />
+                <BackupKey />
+              </div>
+
+              <div className="flex w-96 flex-col space-y-8">
+                <Faq />
+              </div>
             </>
           ) : (
-            <Lock onUnlock={(password) => setState({ tag: 'unlocked', password })} />
+            <Lock className="w-full max-w-lg" onUnlock={(password) => setState({ tag: 'unlocked', password })} />
           )}
-        </div>
-        <div className="flex w-96 flex-col space-y-8">{state.tag === 'unlocked' && <Faq />}</div>
       </div>
     </div>
   );

@@ -27,31 +27,26 @@ export default function Faq({ className = '' }: { className?: string }): JSX.Ele
       {questions.map((question, i) => (
         <Disclosure defaultOpen={i === 0} key={i}>
           {({ open }) => (
-            <>
+            <div className={`flex flex-col ${open && 'bg-gray-5 mb-2 pb-6'} rounded-xl transition-all duration-150 ease-in-out`}>
               <Disclosure.Button
-                className={`flex w-full justify-between px-5 text-left transition duration-100 ease-out ${
-                  open ? ' rounded-t-lg bg-gray-5 pt-5 font-medium text-gray-80' : 'py-3 text-gray-60'
+                className={`flex w-full justify-between text-left px-6 py-3 font-medium text-gray-60 transition-all duration-150 ease-in-out ${
+                  open && 'text-gray-80 pt-6'
                 }`}
               >
                 <p>{question.title}</p>
                 <CaretUp
-                  className={`ml-4 mt-0.5 flex-shrink-0 text-gray-40 ${open ? '' : 'rotate-180 transform'}`}
+                  className={`ml-4 mt-0.5 flex-shrink-0 text-gray-40 ${open ? '' : 'transform rotate-180'} transition-transform duration-200 ease-in-out`}
                   weight="bold"
                   size={20}
                 />
               </Disclosure.Button>
-              <Transition
-                enterFrom="transform opacity-0"
-                enterTo="transform opacity-100"
-                leaveFrom="transform opacity-100"
-                leaveTo="transform opacity-0"
-              >
+              {open && (
                 <Disclosure.Panel
-                  className="rounded-b-lg bg-gray-5 px-5 pt-2 pb-5 text-sm text-gray-60 transition duration-100 ease-out"
+                  className="text-sm text-gray-60 px-6 pt-0 transition-all duration-150 ease-in-out"
                   dangerouslySetInnerHTML={{ __html: question.body }}
                 />
-              </Transition>
-            </>
+              )}
+            </div>
           )}
         </Disclosure>
       ))}

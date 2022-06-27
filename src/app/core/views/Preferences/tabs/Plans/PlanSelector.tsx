@@ -22,7 +22,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const priceButtons = subscription?.type === 'subscription' ? 'change' : 'upgrade';
 
   const [prices, setPrices] = useState<DisplayPrice[] | null>(null);
-  const [interval, setInterval] = useState<'month' | 'year'>('month');
+  const [interval, setInterval] = useState<'month' | 'year'>('year');
 
   useEffect(() => {
     paymentService.getPrices().then(setPrices);
@@ -87,7 +87,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           <IntervalSwitch active={interval === 'year'} text="Annually" onClick={() => setInterval('year')} />
         </div>
       </div>
-      <div className="mt-5 flex gap-x-5">
+      <div className="mt-5 flex flex-row justify-center gap-x-5">
         {pricesFilteredAndSorted?.map((price) => (
           <Price
             key={price.id}
