@@ -90,57 +90,6 @@ export class NetworkFacade {
     );
   }
 
-  uploadMultipart(bucketId: string, mnemonic: string, file: File, options: UploadMultipartOptions): Promise<string> {
-    let fileReadable: ReadableStream<Uint8Array>;
-
-    return uploadMultipartFile(
-      this.network,
-      this.cryptoLib,
-      bucketId,
-      mnemonic,
-      file.size,
-      async (algorithm, key, iv) => {
-        const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
-        fileReadable = encryptAndUploadMultipartFileReadable(file, cipher, options.parts);
-      },
-      async (urls: string[]) => {
-        const fileParts: { PartNumber: number; ETag: string }[] = [];
-
-        let currentUrlIndex = 0;
-        const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
-          const currentUrl = urls[currentUrlIndex];
-
-          const useProxy =
-            process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(currentUrl).hostname.includes('internxt');
-          const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + currentUrl;
-
-          const response = await uploadFileBlob(blob, fetchUrl, {
-            progressCallback: options.uploadingCallback,
-            abortController: options.abortController,
-          });
-
-          const ETag = response.getResponseHeader('etag');
-
-          if (!ETag) {
-            throw new Error('ETag header was not returned');
-          }
-          fileParts.push({
-            ETag,
-            PartNumber: currentUrlIndex + 1,
-          });
-
-          currentUrlIndex += 1;
-        });
-
-        return {
-          hash: fileHash,
-          parts: fileParts,
-        };
-      },
-      options.parts,
-    );
-  }
-
   async download(
     bucketId: string,
     fileId: string,
