@@ -1,4 +1,4 @@
-import { Disclosure, Transition } from '@headlessui/react';
+import { Disclosure } from '@headlessui/react';
 import { CaretUp } from 'phosphor-react';
 import Section from '../../components/Section';
 
