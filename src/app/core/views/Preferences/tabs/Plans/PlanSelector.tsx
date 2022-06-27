@@ -161,8 +161,14 @@ function Price({
     <div className={`${className} w-full lg:w-64 rounded-xl border border-gray-10 p-6`}>
       <h1 className="text-4xl font-medium text-primary">{bytesToString(bytes)}</h1>
       <div className="mt-5 border-t border-gray-10" />
-      <p className="mt-5 text-2xl font-medium text-gray-100">{`${displayAmount(amountMonthly)} €/ month`}</p>
-      <p className=" text-gray-50">{`${displayAmount(amountAnnually)}€ billed annually`}</p>
+      <p className="mt-5 text-2xl font-medium text-gray-100">{`€${displayAmount(amountMonthly)}/month`}</p>
+      <p className=" text-gray-50">
+        {interval === 'month' ? (
+          `€${displayAmount(amountMonthly)} billed monthly`
+        ) : (
+          `€${displayAmount(amountAnnually)} billed annually`
+        )}
+      </p>
       <Button
         loading={loading}
         onClick={onClick}
