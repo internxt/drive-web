@@ -71,7 +71,7 @@ export default function UsageDetails({
             popsFrom="top"
           >
             <div
-              style={{ width: `${(product.usageInBytes / planLimitInBytes) * barWidth}px` }}
+              style={{ width: `${Math.max(((product.usageInBytes / planLimitInBytes) * barWidth), 12)}px` }}
               className={`${colorMapping[product.color]} h-2 border-r-2 border-white ${i === 0 ? 'rounded-l-sm' : ''}`}
             />
           </Tooltip>
