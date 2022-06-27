@@ -10,7 +10,7 @@ export default function SecurityTab({ className = '' }: { className?: string }):
 
   return (
     <div className={className}>
-      <div className="flex flex-row justify-center flex-wrap gap-y-8 gap-x-10">
+      <div className="flex flex-col xl:flex-row justify-center flex-wrap gap-y-8 gap-x-10">
         
           {state.tag === 'unlocked' ? (
             <>
@@ -23,7 +23,7 @@ export default function SecurityTab({ className = '' }: { className?: string }):
                 <BackupKey />
               </div>
 
-              <div className="flex w-96 flex-col space-y-8">
+              <div className="flex w-full xl:w-96 flex-col space-y-8">
                 <Faq />
               </div>
             </>
