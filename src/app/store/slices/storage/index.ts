@@ -46,7 +46,7 @@ export const storageSlice = createSlice({
       Object.assign(state.order, action.payload);
     },
     resetOrder: (state: StorageState) => {
-      state.order = orderFactory('updatedAt', OrderDirection.Desc);
+      state.order = orderFactory('name', OrderDirection.Asc);
     },
     resetFilters: (state: StorageState) => {
       state.filters = filtersFactory();

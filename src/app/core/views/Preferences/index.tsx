@@ -59,12 +59,13 @@ export default function Preferences(): JSX.Element {
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
       <TabContext.Provider value={{ activeTab, setActiveTab }}>
         {/* overflow-y-auto and overflow-x-visible is not a valid combination in the same element */}
-        <div className="flex-grow overflow-y-auto">
-          <div className="overflow-x-visible" style={{ maxWidth: '872px' }}>
+        <div className="flex flex-row justify-center flex-grow overflow-y-auto p-8">
+          <div className="overflow-x-visible w-screen max-w-screen-xl">
             {TABS.map(
               ({ component: Component, id }) =>
-                Component && <Component className={`p-8 ${activeTab !== id ? 'hidden' : ''}`} key={id} />,
+                Component && <Component className={`${activeTab !== id ? 'hidden' : ''}`} key={id} />,
             )}
+            <div className="h-8" /> {/* flexbox glitch trick */}
           </div>
         </div>
       </TabContext.Provider>

@@ -62,7 +62,7 @@ export default function Input({
     <div className="relative">
       <input
         disabled={disabled}
-        className={`inxt-input outline-none h-11 w-full rounded-md border text-lg font-normal text-gray-80 ring-opacity-10 focus:ring-2 disabled:text-gray-40 disabled:placeholder-gray-20 
+        className={`inxt-input outline-none h-11 w-full rounded-md border text-lg font-normal text-gray-80 ring-opacity-10 focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 
 				${borderColor} ${focusColor} ${placeholderColor} ${backgroundColor} ${padding}`}
         type={variant === 'password' && !showPassword ? 'password' : 'text'}
         placeholder={placeholder}
@@ -85,7 +85,7 @@ export default function Input({
             e.preventDefault();
             setShowPassword(!showPassword);
           }}
-          className={`absolute top-1/2 right-4 -translate-y-1/2 transform cursor-pointer py-2 pl-2 text-gray-80 ${backgroundColor}`}
+          className={`absolute top-1/2 right-4 -translate-y-1/2 bg-opacity-0 transform cursor-pointer py-2 pl-2 text-gray-80 ${backgroundColor}`}
         >
           {showPassword ? <Eye size={24} /> : <EyeSlash size={24} />}
         </div>

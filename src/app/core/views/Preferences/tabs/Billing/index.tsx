@@ -6,10 +6,10 @@ export default function BillingTab({ className = '' }: { className?: string }): 
   return (
     <div className={className}>
       <div className="flex flex-wrap gap-y-8 gap-x-10">
-        <div className="flex w-96 flex-col space-y-8">
+        <div className="flex flex-1 flex-col space-y-8">
           <CurrentPlanExtended />
         </div>
-        <div className="flex w-96 flex-col space-y-8">
+        <div className="flex wflex-1 flex-col space-y-8">
           <PaymentMethod />
           <Invoices />
         </div>
