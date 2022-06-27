@@ -124,7 +124,7 @@ function IntervalSwitch({
   );
 }
 
-function Price({
+function Price ({
   bytes,
   amount,
   interval,
@@ -158,11 +158,14 @@ function Price({
   const displayButtonText = button === 'change' ? 'Change' : button === 'current' ? 'Current plan' : 'Upgrade';
 
   return (
-    <div className={`${className} w-full lg:w-64 rounded-xl border border-gray-10 p-6`}>
-      <h1 className="text-4xl font-medium text-primary">{bytesToString(bytes)}</h1>
-      <div className="mt-5 border-t border-gray-10" />
-      <p className="mt-5 text-2xl font-medium text-gray-100">{`€${displayAmount(amountMonthly)}/month`}</p>
-      <p className=" text-gray-50">
+    <div className={`${className} flex flex-col items-center w-full lg:w-64 rounded-xl border border-gray-10 p-6`}>
+      <div className="flex flex-row py-1 pb-0.5 px-4 max-w-min rounded-full text-primary font-medium bg-primary bg-opacity-10">{bytesToString(bytes)}</div>
+      <div className="flex flex-row mt-8 text-gray-100">
+        <div className="flex flex-row items-start text-2xl font-semibold mr-1">€</div>
+        <div className="text-4xl font-semibold">{displayAmount(amountMonthly)}</div>
+        <div className="flex flex-row items-end">/month</div>
+      </div>
+      <p className="text-gray-50 mb-5">
         {interval === 'month' ? (
           `€${displayAmount(amountMonthly)} billed monthly`
         ) : (

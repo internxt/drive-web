@@ -14,7 +14,7 @@ export default function Features({ className = '' }: { className?: string }): JS
     {
       title: 'Secure by default',
       icon: LockKey,
-      points: ['Military grade encryption to ensure your privacy.', 'Encrypted file storage and sharing.'],
+      points: ['Military grade encryption to ensure your privacy.', 'Encrypted file storage and sharing.', 'Zero-knowledge and file fragmentation.'],
     },
     {
       title: 'Unlimited access and sync',
