@@ -2,10 +2,10 @@ import { Environment } from '@internxt/inxt-js';
 import { Network as NetworkModule } from '@internxt/sdk';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { validateMnemonic } from 'bip39';
-import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
+import { uploadFile } from '@internxt/sdk/dist/network/upload';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
 
-import { encryptAndUploadMultipartFileReadable, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
+import { getEncryptedFile } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
@@ -13,10 +13,6 @@ import { buildProgressStream } from 'app/core/services/stream.service';
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
   abortController?: AbortController;
-}
-
-interface UploadMultipartOptions extends UploadOptions {
-  parts: number;
 }
 
 interface DownloadOptions {
