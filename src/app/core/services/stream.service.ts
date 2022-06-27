@@ -220,10 +220,3 @@ export function streamFileIntoChunks(
     },
   });
 }
-
-function mergeBuffers(buffer1: Uint8Array, buffer2: Uint8Array): Uint8Array {
-  const mergedBuffer = new Uint8Array(buffer1.length + buffer2.length);
-  mergedBuffer.set(buffer1);
-  mergedBuffer.set(buffer2, buffer1.length);
-  return mergedBuffer;
-}
