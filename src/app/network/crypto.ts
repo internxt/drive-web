@@ -88,28 +88,6 @@ export function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Ci
   return encryptedFileReadable;
 }
 
-/**
- * Given a stream and a cipher, encrypt its content on pull
- * @param readable Readable stream
- * @param cipher Cipher used to encrypt the content
- * @returns A readable whose output is the encrypted content of the source stream
- */
-export function encryptReadablePull(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
-  const reader = readable.getReader();
-
-  return new ReadableStream({
-    async pull(controller) {
-      const status = await reader.read();
-
-      if (!status.done) {
-        controller.enqueue(cipher.update(status.value));
-      } else {
-        controller.close();
-      }
-    },
-  });
-}
-
 export async function getEncryptedFile(
   plainFile: { stream(): ReadableStream<Uint8Array> },
   cipher: Cipher
