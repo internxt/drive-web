@@ -7,7 +7,6 @@ import {
 import { Sha256 } from 'asmcrypto.js';
 import { mnemonicToSeed } from 'bip39';
 import { Cipher, CipherCCM, createCipheriv, createHash } from 'crypto';
-import { streamFileIntoChunks } from 'app/core/services/stream.service';
 
 const BUCKET_META_MAGIC = [
   66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38, 164,
@@ -155,32 +154,4 @@ export function encryptAndUploadMultipartFileReadable(
 
 export function sha256(input: Buffer): Buffer {
   return createHash('sha256').update(input).digest();
-}
-
-export async function processEveryFileBlobReturnHash(
-  chunkedFileReadable: ReadableStream<Uint8Array>,
-  onEveryBlob: (blob: Blob) => Promise<void>,
-): Promise<string> {
-  const reader = chunkedFileReadable.getReader();
-  const hasher = new Sha256();
-
-  let done = false;
-
-  while (!done) {
-    const status = await reader.read();
-    if (!status.done) {
-      const value = status.value;
-      hasher.process(value);
-      const blob = new Blob([value], { type: 'application/octet-stream' });
-      await onEveryBlob(blob);
-    }
-
-    done = status.done;
-  }
-
-  hasher.finish();
-
-  return createHash('ripemd160')
-    .update(Buffer.from(hasher.result as Uint8Array))
-    .digest('hex');
 }
