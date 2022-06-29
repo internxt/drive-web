@@ -131,7 +131,6 @@ export function trackSignUp(payload: {
   window.analytics.identify(payload.userId, payload.traits);
   window.analytics.track(AnalyticsTrack.SignUp, payload.properties);
   trackSignUpServer(payload);
-  window.rdt('track', 'SignUp');
 }
 
 export function trackUserEnterPayments(priceId: string): void {
