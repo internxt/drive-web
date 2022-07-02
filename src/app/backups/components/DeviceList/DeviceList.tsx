@@ -48,7 +48,7 @@ const DeviceList = (props: Props): JSX.Element => {
     <Empty
       icon={<img className="w-36" alt="" src={folderEmptyImage} />}
       title="You don't have backups yet"
-      subtitle="Set up your bakups on the desktop app"
+      subtitle="Set up your backups on the desktop app"
       action={{
         icon: DownloadSimple,
         style: 'plain',
