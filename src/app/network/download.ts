@@ -109,7 +109,9 @@ async function getFileDownloadStream(
   const encryptedContentParts: ReadableStream<Uint8Array>[] = [];
 
   for (const downloadUrl of downloadUrls) {
-    const encryptedStream = await fetch(downloadUrl, { signal: abortController?.signal }).then((res) => {
+    const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadUrl).hostname.includes('internxt');
+    const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + downloadUrl;
+    const encryptedStream = await fetch(fetchUrl, { signal: abortController?.signal  }).then((res) => {
       if (!res.body) {
         throw new Error('No content received');
       }
