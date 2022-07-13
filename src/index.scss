@@ -194,13 +194,13 @@ code {
     height: 100%;
     overflow-x: hidden;
 
-    @apply text-neutral-700;
+    @apply text-gray-100;
   }
 
   /* LINKS */
   a,
   .link {
-    @apply text-blue-60 underline hover:text-blue-80;
+    @apply text-primary underline hover:text-primary-dark;
   }
 
   a.secondary {
@@ -336,7 +336,15 @@ code {
 
   button.tertiary,
   .base-button.tertiary {
-    @apply bg-white text-neutral-500 hover:bg-neutral-30;
+    @apply text-gray-80 transition-colors duration-100 ease-in-out hover:bg-gray-5 active:bg-gray-10;
+
+    &:disabled {
+      @apply pointer-events-none text-gray-40;
+    }
+
+    &.squared {
+      @apply h-10 w-10;
+    }
   }
 
   button.cancel,

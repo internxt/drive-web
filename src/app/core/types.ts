@@ -106,6 +106,7 @@ export enum AppView {
   Drive = 'drive',
   Recents = 'recents',
   Backups = 'backups',
+  SharedLinks = 'shared-links',
   Photos = 'photos',
   Account = 'account',
   Preferences = 'preferences',

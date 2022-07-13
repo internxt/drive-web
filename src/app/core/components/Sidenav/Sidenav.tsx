@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, ClockCounterClockwise, Desktop, FolderSimple, ImageSquare } from 'phosphor-react';
+import { Clock, ClockCounterClockwise, Link, Desktop, FolderSimple, ImageSquare } from 'phosphor-react';
 import { connect } from 'react-redux';
 
 import { AppView } from '../../types';
@@ -76,6 +76,7 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
             <SidenavItem label="Drive" to="/app" Icon={FolderSimple} />
             <SidenavItem label="Photos" to="/app/photos" Icon={ImageSquare} showNew />
             <SidenavItem label="Backups" to="/app/backups" Icon={ClockCounterClockwise} />
+            <SidenavItem label="Shared links" to="/app/shared-links" Icon={Link} />
             <SidenavItem label="Recents" to="/app/recents" Icon={Clock} />
             <SidenavItem label="Desktop App" Icon={Desktop} onClick={this.onDownloadAppButtonClicked} />
           </div>

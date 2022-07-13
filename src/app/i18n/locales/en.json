@@ -204,6 +204,14 @@
       }
     }
   },
+  "shared-links": {
+    "shared-links": "Shared links",
+    "list": {
+      "link-content": "Link content",
+      "shared": "Shared",
+      "created": "Created"
+    }
+  },
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "All processes have finished"
