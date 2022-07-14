@@ -54,7 +54,11 @@ export default function ListItem({
         </div>
       ))}
 
-      <div className="flex h-14 w-14 flex-shrink-0 flex-col items-center justify-center">
+      <div
+        className={`flex h-14 w-14 flex-shrink-0 flex-col items-center justify-center border-b ${
+          selected ? 'border-primary border-opacity-5' : 'border-gray-5'
+        }`}
+      >
         <Menu as="div" className="relative" onMouseDown={selectItem}>
           <Menu.Button
             className={`flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 group-hover:opacity-100 ${
@@ -64,7 +68,10 @@ export default function ListItem({
             <DotsThree size={24} weight="bold" />
           </Menu.Button>
           <Menu.Items>
-            <div className="absolute right-0 z-20 mt-0 flex flex-col rounded-md border border-gray-5 bg-white py-1.5 shadow-subtle-hard">
+            <div
+              className="absolute right-0 z-20 mt-0 flex flex-col rounded-md border border-gray-5 bg-white py-1.5 shadow-subtle-hard"
+              style={{ minWidth: '180px' }}
+            >
               {menu?.map((option) => (
                 <>
                   {option.separator ? (
@@ -76,7 +83,7 @@ export default function ListItem({
                       {({ active }) => (
                         <div
                           onClick={() => option.action?.(item)}
-                          className={`flex cursor-pointer flex-row whitespace-nowrap px-3 py-1.5 text-base ${
+                          className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
                             active
                               ? 'bg-primary text-white'
                               : option.disabled?.(item, selected)

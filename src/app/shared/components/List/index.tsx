@@ -28,6 +28,7 @@ interface ListProps {
   }>;
   className?: string;
   keyboardShortcuts?: Array<'selectAll' | 'unselectAll' | Array<'delete' & (() => void)>>;
+  disableKeyboardShortcuts?: boolean;
 }
 
 export default function List({
@@ -41,6 +42,7 @@ export default function List({
   menu,
   className,
   keyboardShortcuts,
+  disableKeyboardShortcuts,
 }: ListProps): JSX.Element {
   // Default values
   const defaultOrderDirection: 'asc' | 'desc' = header.filter((column) => column.defaultDirection)[0][
@@ -58,7 +60,7 @@ export default function List({
   // Keyboard shortcuts
   useEffect(() => {
     const listener = (e) => {
-      if (!isLoading) {
+      if ((!disableKeyboardShortcuts ?? true) && !isLoading) {
         if (e.code === 'Escape') {
           if (keyboardShortcuts?.includes('unselectAll')) {
             unselectAllItems();
