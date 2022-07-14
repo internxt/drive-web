@@ -18,6 +18,14 @@ interface ListProps {
   selectedItems: any;
   isLoading?: boolean;
   skinSkeleton?: Array<JSX.Element>;
+  emptyState?: JSX.Element | (() => JSX.Element);
+  menu?: Array<{
+    separator?: boolean;
+    name?: string;
+    icon?: any;
+    action?: (props: any) => void;
+    disabled?: (props: any, selected: any) => boolean;
+  }>;
   className?: string;
   keyboardShortcuts?: Array<'selectAll' | 'unselectAll' | Array<'delete' & (() => void)>>;
 }
@@ -26,10 +34,12 @@ export default function List({
   header,
   items,
   itemComposition,
+  selectedItems,
   isLoading,
   skinSkeleton,
+  emptyState,
+  menu,
   className,
-  selectedItems,
   keyboardShortcuts,
 }: ListProps): JSX.Element {
   // Default values
@@ -103,10 +113,21 @@ export default function List({
     const itemIndex = itemsSelected.findIndex((i: Record<string, unknown>) => item.id === i.id);
     if (itemIndex < 0) {
       selectItems([...itemsSelected, item]);
+    }
+  };
+
+  const unselectItem = (item) => {
+    const itemIndex = itemsSelected.findIndex((i: Record<string, unknown>) => item.id === i.id);
+    const arr = itemsSelected;
+    arr.splice(itemIndex, 1);
+    selectItems([...arr]);
+  };
+
+  const toggleSelectItem = (item) => {
+    if (isItemSelected(item)) {
+      unselectItem(item);
     } else {
-      const arr = itemsSelected;
-      arr.splice(itemIndex, 1);
-      selectItems([...arr]);
+      selectItem(item);
     }
   };
 
@@ -132,67 +153,81 @@ export default function List({
       <div
         className={`relative flex h-full flex-col ${isLoading && 'pointer-events-none overflow-y-hidden'} ${className}`}
       >
-        {/* HEAD */}
-        <div className="sticky flex h-12 flex-shrink-0 flex-row items-center px-5">
-          {/* COLUMN */}
-          <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
-            {/* SELECTION CHECKBOX */}
-            <div
-              onClick={() => {
-                if (itemList.length > itemsSelected.length && itemsSelected.length > 0) {
-                  unselectAllItems();
-                } else {
-                  toggleSelectAllItems();
-                }
-              }}
-              className={`absolute left-0 my-auto flex h-4 w-4 cursor-pointer flex-col items-center justify-center rounded text-white ${
-                itemsSelected.length > 0 ? 'bg-primary' : 'border border-gray-20'
-              }`}
-            >
-              {itemList.length > itemsSelected.length && itemsSelected.length > 0 ? (
-                <Minus size={14} weight="bold" />
-              ) : (
-                <Check size={14} weight="bold" />
-              )}
-            </div>
-            {header.map((column) => (
-              <div
-                onClick={() => order(column.order, column.data)}
-                key={column.name}
-                className={`flex h-full flex-shrink-0 cursor-pointer flex-row items-center space-x-1.5 text-base font-medium text-gray-60 hover:text-gray-80 ${column.width}`}
-              >
-                <span>{column.name}</span>
-                {column.data === orderData &&
-                  (orderDirection === 'asc' ? (
-                    <ArrowUp size={14} weight="bold" />
+        {!isLoading && itemList.length > 0 && (
+          <>
+            {/* HEAD */}
+            <div className="sticky flex h-12 flex-shrink-0 flex-row items-center px-5">
+              {/* COLUMN */}
+              <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
+                {/* SELECTION CHECKBOX */}
+                <div
+                  onClick={() => {
+                    if (itemList.length > itemsSelected.length && itemsSelected.length > 0) {
+                      unselectAllItems();
+                    } else {
+                      toggleSelectAllItems();
+                    }
+                  }}
+                  className={`absolute left-0 my-auto flex h-4 w-4 cursor-pointer flex-col items-center justify-center rounded text-white ${
+                    itemsSelected.length > 0 ? 'bg-primary' : 'border border-gray-20'
+                  }`}
+                >
+                  {itemList.length > itemsSelected.length && itemsSelected.length > 0 ? (
+                    <Minus size={14} weight="bold" />
                   ) : (
-                    <ArrowDown size={14} weight="bold" />
-                  ))}
+                    <Check size={14} weight="bold" />
+                  )}
+                </div>
+                {header.map((column) => (
+                  <div
+                    onClick={() => order(column.order, column.data)}
+                    key={column.name}
+                    className={`flex h-full flex-shrink-0 cursor-pointer flex-row items-center space-x-1.5 text-base font-medium text-gray-60 hover:text-gray-80 ${column.width}`}
+                  >
+                    <span>{column.name}</span>
+                    {column.data === orderData &&
+                      (orderDirection === 'asc' ? (
+                        <ArrowUp size={14} weight="bold" />
+                      ) : (
+                        <ArrowDown size={14} weight="bold" />
+                      ))}
+                  </div>
+                ))}
+
+                {menu && <div className="flex h-14 w-12 flex-shrink-0" />}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </>
+        )}
 
         {/* BODY */}
         <div className={`h-full ${!isLoading && 'overflow-y-auto'} pb-12`}>
-          {!isLoading && itemList.length > 0 ? (
-            <>
-              {itemList.map((item) => (
-                <ListItem
-                  key={JSON.stringify(item)}
-                  onClick={() => selectItem(item)}
-                  item={item}
-                  itemComposition={itemComposition}
-                  selected={isItemSelected(item)}
-                  columns={header.map((column) => column.width)}
-                />
-              ))}
-            </>
-          ) : (
+          {isLoading ? (
             <>
               {new Array(32).fill(0).map((col, i) => (
                 <SkinSkeletonItem key={i} skinSkeleton={skinSkeleton} columns={header.map((column) => column.width)} />
               ))}
+            </>
+          ) : (
+            <>
+              {itemList.length > 0 ? (
+                <>
+                  {itemList.map((item) => (
+                    <ListItem
+                      key={JSON.stringify(item)}
+                      item={item}
+                      itemComposition={itemComposition}
+                      selected={isItemSelected(item)}
+                      columns={header.map((column) => column.width)}
+                      toggleSelectItem={() => toggleSelectItem(item)}
+                      selectItem={() => selectItem(item)}
+                      menu={menu}
+                    />
+                  ))}
+                </>
+              ) : (
+                <>{emptyState}</>
+              )}
             </>
           )}
         </div>

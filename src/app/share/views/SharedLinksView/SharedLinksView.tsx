@@ -2,10 +2,12 @@
 import i18n from 'app/i18n/services/i18n.service';
 import dateService from '../../../core/services/date.service';
 import BaseButton from '../../../shared/components/forms/BaseButton';
-import { Trash } from 'phosphor-react';
+import { Trash, Link, ToggleRight, LinkBreak } from 'phosphor-react';
 import List from '../../../shared/components/List';
 import { useState } from 'react';
 import iconService from '../../../drive/services/icon.service';
+import Empty from '../../../shared/components/Empty/Empty';
+import emptyStateIcon from 'assets/icons/file-types/default.svg';
 // import { sharedActions, sharedThunks } from 'app/store/slices/sharedLinks';
 
 export default function SharedLinksView(): JSX.Element {
@@ -50,13 +52,13 @@ export default function SharedLinksView(): JSX.Element {
         </div>
       );
     },
-    (props, active) => (
-      <span className={`${active ? 'text-primary' : 'text-gray-60'}`}>{`${props.views}${
+    (props, selected) => (
+      <span className={`${selected ? 'text-primary' : 'text-gray-60'}`}>{`${props.views}${
         props.timesValid ? `/${props.timesValid}` : ''
       } views`}</span>
     ),
-    (props, active) => (
-      <span className={`${active ? 'text-primary' : 'text-gray-60'}`}>
+    (props, selected) => (
+      <span className={`${selected ? 'text-primary' : 'text-gray-60'}`}>
         {dateService.format(props.createdAt, 'D MMM YYYY')}
       </span>
     ),
@@ -70,6 +72,21 @@ export default function SharedLinksView(): JSX.Element {
     <div className="h-4 w-20 rounded bg-gray-5" />,
     <div className="h-4 w-24 rounded bg-gray-5" />,
   ];
+
+  const emptyState = (
+    <Empty
+      icon={
+        <div className="relative">
+          <img className="w-36" alt="" src={emptyStateIcon} />
+          <div className=" absolute -bottom-1 right-2 flex h-10 w-10 flex-col items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-8 ring-primary ring-opacity-10">
+            <Link size={24} />
+          </div>
+        </div>
+      }
+      title={i18n.get('shared-links.empty-state.title')}
+      subtitle={i18n.get('shared-links.empty-state.subtitle')}
+    />
+  );
 
   const items = [
     {
@@ -138,14 +155,38 @@ export default function SharedLinksView(): JSX.Element {
     },
   ];
 
-  // const itemOptions = [
-  //   {
-  //     name: 'Copy link',
-  //     action: function (props) {
-  //       console.log('Open rename dialog');
-  //     },
-  //   },
-  // ];
+  const itemMenu = [
+    {
+      name: 'Copy link',
+      icon: Link,
+      action: function (props) {
+        alert('This action should copy link to clipboard');
+      },
+      disabled: function (props, selected): boolean {
+        return false; // If item is selected and link is active
+      },
+    },
+    {
+      name: 'Link settings',
+      icon: ToggleRight,
+      action: function (props) {
+        alert('This action should open link settings');
+      },
+      disabled: function (props, selected): boolean {
+        return false; // If item is selected and link is active
+      },
+    },
+    {
+      name: 'Delete link',
+      icon: LinkBreak,
+      action: function (props) {
+        alert('This action should delete link');
+      },
+      disabled: function (props, selected): boolean {
+        return false; // If item is selected and link is active
+      },
+    },
+  ];
 
   return (
     <div className="flex w-full flex-shrink-0 flex-col">
@@ -170,6 +211,8 @@ export default function SharedLinksView(): JSX.Element {
           items={items}
           itemComposition={[...itemComposition]}
           skinSkeleton={skinSkeleton}
+          emptyState={emptyState}
+          menu={itemMenu}
           selectedItems={setSelectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll']}
         />

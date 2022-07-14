@@ -210,6 +210,10 @@
       "link-content": "Link content",
       "shared": "Shared",
       "created": "Created"
+    },
+    "empty-state": {
+      "title": "Nothing shared yet",
+      "subtitle": "Share a folder or a file to get started"
     }
   },
   "tasks": {

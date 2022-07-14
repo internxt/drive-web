@@ -34,7 +34,7 @@ export default function Empty({ icon, title, subtitle, action }: EmptyProps): JS
     <div className="h-full w-full  p-8">
       <div className="flex h-full items-center justify-center">
         <div className="mb-28">
-          <div className="mx-auto mb-10 w-max">{icon}</div>
+          <div className="pointer-events-none mx-auto mb-10 w-max">{icon}</div>
           <div className="pointer-events-none text-center">
             <p className="mb-1 block text-3xl font-semibold text-gray-100">{title}</p>
             <p className="block text-lg text-gray-60">{subtitle}</p>
