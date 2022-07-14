@@ -47,16 +47,9 @@ export class SdkFactory {
   }
 
   public createShareClient(): Share {
-    const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
-    return Share.client(apiUrl, appDetails, apiSecurity);
-  }
-
-  public createShareV2Client(): Share {
     const apiUrl = this.getApiV2Url();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
+    const apiSecurity = this.getNewApiSecurity();
     return Share.client(apiUrl, appDetails, apiSecurity);
   }
 
