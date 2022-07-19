@@ -5,21 +5,28 @@ import BaseButton from '../../../shared/components/forms/BaseButton';
 import { Trash, Link, ToggleRight, LinkBreak, Check, Terminal } from 'phosphor-react';
 import List from '../../../shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import iconService from '../../../drive/services/icon.service';
 import Empty from '../../../shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
+import shareService from 'app/share/services/share.service';
 // import { sharedActions, sharedThunks } from 'app/store/slices/sharedLinks';
 
 export default function SharedLinksView(): JSX.Element {
   // const dispatch = useAppDispatch();
   // const links = dispatch(sharedThunks.fetchSharedLinksThunk());
   const perPage = 25;
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
   const [optionsDialogIsOpen, setOptionsDialogIsOpenIsOpen] = useState(false);
   const [linkLimitTimes, setLinkLimitTimes] = useState(false);
   const [linkSettingsItem, setLinkSettingsItem] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [items, setItems] = useState<any>([]);
+
+  useEffect(() => {
+    setPage(2); // TODO: if im set page to 1, it will need click 2 times to next page to load 2 page.
+    loadItems();
+  }, []);
 
   // List header columns
   const header = [
@@ -100,72 +107,84 @@ export default function SharedLinksView(): JSX.Element {
   );
 
   // Item list
-  const items = [
-    {
-      id: 1,
-      views: 12,
-      timesVaslid: 15,
-      createdAt: 'Jul 10, 2022 08:00:00',
-      isFolder: false,
-      item: {
-        name: 'sample_file_name.pdf',
-        type: 'pdf',
-      },
-    },
-    {
-      id: 2,
-      views: 114,
-      createdAt: 'Jul 11, 2022 07:00:00',
-      isFolder: false,
-      item: {
-        name: 'sample_file_10_with_a_veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_laaaaaaaaaaaaaaaaaaaaaaaaaaarge_name.png',
-        type: 'png',
-      },
-    },
-    {
-      id: 3,
-      views: 2,
-      timesValid: 2,
-      createdAt: 'Jul 07, 2022 09:00:00',
-      isFolder: false,
-      item: {
-        name: 'smaple_js_file.js',
-        type: 'js',
-      },
-    },
-    {
-      id: 4,
-      views: 63,
-      createdAt: 'Jul 12, 2022 08:00:00',
-      isFolder: false,
-      item: {
-        name: 'sample_file_2_name.fig',
-        type: 'fig',
-      },
-    },
-    {
-      id: 5,
-      views: 8,
-      timesValid: 10,
-      createdAt: 'Jul 03, 2022 08:13:00',
-      isFolder: true,
-      item: {
-        name: 'A folder',
-        type: '',
-      },
-    },
-    {
-      id: 6,
-      views: 26,
-      timesValid: 32,
-      createdAt: 'Jul 01, 2022 11:00:00',
-      isFolder: false,
-      item: {
-        name: 'example_file.jpg',
-        type: 'jpg',
-      },
-    },
-  ];
+  // const items = [
+  //   {
+  //     id: 1,
+  //     views: 12,
+  //     timesVaslid: 15,
+  //     createdAt: 'Jul 10, 2022 08:00:00',
+  //     isFolder: false,
+  //     item: {
+  //       name: 'sample_file_name.pdf',
+  //       type: 'pdf',
+  //     },
+  //   },
+  //   {
+  //     id: 2,
+  //     views: 114,
+  //     createdAt: 'Jul 11, 2022 07:00:00',
+  //     isFolder: false,
+  //     item: {
+  //       name: 'sample_file_10_with_a_veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_laaaaaaaaaaaaaaaaaaaaaaaaaaarge_name.png',
+  //       type: 'png',
+  //     },
+  //   },
+  //   {
+  //     id: 3,
+  //     views: 2,
+  //     timesValid: 2,
+  //     createdAt: 'Jul 07, 2022 09:00:00',
+  //     isFolder: false,
+  //     item: {
+  //       name: 'smaple_js_file.js',
+  //       type: 'js',
+  //     },
+  //   },
+  //   {
+  //     id: 4,
+  //     views: 63,
+  //     createdAt: 'Jul 12, 2022 08:00:00',
+  //     isFolder: false,
+  //     item: {
+  //       name: 'sample_file_2_name.fig',
+  //       type: 'fig',
+  //     },
+  //   },
+  //   {
+  //     id: 5,
+  //     views: 8,
+  //     timesValid: 10,
+  //     createdAt: 'Jul 03, 2022 08:13:00',
+  //     isFolder: true,
+  //     item: {
+  //       name: 'A folder',
+  //       type: '',
+  //     },
+  //   },
+  //   {
+  //     id: 6,
+  //     views: 26,
+  //     timesValid: 32,
+  //     createdAt: 'Jul 01, 2022 11:00:00',
+  //     isFolder: false,
+  //     item: {
+  //       name: 'example_file.jpg',
+  //       type: 'jpg',
+  //     },
+  //   },
+  // ];
+
+
+  const loadItems = async () => {
+    const items = await shareService.getAllShareLinks(page, perPage);
+    setItems(items);
+  };
+
+  const nextPage = () => {
+    setPage(page + 1);
+    loadItems();
+  };
+
 
   // item dropdown custom funtions
   const openLinkSettings = (props) => {
@@ -207,6 +226,8 @@ export default function SharedLinksView(): JSX.Element {
     },
   ];
 
+ 
+
   return (
     <div className="flex w-full flex-shrink-0 flex-col">
       {/* Top action bar */}
@@ -219,7 +240,7 @@ export default function SharedLinksView(): JSX.Element {
         <div className="flex flex-row items-center">
           <BaseButton
             className="tertiary space-x-2 whitespace-nowrap px-4"
-            onClick={() => console.log('Print here the link list')}
+            onClick={() => loadItems()}
           >
             <Terminal size={24} />
             <span>Load links</span>
@@ -227,7 +248,7 @@ export default function SharedLinksView(): JSX.Element {
 
           <BaseButton
             className="tertiary space-x-2 whitespace-nowrap px-4"
-            onClick={() => console.log('Load more links')}
+            onClick={() => nextPage()}
           >
             <Terminal size={24} />
             <span>Pagination</span>
