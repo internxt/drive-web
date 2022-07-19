@@ -58,7 +58,7 @@ export default function ListItem({
           selected ? 'border-primary border-opacity-5' : 'border-gray-5'
         }`}
       >
-        <Menu as="div" className="relative" onMouseDown={selectItem}>
+        <Menu as="div" className="relative" onMouseDown={() => selectItem}>
           <Menu.Button
             className={`focus-within:outline-primary flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
               selected ? 'text-primary hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'
@@ -68,8 +68,10 @@ export default function ListItem({
           </Menu.Button>
           <Menu.Items>
             <div
-              className="absolute right-0 z-20 mt-0 flex flex-col rounded-md border border-gray-5 bg-white py-1.5 shadow-subtle-hard"
-              style={{ minWidth: '180px' }}
+              className="absolute right-0 z-20 mt-0 flex flex-col rounded-lg border border-gray-5 bg-white py-1.5 shadow-subtle-hard"
+              style={{
+                minWidth: '180px',
+              }}
             >
               {menu?.map((option) => (
                 <>

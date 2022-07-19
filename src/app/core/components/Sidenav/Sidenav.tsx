@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, ClockCounterClockwise, Link, Desktop, FolderSimple, ImageSquare } from 'phosphor-react';
+import { Clock, ClockCounterClockwise, Link, Trash, FolderSimple, ImageSquare } from 'phosphor-react';
 import { connect } from 'react-redux';
 
 import { AppView } from '../../types';
@@ -8,7 +8,6 @@ import { RootState } from 'app/store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import SidenavItem from './SidenavItem/SidenavItem';
-import desktopService from 'app/core/services/desktop.service';
 import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
 import { planSelectors } from 'app/store/slices/plan';
 import screenService from 'app/core/services/screen.service';
@@ -52,10 +51,6 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
     });
   };
 
-  onDownloadAppButtonClicked = (): void => {
-    window.open(desktopService.getDownloadAppUrl(), '_self');
-  };
-
   onLogoClicked = (): void => {
     navigationService.push(AppView.Drive);
   };
@@ -78,7 +73,7 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
             <SidenavItem label="Backups" to="/app/backups" Icon={ClockCounterClockwise} />
             <SidenavItem label="Shared links" to="/app/shared-links" Icon={Link} />
             <SidenavItem label="Recents" to="/app/recents" Icon={Clock} />
-            <SidenavItem label="Desktop App" Icon={Desktop} onClick={this.onDownloadAppButtonClicked} />
+            <SidenavItem label="Trash" to="/app/trash" Icon={Trash} />
           </div>
           {this.props.subscription && this.props.subscription.type === 'free' ? (
             <ReferralsWidget />

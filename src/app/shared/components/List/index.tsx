@@ -61,7 +61,7 @@ export default function List({
 
   // Keyboard shortcuts
   useEffect(() => {
-    const listener = (e) => {
+    const onKeyDownListener = (e) => {
       if ((!disableKeyboardShortcuts ?? true) && !isLoading) {
         if (e.code === 'Escape') {
           if (keyboardShortcuts?.includes('unselectAll')) {
@@ -87,10 +87,11 @@ export default function List({
       }
     };
 
-    document.addEventListener('keydown', listener);
+    document.addEventListener('keydown', onKeyDownListener);
     document.addEventListener('keyup', onKeyUpListener);
+
     return () => {
-      document.removeEventListener('keydown', listener);
+      document.removeEventListener('keydown', onKeyDownListener);
       document.removeEventListener('keyup', onKeyUpListener);
     };
   }, [items]);
@@ -251,7 +252,8 @@ export default function List({
             </>
           )}
 
-          <div className="h-full w-full py-6" onClick={unselectAllItems} />
+          {/* Click outside of the list to unselect all items */}
+          {itemList.length > 0 && <div className="h-full w-full py-6" onClick={unselectAllItems} />}
         </div>
       </div>
     </>

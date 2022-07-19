@@ -192,7 +192,7 @@ export default function SharedLinksView(): JSX.Element {
   // Item dropdown menu
   const itemMenu = [
     {
-      name: 'Copy link',
+      name: i18n.get('shared-links.item-menu.copy-link'),
       icon: Link,
       action: function (props) {
         alert('This action should copy link to clipboard');
@@ -202,7 +202,7 @@ export default function SharedLinksView(): JSX.Element {
       },
     },
     {
-      name: 'Link settings',
+      name: i18n.get('shared-links.item-menu.link-settings'),
       icon: ToggleRight,
       action: function (props) {
         openLinkSettings(props);
@@ -212,7 +212,7 @@ export default function SharedLinksView(): JSX.Element {
       },
     },
     {
-      name: 'Delete link',
+      name: i18n.get('shared-links.item-menu.delete-link'),
       icon: LinkBreak,
       action: function (props) {
         alert('This action should delete link');
@@ -296,8 +296,8 @@ export default function SharedLinksView(): JSX.Element {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="flex w-full max-w-lg transform flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
-                  <Dialog.Title as="h3" className="flex flex-col text-3xl text-gray-80">
-                    <span>Share settings</span>
+                  <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
+                    <span className="font-medium">Share settings</span>
                     <span className="truncate whitespace-nowrap text-base text-gray-40">
                       {linkSettingsItem?.item.name}
                     </span>

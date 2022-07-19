@@ -17,6 +17,7 @@ import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/Gu
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
 import SharedLinksView from 'app/share/views/SharedLinksView/SharedLinksView';
+import TrashView from 'app/share/views/TrashView/TrashView';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
@@ -41,6 +42,7 @@ const views: Array<{
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.SharedLinks, component: SharedLinksView },
+  { id: AppView.Trash, component: TrashView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Account, component: AccountView },
   { id: AppView.Preferences, component: Preferences },

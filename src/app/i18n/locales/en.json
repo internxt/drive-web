@@ -214,6 +214,27 @@
     "empty-state": {
       "title": "Nothing shared yet",
       "subtitle": "Share a folder or a file to get started"
+    },
+    "item-menu": {
+      "copy-link": "Copy link",
+      "link-settings": "Link settings",
+      "delete-link": "Delete link"
+    }
+  },
+  "trash": {
+    "trash": "Trash",
+    "list": {
+      "name": "Name",
+      "size": "Size",
+      "moved-to-trash": "Moved to trash"
+    },
+    "empty-state": {
+      "title": "Trash is empty",
+      "subtitle": "Items moved to the trash will appear here"
+    },
+    "item-menu": {
+      "restore": "Restore",
+      "delete-permanently": "Delete permanently"
     }
   },
   "tasks": {
