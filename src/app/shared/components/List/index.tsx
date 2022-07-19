@@ -1,7 +1,8 @@
 import ListItem from './ListItem';
 import SkinSkeletonItem from './SkinSketelonItem';
 import { useEffect, useState } from 'react';
-import { ArrowUp, ArrowDown, Check, Minus } from 'phosphor-react';
+import { ArrowUp, ArrowDown } from 'phosphor-react';
+import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 
 interface HeaderProps {
   name: string;
@@ -55,6 +56,7 @@ export default function List({
   const [itemList, setItemList] = useState<Array<Record<string, unknown>>>(items);
   const [orderDirection, setOrderDirection] = useState<'asc' | 'desc'>(defaultOrderDirection);
   const [orderData, setOrderData] = useState<string>(defaultOrderData);
+  const [multiSelection, setMultiSelection] = useState<boolean>(false);
   const [itemsSelected, setItemsSelected] = useState<Array<Record<string, unknown>>>([]);
 
   // Keyboard shortcuts
@@ -71,12 +73,26 @@ export default function List({
             e.preventDefault();
             selectAllItems();
           }
+        } else if (e.metaKey) {
+          setMultiSelection(true);
+        }
+      }
+    };
+
+    const onKeyUpListener = (e) => {
+      if ((!disableKeyboardShortcuts ?? true) && !isLoading) {
+        if (e.code === 'MetaLeft' || e.code === 'MetaRight') {
+          setMultiSelection(false);
         }
       }
     };
 
     document.addEventListener('keydown', listener);
-    return () => document.removeEventListener('keydown', listener);
+    document.addEventListener('keyup', onKeyUpListener);
+    return () => {
+      document.removeEventListener('keydown', listener);
+      document.removeEventListener('keyup', onKeyUpListener);
+    };
   }, [items]);
 
   useEffect(() => {
@@ -114,7 +130,11 @@ export default function List({
   const selectItem = (item) => {
     const itemIndex = itemsSelected.findIndex((i: Record<string, unknown>) => item.id === i.id);
     if (itemIndex < 0) {
-      selectItems([...itemsSelected, item]);
+      if (multiSelection) {
+        selectItems([...itemsSelected, item]);
+      } else {
+        selectItems([item]);
+      }
     }
   };
 
@@ -149,6 +169,14 @@ export default function List({
     selectItems([]);
   };
 
+  const bulkItemsSelectionToggle = () => {
+    if (itemList.length > itemsSelected.length && itemsSelected.length > 0) {
+      unselectAllItems();
+    } else {
+      toggleSelectAllItems();
+    }
+  };
+
   return (
     <>
       {/* TABLE */}
@@ -162,24 +190,14 @@ export default function List({
               {/* COLUMN */}
               <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
                 {/* SELECTION CHECKBOX */}
-                <div
-                  onClick={() => {
-                    if (itemList.length > itemsSelected.length && itemsSelected.length > 0) {
-                      unselectAllItems();
-                    } else {
-                      toggleSelectAllItems();
-                    }
-                  }}
-                  className={`absolute left-0 my-auto flex h-4 w-4 cursor-pointer flex-col items-center justify-center rounded text-white ${
-                    itemsSelected.length > 0 ? 'bg-primary' : 'border border-gray-20'
-                  }`}
-                >
-                  {itemList.length > itemsSelected.length && itemsSelected.length > 0 ? (
-                    <Minus size={14} weight="bold" />
-                  ) : (
-                    <Check size={14} weight="bold" />
-                  )}
+                <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
+                  <BaseCheckbox
+                    checked={itemsSelected.length > 0}
+                    onClick={bulkItemsSelectionToggle}
+                    indeterminate={itemList.length > itemsSelected.length && itemsSelected.length > 0}
+                  />
                 </div>
+
                 {header.map((column) => (
                   <div
                     onClick={() => order(column.order, column.data)}
@@ -203,7 +221,7 @@ export default function List({
         )}
 
         {/* BODY */}
-        <div className={`h-full ${!isLoading && 'overflow-y-auto'} pb-12`}>
+        <div className={`flex h-full flex-col ${!isLoading && 'overflow-y-auto'}`}>
           {isLoading ? (
             <>
               {new Array(32).fill(0).map((col, i) => (
@@ -232,6 +250,8 @@ export default function List({
               )}
             </>
           )}
+
+          <div className="h-full w-full py-6" onClick={unselectAllItems} />
         </div>
       </div>
     </>

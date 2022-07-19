@@ -232,7 +232,7 @@ code {
   }
 
   /* INPUTS */
-  input[type='checkbox'] {
+  input[type='checkbox']:not(.base-checkbox) {
     @apply h-4 w-4 rounded border-2 border-neutral-500 text-xs text-neutral-500;
   }
 

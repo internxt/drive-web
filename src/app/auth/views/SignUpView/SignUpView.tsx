@@ -17,7 +17,7 @@ import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import BaseCheckboxOld from 'app/shared/components/forms/BaseCheckbox/BaseCheckboxOld';
 import AuthButton from 'app/shared/components/AuthButton';
 import { useAppDispatch } from 'app/store/hooks';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
@@ -307,9 +307,9 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
     <div className="flex h-full w-full">
       <AuthSideInfo title="" subtitle="" />
 
-      <div className="flex flex-col items-center justify-center w-full">
-        <form className="flex flex-col w-72" onSubmit={handleSubmit(getReCaptcha)}>
-          <span className="text-base font-semibold text-neutral-900 mt-1.5 mb-6">Create an Internxt account</span>
+      <div className="flex w-full flex-col items-center justify-center">
+        <form className="flex w-72 flex-col" onSubmit={handleSubmit(getReCaptcha)}>
+          <span className="mt-1.5 mb-6 text-base font-semibold text-neutral-900">Create an Internxt account</span>
 
           <BaseInput
             className="mb-2.5"
@@ -398,21 +398,20 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
           />
 
           <div className="mt-1 mb-2">
-            <span className="text-red-60 text-sm font-medium">{bottomInfoError}</span>
+            <span className="text-sm font-medium text-red-60">{bottomInfoError}</span>
           </div>
 
-          <span className="text-xs font-normal text-neutral-500 text-justify mb-3">
+          <span className="mb-3 text-justify text-xs font-normal text-neutral-500">
             Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we
             don't know your password. That means that if you forget it, your files will be gone. With us, you're the
             only owner of your files.
           </span>
 
-          <BaseCheckbox
+          <BaseCheckboxOld
             label="acceptTerms"
             text="Accept terms, conditions and privacy policy"
             required={true}
             register={register}
-            additionalStyling="mt-2 -mb-0"
           />
 
           <div className="mt-3" />
@@ -423,8 +422,8 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
           />
         </form>
 
-        <div className="flex justify-center items-center w-full mt-2">
-          <span className="text-sm text-neutral-500 ml-3 select-none mr-2">Already registered?</span>
+        <div className="mt-2 flex w-full items-center justify-center">
+          <span className="ml-3 mr-2 select-none text-sm text-neutral-500">Already registered?</span>
           <Link to="/login">Log in </Link>
         </div>
       </div>

@@ -15,13 +15,9 @@ import './ShareView.scss';
 import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
-import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
-import {
-  downloadSharedFolderUsingReadableStream
-} from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
-import {
-  downloadSharedFolderUsingBlobs
-} from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
+import { SharedFolderInfo } from '@internxt/sdk/dist/drive/share/types';
+import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
+import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 
 interface ShareViewProps extends ShareViewState {
@@ -37,7 +33,7 @@ interface ShareViewState {
   error: string | null;
   progress: number;
   ready: boolean;
-  info: ShareTypes.ShareLink;
+  info: ShareTypes.SharedFolderInfo;
 }
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
@@ -47,7 +43,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [info, setInfo] = useState<Partial<ShareLink>>({});
+  const [info, setInfo] = useState<Partial<SharedFolderInfo>>({});
   const [size, setSize] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -76,7 +72,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         setIsLoaded(true);
         setInfo(sharedFolderInfo);
 
-        return loadSize((sharedFolderInfo as unknown as { shareId: number }).shareId, sharedFolderInfo.item.id);
+        return loadSize((sharedFolderInfo as unknown as { shareId: number }).shareId, sharedFolderInfo.folderId);
       })
       .then((folderSize) => {
         setSize(folderSize);
@@ -87,7 +83,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       });
   }, []);
 
-  const loadInfo = (): Promise<ShareTypes.ShareLink> => {
+  const loadInfo = (): Promise<ShareTypes.SharedFolderInfo> => {
     // ! iOS Chrome is not supported
     if (navigator.userAgent.match('CriOS')) {
       throw new Error('Chrome iOS not supported. Use Safari to proceed');
@@ -103,7 +99,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   };
 
   const loadSize = (shareId: number, folderId: number): Promise<number> => {
-    return getSharedFolderSize(shareId.toString(), folderId.toString());
+    return getSharedFolderSize(shareId, folderId);
   };
 
   const updateProgress = (progress: number) => {
@@ -112,7 +108,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
   const download = async (): Promise<void> => {
     if (!isDownloading) {
-      const folderInfo = info as unknown as ShareTypes.ShareLink | null;
+      const folderInfo = info as unknown as ShareTypes.SharedFolderInfo | null;
 
       if (folderInfo) {
         setIsDownloading(true);
@@ -130,13 +126,13 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
         downloadFolder(
           {
-            name: folderInfo.item.name,
+            name: folderInfo.name,
             code: code,
-            id: folderInfo.item.id,
+            id: folderInfo.folderId,
             token: token,
           },
           folderInfo.bucket,
-          folderInfo.itemToken,
+          folderInfo.bucketToken,
           {
             filesLimit: FILES_LIMIT_BY_REQUEST,
             foldersLimit: FOLDERS_LIMIT_BY_REQUEST,
@@ -243,10 +239,10 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
           <div className="flex flex-col items-center justify-center space-y-2">
             <div className="flex flex-col items-center justify-center text-center font-medium">
-              <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info.item.name}>
-                {info.item.name}
+              <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info.name}>
+                {info.name}
               </abbr>
-              <span className="text-cool-gray-60">{sizeService.bytesToString(info.item.size || 0)}</span>
+              <span className="text-cool-gray-60">{sizeService.bytesToString(info.size || 0)}</span>
             </div>
           </div>
         </div>

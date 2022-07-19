@@ -65,39 +65,35 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         return;
       }
 
-      let payload: ShareTypes.GenerateShareLinkPayload;
+      let link;
       const network = new Network(email, userId, mnemonic);
       const code = crypto.randomBytes(32).toString('hex');
 
       if (item.isFolder) {
         const encryptedMnemonic = aes.encrypt(mnemonic, code);
         const bucketToken = await network.createFileToken(bucket, '', 'PULL');
-        payload = {
-          itemId: item.id.toString(),
-          type: 'folder',
+        const payload: ShareTypes.GenerateShareFolderLinkPayload = {
+          folderId: item.id,
           bucket: bucket,
-          itemToken: bucketToken,
-          timesValid: views,
-          mnemonic: encryptedMnemonic,
-          encryptionKey: '',
+          bucketToken: bucketToken,
+          views: views,
+          encryptedMnemonic: encryptedMnemonic,
         };
+        link = await shareService.generateShareFolderLink(payload, code);
       } else {
         const { index } = await network.getFileInfo(bucket, fileId);
         const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
         const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
         const encryptedKey = aes.encrypt(fileEncryptionKey.toString('hex'), code);
-        payload = {
-          itemId: fileId,
-          type: 'file',
-          bucket: bucket,
-          itemToken: fileToken,
-          timesValid: views,
-          mnemonic: '',
+        const payload: ShareTypes.GenerateShareFileLinkPayload = {
+          fileId,
+          bucket,
+          fileToken,
+          views,
           encryptionKey: encryptedKey,
         };
+        link = await shareService.generateShareFileLink(payload, code);
       }
-      const link = await shareService.generateShareLink(payload);
-
       dispatch(referralsThunks.refreshUserReferrals());
 
       window.analytics.track('file-share');

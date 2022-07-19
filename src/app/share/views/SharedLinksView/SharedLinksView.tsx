@@ -2,31 +2,29 @@
 import i18n from 'app/i18n/services/i18n.service';
 import dateService from '../../../core/services/date.service';
 import BaseButton from '../../../shared/components/forms/BaseButton';
-import { Trash, Link, ToggleRight, LinkBreak, Check, Terminal } from 'phosphor-react';
+import { Trash, Link, ToggleRight, LinkBreak, Terminal } from 'phosphor-react';
 import List from '../../../shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
-import { useState, Fragment, useEffect } from 'react';
+import { useState, Fragment, useEffect, FunctionComponent, SVGProps } from 'react';
 import iconService from '../../../drive/services/icon.service';
 import Empty from '../../../shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
 import shareService from 'app/share/services/share.service';
-// import { sharedActions, sharedThunks } from 'app/store/slices/sharedLinks';
+import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 
 export default function SharedLinksView(): JSX.Element {
-  // const dispatch = useAppDispatch();
-  // const links = dispatch(sharedThunks.fetchSharedLinksThunk());
   const perPage = 25;
   const [page, setPage] = useState<number>(1);
-  const [optionsDialogIsOpen, setOptionsDialogIsOpenIsOpen] = useState(false);
+  const [optionsDialogIsOpen, setOptionsDialogIsOpen] = useState(false);
   const [linkLimitTimes, setLinkLimitTimes] = useState(false);
   const [linkSettingsItem, setLinkSettingsItem] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [items, setItems] = useState<any>([]);
+  // const [items, setItems] = useState<any>([]);
 
-  useEffect(() => {
-    setPage(2); // TODO: if im set page to 1, it will need click 2 times to next page to load 2 page.
-    loadItems();
-  }, []);
+  // useEffect(() => {
+  //   setPage(2); // TODO: if im set page to 1, it will need click 2 times to next page to load 2 page.
+  //   loadItems();
+  // }, []);
 
   // List header columns
   const header = [
@@ -107,89 +105,88 @@ export default function SharedLinksView(): JSX.Element {
   );
 
   // Item list
-  // const items = [
-  //   {
-  //     id: 1,
-  //     views: 12,
-  //     timesVaslid: 15,
-  //     createdAt: 'Jul 10, 2022 08:00:00',
-  //     isFolder: false,
-  //     item: {
-  //       name: 'sample_file_name.pdf',
-  //       type: 'pdf',
-  //     },
-  //   },
-  //   {
-  //     id: 2,
-  //     views: 114,
-  //     createdAt: 'Jul 11, 2022 07:00:00',
-  //     isFolder: false,
-  //     item: {
-  //       name: 'sample_file_10_with_a_veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_laaaaaaaaaaaaaaaaaaaaaaaaaaarge_name.png',
-  //       type: 'png',
-  //     },
-  //   },
-  //   {
-  //     id: 3,
-  //     views: 2,
-  //     timesValid: 2,
-  //     createdAt: 'Jul 07, 2022 09:00:00',
-  //     isFolder: false,
-  //     item: {
-  //       name: 'smaple_js_file.js',
-  //       type: 'js',
-  //     },
-  //   },
-  //   {
-  //     id: 4,
-  //     views: 63,
-  //     createdAt: 'Jul 12, 2022 08:00:00',
-  //     isFolder: false,
-  //     item: {
-  //       name: 'sample_file_2_name.fig',
-  //       type: 'fig',
-  //     },
-  //   },
-  //   {
-  //     id: 5,
-  //     views: 8,
-  //     timesValid: 10,
-  //     createdAt: 'Jul 03, 2022 08:13:00',
-  //     isFolder: true,
-  //     item: {
-  //       name: 'A folder',
-  //       type: '',
-  //     },
-  //   },
-  //   {
-  //     id: 6,
-  //     views: 26,
-  //     timesValid: 32,
-  //     createdAt: 'Jul 01, 2022 11:00:00',
-  //     isFolder: false,
-  //     item: {
-  //       name: 'example_file.jpg',
-  //       type: 'jpg',
-  //     },
-  //   },
-  // ];
+  const items = [
+    {
+      id: 1,
+      views: 12,
+      timesVaslid: 15,
+      createdAt: 'Jul 10, 2022 08:00:00',
+      isFolder: false,
+      item: {
+        name: 'sample_file_name.pdf',
+        type: 'pdf',
+      },
+    },
+    {
+      id: 2,
+      views: 114,
+      createdAt: 'Jul 11, 2022 07:00:00',
+      isFolder: false,
+      item: {
+        name: 'sample_file_10_with_a_veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_laaaaaaaaaaaaaaaaaaaaaaaaaaarge_name.png',
+        type: 'png',
+      },
+    },
+    {
+      id: 3,
+      views: 2,
+      timesValid: 2,
+      createdAt: 'Jul 07, 2022 09:00:00',
+      isFolder: false,
+      item: {
+        name: 'smaple_js_file.js',
+        type: 'js',
+      },
+    },
+    {
+      id: 4,
+      views: 63,
+      createdAt: 'Jul 12, 2022 08:00:00',
+      isFolder: false,
+      item: {
+        name: 'sample_file_2_name.fig',
+        type: 'fig',
+      },
+    },
+    {
+      id: 5,
+      views: 8,
+      timesValid: 10,
+      createdAt: 'Jul 03, 2022 08:13:00',
+      isFolder: true,
+      item: {
+        name: 'A folder',
+        type: '',
+      },
+    },
+    {
+      id: 6,
+      views: 26,
+      timesValid: 32,
+      createdAt: 'Jul 01, 2022 11:00:00',
+      isFolder: false,
+      item: {
+        name: 'example_file.jpg',
+        type: 'jpg',
+      },
+    },
+  ];
 
+  // const loadItems = async () => {
+  //   const items = await shareService.getAllShareLinks(page, perPage);
+  //   setItems(items);
+  // };
 
-  const loadItems = async () => {
-    const items = await shareService.getAllShareLinks(page, perPage);
-    setItems(items);
-  };
-
-  const nextPage = () => {
-    setPage(page + 1);
-    loadItems();
-  };
-
+  // const nextPage = () => {
+  //   setPage(page + 1);
+  //   loadItems();
+  // };
 
   // item dropdown custom funtions
   const openLinkSettings = (props) => {
-    setOptionsDialogIsOpenIsOpen(true);
     setLinkSettingsItem(props);
+    setLinkLimitTimes(props.timesValid && props.timesValid > 0);
+    setOptionsDialogIsOpen(true);
   };
 
   // Item dropdown menu
@@ -226,8 +223,6 @@ export default function SharedLinksView(): JSX.Element {
     },
   ];
 
- 
-
   return (
     <div className="flex w-full flex-shrink-0 flex-col">
       {/* Top action bar */}
@@ -238,18 +233,12 @@ export default function SharedLinksView(): JSX.Element {
 
         {/* Delete selected items */}
         <div className="flex flex-row items-center">
-          <BaseButton
-            className="tertiary space-x-2 whitespace-nowrap px-4"
-            onClick={() => loadItems()}
-          >
+          <BaseButton className="tertiary space-x-2 whitespace-nowrap px-4" onClick={() => console.log('loadItems()')}>
             <Terminal size={24} />
             <span>Load links</span>
           </BaseButton>
 
-          <BaseButton
-            className="tertiary space-x-2 whitespace-nowrap px-4"
-            onClick={() => nextPage()}
-          >
+          <BaseButton className="tertiary space-x-2 whitespace-nowrap px-4" onClick={() => console.log('nextPage()')}>
             <Terminal size={24} />
             <span>Pagination</span>
           </BaseButton>
@@ -281,7 +270,7 @@ export default function SharedLinksView(): JSX.Element {
           as="div"
           className="relative z-50 select-none"
           open={optionsDialogIsOpen}
-          onClose={() => setOptionsDialogIsOpenIsOpen(false)}
+          onClose={() => setOptionsDialogIsOpen(false)}
         >
           <Transition.Child
             as={Fragment}
@@ -292,7 +281,7 @@ export default function SharedLinksView(): JSX.Element {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-100 bg-opacity-40" />
+            <div className="fixed inset-0 bg-gray-100 bg-opacity-50" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
@@ -307,40 +296,49 @@ export default function SharedLinksView(): JSX.Element {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="flex w-full max-w-lg transform flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
-                  <Dialog.Title as="h3" className="text-2xl font-medium text-gray-80">
-                    Link settings
+                  <Dialog.Title as="h3" className="flex flex-col text-3xl text-gray-80">
+                    <span>Share settings</span>
+                    <span className="truncate whitespace-nowrap text-base text-gray-40">
+                      {linkSettingsItem?.item.name}
+                    </span>
                   </Dialog.Title>
 
-                  <div className="flex flex-col space-y-1.5">
-                    <span className="font-medium text-gray-80">Views</span>
-                    <div className="flex flex-row rounded-lg bg-gray-1 p-4">{`Link visited ${linkSettingsItem?.views} times`}</div>
+                  <div className="flex flex-col">
+                    <span className="text-lg font-semibold text-gray-80">Views</span>
+                    <span className="text-gray-60">{`Link visited ${linkSettingsItem?.views} times`}</span>
                   </div>
 
-                  <div className="flex flex-col space-y-1.5">
-                    <span className="font-medium text-gray-80">Options</span>
+                  <div className="flex flex-col space-y-1">
+                    <span className="text-lg font-semibold text-gray-80">Options</span>
                     <div className="flex flex-row space-x-3">
-                      <div
+                      <BaseCheckbox
+                        checked={linkLimitTimes}
                         onClick={() => setLinkLimitTimes(!linkLimitTimes)}
-                        className={`mt-1 flex h-5 w-5 cursor-pointer flex-col items-center justify-center rounded text-white ${
-                          linkLimitTimes ? 'bg-primary' : 'border border-gray-20'
-                        }`}
-                      >
-                        <Check size={16} weight="bold" />
-                      </div>
-                      <div className="mb-3 flex flex-col">
-                        <div className="flex flex-row items-center text-lg font-medium">
-                          <span>Open limit</span>
-                          <div className="mx-1.5 flex max-h-full flex-row items-center">
-                            <input
-                              type="number"
-                              min="0"
-                              max="9999"
-                              step="1"
-                              className="w-16 rounded-md border border-gray-20 py-0 px-2 text-right text-lg"
-                            />
+                        className="mt-1"
+                      />
+                      <div className={`mb-3 flex flex-col ${!linkLimitTimes && 'pointer-events-none opacity-50'}`}>
+                        {linkLimitTimes ? (
+                          <div className="text flex flex-row items-center text-base font-medium">
+                            <span>Open limit</span>
+                            <div className="mx-1.5 flex h-6 flex-row items-center">
+                              <input
+                                type="number"
+                                min={linkSettingsItem?.timesValid ?? 1}
+                                max="9999"
+                                step="1"
+                                placeholder={linkSettingsItem?.timesValid}
+                                disabled={!linkLimitTimes}
+                                className="outline-none w-14 rounded-md border border-gray-20 py-0 px-2 text-right text-base focus:border-primary focus:ring-3 focus:ring-primary focus:ring-opacity-10"
+                              />
+                            </div>
+                            <span>times</span>
                           </div>
-                          <span>times</span>
-                        </div>
+                        ) : (
+                          <div className="text flex flex-row items-center space-x-1 text-base">
+                            <span className="font-medium">Open limit is off</span>
+                            <span className="text-gray-40">(Unlimited views)</span>
+                          </div>
+                        )}
                         <span className="text-gray-40">Limit number of times users can open this link</span>
                       </div>
                     </div>
@@ -348,23 +346,23 @@ export default function SharedLinksView(): JSX.Element {
 
                   <div className="flex flex-row justify-between">
                     <BaseButton
-                      onClick={() => setOptionsDialogIsOpenIsOpen(false)}
-                      className="flex h-10 flex-row items-center space-x-2 rounded-lg bg-primary bg-opacity-10 px-5 font-medium text-primary active:bg-opacity-15"
+                      onClick={() => setOptionsDialogIsOpen(false)}
+                      className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
                     >
                       <span>Copy link</span>
                       <Link size={24} />
                     </BaseButton>
 
                     <div className="flex flex-row space-x-2">
-                      <BaseButton
+                      {/* <BaseButton
                         onClick={() => setOptionsDialogIsOpenIsOpen(false)}
-                        className="flex h-10 flex-row items-center rounded-lg bg-gray-5 px-5 font-medium text-gray-80 active:bg-gray-10"
+                        className="flex h-auto flex-row items-center rounded-lg bg-gray-5 py-0 px-4 font-medium text-gray-80 active:bg-gray-10"
                       >
                         Cancel
-                      </BaseButton>
+                      </BaseButton> */}
                       <BaseButton
-                        onClick={() => setOptionsDialogIsOpenIsOpen(false)}
-                        className="flex h-10 flex-row items-center rounded-lg bg-primary px-5 font-medium text-white active:bg-primary-dark"
+                        onClick={() => setOptionsDialogIsOpen(false)}
+                        className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
                       >
                         Save
                       </BaseButton>

@@ -1,5 +1,6 @@
 import { Menu } from '@headlessui/react';
-import { Check, DotsThree } from 'phosphor-react';
+import { DotsThree } from 'phosphor-react';
+import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 
 interface ItemProps {
   item: Record<string, unknown>;
@@ -30,22 +31,21 @@ export default function ListItem({
     <div
       onClick={toggleSelectItem}
       className={`group relative flex h-14 flex-row items-center pl-14 pr-5 ${
-        selected ? 'bg-primary bg-opacity-10 text-primary' : 'hover:bg-gray-1'
+        selected ? 'bg-primary bg-opacity-10 text-primary' : 'focus-within:bg-gray-1 hover:bg-gray-1'
       }`}
     >
       {/* SELECTION CHECKBOX */}
       <div
-        className={`absolute left-5 my-auto flex h-4 w-4 cursor-pointer flex-col items-center justify-center rounded text-white ${
-          selected ? 'bg-primary' : 'border-gray-20 group-hover:border'
+        className={`absolute left-5 top-0 flex h-full w-0 flex-row items-center justify-start p-0 opacity-0 focus-within:opacity-100 group-hover:opacity-100 ${
+          selected && 'opacity-100'
         }`}
       >
-        <Check size={14} weight="bold" />
+        <BaseCheckbox checked={selected} />
       </div>
-
       {/* COLUMNS */}
       {new Array(itemComposition.length).fill(0).map((col, i) => (
         <div
-          key={`${item}-${col}-${i}`}
+          key={`${JSON.stringify(item)}-${col}-${i}`}
           className={`relative flex h-full flex-shrink-0 flex-row items-center border-b ${
             selected ? 'border-primary border-opacity-5' : 'border-gray-5'
           } ${columns[i]}`}
@@ -53,15 +53,14 @@ export default function ListItem({
           {itemComposition[i](item, selected)}
         </div>
       ))}
-
       <div
-        className={`flex h-14 w-14 flex-shrink-0 flex-col items-center justify-center border-b ${
+        className={`flex h-14 w-12 flex-shrink-0 flex-col items-center justify-center border-b ${
           selected ? 'border-primary border-opacity-5' : 'border-gray-5'
         }`}
       >
         <Menu as="div" className="relative" onMouseDown={selectItem}>
           <Menu.Button
-            className={`flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 group-hover:opacity-100 ${
+            className={`focus-within:outline-primary flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
               selected ? 'text-primary hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'
             }`}
           >

@@ -9,6 +9,9 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      outline: {
+        primary: '2px solid rgb(0,102,255)',
+      },
       backdropInvert: {
         25: '25%',
         50: '50%',
