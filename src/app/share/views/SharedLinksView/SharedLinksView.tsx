@@ -223,6 +223,10 @@ export default function SharedLinksView(): JSX.Element {
     },
   ];
 
+  const openFile = (props) => {
+    alert('This should open file/folder');
+  };
+
   return (
     <div className="flex w-full flex-shrink-0 flex-col">
       {/* Top action bar */}
@@ -259,7 +263,8 @@ export default function SharedLinksView(): JSX.Element {
           emptyState={emptyState}
           menu={itemMenu}
           selectedItems={setSelectedItems}
-          keyboardShortcuts={['unselectAll', 'selectAll']}
+          onDoubleClick={openFile}
+          keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           disableKeyboardShortcuts={optionsDialogIsOpen}
         />
       </div>

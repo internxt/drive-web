@@ -221,7 +221,7 @@ export default function TrashView(): JSX.Element {
           emptyState={emptyState}
           menu={itemMenu}
           selectedItems={setSelectedItems}
-          keyboardShortcuts={['unselectAll', 'selectAll']}
+          keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           disableKeyboardShortcuts={deleteDialogIsOpen || emptyTrashDialogIsOpen}
         />
       </div>

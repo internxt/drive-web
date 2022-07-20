@@ -9,6 +9,7 @@ interface ItemProps {
   columns: Array<string>;
   toggleSelectItem: () => void;
   selectItem: () => void;
+  onDoubleClick?: (props?: any) => any;
   menu?: Array<{
     separator?: boolean;
     name?: string;
@@ -25,11 +26,13 @@ export default function ListItem({
   columns,
   toggleSelectItem,
   selectItem,
+  onDoubleClick,
   menu,
 }: ItemProps): JSX.Element {
   return (
     <div
       onClick={toggleSelectItem}
+      onDoubleClick={() => onDoubleClick?.(item)}
       className={`group relative flex h-14 flex-row items-center pl-14 pr-5 ${
         selected ? 'bg-primary bg-opacity-10 text-primary' : 'focus-within:bg-gray-1 hover:bg-gray-1'
       }`}
