@@ -5,7 +5,7 @@ import BaseButton from '../../../shared/components/forms/BaseButton';
 import { Trash, Link, ToggleRight, LinkBreak, Terminal } from 'phosphor-react';
 import List from '../../../shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
-import { useState, Fragment, useEffect, FunctionComponent, SVGProps } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import iconService from '../../../drive/services/icon.service';
 import Empty from '../../../shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
@@ -19,12 +19,12 @@ export default function SharedLinksView(): JSX.Element {
   const [linkLimitTimes, setLinkLimitTimes] = useState(false);
   const [linkSettingsItem, setLinkSettingsItem] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState([]);
-  // const [items, setItems] = useState<any>([]);
+  const [items, setItems] = useState<any>([]);
 
-  // useEffect(() => {
-  //   setPage(2); // TODO: if im set page to 1, it will need click 2 times to next page to load 2 page.
-  //   loadItems();
-  // }, []);
+  useEffect(() => {
+    setPage(2); // TODO: if im set page to 1, it will need click 2 times to next page to load 2 page.
+    loadItems();
+  }, []);
 
   // List header columns
   const header = [
@@ -105,82 +105,82 @@ export default function SharedLinksView(): JSX.Element {
   );
 
   // Item list
-  const items = [
-    {
-      id: 1,
-      views: 12,
-      timesVaslid: 15,
-      createdAt: 'Jul 10, 2022 08:00:00',
-      isFolder: false,
-      item: {
-        name: 'sample_file_name.pdf',
-        type: 'pdf',
-      },
-    },
-    {
-      id: 2,
-      views: 114,
-      createdAt: 'Jul 11, 2022 07:00:00',
-      isFolder: false,
-      item: {
-        name: 'sample_file_10_with_a_veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_laaaaaaaaaaaaaaaaaaaaaaaaaaarge_name.png',
-        type: 'png',
-      },
-    },
-    {
-      id: 3,
-      views: 2,
-      timesValid: 2,
-      createdAt: 'Jul 07, 2022 09:00:00',
-      isFolder: false,
-      item: {
-        name: 'smaple_js_file.js',
-        type: 'js',
-      },
-    },
-    {
-      id: 4,
-      views: 63,
-      createdAt: 'Jul 12, 2022 08:00:00',
-      isFolder: false,
-      item: {
-        name: 'sample_file_2_name.fig',
-        type: 'fig',
-      },
-    },
-    {
-      id: 5,
-      views: 8,
-      timesValid: 10,
-      createdAt: 'Jul 03, 2022 08:13:00',
-      isFolder: true,
-      item: {
-        name: 'A folder',
-        type: '',
-      },
-    },
-    {
-      id: 6,
-      views: 26,
-      timesValid: 32,
-      createdAt: 'Jul 01, 2022 11:00:00',
-      isFolder: false,
-      item: {
-        name: 'example_file.jpg',
-        type: 'jpg',
-      },
-    },
-  ];
+  // const items = [
+  //   {
+  //     id: 1,
+  //     views: 12,
+  //     timesVaslid: 15,
+  //     createdAt: 'Jul 10, 2022 08:00:00',
+  //     isFolder: false,
+  //     item: {
+  //       name: 'sample_file_name.pdf',
+  //       type: 'pdf',
+  //     },
+  //   },
+  //   {
+  //     id: 2,
+  //     views: 114,
+  //     createdAt: 'Jul 11, 2022 07:00:00',
+  //     isFolder: false,
+  //     item: {
+  //       name: 'sample_file_10_with_a_veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_laaaaaaaaaaaaaaaaaaaaaaaaaaarge_name.png',
+  //       type: 'png',
+  //     },
+  //   },
+  //   {
+  //     id: 3,
+  //     views: 2,
+  //     timesValid: 2,
+  //     createdAt: 'Jul 07, 2022 09:00:00',
+  //     isFolder: false,
+  //     item: {
+  //       name: 'smaple_js_file.js',
+  //       type: 'js',
+  //     },
+  //   },
+  //   {
+  //     id: 4,
+  //     views: 63,
+  //     createdAt: 'Jul 12, 2022 08:00:00',
+  //     isFolder: false,
+  //     item: {
+  //       name: 'sample_file_2_name.fig',
+  //       type: 'fig',
+  //     },
+  //   },
+  //   {
+  //     id: 5,
+  //     views: 8,
+  //     timesValid: 10,
+  //     createdAt: 'Jul 03, 2022 08:13:00',
+  //     isFolder: true,
+  //     item: {
+  //       name: 'A folder',
+  //       type: '',
+  //     },
+  //   },
+  //   {
+  //     id: 6,
+  //     views: 26,
+  //     timesValid: 32,
+  //     createdAt: 'Jul 01, 2022 11:00:00',
+  //     isFolder: false,
+  //     item: {
+  //       name: 'example_file.jpg',
+  //       type: 'jpg',
+  //     },
+  //   },
+  // ];
 
-  // const loadItems = async () => {
-  //   const items = await shareService.getAllShareLinks(page, perPage);
-  //   setItems(items);
-  // };
+  const loadItems = async () => {
+    const items = await shareService.getAllShareLinks(page, perPage);
+    setItems(items);
+  };
 
-  // const nextPage = () => {
-  //   setPage(page + 1);
-  //   loadItems();
-  // };
+  const nextPage = () => {
+    setPage(page + 1);
+    loadItems();
+  };
 
   // item dropdown custom funtions
   const openLinkSettings = (props) => {
@@ -237,12 +237,12 @@ export default function SharedLinksView(): JSX.Element {
 
         {/* Delete selected items */}
         <div className="flex flex-row items-center">
-          <BaseButton className="tertiary space-x-2 whitespace-nowrap px-4" onClick={() => console.log('loadItems()')}>
+          <BaseButton className="tertiary space-x-2 whitespace-nowrap px-4" onClick={() => loadItems()}>
             <Terminal size={24} />
             <span>Load links</span>
           </BaseButton>
 
-          <BaseButton className="tertiary space-x-2 whitespace-nowrap px-4" onClick={() => console.log('nextPage()')}>
+          <BaseButton className="tertiary space-x-2 whitespace-nowrap px-4" onClick={() => nextPage()}>
             <Terminal size={24} />
             <span>Pagination</span>
           </BaseButton>
@@ -359,12 +359,6 @@ export default function SharedLinksView(): JSX.Element {
                     </BaseButton>
 
                     <div className="flex flex-row space-x-2">
-                      {/* <BaseButton
-                        onClick={() => setOptionsDialogIsOpenIsOpen(false)}
-                        className="flex h-auto flex-row items-center rounded-lg bg-gray-5 py-0 px-4 font-medium text-gray-80 active:bg-gray-10"
-                      >
-                        Cancel
-                      </BaseButton> */}
                       <BaseButton
                         onClick={() => setOptionsDialogIsOpen(false)}
                         className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"

@@ -15,7 +15,7 @@ import './ShareView.scss';
 import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
-import { SharedFolderInfo } from '@internxt/sdk/dist/drive/share/types';
+import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
 import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import { loadWritableStreamPonyfill } from 'app/network/download';
@@ -33,7 +33,7 @@ interface ShareViewState {
   error: string | null;
   progress: number;
   ready: boolean;
-  info: ShareTypes.SharedFolderInfo;
+  info: ShareTypes.ShareLink;
 }
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
@@ -43,7 +43,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [info, setInfo] = useState<Partial<SharedFolderInfo>>({});
+  const [info, setInfo] = useState<Partial<ShareLink>>({});
   const [size, setSize] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -72,7 +72,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         setIsLoaded(true);
         setInfo(sharedFolderInfo);
 
-        return loadSize((sharedFolderInfo as unknown as { shareId: number }).shareId, sharedFolderInfo.folderId);
+        return loadSize((sharedFolderInfo as unknown as { shareId: number }).shareId, sharedFolderInfo.item.id);
       })
       .then((folderSize) => {
         setSize(folderSize);
@@ -83,7 +83,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       });
   }, []);
 
-  const loadInfo = (): Promise<ShareTypes.SharedFolderInfo> => {
+  const loadInfo = (): Promise<ShareTypes.ShareLink> => {
     // ! iOS Chrome is not supported
     if (navigator.userAgent.match('CriOS')) {
       throw new Error('Chrome iOS not supported. Use Safari to proceed');
@@ -99,7 +99,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   };
 
   const loadSize = (shareId: number, folderId: number): Promise<number> => {
-    return getSharedFolderSize(shareId, folderId);
+    return getSharedFolderSize(shareId.toString(), folderId.toString());
   };
 
   const updateProgress = (progress: number) => {
@@ -108,7 +108,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
   const download = async (): Promise<void> => {
     if (!isDownloading) {
-      const folderInfo = info as unknown as ShareTypes.SharedFolderInfo | null;
+      const folderInfo = info as unknown as ShareTypes.ShareLink | null;
 
       if (folderInfo) {
         setIsDownloading(true);
@@ -126,13 +126,13 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
         downloadFolder(
           {
-            name: folderInfo.name,
+            name: folderInfo.item.name,
             code: code,
-            id: folderInfo.folderId,
+            id: folderInfo.item.id,
             token: token,
           },
           folderInfo.bucket,
-          folderInfo.bucketToken,
+          folderInfo.itemToken,
           {
             filesLimit: FILES_LIMIT_BY_REQUEST,
             foldersLimit: FOLDERS_LIMIT_BY_REQUEST,
@@ -239,10 +239,10 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
           <div className="flex flex-col items-center justify-center space-y-2">
             <div className="flex flex-col items-center justify-center text-center font-medium">
-              <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info.name}>
-                {info.name}
+              <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info.item.name}>
+                {info.item.name}
               </abbr>
-              <span className="text-cool-gray-60">{sizeService.bytesToString(info.size || 0)}</span>
+              <span className="text-cool-gray-60">{sizeService.bytesToString(info.item.size || 0)}</span>
             </div>
           </div>
         </div>

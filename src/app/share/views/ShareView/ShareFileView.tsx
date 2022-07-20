@@ -100,9 +100,9 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     }
   };
 
-  const getDecryptedName = (info: ShareTypes.SharedFileInfo): string => {
-    const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.fileMeta.folderId.toString()}`;
-    const decryptedFilename = aes.decrypt(info.fileMeta.name, salt);
+  const getDecryptedName = (info: ShareTypes.ShareLink): string => {
+    const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.item.id.toString()}`;
+    const decryptedFilename = aes.decrypt(info.item.name, salt);
 
     return decryptedFilename;
   };
@@ -132,8 +132,8 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       setIsLoaded(true);
 
       const updatedName = { ...info };
-      if (updatedName.fileMeta) {
-        updatedName.fileMeta.name = getDecryptedName(info);
+      if (updatedName.item) {
+        updatedName.item.name = getDecryptedName(info);
       }
       setInfo({ ...updatedName });
     } catch (err) {
