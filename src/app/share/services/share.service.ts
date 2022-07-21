@@ -1,19 +1,11 @@
 import errorService from '../../core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../core/factory/sdk';
-import httpService from 'app/core/services/http.service';
-
-// export function generateShareFileLink(params: ShareTypes.GenerateShareFileLinkPayload, code: string): Promise<string> {
-//   const shareClient = SdkFactory.getInstance().createShareV2Client();
-//   return shareClient.createShareFileLink(params).then((response) => {
-//     return `${window.location.origin}/s/file/${response.token}/${code}`;
-//   });
-// }
 
 export function generateShareLink(params: ShareTypes.GenerateShareLinkPayload): Promise<string> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.createShareLink(params).then((response) => {
-    return `${window.location.origin}/s/folder/${response.token}/${params?.code ?? ''}`;
+    return `${window.location.origin}/s/${params.type}/${response.token}/${params?.code ?? ''}`;
   });
 }
 
@@ -56,7 +48,7 @@ export function getSharedDirectoryFolders(
 ): Promise<ShareTypes.SharedDirectoryFolders> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.getShareLinkDirectory({
-    type: 'folders',
+    type: 'folder',
     token: payload.token,
     folderId: payload.directoryId,
     page: payload.offset / payload.limit,
@@ -69,7 +61,7 @@ export function getSharedDirectoryFiles(
 ): Promise<ShareTypes.SharedDirectoryFiles> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.getShareLinkDirectory({
-    type: 'files',
+    type: 'file',
     token: payload.token,
     code: payload.code,
     folderId: payload.directoryId,

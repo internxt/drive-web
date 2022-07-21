@@ -22,7 +22,7 @@ export default function SharedLinksView(): JSX.Element {
   const [items, setItems] = useState<any>([]);
 
   useEffect(() => {
-    setPage(2); // TODO: if im set page to 1, it will need click 2 times to next page to load 2 page.
+    setPage(1); // TODO: if im set page to 1, it will need click 2 times to next page to load 2 page.
     loadItems();
   }, []);
 
@@ -173,8 +173,9 @@ export default function SharedLinksView(): JSX.Element {
   // ];
 
   const loadItems = async () => {
-    const items = await shareService.getAllShareLinks(page, perPage);
-    setItems(items);
+    const items: any = await shareService.getAllShareLinks(page, perPage);
+    console.log('items', items);
+    setItems(items.items);
   };
 
   const nextPage = () => {

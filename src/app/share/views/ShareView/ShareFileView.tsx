@@ -33,7 +33,7 @@ export interface ShareViewProps extends ShareViewState {
   }>;
 }
 
-interface GetShareInfoWithDecryptedName extends ShareTypes.SharedFileInfo {
+interface GetShareInfoWithDecryptedName extends ShareTypes.ShareLink {
   name: string | null;
 }
 
@@ -143,7 +143,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   };
 
   function getEncryptionKey() {
-    const fileInfo = info as unknown as ShareTypes.SharedFileInfo;
+    const fileInfo = info as unknown as ShareTypes.ShareLink;
     let encryptionKey;
     if (code) {
       encryptionKey = aes.decrypt(fileInfo.encryptionKey, code);
@@ -155,15 +155,15 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   }
 
   function getBlob(abortController: AbortController): Promise<Blob> {
-    const fileInfo = info as unknown as ShareTypes.SharedFileInfo;
+    const fileInfo = info as unknown as ShareTypes.ShareLink;
 
     const encryptionKey = getEncryptionKey();
 
     const readable = network.downloadFile({
       bucketId: fileInfo.bucket,
-      fileId: fileInfo.file,
+      fileId: fileInfo.item,
       encryptionKey: Buffer.from(encryptionKey, 'hex'),
-      token: fileInfo.fileToken,
+      token: fileInfo.itemToken,
       options: {
         abortController,
         notifyProgress: () => null,
@@ -180,7 +180,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
   const download = async (): Promise<void> => {
     if (!isDownloading) {
-      const fileInfo = info as unknown as ShareTypes.SharedFileInfo | null;
+      const fileInfo = info as unknown as ShareTypes.ShareLink | null;
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
@@ -190,9 +190,9 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         setIsDownloading(true);
         const readable = await network.downloadFile({
           bucketId: fileInfo.bucket,
-          fileId: fileInfo.file,
+          fileId: fileInfo.item,
           encryptionKey: Buffer.from(encryptionKey, 'hex'),
-          token: fileInfo.fileToken,
+          token: fileInfo.itemToken,
           options: {
             notifyProgress: (totalProgress, downloadedBytes) => {
               setProgress(Math.trunc((downloadedBytes / totalProgress) * 100));
