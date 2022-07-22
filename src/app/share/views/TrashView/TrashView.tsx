@@ -3,6 +3,7 @@ import dateService from '../../../core/services/date.service';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import { Trash, ClockCounterClockwise } from 'phosphor-react';
 import List from '../../../shared/components/List';
+import Grid from '../../../shared/components/Grid';
 import { Dialog, Transition } from '@headlessui/react';
 import { useState, Fragment, useEffect, FunctionComponent, SVGProps } from 'react';
 import iconService from '../../../drive/services/icon.service';
@@ -45,11 +46,11 @@ export default function TrashView(): JSX.Element {
   ];
 
   // Composition of the item (content per item column)
-  const itemComposition = [
+  const listItemComposition = [
     (props) => {
       const Icon = iconService.getItemIcon(props.isFolder, props.item.type);
       return (
-        <div className="w- flex w-full flex-row items-center space-x-4 overflow-hidden">
+        <div className="flex w-full flex-row items-center space-x-4 overflow-hidden">
           <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
           <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">{props.item.name}</span>
         </div>
@@ -66,6 +67,58 @@ export default function TrashView(): JSX.Element {
       </span>
     ),
   ];
+
+  const gridItemComposition = (props, selected) => {
+    const Icon = iconService.getItemIcon(props.isFolder, props.item.type);
+    return (
+      <div className="flex h-full w-full flex-shrink-0 flex-col items-center justify-start overflow-hidden">
+        <div
+          className={`ratio-square flex w-full flex-col items-center justify-center rounded-lg p-5 ${
+            selected && 'bg-gray-1'
+          }`}
+        >
+          <Icon className="flex h-full max-h-24 w-full flex-shrink-0 drop-shadow-soft filter" />
+        </div>
+
+        <div className="mt-2 flex h-16 w-full max-w-full flex-shrink-0 flex-col items-center text-center">
+          <span
+            className={`w-auto max-w-full break-words rounded-md py-1 px-2.5 text-base leading-tight line-clamp-2 ${
+              selected && 'bg-primary text-white'
+            }`}
+          >
+            {props.item.name}
+          </span>
+          <span className="mt-0.5 w-auto max-w-full whitespace-nowrap text-xs text-gray-50">
+            {sizeService.bytesToString(props.item.size || 0, false)}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  // const gridItemComposition = (props, selected) => {
+  //   const Icon = iconService.getItemIcon(props.isFolder, props.item.type);
+  //   return (
+  //     <div
+  //       className={`group flex h-full w-full flex-shrink-0 flex-col items-center justify-start overflow-hidden rounded-lg ${
+  //         selected ? 'bg-primary bg-opacity-5' : 'border border-gray-5 group-hover:bg-gray-1'
+  //       }`}
+  //     >
+  //       <div className="ratio-square flex w-full flex-col items-center justify-center p-5">
+  //         <Icon className="flex h-full max-h-24 w-full flex-shrink-0 drop-shadow-soft filter" />
+  //       </div>
+
+  //       <div
+  //         className={`flex h-10 w-full max-w-full flex-shrink-0 flex-row items-center space-x-1.5 rounded-t-lg px-2.5 text-center ${
+  //           selected ? 'bg-primary text-white' : 'group-hover:bg-gray-5'
+  //         }`}
+  //       >
+  //         <Icon className="flex h-5 w-5 flex-shrink-0 drop-shadow-soft filter" />
+  //         <span className="w-auto max-w-full truncate whitespace-nowrap text-sm leading-tight">{props.item.name}</span>
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   // Skin skeleton when loading
   const skinSkeleton = [
@@ -144,7 +197,7 @@ export default function TrashView(): JSX.Element {
       item: {
         size: null,
         name: 'A folder',
-        type: '',
+        type: null,
       },
     },
     {
@@ -155,6 +208,26 @@ export default function TrashView(): JSX.Element {
         size: 2837629,
         name: 'example_file.jpg',
         type: 'jpg',
+      },
+    },
+    {
+      id: 7,
+      trashed: 'Jun 29, 2022 10:00:00',
+      isFolder: false,
+      item: {
+        size: 287334,
+        name: 'example_code.js',
+        type: 'js',
+      },
+    },
+    {
+      id: 8,
+      trashed: 'Jun 26, 2022 15:00:00',
+      isFolder: true,
+      item: {
+        size: null,
+        name: 'Example folder 2',
+        type: null,
       },
     },
   ];
@@ -216,7 +289,7 @@ export default function TrashView(): JSX.Element {
         <List
           header={header}
           items={items}
-          itemComposition={[...itemComposition]}
+          itemComposition={[...listItemComposition]}
           skinSkeleton={skinSkeleton}
           emptyState={emptyState}
           menu={itemMenu}
@@ -224,6 +297,17 @@ export default function TrashView(): JSX.Element {
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           disableKeyboardShortcuts={deleteDialogIsOpen || emptyTrashDialogIsOpen}
         />
+        {/* <Grid
+          header={header}
+          items={items}
+          itemComposition={gridItemComposition}
+          skinSkeleton={skinSkeleton}
+          emptyState={emptyState}
+          menu={itemMenu}
+          selectedItems={setSelectedItems}
+          keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
+          disableKeyboardShortcuts={deleteDialogIsOpen || emptyTrashDialogIsOpen}
+        /> */}
       </div>
 
       {/* Dialogs */}

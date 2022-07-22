@@ -5,7 +5,7 @@ import BaseButton from '../../../shared/components/forms/BaseButton';
 import { Trash, Link, ToggleRight, LinkBreak, Terminal } from 'phosphor-react';
 import List from '../../../shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
-import { useState, Fragment, useEffect } from 'react';
+import { useState, Fragment, useEffect, useRef } from 'react';
 import iconService from '../../../drive/services/icon.service';
 import Empty from '../../../shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
@@ -13,18 +13,29 @@ import shareService from 'app/share/services/share.service';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 
 export default function SharedLinksView(): JSX.Element {
-  const perPage = 25;
+  const perPage = 2;
   const [page, setPage] = useState<number>(1);
   const [optionsDialogIsOpen, setOptionsDialogIsOpen] = useState(false);
   const [linkLimitTimes, setLinkLimitTimes] = useState(false);
   const [linkSettingsItem, setLinkSettingsItem] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [items, setItems] = useState<any>([]);
+  const [shareLinks, setShareLinks] = useState<any>([]);
 
   useEffect(() => {
-    setPage(1); // TODO: if im set page to 1, it will need click 2 times to next page to load 2 page.
-    loadItems();
-  }, []);
+    // setPage(1); // TODO: if im set page to 1, it will need click 2 times to next page to load 2 page.
+    getShareLinks();
+  }, [page]);
+
+  const getShareLinks = async () => {
+    const links: any = await shareService.getAllShareLinks(page, perPage);
+    setShareLinks([...shareLinks, ...links.items]);
+    console.log('items', links);
+    console.log('sharelinks', [...shareLinks, ...links.items]);
+  };
+
+  const nextPage = () => {
+    setPage(page + 1);
+  };
 
   // List header columns
   const header = [
@@ -60,7 +71,7 @@ export default function SharedLinksView(): JSX.Element {
     (props) => {
       const Icon = iconService.getItemIcon(props.isFolder, props.item.type);
       return (
-        <div className="w- flex w-full flex-row items-center space-x-4 overflow-hidden">
+        <div className="flex w-full flex-row items-center space-x-4 overflow-hidden">
           <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
           <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">{props.item.name}</span>
         </div>
@@ -104,92 +115,6 @@ export default function SharedLinksView(): JSX.Element {
     />
   );
 
-  // Item list
-  // const items = [
-  //   {
-  //     id: 1,
-  //     views: 12,
-  //     timesVaslid: 15,
-  //     createdAt: 'Jul 10, 2022 08:00:00',
-  //     isFolder: false,
-  //     item: {
-  //       name: 'sample_file_name.pdf',
-  //       type: 'pdf',
-  //     },
-  //   },
-  //   {
-  //     id: 2,
-  //     views: 114,
-  //     createdAt: 'Jul 11, 2022 07:00:00',
-  //     isFolder: false,
-  //     item: {
-  //       name: 'sample_file_10_with_a_veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_laaaaaaaaaaaaaaaaaaaaaaaaaaarge_name.png',
-  //       type: 'png',
-  //     },
-  //   },
-  //   {
-  //     id: 3,
-  //     views: 2,
-  //     timesValid: 2,
-  //     createdAt: 'Jul 07, 2022 09:00:00',
-  //     isFolder: false,
-  //     item: {
-  //       name: 'smaple_js_file.js',
-  //       type: 'js',
-  //     },
-  //   },
-  //   {
-  //     id: 4,
-  //     views: 63,
-  //     createdAt: 'Jul 12, 2022 08:00:00',
-  //     isFolder: false,
-  //     item: {
-  //       name: 'sample_file_2_name.fig',
-  //       type: 'fig',
-  //     },
-  //   },
-  //   {
-  //     id: 5,
-  //     views: 8,
-  //     timesValid: 10,
-  //     createdAt: 'Jul 03, 2022 08:13:00',
-  //     isFolder: true,
-  //     item: {
-  //       name: 'A folder',
-  //       type: '',
-  //     },
-  //   },
-  //   {
-  //     id: 6,
-  //     views: 26,
-  //     timesValid: 32,
-  //     createdAt: 'Jul 01, 2022 11:00:00',
-  //     isFolder: false,
-  //     item: {
-  //       name: 'example_file.jpg',
-  //       type: 'jpg',
-  //     },
-  //   },
-  // ];
-
-  const loadItems = async () => {
-    const items: any = await shareService.getAllShareLinks(page, perPage);
-    console.log('items', items);
-    setItems(items.items);
-  };
-
-  const nextPage = () => {
-    setPage(page + 1);
-    loadItems();
-  };
-
-  // item dropdown custom funtions
-  const openLinkSettings = (props) => {
-    setLinkSettingsItem(props);
-    setLinkLimitTimes(props.timesValid && props.timesValid > 0);
-    setOptionsDialogIsOpen(true);
-  };
-
   // Item dropdown menu
   const itemMenu = [
     {
@@ -224,8 +149,11 @@ export default function SharedLinksView(): JSX.Element {
     },
   ];
 
-  const openFile = (props) => {
-    alert('This should open file/folder');
+  // item dropdown custom funtions
+  const openLinkSettings = (props) => {
+    setLinkSettingsItem(props);
+    setLinkLimitTimes(props.timesValid && props.timesValid > 0);
+    setOptionsDialogIsOpen(true);
   };
 
   return (
@@ -238,7 +166,7 @@ export default function SharedLinksView(): JSX.Element {
 
         {/* Delete selected items */}
         <div className="flex flex-row items-center">
-          <BaseButton className="tertiary space-x-2 whitespace-nowrap px-4" onClick={() => loadItems()}>
+          <BaseButton className="tertiary space-x-2 whitespace-nowrap px-4" onClick={() => getShareLinks()}>
             <Terminal size={24} />
             <span>Load links</span>
           </BaseButton>
@@ -258,13 +186,12 @@ export default function SharedLinksView(): JSX.Element {
       <div className="flex h-full w-full flex-col overflow-y-auto">
         <List
           header={header}
-          items={items}
+          items={[]}
           itemComposition={[...itemComposition]}
           skinSkeleton={skinSkeleton}
           emptyState={emptyState}
           menu={itemMenu}
           selectedItems={setSelectedItems}
-          onDoubleClick={openFile}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           disableKeyboardShortcuts={optionsDialogIsOpen}
         />

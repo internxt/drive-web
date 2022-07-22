@@ -1,4 +1,4 @@
-import ListItem from './ListItem';
+import GridItem from './GridItem';
 import SkinSkeletonItem from './SkinSketelonItem';
 import { useEffect, useState } from 'react';
 import { ArrowUp, ArrowDown } from 'phosphor-react';
@@ -14,8 +14,8 @@ interface HeaderProps {
 
 interface ListProps {
   header: Array<HeaderProps> | Array<any>;
-  items: Array<Record<string, unknown>>;
-  itemComposition: Array<(props: Record<string, unknown>, active: boolean) => JSX.Element>;
+  items: Array<Record<string, unknown>> | Array<any>;
+  itemComposition: (props: Record<string, unknown>, active: boolean) => JSX.Element;
   selectedItems: any;
   onDoubleClick?: (props?: any) => any;
   isLoading?: boolean;
@@ -229,6 +229,9 @@ export default function List({
       <div
         className={`relative flex h-full flex-col ${isLoading && 'pointer-events-none overflow-y-hidden'} ${className}`}
       >
+        {/* Click outside of the list to unselect all items */}
+        {itemList.length > 0 && <div className="absolute top-0 left-0 z-0 h-full w-full" onClick={unselectAllItems} />}
+
         {!isLoading && itemList.length > 0 && (
           <>
             {/* HEAD */}
@@ -267,7 +270,11 @@ export default function List({
         )}
 
         {/* BODY */}
-        <div className={`flex h-full flex-col ${!isLoading && 'overflow-y-auto'}`}>
+        <div
+          className={`grid h-full grid-flow-row grid-cols-1 content-start gap-3 p-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 ${
+            !isLoading && 'overflow-y-auto'
+          }`}
+        >
           {isLoading ? (
             <>
               {new Array(32).fill(0).map((col, i) => (
@@ -279,7 +286,7 @@ export default function List({
               {itemList.length > 0 ? (
                 <>
                   {itemList.map((item) => (
-                    <ListItem
+                    <GridItem
                       key={JSON.stringify(item)}
                       item={item}
                       itemComposition={itemComposition}
@@ -297,9 +304,6 @@ export default function List({
               )}
             </>
           )}
-
-          {/* Click outside of the list to unselect all items */}
-          {itemList.length > 0 && <div className="h-full w-full py-6" onClick={unselectAllItems} />}
         </div>
       </div>
     </>
