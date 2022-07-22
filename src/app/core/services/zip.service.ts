@@ -2,26 +2,21 @@ import streamSaver from 'streamsaver';
 import fileDownload from 'js-file-download';
 
 import { binaryStreamToBlob, buildProgressStream } from './stream.service';
+import browserService from './browser.service';
 
 type FlatFolderZipOpts = {
   abortController?: AbortController;
   progress?: (loadedBytes: number) => void;
 }
-function isBrave() {
-  const maybeBrave = (window.navigator as { brave?: { isBrave?: { name: 'isBrave' } } }).brave;
 
-  return maybeBrave != undefined && maybeBrave?.isBrave?.name == 'isBrave';
-}
 export class FlatFolderZip {
   private finished!: Promise<void>;
   private zip: ZipStream;
   private passThrough: ReadableStream<Uint8Array>;
   private folderName: string;
   private abortController?: AbortController;
-  private isServiceWorkerAllowed: boolean;
 
-  constructor(folderName: string, isServiceWorkerAllowed: boolean, opts: FlatFolderZipOpts) {
-    this.isServiceWorkerAllowed = isServiceWorkerAllowed;
+  constructor(folderName: string, opts: FlatFolderZipOpts) {
     this.folderName = folderName;
     this.zip = createFolderWithFilesWritable();
     this.abortController = opts.abortController;
@@ -30,11 +25,9 @@ export class FlatFolderZip {
       buildProgressStream(this.zip.stream, opts.progress) :
       this.zip.stream;
 
-    const isFirefox = navigator.userAgent.indexOf('Firefox') !== -1;
+    if (browserService.isBrave()) return;
 
-    if (isBrave() || !isServiceWorkerAllowed) return;
-
-    if (isFirefox) {
+    if (browserService.isFirefox()) {
       loadWritableStreamPonyfill().then(() => {
         streamSaver.WritableStream = window.WritableStream;
 
@@ -68,7 +61,7 @@ export class FlatFolderZip {
 
     this.zip.end();
 
-    if (isBrave() || !this.isServiceWorkerAllowed) {
+    if (browserService.isBrave()) {
       return fileDownload(
         await binaryStreamToBlob(this.passThrough),
         `${this.folderName}.zip`,

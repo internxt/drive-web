@@ -13,7 +13,6 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { Iterator } from 'app/core/collections';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { downloadFile } from 'app/network/download';
-import serviceWorkerService from 'app/core/services/service-worker.service';
 
 export interface IFolders {
   bucket: string;
@@ -252,17 +251,11 @@ async function downloadFolderAsZip(
 ): Promise<void> {
   const rootFolder: FolderRef = { folderId: folderId, name: folderName };
   const pendingFolders: FolderRef[] = [rootFolder];
-  const canUseServiceWorker = await serviceWorkerService.isServiceWorkerAvailable();
   let totalSize = 0;
   let totalSizeIsReady = false;
 
-  if (!canUseServiceWorker) {
-    console.warn('Service worker is not allowed');
-  }
-
   const zip = new FlatFolderZip(
     rootFolder.name,
-    canUseServiceWorker,
     {
       progress(loadedBytes) {
         if (!totalSizeIsReady) {
