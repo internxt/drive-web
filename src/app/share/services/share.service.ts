@@ -16,6 +16,13 @@ export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Prom
   });
 }
 
+export function deleteShareLink(shareId: string): Promise<{deleted: boolean, shareId: string}> {
+  const shareClient = SdkFactory.getInstance().createShareClient();
+  return shareClient.deleteShareLink(shareId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function getSharedFileInfo(token: string): Promise<ShareTypes.ShareLink> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.getShareLink(token).catch((error) => {
@@ -87,6 +94,7 @@ export function getAllShareLinks(page: number, perPage: number): Promise<Array<P
 const shareService = {
   generateShareLink,
   updateShareLink,
+  deleteShareLink,
   getSharedFileInfo,
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
