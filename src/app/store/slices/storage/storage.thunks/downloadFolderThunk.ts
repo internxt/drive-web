@@ -77,11 +77,9 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
         },
       });
 
-      if (navigator.brave?.isBrave()) {
-        await downloadFolderUsingBlobs({ folder, updateProgressCallback, isTeam });
-      } else {
-        await downloadService.downloadFolder({ folder, updateProgressCallback, isTeam, abortController });
-      }
+      await folderService.downloadFolderAsZip(folder.id, folder.name, (progress) => {
+        updateProgressCallback(progress);
+      });
 
       tasksService.updateTask({
         taskId: options.taskId,
