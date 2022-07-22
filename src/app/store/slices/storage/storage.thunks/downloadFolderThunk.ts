@@ -11,7 +11,7 @@ import { TaskStatus } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import AppError from 'app/core/types';
 import { DriveFolderData } from 'app/drive/types';
-import downloadFolderUsingBlobs from 'app/drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
+import folderService from 'app/drive/services/folder.service';
 
 interface DownloadFolderThunkOptions {
   taskId: string;
