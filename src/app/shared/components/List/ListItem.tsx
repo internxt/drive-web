@@ -71,7 +71,7 @@ export default function ListItem({
           </Menu.Button>
           <Menu.Items>
             <div
-              className="absolute right-0 z-20 mt-0 flex flex-col rounded-lg border border-gray-5 bg-white py-1.5 shadow-subtle-hard"
+              className="absolute right-0 z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard"
               style={{
                 minWidth: '180px',
               }}
