@@ -233,7 +233,7 @@ export default function List({
       <div className={`relative flex h-full flex-col ${className}`}>
         {/* HEAD */}
         <div
-          className={`sticky flex h-12 flex-shrink-0 flex-row items-center px-5 ${
+          className={`relative flex h-12 flex-shrink-0 flex-row px-5 ${
             (isLoading || !(itemList.length > 0)) && 'pointer-events-none'
           }`}
         >
@@ -264,7 +264,7 @@ export default function List({
               </div>
             ))}
 
-            {menu && <div className="flex h-14 w-12 flex-shrink-0" />}
+            {menu && <div className="flex h-full w-12 flex-shrink-0" />}
           </div>
         </div>
 
