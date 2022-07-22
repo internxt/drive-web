@@ -12,6 +12,7 @@ import emptyStateIcon from 'assets/icons/file-types/default.svg';
 import shareService from 'app/share/services/share.service';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
 
 export default function SharedLinksView(): JSX.Element {
   const perPage = 25;
@@ -20,8 +21,10 @@ export default function SharedLinksView(): JSX.Element {
   const [optionsDialogIsOpen, setOptionsDialogIsOpen] = useState(false);
   const [linkLimitTimes, setLinkLimitTimes] = useState(false);
   const [linkSettingsItem, setLinkSettingsItem] = useState<any>(null);
+  const [linkSettingsTimesValid, setLinkSettingsTimesValid] = useState<number>(0);
   const [selectedItems, setSelectedItems] = useState([]);
   const [shareLinks, setShareLinks] = useState<any>([]);
+  const [savingLinkChanges, setSavingLinkChanges] = useState<boolean>(false);
 
   useEffect(() => {
     getShareLinks().then(() => setIsLoading(false));
@@ -40,6 +43,11 @@ export default function SharedLinksView(): JSX.Element {
   const copyShareLink = (token) => {
     copy(`${document.location.origin}/s/file/${token}/`);
     notificationsService.show({ text: i18n.get('shared-links.toast'), type: ToastType.Success });
+  };
+
+  const updateShareLink = async (params: ShareTypes.UpdateShareLinkPayload) => {
+    setSavingLinkChanges(true);
+    await shareService.updateShareLink(params).then(() => setSavingLinkChanges(false));
   };
 
   // List header columns
@@ -236,7 +244,9 @@ export default function SharedLinksView(): JSX.Element {
                   <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
                     <span className="font-medium">{i18n.get('shared-links.link-settings.share-settings')}</span>
                     <span className="truncate whitespace-nowrap text-base text-gray-40">
-                      {linkSettingsItem?.item.name}
+                      {`${linkSettingsItem?.item.name}${
+                        linkSettingsItem?.item.type && `.${linkSettingsItem?.item.type}`
+                      }`}
                     </span>
                   </Dialog.Title>
 
@@ -264,11 +274,12 @@ export default function SharedLinksView(): JSX.Element {
                             <div className="mx-1.5 flex h-6 flex-row items-center">
                               <input
                                 type="number"
-                                min={linkSettingsItem?.timesValid ?? 1}
+                                min={Math.max(linkSettingsItem?.timesValid ?? 1, 1)}
                                 max="9999"
                                 step="1"
                                 placeholder={linkSettingsItem?.timesValid}
                                 disabled={!linkLimitTimes}
+                                onChange={(e) => setLinkSettingsTimesValid(parseInt(e.target.value))}
                                 className="outline-none w-14 rounded-md border border-gray-20 py-0 px-2 text-right text-base focus:border-primary focus:ring-3 focus:ring-primary focus:ring-opacity-10"
                               />
                             </div>
@@ -296,10 +307,19 @@ export default function SharedLinksView(): JSX.Element {
 
                     <div className="flex flex-row space-x-2">
                       <BaseButton
-                        onClick={() => setOptionsDialogIsOpen(false)}
+                        onClick={() =>
+                          updateShareLink({
+                            itemId: linkSettingsItem?.id,
+                            timesValid: linkSettingsTimesValid,
+                            active: true,
+                          })
+                        }
+                        isLoading={savingLinkChanges}
                         className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
                       >
-                        {i18n.get('shared-links.link-settings.save')}
+                        {savingLinkChanges
+                          ? i18n.get('shared-links.link-settings.saving')
+                          : i18n.get('shared-links.link-settings.save')}
                       </BaseButton>
                     </div>
                   </div>

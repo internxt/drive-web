@@ -225,7 +225,8 @@
       "views": "Views",
       "options": "Options",
       "copy-link": "Copy link",
-      "save": "Save"
+      "save": "Save",
+      "saving": "Saving"
     },
     "toast": "Link copied to clipboard"
   },
