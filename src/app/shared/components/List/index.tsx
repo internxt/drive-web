@@ -67,8 +67,6 @@ export default function List({
 
   // Keyboard shortcuts
   useEffect(() => {
-    setItemList(items);
-
     const onKeyDownListener = (e) => {
       if ((!disableKeyboardShortcuts ?? true) && !isLoading) {
         if (e.code === 'Escape' && keyboardShortcuts?.includes('unselectAll')) {
@@ -105,6 +103,10 @@ export default function List({
       document.removeEventListener('keydown', onKeyDownListener);
       document.removeEventListener('keyup', onKeyUpListener);
     };
+  }, [itemList]);
+
+  useEffect(() => {
+    setItemList(items);
   }, [items]);
 
   useEffect(() => {
