@@ -18,8 +18,10 @@ export class FlatFolderZip {
   private passThrough: ReadableStream<Uint8Array>;
   private folderName: string;
   private abortController?: AbortController;
+  private isServiceWorkerAllowed: boolean;
 
-  constructor(folderName: string, opts: FlatFolderZipOpts) {
+  constructor(folderName: string, isServiceWorkerAllowed: boolean, opts: FlatFolderZipOpts) {
+    this.isServiceWorkerAllowed = isServiceWorkerAllowed;
     this.folderName = folderName;
     this.zip = createFolderWithFilesWritable();
     this.abortController = opts.abortController;
@@ -30,7 +32,7 @@ export class FlatFolderZip {
 
     const isFirefox = navigator.userAgent.indexOf('Firefox') !== -1;
 
-    if (isBrave()) return;
+    if (isBrave() || !isServiceWorkerAllowed) return;
 
     if (isFirefox) {
       loadWritableStreamPonyfill().then(() => {
@@ -66,8 +68,7 @@ export class FlatFolderZip {
 
     this.zip.end();
 
-    if (isBrave()) {
-      console.log('is Brave');
+    if (isBrave() || !this.isServiceWorkerAllowed) {
       return fileDownload(
         await binaryStreamToBlob(this.passThrough),
         `${this.folderName}.zip`,
