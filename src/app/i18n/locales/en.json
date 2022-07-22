@@ -219,7 +219,15 @@
       "copy-link": "Copy link",
       "link-settings": "Link settings",
       "delete-link": "Delete link"
-    }
+    },
+    "link-settings": {
+      "share-settings": "Share settings",
+      "views": "Views",
+      "options": "Options",
+      "copy-link": "Copy link",
+      "save": "Save"
+    },
+    "toast": "Link copied to clipboard"
   },
   "trash": {
     "trash": "Trash",
