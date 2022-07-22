@@ -21,6 +21,7 @@ interface ListProps {
   isLoading?: boolean;
   skinSkeleton?: Array<JSX.Element>;
   emptyState?: JSX.Element | (() => JSX.Element);
+  loadingPerPage?: number;
   menu?: Array<{
     separator?: boolean;
     name?: string;
@@ -42,6 +43,7 @@ export default function List({
   isLoading,
   skinSkeleton,
   emptyState,
+  loadingPerPage,
   menu,
   className,
   keyboardShortcuts,
@@ -65,6 +67,8 @@ export default function List({
 
   // Keyboard shortcuts
   useEffect(() => {
+    setItemList(items);
+
     const onKeyDownListener = (e) => {
       if ((!disableKeyboardShortcuts ?? true) && !isLoading) {
         if (e.code === 'Escape' && keyboardShortcuts?.includes('unselectAll')) {
@@ -226,75 +230,74 @@ export default function List({
   return (
     <>
       {/* TABLE */}
-      <div
-        className={`relative flex h-full flex-col ${isLoading && 'pointer-events-none overflow-y-hidden'} ${className}`}
-      >
-        {!isLoading && itemList.length > 0 && (
-          <>
-            {/* HEAD */}
-            <div className="sticky flex h-12 flex-shrink-0 flex-row items-center px-5">
-              {/* COLUMN */}
-              <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
-                {/* SELECTION CHECKBOX */}
-                <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
-                  <BaseCheckbox
-                    checked={itemsSelected.length > 0}
-                    onClick={bulkItemsSelectionToggle}
-                    indeterminate={itemList.length > itemsSelected.length && itemsSelected.length > 0}
-                  />
-                </div>
-
-                {header.map((column) => (
-                  <div
-                    onClick={() => order(column.order, column.data)}
-                    key={column.name}
-                    className={`flex h-full flex-shrink-0 cursor-pointer flex-row items-center space-x-1.5 text-base font-medium text-gray-60 hover:text-gray-80 ${column.width}`}
-                  >
-                    <span>{column.name}</span>
-                    {column.data === orderData &&
-                      (orderDirection === 'asc' ? (
-                        <ArrowUp size={14} weight="bold" />
-                      ) : (
-                        <ArrowDown size={14} weight="bold" />
-                      ))}
-                  </div>
-                ))}
-
-                {menu && <div className="flex h-14 w-12 flex-shrink-0" />}
-              </div>
+      <div className={`relative flex h-full flex-col ${className}`}>
+        {/* HEAD */}
+        <div
+          className={`sticky flex h-12 flex-shrink-0 flex-row items-center px-5 ${
+            (isLoading || !(itemList.length > 0)) && 'pointer-events-none'
+          }`}
+        >
+          {/* COLUMN */}
+          <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
+            {/* SELECTION CHECKBOX */}
+            <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
+              <BaseCheckbox
+                checked={itemsSelected.length > 0}
+                onClick={bulkItemsSelectionToggle}
+                indeterminate={itemList.length > itemsSelected.length && itemsSelected.length > 0}
+              />
             </div>
-          </>
-        )}
+
+            {header.map((column) => (
+              <div
+                onClick={() => order(column.order, column.data)}
+                key={column.name}
+                className={`flex h-full flex-shrink-0 cursor-pointer flex-row items-center space-x-1.5 text-base font-medium text-gray-60 hover:text-gray-80 ${column.width}`}
+              >
+                <span>{column.name}</span>
+                {column.data === orderData &&
+                  (orderDirection === 'asc' ? (
+                    <ArrowUp size={14} weight="bold" />
+                  ) : (
+                    <ArrowDown size={14} weight="bold" />
+                  ))}
+              </div>
+            ))}
+
+            {menu && <div className="flex h-14 w-12 flex-shrink-0" />}
+          </div>
+        </div>
 
         {/* BODY */}
         <div className={`flex h-full flex-col ${!isLoading && 'overflow-y-auto'}`}>
-          {isLoading ? (
-            <>
-              {new Array(32).fill(0).map((col, i) => (
-                <SkinSkeletonItem key={i} skinSkeleton={skinSkeleton} columns={header.map((column) => column.width)} />
-              ))}
-            </>
+          {!isLoading && !(itemList.length > 0) ? (
+            <>{emptyState}</>
           ) : (
             <>
-              {itemList.length > 0 ? (
-                <>
-                  {itemList.map((item) => (
-                    <ListItem
-                      key={JSON.stringify(item)}
-                      item={item}
-                      itemComposition={itemComposition}
-                      selected={isItemSelected(item)}
-                      onDoubleClick={onDoubleClick}
+              {itemList.length > 0 &&
+                itemList.map((item) => (
+                  <ListItem
+                    key={JSON.stringify(item)}
+                    item={item}
+                    itemComposition={itemComposition}
+                    selected={isItemSelected(item)}
+                    onDoubleClick={onDoubleClick}
+                    columns={header.map((column) => column.width)}
+                    toggleSelectItem={() => toggleSelectItem(item)}
+                    selectItem={() => selectItem(item)}
+                    menu={menu}
+                  />
+                ))}
+              {isLoading &&
+                new Array(loadingPerPage ?? 8)
+                  .fill(0)
+                  .map((col, i) => (
+                    <SkinSkeletonItem
+                      key={i}
+                      skinSkeleton={skinSkeleton}
                       columns={header.map((column) => column.width)}
-                      toggleSelectItem={() => toggleSelectItem(item)}
-                      selectItem={() => selectItem(item)}
-                      menu={menu}
                     />
                   ))}
-                </>
-              ) : (
-                <>{emptyState}</>
-              )}
             </>
           )}
 
