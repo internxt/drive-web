@@ -14,6 +14,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const dispatch = useAppDispatch();
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
   if (user === undefined) throw new Error('User is not defined');
 
