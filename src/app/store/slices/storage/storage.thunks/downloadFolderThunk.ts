@@ -2,8 +2,6 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
-import { sessionSelectors } from '../../session/session.selectors';
-import downloadService from 'app/drive/services/download.service';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import i18n from 'app/i18n/services/i18n.service';
@@ -29,12 +27,12 @@ const defaultDownloadFolderThunkOptions = {
   showErrors: true,
 };
 
+// TODO: Enable compatibility for this functionality on Teams
 export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPayload, { state: RootState }>(
   'storage/downloadFolder',
-  async (payload: DownloadFolderThunkPayload, { getState, rejectWithValue }) => {
+  async (payload: DownloadFolderThunkPayload, { rejectWithValue }) => {
     const folder = payload.folder;
     const options = { ...defaultDownloadFolderThunkOptions, ...payload.options };
-    const isTeam: boolean = sessionSelectors.isTeam(getState());
     const task = tasksService.findTask(options.taskId);
 
     const updateProgressCallback = (progress: number) => {
