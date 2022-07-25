@@ -37,6 +37,24 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
     });
   }
 
+  get itemsFileList(): JSX.Element[] {
+    return this.props.items.filter((item) => !item.isFolder).map((item: DriveItemData) => {
+      const itemParentId = item.parentId || item.folderId;
+      const itemKey = `'file'-${item.id}-${itemParentId}`;
+
+      return <DriveExplorerListItem key={itemKey} item={item} />;
+    });
+  }
+
+  get itemsFolderList(): JSX.Element[] {
+    return this.props.items.filter((item) => item.isFolder).map((item: DriveItemData) => {
+      const itemParentId = item.parentId || item.folderId;
+      const itemKey = `'folder'-${item.id}-${itemParentId}`;
+
+      return <DriveExplorerListItem key={itemKey} item={item} />;
+    });
+  }
+
   get isAllSelected(): boolean {
     const { selectedItems, items } = this.props;
 
@@ -105,7 +123,14 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
           </div>
           <div className="w-1/12 flex items-center rounded-tr-4px">{i18n.get('drive.list.columns.actions')}</div>
         </div>
-        <div className="h-full overflow-y-auto">{isLoading ? this.loadingSkeleton : this.itemsList}</div>
+        <div className="h-full overflow-y-auto">{isLoading ? (
+          this.loadingSkeleton
+          ) : (
+            <>
+             { this.itemsFolderList}
+             { this.itemsFileList}
+            </>
+          )}</div>
       </div>
     );
   }

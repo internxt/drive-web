@@ -1401,10 +1401,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/9a19de23e3330a81c0e2bace1a6a0325fc8633197cf677e44ea75e54df315b5e"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@0.15.3":
-  version "0.15.3"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/0.15.3/66cfa5d7747dd48d98301966d046afd9def2d9cd49ad62888f339edfd8a2a004#ce8b965114d3f2eee41bcbc96067172ac685da01"
-  integrity sha512-2Zcb5QA+t8fGT3FyFf2CqcjBaSudbFgZnbYGP7ceM1iA32jxMQ8vmQ2xVEW3r5Ce2ZDeNqJIg/sXXlR1kXNDAw==
+"@internxt/sdk@0.16.2":
+  version "0.16.2"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/0.16.2/d5af19f58470ad1691d1db0ca2b08b74d496e5a2bd7b8f82aee260b24b6ce26b#6214db2b9a8a69e7257060f7bfec367a128ec4cf"
+  integrity sha512-d0QnfIq7o7A/4lqmvwqql8lhHkLu20b3tyeuFU/Tb1pmBlvHKEzeU+ovt+QKZ0vFM9/l6stIFhhrhUvLhiVPyA==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -5181,6 +5181,11 @@ destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.npmjs.org/destroy/-/destroy-1.0.4.tgz"
   integrity sha1-l4hXRCxEdJ5CBmE+N5RiBYJqvYA=
+
+detect-browser@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/detect-browser/-/detect-browser-5.3.0.tgz#9705ef2bddf46072d0f7265a1fe300e36fe7ceca"
+  integrity sha512-53rsFbGdwMwlF7qvCt0ypLM5V5/Mbl0szB7GPN8y9NCcbknYOeVVXdrXEq+90IwAfrrzt6Hd+u2E2ntakICU8w==
 
 detect-newline@^3.0.0:
   version "3.1.0"

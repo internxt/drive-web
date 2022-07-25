@@ -14,6 +14,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const dispatch = useAppDispatch();
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
   if (user === undefined) throw new Error('User is not defined');
 
@@ -22,7 +23,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const priceButtons = subscription?.type === 'subscription' ? 'change' : 'upgrade';
 
   const [prices, setPrices] = useState<DisplayPrice[] | null>(null);
-  const [interval, setInterval] = useState<'month' | 'year'>('month');
+  const [interval, setInterval] = useState<'month' | 'year'>('year');
 
   useEffect(() => {
     paymentService.getPrices().then(setPrices);
@@ -87,7 +88,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           <IntervalSwitch active={interval === 'year'} text="Annually" onClick={() => setInterval('year')} />
         </div>
       </div>
-      <div className="mt-5 flex gap-x-5">
+      <div className="mt-5 flex flex-col lg:flex-row justify-center gap-y-5 lg:gap-y-0 lg:gap-x-5">
         {pricesFilteredAndSorted?.map((price) => (
           <Price
             key={price.id}
@@ -158,7 +159,7 @@ function Price({
   const displayButtonText = button === 'change' ? 'Change' : button === 'current' ? 'Current plan' : 'Upgrade';
 
   return (
-    <div className={`${className} w-64 rounded-xl border border-gray-10 p-6`}>
+    <div className={`${className} w-full lg:w-64 rounded-xl border border-gray-10 p-6`}>
       <h1 className="text-4xl font-medium text-primary">{bytesToString(bytes)}</h1>
       <div className="mt-5 border-t border-gray-10" />
       <p className="mt-5 text-2xl font-medium text-gray-100">{`${displayAmount(amountMonthly)} €/ month`}</p>

@@ -103,7 +103,6 @@ export enum FileViewMode {
 }
 
 export enum DownloadFolderMethod {
-  Blob = 'blob',
   FileSystemAccessAPI = 'file-system-access-api',
   StreamSaver = 'stream-saver',
 }

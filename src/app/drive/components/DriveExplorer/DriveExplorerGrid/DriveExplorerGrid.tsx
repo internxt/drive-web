@@ -29,10 +29,35 @@ class DriveExplorerGrid extends React.Component<DriveExplorerGridProps> {
     });
   }
 
+  get itemsFileList(): JSX.Element[] {
+    return this.props.items.filter((item) => !item.isFolder).map((item) => {
+      const itemParentId = item.parentId || item.folderId;
+      const itemKey = `'file'-${item.id}-${itemParentId}`;
+
+      return <DriveExplorerGridItem key={itemKey} item={item} />;
+    });
+  }
+
+  get itemsFolderList(): JSX.Element[] {
+    return this.props.items.filter((item) => item.isFolder).map((item) => {
+      const itemParentId = item.parentId || item.folderId;
+      const itemKey = `'folder'-${item.id}-${itemParentId}`;
+
+      return <DriveExplorerGridItem key={itemKey} item={item} />;
+    });
+  }
+
   render(): ReactNode {
     const { isLoading } = this.props;
 
-    return <div className="files-grid flex-grow">{isLoading ? this.loadingSkeleton : this.itemsList}</div>;
+    return <div className="files-grid flex-grow">{isLoading ? (
+      this.loadingSkeleton
+    ) : (
+      <>
+        { this.itemsFolderList}
+        { this.itemsFileList}
+      </>
+    )}</div>;
   }
 }
 

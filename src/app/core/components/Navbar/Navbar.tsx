@@ -101,7 +101,7 @@ class Navbar extends React.Component<NavbarProps> {
         <div className="flex">
           <Link
             to="/preferences"
-            className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:bg-gray-5 active:bg-gray-10"
+            className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:text-gray-80 hover:bg-gray-5 active:bg-gray-10"
           >
             <Gear size={24} />
           </Link>

@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { Desktop, SignOut, UserPlus } from 'phosphor-react';
+import { Desktop, SignOut, UserPlus, Gear } from 'phosphor-react';
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import Avatar from '../../../shared/components/Avatar';
@@ -62,6 +62,13 @@ export default function AccountPopover({
         <Desktop size={20} />
         <p className="ml-3">Download app</p>
       </Item>
+      <Link
+        to="/preferences"
+        className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:text-gray-80 hover:bg-gray-1 active:bg-gray-5 no-underline"
+      >
+        <Gear size={20} />
+        <p className="ml-3">Settings</p>
+      </Link>
       {user && user.sharedWorkspace && (
         <Item onClick={onGuestInviteClick}>
           <UserPlus size={20} />
@@ -81,7 +88,7 @@ export default function AccountPopover({
 function Item({ children, onClick }: { children: ReactNode; onClick: () => void }) {
   return (
     <div
-      className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
+      className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-1 active:bg-gray-5"
       onClick={onClick}
     >
       {children}
