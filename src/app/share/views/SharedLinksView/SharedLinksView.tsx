@@ -1,7 +1,7 @@
 import i18n from 'app/i18n/services/i18n.service';
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Link, ToggleRight, LinkBreak, Terminal } from 'phosphor-react';
+import { Trash, Link, ToggleRight, LinkBreak } from 'phosphor-react';
 import List from 'app/shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
 import { useState, Fragment, useEffect } from 'react';
@@ -15,7 +15,8 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 
 export default function SharedLinksView(): JSX.Element {
-  const perPage = 25;
+  const perPage = 64;
+  const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [optionsDialogIsOpen, setOptionsDialogIsOpen] = useState(false);
@@ -32,7 +33,15 @@ export default function SharedLinksView(): JSX.Element {
 
   const getShareLinks = async () => {
     const links: any = await shareService.getAllShareLinks(page, perPage);
+    setHasMoreItems(perPage * page <= links.pagination.countAll);
     setShareLinks([...shareLinks, ...links.items]);
+  };
+
+  const updateLinkItem = (item) => {
+    const index = shareLinks.findIndex((i) => item.id === i.id);
+    const updatedList = shareLinks;
+    updatedList[index] = item;
+    setShareLinks([...updatedList]);
   };
 
   const nextPage = () => {
@@ -40,14 +49,24 @@ export default function SharedLinksView(): JSX.Element {
     setIsLoading(true);
   };
 
-  const copyShareLink = (token) => {
+  const copyShareLink = async (token) => {
     copy(`${document.location.origin}/s/file/${token}/`);
-    notificationsService.show({ text: i18n.get('shared-links.toast'), type: ToastType.Success });
+    notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
   };
 
   const updateShareLink = async (params: ShareTypes.UpdateShareLinkPayload) => {
     setSavingLinkChanges(true);
-    await shareService.updateShareLink(params).then(() => setSavingLinkChanges(false));
+    await shareService.updateShareLink(params).then((item) => {
+      updateLinkItem(item);
+      setLinkSettingsItem(item);
+      setSavingLinkChanges(false);
+      notificationsService.show({ text: i18n.get('shared-links.toast.link-updated'), type: ToastType.Success });
+    });
+  };
+
+  const deleteShareLink = async (item) => {
+    // await shareService.;
+    notificationsService.show({ text: i18n.get('shared-links.toast.link-deleted'), type: ToastType.Success });
   };
 
   // List header columns
@@ -84,21 +103,31 @@ export default function SharedLinksView(): JSX.Element {
     (props) => {
       const Icon = iconService.getItemIcon(props.isFolder, props.item.type);
       return (
-        <div className="flex w-full flex-row items-center space-x-4 overflow-hidden">
+        <div
+          className={`flex w-full flex-row items-center space-x-4 overflow-hidden ${
+            props.timesValid > 0 && props.views >= props.timesValid && 'opacity-50'
+          }`}
+        >
           <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
           <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">{`${props.item.name}${
-            props.item.type && `.${props.item.type}`
+            !props.isFolder && props.item.type ? `.${props.item.type}` : ''
           }`}</span>
         </div>
       );
     },
     (props, selected) => (
-      <span className={`${selected ? 'text-primary' : 'text-gray-60'}`}>{`${props.views}${
-        props.timesValid > 0 ? `/${props.timesValid}` : ''
-      } views`}</span>
+      <span
+        className={`${selected ? 'text-primary' : 'text-gray-60'} ${
+          props.timesValid > 0 && props.views >= props.timesValid && 'opacity-50'
+        }`}
+      >{`${props.views}${props.timesValid > 0 ? `/${props.timesValid}` : ''} views`}</span>
     ),
     (props, selected) => (
-      <span className={`${selected ? 'text-primary' : 'text-gray-60'}`}>
+      <span
+        className={`${selected ? 'text-primary' : 'text-gray-60'} ${
+          props.timesValid > 0 && props.views >= props.timesValid && 'opacity-50'
+        }`}
+      >
         {dateService.format(props.createdAt, 'D MMM YYYY')}
       </span>
     ),
@@ -139,7 +168,7 @@ export default function SharedLinksView(): JSX.Element {
         copyShareLink(props.token);
       },
       disabled: function (props, selected): boolean {
-        return false; // If item is selected and link is active
+        return props.timesValid > 0 && props.views >= props.timesValid;
       },
     },
     {
@@ -181,11 +210,6 @@ export default function SharedLinksView(): JSX.Element {
 
         {/* Delete selected items */}
         <div className="flex flex-row items-center">
-          <BaseButton className="tertiary space-x-2 whitespace-nowrap px-4" onClick={() => nextPage()}>
-            <Terminal size={24} />
-            <span>Next page</span>
-          </BaseButton>
-
           <BaseButton className="tertiary squared" disabled={!(selectedItems.length > 0)}>
             <Trash size={24} />
           </BaseButton>
@@ -201,7 +225,8 @@ export default function SharedLinksView(): JSX.Element {
           itemComposition={[...itemComposition]}
           skinSkeleton={skinSkeleton}
           emptyState={emptyState}
-          loadingPerPage={perPage}
+          nextPagination={nextPage}
+          hasMoreItems={hasMoreItems}
           menu={itemMenu}
           selectedItems={setSelectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
@@ -264,7 +289,9 @@ export default function SharedLinksView(): JSX.Element {
                     <div className="flex flex-row space-x-3">
                       <BaseCheckbox
                         checked={linkLimitTimes}
-                        onClick={() => setLinkLimitTimes(!linkLimitTimes)}
+                        onClick={() => {
+                          setLinkLimitTimes(!linkLimitTimes);
+                        }}
                         className="mt-1"
                       />
                       <div className={`mb-3 flex flex-col ${!linkLimitTimes && 'pointer-events-none opacity-50'}`}>
@@ -274,10 +301,13 @@ export default function SharedLinksView(): JSX.Element {
                             <div className="mx-1.5 flex h-6 flex-row items-center">
                               <input
                                 type="number"
-                                min={Math.max(linkSettingsItem?.timesValid ?? 1, 1)}
+                                min={Math.max(linkSettingsItem?.timesValid ?? 1, linkSettingsItem?.views)}
                                 max="9999"
                                 step="1"
-                                placeholder={linkSettingsItem?.timesValid}
+                                placeholder={Math.max(
+                                  linkSettingsItem?.timesValid ?? 1,
+                                  linkSettingsItem?.views,
+                                ).toString()}
                                 disabled={!linkLimitTimes}
                                 onChange={(e) => setLinkSettingsTimesValid(parseInt(e.target.value))}
                                 className="outline-none w-14 rounded-md border border-gray-20 py-0 px-2 text-right text-base focus:border-primary focus:ring-3 focus:ring-primary focus:ring-opacity-10"
@@ -299,6 +329,9 @@ export default function SharedLinksView(): JSX.Element {
                   <div className="flex flex-row justify-between">
                     <BaseButton
                       onClick={() => copyShareLink(linkSettingsItem?.token)}
+                      disabled={
+                        linkSettingsItem?.timesValid > 0 && linkSettingsItem?.views >= linkSettingsItem?.timesValid
+                      }
                       className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
                     >
                       <span>{i18n.get('shared-links.link-settings.copy-link')}</span>
@@ -310,7 +343,7 @@ export default function SharedLinksView(): JSX.Element {
                         onClick={() =>
                           updateShareLink({
                             itemId: linkSettingsItem?.id,
-                            timesValid: linkSettingsTimesValid,
+                            timesValid: linkLimitTimes ? linkSettingsTimesValid : -1,
                             active: true,
                           })
                         }

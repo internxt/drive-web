@@ -3,6 +3,7 @@ import SkinSkeletonItem from './SkinSketelonItem';
 import { useEffect, useState } from 'react';
 import { ArrowUp, ArrowDown } from 'phosphor-react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 interface HeaderProps {
   name: string;
@@ -21,7 +22,8 @@ interface ListProps {
   isLoading?: boolean;
   skinSkeleton?: Array<JSX.Element>;
   emptyState?: JSX.Element | (() => JSX.Element);
-  loadingPerPage?: number;
+  nextPagination?: any;
+  hasMoreItems?: boolean;
   menu?: Array<{
     separator?: boolean;
     name?: string;
@@ -43,7 +45,8 @@ export default function List({
   isLoading,
   skinSkeleton,
   emptyState,
-  loadingPerPage,
+  nextPagination,
+  hasMoreItems,
   menu,
   className,
   keyboardShortcuts,
@@ -103,7 +106,7 @@ export default function List({
       document.removeEventListener('keydown', onKeyDownListener);
       document.removeEventListener('keyup', onKeyUpListener);
     };
-  }, [itemList]);
+  }, [itemList, disableKeyboardShortcuts]);
 
   useEffect(() => {
     setItemList(items);
@@ -229,16 +232,22 @@ export default function List({
     }
   };
 
+  const loader = new Array(8)
+    .fill(0)
+    .map((col, i) => (
+      <SkinSkeletonItem
+        key={`skinSkeletonRow${i}`}
+        skinSkeleton={skinSkeleton}
+        columns={header.map((column) => column.width)}
+      />
+    ));
+
   return (
     <>
       {/* TABLE */}
-      <div className={`relative flex h-full flex-col ${className}`}>
+      <div className={`relative flex h-full flex-col overflow-y-hidden ${className}`}>
         {/* HEAD */}
-        <div
-          className={`relative flex h-12 flex-shrink-0 flex-row px-5 ${
-            (isLoading || !(itemList.length > 0)) && 'pointer-events-none'
-          }`}
-        >
+        <div className="relative flex h-12 flex-shrink-0 flex-row px-5">
           {/* COLUMN */}
           <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
             {/* SELECTION CHECKBOX */}
@@ -271,13 +280,20 @@ export default function List({
         </div>
 
         {/* BODY */}
-        <div className={`flex h-full flex-col ${!isLoading && 'overflow-y-auto'}`}>
-          {!isLoading && !(itemList.length > 0) ? (
+        <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
+          {(!hasMoreItems ?? false) && itemList.length === 0 ? (
             <>{emptyState}</>
-          ) : (
+          ) : itemList.length > 0 ? (
             <>
-              {itemList.length > 0 &&
-                itemList.map((item) => (
+              <InfiniteScroll
+                dataLength={itemList.length}
+                next={nextPagination}
+                hasMore={hasMoreItems ?? false}
+                loader={loader}
+                scrollableTarget="scrollableList"
+                className="h-full"
+              >
+                {itemList.map((item) => (
                   <ListItem
                     key={JSON.stringify(item)}
                     item={item}
@@ -290,17 +306,10 @@ export default function List({
                     menu={menu}
                   />
                 ))}
-              {isLoading &&
-                new Array(loadingPerPage ?? 8)
-                  .fill(0)
-                  .map((col, i) => (
-                    <SkinSkeletonItem
-                      key={i}
-                      skinSkeleton={skinSkeleton}
-                      columns={header.map((column) => column.width)}
-                    />
-                  ))}
+              </InfiniteScroll>
             </>
+          ) : (
+            <>{loader}</>
           )}
 
           {/* Click outside of the list to unselect all items */}

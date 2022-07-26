@@ -13,7 +13,7 @@ const BaseButton = ({ className, children, disabled, isLoading, onClick }: Butto
     <button
       className={`base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out ${
         className || ''
-      }`}
+      } ${isLoading && 'cursor-not-allowed'}`}
       disabled={disabled}
       onClick={onClick}
     >

@@ -84,14 +84,14 @@ export default function ListItem({
                     </div>
                   ) : (
                     <Menu.Item disabled={option.disabled?.(item, selected)}>
-                      {({ active }) => (
+                      {({ active, disabled }) => (
                         <div
                           onClick={() => option.action?.(item)}
                           className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
                             active
                               ? 'bg-primary text-white'
-                              : option.disabled?.(item, selected)
-                              ? 'text-gray-40'
+                              : disabled
+                              ? 'pointer-events-none text-gray-40'
                               : 'text-gray-60'
                           }`}
                         >
