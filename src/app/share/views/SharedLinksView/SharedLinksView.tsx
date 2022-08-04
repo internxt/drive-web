@@ -13,6 +13,7 @@ import shareService from 'app/share/services/share.service';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
+import _ from 'lodash';
 
 export default function SharedLinksView(): JSX.Element {
   const perPage = 64;
@@ -68,8 +69,19 @@ export default function SharedLinksView(): JSX.Element {
     await shareService.deleteShareLink(shareId);
     setShareLinks((items) => items.filter((item) => item.id !== shareId));
     setSelectedItems((items) => items.filter((item) => item.id !== shareId));
-    notificationsService.show({ text: i18n.get('shared-links.toast.link-deleted'), type: ToastType.Success });
   };
+
+  async function deleteSelectedItems() {
+    const CHUNK_SIZE = 10;
+
+    const chunks = _.chunk(selectedItems, CHUNK_SIZE);
+    for (const chunk of chunks) {
+      const promises = chunk.map((item) => deleteShareLink(item.id));
+      await Promise.all(promises);
+    }
+
+    notificationsService.show({ text: i18n.get('shared-links.toast.links-deleted'), type: ToastType.Success });
+  }
 
   // List header columns
   const header = [
@@ -186,8 +198,9 @@ export default function SharedLinksView(): JSX.Element {
     {
       name: i18n.get('shared-links.item-menu.delete-link'),
       icon: LinkBreak,
-      action: function (props) {
-        deleteShareLink(props.id);
+      action: async function (props) {
+        await deleteShareLink(props.id);
+        notificationsService.show({ text: i18n.get('shared-links.toast.link-deleted'), type: ToastType.Success });
       },
       disabled: function (props, selected): boolean {
         return false; // If item is selected and link is active
@@ -212,7 +225,7 @@ export default function SharedLinksView(): JSX.Element {
 
         {/* Delete selected items */}
         <div className="flex flex-row items-center">
-          <BaseButton className="tertiary squared" disabled={!(selectedItems.length > 0)}>
+          <BaseButton onClick={deleteSelectedItems} className="tertiary squared" disabled={!(selectedItems.length > 0)}>
             <Trash size={24} />
           </BaseButton>
         </div>
