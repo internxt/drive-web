@@ -84,6 +84,12 @@ export function getAllShareLinks(page: number, perPage: number): Promise<Array<P
   });
 }
 
+export function deleteShareLink(shareId: string): Promise<{ shareId: string; deleted: boolean }> {
+  const shareClient = SdkFactory.getInstance().createShareClient();
+
+  return shareClient.deleteShareLink(shareId);
+}
+
 const shareService = {
   generateShareLink,
   updateShareLink,
@@ -91,6 +97,7 @@ const shareService = {
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
   getAllShareLinks,
+  deleteShareLink,
 };
 
 export default shareService;

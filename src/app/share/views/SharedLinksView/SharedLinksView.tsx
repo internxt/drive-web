@@ -23,8 +23,8 @@ export default function SharedLinksView(): JSX.Element {
   const [linkLimitTimes, setLinkLimitTimes] = useState(false);
   const [linkSettingsItem, setLinkSettingsItem] = useState<any>(null);
   const [linkSettingsTimesValid, setLinkSettingsTimesValid] = useState<number>(0);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [shareLinks, setShareLinks] = useState<any>([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [shareLinks, setShareLinks] = useState<any[]>([]);
   const [savingLinkChanges, setSavingLinkChanges] = useState<boolean>(false);
 
   useEffect(() => {
@@ -64,8 +64,10 @@ export default function SharedLinksView(): JSX.Element {
     });
   };
 
-  const deleteShareLink = async (item) => {
-    // await shareService.;
+  const deleteShareLink = async (shareId: string) => {
+    await shareService.deleteShareLink(shareId);
+    setShareLinks((items) => items.filter((item) => item.id !== shareId));
+    setSelectedItems((items) => items.filter((item) => item.id !== shareId));
     notificationsService.show({ text: i18n.get('shared-links.toast.link-deleted'), type: ToastType.Success });
   };
 
@@ -185,7 +187,7 @@ export default function SharedLinksView(): JSX.Element {
       name: i18n.get('shared-links.item-menu.delete-link'),
       icon: LinkBreak,
       action: function (props) {
-        alert('This action should delete link');
+        deleteShareLink(props.id);
       },
       disabled: function (props, selected): boolean {
         return false; // If item is selected and link is active
