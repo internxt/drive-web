@@ -16,14 +16,17 @@ export default function CurrentPlan({
   button?: 'change' | 'upgrade';
   onButtonClick?: () => void;
 }): JSX.Element {
+  const showInfinite = bytesInPlan >= 108851651149824;
   return (
     <div className={`${className} flex items-center justify-between`}>
       <div className="flex items-center">
         <div
           style={{ height: '34px' }}
-          className="flex items-center rounded-lg border border-primary bg-primary bg-opacity-5 px-3 text-lg font-semibold text-primary"
+          className={`flex items-center rounded-lg border border-primary bg-primary bg-opacity-5 px-3 ${
+            showInfinite ? 'text-4xl' : 'text-lg'
+          } font-semibold text-primary`}
         >
-          {bytesToString(bytesInPlan)}
+          {showInfinite ? '∞' : bytesToString(bytesInPlan)}
         </div>
         <div className="ml-3">
           <h1 className="text-lg font-medium text-gray-80">{planName}</h1>
