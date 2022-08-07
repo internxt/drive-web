@@ -77,9 +77,13 @@ export function getSharedDirectoryFiles(
   });
 }
 
-export function getAllShareLinks(page: number, perPage: number): Promise<Array<Partial<ShareTypes.ShareLink>> | []> {
+export function getAllShareLinks(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+) {
   const shareClient = SdkFactory.getInstance().createShareClient();
-  return shareClient.getShareLinks(page, perPage).catch((error) => {
+  return shareClient.getShareLinks(page, perPage, orderBy).catch((error) => {
     throw errorService.castError(error);
   });
 }

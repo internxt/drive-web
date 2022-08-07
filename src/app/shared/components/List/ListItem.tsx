@@ -2,42 +2,40 @@ import { Menu } from '@headlessui/react';
 import { DotsThree } from 'phosphor-react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 
-interface ItemProps {
-  item: Record<string, unknown>;
-  itemComposition: Array<(props: Record<string, unknown>, active: boolean) => JSX.Element>;
+export type ListItemMenu<T> = Array<{
+  separator?: boolean;
+  name: string;
+  icon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
+  action: (target: T) => void;
+  disabled?: (target: T) => boolean;
+}>;
+interface ItemProps<T> {
+  item: T;
+  itemComposition: Array<(props: T) => JSX.Element>;
   selected: boolean;
-  columns: Array<string>;
-  toggleSelectItem: () => void;
-  selectItem: () => void;
-  onDoubleClick?: (props?: any) => any;
-  menu?: Array<{
-    separator?: boolean;
-    name?: string;
-    icon?: any;
-    action?: (props: any) => void;
-    disabled?: (props: any, selected: any) => boolean;
-  }>;
+  columnsWidth: Array<string>;
+  onSelectedChanged: (value: boolean) => void;
+  onDoubleClick?: () => void;
+  menu?: ListItemMenu<T>;
 }
 
-export default function ListItem({
+export default function ListItem<T extends { id: string }>({
   item,
   itemComposition,
   selected,
-  columns,
-  toggleSelectItem,
-  selectItem,
+  columnsWidth,
+  onSelectedChanged,
   onDoubleClick,
   menu,
-}: ItemProps): JSX.Element {
+}: ItemProps<T>): JSX.Element {
   return (
     <div
-      onClick={toggleSelectItem}
-      onDoubleClick={() => onDoubleClick?.(item)}
+      onClick={() => onSelectedChanged(!selected)}
+      onDoubleClick={onDoubleClick}
       className={`group relative flex h-14 flex-row items-center pl-14 pr-5 ${
         selected ? 'bg-primary bg-opacity-10 text-primary' : 'focus-within:bg-gray-1 hover:bg-gray-1'
       }`}
     >
-      {/* SELECTION CHECKBOX */}
       <div
         className={`absolute left-5 top-0 flex h-full w-0 flex-row items-center justify-start p-0 opacity-0 focus-within:opacity-100 group-hover:opacity-100 ${
           selected && 'opacity-100'
@@ -45,15 +43,14 @@ export default function ListItem({
       >
         <BaseCheckbox checked={selected} />
       </div>
-      {/* COLUMNS */}
       {new Array(itemComposition.length).fill(0).map((col, i) => (
         <div
-          key={`${JSON.stringify(item)}-${col}-${i}`}
+          key={i}
           className={`relative flex h-full flex-shrink-0 flex-row items-center border-b ${
             selected ? 'border-primary border-opacity-5' : 'border-gray-5'
-          } ${columns[i]}`}
+          } ${columnsWidth[i]}`}
         >
-          {itemComposition[i](item, selected)}
+          {itemComposition[i](item)}
         </div>
       ))}
       <div
@@ -61,7 +58,7 @@ export default function ListItem({
           selected ? 'border-primary border-opacity-5' : 'border-gray-5'
         }`}
       >
-        <Menu as="div" className="relative" onMouseDown={() => selectItem}>
+        <Menu as="div" className="relative">
           <Menu.Button
             className={`focus-within:outline-primary flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
               selected ? 'text-primary hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'
@@ -83,7 +80,7 @@ export default function ListItem({
                       <div className="h-px w-full bg-gray-10" />
                     </div>
                   ) : (
-                    <Menu.Item disabled={option.disabled?.(item, selected)}>
+                    <Menu.Item disabled={option.disabled?.(item)}>
                       {({ active, disabled }) => (
                         <div
                           onClick={() => option.action?.(item)}

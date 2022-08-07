@@ -14,62 +14,92 @@ import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox'
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import _ from 'lodash';
+import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
+import { DriveFileData } from '../../../drive/types';
+
+type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
 export default function SharedLinksView(): JSX.Element {
-  const perPage = 64;
+  const ITEMS_PER_PAGE = 64;
+
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(0);
+  const [orderBy, setOrderBy] = useState<OrderBy>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [optionsDialogIsOpen, setOptionsDialogIsOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<ListShareLinksItem[]>([]);
+  const [shareLinks, setShareLinks] = useState<ListShareLinksItem[]>([]);
+
+  const [savingLinkChanges, setSavingLinkChanges] = useState<boolean>(false);
   const [linkLimitTimes, setLinkLimitTimes] = useState(false);
   const [linkSettingsItem, setLinkSettingsItem] = useState<any>(null);
   const [linkSettingsTimesValid, setLinkSettingsTimesValid] = useState<number>(0);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
-  const [shareLinks, setShareLinks] = useState<any[]>([]);
-  const [savingLinkChanges, setSavingLinkChanges] = useState<boolean>(false);
+
+  function isItemSelected(item: ListShareLinksItem) {
+    return selectedItems.some((i) => item.id === i.id);
+  }
+
+  function isItemExpired(item: ListShareLinksItem) {
+    return item.timesValid !== null && item.views >= item.timesValid;
+  }
 
   useEffect(() => {
-    getShareLinks().then(() => setIsLoading(false));
-  }, [page]);
+    fetchItems(page, orderBy, 'append');
+  }, []);
 
-  const getShareLinks = async () => {
-    const links: any = await shareService.getAllShareLinks(page, perPage);
-    setHasMoreItems(perPage * page <= links.pagination.countAll);
-    setShareLinks([...shareLinks, ...links.items]);
-  };
+  async function fetchItems(page: number, orderBy: OrderBy, type: 'append' | 'substitute') {
+    setIsLoading(true);
 
-  const updateLinkItem = (item) => {
+    const response = await shareService.getAllShareLinks(
+      page,
+      ITEMS_PER_PAGE,
+      orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+    );
+    setHasMoreItems(ITEMS_PER_PAGE * page < response.pagination.countAll);
+    setOrderBy(orderBy);
+    setIsLoading(false);
+    setPage(page);
+    if (type == 'append') {
+      setShareLinks([...shareLinks, ...response.items]);
+    } else {
+      setShareLinks(response.items);
+    }
+  }
+
+  function updateLinkItem(item: ListShareLinksItem) {
     const index = shareLinks.findIndex((i) => item.id === i.id);
     const updatedList = shareLinks;
     updatedList[index] = item;
-    setShareLinks([...updatedList]);
-  };
+    setShareLinks(updatedList);
+  }
 
-  const nextPage = () => {
-    setPage(page + 1);
-    setIsLoading(true);
-  };
+  function onNextPage() {
+    fetchItems(page + 1, orderBy, 'append');
+  }
 
-  const copyShareLink = async (token) => {
+  function onOrderByChanged(newOrderBy: OrderBy) {
+    fetchItems(0, newOrderBy, 'substitute');
+  }
+
+  function copyShareLink(token: string) {
     copy(`${document.location.origin}/s/file/${token}/`);
     notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
-  };
+  }
 
-  const updateShareLink = async (params: ShareTypes.UpdateShareLinkPayload) => {
+  async function updateShareLink(params: ShareTypes.UpdateShareLinkPayload) {
     setSavingLinkChanges(true);
-    await shareService.updateShareLink(params).then((item) => {
-      updateLinkItem(item);
-      setLinkSettingsItem(item);
-      setSavingLinkChanges(false);
-      notificationsService.show({ text: i18n.get('shared-links.toast.link-updated'), type: ToastType.Success });
-    });
-  };
+    const updatedItem = await shareService.updateShareLink(params);
+    updateLinkItem(updatedItem);
+    setLinkSettingsItem(updatedItem);
+    setSavingLinkChanges(false);
+    notificationsService.show({ text: i18n.get('shared-links.toast.link-updated'), type: ToastType.Success });
+  }
 
-  const deleteShareLink = async (shareId: string) => {
+  async function deleteShareLink(shareId: string) {
     await shareService.deleteShareLink(shareId);
     setShareLinks((items) => items.filter((item) => item.id !== shareId));
     setSelectedItems((items) => items.filter((item) => item.id !== shareId));
-  };
+  }
 
   async function deleteSelectedItems() {
     const CHUNK_SIZE = 10;
@@ -83,71 +113,19 @@ export default function SharedLinksView(): JSX.Element {
     notificationsService.show({ text: i18n.get('shared-links.toast.links-deleted'), type: ToastType.Success });
   }
 
-  // List header columns
-  const header = [
-    {
-      name: i18n.get('shared-links.list.link-content'),
-      width: 'flex-1 min-w-104',
-      data: 'item.name',
-      order: function (a, b) {
-        return a.name > b.name ? 1 : -1;
-      },
-    },
-    {
-      name: i18n.get('shared-links.list.shared'),
-      width: 'w-52',
-      data: 'views',
-      order: function (a, b) {
-        return a.views > b.views ? 1 : -1;
-      },
-    },
-    {
-      name: i18n.get('shared-links.list.created'),
-      width: 'w-40',
-      data: 'createdAt',
-      order: function (a, b) {
-        return new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1;
-      },
-      defaultDirection: 'asc',
-    },
-  ];
+  function onSelectedItemsChanged(changes: { props: ListShareLinksItem; value: boolean }[]) {
+    let updatedSelectedItems = selectedItems;
 
-  // Composition of the item (content per item column)
-  const itemComposition = [
-    (props) => {
-      const Icon = iconService.getItemIcon(props.isFolder, props.item.type);
-      return (
-        <div
-          className={`flex w-full flex-row items-center space-x-4 overflow-hidden ${
-            props.timesValid > 0 && props.views >= props.timesValid && 'opacity-50'
-          }`}
-        >
-          <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
-          <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">{`${props.item.name}${
-            !props.isFolder && props.item.type ? `.${props.item.type}` : ''
-          }`}</span>
-        </div>
-      );
-    },
-    (props, selected) => (
-      <span
-        className={`${selected ? 'text-primary' : 'text-gray-60'} ${
-          props.timesValid > 0 && props.views >= props.timesValid && 'opacity-50'
-        }`}
-      >{`${props.views}${props.timesValid > 0 ? `/${props.timesValid}` : ''} views`}</span>
-    ),
-    (props, selected) => (
-      <span
-        className={`${selected ? 'text-primary' : 'text-gray-60'} ${
-          props.timesValid > 0 && props.views >= props.timesValid && 'opacity-50'
-        }`}
-      >
-        {dateService.format(props.createdAt, 'D MMM YYYY')}
-      </span>
-    ),
-  ];
+    for (const change of changes) {
+      updatedSelectedItems = updatedSelectedItems.filter((item) => item.id !== change.props.id);
+      if (change.value) {
+        updatedSelectedItems = [...updatedSelectedItems, change.props];
+      }
+    }
 
-  // Skin skeleton when loading
+    setSelectedItems(updatedSelectedItems);
+  }
+
   const skinSkeleton = [
     <div className="flex flex-row items-center space-x-4">
       <div className="h-8 w-8 rounded-md bg-gray-5" />
@@ -157,7 +135,6 @@ export default function SharedLinksView(): JSX.Element {
     <div className="h-4 w-24 rounded bg-gray-5" />,
   ];
 
-  // Empty state
   const emptyState = (
     <Empty
       icon={
@@ -173,42 +150,6 @@ export default function SharedLinksView(): JSX.Element {
     />
   );
 
-  // Item dropdown menu
-  const itemMenu = [
-    {
-      name: i18n.get('shared-links.item-menu.copy-link'),
-      icon: Link,
-      action: function (props) {
-        copyShareLink(props.token);
-      },
-      disabled: function (props, selected): boolean {
-        return props.timesValid > 0 && props.views >= props.timesValid;
-      },
-    },
-    {
-      name: i18n.get('shared-links.item-menu.link-settings'),
-      icon: ToggleRight,
-      action: function (props) {
-        openLinkSettings(props);
-      },
-      disabled: function (props, selected): boolean {
-        return false; // If item is selected and link is active
-      },
-    },
-    {
-      name: i18n.get('shared-links.item-menu.delete-link'),
-      icon: LinkBreak,
-      action: async function (props) {
-        await deleteShareLink(props.id);
-        notificationsService.show({ text: i18n.get('shared-links.toast.link-deleted'), type: ToastType.Success });
-      },
-      disabled: function (props, selected): boolean {
-        return false; // If item is selected and link is active
-      },
-    },
-  ];
-
-  // item dropdown custom funtions
   const openLinkSettings = (props) => {
     setLinkSettingsItem(props);
     setLinkLimitTimes(props.timesValid && props.timesValid > 0);
@@ -217,13 +158,11 @@ export default function SharedLinksView(): JSX.Element {
 
   return (
     <div className="flex w-full flex-shrink-0 flex-col">
-      {/* Top action bar */}
       <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <p className="text-lg">{i18n.get('shared-links.shared-links')}</p>
         </div>
 
-        {/* Delete selected items */}
         <div className="flex flex-row items-center">
           <BaseButton onClick={deleteSelectedItems} className="tertiary squared" disabled={!(selectedItems.length > 0)}>
             <Trash size={24} />
@@ -231,21 +170,113 @@ export default function SharedLinksView(): JSX.Element {
         </div>
       </div>
 
-      {/* Link list */}
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List
-          header={header}
+        <List<ListShareLinksItem, 'views' | 'createdAt'>
+          header={[
+            {
+              label: i18n.get('shared-links.list.link-content'),
+              width: 'flex-1 min-w-104',
+              name: 'item',
+              orderable: false,
+            },
+            {
+              label: i18n.get('shared-links.list.shared'),
+              width: 'w-52',
+              name: 'views',
+              orderable: true,
+              defaultDirection: 'ASC',
+            },
+            {
+              label: i18n.get('shared-links.list.created'),
+              width: 'w-40',
+              name: 'createdAt',
+              orderable: true,
+              defaultDirection: 'ASC',
+            },
+          ]}
           items={shareLinks}
           isLoading={isLoading}
-          itemComposition={[...itemComposition]}
+          itemComposition={[
+            (props) => {
+              const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
+              return (
+                <div
+                  className={`flex w-full flex-row items-center space-x-4 overflow-hidden ${
+                    isItemExpired(props) && 'opacity-50'
+                  }`}
+                >
+                  <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
+                  <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">{`${
+                    (props.item as DriveFileData).name
+                  }${
+                    !props.isFolder && (props.item as DriveFileData).type
+                      ? `.${(props.item as DriveFileData).type}`
+                      : ''
+                  }`}</span>
+                </div>
+              );
+            },
+            (props) => (
+              <span
+                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'} ${
+                  isItemExpired(props) && 'opacity-50'
+                }`}
+              >{`${props.views}${props.timesValid !== null ? `/${props.timesValid}` : ''} views`}</span>
+            ),
+            (props) => (
+              <span
+                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'} ${
+                  isItemExpired(props) && 'opacity-50'
+                }`}
+              >
+                {dateService.format(props.createdAt, 'D MMM YYYY')}
+              </span>
+            ),
+          ]}
           skinSkeleton={skinSkeleton}
           emptyState={emptyState}
-          nextPagination={nextPage}
+          onNextPage={onNextPage}
           hasMoreItems={hasMoreItems}
-          menu={itemMenu}
-          selectedItems={setSelectedItems}
+          menu={[
+            {
+              name: i18n.get('shared-links.item-menu.copy-link'),
+              icon: Link,
+              action: (props) => {
+                copyShareLink(props.token);
+              },
+              disabled: (props) => {
+                return props.timesValid !== null && props.views >= props.timesValid;
+              },
+            },
+            {
+              name: i18n.get('shared-links.item-menu.link-settings'),
+              icon: ToggleRight,
+              action: openLinkSettings,
+              disabled: (props) => {
+                return false; // If item is selected and link is active
+              },
+            },
+            {
+              name: i18n.get('shared-links.item-menu.delete-link'),
+              icon: LinkBreak,
+              action: async (props) => {
+                await deleteShareLink(props.id);
+                notificationsService.show({
+                  text: i18n.get('shared-links.toast.link-deleted'),
+                  type: ToastType.Success,
+                });
+              },
+              disabled: (props) => {
+                return false; // If item is selected and link is active
+              },
+            },
+          ]}
+          selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           disableKeyboardShortcuts={optionsDialogIsOpen}
+          onOrderByChanged={onOrderByChanged}
+          orderBy={orderBy}
+          onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>
 

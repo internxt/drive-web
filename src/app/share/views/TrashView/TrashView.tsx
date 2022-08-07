@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
+
 import i18n from 'app/i18n/services/i18n.service';
 import dateService from '../../../core/services/date.service';
 import BaseButton from '../../../shared/components/forms/BaseButton';
