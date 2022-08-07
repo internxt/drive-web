@@ -117,7 +117,9 @@ export default function List<T extends { id: string }, F extends keyof T>({
               <div
                 onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
                 key={column.name.toString()}
-                className={`flex h-full flex-shrink-0 cursor-pointer flex-row items-center space-x-1.5 text-base font-medium text-gray-60 hover:text-gray-80 ${column.width}`}
+                className={`flex h-full flex-shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
+                  column.width
+                } ${column.orderable ? 'cursor-pointer hover:text-gray-80' : ''}`}
               >
                 <span>{column.label}</span>
                 {column.name === orderBy?.field &&
