@@ -40,7 +40,7 @@ export default function SharedLinksView(): JSX.Element {
   }
 
   function isItemExpired(item: ListShareLinksItem) {
-    return item.timesValid !== null && item.views >= item.timesValid;
+    return item.timesValid !== -1 && item.views >= item.timesValid;
   }
 
   useEffect(() => {
@@ -221,7 +221,7 @@ export default function SharedLinksView(): JSX.Element {
                 className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'} ${
                   isItemExpired(props) && 'opacity-50'
                 }`}
-              >{`${props.views}${props.timesValid !== null ? `/${props.timesValid}` : ''} views`}</span>
+              >{`${props.views}${props.timesValid !== -1 ? `/${props.timesValid}` : ''} views`}</span>
             ),
             (props) => (
               <span
