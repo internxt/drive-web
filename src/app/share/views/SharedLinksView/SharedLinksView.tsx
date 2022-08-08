@@ -4,6 +4,7 @@ import BaseButton from 'app/shared/components/forms/BaseButton';
 import { Trash, Link, ToggleRight, LinkBreak } from 'phosphor-react';
 import List from 'app/shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
+import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, Fragment, useEffect } from 'react';
 import iconService from 'app/drive/services/icon.service';
 import copy from 'copy-to-clipboard';
@@ -34,6 +35,13 @@ export default function SharedLinksView(): JSX.Element {
   const [linkLimitTimes, setLinkLimitTimes] = useState(false);
   const [linkSettingsItem, setLinkSettingsItem] = useState<any>(null);
   const [linkSettingsTimesValid, setLinkSettingsTimesValid] = useState<number>(0);
+
+  const [confirmDeleteState, setConfirmDeleteState] = useState<
+    { tag: 'single'; shareId: string } | { tag: 'multiple' } | { tag: 'closed' }
+  >({ tag: 'closed' });
+  function closeConfirmDelete() {
+    setConfirmDeleteState({ tag: 'closed' });
+  }
 
   function isItemSelected(item: ListShareLinksItem) {
     return selectedItems.some((i) => item.id === i.id);
@@ -101,7 +109,16 @@ export default function SharedLinksView(): JSX.Element {
     setSelectedItems((items) => items.filter((item) => item.id !== shareId));
   }
 
-  async function deleteSelectedItems() {
+  async function onDeleteShareLink(shareId: string) {
+    await deleteShareLink(shareId);
+    notificationsService.show({
+      text: i18n.get('shared-links.toast.link-deleted'),
+      type: ToastType.Success,
+    });
+    setConfirmDeleteState({ tag: 'closed' });
+  }
+
+  async function onDeleteSelectedItems() {
     const CHUNK_SIZE = 10;
 
     const chunks = _.chunk(selectedItems, CHUNK_SIZE);
@@ -111,6 +128,7 @@ export default function SharedLinksView(): JSX.Element {
     }
 
     notificationsService.show({ text: i18n.get('shared-links.toast.links-deleted'), type: ToastType.Success });
+    setConfirmDeleteState({ tag: 'closed' });
   }
 
   function onSelectedItemsChanged(changes: { props: ListShareLinksItem; value: boolean }[]) {
@@ -164,7 +182,11 @@ export default function SharedLinksView(): JSX.Element {
         </div>
 
         <div className="flex flex-row items-center">
-          <BaseButton onClick={deleteSelectedItems} className="tertiary squared" disabled={!(selectedItems.length > 0)}>
+          <BaseButton
+            onClick={() => setConfirmDeleteState({ tag: 'multiple' })}
+            className="tertiary squared"
+            disabled={!(selectedItems.length > 0)}
+          >
             <Trash size={24} />
           </BaseButton>
         </div>
@@ -260,11 +282,7 @@ export default function SharedLinksView(): JSX.Element {
               name: i18n.get('shared-links.item-menu.delete-link'),
               icon: LinkBreak,
               action: async (props) => {
-                await deleteShareLink(props.id);
-                notificationsService.show({
-                  text: i18n.get('shared-links.toast.link-deleted'),
-                  type: ToastType.Success,
-                });
+                setConfirmDeleteState({ tag: 'single', shareId: props.id });
               },
               disabled: (props) => {
                 return false; // If item is selected and link is active
@@ -280,6 +298,25 @@ export default function SharedLinksView(): JSX.Element {
         />
       </div>
 
+      <DeleteDialog
+        isOpen={confirmDeleteState.tag !== 'closed'}
+        onClose={closeConfirmDelete}
+        onSecondaryAction={closeConfirmDelete}
+        secondaryAction="Cancel"
+        title={confirmDeleteState.tag === 'single' ? 'Delete link' : 'Delete links'}
+        subtitle={
+          confirmDeleteState.tag === 'single'
+            ? 'Users with the link will lose access to the shared content'
+            : 'Users with the links will lose access to the shared content'
+        }
+        onPrimaryAction={
+          confirmDeleteState.tag === 'single'
+            ? () => onDeleteShareLink(confirmDeleteState.shareId)
+            : onDeleteSelectedItems
+        }
+        primaryAction={confirmDeleteState.tag === 'single' ? 'Delete link' : 'Delete links'}
+        primaryActionColor="danger"
+      />
       {/* Dialogs */}
       <Transition appear show={optionsDialogIsOpen} as={Fragment}>
         <Dialog
