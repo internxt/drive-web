@@ -1,10 +1,11 @@
 import ListItem, { ListItemMenu } from './ListItem';
 import SkinSkeletonItem from './SkinSketelonItem';
-import { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { ArrowUp, ArrowDown } from 'phosphor-react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import _ from 'lodash';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 type HeaderProps<T, F> = {
   label: string;
@@ -69,6 +70,11 @@ export default function List<T extends { id: string }, F extends keyof T>({
     onSelectedItemsChanged(changesToMake);
   }
 
+  function unselectAllItemsAndSelectOne(props: T) {
+    const changesToMake = [...selectedItems.map((item) => ({ props: item, value: false })), { props, value: true }];
+    onSelectedItemsChanged(changesToMake);
+  }
+
   function selectAllItems() {
     const notSelectedItems = _.difference(items, selectedItems);
     const changesToMake = notSelectedItems.map((item) => ({ props: item, value: true }));
@@ -96,82 +102,110 @@ export default function List<T extends { id: string }, F extends keyof T>({
     }
   }
 
+  useHotkeys(
+    'ctrl+a, cmd+a',
+    (e) => {
+      e.preventDefault();
+      selectAllItems();
+    },
+    [items, selectedItems],
+  );
+
+  useHotkeys('esc', unselectAllItems, [selectedItems]);
+
+  function onItemClick(props: T, e: React.MouseEvent<HTMLDivElement>) {
+    if (e.metaKey || e.ctrlKey) {
+      onSelectedItemsChanged([{ props, value: !isItemSelected(props) }]);
+    } else {
+      unselectAllItemsAndSelectOne(props);
+    }
+  }
+
+  useEffect(() => {
+    const cb = (e: MouseEvent) => {
+      if (!(e.target as Element | null)?.closest('#generic-list-component')) {
+        unselectAllItems();
+      }
+    };
+    document.addEventListener('click', cb);
+
+    return () => document.removeEventListener('click', cb);
+  }, [selectedItems]);
+
   return (
-    <>
-      {/* TABLE */}
-      <div className={`relative flex h-full flex-col overflow-y-hidden ${className}`}>
-        {/* HEAD */}
-        <div className="relative flex h-12 flex-shrink-0 flex-row px-5">
-          {/* COLUMN */}
-          <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
-            {/* SELECTION CHECKBOX */}
-            <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
-              <BaseCheckbox
-                checked={selectedItems.length > 0}
-                indeterminate={items.length > selectedItems.length && selectedItems.length > 0}
-                onClick={onTopSelectionCheckboxClick}
-              />
-            </div>
-
-            {header.map((column) => (
-              <div
-                onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
-                key={column.name.toString()}
-                className={`flex h-full flex-shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
-                  column.width
-                } ${column.orderable ? 'cursor-pointer hover:text-gray-80' : ''}`}
-              >
-                <span>{column.label}</span>
-                {column.name === orderBy?.field &&
-                  (orderBy?.direction === 'ASC' ? (
-                    <ArrowUp size={14} weight="bold" />
-                  ) : (
-                    <ArrowDown size={14} weight="bold" />
-                  ))}
-              </div>
-            ))}
-
-            {menu && <div className="flex h-full w-12 flex-shrink-0" />}
+    <div id="generic-list-component" className={`relative flex h-full flex-col overflow-y-hidden ${className}`}>
+      {/* HEAD */}
+      <div className="relative flex h-12 flex-shrink-0 flex-row px-5">
+        {/* COLUMN */}
+        <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
+          {/* SELECTION CHECKBOX */}
+          <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
+            <BaseCheckbox
+              checked={selectedItems.length > 0}
+              indeterminate={items.length > selectedItems.length && selectedItems.length > 0}
+              onClick={onTopSelectionCheckboxClick}
+            />
           </div>
-        </div>
 
-        {/* BODY */}
-        <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
-          {(!hasMoreItems ?? false) && items.length === 0 ? (
-            emptyState
-          ) : items.length > 0 ? (
-            <>
-              <InfiniteScroll
-                dataLength={items.length}
-                next={onNextPage}
-                hasMore={hasMoreItems ?? false}
-                loader={loader}
-                scrollableTarget="scrollableList"
-                className="h-full"
-                style={{ overflow: 'visible' }}
-              >
-                {items.map((item) => (
-                  <ListItem<T>
-                    key={item.id}
-                    item={item}
-                    itemComposition={itemComposition}
-                    selected={isItemSelected(item)}
-                    onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
-                    columnsWidth={header.map((column) => column.width)}
-                    menu={menu}
-                    onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
-                  />
+          {header.map((column) => (
+            <div
+              onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
+              key={column.name.toString()}
+              className={`flex h-full flex-shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
+                column.width
+              } ${column.orderable ? 'cursor-pointer hover:text-gray-80' : ''}`}
+            >
+              <span>{column.label}</span>
+              {column.name === orderBy?.field &&
+                (orderBy?.direction === 'ASC' ? (
+                  <ArrowUp size={14} weight="bold" />
+                ) : (
+                  <ArrowDown size={14} weight="bold" />
                 ))}
-              </InfiniteScroll>
-            </>
-          ) : (
-            <>{loader}</>
-          )}
+            </div>
+          ))}
 
-          {/* Click outside of the list to unselect all items */}
-          {items.length > 0 && <div className="h-full w-full py-6" onClick={unselectAllItems} />}
+          {menu && <div className="flex h-full w-12 flex-shrink-0" />}
         </div>
       </div>
-    </>
+
+      {/* BODY */}
+      <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
+        {(!hasMoreItems ?? false) && items.length === 0 ? (
+          emptyState
+        ) : items.length > 0 ? (
+          <>
+            <InfiniteScroll
+              dataLength={items.length}
+              next={onNextPage}
+              hasMore={hasMoreItems ?? false}
+              loader={loader}
+              scrollableTarget="scrollableList"
+              className="h-full"
+              style={{ overflow: 'visible' }}
+            >
+              {items.map((item) => (
+                <ListItem<T>
+                  key={item.id}
+                  item={item}
+                  itemComposition={itemComposition}
+                  selected={isItemSelected(item)}
+                  onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
+                  onClick={(e) => onItemClick(item, e)}
+                  columnsWidth={header.map((column) => column.width)}
+                  menu={menu}
+                  onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
+                />
+              ))}
+            </InfiniteScroll>
+          </>
+        ) : (
+          <>{loader}</>
+        )}
+
+        {/* Click outside of the list to unselect all items */}
+        {items.length > 0 && <div className="h-full w-full py-6" onClick={unselectAllItems} />}
+      </div>
+    </div>
   );
 }

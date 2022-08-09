@@ -16,6 +16,7 @@ interface ItemProps<T> {
   columnsWidth: Array<string>;
   onSelectedChanged: (value: boolean) => void;
   onDoubleClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   menu?: ListItemMenu<T>;
 }
 
@@ -26,12 +27,13 @@ export default function ListItem<T extends { id: string }>({
   columnsWidth,
   onSelectedChanged,
   onDoubleClick,
+  onClick,
   menu,
 }: ItemProps<T>): JSX.Element {
   return (
     <div
-      onClick={() => onSelectedChanged(!selected)}
       onDoubleClick={onDoubleClick}
+      onClick={onClick}
       className={`group relative flex h-14 flex-row items-center pl-14 pr-5 ${
         selected ? 'bg-primary bg-opacity-10 text-primary' : 'focus-within:bg-gray-1 hover:bg-gray-1'
       }`}
@@ -41,7 +43,13 @@ export default function ListItem<T extends { id: string }>({
           selected && 'opacity-100'
         }`}
       >
-        <BaseCheckbox checked={selected} />
+        <BaseCheckbox
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectedChanged(!selected);
+          }}
+          checked={selected}
+        />
       </div>
       {new Array(itemComposition.length).fill(0).map((col, i) => (
         <div
