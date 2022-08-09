@@ -148,6 +148,7 @@ export default function List<T extends { id: string }, F extends keyof T>({
                 loader={loader}
                 scrollableTarget="scrollableList"
                 className="h-full"
+                style={{ overflow: 'visible' }}
               >
                 {items.map((item) => (
                   <ListItem<T>
