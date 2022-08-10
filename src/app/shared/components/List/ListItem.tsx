@@ -91,7 +91,10 @@ export default function ListItem<T extends { id: string }>({
                     <Menu.Item disabled={option.disabled?.(item)}>
                       {({ active, disabled }) => (
                         <div
-                          onClick={() => option.action?.(item)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            option.action?.(item);
+                          }}
                           className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
                             active
                               ? 'bg-primary text-white'

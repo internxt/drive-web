@@ -171,7 +171,10 @@ export default function SharedLinksView(): JSX.Element {
 
         <div className="flex flex-row items-center">
           <BaseButton
-            onClick={() => setConfirmDeleteState({ tag: 'multiple' })}
+            onClick={(e) => {
+              e.stopPropagation();
+              setConfirmDeleteState({ tag: 'multiple' });
+            }}
             className="tertiary squared"
             disabled={!(selectedItems.length > 0)}
           >

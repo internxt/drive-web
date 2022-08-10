@@ -5,7 +5,7 @@ interface ButtonProps {
   children: JSX.Element | JSX.Element[] | string;
   disabled?: boolean;
   isLoading?: boolean;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const BaseButton = ({ className, children, disabled, isLoading, onClick }: ButtonProps): JSX.Element => {
