@@ -1,34 +1,34 @@
-import { Network } from '@internxt/sdk/dist/network';
 import { sha256 } from '../crypto';
-import { NetworkFacade } from '../NetworkFacade';
+import { NetworkWeb } from '@internxt/network-web/_bundles/prod';
+const { downloadFile: downloadFileNetwork, NetworkFacade } = NetworkWeb;
 
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 type FileStream = ReadableStream<Uint8Array>;
 type DownloadFileResponse = Promise<FileStream>;
-type DownloadFileOptions = { notifyProgress: DownloadProgressCallback, abortController?: AbortController };
+type DownloadFileOptions = { notifyProgress: DownloadProgressCallback; abortController?: AbortController };
 interface NetworkCredentials {
   user: string;
   pass: string;
 }
 
 interface DownloadFileParams {
-  bucketId: string
-  fileId: string
-  options?: DownloadFileOptions
+  bucketId: string;
+  fileId: string;
+  options?: DownloadFileOptions;
 }
 
 interface DownloadOwnFileParams extends DownloadFileParams {
-  creds: NetworkCredentials
-  mnemonic: string
-  token?: never
-  encryptionKey?: never
+  creds: NetworkCredentials;
+  mnemonic: string;
+  token?: never;
+  encryptionKey?: never;
 }
 
 interface DownloadSharedFileParams extends DownloadFileParams {
-  creds?: never
-  mnemonic?: never
-  token: string
-  encryptionKey: string
+  creds?: never;
+  mnemonic?: never;
+  token: string;
+  encryptionKey: string;
 }
 
 type DownloadSharedFileFunction = (params: DownloadSharedFileParams) => DownloadFileResponse;
@@ -38,29 +38,26 @@ type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFileP
 const downloadSharedFile: DownloadSharedFileFunction = (params) => {
   const { bucketId, fileId, encryptionKey, token, options } = params;
 
-  return new NetworkFacade(
-    Network.client(
-      process.env.REACT_APP_STORJ_BRIDGE as string,
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0'
-      },
-      {
-        bridgeUser: '',
-        userId: ''
-      }
-    )
-  ).download(bucketId, fileId, '', {
+  const facade = new NetworkFacade(
+    process.env.REACT_APP_STORJ_BRIDGE as string,
+    {
+      clientName: 'drive-web',
+      clientVersion: '1.0',
+    },
+    {
+      bridgeUser: '',
+      userId: '',
+    },
+  );
+  return downloadFileNetwork(facade, bucketId, fileId, '', {
     key: Buffer.from(encryptionKey, 'hex'),
     token,
     downloadingCallback: options?.notifyProgress,
-    abortController: options?.abortController
+    abortController: options?.abortController,
   });
 };
 
-
-
-function getAuthFromCredentials(creds: NetworkCredentials): { username: string, password: string } {
+function getAuthFromCredentials(creds: NetworkCredentials): { username: string; password: string } {
   return {
     username: creds.user,
     password: sha256(Buffer.from(creds.pass)).toString('hex'),
@@ -71,21 +68,20 @@ const downloadOwnFile: DownloadOwnFileFunction = (params) => {
   const { bucketId, fileId, mnemonic, options } = params;
   const auth = getAuthFromCredentials(params.creds);
 
-  return new NetworkFacade(
-    Network.client(
-      process.env.REACT_APP_STORJ_BRIDGE as string,
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0'
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password
-      }
-    )
-  ).download(bucketId, fileId, mnemonic, {
+  const facade = new NetworkFacade(
+    process.env.REACT_APP_STORJ_BRIDGE as string,
+    {
+      clientName: 'drive-web',
+      clientVersion: '1.0',
+    },
+    {
+      bridgeUser: auth.username,
+      userId: auth.password,
+    },
+  );
+  return downloadFileNetwork(facade, bucketId, fileId, mnemonic, {
     downloadingCallback: options?.notifyProgress,
-    abortController: options?.abortController
+    abortController: options?.abortController,
   });
 };
 

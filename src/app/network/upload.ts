@@ -1,9 +1,9 @@
 import * as Sentry from '@sentry/react';
-import { Network } from '@internxt/sdk/dist/network';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 
 import { sha256 } from './crypto';
-import { NetworkFacade } from './NetworkFacade';
+import { NetworkWeb } from '@internxt/network-web/_bundles/prod';
+const { uploadFile: uploadFileNetworkWeb, NetworkFacade } = NetworkWeb;
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
@@ -19,6 +19,7 @@ interface IUploadParams {
   mnemonic: string;
   progressCallback: UploadProgressCallback;
   abortController?: AbortController;
+  parts?: number;
 }
 
 export function uploadFileBlob(
@@ -28,7 +29,7 @@ export function uploadFileBlob(
     progressCallback: UploadProgressCallback;
     abortController?: AbortController;
   },
-): Promise<void> {
+): Promise<XMLHttpRequest> {
   const uploadRequest = new XMLHttpRequest();
 
   opts.abortController?.signal.addEventListener(
@@ -46,14 +47,14 @@ export function uploadFileBlob(
   uploadRequest.upload.addEventListener('loadstart', (e) => opts.progressCallback(e.total, 0));
   uploadRequest.upload.addEventListener('loadend', (e) => opts.progressCallback(e.total, e.total));
 
-  const uploadFinishedPromise = new Promise<void>((resolve, reject) => {
+  const uploadFinishedPromise = new Promise<XMLHttpRequest>((resolve, reject) => {
     uploadRequest.onload = () => {
       if (uploadRequest.status !== 200) {
         return reject(
           new Error('Upload failed with code ' + uploadRequest.status + ' message ' + uploadRequest.response),
         );
       }
-      resolve();
+      resolve(uploadRequest);
     };
     uploadRequest.onerror = reject;
     uploadRequest.onabort = () => reject(new Error('Upload aborted'));
@@ -61,6 +62,8 @@ export function uploadFileBlob(
   });
 
   uploadRequest.open('PUT', url);
+  // ! Uncomment this line for multipart to work:
+  // uploadRequest.setRequestHeader('Content-Type', '');
   uploadRequest.send(encryptedFile);
 
   return uploadFinishedPromise;
@@ -81,19 +84,31 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
     pass: params.creds.pass,
   });
 
-  return new NetworkFacade(
-    Network.client(
-      process.env.REACT_APP_STORJ_BRIDGE as string,
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
-  ).upload(bucketId, params.mnemonic, file, {
+  const facade = new NetworkFacade(
+    process.env.REACT_APP_STORJ_BRIDGE as string,
+    {
+      clientName: 'drive-web',
+      clientVersion: '1.0',
+    },
+    {
+      bridgeUser: auth.username,
+      userId: auth.password,
+    },
+  );
+
+  if (params.parts) {
+    return uploadFileNetworkWeb(facade, bucketId, params.mnemonic, file, {
+      uploadingCallback: params.progressCallback,
+      abortController: params.abortController,
+      chunkSize: file.size / params.parts,
+    }).catch((err: ErrorWithContext) => {
+      Sentry.captureException(err, { extra: err.context });
+
+      throw err;
+    });
+  }
+
+  return uploadFileNetworkWeb(facade, bucketId, params.mnemonic, file, {
     uploadingCallback: params.progressCallback,
     abortController: params.abortController,
   }).catch((err: ErrorWithContext) => {
