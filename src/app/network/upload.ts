@@ -1,9 +1,9 @@
 import * as Sentry from '@sentry/react';
-import { Network } from '@internxt/sdk/dist/network';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 
 import { sha256 } from './crypto';
-import { NetworkFacade } from './NetworkFacade';
+import { NetworkWeb } from '@internxt/network-web/_bundles/prod';
+const { uploadFile: uploadFileNetworkWeb, NetworkFacade } = NetworkWeb;
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
@@ -85,41 +85,56 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   });
 
   const facade = new NetworkFacade(
-    Network.client(
-      process.env.REACT_APP_STORJ_BRIDGE as string,
-      {
-        clientName: 'drive-web',
-        clientVersion: '1.0',
-      },
-      {
-        bridgeUser: auth.username,
-        userId: auth.password,
-      },
-    ),
+    process.env.REACT_APP_STORJ_BRIDGE as string,
+    {
+      clientName: 'drive-web',
+      clientVersion: '1.0',
+    },
+    {
+      bridgeUser: auth.username,
+      userId: auth.password,
+    },
   );
+  // const facade = new NetworkFacade(
+  //   Network.client(
+  //     process.env.REACT_APP_STORJ_BRIDGE as string,
+  //     {
+  //       clientName: 'drive-web',
+  //       clientVersion: '1.0',
+  //     },
+  //     {
+  //       bridgeUser: auth.username,
+  //       userId: auth.password,
+  //     },
+  //   ),
+  // );
 
   if (params.parts) {
-    return facade
-      .uploadMultipart(bucketId, params.mnemonic, file, {
-        uploadingCallback: params.progressCallback,
-        abortController: params.abortController,
-        parts: params.parts,
-      })
-      .catch((err: ErrorWithContext) => {
-        Sentry.captureException(err, { extra: err.context });
-
-        throw err;
-      });
-  }
-
-  return facade
-    .upload(bucketId, params.mnemonic, file, {
+    return uploadFileNetworkWeb(facade, bucketId, params.mnemonic, file, {
       uploadingCallback: params.progressCallback,
       abortController: params.abortController,
-    })
-    .catch((err: ErrorWithContext) => {
+      chunkSize: file.size / params.parts,
+    }).catch((err: ErrorWithContext) => {
       Sentry.captureException(err, { extra: err.context });
 
       throw err;
     });
+  }
+
+  return (
+    uploadFileNetworkWeb(facade, bucketId, params.mnemonic, file, {
+      uploadingCallback: params.progressCallback,
+      abortController: params.abortController,
+    })
+      // facade
+      // .upload(bucketId, params.mnemonic, file, {
+      //   uploadingCallback: params.progressCallback,
+      //   abortController: params.abortController,
+      // })
+      .catch((err: ErrorWithContext) => {
+        Sentry.captureException(err, { extra: err.context });
+
+        throw err;
+      })
+  );
 }
