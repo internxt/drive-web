@@ -32,6 +32,25 @@ interface ListProps<T, F> {
   disableKeyboardShortcuts?: boolean;
 }
 
+/**
+ *
+ * Generic arguments:
+ * -T: Identifiable entity
+ * -F: Orderable fields of the entity T for better typing in callbacks related to ordering
+ *
+ * "header" contains header items which can or cannot be orderable
+ * "items" is an array of instances of T entity and the source of truth of what is printable on the list component
+ * "itemComposition" given an item of type T, return how its printed on the list component
+ * "onDoubleClick" triggered when an item is double clicked
+ * "onSelectedItemsChanged" triggered when the set of selected items changes
+ * "onNextPage" is triggered when the user gets to the end of the current printed items
+ * "onOrderByChanged" is triggered when the user changes the way the list is ordered
+ * "orderBy" is passed by a component higher in the herarchy which contains the state of what order is currently followed
+ * "hasMoreItems" is passed by the component that is the source of truth for the fetching of items
+ * "menu" contains the valid of options for an item of type T
+ *
+ * This component has no state in it. The state must be kept by an smarter component (higher in the herarchy)
+ */
 export default function List<T extends { id: string }, F extends keyof T>({
   header,
   items,
