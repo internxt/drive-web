@@ -50,9 +50,7 @@ export default function SharedLinksView(): JSX.Element {
     return selectedItems.some((i) => item.id === i.id);
   }
 
-  function isItemExpired(item: ListShareLinksItem) {
-    return item.timesValid !== -1 && item.views >= item.timesValid;
-  }
+
 
   useEffect(() => {
     fetchItems(page, orderBy, 'append');
@@ -82,6 +80,7 @@ export default function SharedLinksView(): JSX.Element {
     const updatedList = shareLinks;
     updatedList[index] = item;
     setShareLinks(updatedList);
+    setIsUpdateLinkModalOpen(false);
   }
 
   function onNextPage() {
@@ -214,8 +213,8 @@ export default function SharedLinksView(): JSX.Element {
               const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
               return (
                 <div
-                  className={`flex w-full flex-row items-center space-x-4 overflow-hidden ${
-                    isItemExpired(props) && 'opacity-50'
+                  className={`flex w-full flex-row items-center space-x-4 overflow-hidden cursor-pointer ${
+                    'opacity-50'
                   }`}
                 >
                   <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
@@ -232,14 +231,14 @@ export default function SharedLinksView(): JSX.Element {
             (props) => (
               <span
                 className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'} ${
-                  isItemExpired(props) && 'opacity-50'
+                  'opacity-50'
                 }`}
-              >{`${props.views}${props.timesValid !== -1 ? `/${props.timesValid}` : ''} views`}</span>
+              >{`${props.views} views`}</span>
             ),
             (props) => (
               <span
                 className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'} ${
-                  isItemExpired(props) && 'opacity-50'
+                  'opacity-50'
                 }`}
               >
                 {dateService.format(props.createdAt, 'D MMM YYYY')}
@@ -258,8 +257,8 @@ export default function SharedLinksView(): JSX.Element {
                 copyShareLink(props.token);
               },
               disabled: (props) => {
-                return props.timesValid !== null && props.views >= props.timesValid;
-              },
+                return false;
+              }
             },
             {
               name: i18n.get('shared-links.item-menu.link-settings'),
@@ -330,22 +329,22 @@ function UpdateLinkModal({
   onShareUpdated: (updatedItem: ListShareLinksItem) => void;
 }) {
   const [savingLinkChanges, setSavingLinkChanges] = useState<boolean>(false);
-  const [timesValid, setTimesValid] = useState<number>(0);
+
   const item = linkToUpdate?.item as DriveFileData | undefined;
 
   useEffect(() => {
     if (isOpen) {
       setSavingLinkChanges(false);
-      setTimesValid(linkToUpdate!.timesValid);
     }
   }, [isOpen]);
 
+  // Could be used for implementing an update of the Share Link if they have more features
   async function updateShareLink(params: ShareTypes.UpdateShareLinkPayload) {
     setSavingLinkChanges(true);
     const updatedItem = await shareService.updateShareLink(params);
     onShareUpdated(updatedItem);
     setSavingLinkChanges(false);
-    notificationsService.show({ text: i18n.get('shared-links.toast.link-updated'), type: ToastType.Success });
+    //notificationsService.show({ text: i18n.get('shared-links.toast.link-updated'), type: ToastType.Success });
   }
 
   return (
@@ -389,51 +388,13 @@ function UpdateLinkModal({
                   <span className="text-gray-60">{`Link visited ${linkToUpdate?.views} times`}</span>
                 </div>
 
-                <div className="flex flex-col space-y-1">
-                  <span className="text-lg font-semibold text-gray-80">
-                    {i18n.get('shared-links.link-settings.options')}
-                  </span>
-                  <div className="flex flex-row space-x-3">
-                    <BaseCheckbox
-                      checked={timesValid !== -1}
-                      onClick={() => {
-                        setTimesValid(timesValid === -1 ? 10 : -1);
-                      }}
-                      className="mt-1"
-                    />
-                    <div className={`mb-3 flex flex-col ${timesValid === -1 && 'pointer-events-none opacity-50'}`}>
-                      {timesValid !== -1 ? (
-                        <div className="text flex flex-row items-center text-base font-medium">
-                          <span>Open limit</span>
-                          <div className="mx-1.5 flex h-6 flex-row items-center">
-                            <input
-                              type="number"
-                              max="9999"
-                              step="1"
-                              disabled={timesValid === -1}
-                              onChange={(e) => setTimesValid(parseInt(e.target.value))}
-                              className="outline-none w-14 rounded-md border border-gray-20 py-0 px-2 text-right text-base focus:border-primary focus:ring-3 focus:ring-primary focus:ring-opacity-10"
-                              value={timesValid}
-                            />
-                          </div>
-                          <span>times</span>
-                        </div>
-                      ) : (
-                        <div className="text flex flex-row items-center space-x-1 text-base">
-                          <span className="font-medium">Open limit is off</span>
-                          <span className="text-gray-40">(Unlimited views)</span>
-                        </div>
-                      )}
-                      <span className="text-gray-40">Limit number of times users can open this link</span>
-                    </div>
-                  </div>
-                </div>
+
 
                 <div className="flex flex-row justify-between">
                   <BaseButton
                     onClick={() => copyShareLink(linkToUpdate!.token)}
                     disabled={
-                      linkToUpdate && linkToUpdate?.timesValid > 0 && linkToUpdate?.views >= linkToUpdate?.timesValid
+                      false 
                     }
                     className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
                   >
@@ -446,16 +407,14 @@ function UpdateLinkModal({
                       onClick={() =>
                         updateShareLink({
                           itemId: linkToUpdate!.id,
-                          timesValid: timesValid,
+                          timesValid: -1,
                           active: true,
                         })
                       }
                       isLoading={savingLinkChanges}
                       className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
                     >
-                      {savingLinkChanges
-                        ? i18n.get('shared-links.link-settings.saving')
-                        : i18n.get('shared-links.link-settings.save')}
+                      {i18n.get('shared-links.link-settings.close')}
                     </BaseButton>
                   </div>
                 </div>

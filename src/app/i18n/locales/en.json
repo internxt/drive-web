@@ -226,7 +226,9 @@
       "options": "Options",
       "copy-link": "Copy link",
       "save": "Save",
-      "saving": "Saving"
+      "saving": "Saving",
+      "save-close": "Save and close",
+      "close": "Close"
     },
     "toast": {
       "copy-to-clipboard": "Link copied to clipboard",

@@ -26,7 +26,7 @@ interface ShareItemDialogProps {
   item: DriveItemData;
 }
 
-const DEFAULT_VIEWS = 10;
+const DEFAULT_VIEWS = -1;
 
 const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -135,24 +135,9 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
             Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link
           </p>
 
-          <div className="mt-3 flex">
-            <span className="mr-4 text-blue-60">1.</span>
-            <div className="flex w-72 items-center rounded-md bg-neutral-20 px-4 py-3">
-              <span className="text-sm text-neutral-500">
-                Enter the number of times you'd like the link to be valid:
-              </span>
-              <input
-                type="number"
-                value={numberOfAttempts}
-                min={1}
-                className="input-number w-12 content-center text-blue-60"
-                onChange={(e) => setNumberOfAttempts(parseInt(e.target.value))}
-              />
-            </div>
-          </div>
 
           <div className="mt-4 self-start">
-            <span className="mr-4 text-blue-60">2.</span>
+            <span className="mr-4 text-blue-60">1.</span>
             <span className="text-neutral-500">Get link to share</span>
           </div>
 
@@ -168,6 +153,10 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
               {isLoading ? 'Loading link...' : linkToCopy}
             </span>
             <UilClipboardAlt className="text-blue-60" />
+          </div>
+           <div className="mt-4 self-start">
+            <span className="mr-4 text-blue-60">2.</span>
+            <span className="text-neutral-500">Paste it wherever you want to share it. And ready to go!</span>
           </div>
         </div>
       </div>
