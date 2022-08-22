@@ -58,7 +58,7 @@ export default function List<T extends { id: string }, F extends keyof T>({
   selectedItems,
   onDoubleClick,
   onSelectedItemsChanged,
-  isLoading,
+ // isLoading,
   skinSkeleton,
   emptyState,
   orderBy,
@@ -67,8 +67,8 @@ export default function List<T extends { id: string }, F extends keyof T>({
   hasMoreItems,
   menu,
   className,
-  keyboardShortcuts,
-  disableKeyboardShortcuts,
+ // keyboardShortcuts,
+ // disableKeyboardShortcuts,
 }: ListProps<T, F>): JSX.Element {
   const isItemSelected = (item: T) => {
     return selectedItems.some((i) => item.id === i.id);

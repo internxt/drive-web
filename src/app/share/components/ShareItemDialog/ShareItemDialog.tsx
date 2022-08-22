@@ -33,7 +33,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   const user = useAppSelector((state) => state.user.user);
   const [linkToCopy, setLinkToCopy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [numberOfAttempts, setNumberOfAttempts] = useState(DEFAULT_VIEWS);
+  const [numberOfAttempts] = useState(DEFAULT_VIEWS);
   const isOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const onClose = (): void => {
     close();

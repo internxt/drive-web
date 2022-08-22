@@ -11,7 +11,6 @@ import copy from 'copy-to-clipboard';
 import Empty from 'app/shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
 import shareService from 'app/share/services/share.service';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import _ from 'lodash';
@@ -64,6 +63,7 @@ export default function SharedLinksView(): JSX.Element {
       ITEMS_PER_PAGE,
       orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
     );
+    console.log(response.items);
     setHasMoreItems(ITEMS_PER_PAGE * page < response.pagination.countAll);
     setOrderBy(orderBy);
     setIsLoading(false);
@@ -213,9 +213,7 @@ export default function SharedLinksView(): JSX.Element {
               const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
               return (
                 <div
-                  className={`flex w-full flex-row items-center space-x-4 overflow-hidden cursor-pointer ${
-                    'opacity-50'
-                  }`}
+                  className={'flex w-full flex-row items-center space-x-4 overflow-hidden cursor-pointer'}
                 >
                   <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
                   <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">{`${
@@ -230,16 +228,12 @@ export default function SharedLinksView(): JSX.Element {
             },
             (props) => (
               <span
-                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'} ${
-                  'opacity-50'
-                }`}
+                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'}`}
               >{`${props.views} views`}</span>
             ),
             (props) => (
               <span
-                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'} ${
-                  'opacity-50'
-                }`}
+                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'}`}
               >
                 {dateService.format(props.createdAt, 'D MMM YYYY')}
               </span>
@@ -256,7 +250,7 @@ export default function SharedLinksView(): JSX.Element {
               action: (props) => {
                 copyShareLink(props.token);
               },
-              disabled: (props) => {
+              disabled: () => {
                 return false;
               }
             },
@@ -264,7 +258,7 @@ export default function SharedLinksView(): JSX.Element {
               name: i18n.get('shared-links.item-menu.link-settings'),
               icon: ToggleRight,
               action: onOpenLinkUpdateModal,
-              disabled: (props) => {
+              disabled: () => {
                 return false; // If item is selected and link is active
               },
             },
@@ -274,7 +268,7 @@ export default function SharedLinksView(): JSX.Element {
               action: async (props) => {
                 setConfirmDeleteState({ tag: 'single', shareId: props.id });
               },
-              disabled: (props) => {
+              disabled: () => {
                 return false; // If item is selected and link is active
               },
             },
@@ -392,6 +386,7 @@ function UpdateLinkModal({
 
                 <div className="flex flex-row justify-between">
                   <BaseButton
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     onClick={() => copyShareLink(linkToUpdate!.token)}
                     disabled={
                       false 
@@ -406,6 +401,7 @@ function UpdateLinkModal({
                     <BaseButton
                       onClick={() =>
                         updateShareLink({
+                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                           itemId: linkToUpdate!.id,
                           timesValid: -1,
                           active: true,

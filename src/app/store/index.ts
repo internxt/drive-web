@@ -14,7 +14,7 @@ import taskManagerReducer from './slices/taskManager';
 import referralsReducer from './slices/referrals';
 import newsletterReducer from './slices/newsletter';
 import photosReducer from './slices/photos';
-// import sharedReducer from './slices/sharedLinks';
+import sharedReducer from './slices/sharedLinks';
 
 export const store = configureStore({
   reducer: {
@@ -32,7 +32,7 @@ export const store = configureStore({
     referrals: referralsReducer,
     newsletter: newsletterReducer,
     photos: photosReducer,
-    // shared: sharedReducer,
+    shared: sharedReducer,
   },
 });
 

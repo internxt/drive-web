@@ -30,6 +30,7 @@ export function getSharedFolderInfo(token: string): Promise<ShareTypes.ShareLink
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getSharedFolderSize(shareId: string, folderId: string): Promise<any> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.getShareLinkFolderSize({ itemId: shareId, folderId }).catch((error) => {
@@ -77,6 +78,7 @@ export function getSharedDirectoryFiles(
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function getAllShareLinks(
   page: number,
   perPage: number,

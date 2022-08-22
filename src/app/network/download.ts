@@ -111,7 +111,7 @@ async function getFileDownloadStream(
   for (const downloadUrl of downloadUrls) {
     const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadUrl).hostname.includes('internxt');
     const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + downloadUrl;
-    const encryptedStream = await fetch(fetchUrl, { signal: abortController?.signal  }).then((res) => {
+    const encryptedStream = await fetch(fetchUrl, { signal: abortController?.signal }).then((res) => {
       if (!res.body) {
         throw new Error('No content received');
       }
@@ -171,6 +171,7 @@ async function getRequiredFileMetadataWithAuth(
 }
 
 export function downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const downloadFileV2Promise = downloadFileV2(params as any);
 
   return downloadFileV2Promise.catch((err) => {

@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+//import * as Sentry from '@sentry/react';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { DriveFileData } from '../../types';
 import analyticsService from '../../../analytics/services/analytics.service';
