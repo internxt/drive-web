@@ -1,102 +1,137 @@
 import i18n from 'app/i18n/services/i18n.service';
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Link, ToggleRight, LinkBreak, Terminal } from 'phosphor-react';
+import { Trash, Link, ToggleRight, LinkBreak } from 'phosphor-react';
 import List from 'app/shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
+import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, Fragment, useEffect } from 'react';
 import iconService from 'app/drive/services/icon.service';
 import copy from 'copy-to-clipboard';
 import Empty from 'app/shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
 import shareService from 'app/share/services/share.service';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
+import _ from 'lodash';
+import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
+import { DriveFileData } from '../../../drive/types';
+
+type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
+
+function copyShareLink(token: string) {
+  copy(`${document.location.origin}/s/file/${token}/`);
+  notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+}
 
 export default function SharedLinksView(): JSX.Element {
-  const perPage = 25;
-  const [page, setPage] = useState<number>(1);
+  const ITEMS_PER_PAGE = 64;
+
+  const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
+  const [page, setPage] = useState<number>(0);
+  const [orderBy, setOrderBy] = useState<OrderBy>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [optionsDialogIsOpen, setOptionsDialogIsOpen] = useState(false);
-  const [linkLimitTimes, setLinkLimitTimes] = useState(false);
-  const [linkSettingsItem, setLinkSettingsItem] = useState<any>(null);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [shareLinks, setShareLinks] = useState<any>([]);
+  const [selectedItems, setSelectedItems] = useState<ListShareLinksItem[]>([]);
+  const [shareLinks, setShareLinks] = useState<ListShareLinksItem[]>([]);
+
+  const [confirmDeleteState, setConfirmDeleteState] = useState<
+    { tag: 'single'; shareId: string } | { tag: 'multiple' } | { tag: 'closed' }
+  >({ tag: 'closed' });
+
+  const [isUpdateLinkModalOpen, setIsUpdateLinkModalOpen] = useState(false);
+  const [linkToUpdate, setLinkToUpdate] = useState<ListShareLinksItem | undefined>(undefined);
+
+  function closeConfirmDelete() {
+    setConfirmDeleteState({ tag: 'closed' });
+  }
+
+  function isItemSelected(item: ListShareLinksItem) {
+    return selectedItems.some((i) => item.id === i.id);
+  }
+
+
 
   useEffect(() => {
-    getShareLinks().then(() => setIsLoading(false));
-  }, [page]);
+    fetchItems(page, orderBy, 'append');
+  }, []);
 
-  const getShareLinks = async () => {
-    const links: any = await shareService.getAllShareLinks(page, perPage);
-    setShareLinks([...shareLinks, ...links.items]);
-  };
-
-  const nextPage = () => {
-    setPage(page + 1);
+  async function fetchItems(page: number, orderBy: OrderBy, type: 'append' | 'substitute') {
     setIsLoading(true);
-  };
 
-  const copyShareLink = (token) => {
-    copy(`${document.location.origin}/s/file/${token}/`);
-    notificationsService.show({ text: i18n.get('shared-links.toast'), type: ToastType.Success });
-  };
+    const response = await shareService.getAllShareLinks(
+      page,
+      ITEMS_PER_PAGE,
+      orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+    );
+    console.log(response.items);
+    setHasMoreItems(ITEMS_PER_PAGE * page < response.pagination.countAll);
+    setOrderBy(orderBy);
+    setIsLoading(false);
+    setPage(page);
+    if (type == 'append') {
+      setShareLinks([...shareLinks, ...response.items]);
+    } else {
+      setShareLinks(response.items);
+    }
+  }
 
-  // List header columns
-  const header = [
-    {
-      name: i18n.get('shared-links.list.link-content'),
-      width: 'flex-1 min-w-104',
-      data: 'item.name',
-      order: function (a, b) {
-        return a.name > b.name ? 1 : -1;
-      },
-    },
-    {
-      name: i18n.get('shared-links.list.shared'),
-      width: 'w-52',
-      data: 'views',
-      order: function (a, b) {
-        return a.views > b.views ? 1 : -1;
-      },
-    },
-    {
-      name: i18n.get('shared-links.list.created'),
-      width: 'w-40',
-      data: 'createdAt',
-      order: function (a, b) {
-        return new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1;
-      },
-      defaultDirection: 'asc',
-    },
-  ];
+  function updateLinkItem(item: ListShareLinksItem) {
+    const index = shareLinks.findIndex((i) => item.id === i.id);
+    const updatedList = shareLinks;
+    updatedList[index] = item;
+    setShareLinks(updatedList);
+    setIsUpdateLinkModalOpen(false);
+  }
 
-  // Composition of the item (content per item column)
-  const itemComposition = [
-    (props) => {
-      const Icon = iconService.getItemIcon(props.isFolder, props.item.type);
-      return (
-        <div className="flex w-full flex-row items-center space-x-4 overflow-hidden">
-          <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
-          <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">{`${props.item.name}${
-            props.item.type && `.${props.item.type}`
-          }`}</span>
-        </div>
-      );
-    },
-    (props, selected) => (
-      <span className={`${selected ? 'text-primary' : 'text-gray-60'}`}>{`${props.views}${
-        props.timesValid > 0 ? `/${props.timesValid}` : ''
-      } views`}</span>
-    ),
-    (props, selected) => (
-      <span className={`${selected ? 'text-primary' : 'text-gray-60'}`}>
-        {dateService.format(props.createdAt, 'D MMM YYYY')}
-      </span>
-    ),
-  ];
+  function onNextPage() {
+    fetchItems(page + 1, orderBy, 'append');
+  }
 
-  // Skin skeleton when loading
+  function onOrderByChanged(newOrderBy: OrderBy) {
+    fetchItems(0, newOrderBy, 'substitute');
+  }
+
+  async function deleteShareLink(shareId: string) {
+    await shareService.deleteShareLink(shareId);
+    setShareLinks((items) => items.filter((item) => item.id !== shareId));
+    setSelectedItems((items) => items.filter((item) => item.id !== shareId));
+  }
+
+  async function onDeleteShareLink(shareId: string) {
+    await deleteShareLink(shareId);
+    notificationsService.show({
+      text: i18n.get('shared-links.toast.link-deleted'),
+      type: ToastType.Success,
+    });
+    setConfirmDeleteState({ tag: 'closed' });
+  }
+
+  async function onDeleteSelectedItems() {
+    const CHUNK_SIZE = 10;
+
+    const chunks = _.chunk(selectedItems, CHUNK_SIZE);
+    for (const chunk of chunks) {
+      const promises = chunk.map((item) => deleteShareLink(item.id));
+      await Promise.all(promises);
+    }
+
+    notificationsService.show({ text: i18n.get('shared-links.toast.links-deleted'), type: ToastType.Success });
+    setConfirmDeleteState({ tag: 'closed' });
+  }
+
+  function onSelectedItemsChanged(changes: { props: ListShareLinksItem; value: boolean }[]) {
+    let updatedSelectedItems = selectedItems;
+
+    for (const change of changes) {
+      updatedSelectedItems = updatedSelectedItems.filter((item) => item.id !== change.props.id);
+      if (change.value) {
+        updatedSelectedItems = [...updatedSelectedItems, change.props];
+      }
+    }
+
+    setSelectedItems(updatedSelectedItems);
+  }
+
   const skinSkeleton = [
     <div className="flex flex-row items-center space-x-4">
       <div className="h-8 w-8 rounded-md bg-gray-5" />
@@ -106,7 +141,6 @@ export default function SharedLinksView(): JSX.Element {
     <div className="h-4 w-24 rounded bg-gray-5" />,
   ];
 
-  // Empty state
   const emptyState = (
     <Empty
       icon={
@@ -122,193 +156,269 @@ export default function SharedLinksView(): JSX.Element {
     />
   );
 
-  // Item dropdown menu
-  const itemMenu = [
-    {
-      name: i18n.get('shared-links.item-menu.copy-link'),
-      icon: Link,
-      action: function (props) {
-        copyShareLink(props.token);
-      },
-      disabled: function (props, selected): boolean {
-        return false; // If item is selected and link is active
-      },
-    },
-    {
-      name: i18n.get('shared-links.item-menu.link-settings'),
-      icon: ToggleRight,
-      action: function (props) {
-        openLinkSettings(props);
-      },
-      disabled: function (props, selected): boolean {
-        return false; // If item is selected and link is active
-      },
-    },
-    {
-      name: i18n.get('shared-links.item-menu.delete-link'),
-      icon: LinkBreak,
-      action: function (props) {
-        alert('This action should delete link');
-      },
-      disabled: function (props, selected): boolean {
-        return false; // If item is selected and link is active
-      },
-    },
-  ];
-
-  // item dropdown custom funtions
-  const openLinkSettings = (props) => {
-    setLinkSettingsItem(props);
-    setLinkLimitTimes(props.timesValid && props.timesValid > 0);
-    setOptionsDialogIsOpen(true);
-  };
+  function onOpenLinkUpdateModal(item: ListShareLinksItem) {
+    setLinkToUpdate(item);
+    setIsUpdateLinkModalOpen(true);
+  }
 
   return (
     <div className="flex w-full flex-shrink-0 flex-col">
-      {/* Top action bar */}
       <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <p className="text-lg">{i18n.get('shared-links.shared-links')}</p>
         </div>
 
-        {/* Delete selected items */}
         <div className="flex flex-row items-center">
-          <BaseButton className="tertiary space-x-2 whitespace-nowrap px-4" onClick={() => nextPage()}>
-            <Terminal size={24} />
-            <span>Next page</span>
-          </BaseButton>
-
-          <BaseButton className="tertiary squared" disabled={!(selectedItems.length > 0)}>
+          <BaseButton
+            onClick={(e) => {
+              e.stopPropagation();
+              setConfirmDeleteState({ tag: 'multiple' });
+            }}
+            className="tertiary squared"
+            disabled={!(selectedItems.length > 0)}
+          >
             <Trash size={24} />
           </BaseButton>
         </div>
       </div>
 
-      {/* Link list */}
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List
-          header={header}
+        <List<ListShareLinksItem, 'views' | 'createdAt'>
+          header={[
+            {
+              label: i18n.get('shared-links.list.link-content'),
+              width: 'flex-1 min-w-104',
+              name: 'item',
+              orderable: false,
+            },
+            {
+              label: i18n.get('shared-links.list.shared'),
+              width: 'w-52',
+              name: 'views',
+              orderable: true,
+              defaultDirection: 'ASC',
+            },
+            {
+              label: i18n.get('shared-links.list.created'),
+              width: 'w-40',
+              name: 'createdAt',
+              orderable: true,
+              defaultDirection: 'ASC',
+            },
+          ]}
           items={shareLinks}
           isLoading={isLoading}
-          itemComposition={[...itemComposition]}
+          itemComposition={[
+            (props) => {
+              const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
+              return (
+                <div
+                  className={'flex w-full flex-row items-center space-x-4 overflow-hidden cursor-pointer'}
+                >
+                  <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
+                  <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">{`${
+                    (props.item as DriveFileData).name
+                  }${
+                    !props.isFolder && (props.item as DriveFileData).type
+                      ? `.${(props.item as DriveFileData).type}`
+                      : ''
+                  }`}</span>
+                </div>
+              );
+            },
+            (props) => (
+              <span
+                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'}`}
+              >{`${props.views} views`}</span>
+            ),
+            (props) => (
+              <span
+                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'}`}
+              >
+                {dateService.format(props.createdAt, 'D MMM YYYY')}
+              </span>
+            ),
+          ]}
           skinSkeleton={skinSkeleton}
           emptyState={emptyState}
-          loadingPerPage={perPage}
-          menu={itemMenu}
-          selectedItems={setSelectedItems}
+          onNextPage={onNextPage}
+          hasMoreItems={hasMoreItems}
+          menu={[
+            {
+              name: i18n.get('shared-links.item-menu.copy-link'),
+              icon: Link,
+              action: (props) => {
+                copyShareLink(props.token);
+              },
+              disabled: () => {
+                return false;
+              }
+            },
+            {
+              name: i18n.get('shared-links.item-menu.link-settings'),
+              icon: ToggleRight,
+              action: onOpenLinkUpdateModal,
+              disabled: () => {
+                return false; // If item is selected and link is active
+              },
+            },
+            {
+              name: i18n.get('shared-links.item-menu.delete-link'),
+              icon: LinkBreak,
+              action: async (props) => {
+                setConfirmDeleteState({ tag: 'single', shareId: props.id });
+              },
+              disabled: () => {
+                return false; // If item is selected and link is active
+              },
+            },
+          ]}
+          selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
-          disableKeyboardShortcuts={optionsDialogIsOpen}
+          disableKeyboardShortcuts={isUpdateLinkModalOpen}
+          onOrderByChanged={onOrderByChanged}
+          orderBy={orderBy}
+          onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>
 
-      {/* Dialogs */}
-      <Transition appear show={optionsDialogIsOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-50 select-none"
-          open={optionsDialogIsOpen}
-          onClose={() => setOptionsDialogIsOpen(false)}
-        >
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-200"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-150"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-gray-100 bg-opacity-50" />
-          </Transition.Child>
-
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-200"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-150"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="flex w-full max-w-lg transform flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
-                  <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
-                    <span className="font-medium">{i18n.get('shared-links.link-settings.share-settings')}</span>
-                    <span className="truncate whitespace-nowrap text-base text-gray-40">
-                      {linkSettingsItem?.item.name}
-                    </span>
-                  </Dialog.Title>
-
-                  <div className="flex flex-col">
-                    <span className="text-lg font-semibold text-gray-80">
-                      {i18n.get('shared-links.link-settings.views')}
-                    </span>
-                    <span className="text-gray-60">{`Link visited ${linkSettingsItem?.views} times`}</span>
-                  </div>
-
-                  <div className="flex flex-col space-y-1">
-                    <span className="text-lg font-semibold text-gray-80">
-                      {i18n.get('shared-links.link-settings.options')}
-                    </span>
-                    <div className="flex flex-row space-x-3">
-                      <BaseCheckbox
-                        checked={linkLimitTimes}
-                        onClick={() => setLinkLimitTimes(!linkLimitTimes)}
-                        className="mt-1"
-                      />
-                      <div className={`mb-3 flex flex-col ${!linkLimitTimes && 'pointer-events-none opacity-50'}`}>
-                        {linkLimitTimes ? (
-                          <div className="text flex flex-row items-center text-base font-medium">
-                            <span>Open limit</span>
-                            <div className="mx-1.5 flex h-6 flex-row items-center">
-                              <input
-                                type="number"
-                                min={linkSettingsItem?.timesValid ?? 1}
-                                max="9999"
-                                step="1"
-                                placeholder={linkSettingsItem?.timesValid}
-                                disabled={!linkLimitTimes}
-                                className="outline-none w-14 rounded-md border border-gray-20 py-0 px-2 text-right text-base focus:border-primary focus:ring-3 focus:ring-primary focus:ring-opacity-10"
-                              />
-                            </div>
-                            <span>times</span>
-                          </div>
-                        ) : (
-                          <div className="text flex flex-row items-center space-x-1 text-base">
-                            <span className="font-medium">Open limit is off</span>
-                            <span className="text-gray-40">(Unlimited views)</span>
-                          </div>
-                        )}
-                        <span className="text-gray-40">Limit number of times users can open this link</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row justify-between">
-                    <BaseButton
-                      onClick={() => copyShareLink(linkSettingsItem?.token)}
-                      className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
-                    >
-                      <span>{i18n.get('shared-links.link-settings.copy-link')}</span>
-                      <Link size={24} />
-                    </BaseButton>
-
-                    <div className="flex flex-row space-x-2">
-                      <BaseButton
-                        onClick={() => setOptionsDialogIsOpen(false)}
-                        className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
-                      >
-                        {i18n.get('shared-links.link-settings.save')}
-                      </BaseButton>
-                    </div>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </Dialog>
-      </Transition>
+      <DeleteDialog
+        isOpen={confirmDeleteState.tag !== 'closed'}
+        onClose={closeConfirmDelete}
+        onSecondaryAction={closeConfirmDelete}
+        secondaryAction="Cancel"
+        title={confirmDeleteState.tag === 'single' ? 'Delete link' : 'Delete links'}
+        subtitle={
+          confirmDeleteState.tag === 'single'
+            ? 'Users with the link will lose access to the shared content'
+            : 'Users with the links will lose access to the shared content'
+        }
+        onPrimaryAction={
+          confirmDeleteState.tag === 'single'
+            ? () => onDeleteShareLink(confirmDeleteState.shareId)
+            : onDeleteSelectedItems
+        }
+        primaryAction={confirmDeleteState.tag === 'single' ? 'Delete link' : 'Delete links'}
+        primaryActionColor="danger"
+      />
+      <UpdateLinkModal
+        isOpen={isUpdateLinkModalOpen}
+        onClose={() => setIsUpdateLinkModalOpen(false)}
+        onShareUpdated={updateLinkItem}
+        linkToUpdate={linkToUpdate}
+      />
     </div>
+  );
+}
+
+function UpdateLinkModal({
+  isOpen,
+  onClose,
+  onShareUpdated,
+  linkToUpdate,
+}: {
+  isOpen: boolean;
+  linkToUpdate?: ListShareLinksItem;
+  onClose: () => void;
+  onShareUpdated: (updatedItem: ListShareLinksItem) => void;
+}) {
+  const [savingLinkChanges, setSavingLinkChanges] = useState<boolean>(false);
+
+  const item = linkToUpdate?.item as DriveFileData | undefined;
+
+  useEffect(() => {
+    if (isOpen) {
+      setSavingLinkChanges(false);
+    }
+  }, [isOpen]);
+
+  // Could be used for implementing an update of the Share Link if they have more features
+  async function updateShareLink(params: ShareTypes.UpdateShareLinkPayload) {
+    setSavingLinkChanges(true);
+    const updatedItem = await shareService.updateShareLink(params);
+    onShareUpdated(updatedItem);
+    setSavingLinkChanges(false);
+    //notificationsService.show({ text: i18n.get('shared-links.toast.link-updated'), type: ToastType.Success });
+  }
+
+  return (
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-50 select-none" open={isOpen} onClose={onClose}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-200"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-gray-100 bg-opacity-50" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-200"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-150"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="flex w-full max-w-lg transform flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
+                <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
+                  <span className="font-medium">{i18n.get('shared-links.link-settings.share-settings')}</span>
+                  <span className="truncate whitespace-nowrap text-base text-gray-40">
+                    {`${item?.name}${item?.type && `.${item?.type}`}`}
+                  </span>
+                </Dialog.Title>
+
+                <div className="flex flex-col">
+                  <span className="text-lg font-semibold text-gray-80">
+                    {i18n.get('shared-links.link-settings.views')}
+                  </span>
+                  <span className="text-gray-60">{`Link visited ${linkToUpdate?.views} times`}</span>
+                </div>
+
+
+
+                <div className="flex flex-row justify-between">
+                  <BaseButton
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    onClick={() => copyShareLink(linkToUpdate!.token)}
+                    disabled={
+                      false 
+                    }
+                    className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
+                  >
+                    <span>{i18n.get('shared-links.link-settings.copy-link')}</span>
+                    <Link size={24} />
+                  </BaseButton>
+
+                  <div className="flex flex-row space-x-2">
+                    <BaseButton
+                      onClick={() =>
+                        updateShareLink({
+                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                          itemId: linkToUpdate!.id,
+                          timesValid: -1,
+                          active: true,
+                        })
+                      }
+                      isLoading={savingLinkChanges}
+                      className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
+                    >
+                      {i18n.get('shared-links.link-settings.close')}
+                    </BaseButton>
+                  </div>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
   );
 }

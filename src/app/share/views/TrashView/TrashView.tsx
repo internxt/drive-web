@@ -1,19 +1,22 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
+
 import i18n from 'app/i18n/services/i18n.service';
 import dateService from '../../../core/services/date.service';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import { Trash, ClockCounterClockwise } from 'phosphor-react';
 import List from '../../../shared/components/List';
-import Grid from '../../../shared/components/Grid';
-import { Dialog, Transition } from '@headlessui/react';
-import { useState, Fragment, useEffect, FunctionComponent, SVGProps } from 'react';
+//import Grid from '../../../shared/components/Grid';
+//import { Dialog, Transition } from '@headlessui/react';
+import { useState } from 'react';
 import iconService from '../../../drive/services/icon.service';
 import sizeService from '../../../drive/services/size.service';
 import Empty from '../../../shared/components/Empty/Empty';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+//import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 
 export default function TrashView(): JSX.Element {
-  const [emptyTrashDialogIsOpen, setEmptyTrashDialogIsOpen] = useState<boolean>(false);
-  const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState<boolean>(false);
+  const [emptyTrashDialogIsOpen] = useState<boolean>(false);
+  const [deleteDialogIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState([]);
 
   // List header columns
@@ -68,7 +71,7 @@ export default function TrashView(): JSX.Element {
     ),
   ];
 
-  const gridItemComposition = (props, selected) => {
+  /*const gridItemComposition = (props, selected) => {
     const Icon = iconService.getItemIcon(props.isFolder, props.item.type);
     return (
       <div className="flex h-full w-full flex-shrink-0 flex-col items-center justify-start overflow-hidden">
@@ -94,7 +97,7 @@ export default function TrashView(): JSX.Element {
         </div>
       </div>
     );
-  };
+  };*/
 
   // const gridItemComposition = (props, selected) => {
   //   const Icon = iconService.getItemIcon(props.isFolder, props.item.type);
@@ -237,14 +240,14 @@ export default function TrashView(): JSX.Element {
     {
       name: 'Restore',
       icon: ClockCounterClockwise,
-      action: function (props) {
+      action: function () {
         alert('This action should show "move" dialog to restore item');
       },
     },
     {
       name: 'Delete permanently',
       icon: Trash,
-      action: function (props) {
+      action: function () {
         alert('This action should show "delete permanently" dialog');
       },
     },

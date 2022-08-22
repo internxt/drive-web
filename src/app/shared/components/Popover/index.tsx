@@ -11,7 +11,7 @@ export default function Popover({
   className?: string;
 }): JSX.Element {
   return (
-    <HPopover style={{ lineHeight: 0 }} className={`relative ${className}`}>
+    <HPopover style={{ lineHeight: 0 }} className={`relative z-50 ${className}`}>
       <HPopover.Button className="cursor-pointer">{button}</HPopover.Button>
 
       <Transition

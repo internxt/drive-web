@@ -1,310 +1,230 @@
-import ListItem from './ListItem';
+import ListItem, { ListItemMenu } from './ListItem';
 import SkinSkeletonItem from './SkinSketelonItem';
-import { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { ArrowUp, ArrowDown } from 'phosphor-react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import _ from 'lodash';
+import { useHotkeys } from 'react-hotkeys-hook';
 
-interface HeaderProps {
-  name: string;
+type HeaderProps<T, F> = {
+  label: string;
   width: string;
-  data: string;
-  order: () => void;
-  defaultDirection?: string;
-}
+} & ({ name: F; orderable: true; defaultDirection: 'ASC' | 'DESC' } | { name: keyof T; orderable: false });
 
-interface ListProps {
-  header: Array<HeaderProps> | Array<any>;
-  items: Array<Record<string, unknown>>;
-  itemComposition: Array<(props: Record<string, unknown>, active: boolean) => JSX.Element>;
-  selectedItems: any;
-  onDoubleClick?: (props?: any) => any;
+interface ListProps<T, F> {
+  header: HeaderProps<T, F>[];
+  items: T[];
+  itemComposition: Array<(props: T) => JSX.Element>;
+  selectedItems: T[];
+  onDoubleClick?: (props: T) => void;
+  onSelectedItemsChanged: (changes: { props: T; value: boolean }[]) => void;
   isLoading?: boolean;
   skinSkeleton?: Array<JSX.Element>;
-  emptyState?: JSX.Element | (() => JSX.Element);
-  loadingPerPage?: number;
-  menu?: Array<{
-    separator?: boolean;
-    name?: string;
-    icon?: any;
-    action?: (props: any) => void;
-    disabled?: (props: any, selected: any) => boolean;
-  }>;
+  emptyState?: ReactNode;
+  onNextPage: () => void;
+  onOrderByChanged?: (value: { field: F; direction: 'ASC' | 'DESC' }) => void;
+  orderBy?: { field: F; direction: 'ASC' | 'DESC' };
+  hasMoreItems?: boolean;
+  menu?: ListItemMenu<T>;
   className?: string;
   keyboardShortcuts?: Array<'selectAll' | 'unselectAll' | 'multiselect' | Array<'delete' & (() => void)>>;
   disableKeyboardShortcuts?: boolean;
 }
 
-export default function List({
+/**
+ *
+ * Generic arguments:
+ * -T: Identifiable entity
+ * -F: Orderable fields of the entity T for better typing in callbacks related to ordering
+ *
+ * "header" contains header items which can or cannot be orderable
+ * "items" is an array of instances of T entity and the source of truth of what is printable on the list component
+ * "itemComposition" given an item of type T, return how its printed on the list component
+ * "onDoubleClick" triggered when an item is double clicked
+ * "onSelectedItemsChanged" triggered when the set of selected items changes
+ * "onNextPage" is triggered when the user gets to the end of the current printed items
+ * "onOrderByChanged" is triggered when the user changes the way the list is ordered
+ * "orderBy" is passed by a component higher in the herarchy which contains the state of what order is currently followed
+ * "hasMoreItems" is passed by the component that is the source of truth for the fetching of items
+ * "menu" contains the valid of options for an item of type T
+ *
+ * This component has no state in it. The state must be kept by an smarter component (higher in the herarchy)
+ */
+export default function List<T extends { id: string }, F extends keyof T>({
   header,
   items,
   itemComposition,
   selectedItems,
   onDoubleClick,
-  isLoading,
+  onSelectedItemsChanged,
+ // isLoading,
   skinSkeleton,
   emptyState,
-  loadingPerPage,
+  orderBy,
+  onOrderByChanged,
+  onNextPage,
+  hasMoreItems,
   menu,
   className,
-  keyboardShortcuts,
-  disableKeyboardShortcuts,
-}: ListProps): JSX.Element {
-  // Default values
-  const defaultOrderDirection: 'asc' | 'desc' = header.filter((column) => column.defaultDirection)[0][
-    'defaultDirection'
-  ];
-  const defaultOrderCriteria = header.filter((column) => column.defaultDirection)[0]['order'];
-  const defaultOrderData: string = header.filter((column) => column.defaultDirection)[0]['data'];
+ // keyboardShortcuts,
+ // disableKeyboardShortcuts,
+}: ListProps<T, F>): JSX.Element {
+  const isItemSelected = (item: T) => {
+    return selectedItems.some((i) => item.id === i.id);
+  };
 
-  // List states
-  const [itemList, setItemList] = useState<Array<Record<string, unknown>>>(items);
-  const [itemsSelected, setItemsSelected] = useState<Array<Record<string, unknown>>>([]);
-  const [orderDirection, setOrderDirection] = useState<'asc' | 'desc'>(defaultOrderDirection);
-  const [orderData, setOrderData] = useState<string>(defaultOrderData);
-  const [multiSelection, setMultiSelection] = useState<boolean>(false);
-  const [multiSelectionRange, setMultiSelectionRange] = useState<boolean>(false);
-  const [multiSelectionRangeFrom, setMultiSelectionRangeFrom] = useState<number | null>(0);
+  const loader = new Array(8)
+    .fill(0)
+    .map((col, i) => (
+      <SkinSkeletonItem
+        key={`skinSkeletonRow${i}`}
+        skinSkeleton={skinSkeleton}
+        columns={header.map((column) => column.width)}
+      />
+    ));
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    setItemList(items);
+  function unselectAllItems() {
+    const changesToMake = selectedItems.map((item) => ({ props: item, value: false }));
+    onSelectedItemsChanged(changesToMake);
+  }
 
-    const onKeyDownListener = (e) => {
-      if ((!disableKeyboardShortcuts ?? true) && !isLoading) {
-        if (e.code === 'Escape' && keyboardShortcuts?.includes('unselectAll')) {
-          unselectAllItems();
-        } else if ((e.metaKey || e.ctrlKey) && e.code === 'KeyA' && keyboardShortcuts?.includes('selectAll')) {
-          // Prevent default ⌘A behaviour
-          e.preventDefault();
-          selectAllItems();
-        } else if ((e.metaKey || e.ctrlKey) && keyboardShortcuts?.includes('multiselect')) {
-          setMultiSelection(true);
-        } else if (e.shiftKey && keyboardShortcuts?.includes('multiselect')) {
-          setMultiSelectionRange(true);
-        }
-      }
-    };
+  function unselectAllItemsAndSelectOne(props: T) {
+    const changesToMake = [...selectedItems.map((item) => ({ props: item, value: false })), { props, value: true }];
+    onSelectedItemsChanged(changesToMake);
+  }
 
-    const onKeyUpListener = (e) => {
-      if ((!disableKeyboardShortcuts ?? true) && !isLoading) {
-        if (
-          (e.code === 'MetaLeft' || e.code === 'MetaRight' || e.code === 'ControlLeft' || e.code === 'ControlRight') &&
-          keyboardShortcuts?.includes('multiselect')
-        ) {
-          setMultiSelection(false);
-        } else if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && keyboardShortcuts?.includes('multiselect')) {
-          setMultiSelectionRange(false);
-        }
-      }
-    };
+  function selectAllItems() {
+    const notSelectedItems = _.difference(items, selectedItems);
+    const changesToMake = notSelectedItems.map((item) => ({ props: item, value: true }));
+    onSelectedItemsChanged(changesToMake);
+  }
 
-    document.addEventListener('keydown', onKeyDownListener);
-    document.addEventListener('keyup', onKeyUpListener);
+  function onTopSelectionCheckboxClick() {
+    const atLeastOneItemSelected = selectedItems.length !== 0;
 
-    return () => {
-      document.removeEventListener('keydown', onKeyDownListener);
-      document.removeEventListener('keyup', onKeyUpListener);
-    };
-  }, [items]);
-
-  useEffect(() => {
-    if (orderDirection === 'asc') {
-      setItemList([...itemList.sort((a, b) => defaultOrderCriteria(a, b))]);
+    if (atLeastOneItemSelected) {
+      unselectAllItems();
     } else {
-      setItemList([...itemList.sort((a, b) => defaultOrderCriteria(a, b)).reverse()]);
-    }
-  }, []);
-
-  const selectItems = (list) => {
-    setItemsSelected(list);
-    selectedItems(list);
-  };
-
-  // Order list by criteria(< || >) and data (name, date, number...)
-  const order = (criteria, data) => {
-    if (data === orderData) {
-      setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc');
-      setItemList([...itemList.reverse()]);
-    } else {
-      setOrderData(data);
-      if (orderDirection === 'asc') {
-        setItemList([...itemList.sort((a, b) => criteria(a, b))]);
-      } else {
-        setItemList([...itemList.sort((a, b) => criteria(a, b)).reverse()]);
-      }
-    }
-  };
-
-  const isItemSelected = (item) => {
-    return itemsSelected.some((i) => item.id === i.id);
-  };
-
-  const sliceItems = (from, to) => {
-    if (from < to) {
-      return itemList.slice(from, to + 1);
-    } else if (from > to) {
-      return itemList.slice(to, from + 1);
-    } else {
-      return [itemList[from]];
-    }
-  };
-
-  const selectItem = (item) => {
-    const isSelected = itemsSelected.findIndex((i) => item.id === i.id) < 0;
-    const itemIndex = itemList.findIndex((i) => item.id === i.id);
-
-    if (!multiSelectionRange) {
-      setMultiSelectionRangeFrom(itemIndex);
-    }
-
-    if (isSelected) {
-      if (multiSelectionRange) {
-        selectItems([...itemsSelected, ...sliceItems(multiSelectionRangeFrom, itemIndex)]);
-      } else if (multiSelection) {
-        selectItems([...itemsSelected, item]);
-      } else {
-        selectItems([item]);
-      }
-    }
-  };
-
-  const unselectItem = (item) => {
-    if (itemsSelected.length > 1) {
-      if (multiSelection) {
-        selectItems([...itemsSelected.filter((i) => item.id !== i.id)]);
-      } else {
-        const itemIndex = itemList.findIndex((i) => item.id === i.id);
-        if (multiSelectionRange) {
-          if (itemsSelected.length === itemList.length) {
-            selectItems([...sliceItems(multiSelectionRangeFrom, itemIndex)]);
-          } else {
-            selectItems([...itemsSelected, ...sliceItems(multiSelectionRangeFrom, itemIndex)]);
-          }
-        } else {
-          setMultiSelectionRangeFrom(itemIndex);
-          selectItems([item]);
-        }
-      }
-    }
-
-    // Reset setMultiSelectionRangeFrom
-    if (itemsSelected.length === 0) {
-      setMultiSelectionRangeFrom(0);
-    }
-  };
-
-  const toggleSelectItem = (item) => {
-    if (isItemSelected(item)) {
-      unselectItem(item);
-    } else {
-      selectItem(item);
-    }
-  };
-
-  const toggleSelectAllItems = () => {
-    if (!(itemList.length === itemsSelected.length)) {
       selectAllItems();
-    } else {
-      unselectAllItems();
     }
-  };
+  }
 
-  const selectAllItems = () => {
-    setMultiSelectionRangeFrom(itemList.length);
-    selectItems([...itemList]);
-  };
+  function onOrderableColumnClicked(field: HeaderProps<T, F>) {
+    if (!field.orderable || !onOrderByChanged) return;
 
-  const unselectAllItems = () => {
-    selectItems([]);
-    setMultiSelectionRangeFrom(0);
-  };
-
-  const bulkItemsSelectionToggle = () => {
-    if (itemList.length > itemsSelected.length && itemsSelected.length > 0) {
-      unselectAllItems();
+    const columnWasAlreadySelected = orderBy?.field === field.name;
+    if (columnWasAlreadySelected) {
+      onOrderByChanged({ field: field.name, direction: orderBy.direction === 'ASC' ? 'DESC' : 'ASC' });
     } else {
-      toggleSelectAllItems();
+      onOrderByChanged({ field: field.name, direction: field.defaultDirection ?? 'ASC' });
     }
-  };
+  }
+
+  useHotkeys(
+    'ctrl+a, cmd+a',
+    (e) => {
+      e.preventDefault();
+      selectAllItems();
+    },
+    [items, selectedItems],
+  );
+
+  useHotkeys('esc', unselectAllItems, [selectedItems]);
+
+  function onItemClick(props: T, e: React.MouseEvent<HTMLDivElement>) {
+    if (e.metaKey || e.ctrlKey) {
+      onSelectedItemsChanged([{ props, value: !isItemSelected(props) }]);
+    } else {
+      unselectAllItemsAndSelectOne(props);
+    }
+  }
+
+  useEffect(() => {
+    const cb = (e: MouseEvent) => {
+      if (!(e.target as Element | null)?.closest('#generic-list-component')) {
+        unselectAllItems();
+      }
+    };
+    document.addEventListener('click', cb);
+
+    return () => document.removeEventListener('click', cb);
+  }, [selectedItems]);
 
   return (
-    <>
-      {/* TABLE */}
-      <div className={`relative flex h-full flex-col ${className}`}>
-        {/* HEAD */}
-        <div
-          className={`sticky flex h-12 flex-shrink-0 flex-row items-center px-5 ${
-            (isLoading || !(itemList.length > 0)) && 'pointer-events-none'
-          }`}
-        >
-          {/* COLUMN */}
-          <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
-            {/* SELECTION CHECKBOX */}
-            <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
-              <BaseCheckbox
-                checked={itemsSelected.length > 0}
-                onClick={bulkItemsSelectionToggle}
-                indeterminate={itemList.length > itemsSelected.length && itemsSelected.length > 0}
-              />
-            </div>
-
-            {header.map((column) => (
-              <div
-                onClick={() => order(column.order, column.data)}
-                key={column.name}
-                className={`flex h-full flex-shrink-0 cursor-pointer flex-row items-center space-x-1.5 text-base font-medium text-gray-60 hover:text-gray-80 ${column.width}`}
-              >
-                <span>{column.name}</span>
-                {column.data === orderData &&
-                  (orderDirection === 'asc' ? (
-                    <ArrowUp size={14} weight="bold" />
-                  ) : (
-                    <ArrowDown size={14} weight="bold" />
-                  ))}
-              </div>
-            ))}
-
-            {menu && <div className="flex h-14 w-12 flex-shrink-0" />}
+    <div id="generic-list-component" className={`relative flex h-full flex-col overflow-y-hidden ${className}`}>
+      {/* HEAD */}
+      <div className="relative flex h-12 flex-shrink-0 flex-row px-5">
+        {/* COLUMN */}
+        <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
+          {/* SELECTION CHECKBOX */}
+          <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
+            <BaseCheckbox
+              checked={selectedItems.length > 0}
+              indeterminate={items.length > selectedItems.length && selectedItems.length > 0}
+              onClick={onTopSelectionCheckboxClick}
+            />
           </div>
-        </div>
 
-        {/* BODY */}
-        <div className={`flex h-full flex-col ${!isLoading && 'overflow-y-auto'}`}>
-          {!isLoading && !(itemList.length > 0) ? (
-            <>{emptyState}</>
-          ) : (
-            <>
-              {itemList.length > 0 &&
-                itemList.map((item) => (
-                  <ListItem
-                    key={JSON.stringify(item)}
-                    item={item}
-                    itemComposition={itemComposition}
-                    selected={isItemSelected(item)}
-                    onDoubleClick={onDoubleClick}
-                    columns={header.map((column) => column.width)}
-                    toggleSelectItem={() => toggleSelectItem(item)}
-                    selectItem={() => selectItem(item)}
-                    menu={menu}
-                  />
+          {header.map((column) => (
+            <div
+              onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
+              key={column.name.toString()}
+              className={`flex h-full flex-shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
+                column.width
+              } ${column.orderable ? 'cursor-pointer hover:text-gray-80' : ''}`}
+            >
+              <span>{column.label}</span>
+              {column.name === orderBy?.field &&
+                (orderBy?.direction === 'ASC' ? (
+                  <ArrowUp size={14} weight="bold" />
+                ) : (
+                  <ArrowDown size={14} weight="bold" />
                 ))}
-              {isLoading &&
-                new Array(loadingPerPage ?? 8)
-                  .fill(0)
-                  .map((col, i) => (
-                    <SkinSkeletonItem
-                      key={i}
-                      skinSkeleton={skinSkeleton}
-                      columns={header.map((column) => column.width)}
-                    />
-                  ))}
-            </>
-          )}
+            </div>
+          ))}
 
-          {/* Click outside of the list to unselect all items */}
-          {itemList.length > 0 && <div className="h-full w-full py-6" onClick={unselectAllItems} />}
+          {menu && <div className="flex h-full w-12 flex-shrink-0" />}
         </div>
       </div>
-    </>
+
+      {/* BODY */}
+      <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
+        {(!hasMoreItems ?? false) && items.length === 0 ? (
+          emptyState
+        ) : items.length > 0 ? (
+          <>
+            <InfiniteScroll
+              dataLength={items.length}
+              next={onNextPage}
+              hasMore={hasMoreItems ?? false}
+              loader={loader}
+              scrollableTarget="scrollableList"
+              className="h-full"
+              style={{ overflow: 'visible' }}
+            >
+              {items.map((item) => (
+                <ListItem<T>
+                  key={item.id}
+                  item={item}
+                  itemComposition={itemComposition}
+                  selected={isItemSelected(item)}
+                  onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
+                  onClick={(e) => onItemClick(item, e)}
+                  columnsWidth={header.map((column) => column.width)}
+                  menu={menu}
+                  onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
+                />
+              ))}
+            </InfiniteScroll>
+          </>
+        ) : (
+          <>{loader}</>
+        )}
+
+        {/* Click outside of the list to unselect all items */}
+        {items.length > 0 && <div className="h-full w-full py-6" onClick={unselectAllItems} />}
+      </div>
+    </div>
   );
 }
