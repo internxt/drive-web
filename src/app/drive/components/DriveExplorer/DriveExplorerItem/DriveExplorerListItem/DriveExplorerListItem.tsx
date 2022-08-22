@@ -138,7 +138,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             className="hover-action mr-3"
             data-test={`download-${item.isFolder ? 'folder' : 'file'}-button`}
           >
-            <DownloadSimple className="h-5" />
+            <DownloadSimple className="h-5 w-5" />
           </button>
           <button
             onClick={(e)=> {
@@ -149,14 +149,14 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             className="hover-action mr-3"
             data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
           >
-            <Link className="h-5" />
+            <Link className="h-5 w-5" />
           </button>
           <button
             onClick={onDeleteButtonClicked}
             className="hover-action"
             data-test={`delete-${item.isFolder ? 'folder' : 'file'}-button`}
           >
-            <Trash className="h-5" />
+            <Trash className="h-5 w-5" />
           </button>
         </div>
       </div>

@@ -159,8 +159,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     } = this.props;
     const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: <GridFour />,
-      [FileViewMode.Grid]: <List />,
+      [FileViewMode.List]: <GridFour className="h-5 w-5"/>,
+      [FileViewMode.Grid]: <List className="h-5 w-5"/>,
     };
     const viewModes = {
       [FileViewMode.List]: DriveExplorerList,
@@ -191,23 +191,23 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               <div className="flex">
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <DownloadSimple className="mr-1.5 h-5" />
+                    <DownloadSimple className="mr-1.5 h-5 w-5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <UploadSimple className="mr-1.5 h-5" />
+                    <UploadSimple className="mr-1.5 h-5 w-5" />
                     <span>{i18n.get('actions.upload')}</span>
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
-                    <FolderPlus />
+                    <FolderPlus className="h-5 w-5"/>
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
-                    <Trash />
+                    <Trash className="h-5 w-5"/>
                   </BaseButton>
                 ) : null}
                 <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
