@@ -25,15 +25,14 @@ interface ShareItemDialogProps {
   item: DriveItemData;
 }
 
-const DEFAULT_VIEWS = null;
-const ATTEMPS = -1;
+const DEFAULT_VIEWS = -1;
 
 const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
   const [linkToCopy, setLinkToCopy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [numberOfAttempts] = useState(ATTEMPS);
+  const [numberOfAttempts] = useState(DEFAULT_VIEWS);
   const isOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const onClose = (): void => {
     close();
