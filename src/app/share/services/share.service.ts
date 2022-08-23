@@ -5,7 +5,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 export function generateShareLink(params: ShareTypes.GenerateShareLinkPayload): Promise<string> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.createShareLink(params).then((response) => {
-    return `${window.location.origin}/s/${params.type}/${response.token}/${params?.code ?? ''}`;
+    return `${window.location.origin}/s/${params.type}/${response.token}/${response.code} ?? ''`;
   });
 }
 

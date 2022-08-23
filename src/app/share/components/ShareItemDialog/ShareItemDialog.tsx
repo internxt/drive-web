@@ -97,7 +97,11 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
           code,
         };
       }
-      const link = await shareService.generateShareLink(payload);
+      let link = await shareService.generateShareLink(payload);
+      if (item.isFolder) {
+        const codeEncrypted: string = link.split('/').slice(-1)[0];
+        link += aes.decrypt(codeEncrypted, mnemonic);
+      }
 
       dispatch(referralsThunks.refreshUserReferrals());
 
