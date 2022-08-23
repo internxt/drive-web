@@ -9,7 +9,8 @@ import { initializeUserThunk, userActions } from 'app/store/slices/user';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
-import AuthButton from 'app/shared/components/AuthButton';
+//import AuthButton from 'app/shared/components/AuthButton';
+import Button from '../../components/Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -198,10 +199,17 @@ export default function SignInView(): JSX.Element {
           )}
 
           <div className="mt-2">
-            <AuthButton
+            {/*<AuthButton
               isDisabled={isLoggingIn || !isValid}
               text="Sign in"
               textWhenDisabled={isValid ? 'Decrypting...' : 'Sign in'}
+          />*/}
+            <Button
+            disabled={isLoggingIn || !isValid}
+            text="Sign in"
+            disabledText={isValid? 'Decrypting...' : 'Sign in'}
+            loading={isLoggingIn}
+            type="primary"
             />
           </div>
         </form>
