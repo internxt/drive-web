@@ -34,6 +34,8 @@ import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 
+//import shareService from 'app/share/services/share.service';
+
 interface DriveExplorerProps {
   title: JSX.Element | string;
   titleClassName?: string;
@@ -366,6 +368,18 @@ const dropTargetCollect: DropTargetCollector<
 
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
+
+  
+   /*shareService.getAllShareLinks(0,state.shared.pagination.perPage,undefined).then((response)=>{
+   
+    const sharedItems: DriveItemData[] = items.filter((item)=>{
+      response.items.some((i) => {
+        
+        return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
+      });
+    });
+  });*/
+ 
 
   return {
     isAuthenticated: state.user.isAuthenticated,
