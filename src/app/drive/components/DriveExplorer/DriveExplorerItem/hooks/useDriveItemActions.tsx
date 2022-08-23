@@ -1,6 +1,6 @@
 import { items } from '@internxt/lib';
 
-import { MouseEvent, ChangeEvent, createRef, KeyboardEventHandler, RefObject, useState, useEffect } from 'react';
+import { MouseEvent, ChangeEvent, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../types';
 import dateService from '../../../../../core/services/date.service';
 import iconService from '../../../../services/icon.service';
@@ -11,12 +11,12 @@ import storageSelectors from '../../../../../store/slices/storage/storage.select
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
 
-import shareService from 'app/share/services/share.service';
+//import shareService from 'app/share/services/share.service';
 
 interface DriveItemActions {
   isEditingName: boolean;
   dirtyName: string;
-  itemIsShared: boolean;
+  //itemIsShared: boolean;
   nameInputRef: RefObject<HTMLInputElement>;
   onRenameButtonClicked: (e: MouseEvent) => void;
   confirmNameChange: () => Promise<void>;
@@ -37,7 +37,7 @@ interface DriveItemActions {
 //const {isItemShared } = useDriveItemStoreProps();
 const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const [isEditingName, setIsEditingName] = useState(false);
-  const [itemIsShared, setItemIsShared] = useState(false);
+  //const [itemIsShared, setItemIsShared] = useState(false);
   const [nameEditPending, setNameEditPending] = useState(false);
   const [dirtyName, setDirtyName] = useState('');
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
@@ -52,7 +52,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
     setTimeout(() => nameInputRef.current?.focus(), 0);
   };
-  const isItemShared = useAppSelector((state) => (item)=>{
+  /*const isItemShared = useAppSelector((state) => (item)=>{
     //const page = state.shared.pagination.page;
     const perPage = state.shared.pagination.perPage;
     shareService.getAllShareLinks(0,perPage,undefined).then((response)=>{
@@ -62,13 +62,13 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
       return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
     }));
   });
-  });
+  });*/
 
-  useEffect(() => {
+  /*useEffect(() => {
 
     isItemShared(item);
 
-  },[]);
+  },[]);*/
   
 
   const confirmNameChange = async () => {
@@ -116,7 +116,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     dispatch(storageActions.setItemToShare(item));
     dispatch(uiActions.setIsShareItemDialogOpen(true));
 
-    isItemShared(item);
+    //isItemShared(item);
   };
 
   const onInfoButtonClicked = (e: React.MouseEvent): void => {
@@ -186,7 +186,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   return {
     isEditingName,
-    itemIsShared,
+    //itemIsShared,
     dirtyName,
     nameInputRef,
     onRenameButtonClicked,

@@ -30,7 +30,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   
   const {
     isEditingName,
-    itemIsShared,
+    //itemIsShared,
     dirtyName,
     nameInputRef,
     onNameChanged,
@@ -56,7 +56,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
   const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
-  const sharedClassNames: string = itemIsShared? 'shared' : '';
+  //const sharedClassNames: string = itemIsShared? 'shared' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
   const onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     e.target.checked ? dispatch(storageActions.selectItems([item])) : dispatch(storageActions.deselectItems([item]));
@@ -98,7 +98,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const template = (
     
     <div
-      className={`${selectedClassNames} ${sharedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
+      className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
       onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}
@@ -120,10 +120,10 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       
         <div className="h-10 w-10 flex justify-center filter drop-shadow-soft">
           <ItemIconComponent className="h-full" />
-          {itemIsShared?
+          {/*itemIsShared?
           <Link 
           className="items-center justify-center rounded-full flex flex-col h-5 w-5 ml-3 absolute -bottom-1 -right-2 place-self-end rounded-full p-0.5 bg-primary text-white border-2 border-white group-hover:border-slate-50 group-active:border-blue-100" 
-          /> : ''}
+          /> : ''*/}
         </div>
       </div>
 
