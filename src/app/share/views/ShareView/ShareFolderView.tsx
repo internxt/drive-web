@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { WritableStream } from 'streamsaver';
 import { match } from 'react-router';
 import { getSharedFolderInfo, getSharedFolderSize } from 'app/share/services/share.service';
@@ -69,10 +69,9 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
     loadInfo()
       .then((sharedFolderInfo) => {
-        setIsLoaded(true);
         setInfo(sharedFolderInfo);
-
-        return loadSize((sharedFolderInfo as unknown as { shareId: number }).shareId, sharedFolderInfo.item.id);
+        setIsLoaded(true);
+        return loadSize((sharedFolderInfo as unknown as { id: number }).id, sharedFolderInfo.item.id);
       })
       .then((folderSize) => {
         setSize(folderSize);
@@ -228,7 +227,6 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     );
   } else if (isLoaded) {
     const FileIcon = iconService.getItemIcon(true);
-
     body = (
       <>
         {/* File info */}

@@ -1,6 +1,5 @@
 import UilClipboardAlt from '@iconscout/react-unicons/icons/uil-clipboard-alt';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { generateFileKey, Network } from 'app/drive/services/network.service';
 import { DriveItemData } from 'app/drive/types';
@@ -13,7 +12,7 @@ import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytic
 import { userThunks } from 'app/store/slices/user';
 import i18n from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { items, aes } from '@internxt/lib';
+import { aes, items } from '@internxt/lib';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import errorService from 'app/core/services/error.service';
@@ -26,14 +25,15 @@ interface ShareItemDialogProps {
   item: DriveItemData;
 }
 
-const DEFAULT_VIEWS = -1;
+const DEFAULT_VIEWS = null;
+const ATTEMPS = -1;
 
 const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
   const [linkToCopy, setLinkToCopy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [numberOfAttempts] = useState(DEFAULT_VIEWS);
+  const [numberOfAttempts] = useState(ATTEMPS);
   const isOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const onClose = (): void => {
     close();
@@ -80,6 +80,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
           timesValid: views,
           mnemonic: encryptedMnemonic,
           encryptionKey: '',
+          code,
         };
       } else {
         const { index } = await network.getFileInfo(bucket, fileId);
@@ -94,6 +95,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
           timesValid: views,
           mnemonic: '',
           encryptionKey: encryptedKey,
+          code,
         };
       }
       const link = await shareService.generateShareLink(payload);
@@ -135,7 +137,6 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
             Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link
           </p>
 
-
           <div className="mt-4 self-start">
             <span className="mr-4 text-blue-60">1.</span>
             <span className="text-neutral-500">Get link to share</span>
@@ -154,7 +155,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
             </span>
             <UilClipboardAlt className="text-blue-60" />
           </div>
-           <div className="mt-4 self-start">
+          <div className="mt-4 self-start">
             <span className="mr-4 text-blue-60">2.</span>
             <span className="text-neutral-500">Paste it wherever you want to share it. And ready to go!</span>
           </div>
