@@ -4,15 +4,14 @@
 
 @layer components {
   .button-primary {
-    @apply bg-primary text-white px-5 h-11 w-full rounded-lg font-medium hover:bg-primary-dark disabled:bg-gray-30 ease-in-out duration-100 cursor-pointer
-  }
+    @apply bg-primary text-white px-5 h-11 w-full rounded-lg font-medium hover:bg-primary-dark disabled:bg-gray-30 ease-in-out duration-100 cursor-pointer; }
+
   .button-secondary {
-    @apply bg-gray-5 text-gray-80 px-5 h-11 w-full rounded-lg font-medium hover:bg-gray-20 disabled:bg-gray-5 disabled:text-gray-40 ease-in-out duration-100 cursor-pointer
-  }
+    @apply bg-gray-5 text-gray-80 px-5 h-11 w-full rounded-lg font-medium hover:bg-gray-20 disabled:bg-gray-5 disabled:text-gray-40 ease-in-out duration-100 cursor-pointer; }
+
   .button-danger {
-    @apply bg-red-20 text-white px-5 h-11 w-full rounded-lg font-medium hover:bg-red-30 disabled:bg-gray-30 ease-in-out duration-100 cursor-pointer
-  }
+    @apply bg-red-20 text-white px-5 h-11 w-full rounded-lg font-medium hover:bg-red-30 disabled:bg-gray-30 ease-in-out duration-100 cursor-pointer; }
+
   .button-loading {
-    @apply inline ml-2 w-5 h-5 text-primary animate-spin
-  }
+    @apply inline ml-2 w-5 h-5 text-primary animate-spin; }
 }
