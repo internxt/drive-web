@@ -16,17 +16,20 @@ import { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
 import bigLogo from 'assets/icons/big-logo.svg';
-import UilLock from '@iconscout/react-unicons/icons/uil-lock';
-import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
-import UilEye from '@iconscout/react-unicons/icons/uil-eye';
-import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
+//import UilLock from '@iconscout/react-unicons/icons/uil-lock';
+//import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
+//import UilEye from '@iconscout/react-unicons/icons/uil-eye';
+import {Eye, EyeSlash, WarningCircle} from 'phosphor-react';
+//import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import errorService from 'app/core/services/error.service';
 import { AppView, IFormValues } from 'app/core/types';
 import navigationService from 'app/core/services/navigation.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+//import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import TextInput from '../../components/TextInput/TextInput';
+import PasswordInput from '../../components/PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
 
 export default function SignInView(): JSX.Element {
@@ -132,21 +135,20 @@ export default function SignInView(): JSX.Element {
         <form className="flex flex-col w-72" onSubmit={handleSubmit(onSubmit)}>
           <img src={bigLogo} width="110" alt="" />
           <span className="text-sm text-neutral-500 mt-1.5 mb-6" />
-
-          <BaseInput
-            className="mb-2.5"
-            placeholder="Email"
+          <span className='font-normal'>  
+            Email
+          </span>
+          <TextInput
+            placeholder="Your email address"
             label="email"
             type="email"
-            icon={<UilEnvelope className="w-4" />}
             register={register}
-            required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
             pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
             error={errors.email}
           />
 
-          <BaseInput
+          {/*<BaseInput
             className="mb-2.5"
             placeholder="Password"
             label={'password'}
@@ -165,11 +167,43 @@ export default function SignInView(): JSX.Element {
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Password must not be empty' }}
+            error={showErrors? {
+                type: 'showError'
+            } : errors.password}
+          />*/}
+          <div className='flex justify-between'>
+            <span className='font-normal'>Password</span>
+            <span
+              onClick={(): void => {
+                analyticsService.trackUserResetPasswordRequest();
+                navigationService.push(AppView.Remove);
+              }}
+              className="cursor-pointer text-sm text-center text-blue-60 hover:text-blue-80"
+            >
+              Forgot your password?
+            </span>
+          </div>
+          <PasswordInput
+            placeholder="Your password"
+            label={'password'}
+            type={showPassword ? 'text' : 'password'}
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Password must not be empty' }}
             error={errors.password}
+             icon={
+              password ? (
+                showPassword ? (
+                  <EyeSlash className="w-5 h-5 font-medium" onClick={() => setShowPassword(false)} />
+                ) : (
+                  <Eye className="w-5 h-5 font-medium" onClick={() => setShowPassword(true)} />
+                )
+              ) : undefined 
+            }
           />
 
           {showTwoFactor && (
-            <BaseInput
+            <PasswordInput
               label="twoFactorCode"
               placeholder="Two factor authentication code"
               type={showTwoFactorCode ? 'text' : 'password'}
@@ -179,13 +213,11 @@ export default function SignInView(): JSX.Element {
               icon={
                 twoFactorCode ? (
                   showTwoFactorCode ? (
-                    <UilEyeSlash className="w-4" onClick={() => setShowTwoFactorCode(false)} />
+                    <EyeSlash className="w-5 h-5 font-medium" onClick={() => setShowTwoFactorCode(false)} />
                   ) : (
-                    <UilEye className="w-4" onClick={() => setShowTwoFactorCode(true)} />
+                    <Eye className="w-5 h-5 font-medium" onClick={() => setShowTwoFactorCode(true)} />
                   )
-                ) : (
-                  <UilLock className="w-4" />
-                )
+                ) : undefined
               }
               minLength={1}
               pattern={twoFactorRegexPattern}
@@ -193,7 +225,8 @@ export default function SignInView(): JSX.Element {
           )}
 
           {loginError && showErrors && (
-            <div className="flex my-1">
+            <div className="flex">
+              <WarningCircle className='h-4 rounded-full mt-0.5 mr-1 text-red-60'/>
               <span className="text-red-60 text-sm w-56 font-medium">{loginError}</span>
             </div>
           )}
@@ -205,9 +238,9 @@ export default function SignInView(): JSX.Element {
               textWhenDisabled={isValid ? 'Decrypting...' : 'Sign in'}
           />*/}
             <Button
-            disabled={isLoggingIn || !isValid}
-            text="Sign in"
-            disabledText={isValid? 'Decrypting...' : 'Sign in'}
+            disabled={isLoggingIn || !isValid }
+            text="Log in"
+            disabledText={isValid? 'Decrypting...' : 'Log in'}
             loading={isLoggingIn}
             type="primary"
             />
@@ -215,19 +248,10 @@ export default function SignInView(): JSX.Element {
         </form>
 
         <div className="flex flex-col items-center w-72">
-          <span
-            onClick={(): void => {
-              analyticsService.trackUserResetPasswordRequest();
-              navigationService.push(AppView.Remove);
-            }}
-            className="cursor-pointer text-sm text-center text-blue-60 hover:text-blue-80 mt-3.5"
-          >
-            Forgot your password?
-          </span>
 
           <div className="flex w-full justify-center text-sm mt-3">
             <span className="mr-2">Don't have an account?</span>
-            <Link to="/new">Get started</Link>
+            <Link to="/new">Create account</Link>
           </div>
         </div>
       </div>
