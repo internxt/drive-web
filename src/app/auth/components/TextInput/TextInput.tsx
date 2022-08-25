@@ -14,8 +14,9 @@ interface InputProps {
   error: FieldError | undefined;
   min?: ValidationRule<number | string> | undefined;
   required?: boolean;
+  autoFocus?: boolean;
 }
-const TextInput = ({label, type, disabled, register, minLength, maxLength, placeholder, pattern, error, min, required }:  InputProps ): JSX.Element => {
+const TextInput = ({label, type, disabled, register, minLength, maxLength, placeholder, pattern, error, min, required, autoFocus }:  InputProps ): JSX.Element => {
   return (
     <div className='mb-2.5 relative flex-1'>
      <input 
@@ -24,6 +25,7 @@ const TextInput = ({label, type, disabled, register, minLength, maxLength, place
       placeholder={placeholder}
       min={0}
       required={true}
+      autoFocus={autoFocus}
       {...register(label, {
         required,
         minLength,

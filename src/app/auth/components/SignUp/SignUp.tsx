@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 import {Eye, EyeSlash,} from 'phosphor-react';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
-import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
+//import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 import { Keys, RegisterDetails } from '@internxt/sdk/dist/auth';
 import { readReferalCookie } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -111,8 +111,6 @@ function SignUp(props: SignUpProps): JSX.Element {
       setPasswordState({ tag: 'success', label: 'Password is strong' });
     }
 
-    console.log(password);
-   // props.onChange({ valid: result.valid, password: input });
   }
 
   const updateInfo = (email: string, password: string) => {
@@ -175,8 +173,8 @@ function SignUp(props: SignUpProps): JSX.Element {
           },
           traits: {
             email: xUser.email,
-            first_name: 'user',
-            last_name: 'lastname',
+            first_name: 'Internxt',
+            last_name: 'User',
             usage: 0,
             createdAt: new Date().toISOString(),
             signup_device_source: signupDevicesource(window.navigator.userAgent),
@@ -212,8 +210,8 @@ function SignUp(props: SignUpProps): JSX.Element {
       revocationCertificate: revocationCertificate,
     };
     const registerDetails: RegisterDetails = {
-      name: 'user',
-      lastname: 'lastname',
+      name: 'Internxt',
+      lastname: 'User',
       email: email,
       password: encPass,
       salt: encSalt,
@@ -245,8 +243,8 @@ function SignUp(props: SignUpProps): JSX.Element {
           traits: {
             member_tier: 'free',
             email: email,
-            first_name: 'user',
-            last_name: 'lastname',
+            first_name: 'Internxt',
+            last_name: 'User',
             usage: 0,
             createdAt: new Date().toISOString(),
             signup_device_source: signupDevicesource(window.navigator.userAgent),
@@ -327,7 +325,7 @@ function SignUp(props: SignUpProps): JSX.Element {
       grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
         // Can't wait or token will expire
         formValues.token = token;
-        onSubmit(formValues);
+        if(passwordState!=null && passwordState.tag != 'error') onSubmit(formValues);
       });
     });
   }
@@ -338,29 +336,6 @@ function SignUp(props: SignUpProps): JSX.Element {
           <form className="flex flex-col w-80" onSubmit={handleSubmit(getReCaptcha)}>
             <span className="text-2xl font-medium mt-10 mb-6">Create account</span>
 
-            {/*<BaseInput
-              className="mb-2.5"
-              placeholder="Name"
-              label="name"
-              type="text"
-              icon={<UilUser className="w-4" />}
-              register={register}
-              required={true}
-              minLength={{ value: 1, message: 'Name must not be empty' }}
-              error={errors.name}
-            />
-
-            <BaseInput
-              className="mb-2.5"
-              placeholder="Lastname"
-              label="lastname"
-              type="text"
-              icon={<UilUser className="w-4" />}
-              register={register}
-              required={true}
-              minLength={{ value: 1, message: 'Lastname must not be empty' }}
-              error={errors.lastname}
-            />*/}
             <span className='mb-0.5'>  
               Email
             </span>
@@ -373,6 +348,7 @@ function SignUp(props: SignUpProps): JSX.Element {
               required={true}
               minLength={{ value: 1, message: 'Email must not be empty' }}
               pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+              autoFocus={true}
               error={errors.email}
             />
 
@@ -395,9 +371,8 @@ function SignUp(props: SignUpProps): JSX.Element {
                 
               }
               register={register}
-              onChange={onChangeHandler}
               onFocus={() => setShowPasswordIndicator(true)}
-              onBlur={() => setShowPasswordIndicator(false)}
+              //onBlur={() => setShowPasswordIndicator(false)}
               required={true}
               //minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
               error={errors.password}
@@ -410,46 +385,13 @@ function SignUp(props: SignUpProps): JSX.Element {
              {showPasswordIndicator && passwordState && (
             <PasswordStrengthIndicator className="mt-2" strength={passwordState.tag} label={passwordState.label} />
              )}
-            {/*<BaseInput
-              className="mb-2.5"
-              placeholder="Confirm new password"
-              label="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
-              icon={
-                confirmPassword ? (
-                  showConfirmPassword ? (
-                    <UilEyeSlash className="w-4" onClick={() => setShowConfirmPassword(false)} />
-                  ) : (
-                    <UilEye className="w-4" onClick={() => setShowConfirmPassword(true)} />
-                  )
-                ) : (
-                  <UilLock className="w-4" />
-                )
-              }
-              register={register}
-              required={true}
-              minLength={{ value: 1, message: 'Password must not be empty' }}
-              error={errors.confirmPassword}
-            />*/}
+
             
 
             <div className="mt-1 mb-2">
               <span className="text-red-60 text-sm font-medium">{bottomInfoError}</span>
             </div>
 
-            {/*<span className="text-xs font-normal text-neutral-500 text-justify mb-3">
-              Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we
-              don't know your password. That means that if you forget it, your files will be gone. With us, you're the
-              only owner of your files.
-            </span>
-
-            <BaseCheckbox
-              label="acceptTerms"
-              text="Accept terms, conditions and privacy policy"
-              required={true}
-              register={register}
-              additionalStyling="mt-2 -mb-0"
-            />*/}
 
             <div className="mt-3" />
             <Button

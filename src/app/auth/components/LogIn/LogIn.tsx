@@ -130,11 +130,11 @@ export default function LogIn(): JSX.Element {
       
       <div className="flex flex-col items-center justify-center w-96 h-fit rounded-2xl bg-white shadow-md">
         <form className="flex flex-col w-80" onSubmit={handleSubmit(onSubmit)}>
-          {/*<img src={bigLogo} width="110" alt="" />*/}
+         
           <span className="text-2xl font-medium mt-10 mb-6" >
           Log in
           </span>
-          {/*<span className="text-sm text-neutral-500 mt-1.5 mb-6" />*/}
+        
           <span className='mb-0.5'>  
             Email
           </span>
@@ -145,32 +145,11 @@ export default function LogIn(): JSX.Element {
             register={register}
             minLength={{ value: 1, message: 'Email must not be empty' }}
             pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+            autoFocus={true}
             error={errors.email}
           />
 
-          {/*<BaseInput
-            className="mb-2.5"
-            placeholder="Password"
-            label={'password'}
-            type={showPassword ? 'text' : 'password'}
-            icon={
-              password ? (
-                showPassword ? (
-                  <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
-                ) : (
-                  <UilEye className="w-4" onClick={() => setShowPassword(true)} />
-                )
-              ) : (
-                <UilLock className="w-4" />
-              )
-            }
-            register={register}
-            required={true}
-            minLength={{ value: 1, message: 'Password must not be empty' }}
-            error={showErrors? {
-                type: 'showError'
-            } : errors.password}
-          />*/}
+         
           <div className='flex justify-between mb-0.5'>
             <span className='font-normal'>Password</span>
             <span
@@ -204,6 +183,7 @@ export default function LogIn(): JSX.Element {
 
           {showTwoFactor && (
             <PasswordInput
+              className='mt-2'
               label="twoFactorCode"
               placeholder="Two factor authentication code"
               type={showTwoFactorCode ? 'text' : 'password'}

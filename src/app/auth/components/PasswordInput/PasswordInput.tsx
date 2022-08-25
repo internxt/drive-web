@@ -21,13 +21,12 @@ interface InputProps {
   min?: ValidationRule<number | string> | undefined;
   required?: boolean;
   icon?: JSX.Element;  
-  onChange?: (v: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
   className? : string;
- 
+  autoFocus?: boolean;
 }
-const PasswordInput = ({label, type, disabled, register, minLength, maxLength, placeholder, pattern, error, min, required, icon, onChange, onFocus, onBlur, className }:  InputProps ): JSX.Element => {
+const PasswordInput = ({label, type, disabled, register, minLength, maxLength, placeholder, pattern, error, min, required, icon, onFocus, onBlur, className, autoFocus }:  InputProps ): JSX.Element => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isFocused, setIsFocused] = useState(false);
@@ -40,7 +39,7 @@ const PasswordInput = ({label, type, disabled, register, minLength, maxLength, p
       placeholder={placeholder}
       min={0}
       required={true}
-     
+      autoFocus={autoFocus}
       {...register(label, {
         required,
         minLength,
