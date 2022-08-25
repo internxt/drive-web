@@ -31,7 +31,7 @@ const TextInput = ({label, type, disabled, register, minLength, maxLength, place
         maxLength,
         pattern,
       })}
-      className={`py-2 w-full transform duration-200 ${error ? 'error' : 'input-primary'}`}
+      className={`py-2 h-11 w-full transform duration-200 ${error ? 'error' : 'input-primary'}`}
      />
     </div>
   );

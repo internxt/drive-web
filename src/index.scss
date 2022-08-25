@@ -253,6 +253,12 @@ code {
     &.error {
       @apply ring-1 bg-white ring-1 ring-red-50;//border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
     }
+    &.warning {
+      @apply ring-1 bg-white ring-1 ring-orange;
+    }
+    &.success {
+      @apply ring-1 bg-white ring-1 ring-green;
+    }
 
     &.semi-dense {
       @apply px-2 py-0.5;

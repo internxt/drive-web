@@ -1,25 +1,18 @@
-/*import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import * as bip39 from 'bip39';
 import queryString from 'query-string';
 import { aes, auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
-import UilLock from '@iconscout/react-unicons/icons/uil-lock';
-import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
-import UilEye from '@iconscout/react-unicons/icons/uil-eye';
-import UilUser from '@iconscout/react-unicons/icons/uil-user';
-import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
-import {Eye, EyeSlash, WarningCircle} from 'phosphor-react';
+
+import {Eye, EyeSlash,} from 'phosphor-react';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 import { Keys, RegisterDetails } from '@internxt/sdk/dist/auth';
 import { readReferalCookie } from '../../services/auth.service';
-import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
-import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
-import AuthButton from 'app/shared/components/AuthButton';
+
 import { useAppDispatch } from 'app/store/hooks';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 import { userActions, userThunks } from 'app/store/slices/user';
@@ -36,12 +29,12 @@ import { referralsThunks } from 'app/store/slices/referrals';
 import { SdkFactory } from '../../../core/factory/sdk';
 import TextInput from '../../components/TextInput/TextInput';
 import PasswordInput from '../../components/PasswordInput/PasswordInput';
-import Button from '../../components/Button/Button';*/
-import bigLogo from 'assets/icons/big-logo.svg';
-//import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-//import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import SignUp from '../../components/SignUp/SignUp';
-export interface SignUpViewProps {
+import Button from '../../components/Button/Button';
+//import bigLogo from 'assets/icons/big-logo.svg';
+import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
+import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
+
+export interface SignUpProps {
   location: {
     search: string;
   };
@@ -49,8 +42,8 @@ export interface SignUpViewProps {
   //onChange: (payload: { valid: boolean; password: string }) => void;
 }
 
-const SignUpView = (props: SignUpViewProps): JSX.Element => {
-  /*const qs = queryString.parse(navigationService.history.location.search);
+function SignUp(props: SignUpProps): JSX.Element {
+  const qs = queryString.parse(navigationService.history.location.search);
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const tokenParam = qs.token;
   const hasReferrer = !!qs.ref;
@@ -68,12 +61,12 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
   const dispatch = useAppDispatch();
 
   const password = useWatch({ control, name: 'password', defaultValue: '' });
-  const confirmPassword = useWatch({ control, name: 'confirmPassword', defaultValue: '' });
+  //const confirmPassword = useWatch({ control, name: 'confirmPassword', defaultValue: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  //const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordState, setPasswordState] = useState<{ tag: 'error' | 'warning' | 'success'; label: string } | null>(null);
 
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
@@ -97,6 +90,11 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
     }
   }, []);
 
+  useEffect(() => {
+    if(password.length>0) onChangeHandler(password);
+    
+  },[password]);
+
   function onChangeHandler(input: string) {
     const result = testPasswordStrength(input, (qs.email as string) === undefined? '' : (qs.email as string));
     if (!result.valid) {
@@ -113,10 +111,11 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
       setPasswordState({ tag: 'success', label: 'Password is strong' });
     }
 
+    console.log(password);
    // props.onChange({ valid: result.valid, password: input });
   }
 
-  const updateInfo = (name: string, lastname: string, email: string, password: string) => {
+  const updateInfo = (email: string, password: string) => {
     // Setup hash and salt
     const hashObj = passToHash({ password: password });
     const encPass = encryptText(hashObj.hash);
@@ -128,8 +127,8 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
 
     // Body
     const body = {
-      name: name,
-      lastname: lastname,
+      //name: name,
+      //lastname: lastname,
       email: email,
       password: encPass,
       mnemonic: encMnemonic,
@@ -176,8 +175,8 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
           },
           traits: {
             email: xUser.email,
-            first_name: name,
-            last_name: lastname,
+            first_name: 'user',
+            last_name: 'lastname',
             usage: 0,
             createdAt: new Date().toISOString(),
             signup_device_source: signupDevicesource(window.navigator.userAgent),
@@ -195,7 +194,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
       });
   };
 
-  const doRegister = async (name: string, lastname: string, email: string, password: string, captcha: string) => {
+  const doRegister = async (email: string, password: string, captcha: string) => {
     const hashObj = passToHash({ password: password });
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
@@ -213,8 +212,8 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
       revocationCertificate: revocationCertificate,
     };
     const registerDetails: RegisterDetails = {
-      name: name,
-      lastname: lastname,
+      name: 'user',
+      lastname: 'lastname',
       email: email,
       password: encPass,
       salt: encSalt,
@@ -246,8 +245,8 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
           traits: {
             member_tier: 'free',
             email: email,
-            first_name: name,
-            last_name: lastname,
+            first_name: 'user',
+            last_name: 'lastname',
             usage: 0,
             createdAt: new Date().toISOString(),
             signup_device_source: signupDevicesource(window.navigator.userAgent),
@@ -291,14 +290,14 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoading(true);
     try {
-      const { name, lastname, email, password, confirmPassword, token } = formData;
+      const { email, password, token } = formData;
 
-      if (password !== confirmPassword) {
+      /*if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
-      }
+      }*/
 
       if (!props.isNewUser) {
-        await updateInfo(name, lastname, email, password)
+        await updateInfo(email, password)
           .then(() => {
             dispatch(productsThunks.initializeThunk());
             dispatch(planThunks.initializeThunk());
@@ -310,7 +309,7 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
             throw new Error(err.message + ', please contact us');
           });
       } else {
-        await doRegister(name, lastname, email, password, token);
+        await doRegister(email, password, token);
       }
     } catch (err: unknown) {
       setIsLoading(false);
@@ -331,17 +330,152 @@ const SignUpView = (props: SignUpViewProps): JSX.Element => {
         onSubmit(formValues);
       });
     });
-  }*/
+  }
 
   return (
-    <div className="flex h-full w-full bg-gray-5 justify-center">
-     
-      <img src={bigLogo} width="150" alt="" className='absolute top-10 left-20'/> 
-      <div className='mt-48'>
-        <SignUp {...props}/>
-      </div>
-    </div>
+    
+        <div className="flex flex-col items-center justify-center w-96 h-fit rounded-2xl bg-white shadow-md">
+          <form className="flex flex-col w-80" onSubmit={handleSubmit(getReCaptcha)}>
+            <span className="text-2xl font-medium mt-10 mb-6">Create account</span>
+
+            {/*<BaseInput
+              className="mb-2.5"
+              placeholder="Name"
+              label="name"
+              type="text"
+              icon={<UilUser className="w-4" />}
+              register={register}
+              required={true}
+              minLength={{ value: 1, message: 'Name must not be empty' }}
+              error={errors.name}
+            />
+
+            <BaseInput
+              className="mb-2.5"
+              placeholder="Lastname"
+              label="lastname"
+              type="text"
+              icon={<UilUser className="w-4" />}
+              register={register}
+              required={true}
+              minLength={{ value: 1, message: 'Lastname must not be empty' }}
+              error={errors.lastname}
+            />*/}
+            <span className='mb-0.5'>  
+              Email
+            </span>
+            <TextInput
+              placeholder="Your email address"
+              label="email"
+              type="email"
+              disabled={hasEmailParam}
+              register={register}
+              required={true}
+              minLength={{ value: 1, message: 'Email must not be empty' }}
+              pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+              error={errors.email}
+            />
+
+            <span className='mb-0.5'>
+              Password
+            </span>
+
+            <PasswordInput
+              className = {passwordState? passwordState.tag : ''}
+              placeholder="Password"
+              label="password"
+              type={showPassword ? 'text' : 'password'}
+              icon={
+               
+                  showPassword ? (
+                    <Eye className="w-6 h-6 font-medium" onClick={() => setShowPassword(false)} />
+                  ) : (
+                    <EyeSlash className="w-6 h-6 font-medium" onClick={() => setShowPassword(true)} />
+                  )
+                
+              }
+              register={register}
+              onChange={onChangeHandler}
+              onFocus={() => setShowPasswordIndicator(true)}
+              onBlur={() => setShowPasswordIndicator(false)}
+              required={true}
+              //minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
+              error={errors.password}
+              /*pattern={{
+                value: isValidPasswordRegex,
+                message: 'The password must contain lowercase/uppercase letters and at least a number',
+              }}*/
+            />
+
+             {showPasswordIndicator && passwordState && (
+            <PasswordStrengthIndicator className="mt-2" strength={passwordState.tag} label={passwordState.label} />
+             )}
+            {/*<BaseInput
+              className="mb-2.5"
+              placeholder="Confirm new password"
+              label="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}
+              icon={
+                confirmPassword ? (
+                  showConfirmPassword ? (
+                    <UilEyeSlash className="w-4" onClick={() => setShowConfirmPassword(false)} />
+                  ) : (
+                    <UilEye className="w-4" onClick={() => setShowConfirmPassword(true)} />
+                  )
+                ) : (
+                  <UilLock className="w-4" />
+                )
+              }
+              register={register}
+              required={true}
+              minLength={{ value: 1, message: 'Password must not be empty' }}
+              error={errors.confirmPassword}
+            />*/}
+            
+
+            <div className="mt-1 mb-2">
+              <span className="text-red-60 text-sm font-medium">{bottomInfoError}</span>
+            </div>
+
+            {/*<span className="text-xs font-normal text-neutral-500 text-justify mb-3">
+              Internxt uses your password to encrypt and decrypt your files. Due to the secure nature of Internxt, we
+              don't know your password. That means that if you forget it, your files will be gone. With us, you're the
+              only owner of your files.
+            </span>
+
+            <BaseCheckbox
+              label="acceptTerms"
+              text="Accept terms, conditions and privacy policy"
+              required={true}
+              register={register}
+              additionalStyling="mt-2 -mb-0"
+            />*/}
+
+            <div className="mt-3" />
+            <Button
+              disabled={isLoading}
+              text="Create account"
+              disabledText={isValid ? 'Encrypting...' : 'Create account'}
+              loading={isLoading}
+              type="primary"
+            />
+          </form>
+          <div className="flex justify-center items-center w-full mt-2 mb-6">
+            <span className='text-gray-50 text-xs mr-1'>
+              By creating an account you accept the 
+            </span>
+            <Link to="/legal" className='text-gray-50 text-xs'>
+              terms and conditions
+            </Link>
+          </div>
+
+          <div className="flex justify-center items-center w-full mt-2 mb-10">
+            <span className="text-sm text-neutral-500 ml-3 select-none mr-2">Already have an account?</span>
+            <Link to="/login" className='cursor-pointer text-sm text-center no-underline font-medium text-blue-60 hover:text-blue-80 appearance-none'>Log in </Link>
+          </div>
+        </div>
+    
   );
 };
 
-export default SignUpView;
+export default SignUp;

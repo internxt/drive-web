@@ -3,6 +3,7 @@ import { IFormValues } from 'app/core/types';
 
 
 import './PasswordInput.scss';
+import { useState } from 'react';
 
 
 
@@ -19,13 +20,17 @@ interface InputProps {
   error: FieldError | undefined;
   min?: ValidationRule<number | string> | undefined;
   required?: boolean;
-  onClick?: () => void;
   icon?: JSX.Element;  
+  onChange?: (v: string) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  className? : string;
  
 }
-const PasswordInput = ({label, type, disabled, register, minLength, maxLength, placeholder, pattern, error, min, required, onClick, icon }:  InputProps ): JSX.Element => {
+const PasswordInput = ({label, type, disabled, register, minLength, maxLength, placeholder, pattern, error, min, required, icon, onChange, onFocus, onBlur, className }:  InputProps ): JSX.Element => {
 
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isFocused, setIsFocused] = useState(false);
 
   return (
     <div className='relative flex-1'>
@@ -43,7 +48,16 @@ const PasswordInput = ({label, type, disabled, register, minLength, maxLength, p
         maxLength,
         pattern,
       })}
-      className={`py-2 w-full transform duration-200 ${error ? 'error' : 'input-primary'}`}
+      //onChange={onChange?(e) => onChange && onChange(e.target.value) : undefined}
+      onFocus={() => {
+        if (onFocus) onFocus();
+          setIsFocused(true);
+      }}
+      onBlur={() => {
+        if (onBlur) onBlur();
+        setIsFocused(false);
+      }}
+      className={`py-2 w-full h-11 transform duration-200 ${className} ${error ? 'error' : 'input-primary'}`}
      />
     <div
       className={`text-neutral-100 absolute ${
@@ -51,10 +65,6 @@ const PasswordInput = ({label, type, disabled, register, minLength, maxLength, p
           ? 'right-3 top-3 cursor-pointer' 
           : 'right-3 top-3'
       } flex items-center justify-center`}
-        onClick={() =>
-        label === 'password' || label === 'confirmPassword' ||
-        label === 'currentPassword' || label === 'lastPassword' ? onClick && onClick() : null
-      }
     >
     {icon || null}
     </div>

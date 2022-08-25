@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+/*import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { auth } from '@internxt/lib';
@@ -8,14 +8,14 @@ import { Link } from 'react-router-dom';
 import { initializeUserThunk, userActions } from 'app/store/slices/user';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
-import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
+//import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
 //import AuthButton from 'app/shared/components/AuthButton';
 import Button from '../../components/Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
-import bigLogo from 'assets/icons/big-logo.svg';
+
 //import UilLock from '@iconscout/react-unicons/icons/uil-lock';
 //import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
 //import UilEye from '@iconscout/react-unicons/icons/uil-eye';
@@ -30,10 +30,12 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 //import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
 import TextInput from '../../components/TextInput/TextInput';
 import PasswordInput from '../../components/PasswordInput/PasswordInput';
-import { referralsThunks } from 'app/store/slices/referrals';
+import { referralsThunks } from 'app/store/slices/referrals';*/
+import bigLogo from 'assets/icons/big-logo.svg';
+import  LogIn  from '../../components/LogIn/LogIn';
 
 export default function SignInView(): JSX.Element {
-  const dispatch = useAppDispatch();
+  /*const dispatch = useAppDispatch();
   const {
     register,
     formState: { errors, isValid },
@@ -125,135 +127,14 @@ export default function SignInView(): JSX.Element {
         navigationService.push(AppView.Drive);
       }
     }
-  }, [isAuthenticated, token, user, registerCompleted]);
+  }, [isAuthenticated, token, user, registerCompleted]);*/
 
   return (
-    <div className="flex h-full w-full">
-      <AuthSideInfo title="" subtitle="" />
-
-      <div className="flex flex-col items-center justify-center w-full">
-        <form className="flex flex-col w-72" onSubmit={handleSubmit(onSubmit)}>
-          <img src={bigLogo} width="110" alt="" />
-          <span className="text-sm text-neutral-500 mt-1.5 mb-6" />
-          <span className='font-normal'>  
-            Email
-          </span>
-          <TextInput
-            placeholder="Your email address"
-            label="email"
-            type="email"
-            register={register}
-            minLength={{ value: 1, message: 'Email must not be empty' }}
-            pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
-            error={errors.email}
-          />
-
-          {/*<BaseInput
-            className="mb-2.5"
-            placeholder="Password"
-            label={'password'}
-            type={showPassword ? 'text' : 'password'}
-            icon={
-              password ? (
-                showPassword ? (
-                  <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
-                ) : (
-                  <UilEye className="w-4" onClick={() => setShowPassword(true)} />
-                )
-              ) : (
-                <UilLock className="w-4" />
-              )
-            }
-            register={register}
-            required={true}
-            minLength={{ value: 1, message: 'Password must not be empty' }}
-            error={showErrors? {
-                type: 'showError'
-            } : errors.password}
-          />*/}
-          <div className='flex justify-between'>
-            <span className='font-normal'>Password</span>
-            <span
-              onClick={(): void => {
-                analyticsService.trackUserResetPasswordRequest();
-                navigationService.push(AppView.Remove);
-              }}
-              className="cursor-pointer text-sm text-center text-blue-60 hover:text-blue-80"
-            >
-              Forgot your password?
-            </span>
-          </div>
-          <PasswordInput
-            placeholder="Your password"
-            label={'password'}
-            type={showPassword ? 'text' : 'password'}
-            register={register}
-            required={true}
-            minLength={{ value: 1, message: 'Password must not be empty' }}
-            error={errors.password}
-             icon={
-              password ? (
-                showPassword ? (
-                  <EyeSlash className="w-5 h-5 font-medium" onClick={() => setShowPassword(false)} />
-                ) : (
-                  <Eye className="w-5 h-5 font-medium" onClick={() => setShowPassword(true)} />
-                )
-              ) : undefined 
-            }
-          />
-
-          {showTwoFactor && (
-            <PasswordInput
-              label="twoFactorCode"
-              placeholder="Two factor authentication code"
-              type={showTwoFactorCode ? 'text' : 'password'}
-              error={errors.twoFactorCode}
-              register={register}
-              required={true}
-              icon={
-                twoFactorCode ? (
-                  showTwoFactorCode ? (
-                    <EyeSlash className="w-5 h-5 font-medium" onClick={() => setShowTwoFactorCode(false)} />
-                  ) : (
-                    <Eye className="w-5 h-5 font-medium" onClick={() => setShowTwoFactorCode(true)} />
-                  )
-                ) : undefined
-              }
-              minLength={1}
-              pattern={twoFactorRegexPattern}
-            />
-          )}
-
-          {loginError && showErrors && (
-            <div className="flex">
-              <WarningCircle className='h-4 rounded-full mt-0.5 mr-1 text-red-60'/>
-              <span className="text-red-60 text-sm w-56 font-medium">{loginError}</span>
-            </div>
-          )}
-
-          <div className="mt-2">
-            {/*<AuthButton
-              isDisabled={isLoggingIn || !isValid}
-              text="Sign in"
-              textWhenDisabled={isValid ? 'Decrypting...' : 'Sign in'}
-          />*/}
-            <Button
-            disabled={isLoggingIn || !isValid }
-            text="Log in"
-            disabledText={isValid? 'Decrypting...' : 'Log in'}
-            loading={isLoggingIn}
-            type="primary"
-            />
-          </div>
-        </form>
-
-        <div className="flex flex-col items-center w-72">
-
-          <div className="flex w-full justify-center text-sm mt-3">
-            <span className="mr-2">Don't have an account?</span>
-            <Link to="/new">Create account</Link>
-          </div>
-        </div>
+    <div className="flex h-full w-full bg-gray-5 justify-center">
+     
+      <img src={bigLogo} width="150" alt="" className='absolute top-10 left-20'/> 
+      <div className='mt-48'>
+        <LogIn/>
       </div>
     </div>
   );
