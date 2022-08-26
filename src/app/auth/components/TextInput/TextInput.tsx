@@ -1,11 +1,10 @@
 import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
 import './TextInput.scss';
-import { useState } from 'react';
 
 interface InputProps {
   label: Path<IFormValues>;
-  type: string;
+  type: 'text' | 'email' | 'number';
   disabled?: boolean;
   register: UseFormRegister<IFormValues>;
   minLength?: ValidationRule<number> | undefined;
@@ -15,45 +14,44 @@ interface InputProps {
   error: FieldError | undefined;
   min?: ValidationRule<number | string> | undefined;
   required?: boolean;
-  autoFocus?: boolean;
   className?: string;
+  autoFocus?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
 }
-const TextInput = ({label, type, disabled, register, minLength, maxLength, placeholder, pattern, error, min, required, autoFocus, className, onFocus, onBlur, }:  InputProps ): JSX.Element => {
-  
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isFocused, setIsFocused] = useState(false);
-  
+export default function TextInput({
+  label,
+  type,
+  disabled,
+  register,
+  minLength,
+  maxLength,
+  placeholder,
+  pattern,
+  error,
+  min,
+  required,
+  className,
+  autoFocus,
+}: InputProps): JSX.Element {
   return (
-    <div className={`relative flex-1 ${className}`}>
-     <input 
-      type={type}
-      disabled={disabled}
-      placeholder={placeholder}
-      min={0}
-      required={true}
-      autoFocus={autoFocus}
-      
-      {...register(label, {
-        required,
-        minLength,
-        min,
-        maxLength,
-        pattern,
-      })}
-      onFocus={() => {
-        if (onFocus) onFocus();
-          setIsFocused(true);
-      }}
-      onBlur={() => {
-        if (onBlur) onBlur();
-        setIsFocused(false);
-      }}
-      className={`py-2 h-11 w-full transform duration-200 ${error ? 'error' : 'input-primary'}`}
-     />
+    <div className={`${className}`}>
+      <input
+        type={type}
+        disabled={disabled}
+        placeholder={placeholder}
+        min={0}
+        required={true}
+        autoFocus={autoFocus}
+        {...register(label, {
+          required,
+          minLength,
+          min,
+          maxLength,
+          pattern,
+        })}
+        className={`relative h-11 w-full py-2 duration-100 ${error ? 'input-error' : 'input-primary'}`}
+      />
     </div>
   );
-};
-
-export default TextInput;
+}

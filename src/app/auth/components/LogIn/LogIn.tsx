@@ -8,25 +8,18 @@ import { Link } from 'react-router-dom';
 import { initializeUserThunk, userActions } from 'app/store/slices/user';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
-//import AuthSideInfo from '../../components/AuthSideInfo/AuthSideInfo';
-//import AuthButton from 'app/shared/components/AuthButton';
 import Button from '../Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
-//import UilLock from '@iconscout/react-unicons/icons/uil-lock';
-//import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
-//import UilEye from '@iconscout/react-unicons/icons/uil-eye';
-import { Eye, EyeSlash, WarningCircle } from 'phosphor-react';
-//import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
+import { WarningCircle } from 'phosphor-react';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import errorService from 'app/core/services/error.service';
 import { AppView, IFormValues } from 'app/core/types';
 import navigationService from 'app/core/services/navigation.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-//import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
 import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
@@ -40,7 +33,6 @@ export default function LogIn(): JSX.Element {
     control,
   } = useForm<IFormValues>({ mode: 'onChange' });
   const email = useWatch({ control, name: 'email', defaultValue: '' });
-  const password = useWatch({ control, name: 'password', defaultValue: '' });
   const twoFactorCode = useWatch({ control, name: 'twoFactorCode', defaultValue: '' });
   const mnemonic = localStorageService.get('xMnemonic');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -50,8 +42,6 @@ export default function LogIn(): JSX.Element {
   const [showTwoFactor, setShowTwoFactor] = useState(false);
   const [loginError, setLoginError] = useState<string[]>([]);
   const [showErrors, setShowErrors] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showTwoFactorCode, setShowTwoFactorCode] = useState(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
@@ -67,7 +57,7 @@ export default function LogIn(): JSX.Element {
         analyticsService.identify(user, user.email);
         analyticsService.trackSignIn({
           email: user.email,
-          userId: user.uuid
+          userId: user.uuid,
         });
 
         try {
@@ -127,115 +117,93 @@ export default function LogIn(): JSX.Element {
   }, [isAuthenticated, token, user, registerCompleted]);
 
   return (
+    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
+      <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <span className="text-2xl font-medium">Log in</span>
 
-    <div className="flex flex-col items-center justify-center w-96 h-fit rounded-2xl bg-white shadow-md">
-      <form className="flex flex-col w-80" onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col space-y-4">
+          <label className="space-y-1">
+            <span>Email</span>
+            <TextInput
+              placeholder="Email"
+              label="email"
+              type="email"
+              register={register}
+              minLength={{ value: 1, message: 'Email must not be empty' }}
+              pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+              autoFocus={true}
+              error={errors.email}
+            />
+          </label>
 
-        <span className="text-2xl font-medium mt-10 mb-6" >
-          Log in
-        </span>
+          <label className="space-y-1">
+            <div className="flex flex-row items-center justify-between">
+              <span className="font-normal">Password</span>
+              <span
+                onClick={(): void => {
+                  analyticsService.trackUserResetPasswordRequest();
+                  navigationService.push(AppView.Remove);
+                }}
+                className="cursor-pointer text-center text-sm font-medium text-primary"
+              >
+                Forgot your password?
+              </span>
+            </div>
 
-        <span className='mb-0.5'>
-          Email
-        </span>
-        <TextInput
-          className='mb-2.5'
-          placeholder="Email"
-          label="email"
-          type="email"
-          register={register}
-          minLength={{ value: 1, message: 'Email must not be empty' }}
-          pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
-          autoFocus={true}
-          error={errors.email}
-        />
+            <PasswordInput
+              placeholder="Password"
+              label={'password'}
+              register={register}
+              required={true}
+              minLength={{ value: 1, message: 'Password must not be empty' }}
+              error={errors.password}
+            />
 
+            {showTwoFactor && (
+              <PasswordInput
+                className="mb-3"
+                label="twoFactorCode"
+                placeholder="Two factor authentication code"
+                error={errors.twoFactorCode}
+                register={register}
+                required={true}
+                minLength={1}
+                pattern={twoFactorRegexPattern}
+              />
+            )}
 
-        <div className='flex justify-between mb-0.5'>
-          <span className='font-normal'>Password</span>
-          <span
-            onClick={(): void => {
-              analyticsService.trackUserResetPasswordRequest();
-              navigationService.push(AppView.Remove);
-            }}
-            className="cursor-pointer text-sm text-center font-medium text-blue-60 hover:text-blue-80"
-          >
-            Forgot your password?
-          </span>
-        </div>
-        <PasswordInput
-          placeholder="Password"
-          label={'password'}
-          type={showPassword ? 'text' : 'password'}
-          register={register}
-          required={true}
-          minLength={{ value: 1, message: 'Password must not be empty' }}
-          error={errors.password}
-          icon={
-            password ? (
-              showPassword ? (
-                <Eye className="w-6 h-6 font-medium" onClick={() => setShowPassword(false)} />
-              ) : (
-                <EyeSlash className="w-6 h-6 font-medium" onClick={() => setShowPassword(true)} />
-              )
-            ) : undefined
-          }
-        />
+            {loginError && showErrors && (
+              <div className="flex flex-row items-start ">
+                <div className="flex h-5 flex-row items-center">
+                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                </div>
+                <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
+              </div>
+            )}
+          </label>
 
-        {showTwoFactor && (
-          <PasswordInput
-            className='mt-2'
-            label="twoFactorCode"
-            placeholder="Two factor authentication code"
-            type={showTwoFactorCode ? 'text' : 'password'}
-            error={errors.twoFactorCode}
-            register={register}
-            required={true}
-            icon={
-              twoFactorCode ? (
-                showTwoFactorCode ? (
-                  <EyeSlash className="w-6 h-6 font-medium" onClick={() => setShowTwoFactorCode(false)} />
-                ) : (
-                  <Eye className="w-6 h-6 font-medium" onClick={() => setShowTwoFactorCode(true)} />
-                )
-              ) : undefined
-            }
-            minLength={1}
-            pattern={twoFactorRegexPattern}
-          />
-        )}
-
-        {loginError && showErrors && (
-          <div className="flex mt-0.5">
-            <WarningCircle className='h-4 rounded-full mt-0.5 mr-1 bg-red-60 text-white' />
-            <span className="text-red-60 text-sm w-56 font-base">{loginError}</span>
-          </div>
-        )}
-
-        <div className="mt-4">
-          {/*<AuthButton
-              isDisabled={isLoggingIn || !isValid}
-              text="Sign in"
-              textWhenDisabled={isValid ? 'Decrypting...' : 'Sign in'}
-          />*/}
           <Button
-            disabled={isLoggingIn || !isValid}
+            disabled={isLoggingIn}
             text="Log in"
             disabledText={isValid ? 'Decrypting...' : 'Log in'}
             loading={isLoggingIn}
-            type="primary"
+            style="button-primary"
+            className="w-full"
           />
         </div>
       </form>
 
-      <div className="flex flex-col items-center w-72 mb-10">
-
-        <div className="flex w-full justify-center text-sm mt-3">
-          <span className="mr-2">Don't have an account?</span>
-          <Link to="/new" className='cursor-pointer text-sm text-center no-underline font-medium text-blue-60 hover:text-blue-80 appearance-none'>Create account</Link>
-        </div>
+      <div className="mt-6 flex w-full justify-center text-sm">
+        <span>
+          Don't have an account?{' '}
+          <Link
+            to="/new"
+            className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline focus:text-primary-dark"
+          >
+            Create account
+          </Link>
+        </span>
       </div>
     </div>
-
   );
 }

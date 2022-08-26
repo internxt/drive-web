@@ -3,7 +3,6 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import * as bip39 from 'bip39';
 import queryString from 'query-string';
 import { aes, auth } from '@internxt/lib';
-import { Link } from 'react-router-dom';
 
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { Keys, RegisterDetails } from '@internxt/sdk/dist/auth';
@@ -29,8 +28,7 @@ import TextInput from '../../components/TextInput/TextInput';
 import PasswordInput from '../../components/PasswordInput/PasswordInput';
 import Button from '../../components/Button/Button';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import { WarningCircle } from 'phosphor-react';
+import { ArrowRight } from 'phosphor-react';
 
 export interface SignUpProps {
   location: {
@@ -40,7 +38,7 @@ export interface SignUpProps {
   //onChange: (payload: { valid: boolean; password: string }) => void;
 }
 
-function SignUp(props: SignUpProps): JSX.Element {
+function SignUpWebsite(props: SignUpProps): JSX.Element {
   const qs = queryString.parse(navigationService.history.location.search);
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const tokenParam = qs.token;
@@ -66,8 +64,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     null,
   );
 
-  const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
-
   const formInputError = Object.values(errors)[0];
 
   let bottomInfoError: null | string = null;
@@ -75,6 +71,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   if (formInputError?.message) {
     bottomInfoError = formInputError.message;
   } else if (showError && signupError) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     bottomInfoError = signupError.toString();
   }
 
@@ -326,81 +323,59 @@ function SignUp(props: SignUpProps): JSX.Element {
   }
 
   return (
-    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
-      <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(getReCaptcha)}>
-        <span className="text-2xl font-medium">Create account</span>
-
-        <div className="flex flex-col space-y-4">
-          <label className="space-y-1">
-            <span>Email</span>
-            <TextInput
-              placeholder="Email"
-              label="email"
-              type="email"
-              disabled={hasEmailParam}
-              register={register}
-              required={true}
-              minLength={{ value: 1, message: 'Email must not be empty' }}
-              pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
-              autoFocus={true}
-              error={errors.email}
-            />
-          </label>
-
-          <label className="space-y-1">
-            <span>Password</span>
-            <PasswordInput
-              className={passwordState ? passwordState.tag : ''}
-              placeholder="Password"
-              label="password"
-              register={register}
-              onFocus={() => setShowPasswordIndicator(true)}
-              required={true}
-              error={errors.password}
-            />
-            {showPasswordIndicator && passwordState && (
-              <PasswordStrengthIndicator className="pt-1" strength={passwordState.tag} label={passwordState.label} />
-            )}
-            {bottomInfoError && (
-              <div className="flex flex-row items-start">
-                <div className="flex h-5 flex-row items-center">
-                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
-                </div>
-                <span className="font-base w-56 text-sm text-red-60">{bottomInfoError}</span>
-              </div>
-            )}
-          </label>
-
-          <Button
-            disabled={isLoading}
-            text="Create account"
-            disabledText={isValid ? 'Encrypting...' : 'Create account'}
-            loading={isLoading}
-            style="button-primary"
-            className="w-full"
+    <form className="flex w-full flex-col" onSubmit={handleSubmit(getReCaptcha)}>
+      <div className="mb-2.5 flex flex-col space-x-0 space-y-3 xs:flex-row xs:space-x-2.5 xs:space-y-0">
+        <label className="space-y-1 xs:flex-1">
+          <span>Email</span>
+          <TextInput
+            className="flex-1"
+            placeholder="Email"
+            label="email"
+            type="email"
+            disabled={hasEmailParam}
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Email must not be empty' }}
+            pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+            autoFocus={true}
+            error={errors.email}
           />
-        </div>
-      </form>
-      <span className="mt-2 w-full text-xs text-gray-50">
-        By creating an account you accept the{' '}
-        <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-80">
-          terms and conditions
-        </a>
-      </span>
+        </label>
 
-      <div className="mt-6 flex w-full items-center justify-center">
-        <span className="select-none text-sm text-gray-80">
-          Already have an account?{' '}
-          <Link
-            to="/login"
-            className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary-dark"
-          >
-            Log in
-          </Link>
+        <label className="space-y-1 xs:flex-1">
+          <span>Password</span>
+          <PasswordInput
+            className="flex-1"
+            placeholder="Password"
+            label="password"
+            register={register}
+            required={true}
+            error={errors.password}
+          />
+        </label>
+      </div>
+
+      <div className="flex flex-row items-center">
+        <Button
+          disabled={isLoading}
+          text="Get started"
+          disabledText={isValid ? 'Encrypting...' : 'Get started'}
+          loading={isLoading}
+          style="button-primary-rounded"
+          rightIcon={<ArrowRight className="h-6 w-6" />}
+        />
+
+        <span className="ml-8 text-xs text-gray-50">
+          By creating an Internxt account you <br className="hidden xs:flex" />
+          accept Internxt’s{' '}
+          <a href="https://internxt.com/legal" target="_blank" className=" text-gray-60 hover:text-gray-80">
+            Terms and Conditions
+          </a>
+          .
         </span>
       </div>
-    </div>
+    </form>
   );
 }
 
-export default SignUp;
+export default SignUpWebsite;

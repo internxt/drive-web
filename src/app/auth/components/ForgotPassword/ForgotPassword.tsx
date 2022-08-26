@@ -1,10 +1,9 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 
-import ExclamationTriangle from '@iconscout/react-unicons/icons/uil-exclamation-triangle';
 import { Link } from 'react-router-dom';
-import {CaretLeft} from 'phosphor-react';
+import { CaretLeft, WarningCircle } from 'phosphor-react';
 import userService from '../../services/user.service';
 
 import { IFormValues } from 'app/core/types';
@@ -24,119 +23,110 @@ function ForgotPassword(): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [getEmail, setEmail] = useState('');
   const [showErrors, setShowErrors] = useState(false);
-  const[emailErrors, setEmailErrors] = useState('');
+  const [emailErrors, setEmailErrors] = useState('');
 
   const sendEmail = async (email: string) => {
     try {
       setIsLoading(true);
       await userService.sendDeactivationEmail(email);
       notificationsService.show({ text: i18n.get('success.accountDeactivationEmailSent'), type: ToastType.Success });
-       if(showErrors === false){
+      if (showErrors === false) {
         setStep(2);
-      };
+      }
     } catch (err: unknown) {
       //notificationsService.show({ text: i18n.get('error.deactivatingAccount'), type: ToastType.Error });
       setEmailErrors(i18n.get('error.deactivatingAccount'));
       setShowErrors(true);
-     
     } finally {
       setIsLoading(false);
-     
     }
   };
 
   const onSubmit: SubmitHandler<IFormValues> = (formData) => {
-   
-      sendEmail(formData.email);
-      setEmail(formData.email);
-    
-   
+    sendEmail(formData.email);
+    setEmail(formData.email);
   };
 
   return (
-      <div className="flex flex-col items-center justify-center text-left w-96 h-fit rounded-2xl bg-white shadow-md">
-       
-        <div className='flex flex-col w-80'>
-          <div className='flex cursor-pointer mt-10'>
-            <CaretLeft className='text-blue-60 mt-1'/>
-            <Link className=" text-sm text-center no-underline font-medium text-blue-60 hover:text-blue-80 appearance-none" to="/login">
-                Log in
-            </Link>
-          </div>
-          <span className="mt-2 mb-1 font-medium text-2xl text-gray-100">Forgot password</span>
-          <div>
-            <p className="text-sm font-regular text-gray-80">
+    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 text-left sm:shadow-soft">
+      <div className="flex flex-col space-y-6">
+        <div className="flex flex-col space-y-1">
+          <Link
+            to="/login"
+            className="flex cursor-pointer flex-row items-center space-x-0.5 text-primary no-underline focus:text-primary-dark"
+          >
+            <CaretLeft className="h-4 w-4" weight="bold" />
+            <span className="font-medium">Log in</span>
+          </Link>
+
+          <div className="flex flex-col space-y-1">
+            <span className="text-2xl font-medium text-gray-100">Forgot password</span>
+            <p className="font-regular text-sm text-gray-80">
               To see the recovery options, please enter your email, we'll guide you to recover your account.
             </p>
           </div>
-          {step === 1 ? (
-            <Fragment>
-              
+        </div>
 
-              <form className="w-full mt-6 mb-10" onSubmit={handleSubmit(onSubmit)}>
-
-                <span className="mb-1">Email</span>
+        {step === 1 ? (
+          <>
+            <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)}>
+              <label className="space-y-1">
+                <span>Email</span>
                 <TextInput
-                  className='mb-4'
                   placeholder="Email"
                   label="email"
                   type="email"
                   register={register}
-                  onFocus={()=>setShowErrors(false)}
+                  onFocus={() => setShowErrors(false)}
                   required={true}
                   minLength={{ value: 1, message: 'Email must not be empty' }}
                   pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
                   error={errors.email}
                 />
-
                 {showErrors && (
-                  <div className="flex mt-0.5 mb-2">
-                    <ExclamationTriangle className='h-4 mt-0.5 mr-1 text-red-60'/>
-                    <span className="text-red-60 text-sm w-56 font-base">{emailErrors}</span>
+                  <div className="-mt-2 flex flex-row items-start pb-3">
+                    <div className="flex h-5 flex-row items-center">
+                      <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                    </div>
+                    <span className="font-base w-56 text-sm text-red-60">{emailErrors}</span>
                   </div>
                 )}
-                <Button 
-                  disabled={isLoading || !isValid} 
-                  text={isLoading ? 'Sending email...' : 'Send instructions'}
-                  loading={isLoading}
-                  type='primary'
-                  disabledText='Send instructions'
-                  />
-              </form>
+              </label>
 
-              
-            </Fragment>
-          ) : (
-           
-            <Fragment>
-              <div className='mt-6 mb-10 bg-gray-1 items-center justify-center rounded-lg border border-gray-10 h-36 w-80'>
-                <div className='flex mb-2 mt-5 text-center justify-center'>
-                
-                  <span className="mr-1 text-sm mt-0.5">
-                      Email sent to
-                  </span>
-                  <span className="font-medium text-sm mt-0.5">
-                      {getEmail}
-                  </span>
-                </div>
-                <p className="mx-4 mb-2 text-center justify-center text-xs text-gray-50">
-                  The email link access will expire in 24h. If you are not receiving the email, please check your promotions or spam inbox.
-                </p>
+              <Button
+                disabled={isLoading}
+                text={isLoading ? 'Sending email...' : 'Send instructions'}
+                loading={isLoading}
+                style="button-primary"
+                disabledText="Send instructions"
+                className="w-full"
+              />
+            </form>
+          </>
+        ) : (
+          <>
+            <div className="flex w-full flex-col items-center justify-center space-y-2 rounded-lg border border-gray-10 bg-gray-1 p-4 text-center text-sm">
+              <span className="w-full break-all">
+                <span className="whitespace-nowrap">Email sent to</span> <span className="font-medium">{getEmail}</span>
+              </span>
 
-                <div className='flex text-center justify-center mb-5'>
-                
-                  <span onClick={()=>setStep(1)} className="mb-0.5 text-sm cursor-pointer text-center justify-center no-underline font-medium text-blue-60 hover:text-blue-80 appearance-none">
-                      Change email
-                  </span>
-                </div>
-              </div>
-              
-            </Fragment>
-          )}
-        </div>
+              <p className="text-gray-50">
+                The email link access will expire in 24h. If you are not receiving the email, please check your
+                promotions or spam inbox.
+              </p>
+
+              <span
+                onClick={() => setStep(1)}
+                className="cursor-pointer font-medium text-primary hover:text-primary-dark"
+              >
+                Change email
+              </span>
+            </div>
+          </>
+        )}
       </div>
-   
+    </div>
   );
-};
+}
 
 export default ForgotPassword;

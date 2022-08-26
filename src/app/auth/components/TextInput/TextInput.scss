@@ -4,10 +4,10 @@
 
 @layer components {
   .input-primary {
-    @apply h-10 px-4 text-lg rounded-md bg-white border-gray-40 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-10 focus:outline-none;
+    @apply focus:outline-none h-11 appearance-none rounded-md border-gray-40 bg-white px-4 text-lg focus:border-primary;
   }
 
   .input-error {
-    @apply h-10 px-4 text-lg rounded-md bg-white ring-1 ring-red-50 appearance-none;
+    @apply h-11 appearance-none rounded-md border-red-std bg-white px-4 text-lg;
   }
 }

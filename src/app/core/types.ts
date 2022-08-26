@@ -102,6 +102,7 @@ export enum AppView {
   Signup = 'signup',
   AppSumo = 'appsumo',
   Login = 'login',
+  SignUpWebsite = 'signupwebsite',
   Recover = 'recover',
   Drive = 'drive',
   Recents = 'recents',
