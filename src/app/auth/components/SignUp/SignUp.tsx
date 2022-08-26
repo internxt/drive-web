@@ -5,7 +5,7 @@ import queryString from 'query-string';
 import { aes, auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
 
-import {Eye, EyeSlash,} from 'phosphor-react';
+import { Eye, EyeSlash, } from 'phosphor-react';
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 //import { isValidPasswordRegex } from '@internxt/lib/dist/src/auth/isValidPassword';
 import { Keys, RegisterDetails } from '@internxt/sdk/dist/auth';
@@ -91,12 +91,12 @@ function SignUp(props: SignUpProps): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if(password.length>0) onChangeHandler(password);
-    
-  },[password]);
+    if (password.length > 0) onChangeHandler(password);
+
+  }, [password]);
 
   function onChangeHandler(input: string) {
-    const result = testPasswordStrength(input, (qs.email as string) === undefined? '' : (qs.email as string));
+    const result = testPasswordStrength(input, (qs.email as string) === undefined ? '' : (qs.email as string));
     if (!result.valid) {
       setPasswordState({
         tag: 'error',
@@ -256,8 +256,8 @@ function SignUp(props: SignUpProps): JSX.Element {
         window._adftrack = Array.isArray(window._adftrack)
           ? window._adftrack
           : window._adftrack
-          ? [window._adftrack]
-          : [];
+            ? [window._adftrack]
+            : [];
         window._adftrack.push({
           HttpHost: 'track.adform.net',
           pm: 2370627,
@@ -325,98 +325,98 @@ function SignUp(props: SignUpProps): JSX.Element {
       grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
         // Can't wait or token will expire
         formValues.token = token;
-        if(passwordState!=null && passwordState.tag != 'error') onSubmit(formValues);
+        if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);
       });
     });
   }
 
   return (
-    
-        <div className="flex flex-col items-center justify-center w-96 h-fit rounded-2xl bg-white shadow-md">
-          <form className="flex flex-col w-80" onSubmit={handleSubmit(getReCaptcha)}>
-            <span className="text-2xl font-medium mt-10 mb-6">Create account</span>
 
-            <span className='mb-0.5'>  
-              Email
-            </span>
-            <TextInput
-              placeholder="Your email address"
-              label="email"
-              type="email"
-              disabled={hasEmailParam}
-              register={register}
-              required={true}
-              minLength={{ value: 1, message: 'Email must not be empty' }}
-              pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
-              autoFocus={true}
-              error={errors.email}
-            />
+    <div className="flex flex-col items-center justify-center w-96 h-fit rounded-2xl bg-white shadow-md">
+      <form className="flex flex-col w-80" onSubmit={handleSubmit(getReCaptcha)}>
+        <span className="text-2xl font-medium mt-10 mb-6">Create account</span>
 
-            <span className='mb-0.5'>
-              Password
-            </span>
+        <span className='mb-0.5'>
+          Email
+        </span>
+        <TextInput
+          placeholder="Email"
+          label="email"
+          type="email"
+          disabled={hasEmailParam}
+          register={register}
+          required={true}
+          minLength={{ value: 1, message: 'Email must not be empty' }}
+          pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+          autoFocus={true}
+          error={errors.email}
+        />
 
-            <PasswordInput
-              className = {passwordState? passwordState.tag : ''}
-              placeholder="Password"
-              label="password"
-              type={showPassword ? 'text' : 'password'}
-              icon={
-               
-                  showPassword ? (
-                    <Eye className="w-6 h-6 font-medium" onClick={() => setShowPassword(false)} />
-                  ) : (
-                    <EyeSlash className="w-6 h-6 font-medium" onClick={() => setShowPassword(true)} />
-                  )
-                
-              }
-              register={register}
-              onFocus={() => setShowPasswordIndicator(true)}
-              //onBlur={() => setShowPasswordIndicator(false)}
-              required={true}
-              //minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
-              error={errors.password}
-              /*pattern={{
-                value: isValidPasswordRegex,
-                message: 'The password must contain lowercase/uppercase letters and at least a number',
-              }}*/
-            />
+        <span className='mb-0.5'>
+          Password
+        </span>
 
-             {showPasswordIndicator && passwordState && (
-            <PasswordStrengthIndicator className="mt-2" strength={passwordState.tag} label={passwordState.label} />
-             )}
+        <PasswordInput
+          className={passwordState ? passwordState.tag : ''}
+          placeholder="Password"
+          label="password"
+          type={showPassword ? 'text' : 'password'}
+          icon={
 
-            
+            showPassword ? (
+              <Eye className="w-6 h-6 font-medium" onClick={() => setShowPassword(false)} />
+            ) : (
+              <EyeSlash className="w-6 h-6 font-medium" onClick={() => setShowPassword(true)} />
+            )
 
-            <div className="mt-1 mb-2">
-              <span className="text-red-60 text-sm font-medium">{bottomInfoError}</span>
-            </div>
+          }
+          register={register}
+          onFocus={() => setShowPasswordIndicator(true)}
+          //onBlur={() => setShowPasswordIndicator(false)}
+          required={true}
+          //minLength={{ value: 8, message: 'The password must be at least 8 characters long' }}
+          error={errors.password}
+        /*pattern={{
+          value: isValidPasswordRegex,
+          message: 'The password must contain lowercase/uppercase letters and at least a number',
+        }}*/
+        />
+
+        {showPasswordIndicator && passwordState && (
+          <PasswordStrengthIndicator className="mt-2" strength={passwordState.tag} label={passwordState.label} />
+        )}
 
 
-            <div className="mt-3" />
-            <Button
-              disabled={isLoading}
-              text="Create account"
-              disabledText={isValid ? 'Encrypting...' : 'Create account'}
-              loading={isLoading}
-              type="primary"
-            />
-          </form>
-          <div className="flex justify-center items-center w-full mt-2 mb-6">
-            <span className='text-gray-50 text-xs mr-1'>
-              By creating an account you accept the 
-            </span>
-            <Link to="/legal" className='text-gray-50 text-xs'>
-              terms and conditions
-            </Link>
-          </div>
 
-          <div className="flex justify-center items-center w-full mt-2 mb-10">
-            <span className="text-sm text-neutral-500 ml-3 select-none mr-2">Already have an account?</span>
-            <Link to="/login" className='cursor-pointer text-sm text-center no-underline font-medium text-blue-60 hover:text-blue-80 appearance-none'>Log in </Link>
-          </div>
+        <div className="mt-1 mb-2">
+          <span className="text-red-60 text-sm font-medium">{bottomInfoError}</span>
         </div>
-    
+
+
+        <div className="mt-3" />
+        <Button
+          disabled={isLoading}
+          text="Create account"
+          disabledText={isValid ? 'Encrypting...' : 'Create account'}
+          loading={isLoading}
+          type="primary"
+        />
+      </form>
+      <div className="flex justify-center items-center w-full mt-2 mb-6">
+        <span className='text-gray-50 text-xs mr-1'>
+          By creating an account you accept the
+        </span>
+        <Link to="/legal" className='text-gray-50 text-xs'>
+          terms and conditions
+        </Link>
+      </div>
+
+      <div className="flex justify-center items-center w-full mt-2 mb-10">
+        <span className="text-sm text-neutral-500 ml-3 select-none mr-2">Already have an account?</span>
+        <Link to="/login" className='cursor-pointer text-sm text-center no-underline font-medium text-blue-60 hover:text-blue-80 appearance-none'>Log in </Link>
+      </div>
+    </div>
+
   );
 };
 

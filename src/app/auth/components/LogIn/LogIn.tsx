@@ -18,7 +18,7 @@ import analyticsService from 'app/analytics/services/analytics.service';
 //import UilLock from '@iconscout/react-unicons/icons/uil-lock';
 //import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
 //import UilEye from '@iconscout/react-unicons/icons/uil-eye';
-import {Eye, EyeSlash, WarningCircle} from 'phosphor-react';
+import { Eye, EyeSlash, WarningCircle } from 'phosphor-react';
 //import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
@@ -127,114 +127,114 @@ export default function LogIn(): JSX.Element {
   }, [isAuthenticated, token, user, registerCompleted]);
 
   return (
-      
-      <div className="flex flex-col items-center justify-center w-96 h-fit rounded-2xl bg-white shadow-md">
-        <form className="flex flex-col w-80" onSubmit={handleSubmit(onSubmit)}>
-         
-          <span className="text-2xl font-medium mt-10 mb-6" >
-          Log in
-          </span>
-        
-          <span className='mb-0.5'>  
-            Email
-          </span>
-          <TextInput
-            placeholder="Your email address"
-            label="email"
-            type="email"
-            register={register}
-            minLength={{ value: 1, message: 'Email must not be empty' }}
-            pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
-            autoFocus={true}
-            error={errors.email}
-          />
 
-         
-          <div className='flex justify-between mb-0.5'>
-            <span className='font-normal'>Password</span>
-            <span
-              onClick={(): void => {
-                analyticsService.trackUserResetPasswordRequest();
-                navigationService.push(AppView.Remove);
-              }}
-              className="cursor-pointer text-sm text-center font-medium text-blue-60 hover:text-blue-80"
-            >
-              Forgot your password?
-            </span>
-          </div>
+    <div className="flex flex-col items-center justify-center w-96 h-fit rounded-2xl bg-white shadow-md">
+      <form className="flex flex-col w-80" onSubmit={handleSubmit(onSubmit)}>
+
+        <span className="text-2xl font-medium mt-10 mb-6" >
+          Log in
+        </span>
+
+        <span className='mb-0.5'>
+          Email
+        </span>
+        <TextInput
+          placeholder="Email"
+          label="email"
+          type="email"
+          register={register}
+          minLength={{ value: 1, message: 'Email must not be empty' }}
+          pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+          autoFocus={true}
+          error={errors.email}
+        />
+
+
+        <div className='flex justify-between mb-0.5'>
+          <span className='font-normal'>Password</span>
+          <span
+            onClick={(): void => {
+              analyticsService.trackUserResetPasswordRequest();
+              navigationService.push(AppView.Remove);
+            }}
+            className="cursor-pointer text-sm text-center font-medium text-blue-60 hover:text-blue-80"
+          >
+            Forgot your password?
+          </span>
+        </div>
+        <PasswordInput
+          placeholder="Password"
+          label={'password'}
+          type={showPassword ? 'text' : 'password'}
+          register={register}
+          required={true}
+          minLength={{ value: 1, message: 'Password must not be empty' }}
+          error={errors.password}
+          icon={
+            password ? (
+              showPassword ? (
+                <Eye className="w-6 h-6 font-medium" onClick={() => setShowPassword(false)} />
+              ) : (
+                <EyeSlash className="w-6 h-6 font-medium" onClick={() => setShowPassword(true)} />
+              )
+            ) : undefined
+          }
+        />
+
+        {showTwoFactor && (
           <PasswordInput
-            placeholder="Your password"
-            label={'password'}
-            type={showPassword ? 'text' : 'password'}
+            className='mt-2'
+            label="twoFactorCode"
+            placeholder="Two factor authentication code"
+            type={showTwoFactorCode ? 'text' : 'password'}
+            error={errors.twoFactorCode}
             register={register}
             required={true}
-            minLength={{ value: 1, message: 'Password must not be empty' }}
-            error={errors.password}
-             icon={
-              password ? (
-                showPassword ? (
-                  <Eye className="w-6 h-6 font-medium" onClick={() => setShowPassword(false)} />
+            icon={
+              twoFactorCode ? (
+                showTwoFactorCode ? (
+                  <EyeSlash className="w-6 h-6 font-medium" onClick={() => setShowTwoFactorCode(false)} />
                 ) : (
-                  <EyeSlash className="w-6 h-6 font-medium" onClick={() => setShowPassword(true)} />
+                  <Eye className="w-6 h-6 font-medium" onClick={() => setShowTwoFactorCode(true)} />
                 )
-              ) : undefined 
+              ) : undefined
             }
+            minLength={1}
+            pattern={twoFactorRegexPattern}
           />
+        )}
 
-          {showTwoFactor && (
-            <PasswordInput
-              className='mt-2'
-              label="twoFactorCode"
-              placeholder="Two factor authentication code"
-              type={showTwoFactorCode ? 'text' : 'password'}
-              error={errors.twoFactorCode}
-              register={register}
-              required={true}
-              icon={
-                twoFactorCode ? (
-                  showTwoFactorCode ? (
-                    <EyeSlash className="w-6 h-6 font-medium" onClick={() => setShowTwoFactorCode(false)} />
-                  ) : (
-                    <Eye className="w-6 h-6 font-medium" onClick={() => setShowTwoFactorCode(true)} />
-                  )
-                ) : undefined
-              }
-              minLength={1}
-              pattern={twoFactorRegexPattern}
-            />
-          )}
+        {loginError && showErrors && (
+          <div className="flex mt-0.5">
+            <WarningCircle className='h-4 rounded-full mt-0.5 mr-1 bg-red-60 text-white' />
+            <span className="text-red-60 text-sm w-56 font-base">{loginError}</span>
+          </div>
+        )}
 
-          {loginError && showErrors && (
-            <div className="flex mt-0.5">
-              <WarningCircle className='h-4 rounded-full mt-0.5 mr-1 bg-red-60 text-white'/>
-              <span className="text-red-60 text-sm w-56 font-base">{loginError}</span>
-            </div>
-          )}
-
-          <div className="mt-4">
-            {/*<AuthButton
+        <div className="mt-4">
+          {/*<AuthButton
               isDisabled={isLoggingIn || !isValid}
               text="Sign in"
               textWhenDisabled={isValid ? 'Decrypting...' : 'Sign in'}
           />*/}
-            <Button
-            disabled={isLoggingIn || !isValid }
+          <Button
+            disabled={isLoggingIn || !isValid}
             text="Log in"
-            disabledText={isValid? 'Decrypting...' : 'Log in'}
+            disabledText={isValid ? 'Decrypting...' : 'Log in'}
             loading={isLoggingIn}
             type="primary"
-            />
-          </div>
-        </form>
+          />
+        </div>
+      </form>
 
-        <div className="flex flex-col items-center w-72 mb-10">
+      <div className="flex flex-col items-center w-72 mb-10">
 
-          <div className="flex w-full justify-center text-sm mt-3">
-            <span className="mr-2">Don't have an account?</span>
-            <Link to="/new" className='cursor-pointer text-sm text-center no-underline font-medium text-blue-60 hover:text-blue-80 appearance-none'>Create account</Link>
-          </div>
+        <div className="flex w-full justify-center text-sm mt-3">
+          <span className="mr-2">Don't have an account?</span>
+          <Link to="/new" className='cursor-pointer text-sm text-center no-underline font-medium text-blue-60 hover:text-blue-80 appearance-none'>Create account</Link>
         </div>
       </div>
-   
+    </div>
+
   );
 }
