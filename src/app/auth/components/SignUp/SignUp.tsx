@@ -340,6 +340,7 @@ function SignUp(props: SignUpProps): JSX.Element {
           Email
         </span>
         <TextInput
+          className='mb-2.5'
           placeholder="Email"
           label="email"
           type="email"

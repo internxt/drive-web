@@ -139,6 +139,7 @@ export default function LogIn(): JSX.Element {
           Email
         </span>
         <TextInput
+          className='mb-2.5'
           placeholder="Email"
           label="email"
           type="email"

@@ -25,8 +25,9 @@ interface InputProps {
   onBlur?: () => void;
   className? : string;
   autoFocus?: boolean;
+  value?:string;
 }
-const PasswordInput = ({label, type, disabled, register, minLength, maxLength, placeholder, pattern, error, min, required, icon, onFocus, onBlur, className, autoFocus }:  InputProps ): JSX.Element => {
+const PasswordInput = ({label, type, disabled, register, minLength, maxLength, placeholder, pattern, error, min, required, icon, onFocus, onBlur, className, autoFocus, value }:  InputProps ): JSX.Element => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isFocused, setIsFocused] = useState(false);
@@ -40,6 +41,7 @@ const PasswordInput = ({label, type, disabled, register, minLength, maxLength, p
       min={0}
       required={true}
       autoFocus={autoFocus}
+      value={value}
       {...register(label, {
         required,
         minLength,
