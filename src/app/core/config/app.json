@@ -69,6 +69,14 @@
       "hideSearch": true
     },
     {
+      "id": "trash",
+      "layout": "header-and-sidenav",
+      "path": "/app/trash",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
+    },
+    {
       "id": "account",
       "layout": "header-and-sidenav",
       "path": "/account",

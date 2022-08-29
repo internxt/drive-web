@@ -139,6 +139,13 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   };
 
+  onDeletePermanentlyButtonClicked = () => {
+    const { dispatch, selectedItems } = this.props;
+
+    dispatch(storageActions.setItemsToDelete(selectedItems));
+    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+  };
+
   onPreviousPageButtonClicked = (): void => undefined;
 
   onNextPageButtonClicked = (): void => undefined;
@@ -170,6 +177,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
     const isRecents = title === 'Recents';
 
+    const isTrash = title === 'Trash';
+
     const FileIcon = iconService.getItemIcon(false);
     const filesEmptyImage = (
       <div className="relative h-32 w-32">
@@ -186,7 +195,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
         <div className="flex h-full w-full max-w-full flex-grow">
           <div className="flex w-1 flex-grow flex-col pt-6">
             <div className="flex justify-between pb-4">
-              <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
+              {!isTrash?
+              (
+                <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
+              ):(
+                <div className={`flex items-center text-lg ${titleClassName || ''}`}>{'Here goes Drive and photos'}</div>
+              )}
 
               <div className="flex">
                 {this.hasAnyItemSelected ? (
@@ -206,7 +220,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
-                  <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
+                  <BaseButton className="tertiary square w-8" onClick={!isTrash? this.onBulkDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}>
                     <UilTrashAlt />
                   </BaseButton>
                 ) : null}
@@ -219,7 +233,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
             <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
               {this.hasItems && (
                 <div className="flex flex-grow flex-col justify-between overflow-hidden">
-                  <ViewModeComponent items={items} isLoading={isLoading} />
+                  <ViewModeComponent items={items} isLoading={isLoading} isTrash={isTrash}/>
                 </div>
               )}
 

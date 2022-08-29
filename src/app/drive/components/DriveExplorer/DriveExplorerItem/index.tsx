@@ -10,4 +10,5 @@ export enum DriveItemAction {
 
 export interface DriveExplorerItemProps {
   item: DriveItemData;
+  isTrash?: boolean;
 }

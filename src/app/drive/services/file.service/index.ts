@@ -86,7 +86,7 @@ async function fetchRecents(limit: number): Promise<DriveFileData[]> {
 
 async function fetchDeleted(): Promise<DriveFileData[]> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  const trashRequest = storageClient.getTrash();
+  const trashRequest = storageClient.getRecentFiles(64); //getTrash()
 
   return trashRequest[0].then((response) => {
     const { files } = response;

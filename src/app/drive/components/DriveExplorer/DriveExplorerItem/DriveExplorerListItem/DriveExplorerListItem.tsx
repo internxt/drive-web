@@ -21,7 +21,7 @@ import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 
 import './DriveExplorerListItem.scss';
 
-const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
+const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { isItemSelected, isSomeItemSelected } = useDriveItemStoreProps();
   const {
@@ -37,6 +37,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     onRenameButtonClicked,
     onInfoButtonClicked,
     onDeleteButtonClicked,
+    onDeletePermanentlyButtonClicked,
     onShareButtonClicked,
     onItemClicked,
     onItemRightClicked,
@@ -115,7 +116,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {/* HOVER ACTIONS */}
       <div className="pl-3 w-2/12 items-center hidden xl:flex">
-        <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
+        {!isTrash?(<div className={`${isSomeItemSelected? 'invisible' : ''} flex`}>
           <button
             onClick={onDownloadButtonClicked}
             className="hover-action mr-3"
@@ -137,7 +138,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           >
             <UilTrashAlt className="h-5" />
           </button>
-        </div>
+        </div>):('')}
       </div>
 
       {
@@ -174,6 +175,8 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
               onShareButtonClicked={onShareButtonClicked}
               onInfoButtonClicked={onInfoButtonClicked}
               onDeleteButtonClicked={onDeleteButtonClicked}
+              onDeletePermanentlyButtonClicked={onDeletePermanentlyButtonClicked}
+              isTrash={isTrash}
             />
           </Dropdown.Menu>
         </Dropdown>
