@@ -81,6 +81,7 @@ export default function LogIn(): JSX.Element {
 
       console.error('Login error. ' + castedError.message);
 
+      //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         navigationService.history.push(`/activate/${email}`);
       } else {

@@ -42,6 +42,7 @@ export interface SignUpProps {
 
 function SignUp(props: SignUpProps): JSX.Element {
   const qs = queryString.parse(navigationService.history.location.search);
+  //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const tokenParam = qs.token;
   const hasReferrer = !!qs.ref;
@@ -152,7 +153,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         //   throw Error('Email adress already used');
         // }
         if (res.status !== 200) {
-          throw Error(body.error || 'Internal Server Error');
+          throw Error('Email adress already used');
         } else {
           return body;
         }

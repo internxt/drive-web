@@ -149,7 +149,7 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
         //   throw Error('Email adress already used');
         // }
         if (res.status !== 200) {
-          throw Error(body.error || 'Internal Server Error');
+          throw Error('Email adress already used');
         } else {
           return body;
         }

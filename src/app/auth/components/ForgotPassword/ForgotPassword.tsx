@@ -82,6 +82,7 @@ function ForgotPassword(): JSX.Element {
                   onFocus={() => setShowErrors(false)}
                   required={true}
                   minLength={{ value: 1, message: 'Email must not be empty' }}
+                  //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
                   pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
                   error={errors.email}
                 />
