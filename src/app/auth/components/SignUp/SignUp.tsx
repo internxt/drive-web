@@ -1,36 +1,29 @@
 import { useState, useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import * as bip39 from 'bip39';
 import queryString from 'query-string';
-import { aes, auth } from '@internxt/lib';
+import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
+import { WarningCircle } from 'phosphor-react';
 
 import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
-import { Keys, RegisterDetails } from '@internxt/sdk/dist/auth';
-import { readReferalCookie } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 
 import { useAppDispatch } from 'app/store/hooks';
-import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 import { userActions, userThunks } from 'app/store/slices/user';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { planThunks } from 'app/store/slices/plan';
-import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { productsThunks } from 'app/store/slices/products';
-import httpService from 'app/core/services/http.service';
 import { AppView, IFormValues } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { referralsThunks } from 'app/store/slices/referrals';
-import { SdkFactory } from '../../../core/factory/sdk';
 import TextInput from '../../components/TextInput/TextInput';
 import PasswordInput from '../../components/PasswordInput/PasswordInput';
 import Button from '../../components/Button/Button';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import { WarningCircle } from 'phosphor-react';
+import { useSignUp } from './useSignUp';
 
 export interface SignUpProps {
   location: {
@@ -42,10 +35,14 @@ export interface SignUpProps {
 
 function SignUp(props: SignUpProps): JSX.Element {
   const qs = queryString.parse(navigationService.history.location.search);
+  const hasReferrer = !!qs.ref;
+  const { updateInfo, doRegister } = useSignUp(
+    qs.register === 'activate' ? 'activate' : 'appsumo',
+    hasReferrer ? String(qs.ref) : undefined,
+  );
   //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const tokenParam = qs.token;
-  const hasReferrer = !!qs.ref;
   const {
     register,
     formState: { errors, isValid },
@@ -109,203 +106,81 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   }
 
-  const updateInfo = (email: string, password: string) => {
-    // Setup hash and salt
-    const hashObj = passToHash({ password: password });
-    const encPass = encryptText(hashObj.hash);
-    const encSalt = encryptText(hashObj.salt);
-
-    // Setup mnemonic
-    const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, password);
-
-    // Body
-    const body = {
-      //name: name,
-      //lastname: lastname,
-      email: email.toLowerCase(),
-      password: encPass,
-      mnemonic: encMnemonic,
-      salt: encSalt,
-      referral: readReferalCookie(),
-    };
-
-    const fetchHandler = async (res: Response) => {
-      const body = await res.text();
-
-      try {
-        const bodyJson = JSON.parse(body);
-
-        return { res: res, body: bodyJson };
-      } catch {
-        return { res: res, body: body };
-      }
-    };
-    const activate = qs.register === 'activate' ? 'activate' : 'appsumo';
-    return fetch(`${process.env.REACT_APP_API_URL}/api/${activate}/update`, {
-      method: 'POST',
-      headers: httpService.getHeaders(true, false),
-      body: JSON.stringify(body),
-    })
-      .then(fetchHandler)
-      .then(({ res, body }) => {
-        // if (res.status === 409) {
-        //   throw Error('Email adress already used');
-        // }
-        if (res.status !== 200) {
-          throw Error('Email adress already used');
-        } else {
-          return body;
-        }
-      })
-      .then((res) => {
-        const xToken = res.token;
-        const xUser = res.user;
-
-        xUser.mnemonic = mnemonic;
-        dispatch(userActions.setUser(xUser));
-        analyticsService.trackSignUp({
-          userId: xUser.uuid,
-          properties: {
-            email: xUser.email,
-            signup_source: signupCampaignSource(window.location.search),
-          },
-          traits: {
-            email: xUser.email,
-            first_name: 'Internxt',
-            last_name: 'User',
-            usage: 0,
-            createdAt: new Date().toISOString(),
-            signup_device_source: signupDevicesource(window.navigator.userAgent),
-            acquisition_channel: signupCampaignSource(window.location.search),
-          },
-        });
-
-        if (activate === 'activate') {
-          analyticsService.trackPaymentConversion();
-        }
-        return dispatch(userThunks.initializeUserThunk()).then(() => {
-          localStorageService.set('xToken', xToken);
-          localStorageService.set('xMnemonic', mnemonic);
-        });
-      });
-  };
-
-  const doRegister = async (email: string, password: string, captcha: string) => {
-    const hashObj = passToHash({ password: password });
-    const encPass = encryptText(hashObj.hash);
-    const encSalt = encryptText(hashObj.salt);
-    const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, password);
-
-    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
-    const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
-
-    const authClient = SdkFactory.getInstance().createAuthClient();
-
-    const keys: Keys = {
-      privateKeyEncrypted: encPrivateKey,
-      publicKey: publicKeyArmored,
-      revocationCertificate: revocationCertificate,
-    };
-    const registerDetails: RegisterDetails = {
-      name: 'Internxt',
-      lastname: 'User',
-      email: email,
-      password: encPass,
-      salt: encSalt,
-      mnemonic: encMnemonic,
-      keys: keys,
-      captcha: captcha,
-      referral: readReferalCookie(),
-      referrer: hasReferrer ? String(qs.ref) : undefined,
-    };
-
-    authClient
-      .register(registerDetails)
-      .then((data) => {
-        const token = data.token;
-        const user: UserSettings = {
-          ...data.user,
-          bucket: '',
-        };
-        const uuid = data.uuid;
-
-        user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
-
-        analyticsService.trackSignUp({
-          userId: uuid,
-          properties: {
-            signup_source: signupCampaignSource(window.location.search),
-            email: email,
-          },
-          traits: {
-            member_tier: 'free',
-            email: email,
-            first_name: 'Internxt',
-            last_name: 'User',
-            usage: 0,
-            createdAt: new Date().toISOString(),
-            signup_device_source: signupDevicesource(window.navigator.userAgent),
-            acquisition_channel: signupCampaignSource(window.location.search),
-          },
-        });
-
-        // adtrack script
-        window._adftrack = Array.isArray(window._adftrack)
-          ? window._adftrack
-          : window._adftrack
-          ? [window._adftrack]
-          : [];
-        window._adftrack.push({
-          HttpHost: 'track.adform.net',
-          pm: 2370627,
-          divider: encodeURIComponent('|'),
-          pagename: encodeURIComponent('New'),
-        });
-
-        localStorageService.set('xToken', token);
-        user.mnemonic = decryptTextWithKey(user.mnemonic, password);
-        dispatch(userActions.setUser({ ...user }));
-        localStorageService.set('xMnemonic', user.mnemonic);
-
-        dispatch(productsThunks.initializeThunk());
-        dispatch(planThunks.initializeThunk());
-        dispatch(referralsThunks.initializeThunk());
-        dispatch(userThunks.initializeUserThunk()).then(() => {
-          navigationService.push(AppView.Drive);
-        });
-      })
-      .catch((err) => {
-        setSignupError(err.message || err);
-        setShowError(true);
-        setIsLoading(false);
-      });
-  };
-
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoading(true);
+
     try {
       const { email, password, token } = formData;
 
-      /*if (password !== confirmPassword) {
-        throw new Error('Passwords do not match');
-      }*/
+      let xUser: UserSettings;
+      let xToken: string;
+      let mnemonic: string;
 
       if (!props.isNewUser) {
-        await updateInfo(email, password)
-          .then(() => {
-            dispatch(productsThunks.initializeThunk());
-            dispatch(planThunks.initializeThunk());
-            navigationService.push(AppView.Drive);
-          })
-          .catch((err) => {
-            setIsLoading(false);
-            throw new Error(err.message);
-          });
+        const res = await updateInfo(email, password);
+        xUser = res.xUser;
+        xToken = res.xToken;
+        mnemonic = res.mnemonic;
+
+        dispatch(userActions.setUser(xUser));
+        await dispatch(userThunks.initializeUserThunk());
+        localStorageService.set('xToken', xToken);
+        localStorageService.set('xMnemonic', mnemonic);
+        dispatch(productsThunks.initializeThunk());
+        dispatch(planThunks.initializeThunk());
       } else {
-        await doRegister(email, password, token);
+        const res = await doRegister(email, password, token);
+        xUser = res.xUser;
+        xToken = res.xToken;
+        mnemonic = res.mnemonic;
+
+        localStorageService.set('xToken', xToken);
+        dispatch(userActions.setUser(xUser));
+        localStorageService.set('xMnemonic', mnemonic);
+        dispatch(productsThunks.initializeThunk());
+        dispatch(planThunks.initializeThunk());
+        dispatch(referralsThunks.initializeThunk());
+        await dispatch(userThunks.initializeUserThunk());
       }
+
+      /**
+       * TODO: Move ANALYTICS ======
+       */
+      analyticsService.trackPaymentConversion();
+      analyticsService.trackSignUp({
+        userId: xUser.uuid,
+        properties: {
+          email: xUser.email,
+          signup_source: signupCampaignSource(window.location.search),
+        },
+        traits: {
+          email: xUser.email,
+          first_name: xUser.name,
+          last_name: xUser.lastname,
+          usage: 0,
+          createdAt: new Date().toISOString(),
+          signup_device_source: signupDevicesource(window.navigator.userAgent),
+          acquisition_channel: signupCampaignSource(window.location.search),
+        },
+      });
+
+      // adtrack script
+      window._adftrack = Array.isArray(window._adftrack)
+        ? window._adftrack
+        : window._adftrack
+        ? [window._adftrack]
+        : [];
+      window._adftrack.push({
+        HttpHost: 'track.adform.net',
+        pm: 2370627,
+        divider: encodeURIComponent('|'),
+        pagename: encodeURIComponent('New'),
+      });
+      /**
+       * ==========
+       */
+
+      navigationService.push(AppView.Drive);
     } catch (err: unknown) {
       setIsLoading(false);
       const castedError = errorService.castError(err);
