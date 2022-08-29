@@ -145,6 +145,9 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
     })
       .then(fetchHandler)
       .then(({ res, body }) => {
+        // if (res.status === 409) {
+        //   throw Error('Email adress already used');
+        // }
         if (res.status !== 200) {
           throw Error(body.error || 'Internal Server Error');
         } else {
@@ -296,8 +299,8 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
           })
           .catch((err) => {
             setIsLoading(false);
-            console.log('ERR', err);
-            throw new Error(err.message + ', please contact us');
+            // console.log('ERR', err);
+            throw new Error(err.message);
           });
       } else {
         await doRegister(email, password, token);
