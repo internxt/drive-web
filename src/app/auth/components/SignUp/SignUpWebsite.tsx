@@ -119,7 +119,7 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
     const body = {
       //name: name,
       //lastname: lastname,
-      email: email,
+      email: email.toLowerCase(),
       password: encPass,
       mnemonic: encMnemonic,
       salt: encSalt,
