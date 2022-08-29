@@ -66,7 +66,7 @@ export default function LogIn(): JSX.Element {
           dispatch(referralsThunks.initializeThunk());
           await dispatch(initializeUserThunk()).unwrap();
         } catch (e: unknown) {
-          console.log(e);
+          // PASS
         }
 
         setIsAuthenticated(true);
@@ -78,8 +78,6 @@ export default function LogIn(): JSX.Element {
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-
-      console.error('Login error. ' + castedError.message);
 
       //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {

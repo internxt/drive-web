@@ -277,7 +277,6 @@ function SignUp(props: SignUpProps): JSX.Element {
         });
       })
       .catch((err) => {
-        console.error('Register error', err);
         setSignupError(err.message || err);
         setShowError(true);
         setIsLoading(false);
@@ -302,7 +301,6 @@ function SignUp(props: SignUpProps): JSX.Element {
           })
           .catch((err) => {
             setIsLoading(false);
-            console.log('ERR', err);
             throw new Error(err.message);
           });
       } else {
