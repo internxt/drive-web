@@ -88,8 +88,8 @@ export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: str
       revocationCertificate: revocationCertificate,
     };
     const registerDetails: RegisterDetails = {
-      name: 'Internxt',
-      lastname: 'User',
+      name: 'My',
+      lastname: 'Internxt',
       email: email,
       password: encPass,
       salt: encSalt,
