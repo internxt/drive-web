@@ -1,6 +1,6 @@
 import { items } from '@internxt/lib';
 
-import { MouseEvent, ChangeEvent, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
+import { ChangeEvent, createRef, KeyboardEventHandler, MouseEvent, RefObject, useState } from 'react';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../types';
 import dateService from '../../../../../core/services/date.service';
 import iconService from '../../../../services/icon.service';
@@ -10,6 +10,7 @@ import { storageActions } from '../../../../../store/slices/storage';
 import storageSelectors from '../../../../../store/slices/storage/storage.selectors';
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
+import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-trash';
 
 interface DriveItemActions {
   isEditingName: boolean;
@@ -131,11 +132,12 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
     e.stopPropagation();
   };
+
   const onDeleteButtonClicked = (e: React.MouseEvent): void => {
     e.stopPropagation();
-
-    dispatch(storageActions.setItemsToDelete([item]));
-    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    moveItemsToTrash([item]);
+    // dispatch(storageActions.setItemsToDelete([item]));
+    // dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   };
   const onItemClicked = (): void => {
     isItemSelected(item)

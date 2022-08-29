@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import selectors from './storage.selectors';
 import { storageExtraReducers } from '../storage/storage.thunks';
-import { StorageState, StorageSetFiltersPayload, filtersFactory, orderFactory } from './storage.model';
+import { filtersFactory, orderFactory, StorageSetFiltersPayload, StorageState } from './storage.model';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import itemsListService from '../../../drive/services/items-list.service';
 import { OrderDirection, OrderSettings } from '../../../core/types';
