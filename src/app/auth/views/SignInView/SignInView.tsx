@@ -5,7 +5,7 @@ export default function SignInView(): JSX.Element {
   return (
     <div className="flex h-full w-full flex-col overflow-auto bg-white sm:bg-gray-5">
       <div className="flex flex-shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
-        <img src={bigLogo} width="100" alt="" />
+        <img src={bigLogo} width="120" alt="" />
       </div>
       <div className="flex h-full flex-col items-center justify-center">
         <LogIn />

@@ -28,7 +28,7 @@ import TextInput from '../../components/TextInput/TextInput';
 import PasswordInput from '../../components/PasswordInput/PasswordInput';
 import Button from '../../components/Button/Button';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { ArrowRight } from 'phosphor-react';
+import { ArrowRight, WarningCircle } from 'phosphor-react';
 
 export interface SignUpProps {
   location: {
@@ -95,8 +95,8 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
         tag: 'error',
         label:
           result.reason === 'NOT_COMPLEX_ENOUGH'
-            ? 'Password is not complex enough'
-            : 'Password has to be at least 8 characters long',
+            ? 'Password must contain at least one letter or symbol'
+            : 'Password must be at least 8 characters long',
       });
     } else if (result.strength === 'medium') {
       setPasswordState({ tag: 'warning', label: 'Password is weak' });
@@ -266,7 +266,8 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
         dispatch(planThunks.initializeThunk());
         dispatch(referralsThunks.initializeThunk());
         dispatch(userThunks.initializeUserThunk()).then(() => {
-          navigationService.push(AppView.Drive);
+          // navigationService.push(AppView.Drive);
+          window.top?.postMessage('redirect', '*');
         });
       })
       .catch((err) => {
@@ -323,8 +324,8 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
   }
 
   return (
-    <form className="flex w-full flex-col" onSubmit={handleSubmit(getReCaptcha)}>
-      <div className="mb-2.5 flex flex-col space-x-0 space-y-3 xs:flex-row xs:space-x-2.5 xs:space-y-0">
+    <form className="flex w-full flex-col px-px" onSubmit={handleSubmit(getReCaptcha)}>
+      <div className="mb-2.5 flex flex-col space-x-0 space-y-2 xs:flex-row xs:space-x-2.5 xs:space-y-0">
         <label className="space-y-1 xs:flex-1">
           <span>Email</span>
           <TextInput
@@ -355,7 +356,18 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
         </label>
       </div>
 
-      <div className="flex flex-row items-center">
+      {(bottomInfoError || passwordState?.tag === 'error') && (
+        <div className="mb-1.5 -mt-1 flex w-full flex-row items-start">
+          <div className="flex h-5 flex-row items-center">
+            <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+          </div>
+          <span className="font-base w-full text-sm text-red-60">
+            {passwordState?.tag === 'error' ? passwordState.label : bottomInfoError}
+          </span>
+        </div>
+      )}
+
+      <div className="flex flex-col items-start xs:flex-row xs:items-center">
         <Button
           disabled={isLoading}
           text="Get started"
@@ -365,7 +377,7 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
           rightIcon={<ArrowRight className="h-6 w-6" />}
         />
 
-        <span className="ml-8 text-xs text-gray-50">
+        <span className="mt-2 text-xs text-gray-50 xs:ml-4 xs:mt-0">
           By creating an Internxt account you <br className="hidden xs:flex" />
           accept Internxt’s{' '}
           <a href="https://internxt.com/legal" target="_blank" className=" text-gray-60 hover:text-gray-80">

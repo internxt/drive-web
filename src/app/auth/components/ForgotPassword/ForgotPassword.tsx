@@ -15,7 +15,7 @@ import Button from '../Button/Button';
 function ForgotPassword(): JSX.Element {
   const {
     register,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
   } = useForm<IFormValues>({ mode: 'onChange' });
 
@@ -62,7 +62,9 @@ function ForgotPassword(): JSX.Element {
           <div className="flex flex-col space-y-1">
             <span className="text-2xl font-medium text-gray-100">Forgot password</span>
             <p className="font-regular text-sm text-gray-80">
-              To see the recovery options, please enter your email, we'll guide you to recover your account.
+              As specified in the security section of the app, your password is used for encryption and decryption and
+              only you have access to it. Therefore, we can't restore your account without the password. You can
+              register again by entering your email below so we can delete your account and all your files.
             </p>
           </div>
         </div>

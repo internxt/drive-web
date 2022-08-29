@@ -23,7 +23,7 @@ export default function Button({
     <button
       disabled={disabled}
       type="submit"
-      className={`flex h-11 flex-row items-center justify-center space-x-4 whitespace-nowrap ${style} ${className} ${
+      className={`flex h-11 flex-row items-center justify-center space-x-3 whitespace-nowrap ${style} ${className} ${
         loading && 'loading'
       } ${disabled && !loading ? 'disabled' : ''}`}
     >

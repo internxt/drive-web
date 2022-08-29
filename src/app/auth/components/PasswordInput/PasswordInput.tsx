@@ -20,7 +20,7 @@ interface InputProps {
   onBlur?: () => void;
   className?: string;
   autoFocus?: boolean;
-  value?:string;
+  value?: string;
 }
 const PasswordInput = ({
   label,
@@ -65,6 +65,8 @@ const PasswordInput = ({
       />
       <div
         onClick={() => setShowPassword(!showPassword)}
+        onKeyDown={(e) => (e['code'] === 'Space' || e['code'] === 'Enter') && setShowPassword(!showPassword)}
+        tabIndex={0}
         className="absolute right-4 top-1/2 flex -translate-y-1/2 transform cursor-pointer items-center justify-center text-gray-100"
       >
         {showPassword ? <Eye className="h-6 w-6" /> : <EyeSlash className="h-6 w-6" />}
