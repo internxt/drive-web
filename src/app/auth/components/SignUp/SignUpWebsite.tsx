@@ -3,7 +3,6 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
 
-import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 
@@ -28,7 +27,6 @@ export interface SignUpProps {
     search: string;
   };
   isNewUser: boolean;
-  //onChange: (payload: { valid: boolean; password: string }) => void;
 }
 
 function SignUpWebsite(props: SignUpProps): JSX.Element {
@@ -214,7 +212,6 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
-            pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
             autoFocus={true}
             error={errors.email}
           />

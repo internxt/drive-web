@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import { auth } from '@internxt/lib';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -24,7 +23,11 @@ import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
 
-export default function LogIn(): JSX.Element {
+interface LogInProps {
+  displayIframe: boolean;
+}
+
+export default function LogIn(props: LogInProps): JSX.Element {
   const dispatch = useAppDispatch();
   const {
     register,
@@ -79,7 +82,6 @@ export default function LogIn(): JSX.Element {
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
-      //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         navigationService.history.push(`/activate/${email}`);
       } else {
@@ -96,7 +98,11 @@ export default function LogIn(): JSX.Element {
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
-      navigationService.push(AppView.Drive);
+      if (props.displayIframe) {
+        window.top?.postMessage('redirect', '*');
+      } else {
+        navigationService.push(AppView.Drive);
+      }
     }
     if (user && user.registerCompleted === false) {
       navigationService.history.push('/appsumo/' + user.email);
@@ -110,18 +116,28 @@ export default function LogIn(): JSX.Element {
       if (!registerCompleted) {
         navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
-        navigationService.push(AppView.Drive);
+        if (props.displayIframe) {
+          window.top?.postMessage('redirect', '*');
+        } else {
+          navigationService.push(AppView.Drive);
+        }
       }
     }
   }, [isAuthenticated, token, user, registerCompleted]);
 
   return (
-    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
+    <div
+      className={`flex flex-col bg-white  ${
+        props.displayIframe
+          ? 'w-full px-px'
+          : 'h-fit w-96 items-center justify-center rounded-2xl px-8 py-10 sm:shadow-soft'
+      }`}
+    >
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <span className="text-2xl font-medium">Log in</span>
 
-        <div className="flex flex-col space-y-4">
-          <label className="space-y-1">
+        <div className="flex flex-col space-y-3">
+          <label className="space-y-0.5">
             <span>Email</span>
             <TextInput
               placeholder="Email"
@@ -129,24 +145,23 @@ export default function LogIn(): JSX.Element {
               type="email"
               register={register}
               minLength={{ value: 1, message: 'Email must not be empty' }}
-              pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
-              autoFocus={true}
+              autoFocus={!props.displayIframe}
               error={errors.email}
             />
           </label>
 
-          <label className="space-y-1">
+          <label className="space-y-0.5">
             <div className="flex flex-row items-center justify-between">
               <span className="font-normal">Password</span>
-              <span
+              <Link
                 onClick={(): void => {
                   analyticsService.trackUserResetPasswordRequest();
-                  navigationService.push(AppView.Remove);
                 }}
-                className="cursor-pointer text-center text-sm font-medium text-primary"
+                to={props.displayIframe ? '/removedialog' : '/remove'}
+                className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
               >
                 Forgot your password?
-              </span>
+              </Link>
             </div>
 
             <PasswordInput
@@ -172,7 +187,7 @@ export default function LogIn(): JSX.Element {
             )}
 
             {loginError && showErrors && (
-              <div className="flex flex-row items-start ">
+              <div className="flex flex-row items-start pt-1">
                 <div className="flex h-5 flex-row items-center">
                   <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
                 </div>
@@ -192,12 +207,12 @@ export default function LogIn(): JSX.Element {
         </div>
       </form>
 
-      <div className="mt-6 flex w-full justify-center text-sm">
+      <div className="mt-4 flex w-full justify-center text-sm">
         <span>
           Don't have an account?{' '}
           <Link
-            to="/new"
-            className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline focus:text-primary-dark"
+            to={props.displayIframe ? '/signupdialog' : '/new'}
+            className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             Create account
           </Link>
