@@ -1401,14 +1401,9 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/9a19de23e3330a81c0e2bace1a6a0325fc8633197cf677e44ea75e54df315b5e"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@0.18.0":
-  version "0.18.0"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/0.18.0/5684435300aead0d42231862e964bbcef27277dc#5684435300aead0d42231862e964bbcef27277dc"
-  integrity sha512-NuCRSyD+YxEZ0BFXyaFnhyi/KrrKTVNPfykT+Etyw2i66pbZsS2Vns27AzT3d47LhZjDteSuPF5nWeIXolmtag==
-  dependencies:
-    axios "^0.24.0"
-    query-string "^7.1.0"
-    uuid "^8.3.2"
+"@internxt/sdk@link:../sdk":
+  version "0.0.0"
+  uid ""
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
