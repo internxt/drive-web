@@ -7,8 +7,8 @@ const MoveItemsToTrash = async (itemsToTrash) => {
       type: item.isFolder ? 'folder' : 'file',
     };
   });
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  await storageClient.addItemsToTrash({ items });
+  const trashClient = await SdkFactory.getInstance().createTrashClient();
+  await trashClient.addItemsToTrash({ items });
 };
 
 export default MoveItemsToTrash;
