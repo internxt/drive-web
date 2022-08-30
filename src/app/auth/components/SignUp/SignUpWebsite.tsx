@@ -175,7 +175,10 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
        * ==========
        */
 
-      window.top?.postMessage('redirect', 'https://internxt.com');
+      window.top?.postMessage(
+        'redirect',
+        process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
+      );
     } catch (err: unknown) {
       setIsLoading(false);
       const castedError = errorService.castError(err);

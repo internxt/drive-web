@@ -180,7 +180,10 @@ function SignUp(props: SignUpProps): JSX.Element {
        */
 
       if (props.displayIframe) {
-        window.top?.postMessage('redirect', 'https://internxt.com');
+        window.top?.postMessage(
+          'redirect',
+          process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
+        );
       } else {
         navigationService.push(AppView.Drive);
       }

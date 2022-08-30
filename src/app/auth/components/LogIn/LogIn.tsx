@@ -103,7 +103,10 @@ export default function LogIn(props: LogInProps): JSX.Element {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
       if (props.displayIframe) {
-        window.top?.postMessage('redirect', 'https://internxt.com');
+        window.top?.postMessage(
+          'redirect',
+          process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
+        );
       } else {
         navigationService.push(AppView.Drive);
       }
@@ -121,7 +124,10 @@ export default function LogIn(props: LogInProps): JSX.Element {
         navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
         if (props.displayIframe) {
-          window.top?.postMessage('redirect', 'https://internxt.com');
+          window.top?.postMessage(
+            'redirect',
+            process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
+          );
         } else {
           navigationService.push(AppView.Drive);
         }
