@@ -167,8 +167,8 @@ function SignUp(props: SignUpProps): JSX.Element {
       window._adftrack = Array.isArray(window._adftrack)
         ? window._adftrack
         : window._adftrack
-        ? [window._adftrack]
-        : [];
+          ? [window._adftrack]
+          : [];
       window._adftrack.push({
         HttpHost: 'track.adform.net',
         pm: 2370627,
