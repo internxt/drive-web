@@ -36,7 +36,7 @@ const views: Array<{
   { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
-  { id: AppView.SignUpWebsite, component: SignUpWebsiteView },
+  { id: AppView.SignUpWebsite, component: SignUpWebsiteView, componentProps: { isNewUser: true } },
   { id: AppView.Recover, component: RecoverView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
