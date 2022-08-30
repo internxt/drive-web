@@ -11,6 +11,7 @@ export function deleteItems(items: DriveItemData[]): Promise<void> {
         ? folderService.deleteFolder(item as DriveFolderData).then()
         : fileService.deleteFile(item as DriveFileData).then(),
     );
+    fileService.moveToTrash([item] as DriveFileData[]);
   }
 
   return Promise.all(promises).then();

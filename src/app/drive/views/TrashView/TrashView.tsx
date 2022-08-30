@@ -36,6 +36,6 @@ class TrashView extends Component<TrashViewProps> {
 export default connect((state: RootState) => {
   return {
     isLoadingDeleted: state.storage.isLoadingDeleted,
-    items: storageSelectors.filteredItems(state)(state.storage.recents),//.itemsOnTrash),
+    items: storageSelectors.filteredItems(state)(state.storage.itemsOnTrash),//.itemsOnTrash),
   };
 })(TrashView);
