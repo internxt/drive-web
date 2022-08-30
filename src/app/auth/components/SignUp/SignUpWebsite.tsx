@@ -144,8 +144,8 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
       window._adftrack = Array.isArray(window._adftrack)
         ? window._adftrack
         : window._adftrack
-        ? [window._adftrack]
-        : [];
+          ? [window._adftrack]
+          : [];
       window._adftrack.push({
         HttpHost: 'track.adform.net',
         pm: 2370627,
@@ -192,7 +192,7 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
-            pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
+            /* pattern={{ value: emailRegexPattern, message: 'Email not valid' }} */
             autoFocus={true}
             error={errors.email}
           />
