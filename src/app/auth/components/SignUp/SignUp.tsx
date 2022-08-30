@@ -1,28 +1,31 @@
-import { useState, useEffect } from 'react';
-import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import queryString from 'query-string';
-import { auth } from '@internxt/lib';
-import { Link } from 'react-router-dom';
-import { WarningCircle } from 'phosphor-react';
+import { useState, useEffect } from "react";
+import { SubmitHandler, useForm, useWatch } from "react-hook-form";
+import queryString from "query-string";
+import { auth } from "@internxt/lib";
+import { Link } from "react-router-dom";
+import { WarningCircle } from "phosphor-react";
 
-import localStorageService from 'app/core/services/local-storage.service';
-import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
+import localStorageService from "app/core/services/local-storage.service";
+import analyticsService, {
+  signupDevicesource,
+  signupCampaignSource,
+} from "app/analytics/services/analytics.service";
 
-import { useAppDispatch } from 'app/store/hooks';
-import { userActions, userThunks } from 'app/store/slices/user';
-import { planThunks } from 'app/store/slices/plan';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
-import { productsThunks } from 'app/store/slices/products';
-import { AppView, IFormValues } from 'app/core/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { referralsThunks } from 'app/store/slices/referrals';
-import TextInput from '../../components/TextInput/TextInput';
-import PasswordInput from '../../components/PasswordInput/PasswordInput';
-import Button from '../../components/Button/Button';
-import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import { useSignUp } from './useSignUp';
+import { useAppDispatch } from "app/store/hooks";
+import { userActions, userThunks } from "app/store/slices/user";
+import { planThunks } from "app/store/slices/plan";
+import errorService from "app/core/services/error.service";
+import navigationService from "app/core/services/navigation.service";
+import { productsThunks } from "app/store/slices/products";
+import { AppView, IFormValues } from "app/core/types";
+import { UserSettings } from "@internxt/sdk/dist/shared/types/userSettings";
+import { referralsThunks } from "app/store/slices/referrals";
+import TextInput from "../../components/TextInput/TextInput";
+import PasswordInput from "../../components/PasswordInput/PasswordInput";
+import Button from "../../components/Button/Button";
+import testPasswordStrength from "@internxt/lib/dist/src/auth/testPasswordStrength";
+import PasswordStrengthIndicator from "app/shared/components/PasswordStrengthIndicator";
+import { useSignUp } from "./useSignUp";
 
 export interface SignUpProps {
   location: {
@@ -36,10 +39,11 @@ function SignUp(props: SignUpProps): JSX.Element {
   const qs = queryString.parse(navigationService.history.location.search);
   const hasReferrer = !!qs.ref;
   const { updateInfo, doRegister } = useSignUp(
-    qs.register === 'activate' ? 'activate' : 'appsumo',
-    hasReferrer ? String(qs.ref) : undefined,
+    qs.register === "activate" ? "activate" : "appsumo",
+    hasReferrer ? String(qs.ref) : undefined
   );
-  const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
+  const hasEmailParam =
+    (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const tokenParam = qs.token;
   const {
     register,
@@ -47,19 +51,19 @@ function SignUp(props: SignUpProps): JSX.Element {
     handleSubmit,
     control,
   } = useForm<IFormValues>({
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
-      email: hasEmailParam ? (qs.email as string) : '',
+      email: hasEmailParam ? (qs.email as string) : "",
     },
   });
   const dispatch = useAppDispatch();
 
-  const password = useWatch({ control, name: 'password', defaultValue: '' });
+  const password = useWatch({ control, name: "password", defaultValue: "" });
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [passwordState, setPasswordState] = useState<{
-    tag: 'error' | 'warning' | 'success';
+    tag: "error" | "warning" | "success";
     label: string;
   } | null>(null);
 
@@ -76,11 +80,12 @@ function SignUp(props: SignUpProps): JSX.Element {
   }
 
   useEffect(() => {
-    const isAppSumo = navigationService.getCurrentView()?.id === AppView.AppSumo;
+    const isAppSumo =
+      navigationService.getCurrentView()?.id === AppView.AppSumo;
 
-    if (isAppSumo && tokenParam && typeof tokenParam === 'string') {
+    if (isAppSumo && tokenParam && typeof tokenParam === "string") {
       localStorageService.clear();
-      localStorageService.set('xToken', tokenParam);
+      localStorageService.set("xToken", tokenParam);
     }
   }, []);
 
@@ -89,19 +94,22 @@ function SignUp(props: SignUpProps): JSX.Element {
   }, [password]);
 
   function onChangeHandler(input: string) {
-    const result = testPasswordStrength(input, (qs.email as string) === undefined ? '' : (qs.email as string));
+    const result = testPasswordStrength(
+      input,
+      (qs.email as string) === undefined ? "" : (qs.email as string)
+    );
     if (!result.valid) {
       setPasswordState({
-        tag: 'error',
+        tag: "error",
         label:
-          result.reason === 'NOT_COMPLEX_ENOUGH'
-            ? 'Password is not complex enough'
-            : 'Password has to be at least 8 characters long',
+          result.reason === "NOT_COMPLEX_ENOUGH"
+            ? "Password is not complex enough"
+            : "Password has to be at least 8 characters long",
       });
-    } else if (result.strength === 'medium') {
-      setPasswordState({ tag: 'warning', label: 'Password is weak' });
+    } else if (result.strength === "medium") {
+      setPasswordState({ tag: "warning", label: "Password is weak" });
     } else {
-      setPasswordState({ tag: 'success', label: 'Password is strong' });
+      setPasswordState({ tag: "success", label: "Password is strong" });
     }
   }
 
@@ -123,8 +131,8 @@ function SignUp(props: SignUpProps): JSX.Element {
 
         dispatch(userActions.setUser(xUser));
         await dispatch(userThunks.initializeUserThunk());
-        localStorageService.set('xToken', xToken);
-        localStorageService.set('xMnemonic', mnemonic);
+        localStorageService.set("xToken", xToken);
+        localStorageService.set("xMnemonic", mnemonic);
         dispatch(productsThunks.initializeThunk());
         dispatch(planThunks.initializeThunk());
       } else {
@@ -133,9 +141,9 @@ function SignUp(props: SignUpProps): JSX.Element {
         xToken = res.xToken;
         mnemonic = res.mnemonic;
 
-        localStorageService.set('xToken', xToken);
+        localStorageService.set("xToken", xToken);
         dispatch(userActions.setUser(xUser));
-        localStorageService.set('xMnemonic', mnemonic);
+        localStorageService.set("xMnemonic", mnemonic);
         dispatch(productsThunks.initializeThunk());
         dispatch(planThunks.initializeThunk());
         dispatch(referralsThunks.initializeThunk());
@@ -170,17 +178,17 @@ function SignUp(props: SignUpProps): JSX.Element {
         ? [window._adftrack]
         : [];
       window._adftrack.push({
-        HttpHost: 'track.adform.net',
+        HttpHost: "track.adform.net",
         pm: 2370627,
-        divider: encodeURIComponent('|'),
-        pagename: encodeURIComponent('New'),
+        divider: encodeURIComponent("|"),
+        pagename: encodeURIComponent("New"),
       });
       /**
        * ==========
        */
 
       if (props.displayIframe) {
-        window.top?.postMessage('redirect', 'https://drive.internxt.com');
+        window.top?.postMessage("redirect", "https://internxt.com");
       } else {
         navigationService.push(AppView.Drive);
       }
@@ -197,11 +205,14 @@ function SignUp(props: SignUpProps): JSX.Element {
     const grecaptcha = window.grecaptcha;
 
     grecaptcha.ready(() => {
-      grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
-        // Can't wait or token will expire
-        formValues.token = token;
-        if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);
-      });
+      grecaptcha
+        .execute(process.env.REACT_APP_RECAPTCHA_V3, { action: "register" })
+        .then((token) => {
+          // Can't wait or token will expire
+          formValues.token = token;
+          if (passwordState != null && passwordState.tag != "error")
+            onSubmit(formValues);
+        });
     });
   }
 
@@ -209,11 +220,14 @@ function SignUp(props: SignUpProps): JSX.Element {
     <div
       className={`flex flex-col bg-white  ${
         props.displayIframe
-          ? 'w-full px-px'
-          : 'h-fit w-96 items-center justify-center rounded-2xl px-8 py-10 sm:shadow-soft'
+          ? "w-full px-px"
+          : "h-fit w-96 items-center justify-center rounded-2xl px-8 py-10 sm:shadow-soft"
       }`}
     >
-      <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(getReCaptcha)}>
+      <form
+        className="flex w-full flex-col space-y-6"
+        onSubmit={handleSubmit(getReCaptcha)}
+      >
         <span className="text-2xl font-medium">Create account</span>
 
         <div className="flex flex-col space-y-3">
@@ -226,7 +240,7 @@ function SignUp(props: SignUpProps): JSX.Element {
               disabled={hasEmailParam}
               register={register}
               required={true}
-              minLength={{ value: 1, message: 'Email must not be empty' }}
+              minLength={{ value: 1, message: "Email must not be empty" }}
               autoFocus={!props.displayIframe}
               error={errors.email}
             />
@@ -235,7 +249,7 @@ function SignUp(props: SignUpProps): JSX.Element {
           <label className="space-y-0.5">
             <span>Password</span>
             <PasswordInput
-              className={passwordState ? passwordState.tag : ''}
+              className={passwordState ? passwordState.tag : ""}
               placeholder="Password"
               label="password"
               register={register}
@@ -244,14 +258,23 @@ function SignUp(props: SignUpProps): JSX.Element {
               error={errors.password}
             />
             {showPasswordIndicator && passwordState && (
-              <PasswordStrengthIndicator className="pt-1" strength={passwordState.tag} label={passwordState.label} />
+              <PasswordStrengthIndicator
+                className="pt-1"
+                strength={passwordState.tag}
+                label={passwordState.label}
+              />
             )}
             {bottomInfoError && (
               <div className="flex flex-row items-start pt-1">
                 <div className="flex h-5 flex-row items-center">
-                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                  <WarningCircle
+                    weight="fill"
+                    className="mr-1 h-4 text-red-std"
+                  />
                 </div>
-                <span className="font-base w-56 text-sm text-red-60">{bottomInfoError}</span>
+                <span className="font-base w-56 text-sm text-red-60">
+                  {bottomInfoError}
+                </span>
               </div>
             )}
           </label>
@@ -259,7 +282,7 @@ function SignUp(props: SignUpProps): JSX.Element {
           <Button
             disabled={isLoading}
             text="Create account"
-            disabledText={isValid ? 'Encrypting...' : 'Create account'}
+            disabledText={isValid ? "Encrypting..." : "Create account"}
             loading={isLoading}
             style="button-primary"
             className="w-full"
@@ -267,17 +290,21 @@ function SignUp(props: SignUpProps): JSX.Element {
         </div>
       </form>
       <span className="mt-2 w-full text-xs text-gray-50">
-        By creating an account you accept the{' '}
-        <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-80">
+        By creating an account you accept the{" "}
+        <a
+          href="https://internxt.com/legal"
+          target="_blank"
+          className="text-xs text-gray-50 hover:text-gray-80"
+        >
           terms and conditions
         </a>
       </span>
 
       <div className="mt-4 flex w-full items-center justify-center">
         <span className="select-none text-sm text-gray-80">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link
-            to={props.displayIframe ? '/logindialog' : '/login'}
+            to={props.displayIframe ? "/logindialog" : "/login"}
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             Log in
