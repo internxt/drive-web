@@ -106,6 +106,7 @@ export enum AppView {
   Recover = 'recover',
   Drive = 'drive',
   Recents = 'recents',
+  Trash = 'trash',
   Backups = 'backups',
   Photos = 'photos',
   Account = 'account',

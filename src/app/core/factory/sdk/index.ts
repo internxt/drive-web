@@ -7,6 +7,7 @@ import { Workspace } from '../../types';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { Photos } from '@internxt/sdk/dist/photos';
+import { Trash } from '@internxt/sdk/dist/drive/trash';
 import authService from '../../../auth/services/auth.service';
 
 export class SdkFactory {
@@ -103,6 +104,18 @@ export class SdkFactory {
     return new Photos(process.env.REACT_APP_PHOTOS_API_URL, newToken);
   }
 
+  public async createTrashClient(): Promise<Trash> {
+    const appDetails = SdkFactory.getAppDetails();
+    let newToken = this.localStorage.get('xNewToken');
+
+    if (!newToken) {
+      newToken = await authService.getNewToken();
+      this.localStorage.set('xNewToken', newToken);
+    }
+
+    const apiSecurity = { ...this.getApiSecurity(), token: newToken };
+    return Trash.client(process.env.REACT_APP_API_V2_URL as string, appDetails, apiSecurity);
+  }
   /** Helpers **/
 
   private getApiSecurity(): ApiSecurity {

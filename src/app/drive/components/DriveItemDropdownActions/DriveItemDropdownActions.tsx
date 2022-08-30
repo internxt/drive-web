@@ -1,9 +1,10 @@
 import React, { MouseEvent, ReactNode } from 'react';
-import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
-import UilEditAlt from '@iconscout/react-unicons/icons/uil-edit-alt';
-import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
-import UilFileInfoAlt from '@iconscout/react-unicons/icons/uil-file-info-alt';
-import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
+//import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
+//import UilEditAlt from '@iconscout/react-unicons/icons/uil-edit-alt';
+//import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
+//import UilFileInfoAlt from '@iconscout/react-unicons/icons/uil-file-info-alt';
+import {ClockCounterClockwise, Pen, Link, Info, CloudArrowDown, Trash} from 'phosphor-react';
+//import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
@@ -16,6 +17,9 @@ interface FileDropdownActionsProps {
   onShareButtonClicked: (e: MouseEvent) => void;
   onInfoButtonClicked: (e: MouseEvent) => void;
   onDeleteButtonClicked: (e: MouseEvent) => void;
+  onRecoverButtonClicked?: (e: MouseEvent) => void;
+  onDeletePermanentlyButtonClicked: (e: MouseEvent) => void;
+  isTrash?: boolean;
 }
 
 class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
@@ -47,10 +51,22 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
     onInfoButtonClicked && onInfoButtonClicked(e);
   };
 
+  onRecoverButtonClicked = (e: MouseEvent): void => {
+    const { onRecoverButtonClicked } = this.props;
+
+    onRecoverButtonClicked && onRecoverButtonClicked(e);
+  };
+
   onDeleteButtonClicked = (e: MouseEvent): void => {
     const { onDeleteButtonClicked } = this.props;
 
     onDeleteButtonClicked && onDeleteButtonClicked(e);
+  };
+
+  onDeletePermanentlyButtonClicked = (e: MouseEvent): void => {
+    const { onDeletePermanentlyButtonClicked } = this.props;
+
+    onDeletePermanentlyButtonClicked && onDeletePermanentlyButtonClicked(e);
   };
 
   render(): ReactNode {
@@ -60,35 +76,41 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
       <div>
         {title ? <span className="text-supporting-2 mb-1">{title}</span> : null}
 
-        {!hiddenActions.includes(DriveItemAction.Download) ? (
+        {!hiddenActions.includes(DriveItemAction.Download) && !this.props.isTrash? (
           <Dropdown.Item id="download" onClick={this.onDownloadButtonClicked}>
-            <UilCloudDownload className="text-blue-60 h-5 mr-1" />
+            <CloudArrowDown className="text-blue-60 h-5 mr-1" />
             <span>Download</span>
           </Dropdown.Item>
         ) : null}
-        {!hiddenActions.includes(DriveItemAction.Rename) ? (
+        {!hiddenActions.includes(DriveItemAction.Rename) && !this.props.isTrash? (
           <Dropdown.Item id="rename" onClick={this.onRenameButtonClicked}>
-            <UilEditAlt className="text-blue-60 h-5 mr-1" />
+            <Pen className="text-blue-60 h-5 mr-1" />
             <span>Rename</span>
           </Dropdown.Item>
         ) : null}
-        {!hiddenActions.includes(DriveItemAction.Share) ? (
+        {!hiddenActions.includes(DriveItemAction.Share) && !this.props.isTrash ? (
           <Dropdown.Item id="share" onClick={this.onShareButtonClicked}>
-            <UilShareAlt className="text-blue-60 h-5 mr-1" />
+            <Link className="text-blue-60 h-5 mr-1" />
             <span>Share</span>
           </Dropdown.Item>
         ) : null}
-        {!hiddenActions.includes(DriveItemAction.Info) ? (
+        {!hiddenActions.includes(DriveItemAction.Info) && !this.props.isTrash ? (
           <Dropdown.Item id="info" onClick={this.onInfoButtonClicked}>
-            <UilFileInfoAlt className="text-blue-60 h-5 mr-1" />
+            <Info className="text-blue-60 h-5 mr-1" />
             <span>Info</span>
+          </Dropdown.Item>
+        ) : null}
+        {!hiddenActions.includes(DriveItemAction.Info) && this.props.isTrash ? (
+          <Dropdown.Item id="recover" onClick={this.onRecoverButtonClicked}>
+            <ClockCounterClockwise className="text-blue-60 h-5 mr-1" />
+            <span>Restore</span>
           </Dropdown.Item>
         ) : null}
         <hr className="text-neutral-30 my-1.5"></hr>
         {!hiddenActions.includes(DriveItemAction.Delete) ? (
-          <Dropdown.Item id="delete" className="text-red-60 hover:text-red-60" onClick={this.onDeleteButtonClicked}>
-            <UilTrashAlt className="h-5 mr-1" />
-            <span>Delete</span>
+          <Dropdown.Item id="delete" className={`${!this.props.isTrash?'text-red-60 hover:text-red-60':''}`} onClick={!this.props.isTrash? this.onDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}>
+            <Trash className={`h-5 mr-1 ${this.props.isTrash?'text-blue-60':''}`} />
+            <span>{this.props.isTrash? 'Delete permanently' : 'Delete'}</span>
           </Dropdown.Item>
         ) : null}
       </div>
