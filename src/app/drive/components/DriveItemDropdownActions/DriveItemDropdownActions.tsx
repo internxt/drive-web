@@ -3,7 +3,7 @@ import React, { MouseEvent, ReactNode } from 'react';
 //import UilEditAlt from '@iconscout/react-unicons/icons/uil-edit-alt';
 //import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
 //import UilFileInfoAlt from '@iconscout/react-unicons/icons/uil-file-info-alt';
-import {ClockCounterClockwise, Pen, Link, Info, CloudArrowDown, Trash} from 'phosphor-react';
+import {ClockCounterClockwise, Link, Info, CloudArrowDown, Trash, PencilSimple} from 'phosphor-react';
 //import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -84,7 +84,7 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
         ) : null}
         {!hiddenActions.includes(DriveItemAction.Rename) && !this.props.isTrash? (
           <Dropdown.Item id="rename" onClick={this.onRenameButtonClicked}>
-            <Pen className="text-blue-60 h-5 mr-1" />
+            <PencilSimple className="text-blue-60 h-5 mr-1" />
             <span>Rename</span>
           </Dropdown.Item>
         ) : null}

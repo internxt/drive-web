@@ -1,10 +1,11 @@
 import React, { Fragment } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import UilPen from '@iconscout/react-unicons/icons/uil-pen';
-import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
-import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
-import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
-import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
+//import UilPen from '@iconscout/react-unicons/icons/uil-pen';
+//import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
+//import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
+//import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
+//import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
+import { DotsThree, CloudArrowDown, Link, PencilSimpleLine, Trash} from 'phosphor-react';
 import { items } from '@internxt/lib';
 
 import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
@@ -81,7 +82,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
           >
             {items.getItemDisplayName(item)}
           </span>
-          {!isEditingName && <UilPen onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />}
+          {!isEditingName && <PencilSimpleLine onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button h-5 w-5" />}
         </div>
       </Fragment>
     );
@@ -91,7 +92,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
       onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
-      onDoubleClick={onItemDoubleClicked}
+      onDoubleClick={!isTrash?onItemDoubleClicked : undefined}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
       {/* SELECTION */}
@@ -122,21 +123,21 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
             className="hover-action mr-3"
             data-test={`download-${item.isFolder ? 'folder' : 'file'}-button`}
           >
-            <UilCloudDownload className="h-5" />
+            <CloudArrowDown className="h-5 w-5" />
           </button>
           <button
             onClick={onShareButtonClicked}
             className="hover-action mr-3"
             data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
           >
-            <UilShareAlt className="h-5" />
+            <Link className="h-5 w-5" />
           </button>
           <button
             onClick={onDeleteButtonClicked}
             className="hover-action"
             data-test={`delete-${item.isFolder ? 'folder' : 'file'}-button`}
           >
-            <UilTrashAlt className="h-5" />
+            <Trash className="h-5 w-5" />
           </button>
         </div>):('')}
       </div>
@@ -165,7 +166,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
       <div className="flex items-center w-1/12">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
-            <UilEllipsisH className="w-full h-full" />
+            <DotsThree className="w-full h-full" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <DriveItemDropdownActions

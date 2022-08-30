@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 //import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
 //import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
 //import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
-import {ClockCounterClockwise, Table, List, CloudArrowDown, CloudArrowUp, FolderPlus, Trash} from 'phosphor-react';
+import {ClockCounterClockwise, GridFour, Rows, CloudArrowDown, CloudArrowUp, FolderPlus, Trash} from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -173,8 +173,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     } = this.props;
     const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: <Table  className='h-5 w-5'/>,
-      [FileViewMode.Grid]: <List  className='h-5 w-5'/>,
+      [FileViewMode.List]: <GridFour  className='h-5 w-5'/>,
+      [FileViewMode.Grid]: <Rows  className='h-5 w-5'/>,
     };
     const viewModes = {
       [FileViewMode.List]: DriveExplorerList,
@@ -208,13 +208,13 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               <div className="flex">
                 {this.hasAnyItemSelected && !isTrash? (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <CloudArrowDown className="mr-1.5 h-5" />
+                    <CloudArrowDown className="mr-1.5 h-5 w-5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
                   !isTrash?
                   (<BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <CloudArrowUp className="mr-1.5 h-5" />
+                    <CloudArrowUp className="mr-1.5 h-5 w-5" />
                     <span>{i18n.get('actions.upload')}</span>
                   </BaseButton>) : ('')
                 )}
@@ -284,13 +284,20 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                         onClick: this.onUploadButtonClicked,
                       }}
                     />
-                  ) : isRecents ? (
+                  ) : isRecents && !isTrash ? (
                     <Empty
                       icon={filesEmptyImage}
                       title="No recents files to show"
                       subtitle="Recent uploads or files you recently interacted with will show up here automatically"
                     />
                   ) : (
+                    isTrash?(
+                    <Empty
+                      icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+                      title="Trash Empty"
+                      subtitle="Each deleted item will be shown here until it is restored or deleted permanently"
+                    />
+                    ):
                     <Empty
                       icon={<img className="w-36" alt="" src={folderEmptyImage} />}
                       title="This folder is empty"
