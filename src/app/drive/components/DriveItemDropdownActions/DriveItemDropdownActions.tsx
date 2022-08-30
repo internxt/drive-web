@@ -108,8 +108,8 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
         ) : null}
         <hr className="text-neutral-30 my-1.5"></hr>
         {!hiddenActions.includes(DriveItemAction.Delete) ? (
-          <Dropdown.Item id="delete" className="text-red-60 hover:text-red-60" onClick={!this.props.isTrash? this.onDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}>
-            <Trash className="h-5 mr-1" />
+          <Dropdown.Item id="delete" className={`${!this.props.isTrash?'text-red-60 hover:text-red-60':''}`} onClick={!this.props.isTrash? this.onDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}>
+            <Trash className={`h-5 mr-1 ${this.props.isTrash?'text-blue-60':''}`} />
             <span>{this.props.isTrash? 'Delete permanently' : 'Delete'}</span>
           </Dropdown.Item>
         ) : null}
