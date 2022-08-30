@@ -1,27 +1,27 @@
-import { useEffect, useState } from "react";
-import { SubmitHandler, useForm, useWatch } from "react-hook-form";
-import { auth } from "@internxt/lib";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { auth } from '@internxt/lib';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import { initializeUserThunk, userActions } from "app/store/slices/user";
-import { RootState } from "app/store";
-import { useAppDispatch } from "app/store/hooks";
-import Button from "../Button/Button";
-import { twoFactorRegexPattern } from "app/core/services/validation.service";
-import { is2FANeeded, doLogin } from "../../services/auth.service";
-import localStorageService from "app/core/services/local-storage.service";
-import analyticsService from "app/analytics/services/analytics.service";
-import { WarningCircle } from "phosphor-react";
-import { planThunks } from "app/store/slices/plan";
-import { productsThunks } from "app/store/slices/products";
-import errorService from "app/core/services/error.service";
-import { AppView, IFormValues } from "app/core/types";
-import navigationService from "app/core/services/navigation.service";
-import { UserSettings } from "@internxt/sdk/dist/shared/types/userSettings";
-import TextInput from "../TextInput/TextInput";
-import PasswordInput from "../PasswordInput/PasswordInput";
-import { referralsThunks } from "app/store/slices/referrals";
+import { initializeUserThunk, userActions } from 'app/store/slices/user';
+import { RootState } from 'app/store';
+import { useAppDispatch } from 'app/store/hooks';
+import Button from '../Button/Button';
+import { twoFactorRegexPattern } from 'app/core/services/validation.service';
+import { is2FANeeded, doLogin } from '../../services/auth.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import analyticsService from 'app/analytics/services/analytics.service';
+import { WarningCircle } from 'phosphor-react';
+import { planThunks } from 'app/store/slices/plan';
+import { productsThunks } from 'app/store/slices/products';
+import errorService from 'app/core/services/error.service';
+import { AppView, IFormValues } from 'app/core/types';
+import navigationService from 'app/core/services/navigation.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import TextInput from '../TextInput/TextInput';
+import PasswordInput from '../PasswordInput/PasswordInput';
+import { referralsThunks } from 'app/store/slices/referrals';
 
 interface LogInProps {
   displayIframe: boolean;
@@ -34,24 +34,22 @@ export default function LogIn(props: LogInProps): JSX.Element {
     formState: { errors, isValid },
     handleSubmit,
     control,
-  } = useForm<IFormValues>({ mode: "onChange" });
-  const email = useWatch({ control, name: "email", defaultValue: "" });
+  } = useForm<IFormValues>({ mode: 'onChange' });
+  const email = useWatch({ control, name: 'email', defaultValue: '' });
   const twoFactorCode = useWatch({
     control,
-    name: "twoFactorCode",
-    defaultValue: "",
+    name: 'twoFactorCode',
+    defaultValue: '',
   });
-  const mnemonic = localStorageService.get("xMnemonic");
+  const mnemonic = localStorageService.get('xMnemonic');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState('');
   const [registerCompleted, setRegisterCompleted] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showTwoFactor, setShowTwoFactor] = useState(false);
   const [loginError, setLoginError] = useState<string[]>([]);
   const [showErrors, setShowErrors] = useState(false);
-  const user = useSelector(
-    (state: RootState) => state.user.user
-  ) as UserSettings;
+  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoggingIn(true);
@@ -88,10 +86,7 @@ export default function LogIn(props: LogInProps): JSX.Element {
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
-      if (
-        castedError.message.includes("not activated") &&
-        auth.isValidEmail(email)
-      ) {
+      if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         navigationService.history.push(`/activate/${email}`);
       } else {
         analyticsService.signInAttempted(email, castedError);
@@ -108,25 +103,25 @@ export default function LogIn(props: LogInProps): JSX.Element {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
       if (props.displayIframe) {
-        window.top?.postMessage("redirect", "https://internxt.com");
+        window.top?.postMessage('redirect', 'https://internxt.com');
       } else {
         navigationService.push(AppView.Drive);
       }
     }
     if (user && user.registerCompleted === false) {
-      navigationService.history.push("/appsumo/" + user.email);
+      navigationService.history.push('/appsumo/' + user.email);
     }
   }, []);
 
   useEffect(() => {
     if (isAuthenticated && token && user) {
-      const mnemonic = localStorageService.get("xMnemonic");
+      const mnemonic = localStorageService.get('xMnemonic');
 
       if (!registerCompleted) {
-        navigationService.history.push("/appsumo/" + email);
+        navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
         if (props.displayIframe) {
-          window.top?.postMessage("redirect", "https://internxt.com");
+          window.top?.postMessage('redirect', 'https://internxt.com');
         } else {
           navigationService.push(AppView.Drive);
         }
@@ -138,14 +133,11 @@ export default function LogIn(props: LogInProps): JSX.Element {
     <div
       className={`flex flex-col bg-white  ${
         props.displayIframe
-          ? "w-full px-px"
-          : "h-fit w-96 items-center justify-center rounded-2xl px-8 py-10 sm:shadow-soft"
+          ? 'w-full px-px'
+          : 'h-fit w-96 items-center justify-center rounded-2xl px-8 py-10 sm:shadow-soft'
       }`}
     >
-      <form
-        className="flex w-full flex-col space-y-6"
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <span className="text-2xl font-medium">Log in</span>
 
         <div className="flex flex-col space-y-3">
@@ -156,7 +148,7 @@ export default function LogIn(props: LogInProps): JSX.Element {
               label="email"
               type="email"
               register={register}
-              minLength={{ value: 1, message: "Email must not be empty" }}
+              minLength={{ value: 1, message: 'Email must not be empty' }}
               autoFocus={!props.displayIframe}
               error={errors.email}
             />
@@ -169,7 +161,7 @@ export default function LogIn(props: LogInProps): JSX.Element {
                 onClick={(): void => {
                   analyticsService.trackUserResetPasswordRequest();
                 }}
-                to={props.displayIframe ? "/removedialog" : "/remove"}
+                to={props.displayIframe ? '/removedialog' : '/remove'}
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
               >
                 Forgot your password?
@@ -178,10 +170,10 @@ export default function LogIn(props: LogInProps): JSX.Element {
 
             <PasswordInput
               placeholder="Password"
-              label={"password"}
+              label={'password'}
               register={register}
               required={true}
-              minLength={{ value: 1, message: "Password must not be empty" }}
+              minLength={{ value: 1, message: 'Password must not be empty' }}
               error={errors.password}
             />
 
@@ -201,14 +193,9 @@ export default function LogIn(props: LogInProps): JSX.Element {
             {loginError && showErrors && (
               <div className="flex flex-row items-start pt-1">
                 <div className="flex h-5 flex-row items-center">
-                  <WarningCircle
-                    weight="fill"
-                    className="mr-1 h-4 text-red-std"
-                  />
+                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
                 </div>
-                <span className="font-base w-56 text-sm text-red-60">
-                  {loginError}
-                </span>
+                <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
               </div>
             )}
           </label>
@@ -216,7 +203,7 @@ export default function LogIn(props: LogInProps): JSX.Element {
           <Button
             disabled={isLoggingIn}
             text="Log in"
-            disabledText={isValid ? "Decrypting..." : "Log in"}
+            disabledText={isValid ? 'Decrypting...' : 'Log in'}
             loading={isLoggingIn}
             style="button-primary"
             className="w-full"
@@ -226,9 +213,9 @@ export default function LogIn(props: LogInProps): JSX.Element {
 
       <div className="mt-4 flex w-full justify-center text-sm">
         <span>
-          Don't have an account?{" "}
+          Don't have an account?{' '}
           <Link
-            to={props.displayIframe ? "/signupdialog" : "/new"}
+            to={props.displayIframe ? '/signupdialog' : '/new'}
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             Create account
