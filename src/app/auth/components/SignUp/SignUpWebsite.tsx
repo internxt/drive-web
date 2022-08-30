@@ -111,8 +111,6 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
       let xToken: string;
       let mnemonic: string;
 
-      console.log('is new user?', props.isNewUser);
-
       if (!props.isNewUser) {
         const res = await updateInfo(email, password);
         xUser = res.xUser;
