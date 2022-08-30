@@ -14,7 +14,6 @@ import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { productsThunks } from 'app/store/slices/products';
 import { AppView, IFormValues } from 'app/core/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { referralsThunks } from 'app/store/slices/referrals';
 import TextInput from '../../components/TextInput/TextInput';
 import PasswordInput from '../../components/PasswordInput/PasswordInput';
@@ -36,8 +35,8 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const tokenParam = qs.token;
   const hasReferrer = !!qs.ref;
-  const { updateInfo, doRegister } = useSignUp(
-    qs.register === 'activate' ? 'activate' : 'appsumo',
+  const { doRegister } = useSignUp(
+    'activate',
     hasReferrer ? String(qs.ref) : undefined,
   );
   const {
@@ -108,39 +107,18 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
     try {
       const { email, password, token } = formData;
 
-      let xUser: UserSettings;
-      let xToken: string;
-      let mnemonic: string;
+      const res = await doRegister(email, password, token);
+      const xUser = res.xUser;
+      const xToken = res.xToken;
+      const mnemonic = res.mnemonic;
 
-      console.log('is new user?', props.isNewUser);
-
-      if (!props.isNewUser) {
-        const res = await updateInfo(email, password);
-        xUser = res.xUser;
-        xToken = res.xToken;
-        mnemonic = res.mnemonic;
-
-        dispatch(userActions.setUser(xUser));
-        await dispatch(userThunks.initializeUserThunk());
-        localStorageService.set('xToken', xToken);
-        localStorageService.set('xMnemonic', mnemonic);
-        dispatch(productsThunks.initializeThunk());
-        dispatch(planThunks.initializeThunk());
-      } else {
-        const res = await doRegister(email, password, token);
-        xUser = res.xUser;
-        xToken = res.xToken;
-        mnemonic = res.mnemonic;
-
-        localStorageService.set('xToken', xToken);
-        dispatch(userActions.setUser(xUser));
-        localStorageService.set('xMnemonic', mnemonic);
-        dispatch(productsThunks.initializeThunk());
-        dispatch(planThunks.initializeThunk());
-        dispatch(referralsThunks.initializeThunk());
-        await dispatch(userThunks.initializeUserThunk());
-      }
-
+      localStorageService.set('xToken', xToken);
+      dispatch(userActions.setUser(xUser));
+      localStorageService.set('xMnemonic', mnemonic);
+      dispatch(productsThunks.initializeThunk());
+      dispatch(planThunks.initializeThunk());
+      dispatch(referralsThunks.initializeThunk());
+      await dispatch(userThunks.initializeUserThunk());
       /**
        * TODO: Move ANALYTICS ======
        */
@@ -178,7 +156,7 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
        * ==========
        */
 
-      navigationService.push(AppView.Drive);
+      window.top?.postMessage('redirect', '*');
     } catch (err: unknown) {
       setIsLoading(false);
       const castedError = errorService.castError(err);
