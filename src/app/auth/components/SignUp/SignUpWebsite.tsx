@@ -156,7 +156,7 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
        * ==========
        */
 
-      navigationService.push(AppView.Drive);
+      window.top?.postMessage('redirect', '*');
     } catch (err: unknown) {
       setIsLoading(false);
       const castedError = errorService.castError(err);
