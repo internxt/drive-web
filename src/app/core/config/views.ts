@@ -2,6 +2,7 @@ import { ComponentClass, FunctionComponent } from 'react';
 
 import SignUpView from 'app/auth/views/SignUpView/SignUpView';
 import SignInView from 'app/auth/views/SignInView/SignInView';
+import SignUpWebsiteView from 'app/auth/views/SignUpWebsiteView/SignUpWebsiteView';
 import DriveView from 'app/drive/views/DriveView/DriveView';
 import RecentsView from 'app/drive/views/RecentsView/RecentsView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
@@ -25,6 +26,7 @@ import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import PhotosView from '../../photos/views/PhotosView';
 import VerifyEmailView from '../views/VerifyEmailView';
+import TrashView from 'app/drive/views/TrashView/TrashView';
 
 const views: Array<{
   id: string;
@@ -35,9 +37,11 @@ const views: Array<{
   { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
+  { id: AppView.SignUpWebsite, component: SignUpWebsiteView },
   { id: AppView.Recover, component: RecoverView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
+  { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Account, component: AccountView },

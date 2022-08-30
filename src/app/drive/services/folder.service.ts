@@ -112,17 +112,18 @@ export async function updateMetaData(folderId: number, metadata: DriveFolderMeta
   });
 }
 
-// export function deleteFolder(folderData: DriveFolderData): Promise<void> {
-//   const storageClient = SdkFactory.getInstance().createStorageClient();
-//   return storageClient.deleteFolder(folderData.id)
-//     .then(() => {
-//       const user = localStorageService.getUser() as UserSettings;
-//       analyticsService.trackDeleteItem(folderData as DriveItemData, {
-//         email: user.email,
-//         platform: DevicePlatform.Web,
-//       });
-//     });
-// }
+export function deleteFolder(folderData: DriveFolderData): Promise<void> {
+  const trashClient = SdkFactory.getInstance().createTrashClient();
+  return trashClient.then((client) => {
+    client.deleteFolder(folderData.id).then(() => {
+      const user = localStorageService.getUser() as UserSettings;
+      analyticsService.trackDeleteItem(folderData as DriveItemData, {
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
+    });
+  });
+}
 
 interface GetDirectoryFoldersResponse {
   folders: DriveFolderData[];

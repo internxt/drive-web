@@ -17,6 +17,7 @@ interface DriveExplorerListProps {
   selectedItems: DriveItemData[];
   order: OrderSettings;
   dispatch: AppDispatch;
+  isTrash?: boolean;
 }
 
 class DriveExplorerList extends React.Component<DriveExplorerListProps> {
@@ -33,7 +34,7 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
       const itemParentId = item.parentId || item.folderId;
       const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}-${itemParentId}`;
 
-      return <DriveExplorerListItem key={itemKey} item={item} />;
+      return <DriveExplorerListItem isTrash= {this.props.isTrash} key={itemKey} item={item} />;
     });
   }
 
@@ -42,7 +43,7 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
       const itemParentId = item.parentId || item.folderId;
       const itemKey = `'file'-${item.id}-${itemParentId}`;
 
-      return <DriveExplorerListItem key={itemKey} item={item} />;
+      return <DriveExplorerListItem isTrash= {this.props.isTrash} key={itemKey} item={item} />;
     });
   }
 
@@ -51,7 +52,7 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
       const itemParentId = item.parentId || item.folderId;
       const itemKey = `'folder'-${item.id}-${itemParentId}`;
 
-      return <DriveExplorerListItem key={itemKey} item={item} />;
+      return <DriveExplorerListItem isTrash= {this.props.isTrash} key={itemKey} item={item} />;
     });
   }
 

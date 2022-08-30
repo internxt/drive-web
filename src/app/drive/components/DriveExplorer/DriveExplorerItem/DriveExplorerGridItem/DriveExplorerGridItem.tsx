@@ -29,6 +29,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     onRenameButtonClicked,
     onInfoButtonClicked,
     onDeleteButtonClicked,
+    onDeletePermanentlyButtonClicked,
     onShareButtonClicked,
     onItemClicked,
     onItemRightClicked,
@@ -106,6 +107,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
             onShareButtonClicked={onShareButtonClicked}
             onInfoButtonClicked={onInfoButtonClicked}
             onDeleteButtonClicked={onDeleteButtonClicked}
+            onDeletePermanentlyButtonClicked={onDeletePermanentlyButtonClicked}
           />
         </Dropdown.Menu>
       </Dropdown>

@@ -14,11 +14,13 @@ const initialState: StorageState = {
   levels: {},
   recents: [],
   isLoadingRecents: false,
+  isLoadingDeleted: false,
   filters: filtersFactory(),
   order: orderFactory('updatedAt', OrderDirection.Desc),
   selectedItems: [],
   itemToShare: null,
   itemsToDelete: [],
+  itemsOnTrash: [],
   viewMode: FileViewMode.List,
   namePath: [],
 };
@@ -33,11 +35,17 @@ export const storageSlice = createSlice({
     setIsLoadingRecents: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoadingRecents = action.payload;
     },
+    setIsLoadingDeleted: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.isLoadingDeleted = action.payload;
+    },
     setItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
       state.levels[action.payload.folderId] = action.payload.items;
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;
+    },
+    setItemsOnTrash: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      state.itemsOnTrash = action.payload;
     },
     setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
       Object.assign(state.filters, action.payload);
@@ -178,6 +186,7 @@ export const storageSlice = createSlice({
 export const {
   setIsLoadingFolder,
   setIsLoadingRecents,
+  setIsLoadingDeleted,
   setItems,
   setRecents,
   setFilters,

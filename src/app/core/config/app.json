@@ -34,6 +34,12 @@
       "exact": true
     },
     {
+      "id": "signupwebsite",
+      "layout": "empty",
+      "path": "/signupwebsite",
+      "exact": true
+    },
+    {
       "id": "recover",
       "layout": "empty",
       "path": "/recover",
@@ -64,6 +70,14 @@
       "id": "photos",
       "layout": "header-and-sidenav",
       "path": "/app/photos",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
+    },
+    {
+      "id": "trash",
+      "layout": "header-and-sidenav",
+      "path": "/app/trash",
       "exact": true,
       "auth": true,
       "hideSearch": true

@@ -115,7 +115,6 @@ export class SdkFactory {
     }
     return new Photos(process.env.REACT_APP_PHOTOS_API_URL, newToken);
   }
-
   /** Helpers **/
 
   private getApiSecurity(): ApiSecurity {

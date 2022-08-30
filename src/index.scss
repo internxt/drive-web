@@ -194,13 +194,13 @@ code {
     height: 100%;
     overflow-x: hidden;
 
-    @apply text-neutral-700;
+    @apply text-gray-100;
   }
 
   /* LINKS */
   a,
   .link {
-    @apply text-blue-60 underline hover:text-blue-80;
+    @apply text-primary underline hover:text-primary-dark;
   }
 
   a.secondary {
@@ -251,7 +251,15 @@ code {
     }
 
     &.error {
-      @apply border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
+      @apply bg-white ring-1 ring-1 ring-red-50; //border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
+    }
+
+    &.warning {
+      @apply bg-white ring-1 ring-1 ring-orange;
+    }
+
+    &.success {
+      @apply bg-white ring-1 ring-1 ring-green;
     }
 
     &.semi-dense {

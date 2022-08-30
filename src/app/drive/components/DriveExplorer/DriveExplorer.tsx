@@ -1,11 +1,12 @@
 import { Component, createRef, ReactNode } from 'react';
 import { connect } from 'react-redux';
-import UilTable from '@iconscout/react-unicons/icons/uil-table';
-import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
-import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
-import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
-import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
-import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
+//import UilTable from '@iconscout/react-unicons/icons/uil-table';
+//import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
+//import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
+//import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
+//import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
+//import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
+import {ClockCounterClockwise, Table, List, CloudArrowDown, CloudArrowUp, FolderPlus, Trash} from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -140,6 +141,19 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     // dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   };
 
+  onDeletePermanentlyButtonClicked = () => {
+    const { dispatch, selectedItems } = this.props;
+
+    dispatch(storageActions.setItemsToDelete(selectedItems));
+    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+  };
+
+  onRecoverButtonClicked = () => {
+
+    //Recover selected (you can select all) files or folders from Trash
+
+  };
+
   onPreviousPageButtonClicked = (): void => undefined;
 
   onNextPageButtonClicked = (): void => undefined;
@@ -160,8 +174,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     } = this.props;
     const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: <UilTable />,
-      [FileViewMode.Grid]: <UilListUiAlt />,
+      [FileViewMode.List]: <Table  className='h-5 w-5'/>,
+      [FileViewMode.Grid]: <List  className='h-5 w-5'/>,
     };
     const viewModes = {
       [FileViewMode.List]: DriveExplorerList,
@@ -170,6 +184,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     const ViewModeComponent = viewModes[viewMode];
 
     const isRecents = title === 'Recents';
+
+    const isTrash = title === 'Trash';
 
     const FileIcon = iconService.getItemIcon(false);
     const filesEmptyImage = (
@@ -187,40 +203,50 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
         <div className="flex h-full w-full max-w-full flex-grow">
           <div className="flex w-1 flex-grow flex-col pt-6">
             <div className="flex justify-between pb-4">
-              <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
+              
+              <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div> 
 
               <div className="flex">
-                {this.hasAnyItemSelected ? (
+                {this.hasAnyItemSelected && !isTrash? (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <UilCloudDownload className="mr-1.5 h-5" />
+                    <CloudArrowDown className="mr-1.5 h-5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
-                  <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <UilCloudUpload className="mr-1.5 h-5" />
+                  !isTrash?
+                  (<BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
+                    <CloudArrowUp className="mr-1.5 h-5" />
                     <span>{i18n.get('actions.upload')}</span>
-                  </BaseButton>
+                  </BaseButton>) : ('')
                 )}
-                {!this.hasAnyItemSelected ? (
+                {!this.hasAnyItemSelected && !isTrash? (
                   <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
-                    <UilFolderPlus />
+                    <FolderPlus className='h-5 w-5' />
                   </BaseButton>
                 ) : null}
-                {this.hasAnyItemSelected ? (
-                  <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
-                    <UilTrashAlt />
+                {isTrash? (
+                  <BaseButton className="tertiary square w-8" onClick={this.onRecoverButtonClicked}>
+                    <ClockCounterClockwise className='h-5 w-5' />
                   </BaseButton>
                 ) : null}
-                <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
+                {this.hasAnyItemSelected || isTrash? (
+                  <BaseButton className="tertiary square w-8" onClick={!isTrash? this.onBulkDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}>
+                    <Trash className='h-5 w-5'/>
+                  </BaseButton>
+                ) : null}
+
+               
+
+                {!isTrash?(<BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
                   {viewModesIcons[viewMode]}
-                </BaseButton>
+                </BaseButton>) : ('')}
               </div>
             </div>
 
             <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
               {this.hasItems && (
                 <div className="flex flex-grow flex-col justify-between overflow-hidden">
-                  <ViewModeComponent items={items} isLoading={isLoading} />
+                  <ViewModeComponent items={items} isLoading={isLoading} isTrash={isTrash}/>
                 </div>
               )}
 
