@@ -1,29 +1,26 @@
-import { useState, useEffect } from "react";
-import { SubmitHandler, useForm, useWatch } from "react-hook-form";
-import queryString from "query-string";
-import { auth } from "@internxt/lib";
+import { useState, useEffect } from 'react';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import queryString from 'query-string';
+import { auth } from '@internxt/lib';
 
-import localStorageService from "app/core/services/local-storage.service";
-import analyticsService, {
-  signupDevicesource,
-  signupCampaignSource,
-} from "app/analytics/services/analytics.service";
+import localStorageService from 'app/core/services/local-storage.service';
+import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 
-import { useAppDispatch } from "app/store/hooks";
-import { userActions, userThunks } from "app/store/slices/user";
-import { planThunks } from "app/store/slices/plan";
-import errorService from "app/core/services/error.service";
-import navigationService from "app/core/services/navigation.service";
-import { productsThunks } from "app/store/slices/products";
-import { AppView, IFormValues } from "app/core/types";
-import { UserSettings } from "@internxt/sdk/dist/shared/types/userSettings";
-import { referralsThunks } from "app/store/slices/referrals";
-import TextInput from "../../components/TextInput/TextInput";
-import PasswordInput from "../../components/PasswordInput/PasswordInput";
-import Button from "../../components/Button/Button";
-import testPasswordStrength from "@internxt/lib/dist/src/auth/testPasswordStrength";
-import { ArrowRight, WarningCircle } from "phosphor-react";
-import { useSignUp } from "./useSignUp";
+import { useAppDispatch } from 'app/store/hooks';
+import { userActions, userThunks } from 'app/store/slices/user';
+import { planThunks } from 'app/store/slices/plan';
+import errorService from 'app/core/services/error.service';
+import navigationService from 'app/core/services/navigation.service';
+import { productsThunks } from 'app/store/slices/products';
+import { AppView, IFormValues } from 'app/core/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { referralsThunks } from 'app/store/slices/referrals';
+import TextInput from '../../components/TextInput/TextInput';
+import PasswordInput from '../../components/PasswordInput/PasswordInput';
+import Button from '../../components/Button/Button';
+import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
+import { ArrowRight, WarningCircle } from 'phosphor-react';
+import { useSignUp } from './useSignUp';
 
 export interface SignUpProps {
   location: {
@@ -34,13 +31,12 @@ export interface SignUpProps {
 
 function SignUpWebsite(props: SignUpProps): JSX.Element {
   const qs = queryString.parse(navigationService.history.location.search);
-  const hasEmailParam =
-    (qs.email && auth.isValidEmail(qs.email as string)) || false;
+  const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const tokenParam = qs.token;
   const hasReferrer = !!qs.ref;
   const { updateInfo, doRegister } = useSignUp(
-    qs.register === "activate" ? "activate" : "appsumo",
-    hasReferrer ? String(qs.ref) : undefined
+    qs.register === 'activate' ? 'activate' : 'appsumo',
+    hasReferrer ? String(qs.ref) : undefined,
   );
   const {
     register,
@@ -48,19 +44,19 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
     handleSubmit,
     control,
   } = useForm<IFormValues>({
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      email: hasEmailParam ? (qs.email as string) : "",
+      email: hasEmailParam ? (qs.email as string) : '',
     },
   });
   const dispatch = useAppDispatch();
 
-  const password = useWatch({ control, name: "password", defaultValue: "" });
+  const password = useWatch({ control, name: 'password', defaultValue: '' });
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [passwordState, setPasswordState] = useState<{
-    tag: "error" | "warning" | "success";
+    tag: 'error' | 'warning' | 'success';
     label: string;
   } | null>(null);
 
@@ -76,12 +72,11 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
   }
 
   useEffect(() => {
-    const isAppSumo =
-      navigationService.getCurrentView()?.id === AppView.AppSumo;
+    const isAppSumo = navigationService.getCurrentView()?.id === AppView.AppSumo;
 
-    if (isAppSumo && tokenParam && typeof tokenParam === "string") {
+    if (isAppSumo && tokenParam && typeof tokenParam === 'string') {
       localStorageService.clear();
-      localStorageService.set("xToken", tokenParam);
+      localStorageService.set('xToken', tokenParam);
     }
   }, []);
 
@@ -90,22 +85,19 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
   }, [password]);
 
   function onChangeHandler(input: string) {
-    const result = testPasswordStrength(
-      input,
-      (qs.email as string) === undefined ? "" : (qs.email as string)
-    );
+    const result = testPasswordStrength(input, (qs.email as string) === undefined ? '' : (qs.email as string));
     if (!result.valid) {
       setPasswordState({
-        tag: "error",
+        tag: 'error',
         label:
-          result.reason === "NOT_COMPLEX_ENOUGH"
-            ? "Password must contain at least one letter or symbol"
-            : "Password must be at least 8 characters long",
+          result.reason === 'NOT_COMPLEX_ENOUGH'
+            ? 'Password must contain at least one letter or symbol'
+            : 'Password must be at least 8 characters long',
       });
-    } else if (result.strength === "medium") {
-      setPasswordState({ tag: "warning", label: "Password is weak" });
+    } else if (result.strength === 'medium') {
+      setPasswordState({ tag: 'warning', label: 'Password is weak' });
     } else {
-      setPasswordState({ tag: "success", label: "Password is strong" });
+      setPasswordState({ tag: 'success', label: 'Password is strong' });
     }
   }
 
@@ -119,7 +111,7 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
       let xToken: string;
       let mnemonic: string;
 
-      console.log("is new user?", props.isNewUser);
+      console.log('is new user?', props.isNewUser);
 
       if (!props.isNewUser) {
         const res = await updateInfo(email, password);
@@ -129,8 +121,8 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
 
         dispatch(userActions.setUser(xUser));
         await dispatch(userThunks.initializeUserThunk());
-        localStorageService.set("xToken", xToken);
-        localStorageService.set("xMnemonic", mnemonic);
+        localStorageService.set('xToken', xToken);
+        localStorageService.set('xMnemonic', mnemonic);
         dispatch(productsThunks.initializeThunk());
         dispatch(planThunks.initializeThunk());
       } else {
@@ -139,9 +131,9 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
         xToken = res.xToken;
         mnemonic = res.mnemonic;
 
-        localStorageService.set("xToken", xToken);
+        localStorageService.set('xToken', xToken);
         dispatch(userActions.setUser(xUser));
-        localStorageService.set("xMnemonic", mnemonic);
+        localStorageService.set('xMnemonic', mnemonic);
         dispatch(productsThunks.initializeThunk());
         dispatch(planThunks.initializeThunk());
         dispatch(referralsThunks.initializeThunk());
@@ -176,16 +168,16 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
         ? [window._adftrack]
         : [];
       window._adftrack.push({
-        HttpHost: "track.adform.net",
+        HttpHost: 'track.adform.net',
         pm: 2370627,
-        divider: encodeURIComponent("|"),
-        pagename: encodeURIComponent("New"),
+        divider: encodeURIComponent('|'),
+        pagename: encodeURIComponent('New'),
       });
       /**
        * ==========
        */
 
-      window.top?.postMessage("redirect", "https://drive.internxt.com");
+      window.top?.postMessage('redirect', 'https://drive.internxt.com');
     } catch (err: unknown) {
       setIsLoading(false);
       const castedError = errorService.castError(err);
@@ -199,22 +191,16 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
     const grecaptcha = window.grecaptcha;
 
     grecaptcha.ready(() => {
-      grecaptcha
-        .execute(process.env.REACT_APP_RECAPTCHA_V3, { action: "register" })
-        .then((token) => {
-          // Can't wait or token will expire
-          formValues.token = token;
-          if (passwordState != null && passwordState.tag != "error")
-            onSubmit(formValues);
-        });
+      grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
+        // Can't wait or token will expire
+        formValues.token = token;
+        if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);
+      });
     });
   }
 
   return (
-    <form
-      className="flex w-full flex-col px-px"
-      onSubmit={handleSubmit(getReCaptcha)}
-    >
+    <form className="flex w-full flex-col px-px" onSubmit={handleSubmit(getReCaptcha)}>
       <div className="mb-2.5 flex flex-col space-x-0 space-y-2 xs:flex-row xs:space-x-2.5 xs:space-y-0">
         <label className="space-y-1 xs:flex-1">
           <span>Email</span>
@@ -226,7 +212,7 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
             disabled={hasEmailParam}
             register={register}
             required={true}
-            minLength={{ value: 1, message: "Email must not be empty" }}
+            minLength={{ value: 1, message: 'Email must not be empty' }}
             autoFocus={true}
             error={errors.email}
           />
@@ -245,15 +231,13 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
         </label>
       </div>
 
-      {(bottomInfoError || passwordState?.tag === "error") && (
+      {(bottomInfoError || passwordState?.tag === 'error') && (
         <div className="mb-1.5 -mt-1 flex w-full flex-row items-start">
           <div className="flex h-5 flex-row items-center">
             <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
           </div>
           <span className="font-base w-full text-sm text-red-60">
-            {passwordState?.tag === "error"
-              ? passwordState.label
-              : bottomInfoError}
+            {passwordState?.tag === 'error' ? passwordState.label : bottomInfoError}
           </span>
         </div>
       )}
@@ -262,7 +246,7 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
         <Button
           disabled={isLoading}
           text="Get started"
-          disabledText={isValid ? "Encrypting..." : "Get started"}
+          disabledText={isValid ? 'Encrypting...' : 'Get started'}
           loading={isLoading}
           style="button-primary-rounded"
           rightIcon={<ArrowRight className="h-6 w-6" />}
@@ -270,12 +254,8 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
 
         <span className="mt-2 text-xs text-gray-50 xs:ml-4 xs:mt-0">
           By creating an Internxt account you <br className="hidden xs:flex" />
-          accept Internxt’s{" "}
-          <a
-            href="https://internxt.com/legal"
-            target="_blank"
-            className=" text-gray-60 hover:text-gray-80"
-          >
+          accept Internxt’s{' '}
+          <a href="https://internxt.com/legal" target="_blank" className=" text-gray-60 hover:text-gray-80">
             Terms and Conditions
           </a>
           .
