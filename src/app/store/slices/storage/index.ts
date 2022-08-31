@@ -20,6 +20,7 @@ const initialState: StorageState = {
   selectedItems: [],
   itemToShare: null,
   itemsToDelete: [],
+  itemsToMove: [],
   itemsOnTrash: [],
   viewMode: FileViewMode.List,
   namePath: [],
@@ -83,6 +84,9 @@ export const storageSlice = createSlice({
     },
     setItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.itemsToDelete = action.payload;
+    },
+    setItemsToMove: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      state.itemsToMove = action.payload;
     },
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
@@ -196,6 +200,7 @@ export const {
   clearSelectedItems,
   setItemToShare,
   setItemsToDelete,
+  setItemsToMove,
   setViewMode,
   resetNamePath,
   pushNamePath,

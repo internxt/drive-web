@@ -92,7 +92,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
       onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
-      onDoubleClick={!isTrash?onItemDoubleClicked : undefined}
+      onDoubleClick={!item.isFolder && !isTrash? onItemDoubleClicked : undefined}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
       {/* SELECTION */}
