@@ -3,7 +3,7 @@ import { storageActions } from '../../app/store/slices/storage';
 import { store } from '../../app/store';
 import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
 
-const ClearTrash = async () => {
+const ClearTrash = async (): Promise<void> => {
   const trashClient = await SdkFactory.getInstance().createTrashClient();
   await trashClient.clearTrash();
 

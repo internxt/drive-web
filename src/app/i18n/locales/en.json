@@ -355,7 +355,7 @@
       }
     },
     "deleteItems": {
-      "advice": "Please confirm that you want to delete these items. This action can't be undone."
+      "advice": "This action can't be undone."
     },
     "clearTrash": {
       "title": "Empty Drive Trash?",

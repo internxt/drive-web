@@ -151,16 +151,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
   onDeletePermanentlyButtonClicked = () => {
     const { dispatch, selectedItems } = this.props;
-    console.log('DELETE PERMANENTLY');
     if (selectedItems.length > 0) {
-      console.log(selectedItems);
-      // dispatch(storageThunks.deleteItemsThunk(selectedItems));
+      dispatch(storageActions.setItemsToDelete(selectedItems));
+      dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
     } else {
-      console.log('OPEN');
       dispatch(uiActions.setIsClearTrashDialogOpen(true));
     }
-    // dispatch(storageActions.setItemsToDelete(selectedItems));
-    // dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   };
 
   onRecoverButtonClicked = () => {

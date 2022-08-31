@@ -4,7 +4,6 @@ import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { useState } from 'react';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToDelete } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -13,6 +12,7 @@ import { DriveItemData } from '../../types';
 import i18n from 'app/i18n/services/i18n.service';
 
 import './DeleteItemsDialog.scss';
+import deleteItems from '../../../../use_cases/trash/delete-items';
 
 interface DeleteItemsDialogProps {
   onItemsDeleted?: () => void;
@@ -33,7 +33,7 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
     try {
       setIsLoading(true);
       if (itemsToDelete.length > 0) {
-        await dispatch(storageThunks.deleteItemsThunk(itemsToDelete));
+        deleteItems(itemsToDelete);
       }
 
       props.onItemsDeleted && props.onItemsDeleted();
@@ -50,7 +50,7 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
   };
 
   return (
-    <BaseDialog isOpen={isOpen} title="Delete items" onClose={onClose}>
+    <BaseDialog isOpen={isOpen} title="Delete permanently?" onClose={onClose}>
       <span className="text-center block w-full text-base px-8 text-neutral-900 mt-2">
         {i18n.get('drive.deleteItems.advice')}
       </span>
