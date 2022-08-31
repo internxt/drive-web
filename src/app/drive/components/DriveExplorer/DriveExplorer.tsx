@@ -1,4 +1,4 @@
-import { createRef, ReactNode, Component } from 'react';
+import { Component, createRef, ReactNode } from 'react';
 import { connect } from 'react-redux';
 //import UilTable from '@iconscout/react-unicons/icons/uil-table';
 //import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
@@ -34,6 +34,7 @@ import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UploadSimple } from 'phosphor-react';
 import iconService from '../../services/icon.service';
+import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -135,9 +136,9 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
   onBulkDeleteButtonClicked = () => {
     const { dispatch, selectedItems } = this.props;
-
-    dispatch(storageActions.setItemsToDelete(selectedItems));
-    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    moveItemsToTrash(selectedItems);
+    // dispatch(storageActions.setItemsToDelete(selectedItems));
+    // dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   };
 
   onDeletePermanentlyButtonClicked = () => {
