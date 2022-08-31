@@ -16,7 +16,7 @@ const PreparingWorkspaceAnimation = (): JSX.Element => {
   }, [step]);
 
   return (
-    <div className="flex flex-col h-screen w-screen justify-center items-center cursor-default">
+    <div className="hidden sm:flex flex-col h-screen w-screen justify-center items-center cursor-default">
       <div className="relative h-32 w-40 mb-4 pointer-events-none">
         <img className="absolute top-0 left-0 object-contain w-full h-full" src={folderBack} alt="" />
         <img
