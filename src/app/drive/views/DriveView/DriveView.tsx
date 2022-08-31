@@ -36,7 +36,9 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
         const currentFolderItems = await databaseService.get(DatabaseCollection.Levels, this.props.currentFolderId);
 
         if (currentFolderItems) {
-          dispatch(storageActions.setItems({ folderId: currentFolderId, items: currentFolderItems }));
+          // TODO: migrate this filter to back-end
+          const items = currentFolderItems.filter((item: DriveItemData) => !item.deleted);
+          dispatch(storageActions.setItems({ folderId: currentFolderId, items }));
         }
       }, 1500),
     });
