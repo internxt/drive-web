@@ -15,7 +15,7 @@ const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   const trashClient = await SdkFactory.getInstance().createTrashClient();
   await trashClient.deleteItemsPermanently({ items } as DeleteItemsPermanentlyPayload);
 
-  store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToDelete }));
+  store.dispatch(storageActions.popItemsToDelete(itemsToDelete));
   store.dispatch(storageActions.clearSelectedItems());
 
   notificationsService.show({

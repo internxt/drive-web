@@ -90,6 +90,15 @@ export const storageSlice = createSlice({
     resetNamePath: (state: StorageState) => {
       state.namePath = [];
     },
+    popItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      action.payload.forEach((itemToPop) => {
+        const index: number = state.itemsOnTrash.findIndex(
+          (item) => item.id === itemToPop.id && item.isFolder === itemToPop.isFolder,
+        );
+
+        state.itemsOnTrash.splice(index, 1);
+      });
+    },
     popNamePathUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
       const folderIndex: number = state.namePath.map((path) => path.id).indexOf(action.payload.id);
 
