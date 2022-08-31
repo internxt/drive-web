@@ -28,6 +28,7 @@ import { storageActions } from '../../../store/slices/storage';
 import { uiActions } from '../../../store/slices/ui';
 import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
+import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
@@ -56,7 +57,8 @@ interface DriveExplorerProps {
   isCreateFolderDialogOpen: boolean;
   isMoveItemsDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
-  
+  isClearTrashDialogOpen: boolean;
+
   viewMode: FileViewMode;
   namePath: FolderPath[];
   dispatch: AppDispatch;
@@ -146,18 +148,22 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
   onDeletePermanentlyButtonClicked = () => {
     const { dispatch, selectedItems } = this.props;
-
-    dispatch(storageActions.setItemsToDelete(selectedItems));
-    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    if (selectedItems.length > 0) {
+      dispatch(storageActions.setItemsToDelete(selectedItems));
+      dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    } else {
+      dispatch(uiActions.setIsClearTrashDialogOpen(true));
+    }
   };
 
   onRecoverButtonClicked = () => {
-
     //Recover selected (you can select all) files or folders from Trash
+
     const { dispatch, selectedItems } = this.props;
 
     dispatch(storageActions.setItemsToMove(selectedItems));
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+
   };
 
   onPreviousPageButtonClicked = (): void => undefined;
@@ -174,6 +180,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       isDeleteItemsDialogOpen,
       isMoveItemsDialogOpen,
       isCreateFolderDialogOpen,
+      isClearTrashDialogOpen,
       onItemsDeleted,
       onItemsMoved,
       onFolderCreated,
@@ -182,8 +189,10 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     } = this.props;
     const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
+
       [FileViewMode.List]: <GridFour  className='h-5 w-5'/>,
       [FileViewMode.Grid]: <Rows  className='h-5 w-5'/>,
+
     };
     const viewModes = {
       [FileViewMode.List]: DriveExplorerList,
@@ -208,54 +217,63 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
         {isMoveItemsDialogOpen && <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash}/>}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
+        {isClearTrashDialogOpen && <ClearTrashDialog onItemsDeleted={onItemsDeleted} />}
 
         <div className="flex h-full w-full max-w-full flex-grow">
           <div className="flex w-1 flex-grow flex-col pt-6">
             <div className="flex justify-between pb-4">
-              
-              <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div> 
+              <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
 
               <div className="flex">
-                {this.hasAnyItemSelected && !isTrash? (
+                {this.hasAnyItemSelected && !isTrash ? (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
                     <CloudArrowDown className="mr-1.5 h-5 w-5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
-                ) : (
+
+                ) : 
                   !isTrash?
                   (<BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
                     <CloudArrowUp className="mr-1.5 h-5 w-5" />
+
                     <span>{i18n.get('actions.upload')}</span>
-                  </BaseButton>) : ('')
+                  </BaseButton>
+                ) : (
+                  ''
                 )}
-                {!this.hasAnyItemSelected && !isTrash? (
+                {!this.hasAnyItemSelected && !isTrash ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
-                    <FolderPlus className='h-5 w-5' />
+                    <FolderPlus className="h-5 w-5" />
                   </BaseButton>
                 ) : null}
-                {isTrash? (
+                {isTrash ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onRecoverButtonClicked}>
-                    <ClockCounterClockwise className='h-5 w-5' />
+                    <ClockCounterClockwise className="h-5 w-5" />
                   </BaseButton>
                 ) : null}
-                {this.hasAnyItemSelected || isTrash? (
-                  <BaseButton className="tertiary square w-8" onClick={!isTrash? this.onBulkDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}>
-                    <Trash className='h-5 w-5'/>
+                {this.hasAnyItemSelected || isTrash ? (
+                  <BaseButton
+                    className="tertiary square w-8"
+                    onClick={!isTrash ? this.onBulkDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}
+                  >
+                    <Trash className="h-5 w-5" />
                   </BaseButton>
                 ) : null}
 
-               
-
-                {!isTrash?(<BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
-                  {viewModesIcons[viewMode]}
-                </BaseButton>) : ('')}
+                {!isTrash ? (
+                  <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
+                    {viewModesIcons[viewMode]}
+                  </BaseButton>
+                ) : (
+                  ''
+                )}
               </div>
             </div>
 
             <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
               {this.hasItems && (
                 <div className="flex flex-grow flex-col justify-between overflow-hidden">
-                  <ViewModeComponent items={items} isLoading={isLoading} isTrash={isTrash}/>
+                  <ViewModeComponent items={items} isLoading={isLoading} isTrash={isTrash} />
                 </div>
               )}
 
@@ -419,7 +437,8 @@ export default connect((state: RootState) => {
     isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
     isMoveItemsDialogOpen: state.ui.isMoveItemsDialogOpen,
     isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
-    
+    isClearTrashDialogOpen: state.ui.isClearTrashDialogOpen,
+
     viewMode: state.storage.viewMode,
     namePath: state.storage.namePath,
     workspace: state.session.workspace,
