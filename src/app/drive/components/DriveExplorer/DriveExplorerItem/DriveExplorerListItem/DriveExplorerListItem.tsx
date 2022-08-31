@@ -39,6 +39,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
     onInfoButtonClicked,
     onDeleteButtonClicked,
     onDeletePermanentlyButtonClicked,
+    onRecoverButtonClicked,
     onShareButtonClicked,
     onItemClicked,
     onItemRightClicked,
@@ -177,6 +178,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
               onInfoButtonClicked={onInfoButtonClicked}
               onDeleteButtonClicked={onDeleteButtonClicked}
               onDeletePermanentlyButtonClicked={onDeletePermanentlyButtonClicked}
+              onRecoverButtonClicked={onRecoverButtonClicked}
               isTrash={isTrash}
             />
           </Dropdown.Menu>

@@ -36,6 +36,7 @@ import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
+import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -43,6 +44,7 @@ interface DriveExplorerProps {
   isLoading: boolean;
   items: DriveItemData[];
   onItemsDeleted?: () => void;
+  onItemsMoved?: () => void;
   onFileUploaded?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
@@ -52,7 +54,9 @@ interface DriveExplorerProps {
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
   isCreateFolderDialogOpen: boolean;
+  isMoveItemsDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
+  
   viewMode: FileViewMode;
   namePath: FolderPath[];
   dispatch: AppDispatch;
@@ -150,7 +154,10 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
   onRecoverButtonClicked = () => {
 
     //Recover selected (you can select all) files or folders from Trash
+    const { dispatch, selectedItems } = this.props;
 
+    dispatch(storageActions.setItemsToMove(selectedItems));
+    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
   };
 
   onPreviousPageButtonClicked = (): void => undefined;
@@ -165,8 +172,10 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       titleClassName,
       items,
       isDeleteItemsDialogOpen,
+      isMoveItemsDialogOpen,
       isCreateFolderDialogOpen,
       onItemsDeleted,
+      onItemsMoved,
       onFolderCreated,
       isOver,
       connectDropTarget,
@@ -197,6 +206,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     return connectDropTarget(
       <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
+        {isMoveItemsDialogOpen && <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash}/>}
         {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
         <div className="flex h-full w-full max-w-full flex-grow">
@@ -407,7 +417,9 @@ export default connect((state: RootState) => {
     selectedItems: state.storage.selectedItems,
     storageFilters: state.storage.filters,
     isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
+    isMoveItemsDialogOpen: state.ui.isMoveItemsDialogOpen,
     isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
+    
     viewMode: state.storage.viewMode,
     namePath: state.storage.namePath,
     workspace: state.session.workspace,
