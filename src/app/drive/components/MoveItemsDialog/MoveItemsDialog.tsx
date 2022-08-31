@@ -12,6 +12,7 @@ import { RootState } from 'app/store';
 import { DriveItemData, FileViewMode, FolderPath  } from '../../types';
 import DriveView from 'app/drive/views/DriveView/DriveView';
 import i18n from 'app/i18n/services/i18n.service';
+import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
 
 //import MoveItemsPayload from 'app/store/slices/storage/storage.thunks/moveItemsThunk';
 
@@ -29,10 +30,10 @@ interface MoveItemsDialogProps {
 const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const itemsToMove: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToMove);
   const [isLoading, setIsLoading] = useState(false);
-  const [destinationId, setDestinationId] = useState(null);
+  const [destinationId, setDestinationId] = useState(0);
   const [shownFolders, setShownFolders] = useState(props.items);
   const dispatch = useAppDispatch();
-  const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
+  const isOpen = props.items?useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen):false;
   const viewModes = {
       [FileViewMode.List]: DriveExplorerList,
       [FileViewMode.Grid]: DriveExplorerGrid,
@@ -47,13 +48,19 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   const onAccept = async (destinationFolderId): Promise<void> => {
     try {
+
+      console.log(itemsToMove);
       setIsLoading(true);
       if (itemsToMove.length > 0 && destinationId) {
         await dispatch(storageThunks.moveItemsThunk({
           items: itemsToMove,
           destinationFolderId: destinationFolderId,
         }));
+
+        restoreItemsFromTrash(itemsToMove, destinationFolderId);
       }
+
+
 
       props.onItemsMoved && props.onItemsMoved();
 
@@ -86,30 +93,41 @@ const onShowFolderContentClicked = (folderId: number): void => {
 
       const folders = items?.filter((i)=>{return i.isFolder;}); 
 
+      console.log(folders);
       if(folders){
         setShownFolders(folders);
       }
     }
   );
 };
+
+const onFolderClicked = (folderId: number): void => {
+
+  setDestinationId(folderId);
+
+};
  
   
   return (
 
     
-    <BaseDialog isOpen={isOpen} title={`${props.isTrash? 'Recover':'Move'} ${itemsToMove.length > 0? (itemsToMove.length)+' items': ('"'+itemsToMove[0].name+'"')}`} onClose={onClose}>
+    <BaseDialog isOpen={isOpen} title={`${props.isTrash? 'Recover':'Move'} ${itemsToMove.length > 1? (itemsToMove.length)+' items': ('"'+itemsToMove[0].name+'"')}`} onClose={onClose}>
     
 
-      <div className="flex justify-center items-center bg-neutral-20 py-6 mt-6">
+      <div className="block justify-center items-center bg-neutral-20 py-6 mt-6">
 
-        <div className="block justify-center w-64 border border-gray-40 items-center bg-neutral-20 py-6">
+        <div className="block ml-auto mr-auto overflow-y-scroll w-64 border border-gray-40 items-center bg-neutral-20 py-6">
           {props.isTrash?shownFolders.map((folder)=>{
 
             return (
-            <div className='flex justify-left w-64 border border-gray-40 items-center bg-neutral-20'>
+            <div className={`${destinationId === folder.folderId? 'bg-primary opacity-40' : ''} flex justify-left w-64 border border-gray-40 items-center bg-neutral-20`} key={folder.folderId}>
+              <div className='flex' onClick={()=>onFolderClicked(folder.folderId)}>
               <Folder className='h-6 w-6 text-primary'/>
-              {folder.name}
-              <CaretRight className='h-6 w-6' onClick={()=>onShowFolderContentClicked(folder.folderId)}/>
+                {folder.name}
+              </div>
+              <div onClick={()=>onShowFolderContentClicked(folder.folderId)}>
+                <CaretRight className='h-6 w-6' />
+              </div>
             </div>);
 
           }):''}

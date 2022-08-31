@@ -6,12 +6,12 @@ import { StorageTypes } from '@internxt/sdk/dist/drive';
 import analyticsService from 'app/analytics/services/analytics.service';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import {DevicePlatform} from 'app/core/types';
+import { DevicePlatform } from 'app/core/types';
 import i18n from 'app/i18n/services/i18n.service';
-import {UserSettings} from '@internxt/sdk/dist/shared/types/userSettings';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as uuid from 'uuid';
 
-export async function moveFile(
+async function moveFile(
   fileId: string,
   destination: number,
   bucketId: string,
@@ -43,7 +43,7 @@ export async function moveFile(
     });
 }
 
-export async function moveFolder(
+async function moveFolder(
   folderId: number, destination: number
 ): Promise<StorageTypes.MoveFolderResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
@@ -74,13 +74,13 @@ export async function moveFolder(
 
 const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
   itemsToRecover.foreach((item) => {
-   if(item.isFolder){
-    moveFolder(item.folderId, destinationId);
-   }else{
-    moveFile(item.fileId, destinationId, item.bucketId);
-   }
+    if (item.isFolder) {
+      moveFolder(item.folderId, destinationId);
+    } else {
+      moveFile(item.fileId, destinationId, item.bucketId);
+    }
   });
-  
+
 };
 
 export default RecoverItemsFromTrash;
