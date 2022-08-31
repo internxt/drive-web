@@ -121,7 +121,7 @@ export const doLogin = async (
         mnemonic: clearMnemonic,
         privateKey: clearPrivateKeyBase64,
       };
-        
+
       localStorageService.set('xToken', token);
       localStorageService.set('xMnemonic', clearMnemonic);
       localStorageService.set('xNewToken', newToken);
@@ -129,8 +129,8 @@ export const doLogin = async (
       Sentry.setUser({
         id: user.uuid,
         email: user.email,
-        sharedWorkspace: user.sharedWorkspace
-       });
+        sharedWorkspace: user.sharedWorkspace,
+      });
 
       return {
         user: clearUser,

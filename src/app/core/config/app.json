@@ -22,6 +22,12 @@
       "exact": true
     },
     {
+      "id": "signupdialog",
+      "layout": "empty",
+      "path": "/signupdialog",
+      "exact": true
+    },
+    {
       "id": "appsumo",
       "layout": "empty",
       "path": "/appsumo",
@@ -31,6 +37,12 @@
       "id": "login",
       "layout": "empty",
       "path": "/login",
+      "exact": true
+    },
+    {
+      "id": "logindialog",
+      "layout": "empty",
+      "path": "/logindialog",
       "exact": true
     },
     {
@@ -133,6 +145,12 @@
       "id": "remove",
       "layout": "empty",
       "path": "/remove",
+      "exact": true
+    },
+    {
+      "id": "removedialog",
+      "layout": "empty",
+      "path": "/removedialog",
       "exact": true
     },
     {

@@ -5,7 +5,6 @@ import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
 import { WarningCircle } from 'phosphor-react';
 
-import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 
@@ -30,7 +29,7 @@ export interface SignUpProps {
     search: string;
   };
   isNewUser: boolean;
-  //onChange: (payload: { valid: boolean; password: string }) => void;
+  displayIframe: boolean;
 }
 
 function SignUp(props: SignUpProps): JSX.Element {
@@ -40,7 +39,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     qs.register === 'activate' ? 'activate' : 'appsumo',
     hasReferrer ? String(qs.ref) : undefined,
   );
-  //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
   const tokenParam = qs.token;
   const {
@@ -60,9 +58,10 @@ function SignUp(props: SignUpProps): JSX.Element {
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [passwordState, setPasswordState] = useState<{ tag: 'error' | 'warning' | 'success'; label: string } | null>(
-    null,
-  );
+  const [passwordState, setPasswordState] = useState<{
+    tag: 'error' | 'warning' | 'success';
+    label: string;
+  } | null>(null);
 
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
 
@@ -180,7 +179,14 @@ function SignUp(props: SignUpProps): JSX.Element {
        * ==========
        */
 
-      navigationService.push(AppView.Drive);
+      if (props.displayIframe) {
+        window.top?.postMessage(
+          'redirect',
+          process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
+        );
+      } else {
+        navigationService.push(AppView.Drive);
+      }
     } catch (err: unknown) {
       setIsLoading(false);
       const castedError = errorService.castError(err);
@@ -203,12 +209,18 @@ function SignUp(props: SignUpProps): JSX.Element {
   }
 
   return (
-    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
+    <div
+      className={`flex flex-col bg-white  ${
+        props.displayIframe
+          ? 'w-full px-px'
+          : 'h-fit w-96 items-center justify-center rounded-2xl px-8 py-10 sm:shadow-soft'
+      }`}
+    >
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(getReCaptcha)}>
         <span className="text-2xl font-medium">Create account</span>
 
-        <div className="flex flex-col space-y-4">
-          <label className="space-y-1">
+        <div className="flex flex-col space-y-3">
+          <label className="space-y-0.5">
             <span>Email</span>
             <TextInput
               placeholder="Email"
@@ -218,13 +230,12 @@ function SignUp(props: SignUpProps): JSX.Element {
               register={register}
               required={true}
               minLength={{ value: 1, message: 'Email must not be empty' }}
-              /* pattern={{ value: emailRegexPattern, message: 'Email not valid' }} */
-              autoFocus={true}
+              autoFocus={!props.displayIframe}
               error={errors.email}
             />
           </label>
 
-          <label className="space-y-1">
+          <label className="space-y-0.5">
             <span>Password</span>
             <PasswordInput
               className={passwordState ? passwordState.tag : ''}
@@ -239,7 +250,7 @@ function SignUp(props: SignUpProps): JSX.Element {
               <PasswordStrengthIndicator className="pt-1" strength={passwordState.tag} label={passwordState.label} />
             )}
             {bottomInfoError && (
-              <div className="flex flex-row items-start">
+              <div className="flex flex-row items-start pt-1">
                 <div className="flex h-5 flex-row items-center">
                   <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
                 </div>
@@ -265,12 +276,12 @@ function SignUp(props: SignUpProps): JSX.Element {
         </a>
       </span>
 
-      <div className="mt-6 flex w-full items-center justify-center">
+      <div className="mt-4 flex w-full items-center justify-center">
         <span className="select-none text-sm text-gray-80">
           Already have an account?{' '}
           <Link
-            to="/login"
-            className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary-dark"
+            to={props.displayIframe ? '/logindialog' : '/login'}
+            className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             Log in
           </Link>

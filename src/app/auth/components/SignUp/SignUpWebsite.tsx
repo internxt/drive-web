@@ -3,7 +3,6 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
 
-import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 
@@ -27,7 +26,6 @@ export interface SignUpProps {
     search: string;
   };
   isNewUser: boolean;
-  //onChange: (payload: { valid: boolean; password: string }) => void;
 }
 
 function SignUpWebsite(props: SignUpProps): JSX.Element {
@@ -56,9 +54,10 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [passwordState, setPasswordState] = useState<{ tag: 'error' | 'warning' | 'success'; label: string } | null>(
-    null,
-  );
+  const [passwordState, setPasswordState] = useState<{
+    tag: 'error' | 'warning' | 'success';
+    label: string;
+  } | null>(null);
 
   const formInputError = Object.values(errors)[0];
 
@@ -156,7 +155,10 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
        * ==========
        */
 
-      window.top?.postMessage('redirect', '*');
+      window.top?.postMessage(
+        'redirect',
+        process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
+      );
     } catch (err: unknown) {
       setIsLoading(false);
       const castedError = errorService.castError(err);
@@ -192,7 +194,6 @@ function SignUpWebsite(props: SignUpProps): JSX.Element {
             register={register}
             required={true}
             minLength={{ value: 1, message: 'Email must not be empty' }}
-            /* pattern={{ value: emailRegexPattern, message: 'Email not valid' }} */
             autoFocus={true}
             error={errors.email}
           />
