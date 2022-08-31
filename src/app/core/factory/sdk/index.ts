@@ -1,4 +1,4 @@
-import { Storage, Share, Users, Referrals, Payments, Backups } from '@internxt/sdk/dist/drive';
+import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
 import { Auth, Token } from '@internxt/sdk/dist/auth';
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import packageJson from '../../../../../package.json';
@@ -7,7 +7,6 @@ import { Workspace } from '../../types';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { Photos } from '@internxt/sdk/dist/photos';
-import { Trash } from '@internxt/sdk/dist/drive/trash';
 import authService from '../../../auth/services/auth.service';
 
 export class SdkFactory {
@@ -52,6 +51,19 @@ export class SdkFactory {
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getApiSecurity();
     return Share.client(apiUrl, appDetails, apiSecurity);
+  }
+
+  public async createTrashClient(): Promise<Trash> {
+    const appDetails = SdkFactory.getAppDetails();
+    let newToken = this.localStorage.get('xNewToken');
+
+    if (!newToken) {
+      newToken = await authService.getNewToken();
+      this.localStorage.set('xNewToken', newToken);
+    }
+
+    const apiSecurity = { ...this.getApiSecurity(), token: newToken };
+    return Trash.client(process.env.REACT_APP_API_V2_URL as string, appDetails, apiSecurity);
   }
 
   public createUsersClient(): Users {
@@ -102,19 +114,6 @@ export class SdkFactory {
       this.localStorage.set('xNewToken', newToken);
     }
     return new Photos(process.env.REACT_APP_PHOTOS_API_URL, newToken);
-  }
-
-  public async createTrashClient(): Promise<Trash> {
-    const appDetails = SdkFactory.getAppDetails();
-    let newToken = this.localStorage.get('xNewToken');
-
-    if (!newToken) {
-      newToken = await authService.getNewToken();
-      this.localStorage.set('xNewToken', newToken);
-    }
-
-    const apiSecurity = { ...this.getApiSecurity(), token: newToken };
-    return Trash.client(process.env.REACT_APP_API_V2_URL as string, appDetails, apiSecurity);
   }
   /** Helpers **/
 
