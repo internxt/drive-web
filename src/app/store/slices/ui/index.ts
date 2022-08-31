@@ -1,8 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import queryString from 'query-string';
 
-import { DriveFileData } from '../../../drive/types';
-import { FileInfoMenuItem } from '../../../drive/types';
+import { DriveFileData, FileInfoMenuItem } from '../../../drive/types';
 import navigationService from '../../../core/services/navigation.service';
 import { AccountViewTab } from '../../../core/views/AccountView/tabs';
 
@@ -13,9 +12,10 @@ interface UISliceState {
   isFileInfoMenuOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
+  isClearTrashDialogOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
-  isSharedFolderTooBigDialogOpen: boolean,
+  isSharedFolderTooBigDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
@@ -33,6 +33,7 @@ const initialState: UISliceState = {
   isFileInfoMenuOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
+  isClearTrashDialogOpen: false,
   isNewsletterDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
   isSharedFolderTooBigDialogOpen: false,
@@ -67,6 +68,9 @@ export const uiSlice = createSlice({
     },
     setIsDeleteItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDeleteItemsDialogOpen = action.payload;
+    },
+    setIsClearTrashDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isClearTrashDialogOpen = action.payload;
     },
     setIsNewsletterDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isNewsletterDialogOpen = action.payload;
