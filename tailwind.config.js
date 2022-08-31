@@ -8,6 +8,13 @@ module.exports = {
   },
   darkMode: false, // or 'media' or 'class'
   theme: {
+    screens: {
+      xs: '512px',
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+    },
     extend: {
       backdropInvert: {
         25: '25%',
@@ -167,6 +174,7 @@ module.exports = {
       boxShadow: {
         b: '2px 1px 3px 0 rgba(0,0,0,0.1),2px 1px 2px 0 rgba(0,0,0,0.06)',
         'photo-select': '0px 12px 24px rgba(0, 0, 0, 0.16)',
+        soft: '0px 4px 8px rgba(0, 0, 0, 0.02), 0px 8px 16px rgba(0, 0, 0, 0.02), 0px 12px 20px rgba(0, 0, 0, 0.02), 0px 16px 24px rgba(0, 0, 0, 0.02), 0px 24px 32px rgba(0, 0, 0, 0.02);',
         subtle: '0 32px 40px 0 rgba(18, 22, 25, 0.04)',
         'subtle-hard': '0 32px 40px 0 rgba(18, 22, 25, 0.08)',
       },
