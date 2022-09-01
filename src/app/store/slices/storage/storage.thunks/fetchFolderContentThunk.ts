@@ -20,10 +20,12 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
     dispatch(storageActions.resetOrder());
 
     if (databaseContent) {
+      // TODO: migrate this filter to back-end
+      const items = databaseContent.filter((item: DriveItemData) => !item.deleted);
       dispatch(
         storageActions.setItems({
           folderId,
-          items: databaseContent,
+          items,
         }),
       );
     } else {
@@ -33,10 +35,11 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
     responsePromise.then((response) => {
       const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
       const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
+      // TODO: migrate this filter to back-end
       dispatch(
         storageActions.setItems({
           folderId,
-          items,
+          items: items.filter((item: DriveItemData) => !item.deleted),
         }),
       );
       databaseService.put(DatabaseCollection.Levels, folderId, items);

@@ -3,7 +3,7 @@ import { storageActions } from '../../app/store/slices/storage';
 import { store } from '../../app/store';
 import { DriveItemData } from '../../app/drive/types';
 
-const GetTrash = async () => {
+const GetTrash = async (): Promise<void> => {
   const trashClient = await SdkFactory.getInstance().createTrashClient();
   const itemsInTrash = await trashClient.getTrash();
   const items: DriveItemData[] = [
