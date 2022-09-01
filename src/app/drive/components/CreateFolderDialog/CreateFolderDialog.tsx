@@ -11,10 +11,11 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
-  currentFolderId: number;
+  currentFolderId?: number;
+  neededFolderId: number;
 }
 
-const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDialogProps) => {
+const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }: CreateFolderDialogProps) => {
   const [folderName, setFolderName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -23,8 +24,10 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
     dispatch(uiActions.setIsCreateFolderDialogOpen(false));
   };
   const createFolder = async () => {
+    console.log(currentFolderId);
+    console.log(neededFolderId);
     setIsLoading(true);
-    await dispatch(storageThunks.createFolderThunk({ folderName, parentFolderId: currentFolderId }))
+    await dispatch(storageThunks.createFolderThunk({ folderName, parentFolderId: currentFolderId? currentFolderId : neededFolderId }))
       .unwrap()
       .then(() => {
         setIsLoading(false);
@@ -75,5 +78,5 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
 
 export default connect((state: RootState) => ({
   user: state.user.user,
-  currentFolderId: storageSelectors.currentFolderId(state),
+  neededFolderId: storageSelectors.currentFolderId(state),
 }))(CreateFolderDialog);

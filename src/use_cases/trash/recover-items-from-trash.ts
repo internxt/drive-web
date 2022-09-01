@@ -73,9 +73,10 @@ async function moveFolder(
 
 
 const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
-  itemsToRecover.foreach((item) => {
+
+  itemsToRecover.forEach((item) => {
     if (item.isFolder) {
-      moveFolder(item.folderId, destinationId);
+      moveFolder(item.id, destinationId);
     } else {
       moveFile(item.fileId, destinationId, item.bucketId);
     }

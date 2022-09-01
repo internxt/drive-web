@@ -1,5 +1,5 @@
 import { Component, createRef, ReactNode } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 //import UilTable from '@iconscout/react-unicons/icons/uil-table';
 //import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
 //import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
@@ -246,7 +246,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                     <FolderPlus className="h-5 w-5" />
                   </BaseButton>
                 ) : null}
-                {isTrash ? (
+                {isTrash && this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onRecoverButtonClicked}>
                     <ClockCounterClockwise className="h-5 w-5" />
                   </BaseButton>
