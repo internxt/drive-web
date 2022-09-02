@@ -29,7 +29,6 @@ export interface SignUpProps {
     search: string;
   };
   isNewUser: boolean;
-  displayIframe: boolean;
 }
 
 function SignUp(props: SignUpProps): JSX.Element {
@@ -167,8 +166,8 @@ function SignUp(props: SignUpProps): JSX.Element {
       window._adftrack = Array.isArray(window._adftrack)
         ? window._adftrack
         : window._adftrack
-          ? [window._adftrack]
-          : [];
+        ? [window._adftrack]
+        : [];
       window._adftrack.push({
         HttpHost: 'track.adform.net',
         pm: 2370627,
@@ -179,14 +178,7 @@ function SignUp(props: SignUpProps): JSX.Element {
        * ==========
        */
 
-      if (props.displayIframe) {
-        window.top?.postMessage(
-          'redirect',
-          process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
-        );
-      } else {
-        navigationService.push(AppView.Drive);
-      }
+      navigationService.push(AppView.Drive);
     } catch (err: unknown) {
       setIsLoading(false);
       const castedError = errorService.castError(err);
@@ -209,13 +201,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   }
 
   return (
-    <div
-      className={`flex flex-col bg-white  ${
-        props.displayIframe
-          ? 'w-full px-px'
-          : 'h-fit w-96 items-center justify-center rounded-2xl px-8 py-10 sm:shadow-soft'
-      }`}
-    >
+    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(getReCaptcha)}>
         <span className="text-2xl font-medium">Create account</span>
 
@@ -230,7 +216,6 @@ function SignUp(props: SignUpProps): JSX.Element {
               register={register}
               required={true}
               minLength={{ value: 1, message: 'Email must not be empty' }}
-              autoFocus={!props.displayIframe}
               error={errors.email}
             />
           </label>
@@ -280,7 +265,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         <span className="select-none text-sm text-gray-80">
           Already have an account?{' '}
           <Link
-            to={props.displayIframe ? '/logindialog' : '/login'}
+            to="/login"
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             Log in

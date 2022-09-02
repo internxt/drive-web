@@ -11,11 +11,7 @@ import i18n from 'app/i18n/services/i18n.service';
 import TextInput from '../TextInput/TextInput';
 import Button from '../Button/Button';
 
-interface ForgotPasswordProps {
-  displayIframe: boolean;
-}
-
-function ForgotPassword(props: ForgotPasswordProps): JSX.Element {
+function ForgotPassword(): JSX.Element {
   const {
     register,
     formState: { errors },
@@ -51,17 +47,11 @@ function ForgotPassword(props: ForgotPasswordProps): JSX.Element {
   };
 
   return (
-    <div
-      className={`flex flex-col bg-white  ${
-        props.displayIframe
-          ? 'w-full px-px'
-          : 'h-fit w-96 items-center justify-center rounded-2xl px-8 py-10 sm:shadow-soft'
-      }`}
-    >
+    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <div className="flex flex-col space-y-3">
         <div className="flex flex-col space-y-1">
           <Link
-            to={props.displayIframe ? '/logindialog' : '/login'}
+            to="/login"
             className="flex cursor-pointer flex-row items-center space-x-0.5 text-primary no-underline focus:text-primary-dark"
           >
             <CaretLeft className="h-4 w-4" weight="bold" />

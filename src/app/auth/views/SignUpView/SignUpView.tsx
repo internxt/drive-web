@@ -18,7 +18,7 @@ export default function SignUpView(props: SignUpViewProps): JSX.Element {
       )}
 
       <div className={`flex h-full flex-col ${!props.displayIframe && 'items-center justify-center'}`}>
-        <SignUp {...props} displayIframe={props.displayIframe} />
+        <SignUp {...props} />
       </div>
 
       {!props.displayIframe && (
