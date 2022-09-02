@@ -10,6 +10,9 @@ import { DevicePlatform } from 'app/core/types';
 import i18n from 'app/i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as uuid from 'uuid';
+import { store } from '../../app/store';
+import { storageActions } from 'app/store/slices/storage';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 async function moveFile(
   fileId: string,
@@ -81,7 +84,13 @@ const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
       moveFile(item.fileId, destinationId, item.bucketId);
     }
   });
+  store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToRecover }));
+  store.dispatch(storageActions.clearSelectedItems());
 
+  notificationsService.show({
+    type: ToastType.Success,
+    text: `${itemsToRecover.length > 1 ? itemsToRecover.length : ''} Item${itemsToRecover.length > 1 ? 's' : ''} recovered`,
+  });
 };
 
 export default RecoverItemsFromTrash;

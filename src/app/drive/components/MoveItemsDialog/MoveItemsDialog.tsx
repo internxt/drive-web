@@ -36,10 +36,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [destinationId, setDestinationId] = useState(0);
   const [currentFolderId, setCurrentFolderId] = useState(0);
   const [shownFolders, setShownFolders] = useState(props.items);
-  const [currentNamePaths, setCurrentNamePaths] = useState([{
-          id: currentFolderId,
-          name: 'Drive',
-        }]);
+  const [rootFolderId, setRootFolderId] = useState(0);
+  const arrayOfPaths : FolderPath[] = [];
+  const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
   const isOpen = props.items?useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen):false;
   const newFolderIsOpen = props.items?useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen):false;
@@ -55,17 +54,44 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
     dispatch(storageActions.resetNamePath());
 
-    setCurrentNamePaths([{
+    setRootFolderId(rootFolderId);
+
+    /*setCurrentNamePaths([{
           id: rootFolderId,
           name: 'Drive',
-    }]); 
+    }]); */
 
+    };
   };
- };
+
+  const pushPath = (namePath)=>{async (payload: void, { getState, dispatch }) => {
+    
+    
+      console.log('NamePath:');
+      console.log(storageSelectors.currentFolderId(getState()));
+
+      dispatch(storageActions.pushNamePath(namePath));
+      
+
+    };
+  };
+
+  const popPath = (namePath)=>{async (payload: void, { getState, dispatch }) => {
+    
+    
+      console.log('NamePath:');
+      console.log(storageSelectors.currentFolderId(getState()));
+
+      dispatch(storageActions.popNamePathUpTo(namePath));
+  
+
+    };
+  };
 
   const onClose = (): void => {
     dispatch(uiActions.setIsMoveItemsDialogOpen(false));
     dispatch(setItemsToMove([]));
+    resetPath();
   };
 
   const onCreateFolderButtonClicked = () => {
@@ -76,8 +102,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     try {
 
       console.log(itemsToMove);
+      console.log(destinationFolderId);
       setIsLoading(true);
-      if (itemsToMove.length > 0 && destinationId) {
+      if (itemsToMove.length > 0) {
         /*await dispatch(storageThunks.moveItemsThunk({
           items: itemsToMove,
           destinationFolderId: destinationFolderId,
@@ -113,7 +140,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     if (currentFolderPaths.length > 0) {
      
       
-      currentFolderPaths.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
+      currentFolderPaths.forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         
         if(items.includes({
           id: path.id,
@@ -142,7 +169,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
 useEffect(()=>{
   setCurrentNamePaths([]);
-  //resetPath();
+  console.log(currentNamePaths);
+  resetPath();
   onShowFolderContentClicked(props.items[0].isFolder? props.items[0].parentId : props.items[0].folderId, 'Drive');
 },[]);
 
@@ -156,8 +184,10 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
       let auxCurrentPaths : FolderPath[] = currentNamePaths;
       if(auxCurrentPaths.find((path)=>{ return path.id === folderId;})){
         auxCurrentPaths= auxCurrentPaths.slice(0, auxCurrentPaths.indexOf({id:folderId, name: name}));
+        popPath({id:folderId, name: name});
       }else{
         auxCurrentPaths.push({id:folderId, name: name});
+        pushPath({id:folderId, name: name});
       }
      
 
@@ -168,6 +198,10 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
       console.log(folders);
       if(folders){
         setShownFolders(folders);
+      }else{
+        setShownFolders([]);
+        setDestinationId(0);
+        setCurrentFolderId(folderId);
       }
     }
   );
@@ -190,7 +224,7 @@ const onFolderClicked = (folderId: number): void => {
   
     <BaseDialog isOpen={isOpen} closable={false} titleClasses='flex px-5 text-left font-medium' panelClasses='text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
         transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-8 rounded-lg overflow-hidden bg-white' title={`${props.isTrash? 'Restore':'Move'} ${itemsToMove.length > 1? (itemsToMove.length)+' items': ('"'+itemsToMove[0].name+'"')}`} onClose={onClose}>
-        {newFolderIsOpen? (<CreateFolderDialog currentFolderId={currentFolderId}/>) : (<div style={{width:'512px'}}/>)}
+        <div style={{width:'512px'}}>{newFolderIsOpen && <CreateFolderDialog currentFolderId={currentFolderId}/>}</div>
 
       <div className="block text-left justify-left items-center w-fill bg-white py-6">
         <div className='ml-5'><Breadcrumbs  items={breadcrumbItems(currentNamePaths)} /></div>
