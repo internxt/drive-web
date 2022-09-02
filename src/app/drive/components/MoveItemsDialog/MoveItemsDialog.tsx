@@ -188,25 +188,27 @@ const onFolderClicked = (folderId: number): void => {
   return (
 
   
-    <BaseDialog isOpen={isOpen} panelClasses='text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
-        transform -translate-y-1/2 -translate-x-1/2 w-2/6 text-left pt-8 rounded-lg overflow-hidden bg-white' title={`${props.isTrash? 'Restore':'Move'} ${itemsToMove.length > 1? (itemsToMove.length)+' items': ('"'+itemsToMove[0].name+'"')}`} onClose={onClose}>
-        {newFolderIsOpen? (<CreateFolderDialog currentFolderId={currentFolderId}/>) : (<div/>)}
+    <BaseDialog isOpen={isOpen} closable={false} titleClasses='flex px-5 text-left font-medium' panelClasses='text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
+        transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-8 rounded-lg overflow-hidden bg-white' title={`${props.isTrash? 'Restore':'Move'} ${itemsToMove.length > 1? (itemsToMove.length)+' items': ('"'+itemsToMove[0].name+'"')}`} onClose={onClose}>
+        {newFolderIsOpen? (<CreateFolderDialog currentFolderId={currentFolderId}/>) : (<div style={{width:'512px'}}/>)}
 
-      <div className="block text-left justify-center items-center w-fill bg-white py-6 mt-6">
+      <div className="block text-left justify-left items-center w-fill bg-white py-6">
         <div className='ml-5'><Breadcrumbs  items={breadcrumbItems(currentNamePaths)} /></div>
-        <div className="block w-fill h-60 border border-gray-10 rounded-md mx-5 items-center bg-white">
+        <div className="block w-fill h-60 border border-gray-10 rounded-md mx-5 items-center overflow-scroll hide-scroll bg-white">
           {props.isTrash?shownFolders.map((folder)=>{
 
             return (
-            <div className={`${destinationId === folder.id? 'bg-gray-20' : ''} flex justify-left align-middle w-fill h-12 border border-t-0 border-r-0 border-l-0 border-gray-10 items-center px-4 bg-white cursor-pointer`} key={folder.id}>
-              <div className='flex cursor-pointer' onClick={()=>onFolderClicked(folder.id)}>
-              <img className="h-8 w-8" alt="" src={folderImage} />
-                <span className='inline-block ml-4 text-base text-regular align-baseline mt-1'>
-                  {folder.name}
-                </span>
-              </div>
-              <div onClick={()=>onShowFolderContentClicked(folder.id, folder.name)} className='ml-auto cursor-pointer hover:bg-gray-10'>
-                <CaretRight className='h-6 w-6' />
+            <div className={`${destinationId === folder.id? 'bg-gray-20' : ''} border border-t-0 border-l-0 border-r-0 border-white`}>
+              <div className={`${destinationId === folder.id? 'bg-gray-20 border-none' : ''} flex justify-left align-middle w-fill h-12 border border-t-0 border-r-0 border-l-0 border-gray-10 items-center mx-4 bg-white cursor-pointer`} key={folder.id}>
+                <div className='flex cursor-pointer w-96' onClick={()=>onFolderClicked(folder.id)}>
+                <img className="h-8 w-8" alt="" src={folderImage} />
+                  <span className='inline-block ml-4 text-base text-regular align-baseline mt-1'>
+                    {folder.name}
+                  </span>
+                </div>
+                <div onClick={()=>onShowFolderContentClicked(folder.id, folder.name)} className='ml-auto cursor-pointer hover:bg-gray-10'>
+                  <CaretRight className='h-6 w-6' />
+                </div>
               </div>
             </div>);
 
@@ -215,13 +217,13 @@ const onFolderClicked = (folderId: number): void => {
        
 
         <div className="flex ml-auto mt-5">
-          <BaseButton className="tertiary square w-8 mr-24 ml-5" onClick={onCreateFolderButtonClicked}>
-            <FolderPlus className="h-8 w-8 text-primary" /> 
+          <BaseButton className="tertiary square w-28 h-8 ml-5 mt-1 mr-auto" onClick={onCreateFolderButtonClicked}>
+            <div className='flex text-primary text-base text-medium cursor-pointer'><FolderPlus className="h-5 w-5 text-primary mr-2" />  <span className='text-primary text-base font-medium cursor-pointer'>{'New folder'}</span></div>
           </BaseButton>
-          <BaseButton onClick={() => onClose()} className="cancel w-full mr-2 ml-6">
+          <BaseButton onClick={() => onClose()} className="quaternary text-base font-medium h-10 rounded-lg w-20 px-1">
             {i18n.get('actions.cancel')}
           </BaseButton>
-          <BaseButton className="primary w-11/12 ml-2 mr-5" disabled={isLoading} onClick={() => onAccept(destinationId? destinationId : currentFolderId)}>
+          <BaseButton className="primary w-32 ml-2 mr-5" disabled={isLoading} onClick={() => onAccept(destinationId? destinationId : currentFolderId)}>
             {isLoading ? (!props.isTrash?'Moving...':'Restoring...') : (!props.isTrash?'Move':'Restore here')}
           </BaseButton>
         </div>
