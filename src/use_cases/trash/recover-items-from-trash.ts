@@ -13,6 +13,7 @@ import * as uuid from 'uuid';
 import { store } from '../../app/store';
 import { storageActions } from 'app/store/slices/storage';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
 //import { DriveItemData } from 'app/drive/types';
 
 async function moveFile(
@@ -95,6 +96,13 @@ const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
   notificationsService.show({
     type: ToastType.Success,
     text: `Restored ${itemsToRecover.length > 1 ? itemsToRecover.length : ''} Item${itemsToRecover.length > 1 ? 's' : ''} ${itemsToRecover.length == 1 ? '"' + itemsToRecover[0].name + '"' : ''}`,
+    action: {
+      text: 'Open folder',
+      onClick: () => {
+        store.dispatch(storageThunks.goToFolderThunk({ name: itemsToRecover[0].name, id: destinationId }));
+        console.log('Open folder');
+      },
+    },
   });
 };
 
