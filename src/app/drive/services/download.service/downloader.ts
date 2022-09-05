@@ -82,7 +82,7 @@ async function downloadFiles(
 
       const readable = await downloadFile({
         bucketId: bucket,
-        fileId: file.id,
+        fileId: (file as any).fileId,
         encryptionKey: Buffer.from(file.encryptionKey, 'hex'),
         token
       });
