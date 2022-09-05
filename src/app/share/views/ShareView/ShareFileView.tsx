@@ -94,7 +94,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       .map((arr) => arr[1])
       .filter((arr) => arr.length > 0);
     for (const extensions of extensionsWithFileViewer) {
-      if (extensions.includes(info['fileMeta']['type'] || '')) {
+      if (extensions.includes(info['item']['type'] || '')) {
         return true;
       }
     }
@@ -108,56 +108,36 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   };
 
   const getFormatFileName = (): string => {
-    const hasType = info['fileMeta']['type'] !== null;
-    const extension = hasType ? `.${info['fileMeta']['type']}` : '';
-    return `${info['fileMeta']['name']}${extension}`;
+    const hasType = info['item']['type'] !== null;
+    const extension = hasType ? `.${info['item']['type']}` : '';
+    return `${info['item']['name']}${extension}`;
   };
 
   const getFormatFileSize = (): string => {
-    return sizeService.bytesToString(info['fileMeta']['size']);
+    return sizeService.bytesToString(info['item']['size']);
   };
 
   const loadInfo = async () => {
     try {
-      const info = await getSharedFileInfo(token).catch(() => {
-        setIsError(true);
-        throw new Error(i18n.get('error.linkExpired'));
-      });
+      const info = await getSharedFileInfo(token, code);
 
       setInfo({
         ...info,
-        name: getDecryptedName(info),
+        name: info.item.name
       });
 
       setIsLoaded(true);
-
-      const updatedName = { ...info };
-      if (updatedName.item) {
-        updatedName.item.name = getDecryptedName(info);
-      }
-      setInfo({ ...updatedName });
     } catch (err) {
+      console.log('err', err);
       setIsError(true);
-      setErrorMSG(errorService.castError(err));
+      setErrorMSG(new Error('Link unavailable'));
     }
   };
-
-  function getEncryptionKey() {
-    const fileInfo = info as unknown as ShareTypes.ShareLink;
-    let encryptionKey;
-    if (code) {
-      encryptionKey = aes.decrypt(fileInfo.encryptionKey, code);
-    } else {
-      encryptionKey = fileInfo.encryptionKey;
-    }
-
-    return encryptionKey;
-  }
 
   function getBlob(abortController: AbortController): Promise<Blob> {
     const fileInfo = info as unknown as ShareTypes.ShareLink;
 
-    const encryptionKey = getEncryptionKey();
+    const encryptionKey = fileInfo.encryptionKey;
 
     const readable = network.downloadFile({
       bucketId: fileInfo.bucket,
@@ -184,15 +164,15 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
-        const encryptionKey = getEncryptionKey();
+        const encryptionKey = fileInfo.encryptionKey;
 
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
         const readable = await network.downloadFile({
           bucketId: fileInfo.bucket,
-          fileId: fileInfo.item,
+          fileId: fileInfo.item.fileId,
           encryptionKey: Buffer.from(encryptionKey, 'hex'),
-          token: fileInfo.itemToken,
+          token: (fileInfo as any).fileToken,
           options: {
             notifyProgress: (totalProgress, downloadedBytes) => {
               setProgress(Math.trunc((downloadedBytes / totalProgress) * 100));
@@ -251,7 +231,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       </>
     );
   } else if (isLoaded) {
-    const FileIcon = iconService.getItemIcon(false, info['fileMeta']['type']);
+    const FileIcon = iconService.getItemIcon(false, info['item']['type']);
 
     body = (
       <>
