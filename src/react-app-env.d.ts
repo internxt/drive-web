@@ -5,6 +5,7 @@ declare namespace NodeJS {
     NODE_ENV: 'development' | 'production' | 'test';
     PUBLIC_URL: string;
     REACT_APP_API_URL: string;
+    REACT_APP_DRIVE_NEW_API_URL: string
     REACT_APP_PHOTOS_API_URL: string;
     REACT_APP_PAYMENTS_API_URL: string;
     REACT_APP_CRYPTO_SECRET: string;

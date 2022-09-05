@@ -25,6 +25,10 @@ export class SdkFactory {
     this.instance = new SdkFactory(process.env.REACT_APP_API_URL, dispatch, localStorage);
   }
 
+  public static getNewApiInstance(): SdkFactory {
+    return new SdkFactory(process.env.REACT_APP_DRIVE_NEW_API_URL, this.instance.dispatch, this.instance.localStorage);
+  }
+
   public static getInstance(): SdkFactory {
     if (this.instance === undefined) {
       throw new Error('Factory not initialized');
@@ -131,7 +135,7 @@ export class SdkFactory {
     return this.apiUrl + '/api';
   }
   private getApiV2Url(): ApiUrl {
-    return String(process.env.REACT_APP_API_V2_URL);
+    return String(process.env.REACT_APP_DRIVE_NEW_API_URL);
   }
 
   private static getAppDetails(): AppDetails {
