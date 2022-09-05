@@ -85,11 +85,13 @@ const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
     }
   });
   store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToRecover }));
+  store.dispatch(storageActions.popItemsToDelete(itemsToRecover));
   store.dispatch(storageActions.clearSelectedItems());
+  store.dispatch(storageActions.pushItems({ updateRecents: true, folderIds: [destinationId], items: itemsToRecover }));
 
   notificationsService.show({
     type: ToastType.Success,
-    text: `${itemsToRecover.length > 1 ? itemsToRecover.length : ''} Item${itemsToRecover.length > 1 ? 's' : ''} recovered`,
+    text: `Restored ${itemsToRecover.length > 1 ? itemsToRecover.length : ''} Item${itemsToRecover.length > 1 ? 's' : ''} ${itemsToRecover.length == 1 ? '"' + itemsToRecover[0].name + '"' : ''}`,
   });
 };
 
