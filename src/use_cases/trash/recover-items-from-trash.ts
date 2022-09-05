@@ -13,6 +13,8 @@ import * as uuid from 'uuid';
 import { store } from '../../app/store';
 import { storageActions } from 'app/store/slices/storage';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+//import { DriveItemData } from 'app/drive/types';
 
 async function moveFile(
   fileId: string,
@@ -75,23 +77,32 @@ async function moveFolder(
 }
 
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
 
   itemsToRecover.forEach((item) => {
     if (item.isFolder) {
       moveFolder(item.id, destinationId);
     } else {
-      moveFile(item.fileId, destinationId, item.bucketId);
+      moveFile(item.fileId, destinationId, item.bucket);
     }
   });
-  store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToRecover }));
+  //store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToRecover }));
+  store.dispatch(storageActions.pushItems({ updateRecents: true, folderIds: [destinationId], items: itemsToRecover }));
   store.dispatch(storageActions.popItemsToDelete(itemsToRecover));
   store.dispatch(storageActions.clearSelectedItems());
-  store.dispatch(storageActions.pushItems({ updateRecents: true, folderIds: [destinationId], items: itemsToRecover }));
+
 
   notificationsService.show({
     type: ToastType.Success,
     text: `Restored ${itemsToRecover.length > 1 ? itemsToRecover.length : ''} Item${itemsToRecover.length > 1 ? 's' : ''} ${itemsToRecover.length == 1 ? '"' + itemsToRecover[0].name + '"' : ''}`,
+    action: {
+      text: 'Open folder',
+      onClick: () => {
+        store.dispatch(storageThunks.goToFolderThunk({ name: itemsToRecover[0].name, id: destinationId }));
+        console.log('Open folder');
+      },
+    },
   });
 };
 
