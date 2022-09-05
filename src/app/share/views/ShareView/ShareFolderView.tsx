@@ -131,7 +131,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
             token: token,
           },
           folderInfo.bucket,
-          folderInfo.itemToken,
+          folderInfo.token,
           {
             filesLimit: FILES_LIMIT_BY_REQUEST,
             foldersLimit: FOLDERS_LIMIT_BY_REQUEST,
