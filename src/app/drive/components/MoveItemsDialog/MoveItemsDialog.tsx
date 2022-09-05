@@ -139,18 +139,26 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
     if (currentFolderPaths.length > 0) {
      
-      
+      console.log('CURRENT', currentFolderPaths);
       currentFolderPaths.forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         
-        if(items.includes({
-          id: path.id,
-          label: path.name,
-          icon: null,
-          active: i < namePath.length - 1,
-          onClick: () => onShowFolderContentClicked(path.id, path.name),
-        })){
-          items.pop();
-        }else{
+      //   if(items.includes({
+      //     id: path.id,
+      //     label: path.name,
+      //     icon: null,
+      //     active: i < namePath.length - 1,
+      //     onClick: () => onShowFolderContentClicked(path.id, path.name),
+      //   })){
+      //     items.pop();
+      //   }else{
+      //     items.push({
+      //     id: path.id,
+      //     label: path.name,
+      //     icon: null,
+      //     active: i < namePath.length - 1,
+      //     onClick: () => onShowFolderContentClicked(path.id, path.name),
+      //     });
+      //   }
           items.push({
           id: path.id,
           label: path.name,
@@ -158,8 +166,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           active: i < namePath.length - 1,
           onClick: () => onShowFolderContentClicked(path.id, path.name),
           });
-        }
       });
+      
     }
 
     return items;
@@ -177,25 +185,21 @@ useEffect(()=>{
 const onShowFolderContentClicked = (folderId: number, name: string): void => {
   databaseService.get(DatabaseCollection.Levels, folderId).then(
     (items)=>{
-
+      console.log('FOLDER', folderId, name);
       setCurrentFolderId(folderId);
       const folders = items?.filter((i)=>{return i.isFolder;}); 
 
-      let auxCurrentPaths : FolderPath[] = currentNamePaths;
-      if(auxCurrentPaths.find((path)=>{ return path.id === folderId;})){
-        auxCurrentPaths= auxCurrentPaths.slice(0, auxCurrentPaths.indexOf({id:folderId, name: name}));
+      let auxCurrentPaths : FolderPath[] = [...currentNamePaths];
+      const currentIndex = auxCurrentPaths.findIndex((i)=>{return i.id === folderId;});
+      if(currentIndex > -1){
+        auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex+1);
         popPath({id:folderId, name: name});
       }else{
         auxCurrentPaths.push({id:folderId, name: name});
         pushPath({id:folderId, name: name});
       }
-     
-
+  
       setCurrentNamePaths(auxCurrentPaths);
-
-      console.log(currentNamePaths);
-
-      console.log(folders);
       if(folders){
         setShownFolders(folders);
       }else{
