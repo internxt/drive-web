@@ -16,30 +16,32 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import _ from 'lodash';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData } from '../../../drive/types';
+import { aes } from '@internxt/lib';
+import localStorageService from 'app/core/services/local-storage.service';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
-function copyShareLink(token: string) {
-  copy(`${document.location.origin}/s/file/${token}/`);
+function copyShareLink(type: string, code: string, token: string) {
+  copy(`${document.location.origin}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
 export default function SharedLinksView(): JSX.Element {
-  const ITEMS_PER_PAGE = 64;
+  const ITEMS_PER_PAGE = 10;
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [page, setPage] = useState<number>(0);
   const [orderBy, setOrderBy] = useState<OrderBy>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [selectedItems, setSelectedItems] = useState<ListShareLinksItem[]>([]);
-  const [shareLinks, setShareLinks] = useState<ListShareLinksItem[]>([]);
+  const [selectedItems, setSelectedItems] = useState<(ListShareLinksItem & { code: string })[]>([]);
+  const [shareLinks, setShareLinks] = useState<(ListShareLinksItem & { code: string })[]>([]);
 
   const [confirmDeleteState, setConfirmDeleteState] = useState<
     { tag: 'single'; shareId: string } | { tag: 'multiple' } | { tag: 'closed' }
   >({ tag: 'closed' });
 
   const [isUpdateLinkModalOpen, setIsUpdateLinkModalOpen] = useState(false);
-  const [linkToUpdate, setLinkToUpdate] = useState<ListShareLinksItem | undefined>(undefined);
+  const [linkToUpdate, setLinkToUpdate] = useState<(ListShareLinksItem & { code: string }) | undefined>(undefined);
 
   function closeConfirmDelete() {
     setConfirmDeleteState({ tag: 'closed' });
@@ -49,8 +51,6 @@ export default function SharedLinksView(): JSX.Element {
     return selectedItems.some((i) => item.id === i.id);
   }
 
-
-
   useEffect(() => {
     fetchItems(page, orderBy, 'append');
   }, []);
@@ -58,7 +58,7 @@ export default function SharedLinksView(): JSX.Element {
   async function fetchItems(page: number, orderBy: OrderBy, type: 'append' | 'substitute') {
     setIsLoading(true);
 
-    const response = await shareService.getAllShareLinks(
+    const response: ShareTypes.ListShareLinksResponse = await shareService.getAllShareLinks(
       page,
       ITEMS_PER_PAGE,
       orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
@@ -68,14 +68,15 @@ export default function SharedLinksView(): JSX.Element {
     setOrderBy(orderBy);
     setIsLoading(false);
     setPage(page);
-    if (type == 'append') {
-      setShareLinks([...shareLinks, ...response.items]);
+
+    if (type === 'append') {
+      setShareLinks([...shareLinks, ...response.items as (ListShareLinksItem & { code: string })[] ]);
     } else {
-      setShareLinks(response.items);
+      setShareLinks(response.items as (ListShareLinksItem & { code: string })[]);
     }
   }
 
-  function updateLinkItem(item: ListShareLinksItem) {
+  function updateLinkItem(item: ListShareLinksItem & { code: string }) {
     const index = shareLinks.findIndex((i) => item.id === i.id);
     const updatedList = shareLinks;
     updatedList[index] = item;
@@ -119,7 +120,7 @@ export default function SharedLinksView(): JSX.Element {
     setConfirmDeleteState({ tag: 'closed' });
   }
 
-  function onSelectedItemsChanged(changes: { props: ListShareLinksItem; value: boolean }[]) {
+  function onSelectedItemsChanged(changes: { props: ListShareLinksItem & { code: string }; value: boolean }[]) {
     let updatedSelectedItems = selectedItems;
 
     for (const change of changes) {
@@ -156,7 +157,8 @@ export default function SharedLinksView(): JSX.Element {
     />
   );
 
-  function onOpenLinkUpdateModal(item: ListShareLinksItem) {
+  function onOpenLinkUpdateModal(item: ListShareLinksItem & { code: string }) {
+    const mnemonic = localStorageService.getUser()!.mnemonic;
     setLinkToUpdate(item);
     setIsUpdateLinkModalOpen(true);
   }
@@ -183,7 +185,7 @@ export default function SharedLinksView(): JSX.Element {
       </div>
 
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List<ListShareLinksItem, 'views' | 'createdAt'>
+        <List<ListShareLinksItem & { code: string }, 'views' | 'createdAt'>
           header={[
             {
               label: i18n.get('shared-links.list.link-content'),
@@ -248,7 +250,13 @@ export default function SharedLinksView(): JSX.Element {
               name: i18n.get('shared-links.item-menu.copy-link'),
               icon: Link,
               action: (props) => {
-                copyShareLink(props.token);
+                const itemType = props.isFolder ? 'folder' : 'file';
+                const encryptedCode = props.code;
+                const plainCode = aes.decrypt(
+                  encryptedCode, 
+                  localStorageService.getUser()!.mnemonic
+                );
+                copyShareLink(itemType, plainCode, props.token);
               },
               disabled: () => {
                 return false;
@@ -305,7 +313,7 @@ export default function SharedLinksView(): JSX.Element {
         isOpen={isUpdateLinkModalOpen}
         onClose={() => setIsUpdateLinkModalOpen(false)}
         onShareUpdated={updateLinkItem}
-        linkToUpdate={linkToUpdate}
+        linkToUpdate={linkToUpdate!}
       />
     </div>
   );
@@ -318,9 +326,9 @@ function UpdateLinkModal({
   linkToUpdate,
 }: {
   isOpen: boolean;
-  linkToUpdate?: ListShareLinksItem;
+  linkToUpdate: ListShareLinksItem & { code: string };
   onClose: () => void;
-  onShareUpdated: (updatedItem: ListShareLinksItem) => void;
+  onShareUpdated: (updatedItem: ListShareLinksItem & { code: string }) => void;
 }) {
   const [savingLinkChanges, setSavingLinkChanges] = useState<boolean>(false);
 
@@ -336,9 +344,17 @@ function UpdateLinkModal({
   async function updateShareLink(params: ShareTypes.UpdateShareLinkPayload) {
     setSavingLinkChanges(true);
     const updatedItem = await shareService.updateShareLink(params);
-    onShareUpdated(updatedItem);
+    onShareUpdated(updatedItem as ShareTypes.ShareLink & { code: string });
     setSavingLinkChanges(false);
     //notificationsService.show({ text: i18n.get('shared-links.toast.link-updated'), type: ToastType.Success });
+  }
+
+  function copyLink() {
+    const mnemonic = localStorageService.getUser()!.mnemonic;
+    const link = shareService.buildLinkFromShare(mnemonic, linkToUpdate);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    copy(link);
+    notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
   }
 
   return (
@@ -371,7 +387,7 @@ function UpdateLinkModal({
                 <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
                   <span className="font-medium">{i18n.get('shared-links.link-settings.share-settings')}</span>
                   <span className="truncate whitespace-nowrap text-base text-gray-40">
-                    {`${item?.name}${item?.type && `.${item?.type}`}`}
+                    {`${item?.name}${(item?.type && item?.type !== 'folder' && `.${item?.type}` || '')}`}
                   </span>
                 </Dialog.Title>
 
@@ -386,8 +402,7 @@ function UpdateLinkModal({
 
                 <div className="flex flex-row justify-between">
                   <BaseButton
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    onClick={() => copyShareLink(linkToUpdate!.token)}
+                    onClick={copyLink}
                     disabled={
                       false 
                     }

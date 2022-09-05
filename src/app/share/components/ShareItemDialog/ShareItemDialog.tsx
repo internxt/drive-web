@@ -1,7 +1,6 @@
 import UilClipboardAlt from '@iconscout/react-unicons/icons/uil-clipboard-alt';
 import { useEffect, useState } from 'react';
 
-import { generateFileKey, Network } from 'app/drive/services/network.service';
 import { DriveItemData } from 'app/drive/types';
 import { uiActions } from 'app/store/slices/ui';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
@@ -20,6 +19,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import crypto from 'crypto';
+import { Environment } from '@internxt/inxt-js';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
@@ -47,16 +47,14 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
 
   const handleShareLink = async (views: number) => {
     try {
-      const fileId = item.fileId;
-
       if (!user) {
         return navigationService.push(AppView.Login);
       }
 
-      const { bucket, mnemonic, userId, bridgeUser: email } = user;
+      const { bucket, bridgeUser, userId, mnemonic } = user;
 
       if (!bucket) {
-        trackShareLinkBucketIdUndefined({ email });
+        trackShareLinkBucketIdUndefined({ email: bridgeUser });
         close();
         notificationsService.show({ text: i18n.get('error.shareLinkMissingBucket'), type: ToastType.Error });
         dispatch(userThunks.logoutThunk());
@@ -64,44 +62,27 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
         return;
       }
 
-      let payload: ShareTypes.GenerateShareLinkPayload;
-      const network = new Network(email, userId, mnemonic);
       const code = crypto.randomBytes(32).toString('hex');
 
-      if (item.isFolder) {
-        const encryptedMnemonic = aes.encrypt(mnemonic, code);
-        const bucketToken = await network.createFileToken(bucket, '', 'PULL');
-        payload = {
-          itemId: item.id.toString(),
-          type: 'folder',
-          bucket: bucket,
-          itemToken: bucketToken,
-          timesValid: views,
-          mnemonic: encryptedMnemonic,
-          encryptionKey: '',
-          code,
-        };
-      } else {
-        const { index } = await network.getFileInfo(bucket, fileId);
-        const fileToken = await network.createFileToken(bucket, fileId, 'PULL');
-        const fileEncryptionKey = await generateFileKey(mnemonic, bucket, Buffer.from(index, 'hex'));
-        const encryptedKey = aes.encrypt(fileEncryptionKey.toString('hex'), code);
-        payload = {
-          itemId: fileId,
-          type: 'file',
-          bucket: bucket,
-          itemToken: fileToken,
-          timesValid: views,
-          mnemonic: '',
-          encryptionKey: encryptedKey,
-          code,
-        };
-      }
-      let link = await shareService.generateShareLink(payload);
-      if (item.isFolder) {
-        const codeEncrypted: string = link.split('/').slice(-1)[0];
-        link += aes.decrypt(codeEncrypted, mnemonic);
-      }
+      const encryptedMnemonic = aes.encrypt(mnemonic, code);
+      const encryptedCode = aes.encrypt(code, mnemonic);
+
+
+      const payload: ShareTypes.GenerateShareLinkPayload = {
+        itemId: item.id.toString(),
+        type: item.isFolder  ? 'folder' : 'file',
+        bucket: bucket,
+        itemToken: await new Environment({
+          bridgePass: userId,
+          bridgeUser,
+          bridgeUrl: process.env.REACT_APP_STORJ_BRIDGE
+        }).createFileToken(bucket, item.fileId, 'PULL'),
+        timesValid: views,
+        encryptedMnemonic,
+        encryptedCode
+      };
+
+      const link = await shareService.createShareLink(code, mnemonic, payload);
 
       dispatch(referralsThunks.refreshUserReferrals());
 
