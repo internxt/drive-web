@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import {FolderPlus, CaretRight, HardDrive} from 'phosphor-react';
+import {FolderPlus, CaretRight} from 'phosphor-react';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { useState, useEffect } from 'react';
 import BaseButton from 'app/shared/components/forms/BaseButton';
@@ -23,6 +23,7 @@ import databaseService, { DatabaseCollection } from 'app/database/services/datab
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
+//import storageService from 'app/drive/services/storage.service';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -36,65 +37,27 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [destinationId, setDestinationId] = useState(0);
   const [currentFolderId, setCurrentFolderId] = useState(0);
   const [shownFolders, setShownFolders] = useState(props.items);
-  const [rootFolderId, setRootFolderId] = useState(0);
+  //const [rootFolderId, setRootFolderId] = useState(0);
   const arrayOfPaths : FolderPath[] = [];
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
   const isOpen = props.items?useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen):false;
   const newFolderIsOpen = props.items?useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen):false;
+  const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
   //const viewModes = {
    //   [FileViewMode.List]: DriveExplorerList,
    //   [FileViewMode.Grid]: DriveExplorerGrid,
     //};
   //const ViewModeComponent = viewModes[FileViewMode.List];
 
-  const resetPath = ()=>{async (payload: void, { getState, dispatch }) => {
-   
-    const rootFolderId: number = storageSelectors.rootFolderId(getState());
-
-    dispatch(storageActions.resetNamePath());
-
-    setRootFolderId(rootFolderId);
-
-    /*setCurrentNamePaths([{
-          id: rootFolderId,
-          name: 'Drive',
-    }]); */
-
-    };
-  };
-
-  const pushPath = (namePath)=>{async (payload: void, { getState, dispatch }) => {
-    
-    
-      console.log('NamePath:');
-      console.log(storageSelectors.currentFolderId(getState()));
-
-      dispatch(storageActions.pushNamePath(namePath));
-      
-
-    };
-  };
-
-  const popPath = (namePath)=>{async (payload: void, { getState, dispatch }) => {
-    
-    
-      console.log('NamePath:');
-      console.log(storageSelectors.currentFolderId(getState()));
-
-      dispatch(storageActions.popNamePathUpTo(namePath));
-  
-
-    };
-  };
 
   const onClose = (): void => {
     dispatch(uiActions.setIsMoveItemsDialogOpen(false));
     dispatch(setItemsToMove([]));
-    resetPath();
   };
 
   const onCreateFolderButtonClicked = () => {
+    
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   };
 
@@ -142,15 +105,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
       
       currentFolderPaths.forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         
-        /*if(items.includes({
-          id: path.id,
-          label: path.name,
-          icon: null,
-          active: i < namePath.length - 1,
-          onClick: () => onShowFolderContentClicked(path.id, path.name),
-        })){*/
-          //items.pop();
-       // }else{
+  
           items.push({
           id: path.id,
           label: path.name,
@@ -158,7 +113,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           active: i < namePath.length - 1,
           onClick: () => onShowFolderContentClicked(path.id, path.name),
           });
-       // }
+      
       });
     }
 
@@ -170,8 +125,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 useEffect(()=>{
   setCurrentNamePaths([]);
   console.log(currentNamePaths);
-  resetPath();
-  onShowFolderContentClicked(props.items[0].isFolder? props.items[0].parentId : props.items[0].folderId, 'Drive');
+  onShowFolderContentClicked(rootFolderID, 'Drive');
 },[]);
 
 const onShowFolderContentClicked = (folderId: number, name: string): void => {
@@ -181,13 +135,14 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
       setCurrentFolderId(folderId);
       const folders = items?.filter((i)=>{return i.isFolder;}); 
 
-      let auxCurrentPaths : FolderPath[] = currentNamePaths;
-      if(auxCurrentPaths.find((path)=>{ return path.id === folderId;})){
-        auxCurrentPaths= auxCurrentPaths.slice(0, auxCurrentPaths.indexOf({id:folderId, name: name}));
-        popPath({id:folderId, name: name});
+      let auxCurrentPaths : FolderPath[] = [...currentNamePaths];
+      const currentIndex = auxCurrentPaths.findIndex((i)=>{return i.id === folderId;});
+      if(currentIndex > -1){
+        auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex+1);
+        dispatch(storageActions.popNamePathUpTo({id:folderId, name: name}));
       }else{
         auxCurrentPaths.push({id:folderId, name: name});
-        pushPath({id:folderId, name: name});
+        dispatch(storageActions.pushNamePath({id:folderId, name: name}));
       }
      
 
