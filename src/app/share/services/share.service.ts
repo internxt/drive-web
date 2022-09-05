@@ -1,12 +1,41 @@
 import errorService from '../../core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../core/factory/sdk';
+import httpService from 'app/core/services/http.service';
+import { aes } from '@internxt/lib';
+import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 
-export function generateShareLink(params: ShareTypes.GenerateShareLinkPayload): Promise<string> {
-  const shareClient = SdkFactory.getInstance().createShareClient();
-  return shareClient.createShareLink(params).then((response) => {
-    return `${window.location.origin}/s/${params.type}/${response.token}/${response.code} ?? ''`;
-  });
+export async function createShare(params: ShareTypes.GenerateShareLinkPayload): Promise<{
+  created: boolean;
+  token: string;
+  code: string;
+}> {
+  const response = await SdkFactory.getInstance().createShareClient().createShareLink(params);
+
+  return response;
+}
+
+export async function createShareLink(
+  plainCode: string,
+  mnemonic: string,
+  params: ShareTypes.GenerateShareLinkPayload
+): Promise<string> {
+  const share = await createShare(params);
+
+  if (share.created) {
+    return `${window.location.origin}/s/${params.type}/${share.token}/${plainCode}`;
+  } else {
+    return `${window.location.origin}/s/${params.type}/${share.token}/${aes.decrypt((share as any).encryptedCode, mnemonic)
+      }`;
+  }
+}
+
+export function buildLinkFromShare(
+  mnemonic: string,
+  share: ListShareLinksItem & { code: string }
+): string {
+  const plainCode = aes.decrypt(share.code, mnemonic);
+  return `${window.location.origin}/s/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
 }
 
 export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Promise<ShareTypes.ShareLink> {
@@ -16,18 +45,16 @@ export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Prom
   });
 }
 
-export function deleteShareLink(shareId: string): Promise<{deleted: boolean, shareId: string}> {
+export function deleteShareLink(shareId: string): Promise<{ deleted: boolean, shareId: string }> {
   const shareClient = SdkFactory.getInstance().createShareClient();
   return shareClient.deleteShareLink(shareId).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getSharedFileInfo(token: string): Promise<ShareTypes.ShareLink> {
+export function getSharedFileInfo(token: string, code: string): Promise<ShareTypes.ShareLink> {
   const shareClient = SdkFactory.getInstance().createShareClient();
-  return shareClient.getShareLink(token).catch((error) => {
-    throw errorService.castError(error);
-  });
+  return httpService.get(process.env.REACT_APP_DRIVE_NEW_API_URL + '/api/storage/share/' + token + '?code=' + code);
 }
 
 export function getSharedFolderInfo(token: string): Promise<ShareTypes.ShareLink> {
@@ -91,20 +118,22 @@ export function getAllShareLinks(
   perPage: number,
   orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
 ) {
-  const shareClient = SdkFactory.getInstance().createShareClient();
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareLinks(page, perPage, orderBy).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
 const shareService = {
-  generateShareLink,
+  createShare,
+  createShareLink,
   updateShareLink,
   deleteShareLink,
   getSharedFileInfo,
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
   getAllShareLinks,
+  buildLinkFromShare
 };
 
 export default shareService;
