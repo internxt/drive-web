@@ -142,23 +142,15 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
       console.log('CURRENT', currentFolderPaths);
       currentFolderPaths.forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         
-      //   if(items.includes({
-      //     id: path.id,
-      //     label: path.name,
-      //     icon: null,
-      //     active: i < namePath.length - 1,
-      //     onClick: () => onShowFolderContentClicked(path.id, path.name),
-      //   })){
-      //     items.pop();
-      //   }else{
-      //     items.push({
-      //     id: path.id,
-      //     label: path.name,
-      //     icon: null,
-      //     active: i < namePath.length - 1,
-      //     onClick: () => onShowFolderContentClicked(path.id, path.name),
-      //     });
-      //   }
+        /*if(items.includes({
+          id: path.id,
+          label: path.name,
+          icon: null,
+          active: i < namePath.length - 1,
+          onClick: () => onShowFolderContentClicked(path.id, path.name),
+        })){*/
+          //items.pop();
+       // }else{
           items.push({
           id: path.id,
           label: path.name,
@@ -166,6 +158,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           active: i < namePath.length - 1,
           onClick: () => onShowFolderContentClicked(path.id, path.name),
           });
+       // }
       });
       
     }
