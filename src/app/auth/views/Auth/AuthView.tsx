@@ -22,10 +22,7 @@ export default function Auth(): JSX.Element {
   const dispatch = useAppDispatch();
 
   const postMessage = (data) => {
-    window.top?.postMessage(
-      data,
-      process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
-    );
+    window.top?.postMessage(data, 'https://internxt.com');
   };
 
   // FILTER MESSAGES
@@ -33,12 +30,7 @@ export default function Auth(): JSX.Element {
   useEffect(() => {
     if (window) {
       window.onmessage = function (e) {
-        const permitedDomains = [
-          'https://drive.internxt.com',
-          'https://internxt.com',
-          process.env.NODE_ENV === 'development' && 'http://localhost:3001',
-          process.env.NODE_ENV === 'development' && 'http://localhost:3000',
-        ];
+        const permitedDomains = ['https://drive.internxt.com', 'https://internxt.com'];
 
         if (permitedDomains.includes(e.origin)) {
           if (e.data.action === 'signup') {
@@ -58,6 +50,7 @@ export default function Auth(): JSX.Element {
   // SIGN UP
 
   const { doRegister } = useSignUp('activate', undefined);
+  const [signingIn, setSigningIn] = useState<boolean>(false);
 
   async function signup(data) {
     const grecaptcha = window.grecaptcha;
@@ -124,12 +117,16 @@ export default function Auth(): JSX.Element {
       /**
        * ==========
        */
+
+      setSigningIn(true);
       postMessage({ action: 'redirect' });
     } catch (err: unknown) {
-      if (inline === true) {
-        postMessage({ action: 'error_inline', msg: errorService.castError(err).message });
-      } else {
-        postMessage({ action: 'error', msg: errorService.castError(err).message });
+      if (signingIn) {
+        if (inline === true) {
+          postMessage({ action: 'error_inline', msg: errorService.castError(err).message });
+        } else {
+          postMessage({ action: 'error', msg: errorService.castError(err).message });
+        }
       }
     }
   };
@@ -139,8 +136,8 @@ export default function Auth(): JSX.Element {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [token, setToken] = useState(localStorageService.get('xToken'));
   const [email, setEmail] = useState<string>('');
+  const mnemonic = useState(localStorageService.get('xMnemonic'));
   const [registerCompleted, setRegisterCompleted] = useState<boolean>(true);
-  const [showTwoFactor, setShowTwoFactor] = useState<boolean>(false);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
@@ -152,7 +149,7 @@ export default function Auth(): JSX.Element {
     try {
       const isTfaEnabled = await is2FANeeded(email);
 
-      if (!isTfaEnabled || showTwoFactor) {
+      if (!isTfaEnabled || tfa) {
         const { user } = await doLogin(email, password, tfa);
         dispatch(userActions.setUser(user));
         analyticsService.identify(user, user.email);
@@ -172,30 +169,27 @@ export default function Auth(): JSX.Element {
 
         setIsAuthenticated(true);
         setToken(token);
-        userActions.setUser(user);
         setRegisterCompleted(user.registerCompleted);
+        userActions.setUser(user);
       } else {
-        setShowTwoFactor(true);
+        postMessage({ action: '2fa' });
+        setIsLoggingIn(false);
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
       if (castedError.message.includes('not activated')) {
         navigationService.history.push(`/activate/${email}`);
-        //! TODO
       } else {
         analyticsService.signInAttempted(email, castedError);
       }
 
       postMessage({ action: 'error', msg: errorService.castError(err).message });
-    } finally {
       setIsLoggingIn(false);
     }
   };
 
   const checkSession = () => {
-    const mnemonic = localStorageService.get('xMnemonic');
-
     if (token && user && !registerCompleted) {
       navigationService.history.push('/appsumo/' + email);
     } else if (token && user && mnemonic) {
@@ -211,11 +205,11 @@ export default function Auth(): JSX.Element {
 
   useEffect(() => {
     checkSession();
-  }, [isAuthenticated, token, user, registerCompleted, isLoggingIn]);
+  }, [mnemonic, isAuthenticated, token, user, registerCompleted, isLoggingIn]);
 
   useEffect(() => {
     checkSession();
-  }, []);
+  });
 
   // RECOVER ACCOUNT
 
