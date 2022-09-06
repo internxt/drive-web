@@ -49,7 +49,7 @@ export default function Auth(): JSX.Element {
 
   // SIGN UP
 
-  const { doRegister } = useSignUp('activate', undefined);
+  const { doRegister } = useSignUp('activate');
   const [signingIn, setSigningIn] = useState<boolean>(false);
 
   async function signup(data) {
@@ -134,7 +134,7 @@ export default function Auth(): JSX.Element {
   // LOG IN
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [token, setToken] = useState(localStorageService.get('xToken'));
+  const token = useState(localStorageService.get('xToken'));
   const [email, setEmail] = useState<string>('');
   const mnemonic = useState(localStorageService.get('xMnemonic'));
   const [registerCompleted, setRegisterCompleted] = useState<boolean>(true);
@@ -168,7 +168,6 @@ export default function Auth(): JSX.Element {
         }
 
         setIsAuthenticated(true);
-        setToken(token);
         setRegisterCompleted(user.registerCompleted);
         userActions.setUser(user);
       } else {
