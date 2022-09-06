@@ -18,7 +18,7 @@ import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import Empty from '../../../shared/components/Empty/Empty';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
-import { AppDispatch, RootState } from 'app/store';
+import { AppDispatch, RootState, store } from 'app/store';
 import { Workspace } from 'app/core/types';
 
 import './DriveExplorer.scss';
@@ -106,6 +106,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
   componentDidMount() {
     deviceService.redirectForMobile();
+    store.dispatch(storageActions.clearSelectedItems());
   }
 
   onUploadButtonClicked = (): void => {

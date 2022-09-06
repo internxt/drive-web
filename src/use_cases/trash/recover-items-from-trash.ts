@@ -11,14 +11,22 @@ import i18n from 'app/i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as uuid from 'uuid';
 import { store } from '../../app/store';
-import { storageActions, storageSelectors } from 'app/store/slices/storage';
+import { storageActions } from 'app/store/slices/storage';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import itemsListService from 'app/drive/services/items-list.service';
-import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
-import { uiActions } from 'app/store/slices/ui';
+//import { useHistory } from 'react-router-dom';
+//import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
+//import { uiActions } from 'app/store/slices/ui';
+//import { Link, Redirect } from 'react-router-dom';
+//import { Toast } from 'react-bootstrap';
+//import { createMemoryHistory } from 'history';
+//import { useSelector } from 'react-redux';
+//import navigationService from 'app/core/services/navigation.service';
 //import { DriveItemData } from 'app/drive/types';
+
+
 
 async function moveFile(
   fileId: string,
@@ -45,10 +53,16 @@ async function moveFile(
     })
     .catch((error) => {
       const castedError = errorService.castError(error);
-      if (castedError.status) {
-        castedError.message = i18n.get(`tasks.move-file.errors.${castedError.status}`);
+      if (castedError.message.includes('same name')) {
+
+        notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
+      } else {
+        if (castedError.status) {
+          castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
+          throw castedError;
+        }
       }
-      throw castedError;
+      throw error;
     });
 }
 
@@ -73,25 +87,25 @@ async function moveFolder(
     })
     .catch((err) => {
       const castedError = errorService.castError(err);
-      if (castedError.status) {
-        castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
+
+      if (castedError.message.includes('same name')) {
+
+        notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
+      } else {
+        if (castedError.status) {
+          castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
+
+        }
+        throw castedError;
       }
-      throw castedError;
+
+
+
+      throw err;
     });
 }
 
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
-
-  itemsToRecover.forEach((item) => {
-    if (item.isFolder) {
-      moveFolder(item.id, destinationId);
-    } else {
-      moveFile(item.fileId, destinationId, item.bucket);
-    }
-  });
-
+async function afterMoving(itemsToRecover, destinationId, name?) {
   //store.dispatch(storageActions.pushItems({ updateRecents: true, folderIds: [destinationId], items: itemsToRecover }));
   // Updates destination folder content in local database
   const destinationLevelDatabaseContent = await databaseService.get(
@@ -113,26 +127,35 @@ const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
     type: ToastType.Success,
     text: `Restored ${itemsToRecover.length > 1 ? itemsToRecover.length : ''} Item${itemsToRecover.length > 1 ? 's' : ''} ${itemsToRecover.length == 1 ? '"' + itemsToRecover[0].name + '"' : ''}`,
     action: {
-      text: 'Open folder',
+      text: 'OpenFolder',
+      to: '/app',
       onClick: () => {
+
         console.log(destinationId);
         console.log(itemsToRecover);
-        store.dispatch(storageThunks.goToFolderThunk({ name: itemsToRecover[0].name, id: destinationId }));
-        //store.dispatch(fetchFolderContentThunk(destinationId)).unwrap();
+        setTimeout(() => store.dispatch(storageThunks.goToFolderThunk({ name: name ? name : itemsToRecover[0].parent, id: destinationId })),
+          500);
 
 
-        /*store.dispatch(storageActions.clearSelectedItems());
-
-        store.dispatch(fetchFolderContentThunk(destinationId)).unwrap();
-
-        store.dispatch(storageActions.pushNamePath(destinationId));
-
-        store.dispatch(uiActions.setFileInfoItem(null));
-        store.dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));*/
         console.log('Open folder');
       },
     },
   });
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+const RecoverItemsFromTrash = async (itemsToRecover, destinationId, name?) => {
+
+
+  itemsToRecover.forEach((item) => {
+    if (item.isFolder) {
+      moveFolder(item.id, destinationId).then(() => { if (itemsToRecover[itemsToRecover.length - 1] === item) { afterMoving(itemsToRecover, destinationId, name); } }).catch((err) => { if (err) { return err; } });
+    } else {
+      moveFile(item.fileId, destinationId, item.bucket).then(() => { if (itemsToRecover[itemsToRecover.length - 1] === item) { afterMoving(itemsToRecover, destinationId, name); } }).catch((err) => { if (err) { return err; } });
+    }
+  });
+
+
 };
 
 export default RecoverItemsFromTrash;

@@ -37,6 +37,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [destinationId, setDestinationId] = useState(0);
   const [currentFolderId, setCurrentFolderId] = useState(0);
   const [shownFolders, setShownFolders] = useState(props.items);
+  const [currentFolderName, setCurrentFolderName] = useState('');
   //const [rootFolderId, setRootFolderId] = useState(0);
   const arrayOfPaths : FolderPath[] = [];
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
@@ -61,7 +62,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   };
 
-  const onAccept = async (destinationFolderId): Promise<void> => {
+  const onAccept = async (destinationFolderId, name): Promise<void> => {
     try {
 
       console.log(itemsToMove);
@@ -77,7 +78,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           destinationFolderId = currentFolderId;
         }
 
-        restoreItemsFromTrash(itemsToMove, destinationFolderId);
+        restoreItemsFromTrash(itemsToMove, destinationFolderId, name);
       }
 
 
@@ -134,6 +135,7 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
     (items)=>{
       console.log('FOLDER', folderId, name);
       setCurrentFolderId(folderId);
+      setCurrentFolderName(name);
       const folders = items?.filter((i)=>{return i.isFolder;}); 
 
       let auxCurrentPaths : FolderPath[] = [...currentNamePaths];
@@ -153,6 +155,7 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
         setShownFolders([]);
         setDestinationId(0);
         setCurrentFolderId(folderId);
+        setCurrentFolderName(name);
       }
     }
   );
@@ -175,7 +178,7 @@ const onFolderClicked = (folderId: number): void => {
   
     <BaseDialog isOpen={isOpen} closable={false} titleClasses='flex px-5 text-left font-medium' panelClasses='text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
         transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-8 rounded-lg overflow-hidden bg-white' title={`${props.isTrash? 'Restore':'Move'} ${itemsToMove.length > 1? (itemsToMove.length)+' items': ('"'+itemsToMove[0].name+'"')}`} onClose={onClose}>
-        <div style={{width:'512px'}}>{newFolderIsOpen && <CreateFolderDialog currentFolderId={currentFolderId}/>}</div>
+        <div style={{width:'512px'}}>{newFolderIsOpen && <CreateFolderDialog/>}</div>
 
       <div className="block text-left justify-left items-center w-fill bg-white py-6">
         <div className='ml-5'><Breadcrumbs  items={breadcrumbItems(currentNamePaths)} /></div>
@@ -208,7 +211,7 @@ const onFolderClicked = (folderId: number): void => {
           <BaseButton onClick={() => onClose()} className="quaternary text-base font-medium h-10 rounded-lg w-20 px-1">
             {i18n.get('actions.cancel')}
           </BaseButton>
-          <BaseButton className="primary w-32 ml-2 mr-5" disabled={isLoading} onClick={() => onAccept(destinationId? destinationId : currentFolderId)}>
+          <BaseButton className="primary w-32 ml-2 mr-5" disabled={isLoading} onClick={() => onAccept(destinationId? destinationId : currentFolderId, currentFolderName)}>
             {isLoading ? (!props.isTrash?'Moving...':'Restoring...') : (!props.isTrash?'Move':'Restore here')}
           </BaseButton>
         </div>
