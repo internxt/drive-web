@@ -179,7 +179,7 @@ const onFolderClicked = (folderId: number): void => {
   
     <BaseDialog isOpen={isOpen} closable={false} titleClasses='flex px-5 text-left font-medium' panelClasses='text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
         transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-8 rounded-lg overflow-hidden bg-white' title={`${props.isTrash? 'Restore':'Move'} ${itemsToMove.length > 1? (itemsToMove.length)+' items': ('"'+itemsToMove[0].name+'"')}`} onClose={onClose}>
-        <div style={{width:'512px'}}>{newFolderIsOpen && <CreateFolderDialog currentFolderId={currentFolderId}/>}</div>
+        <div style={{width:'512px'}}>{newFolderIsOpen && <CreateFolderDialog/>}</div>
 
       <div className="block text-left justify-left items-center w-fill bg-white py-6">
         <div className='ml-5'><Breadcrumbs  items={breadcrumbItems(currentNamePaths)} /></div>
