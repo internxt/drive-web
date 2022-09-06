@@ -105,7 +105,7 @@ async function moveFolder(
     });
 }
 
-async function afterMoving(itemsToRecover, destinationId) {
+async function afterMoving(itemsToRecover, destinationId, name?) {
   //store.dispatch(storageActions.pushItems({ updateRecents: true, folderIds: [destinationId], items: itemsToRecover }));
   // Updates destination folder content in local database
   const destinationLevelDatabaseContent = await databaseService.get(
@@ -133,7 +133,7 @@ async function afterMoving(itemsToRecover, destinationId) {
 
         console.log(destinationId);
         console.log(itemsToRecover);
-        setTimeout(() => store.dispatch(storageThunks.goToFolderThunk({ name: itemsToRecover[0].name, id: destinationId })),
+        setTimeout(() => store.dispatch(storageThunks.goToFolderThunk({ name: name ? name : itemsToRecover[0].parent, id: destinationId })),
           500);
 
 
@@ -144,30 +144,18 @@ async function afterMoving(itemsToRecover, destinationId) {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
-
-  try {
+const RecoverItemsFromTrash = async (itemsToRecover, destinationId, name?) => {
 
 
-    itemsToRecover.forEach((item) => {
-      if (item.isFolder) {
-        moveFolder(item.id, destinationId).then(() => afterMoving(itemsToRecover, destinationId));
-      } else {
-        moveFile(item.fileId, destinationId, item.bucket).then(() => afterMoving(itemsToRecover, destinationId));
-      }
-    });
-
-
-
-
-  } catch (err) {
-
-    const castedError = errorService.castError(err);
-    if (castedError.message.includes('same name')) {
-      console.log('Error of same name!!');
-      notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
+  itemsToRecover.forEach((item) => {
+    if (item.isFolder) {
+      moveFolder(item.id, destinationId).then(() => { if (itemsToRecover[itemsToRecover.length - 1] === item) { afterMoving(itemsToRecover, destinationId, name); } }).catch((err) => { if (err) { return err; } });
+    } else {
+      moveFile(item.fileId, destinationId, item.bucket).then(() => { if (itemsToRecover[itemsToRecover.length - 1] === item) { afterMoving(itemsToRecover, destinationId, name); } }).catch((err) => { if (err) { return err; } });
     }
-  }
+  });
+
+
 };
 
 export default RecoverItemsFromTrash;
