@@ -45,6 +45,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const isOpen = props.items?useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen):false;
   const newFolderIsOpen = props.items?useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen):false;
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
+  const [isFirstTime, setIsFirstTime] = useState(true);
   //const viewModes = {
    //   [FileViewMode.List]: DriveExplorerList,
    //   [FileViewMode.Grid]: DriveExplorerGrid,
@@ -127,7 +128,15 @@ useEffect(()=>{
   setCurrentNamePaths([]);
   console.log(currentNamePaths);
   onShowFolderContentClicked(rootFolderID, 'Drive');
+  setIsFirstTime(false);
 },[]);
+
+useEffect(()=>{
+  if(!isFirstTime){
+    onShowFolderContentClicked(currentFolderId, currentFolderName);
+  }
+
+}, [newFolderIsOpen]);
 
 const onShowFolderContentClicked = (folderId: number, name: string): void => {
   databaseService.get(DatabaseCollection.Levels, folderId).then(
