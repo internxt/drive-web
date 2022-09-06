@@ -1,6 +1,6 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
-import { storageActions, storageSelectors } from '..';
+import { storageSelectors } from '..';
 import { RootState } from '../../..';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import i18n from '../../../../i18n/services/i18n.service';
@@ -9,6 +9,8 @@ import tasksService from '../../../../tasks/services/tasks.service';
 import errorService from '../../../../core/services/error.service';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import folderService from '../../../../drive/services/folder.service';
+import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+import itemsListService from 'app/drive/services/items-list.service';
 
 interface CreateFolderThunkOptions {
   relatedTaskId: string;
@@ -23,7 +25,7 @@ interface CreateFolderPayload {
 
 export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderPayload, { state: RootState }>(
   'storage/createFolder',
-  async ({ folderName, parentFolderId, options }: CreateFolderPayload, { getState, dispatch }) => {
+  async ({ folderName, parentFolderId, options }: CreateFolderPayload, { getState }) => {
     options = Object.assign({ showErrors: true }, options || {});
     const currentFolderId = storageSelectors.currentFolderId(getState());
 
@@ -66,12 +68,23 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
       console.log('parentFolderId', parentFolderId);
 
       if (currentFolderId === parentFolderId) {
-        dispatch(
+        /*dispatch(
           storageActions.pushItems({
             folderIds: [currentFolderId],
             items: createdFolderNormalized as DriveItemData,
           }),
+        );*/
+        const destinationLevelDatabaseContent = await databaseService.get(
+          DatabaseCollection.Levels,
+          parentFolderId,
         );
+        if (destinationLevelDatabaseContent) {
+          databaseService.put(
+            DatabaseCollection.Levels,
+            parentFolderId,
+            itemsListService.pushItems([createdFolderNormalized as DriveItemData], destinationLevelDatabaseContent),
+          );
+        }
       }
 
       console.log('createdFolderNormalized', createdFolderNormalized);

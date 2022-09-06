@@ -11,9 +11,13 @@ import i18n from 'app/i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as uuid from 'uuid';
 import { store } from '../../app/store';
-import { storageActions } from 'app/store/slices/storage';
+import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+import itemsListService from 'app/drive/services/items-list.service';
+import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
+import { uiActions } from 'app/store/slices/ui';
 //import { DriveItemData } from 'app/drive/types';
 
 async function moveFile(
@@ -87,8 +91,20 @@ const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
       moveFile(item.fileId, destinationId, item.bucket);
     }
   });
-  //store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToRecover }));
-  store.dispatch(storageActions.pushItems({ updateRecents: true, folderIds: [destinationId], items: itemsToRecover }));
+
+  //store.dispatch(storageActions.pushItems({ updateRecents: true, folderIds: [destinationId], items: itemsToRecover }));
+  // Updates destination folder content in local database
+  const destinationLevelDatabaseContent = await databaseService.get(
+    DatabaseCollection.Levels,
+    destinationId,
+  );
+  if (destinationLevelDatabaseContent) {
+    databaseService.put(
+      DatabaseCollection.Levels,
+      destinationId,
+      itemsListService.pushItems(itemsToRecover, destinationLevelDatabaseContent),
+    );
+  }
   store.dispatch(storageActions.popItemsToDelete(itemsToRecover));
   store.dispatch(storageActions.clearSelectedItems());
 
@@ -99,7 +115,20 @@ const RecoverItemsFromTrash = async (itemsToRecover, destinationId) => {
     action: {
       text: 'Open folder',
       onClick: () => {
+        console.log(destinationId);
+        console.log(itemsToRecover);
         store.dispatch(storageThunks.goToFolderThunk({ name: itemsToRecover[0].name, id: destinationId }));
+        //store.dispatch(fetchFolderContentThunk(destinationId)).unwrap();
+
+
+        /*store.dispatch(storageActions.clearSelectedItems());
+
+        store.dispatch(fetchFolderContentThunk(destinationId)).unwrap();
+
+        store.dispatch(storageActions.pushNamePath(destinationId));
+
+        store.dispatch(uiActions.setFileInfoItem(null));
+        store.dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));*/
         console.log('Open folder');
       },
     },
