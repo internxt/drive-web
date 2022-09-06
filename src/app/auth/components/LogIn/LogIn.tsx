@@ -23,11 +23,7 @@ import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
 
-interface LogInProps {
-  displayIframe: boolean;
-}
-
-export default function LogIn(props: LogInProps): JSX.Element {
+export default function LogIn(): JSX.Element {
   const dispatch = useAppDispatch();
   const {
     register,
@@ -102,14 +98,8 @@ export default function LogIn(props: LogInProps): JSX.Element {
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
-      if (props.displayIframe) {
-        window.top?.postMessage(
-          'redirect',
-          process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
-        );
-      } else {
-        navigationService.push(AppView.Drive);
-      }
+      window.top?.postMessage({ action: 'redirect' }, 'https://internxt.com');
+      navigationService.push(AppView.Drive);
     }
     if (user && user.registerCompleted === false) {
       navigationService.history.push('/appsumo/' + user.email);
@@ -123,26 +113,14 @@ export default function LogIn(props: LogInProps): JSX.Element {
       if (!registerCompleted) {
         navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
-        if (props.displayIframe) {
-          window.top?.postMessage(
-            'redirect',
-            process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
-          );
-        } else {
-          navigationService.push(AppView.Drive);
-        }
+        window.top?.postMessage({ action: 'redirect' }, 'https://internxt.com');
+        navigationService.push(AppView.Drive);
       }
     }
   }, [isAuthenticated, token, user, registerCompleted]);
 
   return (
-    <div
-      className={`flex flex-col bg-white  ${
-        props.displayIframe
-          ? 'w-full px-px'
-          : 'h-fit w-96 items-center justify-center rounded-2xl px-8 py-10 sm:shadow-soft'
-      }`}
-    >
+    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <span className="text-2xl font-medium">Log in</span>
 
@@ -155,7 +133,6 @@ export default function LogIn(props: LogInProps): JSX.Element {
               type="email"
               register={register}
               minLength={{ value: 1, message: 'Email must not be empty' }}
-              autoFocus={!props.displayIframe}
               error={errors.email}
             />
           </label>
@@ -167,7 +144,7 @@ export default function LogIn(props: LogInProps): JSX.Element {
                 onClick={(): void => {
                   analyticsService.trackUserResetPasswordRequest();
                 }}
-                to={props.displayIframe ? '/removedialog' : '/remove'}
+                to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
               >
                 Forgot your password?
@@ -221,7 +198,7 @@ export default function LogIn(props: LogInProps): JSX.Element {
         <span>
           Don't have an account?{' '}
           <Link
-            to={props.displayIframe ? '/signupdialog' : '/new'}
+            to="/new"
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             Create account

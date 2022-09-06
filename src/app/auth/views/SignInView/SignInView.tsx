@@ -15,7 +15,7 @@ export default function SignInView(props: SignInProps): JSX.Element {
       )}
 
       <div className={`flex h-full flex-col ${!props.displayIframe && 'items-center justify-center'}`}>
-        <LogIn displayIframe={props.displayIframe} />
+        <LogIn />
       </div>
 
       {!props.displayIframe && (

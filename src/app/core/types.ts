@@ -100,11 +100,9 @@ export enum AppViewLayout {
 
 export enum AppView {
   Signup = 'signup',
-  SignupDialog = 'signupdialog',
   AppSumo = 'appsumo',
   Login = 'login',
-  LoginDialog = 'logindialog',
-  SignUpWebsite = 'signupwebsite',
+  Auth = 'auth',
   Recover = 'recover',
   Drive = 'drive',
   Recents = 'recents',

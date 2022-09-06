@@ -22,12 +22,6 @@
       "exact": true
     },
     {
-      "id": "signupdialog",
-      "layout": "empty",
-      "path": "/signupdialog",
-      "exact": true
-    },
-    {
       "id": "appsumo",
       "layout": "empty",
       "path": "/appsumo",
@@ -40,15 +34,9 @@
       "exact": true
     },
     {
-      "id": "logindialog",
+      "id": "auth",
       "layout": "empty",
-      "path": "/logindialog",
-      "exact": true
-    },
-    {
-      "id": "signupwebsite",
-      "layout": "empty",
-      "path": "/signupwebsite",
+      "path": "/auth",
       "exact": true
     },
     {
