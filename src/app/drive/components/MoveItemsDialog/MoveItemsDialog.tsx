@@ -183,7 +183,7 @@ const onFolderClicked = (folderId: number): void => {
           {props.isTrash?shownFolders.map((folder)=>{
 
             return (
-            <div className={`${destinationId === folder.id? 'bg-gray-20' : ''} border border-t-0 border-l-0 border-r-0 border-white`}>
+            <div className={`${destinationId === folder.id? 'bg-gray-20' : ''} border border-t-0 border-l-0 border-r-0 border-white`} key={folder.id.toString()}>
               <div className={`${destinationId === folder.id? 'bg-gray-20 border-none' : ''} flex justify-left align-middle w-fill h-12 border border-t-0 border-r-0 border-l-0 border-gray-10 items-center mx-4 bg-white cursor-pointer`} key={folder.id}>
                 <div className='flex cursor-pointer w-96' onClick={()=>onFolderClicked(folder.id)}>
                 <img className="h-8 w-8" alt="" src={folderImage} />
