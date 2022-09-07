@@ -1,7 +1,4 @@
 import { SdkFactory } from 'app/core/factory/sdk';
-//import { storageActions } from 'app/store/slices/storage';
-//import { store } from 'app/store';
-//import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import analyticsService from 'app/analytics/services/analytics.service';
 import errorService from 'app/core/services/error.service';
@@ -16,17 +13,34 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import itemsListService from 'app/drive/services/items-list.service';
-//import { useHistory } from 'react-router-dom';
-//import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
-//import { uiActions } from 'app/store/slices/ui';
-//import { Link, Redirect } from 'react-router-dom';
-//import { Toast } from 'react-bootstrap';
-//import { createMemoryHistory } from 'history';
-//import { useSelector } from 'react-redux';
-//import navigationService from 'app/core/services/navigation.service';
-//import { DriveItemData } from 'app/drive/types';
 
 
+
+async function trackMove(response, type) {
+  const user = localStorageService.getUser() as UserSettings;
+  analyticsService.trackMoveItem(type, {
+    file_id: response.item.id,
+    email: user.email,
+    platform: DevicePlatform.Web,
+  });
+  return response;
+}
+
+async function catchError(error) {
+  {
+    const castedError = errorService.castError(error);
+    if (castedError.message.includes('same name')) {
+
+      notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
+    } else {
+      if (castedError.status) {
+        castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
+        throw castedError;
+      }
+    }
+    throw error;
+  }
+}
 
 async function moveFile(
   fileId: string,
@@ -40,34 +54,14 @@ async function moveFile(
     bucketId: bucketId,
     destinationPath: uuid.v4(),
   };
-  return storageClient
-    .moveFile(payload)
-    .then((response) => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackMoveItem('file', {
-        file_id: response.item.id,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
-      return response;
-    })
-    .catch((error) => {
-      const castedError = errorService.castError(error);
-      if (castedError.message.includes('same name')) {
-
-        notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
-      } else {
-        if (castedError.status) {
-          castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
-          throw castedError;
-        }
-      }
-      throw error;
-    });
+  return storageClient.moveFile(payload)
+    .then((response) => trackMove(response, 'file'))
+    .catch((error) => catchError(error));
 }
 
 async function moveFolder(
-  folderId: number, destination: number
+  folderId: number,
+  destination: number
 ): Promise<StorageTypes.MoveFolderResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.MoveFolderPayload = {
@@ -76,38 +70,12 @@ async function moveFolder(
   };
 
   return storageClient.moveFolder(payload)
-    .then(response => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackMoveItem('folder', {
-        file_id: response.item.id,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
-      return response;
-    })
-    .catch((err) => {
-      const castedError = errorService.castError(err);
-
-      if (castedError.message.includes('same name')) {
-
-        notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
-      } else {
-        if (castedError.status) {
-          castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
-
-        }
-        throw castedError;
-      }
-
-
-
-      throw err;
-    });
+    .then(response => trackMove(response, 'folder'))
+    .catch((err) => catchError(err));
 }
 
 async function afterMoving(itemsToRecover, destinationId, name?) {
-  //store.dispatch(storageActions.pushItems({ updateRecents: true, folderIds: [destinationId], items: itemsToRecover }));
-  // Updates destination folder content in local database
+
   const destinationLevelDatabaseContent = await databaseService.get(
     DatabaseCollection.Levels,
     destinationId,
