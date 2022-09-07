@@ -1,10 +1,5 @@
 import React, { Fragment } from 'react';
 import { Dropdown } from 'react-bootstrap';
-//import UilPen from '@iconscout/react-unicons/icons/uil-pen';
-//import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
-//import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
-//import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
-//import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 import { DotsThree, CloudArrowDown, Link, PencilSimpleLine, Trash} from 'phosphor-react';
 import { items } from '@internxt/lib';
 

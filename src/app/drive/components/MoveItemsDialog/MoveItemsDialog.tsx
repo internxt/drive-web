@@ -4,26 +4,22 @@ import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { useState, useEffect } from 'react';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';
-//import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { DriveItemData, FolderPath  } from '../../types';
-//import DriveView from 'app/drive/views/DriveView/DriveView';
 import i18n from 'app/i18n/services/i18n.service';
 import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
 import folderImage from 'assets/icons/light/folder.svg';
-//import MoveItemsPayload from 'app/store/slices/storage/storage.thunks/moveItemsThunk';
 
 import './MoveItemsDialog.scss';
-//import DriveExplorerList from '../DriveExplorer/DriveExplorerList/DriveExplorerList';
-////import DriveExplorerGrid from '../DriveExplorer/DriveExplorerGrid/DriveExplorerGrid';
+
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-//import storageService from 'app/drive/services/storage.service';
+
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -38,7 +34,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [currentFolderId, setCurrentFolderId] = useState(0);
   const [shownFolders, setShownFolders] = useState(props.items);
   const [currentFolderName, setCurrentFolderName] = useState('');
-  //const [rootFolderId, setRootFolderId] = useState(0);
   const arrayOfPaths : FolderPath[] = [];
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
@@ -46,11 +41,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const newFolderIsOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
   const [isFirstTime, setIsFirstTime] = useState(true);
-  //const viewModes = {
-   //   [FileViewMode.List]: DriveExplorerList,
-   //   [FileViewMode.Grid]: DriveExplorerGrid,
-    //};
-  //const ViewModeComponent = viewModes[FileViewMode.List];
+
 
 
   const onClose = (): void => {
@@ -66,14 +57,10 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const onAccept = async (destinationFolderId, name): Promise<void> => {
     try {
 
-      console.log(itemsToMove);
-      console.log(destinationFolderId);
+
       setIsLoading(true);
       if (itemsToMove.length > 0) {
-        /*await dispatch(storageThunks.moveItemsThunk({
-          items: itemsToMove,
-          destinationFolderId: destinationFolderId,
-        }));*/
+
 
         if(!destinationFolderId){
           destinationFolderId = currentFolderId;
@@ -104,7 +91,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
     if (currentFolderPaths.length > 0) {
      
-      console.log('CURRENT', currentFolderPaths);
+
       currentFolderPaths.forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         
   
@@ -127,7 +114,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
 useEffect(()=>{
   setCurrentNamePaths([]);
-  console.log(currentNamePaths);
+ 
   onShowFolderContentClicked(rootFolderID, 'Drive');
   setIsFirstTime(false);
 },[]);
@@ -142,7 +129,7 @@ useEffect(()=>{
 const onShowFolderContentClicked = (folderId: number, name: string): void => {
   databaseService.get(DatabaseCollection.Levels, folderId).then(
     (items)=>{
-      console.log('FOLDER', folderId, name);
+     
       setCurrentFolderId(folderId);
       setCurrentFolderName(name);
       const folders = items?.filter((i)=>{return i.isFolder;}); 

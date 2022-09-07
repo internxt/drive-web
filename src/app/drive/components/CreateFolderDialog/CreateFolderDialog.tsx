@@ -24,8 +24,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
     dispatch(uiActions.setIsCreateFolderDialogOpen(false));
   };
   const createFolder = async () => {
-    console.log(currentFolderId);
-    console.log(neededFolderId);
+   
     setIsLoading(true);
     await dispatch(storageThunks.createFolderThunk({ folderName, parentFolderId: currentFolderId? currentFolderId : neededFolderId }))
       .unwrap()

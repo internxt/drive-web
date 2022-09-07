@@ -99,13 +99,11 @@ async function afterMoving(itemsToRecover, destinationId, name?) {
       to: '/app',
       onClick: () => {
 
-        console.log(destinationId);
-        console.log(itemsToRecover);
+
         setTimeout(() => store.dispatch(storageThunks.goToFolderThunk({ name: name ? name : itemsToRecover[0].parent, id: destinationId })),
           500);
 
 
-        console.log('Open folder');
       },
     },
   });

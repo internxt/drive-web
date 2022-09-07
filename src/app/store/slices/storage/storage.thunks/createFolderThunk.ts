@@ -64,16 +64,10 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
         },
       });
 
-      console.log('createdFolderNormalized', createdFolderNormalized);
-      console.log('parentFolderId', parentFolderId);
+
 
       if (currentFolderId === parentFolderId) {
-        /*dispatch(
-          storageActions.pushItems({
-            folderIds: [currentFolderId],
-            items: createdFolderNormalized as DriveItemData,
-          }),
-        );*/
+
         const destinationLevelDatabaseContent = await databaseService.get(
           DatabaseCollection.Levels,
           parentFolderId,
@@ -87,8 +81,7 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
         }
       }
 
-      console.log('createdFolderNormalized', createdFolderNormalized);
-      console.log('parentFolderId', parentFolderId);
+
 
       return createdFolderNormalized;
     } catch (err: unknown) {
@@ -111,7 +104,6 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
           ? i18n.get('error.folderAlreadyExists')
           : i18n.get('error.creatingFolder');
 
-        console.log(action.error);
 
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
       }
