@@ -42,8 +42,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const arrayOfPaths : FolderPath[] = [];
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
-  const isOpen = props.items?useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen):false;
-  const newFolderIsOpen = props.items?useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen):false;
+  const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
+  const newFolderIsOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
   const [isFirstTime, setIsFirstTime] = useState(true);
   //const viewModes = {
