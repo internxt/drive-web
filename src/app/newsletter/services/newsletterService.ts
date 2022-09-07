@@ -1,7 +1,7 @@
 import errorService from 'app/core/services/error.service';
 import httpService from 'app/core/services/http.service';
 
-const GROUP_ID = '103406410';
+const GROUP_ID = '51650193869768251';
 
 const newsletterService = {
   subscribe(email: string): Promise<void> {
