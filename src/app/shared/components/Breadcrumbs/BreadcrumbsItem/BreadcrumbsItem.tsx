@@ -7,6 +7,7 @@ import { BreadcrumbItemData } from '../Breadcrumbs';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
+import { items } from '@internxt/lib';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
@@ -87,7 +88,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       onClick={() => onItemClicked(props.item)}
     >
       {props.item.icon ? props.item.icon : null}
-      {props.item.label ? <span className="label">{props.item.label}</span> : null}
+      {props.item.label ? <span className="label">{items.getItemDisplayName({name: props.item.label})}</span> : null}
     </li>
   );
 };

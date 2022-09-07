@@ -41,8 +41,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const newFolderIsOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
   const [isFirstTime, setIsFirstTime] = useState(true);
+  //const databaseTest = useSelector(async (state: RootState) =>{return await databaseService.get(DatabaseCollection.Levels, currentFolderId);});
 
-
+//console.log('databaseTest: ',databaseTest);
 
   const onClose = (): void => {
     dispatch(uiActions.setIsMoveItemsDialogOpen(false));
@@ -133,7 +134,7 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
       setCurrentFolderId(folderId);
       setCurrentFolderName(name);
       const folders = items?.filter((i)=>{return i.isFolder;}); 
-
+    
       let auxCurrentPaths : FolderPath[] = [...currentNamePaths];
       const currentIndex = auxCurrentPaths.findIndex((i)=>{return i.id === folderId;});
       if(currentIndex > -1){
@@ -182,16 +183,16 @@ const onFolderClicked = (folderId: number): void => {
           {props.isTrash?shownFolders.map((folder)=>{
 
             return (
-            <div className={`${destinationId === folder.id? 'bg-gray-20' : ''} border border-t-0 border-l-0 border-r-0 border-white`} key={folder.id.toString()}>
-              <div className={`${destinationId === folder.id? 'bg-gray-20 border-none' : ''} flex justify-left align-middle w-fill h-12 border border-t-0 border-r-0 border-l-0 border-gray-10 items-center mx-4 bg-white cursor-pointer`} key={folder.id}>
-                <div className='flex cursor-pointer w-96' onClick={()=>onFolderClicked(folder.id)}>
+            <div className={`${destinationId === folder.id? 'bg-blue-20 text-primary' : ''} border border-t-0 border-l-0 border-r-0 border-white`} key={folder.id.toString()}>
+              <div className={`${destinationId === folder.id? 'bg-blue-20 border-none text-primary' : ''} flex justify-left align-middle w-fill h-12 border border-t-0 border-r-0 border-l-0 border-gray-10 items-center mx-4 bg-white cursor-pointer`} key={folder.id}>
+                <div className='flex cursor-pointer w-96' onDoubleClick={()=>onShowFolderContentClicked(folder.id, folder.name)} onClick={()=>onFolderClicked(folder.id)}>
                 <img className="h-8 w-8" alt="" src={folderImage} />
                   <span className='inline-block ml-4 text-base text-regular align-baseline mt-1'>
                     {folder.name}
                   </span>
                 </div>
-                <div onClick={()=>onShowFolderContentClicked(folder.id, folder.name)} className='ml-auto cursor-pointer hover:bg-gray-10'>
-                  <CaretRight className='h-6 w-6' />
+                <div className='ml-auto cursor-pointer'>
+                  <CaretRight onClick={()=>onShowFolderContentClicked(folder.id, folder.name)} className={`h-6 w-6 {${destinationId === folder.id? 'bg-blue-20 text-primary' : ''}`} />
                 </div>
               </div>
             </div>);

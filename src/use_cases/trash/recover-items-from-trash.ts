@@ -93,7 +93,7 @@ async function afterMoving(itemsToRecover, destinationId, name?) {
 
   notificationsService.show({
     type: ToastType.Success,
-    text: `Restored ${itemsToRecover.length > 1 ? itemsToRecover.length : ''} Item${itemsToRecover.length > 1 ? 's' : ''} ${itemsToRecover.length == 1 ? '"' + itemsToRecover[0].name + '"' : ''}`,
+    text: `Item${itemsToRecover.length > 1 ? 's' : ''} restored`,
     action: {
       text: 'OpenFolder',
       to: '/app',

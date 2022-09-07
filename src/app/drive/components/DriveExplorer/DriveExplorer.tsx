@@ -199,11 +199,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       [FileViewMode.List]: DriveExplorerList,
       [FileViewMode.Grid]: DriveExplorerGrid,
     };
-    const ViewModeComponent = viewModes[viewMode];
 
     const isRecents = title === 'Recents';
 
     const isTrash = title === 'Trash';
+
+    const ViewModeComponent = viewModes[isTrash? FileViewMode.List : viewMode];
 
     const FileIcon = iconService.getItemIcon(false);
     const filesEmptyImage = (
@@ -322,9 +323,9 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                   ) : (
                     isTrash?(
                     <Empty
-                      icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-                      title="Trash Empty"
-                      subtitle="Each deleted item will be shown here until it is restored or deleted permanently"
+                      icon={filesEmptyImage}
+                      title="Trash is empty"
+                      subtitle="Move items you no longer need to the trash."
                     />
                     ):
                     <Empty
