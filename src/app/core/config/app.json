@@ -130,6 +130,13 @@
       "auth": true
     },
     {
+      "id": "checkout-plan",
+      "layout": "empty",
+      "path": "/checkout-plan/",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "remove",
       "layout": "empty",
       "path": "/remove",
