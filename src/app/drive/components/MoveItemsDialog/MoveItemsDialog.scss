@@ -11,3 +11,7 @@
 .message-dialog-close-button {
   width: 16px;
 }
+
+.button-loading-spinner {
+  @apply inline h-5 w-5 animate-spin;
+}
