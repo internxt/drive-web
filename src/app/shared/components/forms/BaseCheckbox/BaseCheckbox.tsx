@@ -26,6 +26,7 @@ const BaseCheckbox = ({ id, checked, indeterminate, onClick, required, className
         checked={checked}
         type="checkbox"
         required={required ?? false}
+        readOnly
         className="base-checkbox h-0 w-0 appearance-none opacity-0"
       />
     </label>
