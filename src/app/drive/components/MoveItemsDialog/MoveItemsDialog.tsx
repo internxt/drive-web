@@ -233,7 +233,7 @@ const onFolderClicked = (folderId: number): void => {
               <div className={`${destinationId === folder.id? 'bg-blue-20 border-none text-primary' : ''} flex justify-left align-middle w-fill h-12 border border-t-0 border-r-0 border-l-0 border-gray-10 items-center mx-4 bg-white cursor-pointer`} key={folder.id}>
                 <div className='flex cursor-pointer w-96' onDoubleClick={()=>onShowFolderContentClicked(folder.id, folder.name)} onClick={()=>onFolderClicked(folder.id)}>
                 <img className="h-8 w-8" alt="" src={folderImage} />
-                  <span className='inline-block ml-4 text-base text-regular align-baseline mt-1'>
+                  <span className='inline-block ml-4 text-base text-regular align-baseline mt-1 overflow-hidden overflow-ellipsis' style={{maxWidth:'280px'}}>
                     {folder.name}
                   </span>
                 </div>
