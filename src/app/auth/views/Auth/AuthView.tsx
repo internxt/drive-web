@@ -21,36 +21,44 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 export default function Auth(): JSX.Element {
   const dispatch = useAppDispatch();
 
-  const postMessage = (data) => {
+  const postMessage = (data: Record<string, unknown>) => {
     window.top?.postMessage(data, 'https://internxt.com');
   };
 
   // FILTER MESSAGES
 
-  useEffect(() => {
-    if (window) {
-      window.onmessage = function (e) {
-        const permitedDomains = ['https://drive.internxt.com', 'https://internxt.com'];
+  const permitedDomains = [
+    'https://drive.internxt.com',
+    'https://internxt.com',
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ];
 
-        if (permitedDomains.includes(e.origin)) {
-          if (e.data.action === 'signup') {
-            signup(e.data);
-          } else if (e.data.action === 'check_session') {
-            checkSession();
-          } else if (e.data.action === 'login') {
-            login(e.data);
-          } else if (e.data.action === 'recover') {
-            sendEmail(e.data);
-          }
+  useEffect(() => {
+    const onRecieveMessage = (e) => {
+      if (permitedDomains.includes(e.origin)) {
+        if (e.data.action === 'signup') {
+          signup(e.data);
+        } else if (e.data.action === 'check_session') {
+          checkSession();
+        } else if (e.data.action === 'login') {
+          login(e.data);
+        } else if (e.data.action === 'recover') {
+          sendEmail(e.data);
         }
-      };
-    }
-  }, []);
+      }
+    };
+
+    window.addEventListener('message', onRecieveMessage);
+
+    return () => {
+      window.removeEventListener('message', onRecieveMessage);
+    };
+  });
 
   // SIGN UP
 
   const { doRegister } = useSignUp('activate');
-  const [signingIn, setSigningIn] = useState<boolean>(false);
 
   async function signup(data) {
     const grecaptcha = window.grecaptcha;
@@ -118,15 +126,12 @@ export default function Auth(): JSX.Element {
        * ==========
        */
 
-      setSigningIn(true);
       postMessage({ action: 'redirect' });
     } catch (err: unknown) {
-      if (signingIn) {
-        if (inline === true) {
-          postMessage({ action: 'error_inline', msg: errorService.castError(err).message });
-        } else {
-          postMessage({ action: 'error', msg: errorService.castError(err).message });
-        }
+      if (inline === true) {
+        postMessage({ action: 'error_inline', msg: errorService.castError(err).message });
+      } else {
+        postMessage({ action: 'error', msg: errorService.castError(err).message });
       }
     }
   };

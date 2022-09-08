@@ -15,6 +15,7 @@ import DeactivationTeamsView from 'app/teams/views/DeactivationTeamsView/Deactiv
 import ShareFileView from 'app/share/views/ShareView/ShareFileView';
 import RemoveAccountView from 'app/auth/views/RemoveAccountView/RemoveAccountView';
 import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/GuestAcceptInviteView';
+import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
 
@@ -51,6 +52,7 @@ const views: Array<{
   { id: AppView.TeamSuccess, component: TeamSuccessView },
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
   { id: AppView.Checkout, component: CheckoutView },
+  { id: AppView.CheckoutPlan, component: CheckoutPlanView },
   { id: AppView.Remove, component: RemoveAccountView },
   { id: AppView.RemoveDialog, component: RemoveAccountView, componentProps: { displayIframe: true } },
   { id: AppView.ShareFileToken, component: ShareFileView },
