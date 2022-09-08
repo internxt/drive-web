@@ -10,9 +10,7 @@ export async function createShare(params: ShareTypes.GenerateShareLinkPayload): 
   token: string;
   code: string;
 }> {
-  const response = await SdkFactory.getInstance().createShareClient().createShareLink(params);
-
-  return response;
+  return await SdkFactory.getNewApiInstance().createShareClient().createShareLink(params);
 }
 
 export async function createShareLink(
@@ -39,26 +37,26 @@ export function buildLinkFromShare(
 }
 
 export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Promise<ShareTypes.ShareLink> {
-  const shareClient = SdkFactory.getInstance().createShareClient();
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.updateShareLink(params).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
 export function deleteShareLink(shareId: string): Promise<{ deleted: boolean, shareId: string }> {
-  const shareClient = SdkFactory.getInstance().createShareClient();
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.deleteShareLink(shareId).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
 export function getSharedFileInfo(token: string, code: string): Promise<ShareTypes.ShareLink> {
-  const shareClient = SdkFactory.getInstance().createShareClient();
-  return httpService.get(process.env.REACT_APP_DRIVE_NEW_API_URL + '/api/storage/share/' + token + '?code=' + code);
+  const newApiURL = SdkFactory.getNewApiInstance().getApiUrl();
+  return httpService.get(newApiURL + '/storage/share/' + token + '?code=' + code);
 }
 
 export function getSharedFolderInfo(token: string): Promise<ShareTypes.ShareLink> {
-  const shareClient = SdkFactory.getInstance().createShareClient();
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareLink(token).catch((error) => {
     throw errorService.castError(error);
   });
@@ -66,11 +64,12 @@ export function getSharedFolderInfo(token: string): Promise<ShareTypes.ShareLink
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getSharedFolderSize(shareId: string, folderId: string): Promise<any> {
-  const shareClient = SdkFactory.getInstance().createShareClient();
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareLinkFolderSize({ itemId: shareId, folderId }).catch((error) => {
     throw errorService.castError(error);
   });
 }
+
 interface SharedDirectoryFoldersPayload {
   token: string;
   directoryId: number;
@@ -85,10 +84,11 @@ interface SharedDirectoryFilesPayload {
   limit: number;
   code: string;
 }
+
 export function getSharedDirectoryFolders(
   payload: SharedDirectoryFoldersPayload,
 ): Promise<ShareTypes.SharedDirectoryFolders> {
-  const shareClient = SdkFactory.getInstance().createShareClient();
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareLinkDirectory({
     type: 'folder',
     token: payload.token,
@@ -101,7 +101,7 @@ export function getSharedDirectoryFolders(
 export function getSharedDirectoryFiles(
   payload: SharedDirectoryFilesPayload,
 ): Promise<ShareTypes.SharedDirectoryFiles> {
-  const shareClient = SdkFactory.getInstance().createShareClient();
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareLinkDirectory({
     type: 'file',
     token: payload.token,
