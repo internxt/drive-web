@@ -2,14 +2,14 @@
   .breadcrumb > li + li::before {
     content: "/";
 
-    @apply text-blue-60 cursor-default px-2;
+    @apply text-gray-50 font-medium cursor-default px-2;
   }
 
   ol.breadcrumb {
     display: flex;
 
     li {
-      @apply text-lg text-neutral-500;
+      @apply text-lg text-gray-80 font-medium;
 
       .icon {
         @apply mr-1;
@@ -17,7 +17,7 @@
     }
 
     li.active {
-      @apply text-blue-60 cursor-pointer;
+      @apply text-gray-50 font-medium cursor-pointer;
     }
   }
 }

@@ -255,7 +255,7 @@ const onFolderClicked = (folderId: number): void => {
             {i18n.get('actions.cancel')}
           </BaseButton>
           <BaseButton className="primary w-32 ml-2 mr-5" disabled={isLoading} onClick={() => onAccept(destinationId? destinationId : currentFolderId, currentFolderName)}>
-            {isLoading ? (!props.isTrash?'Moving...':'Restoring...') : (!props.isTrash?'Move':'Restore here')}
+            {isLoading ? (!props.isTrash?'Moving...':'Navigating...') : (!props.isTrash?'Move':'Restore here')}
           </BaseButton>
         </div>
       </div>
