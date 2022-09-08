@@ -26,7 +26,7 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      instance: new SdkFactory(process.env.REACT_APP_API_URL),
+      instance: new SdkFactory(process.env.REACT_APP_API_URL + '/api'),
       newApiInstance: new SdkFactory(process.env.REACT_APP_DRIVE_NEW_API_URL),
     };
   }
@@ -141,7 +141,7 @@ export class SdkFactory {
   }
 
   public getApiUrl(): ApiUrl {
-    return this.apiUrl + '/api';
+    return this.apiUrl;
   }
 
   private static getAppDetails(): AppDetails {
