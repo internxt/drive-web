@@ -139,6 +139,7 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
         
         setCurrentFolderId(folderId);
         setCurrentFolderName(name);
+        setDestinationId(folderId);
         console.log(items);
         const folders = items?.filter((i)=>{return i.isFolder;}); 
       
@@ -157,7 +158,7 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
           setShownFolders(folders);
         }else{
           setShownFolders([]);
-          setDestinationId(0);
+          setDestinationId(folderId);
           setCurrentFolderId(folderId);
           setCurrentFolderName(name);
         }

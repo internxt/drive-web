@@ -100,7 +100,7 @@ async function afterMoving(itemsToRecover, destinationId, name?) {
       onClick: () => {
 
 
-        setTimeout(() => store.dispatch(storageThunks.goToFolderThunk({ name: name ? name : itemsToRecover[0].parent, id: destinationId })),
+        setTimeout(() => store.dispatch(storageThunks.goToFolderThunk({ name: name ? '··· ' + name : '··· ' + itemsToRecover[0].parent, id: destinationId })),
           500);
 
 
