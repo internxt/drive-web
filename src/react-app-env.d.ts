@@ -23,6 +23,8 @@ interface Window {
   Stripe: stripe.StripeStatic;
   analytics: SegmentAnalytics.AnalyticsJS;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rudderanalytics: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _adftrack: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rdt: any;

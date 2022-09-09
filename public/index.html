@@ -25,9 +25,16 @@
   <title>Internxt Drive</title>
 
   <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_V3%"></script>
+  <script type="text/javascript">
+    !function () {
+      var e = window.rudderanalytics = window.rudderanalytics || []; e.methods = ["load", "page", "track", "identify", "alias", "group", "ready", "reset", "getAnonymousId", "setAnonymousId", "getUserId", "getUserTraits", "getGroupId", "getGroupTraits"], e.factory = function (t) { return function () { var r = Array.prototype.slice.call(arguments); return r.unshift(t), e.push(r), e } }; for (var t = 0; t < e.methods.length; t++) { var r = e.methods[t]; e[r] = e.factory(r) } e.loadJS = function (e, t) { var r = document.createElement("script"); r.type = "text/javascript", r.async = !0, r.src = "https://s3.us-east-1.wasabisys.com/djdjdkwl/ruddersnippet.js"; var a = document.getElementsByTagName("script")[0]; a.parentNode.insertBefore(r, a) }, e.loadJS(),
+        e.load("2EL15xyzDYBZ1V8C4ov6vX6MSOV", "https://cdp.internxt.com"),
+        e.page()
+    }();
+  </script>
 
   <!-- Segment -->
-  <script type="text/javascript">
+  <!-- <script type="text/javascript">
     if ('development' === '%NODE_ENV%') {
       document.querySelector("link[rel~='icon']").href = '/development-favicon.ico';
     }
@@ -144,7 +151,7 @@
           }
       })();
     }
-  </script>
+  </script> -->
 
   <!-- MailerLite Universal -->
   <script>

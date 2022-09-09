@@ -96,7 +96,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       }
       dispatch(referralsThunks.refreshUserReferrals());
 
-      window.analytics.track('file-share');
+      // window.analytics.track('file-share');
       setLinkToCopy(link);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
