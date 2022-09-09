@@ -35,6 +35,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [currentFolderId, setCurrentFolderId] = useState(0);
   const [shownFolders, setShownFolders] = useState(props.items);
   const [currentFolderName, setCurrentFolderName] = useState('');
+  const [selectedFolderName, setSelectedFolderName] = useState('');
   const arrayOfPaths : FolderPath[] = [];
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
@@ -61,6 +62,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
       setIsLoading(true);
       if (itemsToMove.length > 0) {
 
+        if(destinationFolderId != currentFolderId ){
+         
+          namePaths.push({id:destinationId, name: selectedFolderName});
+          name = selectedFolderName;
+        }
 
         if(!destinationFolderId){
           destinationFolderId = currentFolderId;
@@ -138,7 +144,7 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
         setCurrentFolderId(folderId);
         setCurrentFolderName(name);
         setDestinationId(folderId);
-        console.log(items);
+        
         const folders = items?.filter((i)=>{return i.isFolder;}); 
       
         let auxCurrentPaths : FolderPath[] = [...currentNamePaths];
@@ -169,7 +175,7 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
   });
 };
 
-const onFolderClicked = (folderId: number): void => {
+const onFolderClicked = (folderId: number, name?: string): void => {
 
   if(destinationId != folderId){
     setDestinationId(folderId);
@@ -177,7 +183,7 @@ const onFolderClicked = (folderId: number): void => {
   }else{
     setDestinationId(currentFolderId);
   }
-  
+  name && setSelectedFolderName(name);
 
 };
  
@@ -233,7 +239,7 @@ const onFolderClicked = (folderId: number): void => {
             return (
             <div className={`${destinationId === folder.id? 'bg-blue-20 text-primary' : ''} border border-t-0 border-l-0 border-r-0 border-white`} key={folder.id.toString()}>
               <div className={`${destinationId === folder.id? 'bg-blue-20 border-none text-primary' : ''} flex justify-left align-middle w-fill h-12 border border-t-0 border-r-0 border-l-0 border-gray-10 items-center mx-4 bg-white cursor-pointer`} key={folder.id}>
-                <div className='flex cursor-pointer w-96' onDoubleClick={()=>onShowFolderContentClicked(folder.id, folder.name)} onClick={()=>onFolderClicked(folder.id)}>
+                <div className='flex cursor-pointer w-96' onDoubleClick={()=>onShowFolderContentClicked(folder.id, folder.name)} onClick={()=>onFolderClicked(folder.id, folder.name)}>
                 <img className="h-8 w-8" alt="" src={folderImage} />
                   <span className='inline-block ml-4 text-base text-regular align-baseline mt-1 overflow-hidden overflow-ellipsis' style={{maxWidth:'280px'}}>
                     {folder.name}
