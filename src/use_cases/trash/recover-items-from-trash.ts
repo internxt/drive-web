@@ -13,6 +13,9 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import itemsListService from 'app/drive/services/items-list.service';
+import { DriveItemData } from 'app/drive/types';
+
+const failedItems: DriveItemData[] = [];
 
 
 
@@ -43,6 +46,7 @@ async function catchError(error) {
 }
 
 async function moveFile(
+  item: DriveItemData,
   fileId: string,
   destination: number,
   bucketId: string,
@@ -56,10 +60,16 @@ async function moveFile(
   };
   return storageClient.moveFile(payload)
     .then((response) => trackMove(response, 'file'))
-    .catch((error) => catchError(error));
+    .catch((error) => {
+
+      failedItems.push(item);
+
+      catchError(error);
+    });
 }
 
 async function moveFolder(
+  item: DriveItemData,
   folderId: number,
   destination: number
 ): Promise<StorageTypes.MoveFolderResponse> {
@@ -71,10 +81,17 @@ async function moveFolder(
 
   return storageClient.moveFolder(payload)
     .then(response => trackMove(response, 'folder'))
-    .catch((err) => catchError(err));
+    .catch((error) => {
+
+      failedItems.push(item);
+
+      catchError(error);
+    });
 }
 
-async function afterMoving(itemsToRecover, destinationId, name?) {
+async function afterMoving(itemsToRecover, destinationId, name?, namePaths?) {
+
+  itemsToRecover = itemsToRecover.filter((el) => !failedItems.includes(el));
 
   const destinationLevelDatabaseContent = await databaseService.get(
     DatabaseCollection.Levels,
@@ -100,7 +117,19 @@ async function afterMoving(itemsToRecover, destinationId, name?) {
       onClick: () => {
 
 
-        setTimeout(() => store.dispatch(storageThunks.goToFolderThunk({ name: name ? '··· ' + name : '··· ' + itemsToRecover[0].parent, id: destinationId })),
+        setTimeout(() => {
+
+          store.dispatch(storageActions.resetNamePath());
+          namePaths.forEach((path) => {
+            if (path.id != namePaths[namePaths.length - 1].id) {
+              store.dispatch(storageActions.pushNamePath(path));
+            }
+
+          });
+
+
+          store.dispatch(storageThunks.goToFolderThunk({ name: name ? name : itemsToRecover[0].parent, id: destinationId }));
+        },
           500);
 
 
@@ -110,14 +139,14 @@ async function afterMoving(itemsToRecover, destinationId, name?) {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const RecoverItemsFromTrash = async (itemsToRecover, destinationId, name?) => {
+const RecoverItemsFromTrash = async (itemsToRecover, destinationId, name?, namePaths?) => {
 
 
   itemsToRecover.forEach((item) => {
     if (item.isFolder) {
-      moveFolder(item.id, destinationId).then(() => { if (itemsToRecover[itemsToRecover.length - 1] === item) { afterMoving(itemsToRecover, destinationId, name); } }).catch((err) => { if (err) { return err; } });
+      moveFolder(item, item.id, destinationId).then(() => { if (itemsToRecover[itemsToRecover.length - 1] === item) { afterMoving(itemsToRecover, destinationId, name, namePaths); } }).catch((err) => { if (err) { return err; } });
     } else {
-      moveFile(item.fileId, destinationId, item.bucket).then(() => { if (itemsToRecover[itemsToRecover.length - 1] === item) { afterMoving(itemsToRecover, destinationId, name); } }).catch((err) => { if (err) { return err; } });
+      moveFile(item, item.fileId, destinationId, item.bucket).then(() => { if (itemsToRecover[itemsToRecover.length - 1] === item) { afterMoving(itemsToRecover, destinationId, name, namePaths); } }).catch((err) => { if (err) { return err; } });
     }
   });
 

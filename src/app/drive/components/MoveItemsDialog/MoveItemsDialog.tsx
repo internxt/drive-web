@@ -42,9 +42,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const newFolderIsOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
   const [isFirstTime, setIsFirstTime] = useState(true);
-  //const databaseTest = useSelector(async (state: RootState) =>{return await databaseService.get(DatabaseCollection.Levels, currentFolderId);});
 
-//console.log('databaseTest: ',databaseTest);
 
   const onClose = (): void => {
     dispatch(uiActions.setIsMoveItemsDialogOpen(false));
@@ -56,7 +54,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   };
 
-  const onAccept = async (destinationFolderId, name): Promise<void> => {
+  const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
     try {
 
 
@@ -68,7 +66,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           destinationFolderId = currentFolderId;
         }
 
-        restoreItemsFromTrash(itemsToMove, destinationFolderId, name);
+        restoreItemsFromTrash(itemsToMove, destinationFolderId, name, namePaths);
       }
 
 
@@ -152,6 +150,8 @@ const onShowFolderContentClicked = (folderId: number, name: string): void => {
           auxCurrentPaths.push({id:folderId, name: name});
           dispatch(storageActions.pushNamePath({id:folderId, name: name}));
         }
+
+       
     
         setCurrentNamePaths(auxCurrentPaths);
         if(folders){
@@ -173,6 +173,7 @@ const onFolderClicked = (folderId: number): void => {
 
   if(destinationId != folderId){
     setDestinationId(folderId);
+    
   }else{
     setDestinationId(currentFolderId);
   }
@@ -255,7 +256,7 @@ const onFolderClicked = (folderId: number): void => {
           <BaseButton onClick={() => onClose()} className="quaternary text-base font-medium h-10 rounded-lg w-20 px-1">
             {i18n.get('actions.cancel')}
           </BaseButton>
-          <BaseButton className="primary w-32 ml-2 mr-5" disabled={isLoading} onClick={() => onAccept(destinationId? destinationId : currentFolderId, currentFolderName)}>
+          <BaseButton className="primary w-32 ml-2 mr-5" disabled={isLoading} onClick={() => onAccept(destinationId? destinationId : currentFolderId, currentFolderName, currentNamePaths)}>
             {isLoading ? (!props.isTrash?'Moving...':'Navigating...') : (!props.isTrash?'Move':'Restore here')}
           </BaseButton>
         </div>

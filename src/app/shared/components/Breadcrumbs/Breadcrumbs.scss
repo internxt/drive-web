@@ -1,7 +1,5 @@
 @layer components {
   .breadcrumb > li + li::before {
-    
-
     @apply text-gray-50 font-medium cursor-default px-2;
   }
 
