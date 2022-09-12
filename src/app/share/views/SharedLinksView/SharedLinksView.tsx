@@ -37,14 +37,14 @@ export default function SharedLinksView(): JSX.Element {
   const [shareLinks, setShareLinks] = useState<(ListShareLinksItem & { code: string })[]>([]);
 
   const [confirmDeleteState, setConfirmDeleteState] = useState<
-    { tag: 'single'; shareId: string } | { tag: 'multiple' } | { tag: 'closed' }
-  >({ tag: 'closed' });
+    { tag: 'single' | 'multiple'; shareId?: string; isOpen: boolean; }
+  >({ tag: 'single', isOpen:false });
 
   const [isUpdateLinkModalOpen, setIsUpdateLinkModalOpen] = useState(false);
   const [linkToUpdate, setLinkToUpdate] = useState<(ListShareLinksItem & { code: string }) | undefined>(undefined);
 
   function closeConfirmDelete() {
-    setConfirmDeleteState({ tag: 'closed' });
+    setConfirmDeleteState({ tag: confirmDeleteState.tag, isOpen: false });
   }
 
   function isItemSelected(item: ListShareLinksItem) {
@@ -66,7 +66,6 @@ export default function SharedLinksView(): JSX.Element {
     console.log(response.items);
     setHasMoreItems(ITEMS_PER_PAGE * page < response.pagination.countAll);
     setOrderBy(orderBy);
-    setIsLoading(false);
     setPage(page);
 
     if (type === 'append') {
@@ -100,13 +99,17 @@ export default function SharedLinksView(): JSX.Element {
     //setSelectedItems((items) => items.filter((item) => item.id !== shareId));
   }
 
+  async function onDeleteShareLink() {
     setIsLoading(true);
+    const shareId = confirmDeleteState.shareId ? confirmDeleteState.shareId : '';
+    //TODO throw error when invalid shareId
     await deleteShareLink(shareId);
     notificationsService.show({
       text: i18n.get('shared-links.toast.link-deleted'),
       type: ToastType.Success,
     });
     await fetchItems(0, orderBy, 'substitute');
+    closeConfirmDelete();
     setIsLoading(false);
   }
 
@@ -122,6 +125,7 @@ export default function SharedLinksView(): JSX.Element {
 
     notificationsService.show({ text: i18n.get('shared-links.toast.links-deleted'), type: ToastType.Success });
     await fetchItems(0, orderBy, 'substitute');
+    closeConfirmDelete();
     setIsLoading(false);
   }
 
@@ -179,7 +183,7 @@ export default function SharedLinksView(): JSX.Element {
           <BaseButton
             onClick={(e) => {
               e.stopPropagation();
-              setConfirmDeleteState({ tag: 'multiple' });
+              setConfirmDeleteState({ tag: selectedItems.length > 1 ? 'multiple' :'single', isOpen:true });
             }}
             className="tertiary squared"
             disabled={!(selectedItems.length > 0)}
@@ -278,8 +282,8 @@ export default function SharedLinksView(): JSX.Element {
             {
               name: i18n.get('shared-links.item-menu.delete-link'),
               icon: LinkBreak,
-              action: async (props) => {
-                setConfirmDeleteState({ tag: 'single', shareId: props.id });
+              action: (props) => {
+                setConfirmDeleteState({ tag: selectedItems.length > 1 ? 'multiple' :'single', shareId: props.id, isOpen:true });
               },
               disabled: () => {
                 return false; // If item is selected and link is active
@@ -296,7 +300,7 @@ export default function SharedLinksView(): JSX.Element {
       </div>
 
       <DeleteDialog
-        isOpen={confirmDeleteState.tag !== 'closed'}
+        isOpen={confirmDeleteState.isOpen}
         onClose={closeConfirmDelete}
         onSecondaryAction={closeConfirmDelete}
         secondaryAction="Cancel"
@@ -308,7 +312,7 @@ export default function SharedLinksView(): JSX.Element {
         }
         onPrimaryAction={
           confirmDeleteState.tag === 'single'
-            ? () => onDeleteShareLink(confirmDeleteState.shareId)
+            ? onDeleteShareLink
             : onDeleteSelectedItems
         }
         primaryAction={confirmDeleteState.tag === 'single' ? 'Delete link' : 'Delete links'}
