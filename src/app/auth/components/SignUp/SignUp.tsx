@@ -188,21 +188,21 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   };
 
-  async function getReCaptcha(formValues: IFormValues) {
-    const grecaptcha = window.grecaptcha;
+  // async function getReCaptcha(formValues: IFormValues) {
+  //   const grecaptcha = window.grecaptcha;
 
-    grecaptcha.ready(() => {
-      grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
-        // Can't wait or token will expire
-        formValues.token = token;
-        if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);
-      });
-    });
-  }
+  //   grecaptcha.ready(() => {
+  //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
+  //       // Can't wait or token will expire
+  //       formValues.token = token;
+  //       if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);
+  //     });
+  //   });
+  // }
 
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
-      <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(getReCaptcha)}>
+      <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <span className="text-2xl font-medium">Create account</span>
 
         <div className="flex flex-col space-y-3">

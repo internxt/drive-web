@@ -60,19 +60,19 @@ export default function Auth(): JSX.Element {
 
   const { doRegister } = useSignUp('activate');
 
-  async function signup(data) {
-    const grecaptcha = window.grecaptcha;
+  // async function signUpWithRecaptcha(data) {
+  //   const grecaptcha = window.grecaptcha;
 
-    grecaptcha.ready(() => {
-      grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
-        // Can't wait or token will expire
-        data.token = token;
-        signUpWithRecaptcha(data);
-      });
-    });
-  }
+  //   grecaptcha.ready(() => {
+  //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
+  //       // Can't wait or token will expire
+  //       data.token = token;
+  //       signup(data);
+  //     });
+  //   });
+  // }
 
-  const signUpWithRecaptcha = async (data) => {
+  const signup = async (data) => {
     const { inline } = data;
 
     try {
