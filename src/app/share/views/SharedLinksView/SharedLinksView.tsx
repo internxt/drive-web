@@ -74,6 +74,7 @@ export default function SharedLinksView(): JSX.Element {
     } else {
       setShareLinks(response.items as (ListShareLinksItem & { code: string })[]);
     }
+    setIsLoading(false);
   }
 
   function updateLinkItem(item: ListShareLinksItem & { code: string }) {
@@ -94,20 +95,23 @@ export default function SharedLinksView(): JSX.Element {
 
   async function deleteShareLink(shareId: string) {
     await shareService.deleteShareLink(shareId);
-    setShareLinks((items) => items.filter((item) => item.id !== shareId));
-    setSelectedItems((items) => items.filter((item) => item.id !== shareId));
+    //TODO check if its deleted correctly
+    //setShareLinks((items) => items.filter((item) => item.id !== shareId));
+    //setSelectedItems((items) => items.filter((item) => item.id !== shareId));
   }
 
-  async function onDeleteShareLink(shareId: string) {
+    setIsLoading(true);
     await deleteShareLink(shareId);
     notificationsService.show({
       text: i18n.get('shared-links.toast.link-deleted'),
       type: ToastType.Success,
     });
-    setConfirmDeleteState({ tag: 'closed' });
+    await fetchItems(0, orderBy, 'substitute');
+    setIsLoading(false);
   }
 
   async function onDeleteSelectedItems() {
+    setIsLoading(true);
     const CHUNK_SIZE = 10;
 
     const chunks = _.chunk(selectedItems, CHUNK_SIZE);
@@ -117,7 +121,8 @@ export default function SharedLinksView(): JSX.Element {
     }
 
     notificationsService.show({ text: i18n.get('shared-links.toast.links-deleted'), type: ToastType.Success });
-    setConfirmDeleteState({ tag: 'closed' });
+    await fetchItems(0, orderBy, 'substitute');
+    setIsLoading(false);
   }
 
   function onSelectedItemsChanged(changes: { props: ListShareLinksItem & { code: string }; value: boolean }[]) {
