@@ -130,14 +130,16 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
             className="\ ml-8 mt-3 flex w-72 cursor-pointer
             select-text items-center justify-between rounded-md bg-neutral-20 px-4 py-2"
             onClick={() => {
-              navigator.clipboard.writeText(linkToCopy);
-              notificationsService.show({ text: i18n.get('success.linkCopied'), type: ToastType.Info });
+              if (!isLoading){
+                navigator.clipboard.writeText(linkToCopy);
+                notificationsService.show({ text: i18n.get('success.linkCopied'), type: ToastType.Info });
+              }
             }}
           >
             <span className="w-56 overflow-hidden truncate text-xs text-neutral-900">
               {isLoading ? 'Loading link...' : linkToCopy}
             </span>
-            <UilClipboardAlt className="text-blue-60" />
+            {!isLoading && <UilClipboardAlt className="text-blue-60" />}
           </div>
           <div className="mt-4 self-start">
             <span className="mr-4 text-blue-60">2.</span>
