@@ -262,14 +262,14 @@ export default function SharedLinksView(): JSX.Element {
                 return false;
               }
             },
-            {
+            /*{
               name: i18n.get('shared-links.item-menu.link-settings'),
               icon: ToggleRight,
               action: onOpenLinkUpdateModal,
               disabled: () => {
                 return false; // If item is selected and link is active
               },
-            },
+            },*/
             {
               name: i18n.get('shared-links.item-menu.delete-link'),
               icon: LinkBreak,
