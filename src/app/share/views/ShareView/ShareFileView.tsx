@@ -175,7 +175,11 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
           token: (fileInfo as any).fileToken,
           options: {
             notifyProgress: (totalProgress, downloadedBytes) => {
-              setProgress(Math.trunc((downloadedBytes / totalProgress) * 100));
+              const progress = Math.trunc((downloadedBytes / totalProgress) * 100);
+              setProgress(progress);
+              if (progress == 100) {
+                setIsDownloading(false);
+              }
             },
           },
         });
@@ -271,8 +275,13 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
             className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
                         text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
           >
-            {isDownloading ? (
-              progress < 100 ? (
+            {Number(progress) == 100 ? (
+                <>
+                  {/* Download completed */}
+                  <UilCheck height="24" width="24" />
+                  <span className="font-medium">{i18n.get('actions.downloaded')}</span>
+                </>
+              ) : isDownloading ? (
                 <>
                   {/* Download in progress */}
                   <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
@@ -281,18 +290,12 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                 </>
               ) : (
                 <>
-                  {/* Download completed */}
-                  <UilCheck height="24" width="24" />
-                  <span className="font-medium">{i18n.get('actions.downloaded')}</span>
-                </>
-              )
-            ) : (
-              <>
                 {/* Download button */}
                 <UilImport height="20" width="20" />
                 <span className="font-medium">{i18n.get('actions.download')}</span>
               </>
-            )}
+              )
+            }
           </button>
         </div>
       </>
