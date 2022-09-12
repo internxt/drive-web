@@ -141,9 +141,9 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
     const readable = network.downloadFile({
       bucketId: fileInfo.bucket,
-      fileId: fileInfo.item,
+      fileId: fileInfo.item.fileId,
       encryptionKey: Buffer.from(encryptionKey, 'hex'),
-      token: fileInfo.itemToken,
+      token: (fileInfo as any).fileToken,
       options: {
         abortController,
         notifyProgress: () => null,
@@ -160,7 +160,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
   const download = async (): Promise<void> => {
     if (!isDownloading) {
-      const fileInfo = info as unknown as ShareTypes.ShareLink | null;
+      const fileInfo = info as unknown as ShareTypes.ShareLink;
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
@@ -290,10 +290,10 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                 </>
               ) : (
                 <>
-                {/* Download button */}
-                <UilImport height="20" width="20" />
-                <span className="font-medium">{i18n.get('actions.download')}</span>
-              </>
+                  {/* Download button */}
+                  <UilImport height="20" width="20" />
+                  <span className="font-medium">{i18n.get('actions.download')}</span>
+                </>
               )
             }
           </button>
@@ -308,7 +308,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     <>
       <FileViewer
         show={openPreview}
-        file={info['fileMeta']}
+        file={info['item']}
         onClose={closePreview}
         onDownload={onDownloadFromPreview}
         downloader={getBlob}
