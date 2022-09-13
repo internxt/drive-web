@@ -163,8 +163,11 @@ export default function LogIn(): JSX.Element {
               minLength={{ value: 1, message: 'Password must not be empty' }}
               error={errors.password}
             />
+          </label>
 
-            {showTwoFactor && (
+          {showTwoFactor && (
+            <label className="space-y-0.5">
+              <span>Two factor code</span>
               <PasswordInput
                 className="mb-3"
                 label="twoFactorCode"
@@ -175,17 +178,17 @@ export default function LogIn(): JSX.Element {
                 minLength={1}
                 pattern={twoFactorRegexPattern}
               />
-            )}
+            </label>
+          )}
 
-            {loginError && showErrors && (
-              <div className="flex flex-row items-start pt-1">
-                <div className="flex h-5 flex-row items-center">
-                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
-                </div>
-                <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
+          {loginError && showErrors && (
+            <div className="flex flex-row items-start pt-1">
+              <div className="flex h-5 flex-row items-center">
+                <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
               </div>
-            )}
-          </label>
+              <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
+            </div>
+          )}
 
           <Button
             disabled={isLoggingIn}
