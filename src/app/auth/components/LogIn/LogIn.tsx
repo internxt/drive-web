@@ -11,7 +11,7 @@ import Button from '../Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import analyticsService from 'app/analytics/services/analytics.service';
+// import analyticsService from 'app/analytics/services/analytics.service';
 import { WarningCircle } from 'phosphor-react';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
@@ -57,11 +57,15 @@ export default function LogIn(): JSX.Element {
       if (!isTfaEnabled || showTwoFactor) {
         const { token, user } = await doLogin(email, password, twoFactorCode);
         dispatch(userActions.setUser(user));
-        analyticsService.identify(user, user.email);
-        analyticsService.trackSignIn({
-          email: user.email,
-          userId: user.uuid,
-        });
+
+        window.rudderanalytics.identify(user.uuid, { email: user.email });
+        window.rudderanalytics.track('User Signin', { email: user.email });
+
+        // analyticsService.identify(user, user.email);
+        // analyticsService.trackSignIn({
+        //   email: user.email,
+        //   userId: user.uuid,
+        // });
 
         try {
           dispatch(productsThunks.initializeThunk());
@@ -85,7 +89,7 @@ export default function LogIn(): JSX.Element {
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         navigationService.history.push(`/activate/${email}`);
       } else {
-        analyticsService.signInAttempted(email, castedError);
+        // analyticsService.signInAttempted(email, castedError);
       }
 
       setLoginError([castedError.message]);
@@ -142,7 +146,7 @@ export default function LogIn(): JSX.Element {
               <span className="font-normal">Password</span>
               <Link
                 onClick={(): void => {
-                  analyticsService.trackUserResetPasswordRequest();
+                  // analyticsService.trackUserResetPasswordRequest();
                 }}
                 to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"

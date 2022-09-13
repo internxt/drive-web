@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { WarningCircle } from 'phosphor-react';
 
 import localStorageService from 'app/core/services/local-storage.service';
-import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
+// import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions, userThunks } from 'app/store/slices/user';
@@ -141,42 +141,39 @@ function SignUp(props: SignUpProps): JSX.Element {
         await dispatch(userThunks.initializeUserThunk());
       }
 
-      /**
-       * TODO: Move ANALYTICS ======
-       */
-      analyticsService.trackPaymentConversion();
-      analyticsService.trackSignUp({
-        userId: xUser.uuid,
-        properties: {
-          email: xUser.email,
-          signup_source: signupCampaignSource(window.location.search),
-        },
-        traits: {
-          email: xUser.email,
-          first_name: xUser.name,
-          last_name: xUser.lastname,
-          usage: 0,
-          createdAt: new Date().toISOString(),
-          signup_device_source: signupDevicesource(window.navigator.userAgent),
-          acquisition_channel: signupCampaignSource(window.location.search),
-        },
-      });
+      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email });
+      window.rudderanalytics.track('User Signup', { email: xUser.email });
+
+      // analyticsService.trackPaymentConversion();
+      // analyticsService.trackSignUp({
+      //   userId: xUser.uuid,
+      //   properties: {
+      //     email: xUser.email,
+      //     signup_source: signupCampaignSource(window.location.search),
+      //   },
+      //   traits: {
+      //     email: xUser.email,
+      //     first_name: xUser.name,
+      //     last_name: xUser.lastname,
+      //     usage: 0,
+      //     createdAt: new Date().toISOString(),
+      //     signup_device_source: signupDevicesource(window.navigator.userAgent),
+      //     acquisition_channel: signupCampaignSource(window.location.search),
+      //   },
+      // });
 
       // adtrack script
-      window._adftrack = Array.isArray(window._adftrack)
-        ? window._adftrack
-        : window._adftrack
-        ? [window._adftrack]
-        : [];
-      window._adftrack.push({
-        HttpHost: 'track.adform.net',
-        pm: 2370627,
-        divider: encodeURIComponent('|'),
-        pagename: encodeURIComponent('New'),
-      });
-      /**
-       * ==========
-       */
+      // window._adftrack = Array.isArray(window._adftrack)
+      //   ? window._adftrack
+      //   : window._adftrack
+      //   ? [window._adftrack]
+      //   : [];
+      // window._adftrack.push({
+      //   HttpHost: 'track.adform.net',
+      //   pm: 2370627,
+      //   divider: encodeURIComponent('|'),
+      //   pagename: encodeURIComponent('New'),
+      // });
 
       navigationService.push(AppView.Drive);
     } catch (err: unknown) {

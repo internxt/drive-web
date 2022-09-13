@@ -1,7 +1,7 @@
 import localStorageService from 'app/core/services/local-storage.service';
 import { RootState } from 'app/store';
 import { useSelector } from 'react-redux';
-import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
+// import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 import navigationService from 'app/core/services/navigation.service';
 import userService from '../../services/user.service';
 import i18n from 'app/i18n/services/i18n.service';
@@ -89,42 +89,40 @@ export default function Auth(): JSX.Element {
       dispatch(planThunks.initializeThunk());
       dispatch(referralsThunks.initializeThunk());
       await dispatch(userThunks.initializeUserThunk());
-      /**
-       * TODO: Move ANALYTICS ======
-       */
-      analyticsService.trackPaymentConversion();
-      analyticsService.trackSignUp({
-        userId: xUser.uuid,
-        properties: {
-          email: xUser.email,
-          signup_source: signupCampaignSource(window.location.search),
-        },
-        traits: {
-          email: xUser.email,
-          first_name: xUser.name,
-          last_name: xUser.lastname,
-          usage: 0,
-          createdAt: new Date().toISOString(),
-          signup_device_source: signupDevicesource(window.navigator.userAgent),
-          acquisition_channel: signupCampaignSource(window.location.search),
-        },
-      });
+
+      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email });
+      window.rudderanalytics.track('User Signup', { email: xUser.email });
+
+      // analyticsService.trackPaymentConversion();
+      // analyticsService.trackSignUp({
+      //   userId: xUser.uuid,
+      //   properties: {
+      //     email: xUser.email,
+      //     signup_source: signupCampaignSource(window.location.search),
+      //   },
+      //   traits: {
+      //     email: xUser.email,
+      //     first_name: xUser.name,
+      //     last_name: xUser.lastname,
+      //     usage: 0,
+      //     createdAt: new Date().toISOString(),
+      //     signup_device_source: signupDevicesource(window.navigator.userAgent),
+      //     acquisition_channel: signupCampaignSource(window.location.search),
+      //   },
+      // });
 
       // adtrack script
-      window._adftrack = Array.isArray(window._adftrack)
-        ? window._adftrack
-        : window._adftrack
-        ? [window._adftrack]
-        : [];
-      window._adftrack.push({
-        HttpHost: 'track.adform.net',
-        pm: 2370627,
-        divider: encodeURIComponent('|'),
-        pagename: encodeURIComponent('New'),
-      });
-      /**
-       * ==========
-       */
+      // window._adftrack = Array.isArray(window._adftrack)
+      //   ? window._adftrack
+      //   : window._adftrack
+      //   ? [window._adftrack]
+      //   : [];
+      // window._adftrack.push({
+      //   HttpHost: 'track.adform.net',
+      //   pm: 2370627,
+      //   divider: encodeURIComponent('|'),
+      //   pagename: encodeURIComponent('New'),
+      // });
 
       postMessage({ action: 'redirect' });
     } catch (err: unknown) {
@@ -157,11 +155,15 @@ export default function Auth(): JSX.Element {
       if (!isTfaEnabled || tfa) {
         const { user } = await doLogin(email, password, tfa);
         dispatch(userActions.setUser(user));
-        analyticsService.identify(user, user.email);
-        analyticsService.trackSignIn({
-          email: user.email,
-          userId: user.uuid,
-        });
+
+        window.rudderanalytics.identify(user.uuid, { email: user.email });
+        window.rudderanalytics.track('User Signin', { email: user.email });
+
+        // analyticsService.identify(user, user.email);
+        // analyticsService.trackSignIn({
+        //   email: user.email,
+        //   userId: user.uuid,
+        // });
 
         try {
           dispatch(productsThunks.initializeThunk());
@@ -185,7 +187,7 @@ export default function Auth(): JSX.Element {
       if (castedError.message.includes('not activated')) {
         navigationService.history.push(`/activate/${email}`);
       } else {
-        analyticsService.signInAttempted(email, castedError);
+        // analyticsService.signInAttempted(email, castedError);
       }
 
       postMessage({ action: 'error', msg: errorService.castError(err).message });
