@@ -18,6 +18,7 @@ import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
 import localStorageService from 'app/core/services/local-storage.service';
+import sizeService from 'app/drive/services/size.service';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -149,6 +150,7 @@ export default function SharedLinksView(): JSX.Element {
     </div>,
     <div className="h-4 w-20 rounded bg-gray-5" />,
     <div className="h-4 w-24 rounded bg-gray-5" />,
+    <div className="h-4 w-20 rounded bg-gray-5" />,
   ];
 
   const emptyState = (
@@ -198,23 +200,29 @@ export default function SharedLinksView(): JSX.Element {
           header={[
             {
               label: i18n.get('shared-links.list.link-content'),
-              width: 'flex-1 min-w-104',
+              width: 'flex-1 min-w-100', //flex-grow w-1
               name: 'item',
               orderable: false,
             },
             {
               label: i18n.get('shared-links.list.shared'),
-              width: 'w-52',
+              width: 'w-40', //w-1/12
               name: 'views',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
               label: i18n.get('shared-links.list.created'),
-              width: 'w-40',
+              width: 'w-40', //w-2/12
               name: 'createdAt',
               orderable: true,
               defaultDirection: 'ASC',
+            },
+            {
+              label: 'Size',
+              width: 'w-40', //w-1.5/12
+              name: 'fileSize',
+              orderable: false,
             },
           ]}
           items={shareLinks}
@@ -248,6 +256,11 @@ export default function SharedLinksView(): JSX.Element {
               >
                 {dateService.format(props.createdAt, 'D MMM YYYY')}
               </span>
+            ),
+            (props) => (
+              props.isFolder ?
+                <span className="opacity-25">—</span> :
+                <span>{`${sizeService.bytesToString((props.fileSize ? props.fileSize : 0), false)}`}</span>
             ),
           ]}
           skinSkeleton={skinSkeleton}
