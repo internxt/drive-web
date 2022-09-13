@@ -141,8 +141,9 @@ function SignUp(props: SignUpProps): JSX.Element {
         await dispatch(userThunks.initializeUserThunk());
       }
 
-      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email });
+      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid:  xUser.uuid });
       window.rudderanalytics.track('User Signup', { email: xUser.email });
+      
 
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({

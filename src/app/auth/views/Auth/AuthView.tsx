@@ -90,7 +90,7 @@ export default function Auth(): JSX.Element {
       dispatch(referralsThunks.initializeThunk());
       await dispatch(userThunks.initializeUserThunk());
 
-      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email });
+      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid:  xUser.uuid });
       window.rudderanalytics.track('User Signup', { email: xUser.email });
 
       // analyticsService.trackPaymentConversion();
