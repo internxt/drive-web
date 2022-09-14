@@ -118,6 +118,9 @@ class App extends Component<AppProps> {
               <Route exact path="/">
                 <Redirect to="/login" />
               </Route>
+              <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
+              <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
+              <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
               {this.routes}
             </Switch>
 
