@@ -178,6 +178,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       navigationService.push(AppView.Drive);
     } catch (err: unknown) {
+      console.log(err);
       setIsLoading(false);
       const castedError = errorService.castError(err);
       setSignupError(castedError.message);
