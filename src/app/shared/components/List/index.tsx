@@ -1,6 +1,6 @@
 import ListItem, { ListItemMenu } from './ListItem';
 import SkinSkeletonItem from './SkinSketelonItem';
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect, useCallback, useLayoutEffect, useState } from 'react';
 import { ArrowUp, ArrowDown } from 'phosphor-react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -58,7 +58,7 @@ export default function List<T extends { id: string }, F extends keyof T>({
   selectedItems,
   onDoubleClick,
   onSelectedItemsChanged,
- // isLoading,
+  isLoading,
   skinSkeleton,
   emptyState,
   orderBy,
@@ -70,6 +70,7 @@ export default function List<T extends { id: string }, F extends keyof T>({
  // keyboardShortcuts,
  // disableKeyboardShortcuts,
 }: ListProps<T, F>): JSX.Element {
+  const [isScrollable, ref, node] = useIsScrollable([items]);
   const isItemSelected = (item: T) => {
     return selectedItems.some((i) => item.id === i.id);
   };
@@ -83,6 +84,14 @@ export default function List<T extends { id: string }, F extends keyof T>({
         columns={header.map((column) => column.width)}
       />
     ));
+
+  useEffect(() => {
+    if (!node || isLoading) return;
+
+    if (!isScrollable && hasMoreItems) {
+      onNextPage();
+    }
+  }, [isLoading, isScrollable, hasMoreItems, node]);
 
   function unselectAllItems() {
     const changesToMake = selectedItems.map((item) => ({ props: item, value: false }));
@@ -189,7 +198,7 @@ export default function List<T extends { id: string }, F extends keyof T>({
       </div>
 
       {/* BODY */}
-      <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
+      <div id="scrollableList" className="flex h-full flex-col overflow-y-auto" ref={ref}>
         {(!hasMoreItems ?? false) && items.length === 0 ? (
           emptyState
         ) : items.length > 0 ? (
@@ -228,3 +237,32 @@ export default function List<T extends { id: string }, F extends keyof T>({
     </div>
   );
 }
+
+const useIsScrollable = (dependencies: any[]) => {
+  const [node, setNode] = useState<HTMLDivElement>();
+  const ref = useCallback((node: HTMLDivElement) => {
+    setNode(node);
+  }, []);
+
+  const [isScrollable, setIsScrollable] = useState<boolean>(false);
+
+  useLayoutEffect(() => {
+    if (!node) return;
+
+    setIsScrollable(node.scrollHeight > node.clientHeight);
+  }, [...dependencies, node]);
+
+  useLayoutEffect(() => {
+    if (!node) return;
+
+    const handleWindowResize = () => {
+      setIsScrollable(node.scrollHeight > node.clientHeight);
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+
+    return () => window.removeEventListener('resize', handleWindowResize);
+  }, [node]);
+
+  return [isScrollable, ref, node] as const;
+};
