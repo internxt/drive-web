@@ -64,7 +64,6 @@ export default function SharedLinksView(): JSX.Element {
       ITEMS_PER_PAGE,
       orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
     );
-    console.log(response.items);
     setHasMoreItems(ITEMS_PER_PAGE * page < response.pagination.countAll);
     setOrderBy(orderBy);
     setPage(page);

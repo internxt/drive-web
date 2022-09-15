@@ -36,9 +36,9 @@ export function buildLinkFromShare(
   return `${window.location.origin}/s/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
 }
 
-export function incrementShareView(shareId: string): Promise<{ incremented: boolean, shareId: string }> {
+export function incrementShareView(token: string): Promise<{ incremented: boolean, token: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.incrementShareViewById(shareId).catch((error) => {
+  return shareClient.incrementShareViewByToken(token).catch((error) => {
     throw errorService.castError(error);
   });
 }
