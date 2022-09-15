@@ -145,7 +145,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         )
           .then(() => {
             updateProgress(1);
-            shareService.incrementShareView(folderInfo.id);
+            shareService.incrementShareView(folderInfo.token);
           })
           .catch((err) => {
             if (err && err.message && err.message.includes('user aborted')) {

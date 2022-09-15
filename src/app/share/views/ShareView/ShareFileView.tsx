@@ -178,7 +178,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
               const progress = Math.trunc((downloadedBytes / totalProgress) * 100);
               setProgress(progress);
               if (progress == 100) {
-                shareService.incrementShareView(fileInfo.id);
+                shareService.incrementShareView(fileInfo.token);
                 setIsDownloading(false);
               }
             },
