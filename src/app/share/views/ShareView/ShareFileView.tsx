@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { match } from 'react-router';
 import { aes } from '@internxt/lib';
-import { getSharedFileInfo } from 'app/share/services/share.service';
+import shareService, { getSharedFileInfo } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
@@ -178,6 +178,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
               const progress = Math.trunc((downloadedBytes / totalProgress) * 100);
               setProgress(progress);
               if (progress == 100) {
+                shareService.incrementShareView(fileInfo.id);
                 setIsDownloading(false);
               }
             },

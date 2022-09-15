@@ -16,6 +16,7 @@ import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import shareService from 'app/share/services/share.service';
 import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
 import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import { loadWritableStreamPonyfill } from 'app/network/download';
@@ -144,6 +145,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         )
           .then(() => {
             updateProgress(1);
+            shareService.incrementShareView(folderInfo.id);
           })
           .catch((err) => {
             if (err && err.message && err.message.includes('user aborted')) {

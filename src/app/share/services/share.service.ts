@@ -36,6 +36,13 @@ export function buildLinkFromShare(
   return `${window.location.origin}/s/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
 }
 
+export function incrementShareView(shareId: string): Promise<{ incremented: boolean, shareId: string }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.incrementShareViewById(shareId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Promise<ShareTypes.ShareLink> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.updateShareLink(params).catch((error) => {
@@ -133,7 +140,8 @@ const shareService = {
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
   getAllShareLinks,
-  buildLinkFromShare
+  buildLinkFromShare,
+  incrementShareView
 };
 
 export default shareService;
