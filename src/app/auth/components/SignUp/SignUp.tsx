@@ -15,7 +15,6 @@ import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { productsThunks } from 'app/store/slices/products';
 import { AppView, IFormValues } from 'app/core/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { referralsThunks } from 'app/store/slices/referrals';
 import TextInput from '../../components/TextInput/TextInput';
 import PasswordInput from '../../components/PasswordInput/PasswordInput';
@@ -98,43 +97,27 @@ function SignUp(props: SignUpProps): JSX.Element {
     setIsLoading(true);
 
     try {
+      const { isNewUser } = props;
       const { email, password, token } = formData;
+      const { xUser, xToken, mnemonic } = isNewUser ? 
+        await doRegister(email, password, token) : 
+        await updateInfo(email, password);
 
-      let xUser: UserSettings;
-      let xToken: string;
-      let mnemonic: string;
+      localStorageService.set('xToken', xToken);
+      localStorageService.set('xMnemonic', mnemonic);
 
-      if (!props.isNewUser) {
-        const res = await updateInfo(email, password);
-        xUser = res.xUser;
-        xToken = res.xToken;
-        mnemonic = res.mnemonic;
+      dispatch(userActions.setUser(xUser));
+      await dispatch(userThunks.initializeUserThunk());
+      dispatch(productsThunks.initializeThunk());
+      dispatch(planThunks.initializeThunk());
 
-        dispatch(userActions.setUser(xUser));
-        await dispatch(userThunks.initializeUserThunk());
-        localStorageService.set('xToken', xToken);
-        localStorageService.set('xMnemonic', mnemonic);
-        dispatch(productsThunks.initializeThunk());
-        dispatch(planThunks.initializeThunk());
-      } else {
-        const res = await doRegister(email, password, token);
-        xUser = res.xUser;
-        xToken = res.xToken;
-        mnemonic = res.mnemonic;
-
-        localStorageService.set('xToken', xToken);
-        dispatch(userActions.setUser(xUser));
-        localStorageService.set('xMnemonic', mnemonic);
-        dispatch(productsThunks.initializeThunk());
-        dispatch(planThunks.initializeThunk());
+      if (isNewUser) {
         dispatch(referralsThunks.initializeThunk());
-        await dispatch(userThunks.initializeUserThunk());
       }
 
-      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid:  xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email: xUser.email });
+      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
+      window.rudderanalytics.track('User Signup', { email });
       
-
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({
       //   userId: xUser.uuid,
