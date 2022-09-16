@@ -39,7 +39,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     hasReferrer ? String(qs.ref) : undefined,
   );
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
-  const tokenParam = qs.token;
   const {
     register,
     formState: { errors, isValid },
@@ -73,15 +72,6 @@ function SignUp(props: SignUpProps): JSX.Element {
   } else if (showError && signupError) {
     bottomInfoError = signupError.toString();
   }
-
-  useEffect(() => {
-    const isAppSumo = navigationService.getCurrentView()?.id === AppView.AppSumo;
-
-    if (isAppSumo && tokenParam && typeof tokenParam === 'string') {
-      localStorageService.clear();
-      localStorageService.set('xToken', tokenParam);
-    }
-  }, []);
 
   useEffect(() => {
     if (password.length > 0) onChangeHandler(password);
