@@ -14,7 +14,11 @@ export default function Features({ className = '' }: { className?: string }): JS
     {
       title: 'Secure by default',
       icon: LockKey,
-      points: ['Military grade encryption to ensure your privacy.', 'Encrypted file storage and sharing.'],
+      points: [
+        'Military grade encryption to ensure your privacy.',
+        'Encrypted file storage and sharing.',
+        'Zero-knowledge cloud storage.',
+      ],
     },
     {
       title: 'Unlimited access and sync',
@@ -31,7 +35,7 @@ export default function Features({ className = '' }: { className?: string }): JS
       <h1 className="text-2xl font-medium text-gray-100 lg:text-center">Features included in all plans</h1>
       <div className="mt-7 justify-between space-y-6 lg:flex lg:space-y-0 lg:space-x-6">
         {sections.map((section) => (
-          <div key={section.title} className="flex flex-col flex-1">
+          <div key={section.title} className="flex flex-1 flex-col">
             <div className="flex items-center">
               <section.icon size={24} weight="duotone" className="text-primary" />
               <h1 className="ml-2 flex-1 text-lg font-medium text-gray-80">{section.title}</h1>
@@ -39,7 +43,7 @@ export default function Features({ className = '' }: { className?: string }): JS
             <div className="mt-3 space-y-2 pl-2">
               {section.points.map((point) => (
                 <div key={point} className="flex flex-row">
-                  <Check size={16} weight="bold" className="text-gray-40 mt-1" />
+                  <Check size={16} weight="bold" className="mt-1 text-gray-40" />
                   <p className="ml-2 flex-1 text-gray-80">{point}</p>
                 </div>
               ))}

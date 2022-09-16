@@ -11,7 +11,7 @@ import Button from '../Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import analyticsService from 'app/analytics/services/analytics.service';
+// import analyticsService from 'app/analytics/services/analytics.service';
 import { WarningCircle } from 'phosphor-react';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
@@ -23,11 +23,7 @@ import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
 
-interface LogInProps {
-  displayIframe: boolean;
-}
-
-export default function LogIn(props: LogInProps): JSX.Element {
+export default function LogIn(): JSX.Element {
   const dispatch = useAppDispatch();
   const {
     register,
@@ -61,11 +57,15 @@ export default function LogIn(props: LogInProps): JSX.Element {
       if (!isTfaEnabled || showTwoFactor) {
         const { token, user } = await doLogin(email, password, twoFactorCode);
         dispatch(userActions.setUser(user));
-        analyticsService.identify(user, user.email);
-        analyticsService.trackSignIn({
-          email: user.email,
-          userId: user.uuid,
-        });
+
+        window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
+        window.rudderanalytics.track('User Signin', { email: user.email });
+
+        // analyticsService.identify(user, user.email);
+        // analyticsService.trackSignIn({
+        //   email: user.email,
+        //   userId: user.uuid,
+        // });
 
         try {
           dispatch(productsThunks.initializeThunk());
@@ -89,7 +89,7 @@ export default function LogIn(props: LogInProps): JSX.Element {
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         navigationService.history.push(`/activate/${email}`);
       } else {
-        analyticsService.signInAttempted(email, castedError);
+        // analyticsService.signInAttempted(email, castedError);
       }
 
       setLoginError([castedError.message]);
@@ -102,14 +102,7 @@ export default function LogIn(props: LogInProps): JSX.Element {
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
-      if (props.displayIframe) {
-        window.top?.postMessage(
-          'redirect',
-          process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
-        );
-      } else {
-        navigationService.push(AppView.Drive);
-      }
+      navigationService.push(AppView.Drive);
     }
     if (user && user.registerCompleted === false) {
       navigationService.history.push('/appsumo/' + user.email);
@@ -123,26 +116,13 @@ export default function LogIn(props: LogInProps): JSX.Element {
       if (!registerCompleted) {
         navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
-        if (props.displayIframe) {
-          window.top?.postMessage(
-            'redirect',
-            process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://internxt.com',
-          );
-        } else {
-          navigationService.push(AppView.Drive);
-        }
+        navigationService.push(AppView.Drive);
       }
     }
   }, [isAuthenticated, token, user, registerCompleted]);
 
   return (
-    <div
-      className={`flex flex-col bg-white  ${
-        props.displayIframe
-          ? 'w-full px-px'
-          : 'h-fit w-96 items-center justify-center rounded-2xl px-8 py-10 sm:shadow-soft'
-      }`}
-    >
+    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <span className="text-2xl font-medium">Log in</span>
 
@@ -155,7 +135,6 @@ export default function LogIn(props: LogInProps): JSX.Element {
               type="email"
               register={register}
               minLength={{ value: 1, message: 'Email must not be empty' }}
-              autoFocus={!props.displayIframe}
               error={errors.email}
             />
           </label>
@@ -165,9 +144,9 @@ export default function LogIn(props: LogInProps): JSX.Element {
               <span className="font-normal">Password</span>
               <Link
                 onClick={(): void => {
-                  analyticsService.trackUserResetPasswordRequest();
+                  // analyticsService.trackUserResetPasswordRequest();
                 }}
-                to={props.displayIframe ? '/removedialog' : '/remove'}
+                to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
               >
                 Forgot your password?
@@ -182,8 +161,11 @@ export default function LogIn(props: LogInProps): JSX.Element {
               minLength={{ value: 1, message: 'Password must not be empty' }}
               error={errors.password}
             />
+          </label>
 
-            {showTwoFactor && (
+          {showTwoFactor && (
+            <label className="space-y-0.5">
+              <span>Two factor code</span>
               <PasswordInput
                 className="mb-3"
                 label="twoFactorCode"
@@ -194,17 +176,17 @@ export default function LogIn(props: LogInProps): JSX.Element {
                 minLength={1}
                 pattern={twoFactorRegexPattern}
               />
-            )}
+            </label>
+          )}
 
-            {loginError && showErrors && (
-              <div className="flex flex-row items-start pt-1">
-                <div className="flex h-5 flex-row items-center">
-                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
-                </div>
-                <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
+          {loginError && showErrors && (
+            <div className="flex flex-row items-start pt-1">
+              <div className="flex h-5 flex-row items-center">
+                <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
               </div>
-            )}
-          </label>
+              <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
+            </div>
+          )}
 
           <Button
             disabled={isLoggingIn}
@@ -221,7 +203,7 @@ export default function LogIn(props: LogInProps): JSX.Element {
         <span>
           Don't have an account?{' '}
           <Link
-            to={props.displayIframe ? '/signupdialog' : '/new'}
+            to="/new"
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             Create account

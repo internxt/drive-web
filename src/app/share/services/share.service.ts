@@ -21,9 +21,9 @@ export async function createShareLink(
   const share = await createShare(params);
 
   if (share.created) {
-    return `${window.location.origin}/s/${params.type}/${share.token}/${plainCode}`;
+    return `${window.location.origin}/sh/${params.type}/${share.token}/${plainCode}`;
   } else {
-    return `${window.location.origin}/s/${params.type}/${share.token}/${aes.decrypt((share as any).encryptedCode, mnemonic)
+    return `${window.location.origin}/sh/${params.type}/${share.token}/${aes.decrypt((share as any).encryptedCode, mnemonic)
       }`;
   }
 }
@@ -33,7 +33,7 @@ export function buildLinkFromShare(
   share: ListShareLinksItem & { code: string }
 ): string {
   const plainCode = aes.decrypt(share.code, mnemonic);
-  return `${window.location.origin}/s/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
+  return `${window.location.origin}/sh/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
 }
 
 export function incrementShareView(token: string): Promise<{ incremented: boolean, token: string }> {

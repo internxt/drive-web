@@ -15,7 +15,7 @@ function RemoveAccount(props: RemoveAccountProps): JSX.Element {
       )}
 
       <div className={`flex h-full flex-col ${!props.displayIframe && 'items-center justify-center'}`}>
-        <ForgotPassword displayIframe={props.displayIframe} />
+        <ForgotPassword />
       </div>
 
       {!props.displayIframe && (

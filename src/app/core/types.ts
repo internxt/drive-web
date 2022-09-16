@@ -100,11 +100,9 @@ export enum AppViewLayout {
 
 export enum AppView {
   Signup = 'signup',
-  SignupDialog = 'signupdialog',
   AppSumo = 'appsumo',
   Login = 'login',
-  LoginDialog = 'logindialog',
-  SignUpWebsite = 'signupwebsite',
+  Auth = 'auth',
   Recover = 'recover',
   Drive = 'drive',
   Recents = 'recents',
@@ -119,6 +117,7 @@ export enum AppView {
   TeamsDeactivation = 'teams-deactivation',
   TeamSuccess = 'team-success',
   CheckoutSuccess = 'checkout-success',
+  CheckoutPlan = 'checkout-plan',
   Checkout = 'checkout',
   Remove = 'remove',
   RemoveDialog = 'removedialog',
