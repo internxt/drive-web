@@ -90,7 +90,7 @@ export default function Auth(): JSX.Element {
       dispatch(referralsThunks.initializeThunk());
       await dispatch(userThunks.initializeUserThunk());
 
-      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid:  xUser.uuid });
+      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email: xUser.email });
 
       // analyticsService.trackPaymentConversion();
@@ -124,6 +124,7 @@ export default function Auth(): JSX.Element {
       //   pagename: encodeURIComponent('New'),
       // });
 
+      await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 3000));
       postMessage({ action: 'redirect' });
     } catch (err: unknown) {
       if (inline === true) {
