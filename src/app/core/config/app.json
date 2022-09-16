@@ -86,13 +86,6 @@
       "auth": true
     },
     {
-      "id": "trash",
-      "layout": "header-and-sidenav",
-      "path": "/app/trash",
-      "exact": true,
-      "auth": true
-    },
-    {
       "id": "photos",
       "layout": "header-and-sidenav",
       "path": "/app/photos",
