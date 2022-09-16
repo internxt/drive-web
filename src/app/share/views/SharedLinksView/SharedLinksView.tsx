@@ -64,15 +64,15 @@ export default function SharedLinksView(): JSX.Element {
       ITEMS_PER_PAGE,
       orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
     );
+    let items = response.items.filter((shareLink)=>{return shareLink.item != null;}) as (ListShareLinksItem & { code: string })[];
+    if (type === 'append') {
+      items = [...shareLinks, ...items];
+    }
+    setShareLinks(items);
     setHasMoreItems(ITEMS_PER_PAGE * page < response.pagination.countAll);
     setOrderBy(orderBy);
     setPage(page);
 
-    if (type === 'append') {
-      setShareLinks([...shareLinks, ...response.items as (ListShareLinksItem & { code: string })[] ]);
-    } else {
-      setShareLinks(response.items as (ListShareLinksItem & { code: string })[]);
-    }
     setIsLoading(false);
   }
 
