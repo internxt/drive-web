@@ -102,7 +102,6 @@ export default function LogIn(): JSX.Element {
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
-      window.top?.postMessage({ action: 'redirect' }, 'https://internxt.com');
       navigationService.push(AppView.Drive);
     }
     if (user && user.registerCompleted === false) {
@@ -117,7 +116,6 @@ export default function LogIn(): JSX.Element {
       if (!registerCompleted) {
         navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
-        window.top?.postMessage({ action: 'redirect' }, 'https://internxt.com');
         navigationService.push(AppView.Drive);
       }
     }
