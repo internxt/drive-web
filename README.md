@@ -1,5 +1,3 @@
-![Build Status](https://jenkins.api.internxt.com/buildStatus/icon?job=drive-web-deploy)
-
 # Getting Started
 
 ## Installation

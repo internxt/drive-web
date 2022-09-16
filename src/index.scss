@@ -262,7 +262,15 @@ code {
     }
 
     &.error {
-      @apply border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
+      @apply bg-white ring-1 ring-1 ring-red-50; //border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
+    }
+
+    &.warning {
+      @apply bg-white ring-1 ring-1 ring-orange;
+    }
+
+    &.success {
+      @apply bg-white ring-1 ring-1 ring-green;
     }
 
     &.semi-dense {

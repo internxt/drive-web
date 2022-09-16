@@ -2,6 +2,7 @@ import { ComponentClass, FunctionComponent } from 'react';
 
 import SignUpView from 'app/auth/views/SignUpView/SignUpView';
 import SignInView from 'app/auth/views/SignInView/SignInView';
+import SignUpWebsiteView from 'app/auth/views/SignUpWebsiteView/SignUpWebsiteView';
 import DriveView from 'app/drive/views/DriveView/DriveView';
 import RecentsView from 'app/drive/views/RecentsView/RecentsView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
@@ -35,8 +36,11 @@ const views: Array<{
   componentProps?: Record<string, unknown>;
 }> = [
   { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
+  { id: AppView.SignupDialog, component: SignUpView, componentProps: { displayIframe: true, isNewUser: true } },
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
+  { id: AppView.LoginDialog, component: SignInView, componentProps: { displayIframe: true } },
+  { id: AppView.SignUpWebsite, component: SignUpWebsiteView, componentProps: { isNewUser: true } },
   { id: AppView.Recover, component: RecoverView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
@@ -54,6 +58,7 @@ const views: Array<{
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
   { id: AppView.Checkout, component: CheckoutView },
   { id: AppView.Remove, component: RemoveAccountView },
+  { id: AppView.RemoveDialog, component: RemoveAccountView, componentProps: { displayIframe: true } },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFolderToken, component: ShareFolderView },
   { id: AppView.SharePhotosToken, component: SharePhotosView },

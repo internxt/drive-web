@@ -100,8 +100,11 @@ export enum AppViewLayout {
 
 export enum AppView {
   Signup = 'signup',
+  SignupDialog = 'signupdialog',
   AppSumo = 'appsumo',
   Login = 'login',
+  LoginDialog = 'logindialog',
+  SignUpWebsite = 'signupwebsite',
   Recover = 'recover',
   Drive = 'drive',
   Recents = 'recents',
@@ -118,6 +121,7 @@ export enum AppView {
   CheckoutSuccess = 'checkout-success',
   Checkout = 'checkout',
   Remove = 'remove',
+  RemoveDialog = 'removedialog',
   ShareFileToken = 'share-token',
   ShareFolderToken = 'share-folder-token',
   SharePhotosToken = 'share-photos-token',
