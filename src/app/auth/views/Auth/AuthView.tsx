@@ -78,6 +78,7 @@ export default function Auth(): JSX.Element {
     try {
       const { email, password, token } = data;
       const res = await doRegister(email, password, token);
+      await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 3000));
       const xUser = res.xUser;
       const xToken = res.xToken;
       const mnemonic = res.mnemonic;
@@ -124,7 +125,6 @@ export default function Auth(): JSX.Element {
       //   pagename: encodeURIComponent('New'),
       // });
 
-      await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 3000));
       postMessage({ action: 'redirect' });
     } catch (err: unknown) {
       if (inline === true) {
