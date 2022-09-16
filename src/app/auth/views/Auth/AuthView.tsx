@@ -126,7 +126,7 @@ export default function Auth(): JSX.Element {
 
       postMessage({ action: 'redirect' });
     } catch (err: unknown) {
-      console.error(err);
+      // console.error(err);
       if (inline === true) {
         postMessage({ action: 'error_inline', msg: errorService.castError(err).message });
       } else {
