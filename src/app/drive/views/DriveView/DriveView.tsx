@@ -10,6 +10,7 @@ import pollingService from 'app/core/services/polling.service';
 import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import analyticsService, { PAGENAMES } from 'app/analytics/services/analytics.service';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -40,6 +41,8 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
         }
       }, 1500),
     });
+
+    analyticsService.trackPage(PAGENAMES.main);
   }
 
   componentWillUnmount(): void {

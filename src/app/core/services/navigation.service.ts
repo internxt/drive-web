@@ -1,7 +1,7 @@
 import { createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
-import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
+import analyticsService, { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView, AppViewConfig } from '../types';
 import configService from './config.service';
 
@@ -14,7 +14,7 @@ instance.listen((nav) => {
   if (index > -1) {
     const pageName = PATH_NAMES[keys[index]];
 
-    window.rudderanalytics.page(pageName);
+    //analyticsService.trackPage(pageName);
     serverPage(pageName).catch(() => {
       // NO OP
     });

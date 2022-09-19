@@ -13,6 +13,7 @@ import Preview from '../components/Preview';
 import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
+import analyticsService, { PAGENAMES } from 'app/analytics/services/analytics.service';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useDispatch();
@@ -22,7 +23,10 @@ export default function PhotosView({ className = '' }: { className?: string }): 
     dispatch(photosThunks.fetchThunk());
   }
 
-  useEffect(fetchPhotos, []);
+  useEffect(() => {
+    fetchPhotos();
+    analyticsService.trackPage(PAGENAMES.photos);
+  }, []);
 
   const [deletePending, setDeletePending] = useState<null | 'selected' | 'preview'>(null);
   const [sharePending, setSharePending] = useState<null | 'selected' | 'preview'>(null);

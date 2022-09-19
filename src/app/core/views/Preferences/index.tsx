@@ -1,3 +1,4 @@
+import analyticsService, { PAGENAMES } from 'app/analytics/services/analytics.service';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import AccountTab from './tabs/Account';
@@ -36,6 +37,7 @@ export default function Preferences(): JSX.Element {
   const firstRun = useRef(true);
 
   useEffect(() => {
+    analyticsService.trackPage(PAGENAMES[activeTab]);
     if (firstRun.current) {
       firstRun.current = false;
       return;

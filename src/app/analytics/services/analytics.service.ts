@@ -24,8 +24,21 @@ export const PATH_NAMES = {
   '/app': 'App'
 };
 
+export const PAGENAMES = {
+  backups: 'Backups',
+  main: 'Drive Web Main',
+  photos: 'Photos',
+  sharedLinks: 'Shared Links',
+  recents: 'Recents',
+  account: 'Account',
+  billing: 'Billing',
+  plans: 'Plans',
+  security: 'Security'
+};
 
-
+const trackPage = (pageName: string) => {
+  window.rudderanalytics.page(pageName);
+};
 
 export function trackFileDownloadCompleted(properties): void {
   trackData(properties, 'file_downloaded');
@@ -45,10 +58,6 @@ const payload = {
   limit: 0,
   plan: 0,
 };
-
-export function page(pageName: string): void {
-  window.rudderanalytics.page(pageName);
-}
 
 export function signupDevicesource(userAgent: string): string {
   for (const device in SignupDeviceSource) {
@@ -410,7 +419,7 @@ export async function trackSignUpServer(payload: {
 
 
 const analyticsService = {
-  page,
+  trackPage,
   identify,
   identifyUsage,
   identifyPlan,
