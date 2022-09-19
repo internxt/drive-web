@@ -23,6 +23,17 @@ export enum AnalyticsTrack {
   PaymentConversionEvent = 'Payment Conversion'
 }
 
+export enum RudderAnalyticsTrack {
+  SignUp = 'User Signup',
+  SignIn = 'User Signin',
+  ClickedDriveUploadButton = 'Upload Button Clicked',
+  ClickedDriveUploadButtonUI = 'main_upload_button',
+  ClickedDriveNewFolder = 'Create Folder Clicked',
+  ClickedDriveNewFolderUI = 'main_create_folder_button',
+  ClickedDriveChangeViewMosaic = 'Mosaic View Toggled',
+  ClickedDriveChangeViewList = 'List View Toggled',
+}
+
 export enum RudderAnalyticsPage {
   backups = 'Backups',
   main = 'Drive Web Main',

@@ -17,6 +17,7 @@ import errorService from 'app/core/services/error.service';
 import { useEffect, useState } from 'react';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export default function Auth(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -91,8 +92,8 @@ export default function Auth(): JSX.Element {
       dispatch(referralsThunks.initializeThunk());
       await dispatch(userThunks.initializeUserThunk());
 
-      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email: xUser.email });
+      analyticsService.rudderIdentify(xUser);
+      analyticsService.rudderTrackSignUp(xUser.email);
 
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({
@@ -157,8 +158,8 @@ export default function Auth(): JSX.Element {
         const { user } = await doLogin(email, password, tfa);
         dispatch(userActions.setUser(user));
 
-        window.rudderanalytics.identify(user.uuid, { email: user.email });
-        window.rudderanalytics.track('User Signin', { email: user.email });
+        analyticsService.rudderIdentify(user);
+        analyticsService.rudderTrackSignIn(user.email);
 
         // analyticsService.identify(user, user.email);
         // analyticsService.trackSignIn({

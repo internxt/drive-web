@@ -22,6 +22,7 @@ import Button from '../../components/Button/Button';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export interface SignUpProps {
   location: {
@@ -115,8 +116,8 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email });
+      analyticsService.rudderIdentify(xUser);
+      analyticsService.rudderTrackSignUp(xUser.email);
       
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({

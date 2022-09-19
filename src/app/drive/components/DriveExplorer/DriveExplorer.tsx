@@ -33,6 +33,7 @@ import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UploadSimple } from 'phosphor-react';
 import iconService from '../../services/icon.service';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -101,6 +102,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
   onUploadButtonClicked = (): void => {
     this.state.fileInputRef.current?.click();
+    analyticsService.rudderTrackClickedDriveUploadButton();
   };
 
   onDownloadButtonClicked = (): void => {
@@ -126,10 +128,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     const viewMode: FileViewMode = this.props.viewMode === FileViewMode.List ? FileViewMode.Grid : FileViewMode.List;
 
     this.props.dispatch(storageActions.setViewMode(viewMode));
+    analyticsService.rudderTrackClickedDriveChangeViewButton(viewMode === FileViewMode.Grid ? 'mosaic' : 'list');
   };
 
   onCreateFolderButtonClicked = () => {
     this.props.dispatch(uiActions.setIsCreateFolderDialogOpen(true));
+    analyticsService.rudderTrackClickedDriveNewFolderButton();
   };
 
   onBulkDeleteButtonClicked = () => {

@@ -7,7 +7,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
-import { AnalyticsTrack } from '../types';
+import { AnalyticsTrack, RudderAnalyticsTrack } from '../types';
 import { getCookie, setCookie } from '../utils';
 import queryString from 'query-string';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,6 +28,38 @@ export const PATH_NAMES = {
 const rudderTrackPage = (pageName: string) => {
   window.rudderanalytics.page(pageName);
 };
+
+const rudderTrack = (trackString: string, trackData?) => {
+  window.rudderanalytics.track(trackString, trackData);
+};
+
+const rudderIdentify = (user: UserSettings) => {
+  window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
+};
+
+
+const rudderTrackSignIn = (email: string) => {
+  rudderTrack(RudderAnalyticsTrack.SignIn, { email });
+};
+
+const rudderTrackSignUp = (email: string) => {
+  rudderTrack(RudderAnalyticsTrack.SignUp, { email });
+};
+
+const rudderTrackClickedDriveUploadButton = () => {
+  rudderTrack(RudderAnalyticsTrack.ClickedDriveUploadButton, { ui_element: RudderAnalyticsTrack.ClickedDriveUploadButtonUI });
+};
+
+const rudderTrackClickedDriveNewFolderButton = () => {
+  rudderTrack(RudderAnalyticsTrack.ClickedDriveNewFolder, { ui_element: RudderAnalyticsTrack.ClickedDriveNewFolderUI });
+};
+
+const rudderTrackClickedDriveChangeViewButton = (view: string) => {
+  const clicked = view === 'mosaic' ? RudderAnalyticsTrack.ClickedDriveChangeViewMosaic : RudderAnalyticsTrack.ClickedDriveChangeViewList;
+  rudderTrack(clicked);
+};
+
+
 
 export function trackFileDownloadCompleted(properties): void {
   trackData(properties, 'file_downloaded');
@@ -409,6 +441,13 @@ export async function trackSignUpServer(payload: {
 
 const analyticsService = {
   rudderTrackPage,
+  rudderTrack,
+  rudderIdentify,
+  rudderTrackSignIn,
+  rudderTrackSignUp,
+  rudderTrackClickedDriveUploadButton,
+  rudderTrackClickedDriveNewFolderButton,
+  rudderTrackClickedDriveChangeViewButton,
   identify,
   identifyUsage,
   identifyPlan,
