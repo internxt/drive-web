@@ -59,6 +59,58 @@ const rudderTrackClickedDriveChangeViewButton = (view: string) => {
   rudderTrack(clicked);
 };
 
+const rudderTrackFileUploadStarted = (size: number, type: string) => {
+  rudderTrack(RudderAnalyticsTrack.FileUploadStarted, { size, type });
+};
+
+const rudderTrackFileUploadCompleted = (size: number, type: string, file_id, parent_folder_id) => {
+  rudderTrack(RudderAnalyticsTrack.FileUploadCompleted, { size, type, file_id, parent_folder_id });
+};
+
+const rudderTrackFileUploadCanceled = (size: number, type: string) => {
+  rudderTrack(RudderAnalyticsTrack.FileUploadCanceled, { size, type });
+};
+
+const rudderTrackFileUploadError = (message: string, size: number, type: string) => {
+  rudderTrack(RudderAnalyticsTrack.FileUploadError, { message, size, type });
+};
+
+const rudderTrackClickedDriveMainDownloadButton = (is_multiselection: boolean, size?: number, type?: string, is_folder?: boolean) => {
+  rudderTrack(RudderAnalyticsTrack.ClickedDriveDownloadButton, {
+    is_multiselection, size, type, is_folder,
+    ui_element: RudderAnalyticsTrack.ClickedDriveDownloadButtonMainUI
+  });
+};
+
+const rudderTrackClickedDriveActionsDownloadButton = (is_multiselection: boolean, size: number, type: string, is_folder: boolean) => {
+  rudderTrack(RudderAnalyticsTrack.ClickedDriveDownloadButton, {
+    is_multiselection, size, type, is_folder,
+    ui_element: RudderAnalyticsTrack.ClickedDriveActionsUI
+  });
+};
+
+const rudderTrackClickedDriveActionsRenameButton = (is_folder: boolean) => {
+  rudderTrack(RudderAnalyticsTrack.ClickedDriveActionsRenameButton, { is_folder, ui_element: RudderAnalyticsTrack.ClickedDriveActionsUI });
+};
+
+const rudderTrackClickedDriveActionsShareButton = (is_folder: boolean) => {
+  rudderTrack(RudderAnalyticsTrack.ClickedDriveActionsShareButton, { is_folder, ui_element: RudderAnalyticsTrack.ClickedDriveActionsUI });
+};
+
+const rudderTrackClickedDriveActionsInfoButton = (is_folder: boolean) => {
+  rudderTrack(RudderAnalyticsTrack.ClickedDriveActionsInfoButton, { is_folder, ui_element: RudderAnalyticsTrack.ClickedDriveActionsUI });
+};
+
+const rudderTrackClickedDriveActionsDeleteButton = (is_folder: boolean) => {
+  rudderTrack(RudderAnalyticsTrack.ClickedDriveDeleteButton, { is_folder, ui_element: RudderAnalyticsTrack.ClickedDriveActionsUI });
+};
+
+const rudderTrackClickedDriveMainDeleteButton = (is_multiselection: boolean, size?: number, type?: string, is_folder?: boolean) => {
+  rudderTrack(RudderAnalyticsTrack.ClickedDriveDeleteButton, {
+    is_multiselection, size, type, is_folder,
+    ui_element: RudderAnalyticsTrack.ClickedDriveDeleteButtonMainUI
+  });
+};
 
 
 export function trackFileDownloadCompleted(properties): void {
@@ -448,6 +500,17 @@ const analyticsService = {
   rudderTrackClickedDriveUploadButton,
   rudderTrackClickedDriveNewFolderButton,
   rudderTrackClickedDriveChangeViewButton,
+  rudderTrackFileUploadStarted,
+  rudderTrackFileUploadCompleted,
+  rudderTrackFileUploadCanceled,
+  rudderTrackFileUploadError,
+  rudderTrackClickedDriveMainDownloadButton,
+  rudderTrackClickedDriveActionsDownloadButton,
+  rudderTrackClickedDriveActionsRenameButton,
+  rudderTrackClickedDriveActionsShareButton,
+  rudderTrackClickedDriveActionsInfoButton,
+  rudderTrackClickedDriveActionsDeleteButton,
+  rudderTrackClickedDriveMainDeleteButton,
   identify,
   identifyUsage,
   identifyPlan,

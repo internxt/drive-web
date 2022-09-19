@@ -30,8 +30,20 @@ export enum RudderAnalyticsTrack {
   ClickedDriveUploadButtonUI = 'main_upload_button',
   ClickedDriveNewFolder = 'Create Folder Clicked',
   ClickedDriveNewFolderUI = 'main_create_folder_button',
+  ClickedDriveDownloadButton = 'Download Button Clicked',
+  ClickedDriveDownloadButtonMainUI = 'main_download_button',
+  ClickedDriveActionsUI = 'actions_menu',
   ClickedDriveChangeViewMosaic = 'Mosaic View Toggled',
   ClickedDriveChangeViewList = 'List View Toggled',
+  ClickedDriveActionsRenameButton = 'Rename Clicked',
+  ClickedDriveActionsShareButton = 'Share Clicked',
+  ClickedDriveActionsInfoButton = 'Info Clicked',
+  ClickedDriveDeleteButton = 'Delete Clicked',
+  ClickedDriveDeleteButtonMainUI = 'main_delete_button',
+  FileUploadStarted = 'File Upload Started',
+  FileUploadCompleted = 'File Upload Completed',
+  FileUploadCanceled = 'File Upload Canceled',
+  FileUploadError = 'File Upload Error',
 }
 
 export enum RudderAnalyticsPage {

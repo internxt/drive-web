@@ -10,6 +10,7 @@ import { storageActions } from '../../../../../store/slices/storage';
 import storageSelectors from '../../../../../store/slices/storage/storage.selectors';
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 interface DriveItemActions {
   isEditingName: boolean;
@@ -46,6 +47,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     setDirtyName(item.name);
 
     setTimeout(() => nameInputRef.current?.focus(), 0);
+    analyticsService.rudderTrackClickedDriveActionsRenameButton(item.isFolder || false);
   };
   const confirmNameChange = async () => {
     if (nameEditPending) return;
@@ -84,6 +86,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     e.stopPropagation();
 
     dispatch(storageThunks.downloadItemsThunk([item]));
+    analyticsService.rudderTrackClickedDriveActionsDownloadButton(false, item.size, item.type, item.isFolder || false);
   };
 
   const onShareButtonClicked = async (e: React.MouseEvent): Promise<void> => {
@@ -91,6 +94,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
     dispatch(storageActions.setItemToShare(item));
     dispatch(uiActions.setIsShareItemDialogOpen(true));
+    analyticsService.rudderTrackClickedDriveActionsShareButton(item.isFolder || false);
   };
 
   const onInfoButtonClicked = (e: React.MouseEvent): void => {
@@ -128,6 +132,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
       }),
     );
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(true));
+    analyticsService.rudderTrackClickedDriveActionsInfoButton(item.isFolder || false);
 
     e.stopPropagation();
   };
@@ -136,6 +141,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
     dispatch(storageActions.setItemsToDelete([item]));
     dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    analyticsService.rudderTrackClickedDriveActionsDeleteButton(item.isFolder || false);
   };
   const onItemClicked = (): void => {
     isItemSelected(item)

@@ -36,6 +36,7 @@ export async function uploadFile(
       email: userEmail,
       platform: DevicePlatform.Web,
     });
+    analyticsService.rudderTrackFileUploadStarted(file.size, file.type);
 
     if (!bucketId) {
       analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
@@ -80,6 +81,7 @@ export async function uploadFile(
       file_type: file.type,
       email: userEmail,
     });
+    analyticsService.rudderTrackFileUploadCompleted(file.size, file.type, fileId, file.parentFolderId);
 
     return response;
   } catch (err: unknown) {
@@ -94,6 +96,9 @@ export async function uploadFile(
         msg: castedError.message,
         platform: DevicePlatform.Web,
       });
+      analyticsService.rudderTrackFileUploadError(castedError.message, file.size, file.type);
+    } else {
+      analyticsService.rudderTrackFileUploadCanceled(file.size, file.type);
     }
 
     throw err;

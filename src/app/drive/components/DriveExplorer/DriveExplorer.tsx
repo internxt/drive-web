@@ -109,6 +109,14 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     const { dispatch, selectedItems } = this.props;
 
     dispatch(storageThunks.downloadItemsThunk(selectedItems));
+
+    if (this.props.selectedItems.length > 0) {
+      const size = this.props.selectedItems.length == 1 ? selectedItems[0].size : undefined;
+      const type = this.props.selectedItems.length == 1 ? selectedItems[0].type : undefined;
+      const is_folder = this.props.selectedItems.length == 1 ? selectedItems[0].isFolder || false : undefined;
+      const is_multiselection = this.props.selectedItems.length > 1;
+      analyticsService.rudderTrackClickedDriveMainDownloadButton(is_multiselection, size, type, is_folder);
+    }
   };
 
   onUploadInputChanged = async (e) => {
@@ -141,6 +149,13 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
     dispatch(storageActions.setItemsToDelete(selectedItems));
     dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    if (this.props.selectedItems.length > 0) {
+      const size = this.props.selectedItems.length == 1 ? selectedItems[0].size : undefined;
+      const type = this.props.selectedItems.length == 1 ? selectedItems[0].type : undefined;
+      const is_folder = this.props.selectedItems.length == 1 ? selectedItems[0].isFolder || false : undefined;
+      const is_multiselection = this.props.selectedItems.length > 1;
+      analyticsService.rudderTrackClickedDriveMainDeleteButton(is_multiselection, size, type, is_folder);
+    }
   };
 
   onPreviousPageButtonClicked = (): void => undefined;
