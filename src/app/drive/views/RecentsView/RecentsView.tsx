@@ -8,7 +8,8 @@ import { storageSelectors } from '../../../store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveItemData } from '../../types';
 import { AppView } from '../../../core/types';
-import analyticsService, { PAGENAMES } from 'app/analytics/services/analytics.service';
+import analyticsService from 'app/analytics/services/analytics.service';
+import { RudderAnalyticsPage } from 'app/analytics/types';
 
 export interface RecentsViewProps {
   isLoadingRecents: boolean;
@@ -20,7 +21,7 @@ class RecentsView extends Component<RecentsViewProps> {
   componentDidMount(): void {
     this.props.dispatch(storageThunks.resetNamePathThunk());
     this.refreshRecents();
-    analyticsService.trackPage(PAGENAMES.recents);
+    analyticsService.rudderTrackPage(RudderAnalyticsPage.recents);
   }
 
   refreshRecents = () => {

@@ -24,19 +24,8 @@ export const PATH_NAMES = {
   '/app': 'App'
 };
 
-export const PAGENAMES = {
-  backups: 'Backups',
-  main: 'Drive Web Main',
-  photos: 'Photos',
-  sharedLinks: 'Shared Links',
-  recents: 'Recents',
-  account: 'Account',
-  billing: 'Billing',
-  plans: 'Plans',
-  security: 'Security'
-};
 
-const trackPage = (pageName: string) => {
+const rudderTrackPage = (pageName: string) => {
   window.rudderanalytics.page(pageName);
 };
 
@@ -419,7 +408,7 @@ export async function trackSignUpServer(payload: {
 
 
 const analyticsService = {
-  trackPage,
+  rudderTrackPage,
   identify,
   identifyUsage,
   identifyPlan,

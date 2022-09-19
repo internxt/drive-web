@@ -12,7 +12,8 @@ import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { DriveItemData } from '../../../drive/types';
-import analyticsService, { PAGENAMES } from 'app/analytics/services/analytics.service';
+import analyticsService from 'app/analytics/services/analytics.service';
+import { RudderAnalyticsPage } from 'app/analytics/types';
 
 export default function BackupsView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -42,7 +43,7 @@ export default function BackupsView(): JSX.Element {
 
   useEffect(() => {
     dispatch(backupsThunks.fetchDevicesThunk());
-    analyticsService.trackPage(PAGENAMES.backups);
+    analyticsService.rudderTrackPage(RudderAnalyticsPage.backups);
   }, []);
 
   const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);

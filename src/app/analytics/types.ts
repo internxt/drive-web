@@ -23,6 +23,18 @@ export enum AnalyticsTrack {
   PaymentConversionEvent = 'Payment Conversion'
 }
 
+export enum RudderAnalyticsPage {
+  backups = 'Backups',
+  main = 'Drive Web Main',
+  photos = 'Photos',
+  sharedLinks = 'Shared Links',
+  recents = 'Recents',
+  account = 'Account',
+  billing = 'Billing',
+  plans = 'Plans',
+  security = 'Security'
+};
+
 export interface PriceMetadata {
   maxSpaceBytes: string,
   name: string,

@@ -1,10 +1,11 @@
-import analyticsService, { PAGENAMES } from 'app/analytics/services/analytics.service';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
 import PlansTab from './tabs/Plans';
 import SecurityTab from './tabs/Security';
+import analyticsService from 'app/analytics/services/analytics.service';
+import { RudderAnalyticsPage } from 'app/analytics/types';
 
 const PREFERENCES_TABS = ['account', 'billing', 'plans', 'security'] as const;
 type PreferencesTabID = typeof PREFERENCES_TABS[number];
@@ -37,7 +38,7 @@ export default function Preferences(): JSX.Element {
   const firstRun = useRef(true);
 
   useEffect(() => {
-    analyticsService.trackPage(PAGENAMES[activeTab]);
+    analyticsService.rudderTrackPage(RudderAnalyticsPage[activeTab]);
     if (firstRun.current) {
       firstRun.current = false;
       return;

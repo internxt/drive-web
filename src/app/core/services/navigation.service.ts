@@ -14,7 +14,7 @@ instance.listen((nav) => {
   if (index > -1) {
     const pageName = PATH_NAMES[keys[index]];
 
-    //analyticsService.trackPage(pageName);
+    //analyticsService.rudderTrackPage(pageName);
     serverPage(pageName).catch(() => {
       // NO OP
     });
