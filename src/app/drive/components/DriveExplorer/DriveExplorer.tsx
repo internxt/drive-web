@@ -1,11 +1,12 @@
 import { createRef, ReactNode, Component } from 'react';
 import { connect } from 'react-redux';
-import UilTable from '@iconscout/react-unicons/icons/uil-table';
+/*import UilTable from '@iconscout/react-unicons/icons/uil-table';
 import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
 import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
 import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
 import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
-import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
+import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
+import { Trash, DownloadSimple, UploadSimple, FolderPlus, List, GridFour} from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -31,8 +32,9 @@ import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { UploadSimple } from 'phosphor-react';
 import iconService from '../../services/icon.service';
+
+//import shareService from 'app/share/services/share.service';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -159,8 +161,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     } = this.props;
     const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: <UilTable />,
-      [FileViewMode.Grid]: <UilListUiAlt />,
+      [FileViewMode.List]: <GridFour className="h-5 w-5"/>,
+      [FileViewMode.Grid]: <List className="h-5 w-5"/>,
     };
     const viewModes = {
       [FileViewMode.List]: DriveExplorerList,
@@ -191,23 +193,23 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               <div className="flex">
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <UilCloudDownload className="mr-1.5 h-5" />
+                    <DownloadSimple className="mr-1.5 h-5 w-5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <UilCloudUpload className="mr-1.5 h-5" />
+                    <UploadSimple className="mr-1.5 h-5 w-5" />
                     <span>{i18n.get('actions.upload')}</span>
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
-                    <UilFolderPlus />
+                    <FolderPlus className="h-5 w-5"/>
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
-                    <UilTrashAlt />
+                    <Trash className="h-5 w-5"/>
                   </BaseButton>
                 ) : null}
                 <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
@@ -366,6 +368,18 @@ const dropTargetCollect: DropTargetCollector<
 
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
+
+  
+   /*shareService.getAllShareLinks(0,state.shared.pagination.perPage,undefined).then((response)=>{
+   
+    const sharedItems: DriveItemData[] = items.filter((item)=>{
+      response.items.some((i) => {
+        
+        return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
+      });
+    });
+  });*/
+ 
 
   return {
     isAuthenticated: state.user.isAuthenticated,
