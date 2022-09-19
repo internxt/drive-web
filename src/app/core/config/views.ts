@@ -18,6 +18,7 @@ import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/Gu
 import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
+import SharedLinksView from 'app/share/views/SharedLinksView/SharedLinksView';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
@@ -42,6 +43,7 @@ const views: Array<{
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Backups, component: BackupsView },
+  { id: AppView.SharedLinks, component: SharedLinksView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Account, component: AccountView },
   { id: AppView.Preferences, component: Preferences },

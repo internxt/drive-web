@@ -6,6 +6,7 @@ import { ReactComponent as LightFolder } from '../../../assets/icons/light/folde
 import { ReactComponent as DefaultFile } from '../../../assets/icons/file-types/default.svg';
 import { ReactComponent as AudioFile } from '../../../assets/icons/file-types/audio.svg';
 import { ReactComponent as CodeFile } from '../../../assets/icons/file-types/code.svg';
+import { ReactComponent as FigmaFile } from '../../../assets/icons/file-types/figma.svg';
 import { ReactComponent as ImageFile } from '../../../assets/icons/file-types/image.svg';
 import { ReactComponent as PdfFile } from '../../../assets/icons/file-types/pdf.svg';
 import { ReactComponent as PptFile } from '../../../assets/icons/file-types/ppt.svg';
@@ -21,6 +22,7 @@ import fileExtensionService from './file-extension.service';
 const iconsByFileExtensionGroup = {
   [FileExtensionGroup.Audio]: AudioFile,
   [FileExtensionGroup.Code]: CodeFile,
+  [FileExtensionGroup.Figma]: FigmaFile,
   [FileExtensionGroup.Image]: ImageFile,
   [FileExtensionGroup.Pdf]: PdfFile,
   [FileExtensionGroup.Ppt]: PptFile,
@@ -38,6 +40,7 @@ const extensionsList = fileExtensionService.computeExtensionsLists();
 export const icons = {
   AudioFile,
   CodeFile,
+  FigmaFile,
   ImageFile,
   PdfFile,
   PptFile,
