@@ -186,7 +186,7 @@ export default function SharedLinksView(): JSX.Element {
           header={[
             {
               label: i18n.get('shared-links.list.link-content'),
-              width: 'flex-1 min-w-100', //flex-grow w-1
+              width: 'flex-grow w-1 min-w-100', //flex-grow w-1
               name: 'item',
               orderable: false,
             },
