@@ -118,14 +118,8 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
 
         <div className="px-8">
           <p className="w-full text-center text-neutral-500">
-            Share your Drive {item.isFolder ? 'folder' : 'file'} with this private link
+            Securely share your {item.isFolder ? 'folder' : 'file'} with Internxt
           </p>
-
-          <div className="mt-4 self-start">
-            <span className="mr-4 text-blue-60">1.</span>
-            <span className="text-neutral-500">Get link to share</span>
-          </div>
-
           <div
             className="\ ml-8 mt-3 flex w-72 cursor-pointer
             select-text items-center justify-between rounded-md bg-neutral-20 px-4 py-2"
@@ -140,10 +134,6 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
               {isLoading ? 'Loading link...' : linkToCopy}
             </span>
             {!isLoading && <UilClipboardAlt className="text-blue-60" />}
-          </div>
-          <div className="mt-4 self-start">
-            <span className="mr-4 text-blue-60">2.</span>
-            <span className="text-neutral-500">Paste it wherever you want to share it. And ready to go!</span>
           </div>
         </div>
       </div>
