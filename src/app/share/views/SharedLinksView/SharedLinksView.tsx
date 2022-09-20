@@ -62,7 +62,9 @@ export default function SharedLinksView(): JSX.Element {
       ITEMS_PER_PAGE,
       orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
     );
-    let items = response.items.filter((shareLink) => { return shareLink.item != null; }) as (ListShareLinksItem & { code: string })[];
+    let items = response.items.filter((shareLink) => {
+      return shareLink.item != null;
+    }) as (ListShareLinksItem & { code: string })[];
     if (type === 'append') {
       items = [...shareLinks, ...items];
     }
@@ -108,7 +110,10 @@ export default function SharedLinksView(): JSX.Element {
         await Promise.all(promises);
       }
 
-      const stringLinksDeleted = selectedItems.length > 1 ? i18n.get('shared-links.toast.links-deleted') : i18n.get('shared-links.toast.link-deleted');
+      const stringLinksDeleted =
+        selectedItems.length > 1
+          ? i18n.get('shared-links.toast.links-deleted')
+          : i18n.get('shared-links.toast.link-deleted');
       notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
       await fetchItems(0, orderBy, 'substitute');
       closeConfirmDelete();
@@ -186,7 +191,7 @@ export default function SharedLinksView(): JSX.Element {
           header={[
             {
               label: i18n.get('shared-links.list.link-content'),
-              width: 'flex-grow w-1 min-w-100', //flex-grow w-1
+              width: 'flex-1 min-w-104 flex-shrink-0 whitespace-nowrap', //flex-grow w-1
               name: 'item',
               orderable: false,
             },
@@ -217,16 +222,22 @@ export default function SharedLinksView(): JSX.Element {
             (props) => {
               const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
               return (
-                <div
-                  className={'flex w-full flex-row items-center space-x-4 overflow-hidden cursor-pointer'}
-                >
+                <div className={'flex w-full cursor-pointer flex-row items-center space-x-4 overflow-hidden'}>
                   <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
-                  <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">
-                    {`${(props.item as DriveFileData).name
-                      }${!props.isFolder && (props.item as DriveFileData).type
+                  <span
+                    className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16"
+                    title={`${(props.item as DriveFileData).name}${
+                      !props.isFolder && (props.item as DriveFileData).type
                         ? `.${(props.item as DriveFileData).type}`
                         : ''
-                      }`}</span>
+                    }`}
+                  >
+                    {`${(props.item as DriveFileData).name}${
+                      !props.isFolder && (props.item as DriveFileData).type
+                        ? `.${(props.item as DriveFileData).type}`
+                        : ''
+                    }`}
+                  </span>
                 </div>
               );
             },
@@ -236,17 +247,16 @@ export default function SharedLinksView(): JSX.Element {
               >{`${props.views} views`}</span>
             ),
             (props) => (
-              <span
-                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'}`}
-              >
+              <span className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'}`}>
                 {dateService.format(props.createdAt, 'D MMM YYYY')}
               </span>
             ),
-            (props) => (
-              props.isFolder ?
-                <span className="opacity-25">—</span> :
-                <span>{`${sizeService.bytesToString((props.fileSize ? props.fileSize : 0), false)}`}</span>
-            ),
+            (props) =>
+              props.isFolder ? (
+                <span className="opacity-25">—</span>
+              ) : (
+                <span>{`${sizeService.bytesToString(props.fileSize ? props.fileSize : 0, false)}`}</span>
+              ),
           ]}
           skinSkeleton={skinSkeleton}
           emptyState={emptyState}
@@ -259,15 +269,12 @@ export default function SharedLinksView(): JSX.Element {
               action: (props) => {
                 const itemType = props.isFolder ? 'folder' : 'file';
                 const encryptedCode = props.code;
-                const plainCode = aes.decrypt(
-                  encryptedCode,
-                  localStorageService.getUser()!.mnemonic
-                );
+                const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
                 copyShareLink(itemType, plainCode, props.token);
               },
               disabled: () => {
                 return false;
-              }
+              },
             },
             /*{
               name: i18n.get('shared-links.item-menu.link-settings'),
@@ -390,7 +397,7 @@ function UpdateLinkModal({
                 <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
                   <span className="font-medium">{i18n.get('shared-links.link-settings.share-settings')}</span>
                   <span className="truncate whitespace-nowrap text-base text-gray-40">
-                    {`${item?.name}${(item?.type && item?.type !== 'folder' && `.${item?.type}` || '')}`}
+                    {`${item?.name}${(item?.type && item?.type !== 'folder' && `.${item?.type}`) || ''}`}
                   </span>
                 </Dialog.Title>
 
@@ -400,8 +407,6 @@ function UpdateLinkModal({
                   </span>
                   <span className="text-gray-60">{`Link visited ${linkToUpdate?.views} times`}</span>
                 </div>
-
-
 
                 <div className="flex flex-row justify-between">
                   <BaseButton

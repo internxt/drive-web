@@ -332,7 +332,7 @@ code {
 
   button.primary,
   .base-button.primary {
-    @apply bg-blue-60 text-white hover:bg-blue-80;
+    @apply bg-blue-60 text-white hover:bg-primary-dark;
 
     &.inverse {
       @apply bg-blue-20 text-blue-60 hover:bg-blue-30;

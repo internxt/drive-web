@@ -6,7 +6,7 @@ import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download'
 import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
 import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
-import { Trash, DownloadSimple, UploadSimple, FolderPlus, List, GridFour} from 'phosphor-react';
+import { Trash, DownloadSimple, UploadSimple, FolderSimplePlus, Rows, SquaresFour } from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -161,8 +161,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     } = this.props;
     const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: <GridFour className="h-5 w-5"/>,
-      [FileViewMode.Grid]: <List className="h-5 w-5"/>,
+      [FileViewMode.List]: <SquaresFour className="h-6 w-6" />,
+      [FileViewMode.Grid]: <Rows className="h-6 w-6" />,
     };
     const viewModes = {
       [FileViewMode.List]: DriveExplorerList,
@@ -193,23 +193,23 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               <div className="flex">
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <DownloadSimple className="mr-1.5 h-5 w-5" />
+                    <DownloadSimple className="mr-2.5 h-5 w-5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <UploadSimple className="mr-1.5 h-5 w-5" />
+                    <UploadSimple className="mr-2.5 h-5 w-5" />
                     <span>{i18n.get('actions.upload')}</span>
                   </BaseButton>
                 )}
                 {!this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
-                    <FolderPlus className="h-5 w-5"/>
+                    <FolderSimplePlus className="h-6 w-6" />
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
-                    <Trash className="h-5 w-5"/>
+                    <Trash className="h-6 w-6" />
                   </BaseButton>
                 ) : null}
                 <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
@@ -369,8 +369,7 @@ const dropTargetCollect: DropTargetCollector<
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
 
-  
-   /*shareService.getAllShareLinks(0,state.shared.pagination.perPage,undefined).then((response)=>{
+  /*shareService.getAllShareLinks(0,state.shared.pagination.perPage,undefined).then((response)=>{
    
     const sharedItems: DriveItemData[] = items.filter((item)=>{
       response.items.some((i) => {
@@ -379,7 +378,6 @@ export default connect((state: RootState) => {
       });
     });
   });*/
- 
 
   return {
     isAuthenticated: state.user.isAuthenticated,
