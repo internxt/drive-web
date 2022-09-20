@@ -37,15 +37,13 @@ export default function SharedLinksView(): JSX.Element {
   const [selectedItems, setSelectedItems] = useState<(ListShareLinksItem & { code: string })[]>([]);
   const [shareLinks, setShareLinks] = useState<(ListShareLinksItem & { code: string })[]>([]);
 
-  const [confirmDeleteState, setConfirmDeleteState] = useState<
-    { tag: 'single' | 'multiple'; shareId?: string; isOpen: boolean; }
-  >({ tag: 'single', isOpen:false });
+  const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
 
   const [isUpdateLinkModalOpen, setIsUpdateLinkModalOpen] = useState(false);
   const [linkToUpdate, setLinkToUpdate] = useState<(ListShareLinksItem & { code: string }) | undefined>(undefined);
 
   function closeConfirmDelete() {
-    setConfirmDeleteState({ tag: confirmDeleteState.tag, isOpen: false });
+    setIsDeleteDialogModalOpen(false);
   }
 
   function isItemSelected(item: ListShareLinksItem) {
@@ -64,7 +62,7 @@ export default function SharedLinksView(): JSX.Element {
       ITEMS_PER_PAGE,
       orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
     );
-    let items = response.items.filter((shareLink)=>{return shareLink.item != null;}) as (ListShareLinksItem & { code: string })[];
+    let items = response.items.filter((shareLink) => { return shareLink.item != null; }) as (ListShareLinksItem & { code: string })[];
     if (type === 'append') {
       items = [...shareLinks, ...items];
     }
@@ -93,40 +91,29 @@ export default function SharedLinksView(): JSX.Element {
   }
 
   async function deleteShareLink(shareId: string) {
-    await shareService.deleteShareLink(shareId);
-    //TODO check if its deleted correctly
     //setShareLinks((items) => items.filter((item) => item.id !== shareId));
     //setSelectedItems((items) => items.filter((item) => item.id !== shareId));
-  }
-
-  async function onDeleteShareLink() {
-    setIsLoading(true);
-    const shareId = confirmDeleteState.shareId ? confirmDeleteState.shareId : '';
-    //TODO throw error when invalid shareId
-    await deleteShareLink(shareId);
-    notificationsService.show({
-      text: i18n.get('shared-links.toast.link-deleted'),
-      type: ToastType.Success,
-    });
-    await fetchItems(0, orderBy, 'substitute');
-    closeConfirmDelete();
-    setIsLoading(false);
+    return await shareService.deleteShareLink(shareId);
+    //TODO check if its deleted correctly
   }
 
   async function onDeleteSelectedItems() {
-    setIsLoading(true);
-    const CHUNK_SIZE = 10;
+    if (selectedItems.length > 0) {
+      setIsLoading(true);
 
-    const chunks = _.chunk(selectedItems, CHUNK_SIZE);
-    for (const chunk of chunks) {
-      const promises = chunk.map((item) => deleteShareLink(item.id));
-      await Promise.all(promises);
+      const CHUNK_SIZE = 10;
+      const chunks = _.chunk(selectedItems, CHUNK_SIZE);
+      for (const chunk of chunks) {
+        const promises = chunk.map((item) => deleteShareLink(item.id));
+        await Promise.all(promises);
+      }
+
+      const stringLinksDeleted = selectedItems.length > 1 ? i18n.get('shared-links.toast.links-deleted') : i18n.get('shared-links.toast.link-deleted');
+      notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
+      await fetchItems(0, orderBy, 'substitute');
+      closeConfirmDelete();
+      setIsLoading(false);
     }
-
-    notificationsService.show({ text: i18n.get('shared-links.toast.links-deleted'), type: ToastType.Success });
-    await fetchItems(0, orderBy, 'substitute');
-    closeConfirmDelete();
-    setIsLoading(false);
   }
 
   function onSelectedItemsChanged(changes: { props: ListShareLinksItem & { code: string }; value: boolean }[]) {
@@ -184,7 +171,7 @@ export default function SharedLinksView(): JSX.Element {
           <BaseButton
             onClick={(e) => {
               e.stopPropagation();
-              setConfirmDeleteState({ tag: selectedItems.length > 1 ? 'multiple' :'single', isOpen:true });
+              setIsDeleteDialogModalOpen(true);
             }}
             className="tertiary squared"
             disabled={!(selectedItems.length > 0)}
@@ -234,13 +221,12 @@ export default function SharedLinksView(): JSX.Element {
                   className={'flex w-full flex-row items-center space-x-4 overflow-hidden cursor-pointer'}
                 >
                   <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
-                  <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">{`${
-                    (props.item as DriveFileData).name
-                  }${
-                    !props.isFolder && (props.item as DriveFileData).type
-                      ? `.${(props.item as DriveFileData).type}`
-                      : ''
-                  }`}</span>
+                  <span className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16">
+                    {`${(props.item as DriveFileData).name
+                      }${!props.isFolder && (props.item as DriveFileData).type
+                        ? `.${(props.item as DriveFileData).type}`
+                        : ''
+                      }`}</span>
                 </div>
               );
             },
@@ -274,7 +260,7 @@ export default function SharedLinksView(): JSX.Element {
                 const itemType = props.isFolder ? 'folder' : 'file';
                 const encryptedCode = props.code;
                 const plainCode = aes.decrypt(
-                  encryptedCode, 
+                  encryptedCode,
                   localStorageService.getUser()!.mnemonic
                 );
                 copyShareLink(itemType, plainCode, props.token);
@@ -295,7 +281,7 @@ export default function SharedLinksView(): JSX.Element {
               name: i18n.get('shared-links.item-menu.delete-link'),
               icon: LinkBreak,
               action: (props) => {
-                setConfirmDeleteState({ tag: selectedItems.length > 1 ? 'multiple' :'single', shareId: props.id, isOpen:true });
+                setIsDeleteDialogModalOpen(true);
               },
               disabled: () => {
                 return false; // If item is selected and link is active
@@ -312,22 +298,18 @@ export default function SharedLinksView(): JSX.Element {
       </div>
 
       <DeleteDialog
-        isOpen={confirmDeleteState.isOpen}
+        isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}
         onSecondaryAction={closeConfirmDelete}
         secondaryAction="Cancel"
-        title={confirmDeleteState.tag === 'single' ? 'Delete link' : 'Delete links'}
+        title={selectedItems.length > 1 ? 'Delete links' : 'Delete link'}
         subtitle={
-          confirmDeleteState.tag === 'single'
-            ? 'Users with the link will lose access to the shared content'
-            : 'Users with the links will lose access to the shared content'
+          selectedItems.length > 1
+            ? 'Users with the links will lose access to the shared content'
+            : 'Users with the link will lose access to the shared content'
         }
-        onPrimaryAction={
-          confirmDeleteState.tag === 'single'
-            ? onDeleteShareLink
-            : onDeleteSelectedItems
-        }
-        primaryAction={confirmDeleteState.tag === 'single' ? 'Delete link' : 'Delete links'}
+        onPrimaryAction={onDeleteSelectedItems}
+        primaryAction={selectedItems.length > 1 ? 'Delete links' : 'Delete link'}
         primaryActionColor="danger"
       />
       <UpdateLinkModal
@@ -424,9 +406,7 @@ function UpdateLinkModal({
                 <div className="flex flex-row justify-between">
                   <BaseButton
                     onClick={copyLink}
-                    disabled={
-                      false 
-                    }
+                    disabled={false}
                     className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
                   >
                     <span>{i18n.get('shared-links.link-settings.copy-link')}</span>
