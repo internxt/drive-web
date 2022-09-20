@@ -12,7 +12,6 @@ import i18n from './app/i18n/services/i18n.service';
 import { AppViewConfig } from './app/core/types';
 import navigationService from './app/core/services/navigation.service';
 import layouts from './app/core/layouts';
-import analyticsService, { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
 import { sessionActions } from './app/store/slices/session';
 import { AppDispatch, RootState } from './app/store';
 import { initializeUserThunk } from './app/store/slices/user';
@@ -88,17 +87,8 @@ class App extends Component<AppProps> {
     const isDev = !envService.isProduction();
     const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, fileViewerItem, dispatch } =
       this.props;
-    const pathName = window.location.pathname.split('/')[1];
     let template = <PreparingWorkspaceAnimation />;
 
-    if (window.location.pathname) {
-      if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
-        analyticsService.rudderTrackPage(PATH_NAMES[window.location.pathname]);
-        serverPage(PATH_NAMES[window.location.pathname]).catch(() => {
-          // NO OP
-        });
-      }
-    }
 
     if (!isAuthenticated || isInitialized) {
       template = (

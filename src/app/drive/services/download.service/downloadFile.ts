@@ -1,6 +1,6 @@
 import streamSaver from 'streamsaver';
 
-import analyticsService from 'app/analytics/services/analytics.service';
+//import analyticsService from 'app/analytics/services/analytics.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform } from 'app/core/types';
 import { DriveFileData } from '../../types';
@@ -18,13 +18,13 @@ const trackFileDownloadStart = (
 ) => {
   const data = { file_id, file_name, file_size, file_type, email: userEmail, folder_id, platform: DevicePlatform.Web };
 
-  analyticsService.trackFileDownloadStart(data);
+  //analyticsService.trackFileDownloadStart(data);
 };
 
 const trackFileDownloadError = (userEmail: string, file_id: string, msg: string) => {
   const data = { file_id, email: userEmail, msg, platform: DevicePlatform.Web };
 
-  analyticsService.trackFileDownloadError(data);
+  //analyticsService.trackFileDownloadError(data);
 };
 
 interface BlobWritable {
@@ -139,10 +139,7 @@ export default async function downloadFile(
     throw new Error(errMessage);
   });
 
-  analyticsService.trackFileDownloadCompleted({
-    size: itemData.size,
-    extension: itemData.type,
-  });
+  //analyticsService.trackFileDownloadCompleted({ size: itemData.size, extension: itemData.type, });
 }
 
 async function downloadFileAsBlob(

@@ -19,7 +19,7 @@ export default function PlanUsage({
   const history = useHistory();
   const onUpgradeButtonClicked = () => {
     history.push('/preferences?tab=plans');
-    analyticsService.rudderTrackClickedSidenavUpgradeButton();
+    analyticsService.trackClickedSidenavUpgradeButton();
   };
   const usagePercent = usageService.getUsagePercent(usage, limit);
 

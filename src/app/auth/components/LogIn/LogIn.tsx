@@ -11,7 +11,6 @@ import Button from '../Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
-// import analyticsService from 'app/analytics/services/analytics.service';
 import { WarningCircle } from 'phosphor-react';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
@@ -59,14 +58,8 @@ export default function LogIn(): JSX.Element {
         const { token, user } = await doLogin(email, password, twoFactorCode);
         dispatch(userActions.setUser(user));
 
-        analyticsService.rudderIdentify(user);
-        analyticsService.rudderTrackSignIn(user.email);
-
-        // analyticsService.identify(user, user.email);
-        // analyticsService.trackSignIn({
-        //   email: user.email,
-        //   userId: user.uuid,
-        // });
+        analyticsService.identify({ user });
+        analyticsService.trackSignIn(user);
 
         try {
           dispatch(productsThunks.initializeThunk());

@@ -29,17 +29,10 @@ export async function uploadFile(
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
   try {
-    analyticsService.trackFileUploadStart({
-      file_size: file.size,
-      file_type: file.type,
-      folder_id: file.parentFolderId,
-      email: userEmail,
-      platform: DevicePlatform.Web,
-    });
-    analyticsService.rudderTrackFileUploadStarted(file.size, file.type);
+    analyticsService.trackFileUploadStarted({ size: file.size, type: file.type });
 
     if (!bucketId) {
-      analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
+      //analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
       notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
       localStorageService.clear();
       navigationService.push(AppView.Login);
@@ -75,30 +68,16 @@ export async function uploadFile(
 
     const response = await storageClient.createFileEntry(fileEntry);
 
-    analyticsService.trackFileUploadFinished({
-      file_size: file.size,
-      file_id: response.id,
-      file_type: file.type,
-      email: userEmail,
-    });
-    analyticsService.rudderTrackFileUploadCompleted(file.size, file.type, fileId, file.parentFolderId);
+    analyticsService.trackFileUploadCompleted({ size: file.size, type: file.type, file_id: fileId, parent_folder_id: file.parentFolderId });
 
     return response;
   } catch (err: unknown) {
     const castedError = errorService.castError(err);
 
     if (!abortController?.signal.aborted) {
-      analyticsService.trackFileUploadError({
-        file_size: file.size,
-        file_type: file.type,
-        folder_id: file.parentFolderId,
-        email: userEmail,
-        msg: castedError.message,
-        platform: DevicePlatform.Web,
-      });
-      analyticsService.rudderTrackFileUploadError(castedError.message, file.size, file.type);
+      analyticsService.trackFileUploadError({ messageError: castedError.message, size: file.size, type: file.type });
     } else {
-      analyticsService.rudderTrackFileUploadCanceled(file.size, file.type);
+      analyticsService.trackFileUploadCanceled({ size: file.size, type: file.type });
     }
 
     throw err;

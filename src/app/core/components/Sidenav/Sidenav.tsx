@@ -55,7 +55,7 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
 
   onDownloadAppButtonClicked = (): void => {
     window.open(desktopService.getDownloadAppUrl(), '_self');
-    analyticsService.rudderTrackClickedSidenavDownloadDesktopAppButton();
+    analyticsService.trackClickedSidenavDownloadDesktopAppButton();
   };
 
   onLogoClicked = (): void => {

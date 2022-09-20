@@ -1,7 +1,6 @@
 import localStorageService from 'app/core/services/local-storage.service';
 import { RootState } from 'app/store';
 import { useSelector } from 'react-redux';
-// import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 import navigationService from 'app/core/services/navigation.service';
 import userService from '../../services/user.service';
 import i18n from 'app/i18n/services/i18n.service';
@@ -92,8 +91,8 @@ export default function Auth(): JSX.Element {
       dispatch(referralsThunks.initializeThunk());
       await dispatch(userThunks.initializeUserThunk());
 
-      analyticsService.rudderIdentify(xUser);
-      analyticsService.rudderTrackSignUp(xUser.email);
+      analyticsService.identify({ user: xUser });
+      analyticsService.trackSignUp(xUser);
 
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({
@@ -158,14 +157,8 @@ export default function Auth(): JSX.Element {
         const { user } = await doLogin(email, password, tfa);
         dispatch(userActions.setUser(user));
 
-        analyticsService.rudderIdentify(user);
-        analyticsService.rudderTrackSignIn(user.email);
-
-        // analyticsService.identify(user, user.email);
-        // analyticsService.trackSignIn({
-        //   email: user.email,
-        //   userId: user.uuid,
-        // });
+        analyticsService.identify({ user });
+        analyticsService.trackSignIn(user);
 
         try {
           dispatch(productsThunks.initializeThunk());

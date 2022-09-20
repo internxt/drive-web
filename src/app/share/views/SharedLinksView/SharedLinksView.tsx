@@ -20,7 +20,6 @@ import { aes } from '@internxt/lib';
 import localStorageService from 'app/core/services/local-storage.service';
 import sizeService from 'app/drive/services/size.service';
 import analyticsService from 'app/analytics/services/analytics.service';
-import { RudderAnalyticsPage } from 'app/analytics/types';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -54,7 +53,7 @@ export default function SharedLinksView(): JSX.Element {
 
   useEffect(() => {
     fetchItems(page, orderBy, 'append');
-    analyticsService.rudderTrackPage(RudderAnalyticsPage.sharedLinks);
+    analyticsService.trackPageSharedLinks();
   }, []);
 
   async function fetchItems(page: number, orderBy: OrderBy, type: 'append' | 'substitute') {

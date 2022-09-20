@@ -31,10 +31,9 @@ import httpService from '../../core/services/http.service';
 export async function logOut(): Promise<void> {
   const currentUser = localStorageService.getUser();
   if (currentUser) {
-    analyticsService.rudderIdentify(currentUser, true);
-    analyticsService.rudderTrackLogOut(currentUser.email);
+    analyticsService.identify({ user: currentUser, logout: true });
+    analyticsService.trackLogOut(currentUser);
   }
-  analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
   navigationService.push(AppView.Login);
@@ -49,7 +48,7 @@ export function cancelAccount(): Promise<void> {
 export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
-    analyticsService.signInAttempted(email, error.message);
+    //analyticsService.signInAttempted(email, error.message);
     throw new Error(error.message ?? 'Login error');
   });
 
@@ -144,7 +143,7 @@ export const doLogin = async (
     })
     .catch((error) => {
       if (error instanceof UserAccessError) {
-        analyticsService.signInAttempted(email, error.message);
+        //analyticsService.signInAttempted(email, error.message);
       }
       throw error;
     });
@@ -204,10 +203,10 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       encryptedPrivateKey: privateKeyEncrypted,
     })
     .then(() => {
-      analyticsService.track(email, 'success');
+      //analyticsService.track(email, 'success');
     })
     .catch((error) => {
-      analyticsService.track(email, 'error');
+      //analyticsService.track(email, 'error');
       if (error.status === 500) {
         throw new Error('The password you introduced does not match your current password');
       }

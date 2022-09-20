@@ -30,7 +30,7 @@ export default function AccountPopover({
 
   function onDownloadAppButtonClicked() {
     window.open(desktopService.getDownloadAppUrl(), '_self');
-    analyticsService.rudderTrackClickedAvatarDropDownDownloadDesktopAppButton();
+    analyticsService.trackClickedAvatarDropDownDownloadDesktopAppButton();
   }
   function onLogout() {
     dispatch(userThunks.logoutThunk());
@@ -41,11 +41,11 @@ export default function AccountPopover({
   }
 
   const onAvatarClicked = () => {
-    analyticsService.rudderTrackClickedNavbarAvatarButton();
+    analyticsService.trackClickedNavbarAvatarButton();
   };
 
   const onUpgradeClicked = () => {
-    analyticsService.rudderTrackClickedAvatarDropDownUpgradeButton();
+    analyticsService.trackClickedAvatarDropDownUpgradeButton();
   };
 
   const panel = (

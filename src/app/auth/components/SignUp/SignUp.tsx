@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { WarningCircle } from 'phosphor-react';
 
 import localStorageService from 'app/core/services/local-storage.service';
-// import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions, userThunks } from 'app/store/slices/user';
@@ -100,8 +99,8 @@ function SignUp(props: SignUpProps): JSX.Element {
     try {
       const { isNewUser } = props;
       const { email, password, token } = formData;
-      const { xUser, xToken, mnemonic } = isNewUser ? 
-        await doRegister(email, password, token) : 
+      const { xUser, xToken, mnemonic } = isNewUser ?
+        await doRegister(email, password, token) :
         await updateInfo(email, password);
 
       localStorageService.set('xToken', xToken);
@@ -116,9 +115,9 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      analyticsService.rudderIdentify(xUser);
-      analyticsService.rudderTrackSignUp(xUser.email);
-      
+      analyticsService.identify({ user: xUser });
+      analyticsService.trackSignUp(xUser);
+
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({
       //   userId: xUser.uuid,

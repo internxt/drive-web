@@ -1,5 +1,5 @@
 import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../../types';
-import analyticsService from '../../../analytics/services/analytics.service';
+//import analyticsService from '../../../analytics/services/analytics.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { DevicePlatform } from '../../../core/types';
@@ -21,12 +21,8 @@ export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayloa
 
   return storageClient.updateFile(payload)
     .then(() => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackFileRename({
-        file_id: fileId,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
+      //const user = localStorageService.getUser() as UserSettings;
+      //analyticsService.trackFileRename({ file_id: fileId, email: user.email, platform: DevicePlatform.Web, });
     });
 }
 
@@ -37,11 +33,8 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
     folderId: fileData.folderId
   })
     .then(() => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackDeleteItem(fileData as DriveItemData, {
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
+      //const user = localStorageService.getUser() as UserSettings;
+      //analyticsService.trackDeleteItem(fileData as DriveItemData, { email: user.email, latform: DevicePlatform.Web, });
     });
 }
 
@@ -57,12 +50,8 @@ export async function moveFile(
   };
   return storageClient.moveFile(payload)
     .then(response => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackMoveItem('file', {
-        file_id: response.item.id,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
+      //const user = localStorageService.getUser() as UserSettings;
+      //analyticsService.trackMoveItem('file', { file_id: response.item.id, email: user.email, platform: DevicePlatform.Web, });
       return response;
     })
     .catch(error => {

@@ -3,7 +3,7 @@ import errorService from '../../core/services/error.service';
 import { aes } from '@internxt/lib';
 import httpService from '../../core/services/http.service';
 import { DevicePlatform } from '../../core/types';
-import analyticsService from '../../analytics/services/analytics.service';
+//import analyticsService from '../../analytics/services/analytics.service';
 import i18n from '../../i18n/services/i18n.service';
 import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -82,11 +82,8 @@ export function createFolder(
 
   const finalPromise = createdFolderPromise
     .then(response => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackFolderCreated({
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
+      //const user = localStorageService.getUser() as UserSettings;
+      //analyticsService.trackFolderCreated({ email: user.email, platform: DevicePlatform.Web, });
       return response;
     })
     .catch(error => {
@@ -104,12 +101,8 @@ export async function updateMetaData(folderId: number, metadata: DriveFolderMeta
   };
   return storageClient.updateFolder(payload)
     .then(() => {
-      const user: UserSettings = localStorageService.getUser() as UserSettings;
-      analyticsService.trackFolderRename({
-        email: user.email,
-        fileId: folderId,
-        platform: DevicePlatform.Web,
-      });
+      //const user: UserSettings = localStorageService.getUser() as UserSettings;
+      //analyticsService.trackFolderRename({ email: user.email, fileId: folderId, platform: DevicePlatform.Web, });
     });
 }
 
@@ -117,11 +110,8 @@ export function deleteFolder(folderData: DriveFolderData): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   return storageClient.deleteFolder(folderData.id)
     .then(() => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackDeleteItem(folderData as DriveItemData, {
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
+      //const user = localStorageService.getUser() as UserSettings;
+      //analyticsService.trackDeleteItem(folderData as DriveItemData, { email: user.email, platform: DevicePlatform.Web, });
     });
 }
 
@@ -373,12 +363,8 @@ export async function moveFolder(
 
   return storageClient.moveFolder(payload)
     .then(response => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackMoveItem('folder', {
-        file_id: response.item.id,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
+      //const user = localStorageService.getUser() as UserSettings;
+      //analyticsService.trackMoveItem('folder', { file_id: response.item.id, email: user.email, platform: DevicePlatform.Web, });
       return response;
     })
     .catch((err) => {

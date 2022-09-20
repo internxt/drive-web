@@ -76,7 +76,7 @@ class Navbar extends React.Component<NavbarProps> {
   };
 
   onSettingsClicked = (): void => {
-    analyticsService.rudderTrackClickedNavbarSettingsButton();
+    analyticsService.trackClickedNavbarSettingsButton();
   }
 
   render(): ReactNode {

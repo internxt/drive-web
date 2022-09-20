@@ -6,7 +6,7 @@ import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download'
 import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
 import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
-import { Trash, DownloadSimple, UploadSimple, FolderPlus, List, GridFour} from 'phosphor-react';
+import { Trash, DownloadSimple, UploadSimple, FolderPlus, List, GridFour } from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -104,7 +104,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
   onUploadButtonClicked = (): void => {
     this.state.fileInputRef.current?.click();
-    analyticsService.rudderTrackClickedDriveUploadButton();
+    analyticsService.trackClickedDriveUploadButton();
   };
 
   onDownloadButtonClicked = (): void => {
@@ -117,7 +117,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       const type = this.props.selectedItems.length == 1 ? selectedItems[0].type : undefined;
       const is_folder = this.props.selectedItems.length == 1 ? selectedItems[0].isFolder || false : undefined;
       const is_multiselection = this.props.selectedItems.length > 1;
-      analyticsService.rudderTrackClickedDriveMainDownloadButton(is_multiselection, size, type, is_folder);
+      analyticsService.trackClickedDriveMainDownloadButton({ is_multiselection, size, type, is_folder });
     }
   };
 
@@ -138,12 +138,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     const viewMode: FileViewMode = this.props.viewMode === FileViewMode.List ? FileViewMode.Grid : FileViewMode.List;
 
     this.props.dispatch(storageActions.setViewMode(viewMode));
-    analyticsService.rudderTrackClickedDriveChangeViewButton(viewMode === FileViewMode.Grid ? 'mosaic' : 'list');
+    analyticsService.trackClickedDriveChangeViewButton(viewMode === FileViewMode.Grid ? 'mosaic' : 'list');
   };
 
   onCreateFolderButtonClicked = () => {
     this.props.dispatch(uiActions.setIsCreateFolderDialogOpen(true));
-    analyticsService.rudderTrackClickedDriveNewFolderButton();
+    analyticsService.trackClickedDriveNewFolderButton();
   };
 
   onBulkDeleteButtonClicked = () => {
@@ -156,7 +156,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       const type = this.props.selectedItems.length == 1 ? selectedItems[0].type : undefined;
       const is_folder = this.props.selectedItems.length == 1 ? selectedItems[0].isFolder || false : undefined;
       const is_multiselection = this.props.selectedItems.length > 1;
-      analyticsService.rudderTrackClickedDriveMainDeleteButton(is_multiselection, size, type, is_folder);
+      analyticsService.trackClickedDriveMainDeleteButton({ is_multiselection, size, type, is_folder });
     }
   };
 
@@ -180,8 +180,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     } = this.props;
     const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
-      [FileViewMode.List]: <GridFour className="h-5 w-5"/>,
-      [FileViewMode.Grid]: <List className="h-5 w-5"/>,
+      [FileViewMode.List]: <GridFour className="h-5 w-5" />,
+      [FileViewMode.Grid]: <List className="h-5 w-5" />,
     };
     const viewModes = {
       [FileViewMode.List]: DriveExplorerList,
@@ -223,12 +223,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 )}
                 {!this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
-                    <FolderPlus className="h-5 w-5"/>
+                    <FolderPlus className="h-5 w-5" />
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
-                    <Trash className="h-5 w-5"/>
+                    <Trash className="h-5 w-5" />
                   </BaseButton>
                 ) : null}
                 <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
@@ -388,17 +388,14 @@ const dropTargetCollect: DropTargetCollector<
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
 
-  
-   /*shareService.getAllShareLinks(0,state.shared.pagination.perPage,undefined).then((response)=>{
-   
+
+  /*shareService.getAllShareLinks(0,state.shared.pagination.perPage,undefined).then((response)=>{
     const sharedItems: DriveItemData[] = items.filter((item)=>{
       response.items.some((i) => {
-        
         return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
       });
     });
   });*/
- 
 
   return {
     isAuthenticated: state.user.isAuthenticated,

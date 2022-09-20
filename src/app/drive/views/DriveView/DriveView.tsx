@@ -11,7 +11,6 @@ import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import analyticsService from 'app/analytics/services/analytics.service';
-import { RudderAnalyticsPage } from 'app/analytics/types';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -43,7 +42,7 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
       }, 1500),
     });
 
-    analyticsService.rudderTrackPage(RudderAnalyticsPage.main);
+    analyticsService.trackPageMain();
   }
 
   componentWillUnmount(): void {

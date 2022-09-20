@@ -13,7 +13,6 @@ import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsA
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { DriveItemData } from '../../../drive/types';
 import analyticsService from 'app/analytics/services/analytics.service';
-import { RudderAnalyticsPage } from 'app/analytics/types';
 
 export default function BackupsView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -43,7 +42,7 @@ export default function BackupsView(): JSX.Element {
 
   useEffect(() => {
     dispatch(backupsThunks.fetchDevicesThunk());
-    analyticsService.rudderTrackPage(RudderAnalyticsPage.backups);
+    analyticsService.trackPageBackups();
   }, []);
 
   const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);

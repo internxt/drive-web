@@ -14,7 +14,6 @@ import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
 import analyticsService from 'app/analytics/services/analytics.service';
-import { RudderAnalyticsPage } from 'app/analytics/types';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useDispatch();
@@ -26,7 +25,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   useEffect(() => {
     fetchPhotos();
-    analyticsService.rudderTrackPage(RudderAnalyticsPage.photos);
+    analyticsService.trackPagePhotos();
   }, []);
 
   const [deletePending, setDeletePending] = useState<null | 'selected' | 'preview'>(null);

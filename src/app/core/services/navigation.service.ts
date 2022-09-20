@@ -1,24 +1,24 @@
 import { createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
-import analyticsService, { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
+//import analyticsService, { serverPage, PATH_NAMES } from '../../analytics/services/analytics.service';
 import { AppView, AppViewConfig } from '../types';
 import configService from './config.service';
 
 const instance = createBrowserHistory({ forceRefresh: false });
 
 instance.listen((nav) => {
-  const keys = Object.keys(PATH_NAMES);
+  /*const keys = Object.keys(PATH_NAMES);
   const index = keys.indexOf(nav.pathname);
 
   if (index > -1) {
     const pageName = PATH_NAMES[keys[index]];
 
-    //analyticsService.rudderTrackPage(pageName);
+    //analyticsService.trackPage(pageName);
     serverPage(pageName).catch(() => {
       // NO OP
     });
-  }
+  }*/
 });
 
 const navigationService = {

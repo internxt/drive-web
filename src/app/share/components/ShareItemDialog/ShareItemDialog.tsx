@@ -7,7 +7,7 @@ import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import shareService from 'app/share/services/share.service';
 import './ShareItemDialog.scss';
 import { storageActions } from 'app/store/slices/storage';
-import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytics.service';
+//import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytics.service';
 import { userThunks } from 'app/store/slices/user';
 import i18n from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -54,7 +54,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       const { bucket, bridgeUser, userId, mnemonic } = user;
 
       if (!bucket) {
-        trackShareLinkBucketIdUndefined({ email: bridgeUser });
+        //trackShareLinkBucketIdUndefined({ email: bridgeUser });
         close();
         notificationsService.show({ text: i18n.get('error.shareLinkMissingBucket'), type: ToastType.Error });
         dispatch(userThunks.logoutThunk());

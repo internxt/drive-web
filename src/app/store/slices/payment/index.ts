@@ -7,7 +7,7 @@ import errorService from '../../../core/services/error.service';
 import i18n from '../../../i18n/services/i18n.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import paymentService, { CreatePaymentSessionPayload } from '../../../payment/services/payment.service';
-import analyticsService from '../../../analytics/services/analytics.service';
+//import analyticsService from '../../../analytics/services/analytics.service';
 
 interface PaymentState {
   isBuying: boolean;
@@ -48,7 +48,7 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
     try {
       const session = await paymentService.createSession(body);
 
-      analyticsService.trackUserEnterPayments(payload.product.price.id);
+      //analyticsService.trackUserEnterPayments(payload.product.price.id);
 
       await paymentService.redirectToCheckout({ sessionId: session.id });
     } catch (err: unknown) {
