@@ -15,23 +15,20 @@ const getAnalytics = () => {
 };
 
 const trackPage = (pageName: string) => {
-  const analytics = getAnalytics();
-  analytics?.page(pageName);
+  getAnalytics()?.page(pageName);
 };
 
 const track = (payload: AnalyticsPayloads['Track']) => {
-  const analytics = getAnalytics();
-  analytics?.track(payload.trackString, payload.trackData);
+  getAnalytics()?.track(payload.trackString, payload.trackData);
 };
 
 const identify = (payload: AnalyticsPayloads['Identify']) => {
-  const analytics = getAnalytics();
   const user = payload?.user;
   let identifyObject = { email: user?.email, uuid: user?.uuid } as IdentifyObject;
   if (payload.logout) {
     identifyObject = { email: user?.email, uuid: user?.uuid, is_logged_in: false };
   }
-  analytics?.identify(user?.uuid, identifyObject);
+  getAnalytics()?.identify(user?.uuid, identifyObject);
 };
 
 const trackPageBackups = () => {
@@ -135,7 +132,7 @@ const trackFileUploadError = (payload: AnalyticsPayloads['FileUpload']) => {
 
 const trackClickedDriveMainDownloadButton = (payload: AnalyticsPayloads['DriveItem']) => {
   track({
-    trackString: AnalyticsTrackActions.ClickedDriveDownloadButton,
+    trackString: AnalyticsTrackActions.ClickedDriveMainDownloadButton,
     trackData: {
       is_multiselection: payload.is_multiselection,
       size: payload.size,
@@ -148,7 +145,7 @@ const trackClickedDriveMainDownloadButton = (payload: AnalyticsPayloads['DriveIt
 
 const trackClickedDriveActionsDownloadButton = (payload: AnalyticsPayloads['DriveItem']) => {
   track({
-    trackString: AnalyticsTrackActions.ClickedDriveDownloadButton,
+    trackString: AnalyticsTrackActions.ClickedDriveActionsDownloadButton,
     trackData: {
       is_multiselection: payload.is_multiselection,
       size: payload.size,
@@ -191,7 +188,7 @@ const trackClickedDriveActionsInfoButton = (is_folder: boolean) => {
 
 const trackClickedDriveActionsDeleteButton = (is_folder: boolean) => {
   track({
-    trackString: AnalyticsTrackActions.ClickedDriveDeleteButton,
+    trackString: AnalyticsTrackActions.ClickedDriveActionsDeleteButton,
     trackData: {
       is_folder,
       ui_element: AnalyticsTrackUI.ClickedDriveActionsUI
@@ -201,7 +198,7 @@ const trackClickedDriveActionsDeleteButton = (is_folder: boolean) => {
 
 const trackClickedDriveMainDeleteButton = (payload: AnalyticsPayloads['DriveItem']) => {
   track({
-    trackString: AnalyticsTrackActions.ClickedDriveDeleteButton,
+    trackString: AnalyticsTrackActions.ClickedDriveMainDeleteButton,
     trackData: {
       is_multiselection: payload.is_multiselection,
       size: payload.size,
