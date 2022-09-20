@@ -42,6 +42,7 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <BaseButton
+          //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
           disabled={isLoading || !email || !isValidEmail(email)}
           className="primary inverse"
           onClick={onSendButtonClicked}

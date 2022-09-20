@@ -187,7 +187,7 @@ class TaskManagerService {
 
   private getTaskNotificationSubtitle(task: TaskData): string {
     return i18n.get(`tasks.${task.action}.status.${task.status}`, {
-      progress: task.progress ? (task.progress * 100).toFixed(2) : 0,
+      progress: task.progress ? (task.progress * 100).toFixed(0) : 0,
     });
   }
 
