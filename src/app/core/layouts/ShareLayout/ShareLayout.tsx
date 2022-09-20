@@ -52,7 +52,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
             <div className="flex h-full flex-col justify-center space-y-20">
               <div className="flex flex-col space-y-2">
                 <span className="text-xl opacity-60">WE ARE INTERNXT</span>
-                <p className="text-5xl-banner font-semibold leading-none">Private and secure cloud storage</p>
+                <p className="text-3xl font-semibold leading-none">Private and secure cloud storage</p>
               </div>
 
               <div className="flex flex-col space-y-3 text-xl">
