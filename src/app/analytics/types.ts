@@ -44,6 +44,8 @@ export enum RudderAnalyticsTrack {
   FileUploadCompleted = 'File Upload Completed',
   FileUploadCanceled = 'File Upload Canceled',
   FileUploadError = 'File Upload Error',
+  ClickedSidenavElement = 'sidenav',
+  ClickedSidenavUpgradeButton = 'Upgrade Button Clicked',
 }
 
 export enum RudderAnalyticsPage {

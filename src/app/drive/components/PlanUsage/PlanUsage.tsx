@@ -3,6 +3,7 @@ import limitService from 'app/drive/services/limit.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import usageService from 'app/drive/services/usage.service';
 import { useHistory } from 'react-router';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export default function PlanUsage({
   limit,
@@ -18,6 +19,7 @@ export default function PlanUsage({
   const history = useHistory();
   const onUpgradeButtonClicked = () => {
     history.push('/preferences?tab=plans');
+    analyticsService.rudderTrackClickedSidenavUpgradeButton();
   };
   const usagePercent = usageService.getUsagePercent(usage, limit);
 

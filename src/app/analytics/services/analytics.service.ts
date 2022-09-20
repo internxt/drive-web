@@ -112,6 +112,10 @@ const rudderTrackClickedDriveMainDeleteButton = (is_multiselection: boolean, siz
   });
 };
 
+const rudderTrackClickedSidenavUpgradeButton = () => {
+  rudderTrack(RudderAnalyticsTrack.ClickedSidenavUpgradeButton, { ui_element: RudderAnalyticsTrack.ClickedSidenavElement });
+};
+
 
 export function trackFileDownloadCompleted(properties): void {
   trackData(properties, 'file_downloaded');
@@ -511,6 +515,7 @@ const analyticsService = {
   rudderTrackClickedDriveActionsInfoButton,
   rudderTrackClickedDriveActionsDeleteButton,
   rudderTrackClickedDriveMainDeleteButton,
+  rudderTrackClickedSidenavUpgradeButton,
   identify,
   identifyUsage,
   identifyPlan,
