@@ -24,21 +24,27 @@ export const PATH_NAMES = {
   '/app': 'App'
 };
 
+const getRudderAnalytics = () => {
+  return window?.rudderanalytics;
+};
 
 const rudderTrackPage = (pageName: string) => {
-  window.rudderanalytics.page(pageName);
+  const rudderanalytics = getRudderAnalytics();
+  rudderanalytics?.page(pageName);
 };
 
 const rudderTrack = (trackString: string, trackData?) => {
-  window.rudderanalytics.track(trackString, trackData);
+  const rudderanalytics = getRudderAnalytics();
+  rudderanalytics?.track(trackString, trackData);
 };
 
 const rudderIdentify = (user: UserSettings, logout?: boolean) => {
+  const rudderanalytics = getRudderAnalytics();
   let identify = { email: user.email, uuid: user.uuid } as RudderIdentify;
   if (logout) {
     identify = { email: user.email, uuid: user.uuid, is_logged_in: false };
   }
-  window.rudderanalytics.identify(user.uuid, identify);
+  rudderanalytics?.identify(user.uuid, identify);
 };
 
 
