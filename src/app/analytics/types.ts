@@ -26,6 +26,7 @@ export enum AnalyticsTrack {
 export enum RudderAnalyticsTrack {
   SignUp = 'User Signup',
   SignIn = 'User Signin',
+  LogOut = 'User Logout',
   ClickedDriveUploadButton = 'Upload Button Clicked',
   ClickedDriveUploadButtonUI = 'main_upload_button',
   ClickedDriveNewFolder = 'Create Folder Clicked',
@@ -46,6 +47,19 @@ export enum RudderAnalyticsTrack {
   FileUploadError = 'File Upload Error',
   ClickedSidenavElement = 'sidenav',
   ClickedSidenavUpgradeButton = 'Upgrade Button Clicked',
+  ClickedSidenavDownloadDesktopAppButton = 'Download Desktop App',
+  ClickedNavbarElement = 'top_bar',
+  ClickedNavbarSettingsButton = 'Settings Button Clicked',
+  ClickedNavbarAvatarButton = 'Avatar Button Clicked',
+  ClickedAvatarDropDownElement = 'avatar_drop_down_menu',
+  ClickedAvatarDropDownUpgradeButton = 'Upgrade Button Clicked',
+  ClickedAvatarDropDownDownloadDesktopAppButton = 'Download Desktop App',
+}
+
+export interface RudderIdentify {
+  email: string,
+  uuid: string,
+  is_logged_in?: boolean
 }
 
 export enum RudderAnalyticsPage {

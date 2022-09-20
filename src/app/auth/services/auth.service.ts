@@ -29,6 +29,11 @@ import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
 
 export async function logOut(): Promise<void> {
+  const currentUser = localStorageService.getUser();
+  if (currentUser) {
+    analyticsService.rudderIdentify(currentUser, true);
+    analyticsService.rudderTrackLogOut(currentUser.email);
+  }
   analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();

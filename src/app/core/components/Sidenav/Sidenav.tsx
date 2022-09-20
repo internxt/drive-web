@@ -16,6 +16,7 @@ import screenService from 'app/core/services/screen.service';
 import './Sidenav.scss';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -54,6 +55,7 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
 
   onDownloadAppButtonClicked = (): void => {
     window.open(desktopService.getDownloadAppUrl(), '_self');
+    analyticsService.rudderTrackClickedSidenavDownloadDesktopAppButton();
   };
 
   onLogoClicked = (): void => {

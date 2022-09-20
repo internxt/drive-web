@@ -7,7 +7,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
-import { AnalyticsTrack, RudderAnalyticsTrack } from '../types';
+import { AnalyticsTrack, RudderAnalyticsTrack, RudderIdentify } from '../types';
 import { getCookie, setCookie } from '../utils';
 import queryString from 'query-string';
 import { v4 as uuidv4 } from 'uuid';
@@ -33,8 +33,12 @@ const rudderTrack = (trackString: string, trackData?) => {
   window.rudderanalytics.track(trackString, trackData);
 };
 
-const rudderIdentify = (user: UserSettings) => {
-  window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
+const rudderIdentify = (user: UserSettings, logout?: boolean) => {
+  let identify = { email: user.email, uuid: user.uuid } as RudderIdentify;
+  if (logout) {
+    identify = { email: user.email, uuid: user.uuid, is_logged_in: false };
+  }
+  window.rudderanalytics.identify(user.uuid, identify);
 };
 
 
@@ -44,6 +48,10 @@ const rudderTrackSignIn = (email: string) => {
 
 const rudderTrackSignUp = (email: string) => {
   rudderTrack(RudderAnalyticsTrack.SignUp, { email });
+};
+
+const rudderTrackLogOut = (email: string) => {
+  rudderTrack(RudderAnalyticsTrack.LogOut, { email });
 };
 
 const rudderTrackClickedDriveUploadButton = () => {
@@ -114,6 +122,26 @@ const rudderTrackClickedDriveMainDeleteButton = (is_multiselection: boolean, siz
 
 const rudderTrackClickedSidenavUpgradeButton = () => {
   rudderTrack(RudderAnalyticsTrack.ClickedSidenavUpgradeButton, { ui_element: RudderAnalyticsTrack.ClickedSidenavElement });
+};
+
+const rudderTrackClickedSidenavDownloadDesktopAppButton = () => {
+  rudderTrack(RudderAnalyticsTrack.ClickedSidenavDownloadDesktopAppButton, { ui_element: RudderAnalyticsTrack.ClickedSidenavElement });
+};
+
+const rudderTrackClickedNavbarSettingsButton = () => {
+  rudderTrack(RudderAnalyticsTrack.ClickedNavbarSettingsButton, { ui_element: RudderAnalyticsTrack.ClickedNavbarElement });
+};
+
+const rudderTrackClickedNavbarAvatarButton = () => {
+  rudderTrack(RudderAnalyticsTrack.ClickedNavbarAvatarButton, { ui_element: RudderAnalyticsTrack.ClickedNavbarElement });
+};
+
+const rudderTrackClickedAvatarDropDownUpgradeButton = () => {
+  rudderTrack(RudderAnalyticsTrack.ClickedAvatarDropDownUpgradeButton, { ui_element: RudderAnalyticsTrack.ClickedAvatarDropDownElement });
+};
+
+const rudderTrackClickedAvatarDropDownDownloadDesktopAppButton = () => {
+  rudderTrack(RudderAnalyticsTrack.ClickedAvatarDropDownDownloadDesktopAppButton, { ui_element: RudderAnalyticsTrack.ClickedAvatarDropDownElement });
 };
 
 
@@ -501,6 +529,7 @@ const analyticsService = {
   rudderIdentify,
   rudderTrackSignIn,
   rudderTrackSignUp,
+  rudderTrackLogOut,
   rudderTrackClickedDriveUploadButton,
   rudderTrackClickedDriveNewFolderButton,
   rudderTrackClickedDriveChangeViewButton,
@@ -516,6 +545,11 @@ const analyticsService = {
   rudderTrackClickedDriveActionsDeleteButton,
   rudderTrackClickedDriveMainDeleteButton,
   rudderTrackClickedSidenavUpgradeButton,
+  rudderTrackClickedSidenavDownloadDesktopAppButton,
+  rudderTrackClickedNavbarSettingsButton,
+  rudderTrackClickedNavbarAvatarButton,
+  rudderTrackClickedAvatarDropDownUpgradeButton,
+  rudderTrackClickedAvatarDropDownDownloadDesktopAppButton,
   identify,
   identifyUsage,
   identifyPlan,

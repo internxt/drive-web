@@ -8,6 +8,7 @@ import { useAppDispatch } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../services/desktop.service';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export default function AccountPopover({
   className = '',
@@ -29,6 +30,7 @@ export default function AccountPopover({
 
   function onDownloadAppButtonClicked() {
     window.open(desktopService.getDownloadAppUrl(), '_self');
+    analyticsService.rudderTrackClickedAvatarDropDownDownloadDesktopAppButton();
   }
   function onLogout() {
     dispatch(userThunks.logoutThunk());
@@ -37,6 +39,14 @@ export default function AccountPopover({
   function onGuestInviteClick() {
     dispatch(uiActions.setIsGuestInvitationDialogOpen(true));
   }
+
+  const onAvatarClicked = () => {
+    analyticsService.rudderTrackClickedNavbarAvatarButton();
+  };
+
+  const onUpgradeClicked = () => {
+    analyticsService.rudderTrackClickedAvatarDropDownUpgradeButton();
+  };
 
   const panel = (
     <div className="w-52">
@@ -52,7 +62,7 @@ export default function AccountPopover({
       <div className="flex items-center justify-between px-3 pb-1">
         <p className="text-sm text-gray-50">{`${percentageUsed}% space used`}</p>
         {plan.showUpgrade && (
-          <Link to="/preferences?tab=billing" className="text-sm font-medium text-primary no-underline">
+          <Link to="/preferences?tab=billing" onClick={onUpgradeClicked} className="text-sm font-medium text-primary no-underline">
             Upgrade
           </Link>
         )}
@@ -82,7 +92,7 @@ export default function AccountPopover({
     </div>
   );
 
-  return <Popover className={className} button={button} panel={panel} />;
+  return <Popover className={className} button={button} panel={panel} onClick={onAvatarClicked} />;
 }
 
 function Item({ children, onClick }: { children: ReactNode; onClick: () => void }) {

@@ -1,18 +1,20 @@
 import { Popover as HPopover, Transition } from '@headlessui/react';
-import { ReactNode } from 'react';
+import { MouseEventHandler, ReactNode } from 'react';
 
 export default function Popover({
   button,
   panel,
   className,
+  onClick
 }: {
   button: ReactNode;
   panel: ReactNode;
   className?: string;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
 }): JSX.Element {
   return (
     <HPopover style={{ lineHeight: 0 }} className={`relative z-50 ${className}`}>
-      <HPopover.Button className="cursor-pointer">{button}</HPopover.Button>
+      <HPopover.Button className="cursor-pointer" onClick={onClick}>{button}</HPopover.Button>
 
       <Transition
         enter="transition duration-100 ease-out"
