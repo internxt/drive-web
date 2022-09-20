@@ -1396,6 +1396,15 @@
   resolved "https://npm.pkg.github.com/download/@internxt/lib/1.2.0/283c36f4d8c443ca4d4bf41a856f43de94b290a3ea50d72cdaf1d6cb778ca838#172d7929abb3dc34fda044ad9977875791f7a471"
   integrity sha512-14byNxSU0S0KSc3g+BWiJb7/fcHUfqxkHQRz9fwJhAHNmgOo+Bhx13xXk07KKUzeNX1JymSGEZkVCk0AOQiM+Q==
 
+"@internxt/network-web@0.0.1":
+  version "0.0.1"
+  resolved "https://npm.pkg.github.com/download/@internxt/network-web/0.0.1/07491b00307b320ebaec313102d62f15a6aaf5e7#07491b00307b320ebaec313102d62f15a6aaf5e7"
+  integrity sha512-czxyqgkNNp5GjN0ia0v+FwOLZWhqiOxC2GTIGsJ4p2MTVxfSSFnwWO3alAGlJG1z2PWUIfjzxDJmJVE/kkRp0w==
+  dependencies:
+    axios "^0.24.0"
+    query-string "^7.1.0"
+    uuid "^8.3.2"
+
 "@internxt/prettier-config@^1.0.1":
   version "1.0.2"
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/9a19de23e3330a81c0e2bace1a6a0325fc8633197cf677e44ea75e54df315b5e"
