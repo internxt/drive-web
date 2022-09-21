@@ -6,10 +6,14 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
+import { useAppSelector } from 'app/store/hooks';
+import { ReferralKey } from '@internxt/sdk/dist/drive/referrals/types';
 
 const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const referrals = useAppSelector((state) => state.referrals.list);
+  const inviteFriend = referrals.map(referral => referral.key).includes(ReferralKey.InviteFriends);
   const onSendButtonClicked = async () => {
     try {
       setIsLoading(true);
@@ -31,7 +35,7 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
     <div className={`${props.className || ''} w-full max-w-lg rounded-lg border border-neutral-30 bg-neutral-10 p-6`}>
       <span className="mb-1 block w-full text-center font-semibold">{i18n.get('inviteAFriend.title')}</span>
       <span className="m-auto block max-w-xs text-center text-sm text-neutral-100">
-        {i18n.get('inviteAFriend.description')}
+        {inviteFriend ? i18n.get('inviteAFriend.descriptionWidget', { N: 4 }) : i18n.get('inviteAFriend.descriptionWidget', { N: 2 })}
       </span>
       <div className="mt-6 flex">
         <input

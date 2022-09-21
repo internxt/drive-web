@@ -63,6 +63,14 @@ const executeUserReferralActionThunk = createAsyncThunk<void, { referralKey: Ref
         navigationService.push(AppView.Account);
         break;
       }
+      case ReferralKey.Invite2Firends: {
+        navigationService.push(AppView.Account);
+        break;
+      }
+      case ReferralKey.CompleteSurvey: {
+        dispatch(uiActions.setIsSurveyDialogOpen(true));
+        break;
+      }
     }
   },
 );
