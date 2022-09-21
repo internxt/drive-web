@@ -11,7 +11,7 @@ import Button from '../Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import analyticsService from 'app/analytics/services/analytics.service';
+// import analyticsService from 'app/analytics/services/analytics.service';
 import { WarningCircle } from 'phosphor-react';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
@@ -57,11 +57,15 @@ export default function LogIn(): JSX.Element {
       if (!isTfaEnabled || showTwoFactor) {
         const { token, user } = await doLogin(email, password, twoFactorCode);
         dispatch(userActions.setUser(user));
-        analyticsService.identify(user, user.email);
-        analyticsService.trackSignIn({
-          email: user.email,
-          userId: user.uuid,
-        });
+
+        window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
+        window.rudderanalytics.track('User Signin', { email: user.email });
+
+        // analyticsService.identify(user, user.email);
+        // analyticsService.trackSignIn({
+        //   email: user.email,
+        //   userId: user.uuid,
+        // });
 
         try {
           dispatch(productsThunks.initializeThunk());
@@ -85,7 +89,7 @@ export default function LogIn(): JSX.Element {
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         navigationService.history.push(`/activate/${email}`);
       } else {
-        analyticsService.signInAttempted(email, castedError);
+        // analyticsService.signInAttempted(email, castedError);
       }
 
       setLoginError([castedError.message]);
@@ -98,7 +102,6 @@ export default function LogIn(): JSX.Element {
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
-      window.top?.postMessage({ action: 'redirect' }, 'https://internxt.com');
       navigationService.push(AppView.Drive);
     }
     if (user && user.registerCompleted === false) {
@@ -113,7 +116,6 @@ export default function LogIn(): JSX.Element {
       if (!registerCompleted) {
         navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
-        window.top?.postMessage({ action: 'redirect' }, 'https://internxt.com');
         navigationService.push(AppView.Drive);
       }
     }
@@ -142,7 +144,7 @@ export default function LogIn(): JSX.Element {
               <span className="font-normal">Password</span>
               <Link
                 onClick={(): void => {
-                  analyticsService.trackUserResetPasswordRequest();
+                  // analyticsService.trackUserResetPasswordRequest();
                 }}
                 to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
@@ -159,8 +161,11 @@ export default function LogIn(): JSX.Element {
               minLength={{ value: 1, message: 'Password must not be empty' }}
               error={errors.password}
             />
+          </label>
 
-            {showTwoFactor && (
+          {showTwoFactor && (
+            <label className="space-y-0.5">
+              <span>Two factor code</span>
               <PasswordInput
                 className="mb-3"
                 label="twoFactorCode"
@@ -171,17 +176,17 @@ export default function LogIn(): JSX.Element {
                 minLength={1}
                 pattern={twoFactorRegexPattern}
               />
-            )}
+            </label>
+          )}
 
-            {loginError && showErrors && (
-              <div className="flex flex-row items-start pt-1">
-                <div className="flex h-5 flex-row items-center">
-                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
-                </div>
-                <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
+          {loginError && showErrors && (
+            <div className="flex flex-row items-start pt-1">
+              <div className="flex h-5 flex-row items-center">
+                <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
               </div>
-            )}
-          </label>
+              <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
+            </div>
+          )}
 
           <Button
             disabled={isLoggingIn}

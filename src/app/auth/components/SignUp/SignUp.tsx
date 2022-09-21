@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { WarningCircle } from 'phosphor-react';
 
 import localStorageService from 'app/core/services/local-storage.service';
-import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
+// import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions, userThunks } from 'app/store/slices/user';
@@ -15,7 +15,6 @@ import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { productsThunks } from 'app/store/slices/products';
 import { AppView, IFormValues } from 'app/core/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { referralsThunks } from 'app/store/slices/referrals';
 import TextInput from '../../components/TextInput/TextInput';
 import PasswordInput from '../../components/PasswordInput/PasswordInput';
@@ -39,7 +38,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     hasReferrer ? String(qs.ref) : undefined,
   );
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
-  const tokenParam = qs.token;
   const {
     register,
     formState: { errors, isValid },
@@ -75,15 +73,6 @@ function SignUp(props: SignUpProps): JSX.Element {
   }
 
   useEffect(() => {
-    const isAppSumo = navigationService.getCurrentView()?.id === AppView.AppSumo;
-
-    if (isAppSumo && tokenParam && typeof tokenParam === 'string') {
-      localStorageService.clear();
-      localStorageService.set('xToken', tokenParam);
-    }
-  }, []);
-
-  useEffect(() => {
     if (password.length > 0) onChangeHandler(password);
   }, [password]);
 
@@ -108,78 +97,61 @@ function SignUp(props: SignUpProps): JSX.Element {
     setIsLoading(true);
 
     try {
+      const { isNewUser } = props;
       const { email, password, token } = formData;
+      const { xUser, xToken, mnemonic } = isNewUser ? 
+        await doRegister(email, password, token) : 
+        await updateInfo(email, password);
 
-      let xUser: UserSettings;
-      let xToken: string;
-      let mnemonic: string;
+      localStorageService.set('xToken', xToken);
+      localStorageService.set('xMnemonic', mnemonic);
 
-      if (!props.isNewUser) {
-        const res = await updateInfo(email, password);
-        xUser = res.xUser;
-        xToken = res.xToken;
-        mnemonic = res.mnemonic;
+      dispatch(userActions.setUser(xUser));
+      await dispatch(userThunks.initializeUserThunk());
+      dispatch(productsThunks.initializeThunk());
+      dispatch(planThunks.initializeThunk());
 
-        dispatch(userActions.setUser(xUser));
-        await dispatch(userThunks.initializeUserThunk());
-        localStorageService.set('xToken', xToken);
-        localStorageService.set('xMnemonic', mnemonic);
-        dispatch(productsThunks.initializeThunk());
-        dispatch(planThunks.initializeThunk());
-      } else {
-        const res = await doRegister(email, password, token);
-        xUser = res.xUser;
-        xToken = res.xToken;
-        mnemonic = res.mnemonic;
-
-        localStorageService.set('xToken', xToken);
-        dispatch(userActions.setUser(xUser));
-        localStorageService.set('xMnemonic', mnemonic);
-        dispatch(productsThunks.initializeThunk());
-        dispatch(planThunks.initializeThunk());
+      if (isNewUser) {
         dispatch(referralsThunks.initializeThunk());
-        await dispatch(userThunks.initializeUserThunk());
       }
 
-      /**
-       * TODO: Move ANALYTICS ======
-       */
-      analyticsService.trackPaymentConversion();
-      analyticsService.trackSignUp({
-        userId: xUser.uuid,
-        properties: {
-          email: xUser.email,
-          signup_source: signupCampaignSource(window.location.search),
-        },
-        traits: {
-          email: xUser.email,
-          first_name: xUser.name,
-          last_name: xUser.lastname,
-          usage: 0,
-          createdAt: new Date().toISOString(),
-          signup_device_source: signupDevicesource(window.navigator.userAgent),
-          acquisition_channel: signupCampaignSource(window.location.search),
-        },
-      });
+      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
+      window.rudderanalytics.track('User Signup', { email });
+      
+      // analyticsService.trackPaymentConversion();
+      // analyticsService.trackSignUp({
+      //   userId: xUser.uuid,
+      //   properties: {
+      //     email: xUser.email,
+      //     signup_source: signupCampaignSource(window.location.search),
+      //   },
+      //   traits: {
+      //     email: xUser.email,
+      //     first_name: xUser.name,
+      //     last_name: xUser.lastname,
+      //     usage: 0,
+      //     createdAt: new Date().toISOString(),
+      //     signup_device_source: signupDevicesource(window.navigator.userAgent),
+      //     acquisition_channel: signupCampaignSource(window.location.search),
+      //   },
+      // });
 
       // adtrack script
-      window._adftrack = Array.isArray(window._adftrack)
-        ? window._adftrack
-        : window._adftrack
-          ? [window._adftrack]
-          : [];
-      window._adftrack.push({
-        HttpHost: 'track.adform.net',
-        pm: 2370627,
-        divider: encodeURIComponent('|'),
-        pagename: encodeURIComponent('New'),
-      });
-      /**
-       * ==========
-       */
+      // window._adftrack = Array.isArray(window._adftrack)
+      //   ? window._adftrack
+      //   : window._adftrack
+      //   ? [window._adftrack]
+      //   : [];
+      // window._adftrack.push({
+      //   HttpHost: 'track.adform.net',
+      //   pm: 2370627,
+      //   divider: encodeURIComponent('|'),
+      //   pagename: encodeURIComponent('New'),
+      // });
 
       navigationService.push(AppView.Drive);
     } catch (err: unknown) {
+      console.log(err);
       setIsLoading(false);
       const castedError = errorService.castError(err);
       setSignupError(castedError.message);
@@ -188,22 +160,22 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   };
 
-  async function getReCaptcha(formValues: IFormValues) {
-    const grecaptcha = window.grecaptcha;
+  // async function getReCaptcha(formValues: IFormValues) {
+  //   const grecaptcha = window.grecaptcha;
 
-    grecaptcha.ready(() => {
-      grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
-        // Can't wait or token will expire
-        formValues.token = token;
-        if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);
-      });
-    });
-  }
+  //   grecaptcha.ready(() => {
+  //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
+  //       // Can't wait or token will expire
+  //       formValues.token = token;
+  //       if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);
+  //     });
+  //   });
+  // }
 
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
-      <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(getReCaptcha)}>
-        <h1 className="text-2xl font-medium">Create account</h1>
+      <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <span className="text-2xl font-medium">Create account</span>
 
         <div className="flex flex-col space-y-3">
           <label className="space-y-0.5">

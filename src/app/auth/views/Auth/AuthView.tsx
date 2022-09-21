@@ -1,7 +1,7 @@
 import localStorageService from 'app/core/services/local-storage.service';
 import { RootState } from 'app/store';
 import { useSelector } from 'react-redux';
-import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
+// import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 import navigationService from 'app/core/services/navigation.service';
 import userService from '../../services/user.service';
 import i18n from 'app/i18n/services/i18n.service';
@@ -21,55 +21,64 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 export default function Auth(): JSX.Element {
   const dispatch = useAppDispatch();
 
-  const postMessage = (data) => {
+  const postMessage = (data: Record<string, unknown>) => {
     window.top?.postMessage(data, 'https://internxt.com');
   };
 
   // FILTER MESSAGES
 
-  useEffect(() => {
-    if (window) {
-      window.onmessage = function (e) {
-        const permitedDomains = ['https://drive.internxt.com', 'https://internxt.com'];
+  const permitedDomains = [
+    'https://drive.internxt.com',
+    'https://internxt.com',
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ];
 
-        if (permitedDomains.includes(e.origin)) {
-          if (e.data.action === 'signup') {
-            signup(e.data);
-          } else if (e.data.action === 'check_session') {
-            checkSession();
-          } else if (e.data.action === 'login') {
-            login(e.data);
-          } else if (e.data.action === 'recover') {
-            sendEmail(e.data);
-          }
+  useEffect(() => {
+    const onRecieveMessage = (e) => {
+      if (permitedDomains.includes(e.origin)) {
+        if (e.data.action === 'signup') {
+          signup(e.data);
+        } else if (e.data.action === 'check_session') {
+          checkSession();
+        } else if (e.data.action === 'login') {
+          login(e.data);
+        } else if (e.data.action === 'recover') {
+          sendEmail(e.data);
         }
-      };
-    }
-  }, []);
+      }
+    };
+
+    window.addEventListener('message', onRecieveMessage);
+
+    return () => {
+      window.removeEventListener('message', onRecieveMessage);
+    };
+  });
 
   // SIGN UP
 
   const { doRegister } = useSignUp('activate');
-  const [signingIn, setSigningIn] = useState<boolean>(false);
 
-  async function signup(data) {
-    const grecaptcha = window.grecaptcha;
+  // async function signUpWithRecaptcha(data) {
+  //   const grecaptcha = window.grecaptcha;
 
-    grecaptcha.ready(() => {
-      grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
-        // Can't wait or token will expire
-        data.token = token;
-        signUpWithRecaptcha(data);
-      });
-    });
-  }
+  //   grecaptcha.ready(() => {
+  //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
+  //       // Can't wait or token will expire
+  //       data.token = token;
+  //       signup(data);
+  //     });
+  //   });
+  // }
 
-  const signUpWithRecaptcha = async (data) => {
+  const signup = async (data) => {
     const { inline } = data;
 
     try {
       const { email, password, token } = data;
       const res = await doRegister(email, password, token);
+      await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 3000));
       const xUser = res.xUser;
       const xToken = res.xToken;
       const mnemonic = res.mnemonic;
@@ -81,52 +90,47 @@ export default function Auth(): JSX.Element {
       dispatch(planThunks.initializeThunk());
       dispatch(referralsThunks.initializeThunk());
       await dispatch(userThunks.initializeUserThunk());
-      /**
-       * TODO: Move ANALYTICS ======
-       */
-      analyticsService.trackPaymentConversion();
-      analyticsService.trackSignUp({
-        userId: xUser.uuid,
-        properties: {
-          email: xUser.email,
-          signup_source: signupCampaignSource(window.location.search),
-        },
-        traits: {
-          email: xUser.email,
-          first_name: xUser.name,
-          last_name: xUser.lastname,
-          usage: 0,
-          createdAt: new Date().toISOString(),
-          signup_device_source: signupDevicesource(window.navigator.userAgent),
-          acquisition_channel: signupCampaignSource(window.location.search),
-        },
-      });
+
+      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid: xUser.uuid });
+      window.rudderanalytics.track('User Signup', { email: xUser.email });
+
+      // analyticsService.trackPaymentConversion();
+      // analyticsService.trackSignUp({
+      //   userId: xUser.uuid,
+      //   properties: {
+      //     email: xUser.email,
+      //     signup_source: signupCampaignSource(window.location.search),
+      //   },
+      //   traits: {
+      //     email: xUser.email,
+      //     first_name: xUser.name,
+      //     last_name: xUser.lastname,
+      //     usage: 0,
+      //     createdAt: new Date().toISOString(),
+      //     signup_device_source: signupDevicesource(window.navigator.userAgent),
+      //     acquisition_channel: signupCampaignSource(window.location.search),
+      //   },
+      // });
 
       // adtrack script
-      window._adftrack = Array.isArray(window._adftrack)
-        ? window._adftrack
-        : window._adftrack
-        ? [window._adftrack]
-        : [];
-      window._adftrack.push({
-        HttpHost: 'track.adform.net',
-        pm: 2370627,
-        divider: encodeURIComponent('|'),
-        pagename: encodeURIComponent('New'),
-      });
-      /**
-       * ==========
-       */
+      // window._adftrack = Array.isArray(window._adftrack)
+      //   ? window._adftrack
+      //   : window._adftrack
+      //   ? [window._adftrack]
+      //   : [];
+      // window._adftrack.push({
+      //   HttpHost: 'track.adform.net',
+      //   pm: 2370627,
+      //   divider: encodeURIComponent('|'),
+      //   pagename: encodeURIComponent('New'),
+      // });
 
-      setSigningIn(true);
       postMessage({ action: 'redirect' });
     } catch (err: unknown) {
-      if (signingIn) {
-        if (inline === true) {
-          postMessage({ action: 'error_inline', msg: errorService.castError(err).message });
-        } else {
-          postMessage({ action: 'error', msg: errorService.castError(err).message });
-        }
+      if (inline === true) {
+        postMessage({ action: 'error_inline', msg: errorService.castError(err).message });
+      } else {
+        postMessage({ action: 'error', msg: errorService.castError(err).message });
       }
     }
   };
@@ -152,11 +156,15 @@ export default function Auth(): JSX.Element {
       if (!isTfaEnabled || tfa) {
         const { user } = await doLogin(email, password, tfa);
         dispatch(userActions.setUser(user));
-        analyticsService.identify(user, user.email);
-        analyticsService.trackSignIn({
-          email: user.email,
-          userId: user.uuid,
-        });
+
+        window.rudderanalytics.identify(user.uuid, { email: user.email });
+        window.rudderanalytics.track('User Signin', { email: user.email });
+
+        // analyticsService.identify(user, user.email);
+        // analyticsService.trackSignIn({
+        //   email: user.email,
+        //   userId: user.uuid,
+        // });
 
         try {
           dispatch(productsThunks.initializeThunk());
@@ -180,7 +188,7 @@ export default function Auth(): JSX.Element {
       if (castedError.message.includes('not activated')) {
         navigationService.history.push(`/activate/${email}`);
       } else {
-        analyticsService.signInAttempted(email, castedError);
+        // analyticsService.signInAttempted(email, castedError);
       }
 
       postMessage({ action: 'error', msg: errorService.castError(err).message });
