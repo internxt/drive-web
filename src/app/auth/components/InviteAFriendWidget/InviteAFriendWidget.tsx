@@ -13,7 +13,7 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const referrals = useAppSelector((state) => state.referrals.list);
-  const inviteFriend = referrals.map(referral => referral.key).includes(ReferralKey.InviteFriends);
+  const inviteAFriendReferral = referrals.find(referral => referral.key === ReferralKey.InviteFriends);
   const onSendButtonClicked = async () => {
     try {
       setIsLoading(true);
@@ -35,7 +35,7 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
     <div className={`${props.className || ''} w-full max-w-lg rounded-lg border border-neutral-30 bg-neutral-10 p-6`}>
       <span className="mb-1 block w-full text-center font-semibold">{i18n.get('inviteAFriend.title')}</span>
       <span className="m-auto block max-w-xs text-center text-sm text-neutral-100">
-        {inviteFriend ? i18n.get('inviteAFriend.descriptionWidget', { N: 4 }) : i18n.get('inviteAFriend.descriptionWidget', { N: 2 })}
+        {i18n.get('inviteAFriend.descriptionWidget', { N: inviteAFriendReferral?.steps })}
       </span>
       <div className="mt-6 flex">
         <input

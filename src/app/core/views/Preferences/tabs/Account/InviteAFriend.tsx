@@ -19,7 +19,7 @@ export default function InviteAFriend({ className = '' }: { className?: string }
 
   const referrals = useAppSelector((state) => state.referrals.list);
 
-  const inviteFriend = referrals.map(referral => referral.key).includes(ReferralKey.InviteFriends);
+  const inviteAFriendReferral = referrals.find(referral => referral.key === ReferralKey.InviteFriends);
 
   const [status, setStatus] = useState<'READY' | 'LOADING' | 'CANT_INVITE_MORE'>('READY');
 
@@ -50,7 +50,7 @@ export default function InviteAFriend({ className = '' }: { className?: string }
     <Section className={className} title={i18n.get('inviteAFriend.title')}>
       <Card>
         <p className="text-gray-80">
-          {inviteFriend ? i18n.get('inviteAFriend.description', { N: 4 }) : i18n.get('inviteAFriend.description', { N: 2 })}
+          {i18n.get('inviteAFriend.description', { N: inviteAFriendReferral?.steps })}
         </p>
         <div className="mt-3">
           {status !== 'CANT_INVITE_MORE' ? (
