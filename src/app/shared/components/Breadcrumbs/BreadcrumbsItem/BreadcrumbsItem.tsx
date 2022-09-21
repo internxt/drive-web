@@ -7,6 +7,8 @@ import { BreadcrumbItemData } from '../Breadcrumbs';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
+import { items } from '@internxt/lib';
+
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
@@ -80,15 +82,15 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const isDraggingOverClassNames = isOver && canDrop ? 'drag-over-effect' : '';
 
   return (
-    <li
+    <><li
       ref={drop}
       className={`p-1 flex items-center ${isDraggingOverClassNames} ${props.item.active ? 'active' : ''}`}
       key={props.item.id}
       onClick={() => onItemClicked(props.item)}
     >
       {props.item.icon ? props.item.icon : null}
-      {props.item.label ? <span className="label">{props.item.label}</span> : null}
-    </li>
+      {props.item.label ? <span className={`label overflow-hidden overflow-ellipsis ${props.item.label === '···' ? 'font-black' : ''}`} style={{ maxWidth: '150px' }}>{items.getItemDisplayName({ name: props.item.label })} </span> : null}
+    </li></>
   );
 };
 

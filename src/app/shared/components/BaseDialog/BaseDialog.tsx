@@ -29,7 +29,7 @@ const BaseDialog = ({
     >
       <div
         className={`${panelClasses || ''} text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
-        transform -translate-y-1/2 -translate-x-1/2 w-104 pt-8 rounded-lg overflow-hidden bg-white`}
+        transform -translate-y-1/2 -translate-x-1/2 w-104 ${panelClasses?.includes('pt-')? '' : 'pt-8'} rounded-lg overflow-hidden bg-white`}
       >
         <UilTimes
           className={`${closable ? '' : 'hidden'} absolute right-8 cursor-pointer transition duration-200\
@@ -40,7 +40,7 @@ const BaseDialog = ({
         <span
           className={`${
             titleClasses || ''
-          } whitespace-nowrap text-xl text-center px-16 overflow-hidden overflow-ellipsis`}
+          } whitespace-nowrap text-xl ${titleClasses?.includes('text-')?'':'text-center'} ${titleClasses?.includes('px-')?'':'px-16'} overflow-hidden overflow-ellipsis`}
         >
           {title}
         </span>

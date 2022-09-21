@@ -347,6 +347,16 @@ code {
     @apply bg-white text-neutral-500 hover:bg-neutral-30;
   }
 
+  button.quaternary,
+  .base-button.quaternary {
+    @apply bg-gray-10 text-gray-80 hover:bg-gray-20;
+  }
+
+  button.delete-red,
+  .base-button.delete-red {
+    @apply bg-red-60 text-white hover:bg-red-dark;
+  }
+
   button.cancel,
   .base-button.cancel {
     @apply bg-opacity-0 text-red-60;

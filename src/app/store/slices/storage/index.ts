@@ -20,6 +20,7 @@ const initialState: StorageState = {
   selectedItems: [],
   itemToShare: null,
   itemsToDelete: [],
+  itemsToMove: [],
   itemsOnTrash: [],
   viewMode: FileViewMode.List,
   namePath: [],
@@ -84,6 +85,9 @@ export const storageSlice = createSlice({
     setItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.itemsToDelete = action.payload;
     },
+    setItemsToMove: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      state.itemsToMove = action.payload;
+    },
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
     },
@@ -146,7 +150,7 @@ export const storageSlice = createSlice({
       action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
     ) {
       const itemsToPush = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
-      const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
+      const folderIds = !Array.isArray(action.payload.folderIds) ? [action.payload.folderIds] : (action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId)));
 
       folderIds.forEach((folderId) => {
         const items = itemsListService.pushItems(itemsToPush, state.levels[folderId]);
@@ -205,6 +209,7 @@ export const {
   clearSelectedItems,
   setItemToShare,
   setItemsToDelete,
+  setItemsToMove,
   setViewMode,
   resetNamePath,
   pushNamePath,

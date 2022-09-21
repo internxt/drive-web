@@ -28,6 +28,7 @@ interface DriveItemActions {
   onInfoButtonClicked: (e: MouseEvent) => void;
   onDeleteButtonClicked: (e: MouseEvent) => void;
   onDeletePermanentlyButtonClicked: (e: MouseEvent) => void;
+  onRecoverButtonClicked: (e: MouseEvent) => void;
   onItemClicked: (e: MouseEvent) => void;
   onItemDoubleClicked: (e: MouseEvent) => void;
   onItemRightClicked: (e: MouseEvent) => void;
@@ -141,8 +142,16 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   const onDeletePermanentlyButtonClicked = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    dispatch(storageActions.setItemsToDelete([item]));
-    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+
+     dispatch(storageActions.setItemsToDelete([item]));
+     dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+  };
+
+  const onRecoverButtonClicked = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+     dispatch(storageActions.setItemsToMove([item]));
+     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+
   };
 
   const onItemClicked = (): void => {
@@ -182,6 +191,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     onInfoButtonClicked,
     onDeleteButtonClicked,
     onDeletePermanentlyButtonClicked,
+    onRecoverButtonClicked,
     onItemClicked,
     onItemDoubleClicked,
     onItemRightClicked,

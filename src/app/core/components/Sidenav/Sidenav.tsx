@@ -77,8 +77,9 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
             <SidenavItem label="Photos" to="/app/photos" Icon={ImageSquare} showNew />
             <SidenavItem label="Backups" to="/app/backups" Icon={ClockCounterClockwise} />
             <SidenavItem label="Recents" to="/app/recents" Icon={Clock} />
-            <SidenavItem label="Desktop App" Icon={Desktop} onClick={this.onDownloadAppButtonClicked} />
             <SidenavItem label="Trash" to="/app/trash" Icon={Trash} />
+            <SidenavItem label="Desktop App" Icon={Desktop} onClick={this.onDownloadAppButtonClicked} />
+            
           </div>
           {this.props.subscription && this.props.subscription.type === 'free' ? (
             <ReferralsWidget />
