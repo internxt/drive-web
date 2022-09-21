@@ -1,7 +1,11 @@
 import { Widget } from '@typeform/embed-react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'app/store';
+
 import { useAppDispatch } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 
 const SurveyDialog = (props: { isOpen: boolean }): JSX.Element => {
@@ -10,6 +14,8 @@ const SurveyDialog = (props: { isOpen: boolean }): JSX.Element => {
     const onClose = (): void => {
         dispatch(uiActions.setIsSurveyDialogOpen(false));
     };
+
+    const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
     return (
         <BaseDialog
@@ -20,7 +26,14 @@ const SurveyDialog = (props: { isOpen: boolean }): JSX.Element => {
             bgColor={'bg-transparent'}
         >
             <div className='py-10'>
-                <Widget id='YSglxhad' height={500} />
+                <Widget 
+                    id='yM3EyqJE' 
+                    height={500} 
+                    hidden={{
+                        email: user.email,
+                        uuid: user.uuid
+                    }}
+                />
             </div>
         </BaseDialog>
     );
