@@ -63,7 +63,7 @@ const executeUserReferralActionThunk = createAsyncThunk<void, { referralKey: Ref
         navigationService.push(AppView.Account);
         break;
       }
-      case ReferralKey.Invite2Firends: {
+      case ReferralKey.Invite2Friends: {
         navigationService.push(AppView.Account);
         break;
       }
