@@ -26,7 +26,7 @@ const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
   store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
   store.dispatch(storageActions.clearSelectedItems());
 
-  notificationsService.show({
+  const id = notificationsService.show({
     type: ToastType.Success,
     text: `${itemsToTrash.length > 1 ? itemsToTrash.length : ''} Item${itemsToTrash.length > 1 ? 's' : ''
       } moved to trash`,
@@ -34,7 +34,8 @@ const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
       text: 'Undo',
       onClick: () => {
         recoverFromTrash();
-        console.log('UNDO');
+        notificationsService.dismiss(id);
+        //console.log('UNDO');
       },
     },
   });
