@@ -59,6 +59,7 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
   const onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     e.target.checked ? dispatch(storageActions.selectItems([item])) : dispatch(storageActions.deselectItems([item]));
   };
+
   const nameNodefactory = () => {
     const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
 
@@ -93,6 +94,7 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
       </Fragment>
     );
   };
+
   const template = (
     <div
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
@@ -155,10 +157,10 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
         </div>) : ('')}
       </div>
 
-      {
-        /* DROPPABLE ZONE */ connectDropTarget(
-        <div className="group-hover:invisible absolute h-full w-1/2 top-0"></div>,
-      )
+      {/* DROPPABLE ZONE */
+        !isTrash && connectDropTarget(
+          <div className="group-hover:invisible absolute h-full w-1/2 top-0"></div>,
+        )
       }
 
       {/* DATE */}
@@ -199,7 +201,7 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
     </div>
   );
 
-  return isEditingName ? template : (connectDragSource(template) as JSX.Element);
+  return (isEditingName || isTrash) ? template : (connectDragSource(template) as JSX.Element);
 };
 
 export default DriveExplorerListItem;
