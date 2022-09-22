@@ -198,7 +198,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     };
     const isRecents = title === 'Recents';
     const isTrash = title === 'Trash';
-    const ViewModeComponent = viewModes[isTrash? FileViewMode.List : viewMode];
+    const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
 
     const FileIcon = iconService.getItemIcon(false);
     const filesEmptyImage = (
@@ -208,70 +208,65 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       </div>
     );
 
-    return connectDropTarget(
-      <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
-        {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
-        {isMoveItemsDialogOpen && <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash}/>}
-        {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
-        {isClearTrashDialogOpen && <ClearTrashDialog onItemsDeleted={onItemsDeleted} />}
+    const driveExplorer = <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
+      {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
+      {isMoveItemsDialogOpen && <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />}
+      {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
+      {isClearTrashDialogOpen && <ClearTrashDialog onItemsDeleted={onItemsDeleted} />}
 
-        <div className="flex h-full w-full max-w-full flex-grow">
-          <div className="flex w-1 flex-grow flex-col pt-6">
-            <div className="flex justify-between pb-4">
-              <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
+      <div className="flex h-full w-full max-w-full flex-grow">
+        <div className="flex w-1 flex-grow flex-col pt-6">
+          <div className="flex justify-between pb-4">
+            <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
 
-              <div className="flex">
-                {this.hasAnyItemSelected && !isTrash ? (
-                  <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <DownloadSimple className="mr-2.5 h-5 w-5" />
-                    <span>{i18n.get('actions.download')}</span>
-                  </BaseButton>
-                ) : !isTrash?(
-                  <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <UploadSimple className="mr-2.5 h-5 w-5" />
-                    <span>{i18n.get('actions.upload')}</span>
-                  </BaseButton>
-                ) : (
-                  ''
-                )}
-                {!this.hasAnyItemSelected && !isTrash ? (
-                  <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
-                    <FolderSimplePlus className="h-6 w-6" />
-                  </BaseButton>
-                ) : null}
-                {this.hasAnyItemSelected && isTrash ? (
-                  <BaseButton className="tertiary square w-8" onClick={this.onRecoverButtonClicked}>
-                    <ClockCounterClockwise className="h-6 w-6" />
-                  </BaseButton>
-                ) : null}
-                {this.hasAnyItemSelected || isTrash ? (
-                  <BaseButton
-                    className="tertiary square w-8"
-                    onClick={!isTrash ? this.onBulkDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}
-                  >
-                    <Trash className="h-5 w-5" />
-                  </BaseButton>
-                ) : null}
-
-                {!isTrash ? (
-                  <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
-                    {viewModesIcons[viewMode]}
-                  </BaseButton>
-                ) : (
-                  ''
-                )}
-              </div>
-            </div>
-
-            <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
-              {this.hasItems && (
-                <div className="flex flex-grow flex-col justify-between overflow-hidden">
-                  <ViewModeComponent items={items} isLoading={isLoading} isTrash={isTrash} />
-                </div>
+            <div className="flex">
+              {(this.hasAnyItemSelected && !isTrash) ? (
+                <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
+                  <DownloadSimple className="mr-2.5 h-5 w-5" />
+                  <span>{i18n.get('actions.download')}</span>
+                </BaseButton>
+              ) : !isTrash && (
+                <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
+                  <UploadSimple className="mr-2.5 h-5 w-5" />
+                  <span>{i18n.get('actions.upload')}</span>
+                </BaseButton>
+              )}
+              {(!this.hasAnyItemSelected && !isTrash) && (
+                <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
+                  <FolderSimplePlus className="h-6 w-6" />
+                </BaseButton>
+              )}
+              {(this.hasAnyItemSelected && isTrash) && (
+                <BaseButton className="tertiary square w-8" onClick={this.onRecoverButtonClicked}>
+                  <ClockCounterClockwise className="h-6 w-6" />
+                </BaseButton>
+              )}
+              {(this.hasAnyItemSelected || isTrash) && (
+                <BaseButton
+                  className="tertiary square w-8"
+                  onClick={!isTrash ? this.onBulkDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}
+                >
+                  <Trash className="h-5 w-5" />
+                </BaseButton>
               )}
 
-              {/* PAGINATION */}
-              {/* !isLoading ? (
+              {!isTrash && (
+                <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
+                  {viewModesIcons[viewMode]}
+                </BaseButton>
+              )}
+            </div>
+          </div>
+
+          <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
+            {this.hasItems && (
+              <div className="flex flex-grow flex-col justify-between overflow-hidden">
+                <ViewModeComponent items={items} isLoading={isLoading} isTrash={isTrash} />
+              </div>
+            )}
+
+            {/* PAGINATION */}
+            {/* !isLoading && (
                 <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
                   <span className="text-sm w-1/3" />
                   <divconst droppedType = monitor.getItemType();
@@ -288,75 +283,73 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                   </div>
                   <div className="w-1/3"></div>
                 </div>
-              ) : null */}
+              )*/}
 
-              {
-                /* EMPTY FOLDER */
-                !this.hasItems && !isLoading ? (
-                  this.hasFilters ? (
-                    <Empty
-                      icon={filesEmptyImage}
-                      title="There are no results for this search"
-                      subtitle="Drag and drop here or click on upload button"
-                      action={{
-                        icon: UploadSimple,
-                        style: 'elevated',
-                        text: 'Upload files',
-                        onClick: this.onUploadButtonClicked,
-                      }}
-                    />
-                  ) : isRecents && !isTrash ? (
-                    <Empty
-                      icon={filesEmptyImage}
-                      title="No recents files to show"
-                      subtitle="Recent uploads or files you recently interacted with will show up here automatically"
-                    />
-                  ) : (
-                    isTrash?(
-                    <Empty
-                      icon={filesEmptyImage}
-                      title="Trash is empty"
-                      subtitle="Move items you no longer need to the trash."
-                    />
-                    ):
-                    <Empty
-                      icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-                      title="This folder is empty"
-                      subtitle="Drag and drop files or click to select files and upload"
-                      action={{
-                        icon: UploadSimple,
-                        style: 'elevated',
-                        text: 'Upload files',
-                        onClick: this.onUploadButtonClicked,
-                      }}
-                    />
-                  )
-                ) : null
-              }
+            { /* EMPTY FOLDER */
+              (!this.hasItems && !isLoading) && (
+                this.hasFilters ? (
+                  <Empty
+                    icon={filesEmptyImage}
+                    title="There are no results for this search"
+                    subtitle="Drag and drop here or click on upload button"
+                    action={{
+                      icon: UploadSimple,
+                      style: 'elevated',
+                      text: 'Upload files',
+                      onClick: this.onUploadButtonClicked,
+                    }}
+                  />
+                ) : isRecents ? (
+                  <Empty
+                    icon={filesEmptyImage}
+                    title="No recents files to show"
+                    subtitle="Recent uploads or files you recently interacted with will show up here automatically"
+                  />
+                ) : isTrash ? (
+                  <Empty
+                    icon={filesEmptyImage}
+                    title="Trash is empty"
+                    subtitle="Move items you no longer need to the trash."
+                  />
+                ) : (
+                  <Empty
+                    icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+                    title="This folder is empty"
+                    subtitle="Drag and drop files or click to select files and upload"
+                    action={{
+                      icon: UploadSimple,
+                      style: 'elevated',
+                      text: 'Upload files',
+                      onClick: this.onUploadButtonClicked,
+                    }}
+                  />
+                )
+              )
+            }
 
-              {
-                /* DRAG AND DROP */
-                isOver ? (
-                  <div
-                    className="drag-over-effect pointer-events-none\
+            {/* DRAG AND DROP */
+              (isOver && !isTrash) && (
+                <div
+                  className="drag-over-effect pointer-events-none\
                    absolute flex h-full w-full items-end justify-center"
-                  ></div>
-                ) : null
-              }
-            </div>
-
-            <input
-              key={fileInputKey}
-              className="hidden"
-              ref={fileInputRef}
-              type="file"
-              onChange={this.onUploadInputChanged}
-              multiple={true}
-            />
+                ></div>
+              )
+            }
           </div>
+
+          {!isTrash && <input
+            key={fileInputKey}
+            className="hidden"
+            ref={fileInputRef}
+            type="file"
+            onChange={this.onUploadInputChanged}
+            multiple={true}
+          />}
         </div>
-      </div>,
-    );
+      </div>
+    </div>;
+
+    return !isTrash ? connectDropTarget(driveExplorer) : driveExplorer;
   }
 }
 
