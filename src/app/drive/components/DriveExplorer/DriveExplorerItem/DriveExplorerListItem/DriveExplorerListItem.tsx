@@ -6,7 +6,7 @@ import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
 import UilLinkedAlt from '@iconscout/react-unicons/icons/uil-link';
 import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
-import { PencilSimple, Link, Trash, DownloadSimple, DotsThree} from 'phosphor-react';
+import { PencilSimple, Link, Trash, DownloadSimple, DotsThree } from 'phosphor-react';
 import { items } from '@internxt/lib';
 
 import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
@@ -24,7 +24,7 @@ import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 
 import './DriveExplorerListItem.scss';
 
-const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.Element => {
+const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { isItemSelected, isSomeItemSelected } = useDriveItemStoreProps();
   const {
@@ -64,7 +64,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
 
     return (
       <Fragment>
-        <div className={`${isEditingName ? 'flex' : 'hidden'}`}>
+        {!isTrash && <div className={`${isEditingName ? 'flex' : 'hidden'}`}>
           <input
             className="dense border border-white no-ring rect select-text"
             onClick={(e) => e.stopPropagation()}
@@ -79,7 +79,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
             autoFocus
           />
           <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
-        </div>
+        </div>}
         <div className="file-list-item-name flex items-center max-w-full">
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
@@ -88,7 +88,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
           >
             {items.getItemDisplayName(item)}
           </span>
-          {!isEditingName && <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />}
+          {!isEditingName && !isTrash && <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />}
         </div>
       </Fragment>
     );
@@ -98,7 +98,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
       onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
-      onDoubleClick={!isTrash? onItemDoubleClicked : item.isFolder? (undefined) : (onItemDoubleClicked)}
+      onDoubleClick={!isTrash ? onItemDoubleClicked : item.isFolder ? (undefined) : (onItemDoubleClicked)}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
       {/* SELECTION */}
@@ -113,7 +113,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
 
       {/* ICON */}
       <div className="w-1/12 flex items-center px-3 box-content">
-      
+
         <div className="h-10 w-10 flex justify-center filter drop-shadow-soft">
           <ItemIconComponent className="h-full" />
           {/*itemIsShared?
@@ -128,7 +128,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
 
       {/* HOVER ACTIONS */}
       <div className="pl-3 w-2/12 items-center hidden xl:flex">
-        {!isTrash?(<div className={`${isSomeItemSelected? 'invisible' : ''} flex`}>
+        {!isTrash ? (<div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
           <button
             onClick={onDownloadButtonClicked}
             className="hover-action mr-3"
@@ -137,7 +137,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
             <DownloadSimple className="h-5 w-5" />
           </button>
           <button
-            onClick={(e)=> {
+            onClick={(e) => {
               onShareButtonClicked && onShareButtonClicked(e);
             }}
             className="hover-action mr-3"
@@ -152,13 +152,13 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
           >
             <Trash className="h-5 w-5" />
           </button>
-        </div>):('')}
+        </div>) : ('')}
       </div>
 
       {
         /* DROPPABLE ZONE */ connectDropTarget(
-          <div className="group-hover:invisible absolute h-full w-1/2 top-0"></div>,
-        )
+        <div className="group-hover:invisible absolute h-full w-1/2 top-0"></div>,
+      )
       }
 
       {/* DATE */}
