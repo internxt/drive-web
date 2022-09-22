@@ -244,6 +244,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               {(this.hasAnyItemSelected || isTrash) && (
                 <BaseButton
                   className="tertiary square w-8"
+                  disabled={isTrash && !this.hasItems}
                   onClick={!isTrash ? this.onBulkDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}
                 >
                   <Trash className="h-5 w-5" />
