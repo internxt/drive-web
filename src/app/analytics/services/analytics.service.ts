@@ -47,7 +47,7 @@ const payload = {
 };
 
 export function page(pageName: string): void {
-  window.analytics.page(pageName);
+  window.rudderanalytics.page(pageName);
 }
 
 export function signupDevicesource(userAgent: string): string {
@@ -82,36 +82,36 @@ function identifyPlanName(bytes: number): string {
 export function identifyUsage(newValue) {
   if (newValue !== payload.usage) {
     payload.usage = newValue;
-    window.analytics.identify(getUser().uuid, { userId: getUser().uuid, storage: newValue, platform: 'web' });
+    // window.analytics.identify(getUser().uuid, { userId: getUser().uuid, storage: newValue, platform: 'web' });
   }
 }
 
 export function identifyPlan(newValue: number) {
   if (newValue !== payload.plan) {
     payload.plan = newValue;
-    window.analytics.identify(getUser().uuid, {
+    /* window.analytics.identify(getUser().uuid, {
       userId: getUser().uuid,
       plan: identifyPlanName(newValue),
       platform: 'web',
-    });
+    }); */
   }
 }
 
 export function trackSignOut() {
-  window.analytics.track(AnalyticsTrack.SignOut);
-  window.analytics.reset();
+  /* window.analytics.track(AnalyticsTrack.SignOut);
+  window.analytics.reset(); */
 }
 
 export function trackSignIn(payload: { email: string; userId: string }): void {
-  window.analytics.track(AnalyticsTrack.SignIn, payload);
+  // window.analytics.track(AnalyticsTrack.SignIn, payload);
 }
 
 export function signInAttempted(email: string, error: string | Error): void {
-  window.analytics.track(AnalyticsTrack.SignInAttempted, {
+  /* window.analytics.track(AnalyticsTrack.SignInAttempted, {
     status: 'error',
     msg: error ? error : 'Login error',
     email: email,
-  });
+  }); */
 }
 
 export function trackSignUp(payload: {
@@ -128,13 +128,13 @@ export function trackSignUp(payload: {
   };
   userId: string;
 }): void {
-  window.analytics.identify(payload.userId, payload.traits);
-  window.analytics.track(AnalyticsTrack.SignUp, payload.properties);
+  /* window.analytics.identify(payload.userId, payload.traits);
+  window.analytics.track(AnalyticsTrack.SignUp, payload.properties); */
   trackSignUpServer(payload);
 }
 
 export function trackUserEnterPayments(priceId: string): void {
-  window.analytics.track(AnalyticsTrack.UserEnterPayments, { price_id: priceId });
+  //  window.analytics.track(AnalyticsTrack.UserEnterPayments, { price_id: priceId });
 }
 
 export function trackPlanSubscriptionSelected(payload: {
@@ -144,19 +144,19 @@ export function trackPlanSubscriptionSelected(payload: {
   plan_length: number;
   email: string;
 }): void {
-  window.analytics.track(AnalyticsTrack.PlanSubscriptionSelected, payload);
+  // window.analytics.track(AnalyticsTrack.PlanSubscriptionSelected, payload);
 }
 
 export function trackFolderCreated(payload: { email: string; platform: DevicePlatform }): void {
-  window.analytics.track(AnalyticsTrack.FolderCreated, payload);
+  // window.analytics.track(AnalyticsTrack.FolderCreated, payload);
 }
 
 export function trackFolderRename(payload: { email: string; fileId: number; platform: DevicePlatform }): void {
-  window.analytics.track(AnalyticsTrack.FolderRename, payload);
+  // window.analytics.track(AnalyticsTrack.FolderRename, payload);
 }
 
 export function trackFileRename(payload: { email: string; file_id: number | string; platform: DevicePlatform }): void {
-  window.analytics.track(AnalyticsTrack.FileRename, payload);
+  // window.analytics.track(AnalyticsTrack.FileRename, payload);
 }
 
 export function trackFileDownloadStart(payload: {
@@ -168,7 +168,7 @@ export function trackFileDownloadStart(payload: {
   folder_id: number;
   platform: DevicePlatform;
 }): void {
-  window.analytics.track(AnalyticsTrack.FileDownloadStart, payload);
+  // window.analytics.track(AnalyticsTrack.FileDownloadStart, payload);
 }
 
 export function trackFileDownloadError(payload: {
@@ -177,7 +177,7 @@ export function trackFileDownloadError(payload: {
   msg: string;
   platform: DevicePlatform;
 }): void {
-  window.analytics.track(AnalyticsTrack.FileDownloadError, payload);
+  // window.analytics.track(AnalyticsTrack.FileDownloadError, payload);
 }
 
 export function trackFileDownloadFinished(payload: {
@@ -186,7 +186,7 @@ export function trackFileDownloadFinished(payload: {
   email: string;
   platform: DevicePlatform;
 }): void {
-  window.analytics.track(AnalyticsTrack.FileDownloadFinished, payload);
+  // window.analytics.track(AnalyticsTrack.FileDownloadFinished, payload);
 }
 
 export function trackFileUploadStart(payload: {
@@ -196,7 +196,7 @@ export function trackFileUploadStart(payload: {
   email: string;
   platform: DevicePlatform;
 }): void {
-  window.analytics.track(AnalyticsTrack.FileUploadStart, payload);
+  // window.analytics.track(AnalyticsTrack.FileUploadStart, payload);
 }
 
 export function trackFileUploadError(payload: {
@@ -207,7 +207,7 @@ export function trackFileUploadError(payload: {
   msg: string;
   platform: DevicePlatform;
 }): void {
-  window.analytics.track(AnalyticsTrack.FileUploadError, payload);
+  // window.analytics.track(AnalyticsTrack.FileUploadError, payload);
 }
 
 export function trackFileUploadFinished(payload: {
@@ -216,67 +216,67 @@ export function trackFileUploadFinished(payload: {
   file_size: number;
   email: string;
 }): void {
-  window.analytics.track(AnalyticsTrack.FileUploadFinished, payload);
+  // window.analytics.track(AnalyticsTrack.FileUploadFinished, payload);
 }
 
 export function trackMoveItem(
   keyOp: string,
   payload: { email: string; file_id: number; platform: DevicePlatform },
 ): void {
-  window.analytics.track(`${keyOp}-move`.toLowerCase(), payload);
+  // window.analytics.track(`${keyOp}-move`.toLowerCase(), payload);
 }
 
 export function trackDeleteItem(
   itemToDelete: DriveItemData,
   payload: { email: string; platform: DevicePlatform },
 ): void {
-  window.analytics.track(`${itemToDelete.isFolder ? 'folder' : 'file'}-delete`, payload);
+  // window.analytics.track(`${itemToDelete.isFolder ? 'folder' : 'file'}-delete`, payload);
 }
 
 export function trackOpenWelcomeFile(): void {
-  window.analytics.track(AnalyticsTrack.OpenWelcomeFile);
+  // window.analytics.track(AnalyticsTrack.OpenWelcomeFile);
 }
 
 export function trackDeleteWelcomeFile(): void {
-  window.analytics.track(AnalyticsTrack.DeleteWelcomeFile);
+  // window.analytics.track(AnalyticsTrack.DeleteWelcomeFile);
 }
 
 export function trackFileShare(): void {
-  window.analytics.track(AnalyticsTrack.FileShare);
+  // window.analytics.track(AnalyticsTrack.FileShare);
 }
 
 export function identify(user: UserSettings, email: string): void {
-  window.analytics.identify(user.uuid, {
+  /* window.analytics.identify(user.uuid, {
     email,
     platform: DevicePlatform.Web,
     referrals_credit: user.credit,
     referrals_count: Math.floor(user.credit / 5),
     createdAt: user.createdAt,
-  });
+  }); */
 }
 
 export function trackUserResetPasswordRequest(): void {
-  window.analytics.track(AnalyticsTrack.UserResetPasswordRequest);
+  // window.analytics.track(AnalyticsTrack.UserResetPasswordRequest);
 }
 
 export function track(email: string, status: 'error' | 'success'): void {
-  window.analytics.track('Password Changed', {
+  /* window.analytics.track('Password Changed', {
     status,
     email,
-  });
+  }); */
 }
 
 export function trackFileUploadBucketIdUndefined(payload: { email: string; platform: DevicePlatform }): void {
-  window.analytics.track(AnalyticsTrack.FileUploadBucketIdUndefined, payload);
+  // window.analytics.track(AnalyticsTrack.FileUploadBucketIdUndefined, payload);
 }
 
 export function trackShareLinkBucketIdUndefined(payload: { email: string }): void {
-  window.analytics.track(AnalyticsTrack.ShareLinkBucketIdUndefined, payload);
+  // window.analytics.track(AnalyticsTrack.ShareLinkBucketIdUndefined, payload);
 }
 
 export async function trackPaymentConversion() {
   try {
-    window.analytics.page('Checkout Success');
+    // window.analytics.page('Checkout Success');
     const queryStringParsed = queryString.parse(location.search);
     const checkoutSessionId = String(queryStringParsed.cs_id);
     const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
@@ -288,7 +288,7 @@ export async function trackPaymentConversion() {
     const { username, uuid } = getUser();
     const amount = amount_total * 0.01;
 
-    window.analytics.identify(
+    /* window.analytics.identify(
       uuid,
       {
         email: username,
@@ -317,19 +317,19 @@ export async function trackPaymentConversion() {
         subscription_id: subscription,
         payment_intent,
       }
-    );
+    ); */
   }
   catch (err) {
     const castedError = errorService.castError(err);
-    window.analytics.track('Error Signup After Payment Conversion', {
+    /* window.analytics.track('Error Signup After Payment Conversion', {
       message: castedError.message || '',
-    });
+    }); */
   }
 
 }
 
 async function getBodyPage(segmentName?: string) {
-  const queryString = window.location.search;
+  /* const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const brave = navigator.brave && await navigator.brave.isBrave();
   const browser = brave ? 'brave' : navigator.userAgent;
@@ -368,7 +368,7 @@ async function getBodyPage(segmentName?: string) {
       search: window.location.search,
       url: document.URL,
     }
-  };
+  }; */
 }
 
 export async function serverPage(segmentName: string) {

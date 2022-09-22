@@ -1,5 +1,11 @@
 import React, { MouseEvent, ReactNode } from 'react';
-import {ClockCounterClockwise, Link, Info, CloudArrowDown, Trash, PencilSimple} from 'phosphor-react';
+/*import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
+import UilEditAlt from '@iconscout/react-unicons/icons/uil-edit-alt';
+import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
+import UilFileInfoAlt from '@iconscout/react-unicons/icons/uil-file-info-alt';
+import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
+*/
+import { PencilSimple, Link, Trash, DownloadSimple, File, ClockCounterClockwise } from 'phosphor-react';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
@@ -73,25 +79,25 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
 
         {!hiddenActions.includes(DriveItemAction.Download) && !this.props.isTrash? (
           <Dropdown.Item id="download" onClick={this.onDownloadButtonClicked}>
-            <CloudArrowDown className="text-blue-60 h-5 mr-1" />
+            <DownloadSimple className="text-blue-60 h-5 w-5 mr-1" />
             <span>Download</span>
           </Dropdown.Item>
         ) : null}
         {!hiddenActions.includes(DriveItemAction.Rename) && !this.props.isTrash? (
           <Dropdown.Item id="rename" onClick={this.onRenameButtonClicked}>
-            <PencilSimple className="text-blue-60 h-5 mr-1" />
+            <PencilSimple className="text-blue-60 h-5 w-5 mr-1" />
             <span>Rename</span>
           </Dropdown.Item>
         ) : null}
         {!hiddenActions.includes(DriveItemAction.Share) && !this.props.isTrash ? (
           <Dropdown.Item id="share" onClick={this.onShareButtonClicked}>
-            <Link className="text-blue-60 h-5 mr-1" />
+            <Link className="text-blue-60 h-5 w-5 mr-1" />
             <span>Share</span>
           </Dropdown.Item>
         ) : null}
         {!hiddenActions.includes(DriveItemAction.Info) && !this.props.isTrash ? (
           <Dropdown.Item id="info" onClick={this.onInfoButtonClicked}>
-            <Info className="text-blue-60 h-5 mr-1" />
+            <File className="text-blue-60 h-5 w-5 mr-1" />
             <span>Info</span>
           </Dropdown.Item>
         ) : null}
@@ -104,7 +110,7 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
         <hr className="text-neutral-30 my-1.5"></hr>
         {!hiddenActions.includes(DriveItemAction.Delete) ? (
           <Dropdown.Item id="delete" className={`${!this.props.isTrash?'text-red-60 hover:text-red-60':''}`} onClick={!this.props.isTrash? this.onDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}>
-            <Trash className={`h-5 mr-1 ${this.props.isTrash?'text-blue-60':''}`} />
+            <Trash className={`h-5 w-5 mr-1 ${this.props.isTrash?'text-blue-60':''}`} />
             <span>{this.props.isTrash? 'Delete permanently' : 'Move to trash'}</span>
           </Dropdown.Item>
         ) : null}

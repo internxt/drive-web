@@ -5,6 +5,7 @@ declare namespace NodeJS {
     NODE_ENV: 'development' | 'production' | 'test';
     PUBLIC_URL: string;
     REACT_APP_API_URL: string;
+    REACT_APP_DRIVE_NEW_API_URL: string
     REACT_APP_PHOTOS_API_URL: string;
     REACT_APP_PAYMENTS_API_URL: string;
     REACT_APP_CRYPTO_SECRET: string;
@@ -22,6 +23,8 @@ declare namespace NodeJS {
 interface Window {
   Stripe: stripe.StripeStatic;
   analytics: SegmentAnalytics.AnalyticsJS;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rudderanalytics: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _adftrack: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

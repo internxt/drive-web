@@ -1,6 +1,12 @@
 import React, { Fragment } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { DotsThree, CloudArrowDown, Link, PencilSimpleLine, Trash} from 'phosphor-react';
+/*import UilPen from '@iconscout/react-unicons/icons/uil-pen';
+import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
+import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
+import UilLinkedAlt from '@iconscout/react-unicons/icons/uil-link';
+import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
+import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
+import { PencilSimple, Link, Trash, DownloadSimple, DotsThree} from 'phosphor-react';
 import { items } from '@internxt/lib';
 
 import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
@@ -15,6 +21,7 @@ import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 
+
 import './DriveExplorerListItem.scss';
 
 const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.Element => {
@@ -22,6 +29,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
   const { isItemSelected, isSomeItemSelected } = useDriveItemStoreProps();
   const {
     isEditingName,
+    //itemIsShared,
     dirtyName,
     nameInputRef,
     onNameChanged,
@@ -40,11 +48,13 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
     onItemRightClicked,
     onItemDoubleClicked,
   } = useDriveItemActions(item);
+
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
   const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
+  //const sharedClassNames: string = itemIsShared? 'shared' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
   const onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     e.target.checked ? dispatch(storageActions.selectItems([item])) : dispatch(storageActions.deselectItems([item]));
@@ -78,7 +88,7 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
           >
             {items.getItemDisplayName(item)}
           </span>
-          {!isEditingName && <PencilSimpleLine onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button h-5 w-5" />}
+          {!isEditingName && <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />}
         </div>
       </Fragment>
     );
@@ -103,8 +113,13 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
 
       {/* ICON */}
       <div className="w-1/12 flex items-center px-3 box-content">
+      
         <div className="h-10 w-10 flex justify-center filter drop-shadow-soft">
           <ItemIconComponent className="h-full" />
+          {/*itemIsShared?
+          <Link 
+          className="items-center justify-center rounded-full flex flex-col h-5 w-5 ml-3 absolute -bottom-1 -right-2 place-self-end rounded-full p-0.5 bg-primary text-white border-2 border-white group-hover:border-slate-50 group-active:border-blue-100" 
+          /> : ''*/}
         </div>
       </div>
 
@@ -119,10 +134,12 @@ const DriveExplorerListItem = ({isTrash, item }: DriveExplorerItemProps): JSX.El
             className="hover-action mr-3"
             data-test={`download-${item.isFolder ? 'folder' : 'file'}-button`}
           >
-            <CloudArrowDown className="h-5 w-5" />
+            <DownloadSimple className="h-5 w-5" />
           </button>
           <button
-            onClick={onShareButtonClicked}
+            onClick={(e)=> {
+              onShareButtonClicked && onShareButtonClicked(e);
+            }}
             className="hover-action mr-3"
             data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
           >

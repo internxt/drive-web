@@ -104,7 +104,7 @@ export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: str
     const { token } = data;
     const user: UserSettings = { ...data.user, bucket: '' };
 
-    user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
+    // user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
     user.mnemonic = decryptTextWithKey(user.mnemonic, password);
 
     return { xUser: user, xToken: token, mnemonic: user.mnemonic };

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { emailRegexPattern } from '@internxt/lib/dist/src/auth/isValidEmail';
 
 import { Link } from 'react-router-dom';
 import { CaretLeft, WarningCircle } from 'phosphor-react';
@@ -48,8 +47,8 @@ function ForgotPassword(): JSX.Element {
   };
 
   return (
-    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 text-left sm:shadow-soft">
-      <div className="flex flex-col space-y-6">
+    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
+      <div className="flex flex-col space-y-3">
         <div className="flex flex-col space-y-1">
           <Link
             to="/login"
@@ -82,8 +81,6 @@ function ForgotPassword(): JSX.Element {
                   onFocus={() => setShowErrors(false)}
                   required={true}
                   minLength={{ value: 1, message: 'Email must not be empty' }}
-                  //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
-                  pattern={{ value: emailRegexPattern, message: 'Email not valid' }}
                   error={errors.email}
                 />
                 {showErrors && (

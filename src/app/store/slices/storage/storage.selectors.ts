@@ -2,6 +2,7 @@ import { RootState } from '../..';
 import { DriveItemData } from '../../../drive/types';
 import itemsListService from '../../../drive/services/items-list.service';
 import { sessionSelectors } from '../session/session.selectors';
+//import shareService from 'app/share/services/share.service';
 
 const rootFolderId = (state: RootState): number => {
   const { team } = state.team;
@@ -71,6 +72,15 @@ const storageSelectors = {
   },
 
   isSomeItemSelected: (state: RootState): boolean => state.storage.selectedItems.length > 0,
+
+  /*async isItemShared(state: RootState): Promise<(item: DriveItemData) => boolean> {
+
+    const page = state.shared.pagination.page;
+    const perPage = state.shared.pagination.perPage;
+    const response = await shareService.getAllShareLinks(page, perPage, undefined);
+    return (item) => response.items.some((i) => item.id.toString() === i.id && item.isFolder === i.isFolder);
+  },*/
+
 };
 
 export default storageSelectors;

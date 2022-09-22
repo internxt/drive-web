@@ -84,107 +84,118 @@ code {
   font-family: 'NeueEinstellung', sans-serif;
 }
 
-.text-6xl {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 60px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-}
+// .text-6xl {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 60px;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.5;
+//   letter-spacing: normal;
+// }
 
-.text-5xl {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 48px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-}
+// .text-5xl {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 48px;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.5;
+//   letter-spacing: normal;
+// }
 
-.text-4xl {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 36px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.11;
-  letter-spacing: normal;
-}
+// .text-4xl {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 36px;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.11;
+//   letter-spacing: normal;
+// }
 
-.text-3xl {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 30px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-}
+// .text-3xl {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 30px;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.2;
+//   letter-spacing: normal;
+// }
 
-.text-2xl {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 24px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.33;
-  letter-spacing: normal;
-}
+// .text-2xl {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 24px;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.33;
+//   letter-spacing: normal;
+// }
 
-.text-xl {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 20px; // font-family: Gotham;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
-}
+// .text-xl {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 20px; // font-family: Gotham;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.4;
+// }
 
-.text-lg {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 18px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.56;
-  letter-spacing: normal;
-}
+// .text-lg {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 18px;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.56;
+//   letter-spacing: normal;
+// }
 
-.text-base {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 16px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-}
+// .text-base {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 16px;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.5;
+//   letter-spacing: normal;
+// }
 
-.text-sm {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 14px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.43;
-}
+// .text-sm {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 14px;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.43;
+// }
 
-.text-xs {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 12px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.33;
-}
+// .text-xs {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 12px;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.33;
+// }
 
 .text-supporting-2 {
   font-family: 'NeueEinstellung', sans-serif;
   font-size: 10px;
   font-stretch: normal;
   font-style: normal;
-  line-height: 1.2;
 }
 
-.text-supporting-1 {
-  font-family: 'NeueEinstellung', sans-serif;
-  font-size: 8px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.25;
+// .text-supporting-1 {
+//   font-family: 'NeueEinstellung', sans-serif;
+//   font-size: 8px;
+//   font-stretch: normal;
+//   font-style: normal;
+//   line-height: 1.25;
+// }
+
+.ratio-auto {
+  aspect-ratio: auto;
+}
+
+.ratio-square {
+  aspect-ratio: 1 / 1;
+}
+
+.ratio-video {
+  aspect-ratio: 16 / 9;
 }
 
 @layer components {
@@ -232,7 +243,7 @@ code {
   }
 
   /* INPUTS */
-  input[type='checkbox'] {
+  input[type='checkbox']:not(.base-checkbox) {
     @apply h-4 w-4 rounded border-2 border-neutral-500 text-xs text-neutral-500;
   }
 
@@ -321,7 +332,7 @@ code {
 
   button.primary,
   .base-button.primary {
-    @apply bg-blue-60 text-white hover:bg-blue-80;
+    @apply bg-blue-60 text-white hover:bg-primary-dark;
 
     &.inverse {
       @apply bg-blue-20 text-blue-60 hover:bg-blue-30;
@@ -344,7 +355,15 @@ code {
 
   button.tertiary,
   .base-button.tertiary {
-    @apply bg-white text-neutral-500 hover:bg-neutral-30;
+    @apply text-gray-80 transition-colors duration-100 ease-in-out hover:bg-gray-5 active:bg-gray-10;
+
+    &:disabled {
+      @apply pointer-events-none text-gray-40;
+    }
+
+    &.squared {
+      @apply h-10 w-10;
+    }
   }
 
   button.quaternary,

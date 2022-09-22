@@ -72,7 +72,7 @@ export default function ShareDialog({
       const encryptedMnemonic = aes.encrypt(mnemonic, code);
       const share = await shares.createShare({ bucket, encryptedMnemonic, photoIds: photos, token, views });
 
-      const link = `${window.location.origin}/s/photos/${share.id}/${code}`;
+      const link = `${window.location.origin}/sh/photos/${share.id}/${code}`;
 
       setStatus({ tag: 'done', link });
     }

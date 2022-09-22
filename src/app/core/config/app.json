@@ -34,9 +34,9 @@
       "exact": true
     },
     {
-      "id": "signupwebsite",
+      "id": "auth",
       "layout": "empty",
-      "path": "/signupwebsite",
+      "path": "/auth",
       "exact": true
     },
     {
@@ -63,6 +63,13 @@
       "id": "backups",
       "layout": "header-and-sidenav",
       "path": "/app/backups",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "shared-links",
+      "layout": "header-and-sidenav",
+      "path": "/app/shared-links",
       "exact": true,
       "auth": true
     },
@@ -138,27 +145,40 @@
       "auth": true
     },
     {
+      "id": "checkout-plan",
+      "layout": "empty",
+      "path": "/checkout-plan/",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "remove",
       "layout": "empty",
       "path": "/remove",
       "exact": true
     },
     {
+      "id": "removedialog",
+      "layout": "empty",
+      "path": "/removedialog",
+      "exact": true
+    },
+    {
       "id": "share-token",
       "layout": "share",
-      "path": "/s/file/:token([a-z0-9]{20})/:code?",
+      "path": "/sh/file/:token([a-z0-9]{20})/:code?",
       "exact": false
     },
     {
       "id": "share-folder-token",
       "layout": "share",
-      "path": "/s/folder/:token([a-z0-9]{20})/:code",
+      "path": "/sh/folder/:token([a-z0-9]{20})/:code",
       "exact": false
     },
     {
       "id": "share-photos-token",
       "layout": "share",
-      "path": "/s/photos/:token([a-z0-9]{24})/:code",
+      "path": "/sh/photos/:token([a-z0-9]{24})/:code",
       "exact": false
     },
     {

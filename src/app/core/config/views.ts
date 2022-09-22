@@ -2,7 +2,7 @@ import { ComponentClass, FunctionComponent } from 'react';
 
 import SignUpView from 'app/auth/views/SignUpView/SignUpView';
 import SignInView from 'app/auth/views/SignInView/SignInView';
-import SignUpWebsiteView from 'app/auth/views/SignUpWebsiteView/SignUpWebsiteView';
+import AuthView from 'app/auth/views/Auth/AuthView';
 import DriveView from 'app/drive/views/DriveView/DriveView';
 import RecentsView from 'app/drive/views/RecentsView/RecentsView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
@@ -15,8 +15,10 @@ import DeactivationTeamsView from 'app/teams/views/DeactivationTeamsView/Deactiv
 import ShareFileView from 'app/share/views/ShareView/ShareFileView';
 import RemoveAccountView from 'app/auth/views/RemoveAccountView/RemoveAccountView';
 import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/GuestAcceptInviteView';
+import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
+import SharedLinksView from 'app/share/views/SharedLinksView/SharedLinksView';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
@@ -37,12 +39,13 @@ const views: Array<{
   { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
-  { id: AppView.SignUpWebsite, component: SignUpWebsiteView },
+  { id: AppView.Auth, component: AuthView },
   { id: AppView.Recover, component: RecoverView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
+  { id: AppView.SharedLinks, component: SharedLinksView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Account, component: AccountView },
   { id: AppView.Preferences, component: Preferences },
@@ -53,7 +56,9 @@ const views: Array<{
   { id: AppView.TeamSuccess, component: TeamSuccessView },
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
   { id: AppView.Checkout, component: CheckoutView },
+  { id: AppView.CheckoutPlan, component: CheckoutPlanView },
   { id: AppView.Remove, component: RemoveAccountView },
+  { id: AppView.RemoveDialog, component: RemoveAccountView, componentProps: { displayIframe: true } },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFolderToken, component: ShareFolderView },
   { id: AppView.SharePhotosToken, component: SharePhotosView },

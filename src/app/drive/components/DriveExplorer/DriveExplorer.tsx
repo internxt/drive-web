@@ -1,14 +1,12 @@
 import { Component, createRef, ReactNode } from 'react';
 import { connect } from 'react-redux';
-//import UilTable from '@iconscout/react-unicons/icons/uil-table';
-//import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
-//import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
-//import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
-//import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
-//import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
-
-import {ClockCounterClockwise, GridFour, Rows, CloudArrowDown, CloudArrowUp, FolderPlus, Trash, UploadSimple} from 'phosphor-react';
-
+/*import UilTable from '@iconscout/react-unicons/icons/uil-table';
+import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
+import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
+import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
+import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
+import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
+import { Trash, DownloadSimple, UploadSimple, FolderSimplePlus, Rows, SquaresFour, ClockCounterClockwise } from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -39,6 +37,8 @@ import iconService from '../../services/icon.service';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
 
+//import shareService from 'app/share/services/share.service';
+
 interface DriveExplorerProps {
   title: JSX.Element | string;
   titleClassName?: string;
@@ -58,7 +58,6 @@ interface DriveExplorerProps {
   isMoveItemsDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isClearTrashDialogOpen: boolean;
-
   viewMode: FileViewMode;
   namePath: FolderPath[];
   dispatch: AppDispatch;
@@ -190,20 +189,15 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     } = this.props;
     const { fileInputRef, fileInputKey } = this.state;
     const viewModesIcons = {
-
-      [FileViewMode.List]: <GridFour  className='h-5 w-5'/>,
-      [FileViewMode.Grid]: <Rows  className='h-5 w-5'/>,
-
+      [FileViewMode.List]: <SquaresFour className="h-6 w-6" />,
+      [FileViewMode.Grid]: <Rows className="h-6 w-6" />,
     };
     const viewModes = {
       [FileViewMode.List]: DriveExplorerList,
       [FileViewMode.Grid]: DriveExplorerGrid,
     };
-
     const isRecents = title === 'Recents';
-
     const isTrash = title === 'Trash';
-
     const ViewModeComponent = viewModes[isTrash? FileViewMode.List : viewMode];
 
     const FileIcon = iconService.getItemIcon(false);
@@ -229,15 +223,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               <div className="flex">
                 {this.hasAnyItemSelected && !isTrash ? (
                   <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <CloudArrowDown className="mr-1.5 h-5 w-5" />
+                    <DownloadSimple className="mr-2.5 h-5 w-5" />
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
-
-                ) : 
-                  !isTrash?
-                  (<BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <CloudArrowUp className="mr-1.5 h-5 w-5" />
-
+                ) : !isTrash?(
+                  <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
+                    <UploadSimple className="mr-2.5 h-5 w-5" />
                     <span>{i18n.get('actions.upload')}</span>
                   </BaseButton>
                 ) : (
@@ -245,12 +236,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 )}
                 {!this.hasAnyItemSelected && !isTrash ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
-                    <FolderPlus className="h-5 w-5" />
+                    <FolderSimplePlus className="h-6 w-6" />
                   </BaseButton>
                 ) : null}
-                {isTrash && this.hasAnyItemSelected ? (
+                {this.hasAnyItemSelected && isTrash ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onRecoverButtonClicked}>
-                    <ClockCounterClockwise className="h-5 w-5" />
+                    <ClockCounterClockwise className="h-6 w-6" />
                   </BaseButton>
                 ) : null}
                 {this.hasAnyItemSelected || isTrash ? (
@@ -430,6 +421,16 @@ const dropTargetCollect: DropTargetCollector<
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
 
+  /*shareService.getAllShareLinks(0,state.shared.pagination.perPage,undefined).then((response)=>{
+   
+    const sharedItems: DriveItemData[] = items.filter((item)=>{
+      response.items.some((i) => {
+        
+        return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
+      });
+    });
+  });*/
+
   return {
     isAuthenticated: state.user.isAuthenticated,
     user: state.user.user,
@@ -440,7 +441,6 @@ export default connect((state: RootState) => {
     isMoveItemsDialogOpen: state.ui.isMoveItemsDialogOpen,
     isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
     isClearTrashDialogOpen: state.ui.isClearTrashDialogOpen,
-
     viewMode: state.storage.viewMode,
     namePath: state.storage.namePath,
     workspace: state.session.workspace,
