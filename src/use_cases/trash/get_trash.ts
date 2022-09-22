@@ -4,7 +4,7 @@ import { store } from '../../app/store';
 import { DriveItemData } from '../../app/drive/types';
 
 const GetTrash = async (): Promise<void> => {
-  const trashClient = await SdkFactory.getInstance().createTrashClient();
+  const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
   const itemsInTrash = await trashClient.getTrash();
   const items: DriveItemData[] = [
     ...(itemsInTrash.files as DriveItemData[]),

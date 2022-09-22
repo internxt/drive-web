@@ -1,14 +1,14 @@
-import {DriveFileData, DriveFileMetadataPayload} from '../../types';
+import { DriveFileData, DriveFileMetadataPayload } from '../../types';
 import analyticsService from '../../../analytics/services/analytics.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
-import {DevicePlatform} from '../../../core/types';
+import { DevicePlatform } from '../../../core/types';
 import i18n from '../../../i18n/services/i18n.service';
-import {UserSettings} from '@internxt/sdk/dist/shared/types/userSettings';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import uploadFile from './uploadFile';
 import * as uuid from 'uuid';
-import {StorageTypes} from '@internxt/sdk/dist/drive';
-import {SdkFactory} from '../../../core/factory/sdk';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { SdkFactory } from '../../../core/factory/sdk';
 //import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 //import { FetchFolderContentResponse } from '../folder.service';
 
@@ -32,7 +32,7 @@ export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayloa
 }
 
 // export function deleteFile(fileData: DriveFileData): Promise<void> {
-//   const trashClient = SdkFactory.getInstance().createTrashClient();
+//   const trashClient = SdkFactory.getNewApiInstance().createTrashClient()();
 //
 //   return trashClient.then((client) => {
 //     client
@@ -88,7 +88,7 @@ async function fetchRecents(limit: number): Promise<DriveFileData[]> {
 }
 
 // export function moveToTrash(items: DriveFileData[]): Promise<void> {
-//   const trashClient = SdkFactory.getInstance().createTrashClient();
+//   const trashClient = SdkFactory.getNewApiInstance().createTrashClient()();
 //   let itemsArray: AddItemsToTrashPayload;
 //
 //   items.forEach((i) => {
@@ -111,15 +111,13 @@ async function fetchRecents(limit: number): Promise<DriveFileData[]> {
 // }
 
 async function fetchDeleted(): Promise<DriveFileData[]> {
-  const trashClient = SdkFactory.getInstance().createTrashClient();
+  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
 
-  return trashClient.then((client) => {
-    const trashRequest = client.getTrash();
+  const trashRequest = trashClient.getTrash();
 
-    return trashRequest[0].then((response) => {
-      const { files } = response;
-      return files;
-    });
+  return trashRequest[0].then((response) => {
+    const { files } = response;
+    return files;
   });
 }
 

@@ -66,17 +66,11 @@ export class SdkFactory {
     return Share.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public async createTrashClient(): Promise<Trash> {
+  public createTrashClient(): Trash {
+    const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    let newToken = this.localStorage.get('xNewToken');
-
-    if (!newToken) {
-      newToken = await authService.getNewToken();
-      this.localStorage.set('xNewToken', newToken);
-    }
-
-    const apiSecurity = { ...this.getApiSecurity(), token: newToken };
-    return Trash.client(process.env.REACT_APP_API_V2_URL as string, appDetails, apiSecurity);
+    const apiSecurity = this.getNewApiSecurity();
+    return Trash.client(apiUrl, appDetails, apiSecurity);
   }
 
   public createUsersClient(): Users {

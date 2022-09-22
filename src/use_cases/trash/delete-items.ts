@@ -8,11 +8,11 @@ import { DeleteItemsPermanentlyPayload } from '@internxt/sdk/dist/drive/trash/ty
 const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToDelete.map((item) => {
     return {
-      id: item.isFolder ? item.id : item.fileId,
+      id: item.id,
       type: item.isFolder ? 'folder' : 'file',
     };
   });
-  const trashClient = await SdkFactory.getInstance().createTrashClient();
+  const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
   await trashClient.deleteItemsPermanently({ items } as DeleteItemsPermanentlyPayload);
 
   store.dispatch(storageActions.popItemsToDelete(itemsToDelete));

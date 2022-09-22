@@ -113,14 +113,12 @@ export async function updateMetaData(folderId: number, metadata: DriveFolderMeta
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
-  const trashClient = SdkFactory.getInstance().createTrashClient();
-  return trashClient.then((client) => {
-    client.deleteFolder(folderData.id).then(() => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackDeleteItem(folderData as DriveItemData, {
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
+  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+  return trashClient.deleteFolder(folderData.id).then(() => {
+    const user = localStorageService.getUser() as UserSettings;
+    analyticsService.trackDeleteItem(folderData as DriveItemData, {
+      email: user.email,
+      platform: DevicePlatform.Web,
     });
   });
 }

@@ -4,7 +4,7 @@ import { store } from '../../app/store';
 import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
 
 const ClearTrash = async (): Promise<void> => {
-  const trashClient = await SdkFactory.getInstance().createTrashClient();
+  const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
   await trashClient.clearTrash();
 
   store.dispatch(storageActions.setItemsOnTrash([]));
