@@ -37,10 +37,10 @@ async function catchError(error) {
     } else {
       if (castedError.status) {
         castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
-        throw castedError;
+        //throw castedError;
       }
     }
-    throw error;
+    //throw error;
   }
 }
 
@@ -130,9 +130,17 @@ async function afterMoving(itemsToRecover, destinationId, name?, namePaths?) {
 const RecoverItemsFromTrash = async (itemsToRecover, destinationId, name?, namePaths?) => {
   itemsToRecover?.forEach((item) => {
     if (item.isFolder) {
-      moveFolder(item, item.id, destinationId).then(() => { if (itemsToRecover[itemsToRecover.length - 1] === item) { afterMoving(itemsToRecover, destinationId, name, namePaths); } }).catch((err) => { if (err) { return err; } });
+      moveFolder(item, item.id, destinationId).then(() => {
+        if (itemsToRecover[itemsToRecover.length - 1] === item) {
+          afterMoving(itemsToRecover, destinationId, name, namePaths);
+        }
+      }).catch((err) => { if (err) { return err; } });
     } else {
-      moveFile(item, item.fileId, destinationId, item.bucket).then(() => { if (itemsToRecover[itemsToRecover.length - 1] === item) { afterMoving(itemsToRecover, destinationId, name, namePaths); } }).catch((err) => { if (err) { return err; } });
+      moveFile(item, item.fileId, destinationId, item.bucket).then(() => {
+        if (itemsToRecover[itemsToRecover.length - 1] === item) {
+          afterMoving(itemsToRecover, destinationId, name, namePaths);
+        }
+      }).catch((err) => { if (err) { return err; } });
     }
   });
 };
