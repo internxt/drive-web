@@ -143,6 +143,7 @@ const RecoverItemsFromTrash = async (itemsToRecover, destinationId, name?, nameP
       }).catch((err) => { if (err) { return err; } });
     }
   });
+  failedItems.splice(0);
 };
 
 export default RecoverItemsFromTrash;
