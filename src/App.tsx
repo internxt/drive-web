@@ -129,7 +129,7 @@ class App extends Component<AppProps> {
             <Toaster position="bottom-center" />
 
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
-            <SurveyDialog isOpen={isSurveyDialogOpen} />
+            {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
 
             <FileViewerWrapper
               file={fileViewerItem}
