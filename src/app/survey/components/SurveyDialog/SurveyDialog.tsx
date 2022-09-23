@@ -1,6 +1,7 @@
 import { Widget } from '@typeform/embed-react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
+import { useEffect } from 'react';
 
 import { useAppDispatch } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
@@ -10,19 +11,21 @@ import RealtimeService from 'app/core/services/socket.service';
 import { referralsThunks } from 'app/store/slices/referrals';
 
 const SurveyDialog = (props: { isOpen: boolean }): JSX.Element => {
+  const clientId = RealtimeService.getInstance().getClientId();
   const dispatch = useAppDispatch();
+  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
   const onClose = (): void => {
+    dispatch(uiActions.setIsSurveyDialogOpen(false));
+  };
+
+  useEffect(() => {
     RealtimeService.getInstance().onEvent((data) => {
       if (data.event === 'USER_STORAGE_UPDATED') {
         dispatch(referralsThunks.refreshUserReferrals());
       }
     });
-
-    dispatch(uiActions.setIsSurveyDialogOpen(false));
-  };
-
-  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
+  }, []);
 
   return (
     <BaseDialog
@@ -38,8 +41,8 @@ const SurveyDialog = (props: { isOpen: boolean }): JSX.Element => {
             id="yM3EyqJE"
             height={500}
             hidden={{
-              email: user.email,
-              uuid: user.uuid,
+              email: clientId,
+              uuid: user.uuid
             }}
           />
         </div>

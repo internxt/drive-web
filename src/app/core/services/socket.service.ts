@@ -13,7 +13,7 @@ export default class RealtimeService {
     return this.instance;
   }
 
-  init(): void {
+  init(onConnected?: () => void): void {
     if (!isProduction()) {
       console.log('[REALTIME]: CONNECTING...');
     }
@@ -28,6 +28,8 @@ export default class RealtimeService {
       if (!isProduction()) {
         console.log('[REALTIME]: CONNECTED WITH ID', this.socket?.id);
       }
+
+      onConnected?.();
     });
 
     this.socket.on('disconnect', (reason) => {
@@ -40,6 +42,13 @@ export default class RealtimeService {
       if (!isProduction())
         console.error('[REALTIME] CONNECTION ERROR:', error);
     });
+  }
+
+  getClientId(): string {
+    if (!this.socket) {
+      throw new Error('Realtime service is not connected');
+    }
+    return this.socket.id;
   }
 
   onEvent(cb: (data: any) => void): void {
