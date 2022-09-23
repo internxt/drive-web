@@ -31,7 +31,7 @@ const SurveyDialog = (props: { isOpen: boolean }): JSX.Element => {
     <BaseDialog
       isOpen={props.isOpen}
       title={''}
-      panelClasses="px-6 py-8 w-156"
+      panelClasses="px-6 py-8 w-4/5 max-w-screen-xl"
       onClose={onClose}
       bgColor={'bg-transparent'}
     >
@@ -39,7 +39,7 @@ const SurveyDialog = (props: { isOpen: boolean }): JSX.Element => {
         <div className="py-10">
           <Widget
             id="yM3EyqJE"
-            height={500}
+            height={600}
             hidden={{
               email: clientId,
               uuid: user.uuid
