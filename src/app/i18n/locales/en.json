@@ -373,7 +373,12 @@
     "subscribeToNewsletter": "{email} successfully subscribed to newsletter"
   },
   "actions": {
-    "upload": "Upload",
+    "upload": {
+      "new": "New",
+      "folder": "Folder",
+      "uploadFiles": "Upload files",
+      "uploadFolder": "Upload folder"
+    },
     "download": "Download",
     "downloading": "Downloading",
     "downloaded": "Downloaded",

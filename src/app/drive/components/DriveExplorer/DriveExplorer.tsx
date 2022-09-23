@@ -6,7 +6,7 @@ import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download'
 import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
 import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
-import { Trash, DownloadSimple, UploadSimple, FolderSimplePlus, Rows, SquaresFour } from 'phosphor-react';
+import { Trash, DownloadSimple, UploadSimple, FolderSimplePlus, Rows, SquaresFour, FileArrowUp, Plus, CaretDown } from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -35,6 +35,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 import { IRoot } from 'app/store/slices/storage/storage.thunks/uploadFolderThunk';
 import { transformInputFilesToJSON, transformJsonFilesToItems } from 'app/drive/services/folder.service/uploadFolderInput.service';
+import Popover from 'app/shared/components/Popover';
 
 //import shareService from 'app/share/services/share.service';
 
@@ -203,6 +204,18 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       </div>
     );
 
+    const separator = <div className="my-0.5 mx-3 border-t border-gray-10" />;
+    const PopoverItem = ({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
+      return (
+        <div
+          className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-1 active:bg-gray-5"
+          onClick={onClick}
+        >
+          {children}
+        </div>
+      );
+    };
+
     return connectDropTarget(
       <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
         {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
@@ -220,16 +233,33 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
-                  <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                    <UploadSimple className="mr-2.5 h-5 w-5" />
-                    <span>{i18n.get('actions.upload')}</span>
-                  </BaseButton>
+                  <Popover
+                    className={'z-40 mr-5'}
+                    button={
+                      <BaseButton className="primary flex items-center">
+                        <span>{i18n.get('actions.upload.new')}</span>
+                        <Plus className="ml-2.5 h-3 w-3" />
+                        <CaretDown className="h-3 w-3" />
+                      </BaseButton>
+                    }
+                    panel={
+                      <div className="w-52">
+                        <PopoverItem onClick={this.onCreateFolderButtonClicked} >
+                          <FolderSimplePlus size={20} />
+                          <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                        </PopoverItem>
+                        {separator}
+                        <PopoverItem onClick={this.onUploadFileButtonClicked} >
+                          <FileArrowUp size={20} />
+                          <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
+                        </PopoverItem>
+                        <PopoverItem onClick={this.onUploadFolderButtonClicked} >
+                          <UploadSimple size={20} />
+                          <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
+                        </PopoverItem>
+                      </div>
+                    } />
                 )}
-                {!this.hasAnyItemSelected ? (
-                  <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
-                    <FolderSimplePlus className="h-6 w-6" />
-                  </BaseButton>
-                ) : null}
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
                     <Trash className="h-6 w-6" />
