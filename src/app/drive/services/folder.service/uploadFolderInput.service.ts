@@ -6,8 +6,7 @@ export const transformInputFilesToJSON = (files: File[]): JSON => {
     for (const file of files) {
         file.webkitRelativePath.split('/').reduce(
             (previousValue, currentValue, currentIndex, arrayPaths) => {
-                //console.log(currentIndex, previousValue, currentValue);
-                if (currentIndex == arrayPaths.length - 1) {
+                if (currentIndex === arrayPaths.length - 1) {
                     previousValue[currentValue] = file;
                 }
                 return previousValue[currentValue] = previousValue[currentValue] || {};
