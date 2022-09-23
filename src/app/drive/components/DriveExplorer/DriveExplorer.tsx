@@ -33,6 +33,8 @@ import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
+import { IRoot } from 'app/store/slices/storage/storage.thunks/uploadFolderThunk';
+import { transformInputFilesToJSON, transformJsonFilesToItems } from 'app/drive/services/folder.service/uploadFolderInput.service';
 
 //import shareService from 'app/share/services/share.service';
 
@@ -43,6 +45,7 @@ interface DriveExplorerProps {
   items: DriveItemData[];
   onItemsDeleted?: () => void;
   onFileUploaded?: () => void;
+  onFolderUploaded?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
   user: UserSettings | undefined;
@@ -65,6 +68,8 @@ interface DriveExplorerProps {
 interface DriveExplorerState {
   fileInputRef: React.RefObject<HTMLInputElement>;
   fileInputKey: number; //! Changing this forces the invisible file input to render
+  folderInputKey: number;
+  folderInputRef: React.RefObject<HTMLInputElement>;
   email: string;
   token: string;
   isAdmin: boolean;
@@ -78,6 +83,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     this.state = {
       fileInputRef: createRef(),
       fileInputKey: Date.now(),
+      folderInputKey: Date.now(),
+      folderInputRef: createRef(),
       email: '',
       token: '',
       isAdmin: true,
@@ -101,8 +108,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     deviceService.redirectForMobile();
   }
 
-  onUploadButtonClicked = (): void => {
+  onUploadFileButtonClicked = (): void => {
     this.state.fileInputRef.current?.click();
+  };
+
+  onUploadFolderButtonClicked = (): void => {
+    this.state.folderInputRef.current?.click();
   };
 
   onDownloadButtonClicked = (): void => {
@@ -111,7 +122,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     dispatch(storageThunks.downloadItemsThunk(selectedItems));
   };
 
-  onUploadInputChanged = async (e) => {
+  onUploadFileInputChanged = async (e) => {
     const { dispatch, onFileUploaded, currentFolderId } = this.props;
 
     dispatch(
@@ -122,6 +133,18 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     ).then(() => onFileUploaded && onFileUploaded());
 
     this.setState({ fileInputKey: Date.now() });
+  };
+
+  onUploadFolderInputChanged = async (e) => {
+    const files = e?.target?.files as File[];
+    const { currentFolderId } = this.props;
+
+    const filesJson = transformInputFilesToJSON(files);
+    const { rootList, rootFiles } = transformJsonFilesToItems(filesJson, currentFolderId);
+
+    await uploadItems(this.props, rootList, rootFiles);
+
+    this.setState({ folderInputKey: Date.now() });
   };
 
   onViewModeButtonClicked = (): void => {
@@ -159,7 +182,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       isOver,
       connectDropTarget,
     } = this.props;
-    const { fileInputRef, fileInputKey } = this.state;
+    const { fileInputRef, fileInputKey, folderInputKey, folderInputRef } = this.state;
     const viewModesIcons = {
       [FileViewMode.List]: <SquaresFour className="h-6 w-6" />,
       [FileViewMode.Grid]: <Rows className="h-6 w-6" />,
@@ -257,7 +280,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                         icon: UploadSimple,
                         style: 'elevated',
                         text: 'Upload files',
-                        onClick: this.onUploadButtonClicked,
+                        onClick: this.onUploadFileButtonClicked,
                       }}
                     />
                   ) : isRecents ? (
@@ -275,7 +298,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                         icon: UploadSimple,
                         style: 'elevated',
                         text: 'Upload files',
-                        onClick: this.onUploadButtonClicked,
+                        onClick: this.onUploadFileButtonClicked,
                       }}
                     />
                   )
@@ -294,11 +317,21 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
             </div>
 
             <input
-              key={fileInputKey}
+              key={`file-${fileInputKey}`}
               className="hidden"
               ref={fileInputRef}
               type="file"
-              onChange={this.onUploadInputChanged}
+              onChange={this.onUploadFileInputChanged}
+              multiple={true}
+            />
+            <input
+              key={`folder-${folderInputKey}`}
+              className="hidden"
+              ref={folderInputRef}
+              type="file"
+              directory=""
+              webkitdirectory=""
+              onChange={this.onUploadFolderInputChanged}
               multiple={true}
             />
           </div>
@@ -308,10 +341,48 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
   }
 }
 
+declare module 'react' {
+  interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
+    // extends React's HTMLAttributes
+    directory?: string;
+    webkitdirectory?: string;
+  }
+}
+
+const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
+  const { dispatch, currentFolderId, onDragAndDropEnd } = props;
+  if (files.length) {
+    // files where dragged directly
+    await dispatch(
+      storageThunks.uploadItemsThunk({
+        files,
+        parentFolderId: currentFolderId,
+        options: {
+          onSuccess: onDragAndDropEnd,
+        },
+      }),
+    );
+  }
+
+  if (rootList.length) {
+    for (const root of rootList) {
+      await dispatch(
+        storageThunks.uploadFolderThunk({
+          root,
+          currentFolderId,
+          options: {
+            onSuccess: onDragAndDropEnd,
+          },
+        }),
+      );
+    }
+  }
+};
+
 const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
   drop: (props, monitor) => {
-    const { dispatch, currentFolderId, onDragAndDropEnd } = props;
     const droppedData: { files: File[]; items: DataTransferItemList } = monitor.getItem();
+    console.log('droppedData', droppedData);
     const isAlreadyDropped = monitor.didDrop();
     const namePathDestinationArray = props.namePath.map((level) => level.name);
 
@@ -324,32 +395,7 @@ const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
     const folderPath = namePathDestinationArray.join('/');
 
     transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
-      if (files.length) {
-        // files where dragged directly
-        await dispatch(
-          storageThunks.uploadItemsThunk({
-            files,
-            parentFolderId: currentFolderId,
-            options: {
-              onSuccess: onDragAndDropEnd,
-            },
-          }),
-        );
-      }
-
-      if (rootList.length) {
-        for (const root of rootList) {
-          await dispatch(
-            storageThunks.uploadFolderThunk({
-              root,
-              currentFolderId,
-              options: {
-                onSuccess: onDragAndDropEnd,
-              },
-            }),
-          );
-        }
-      }
+      await uploadItems(props, rootList, files);
     });
   },
 };
