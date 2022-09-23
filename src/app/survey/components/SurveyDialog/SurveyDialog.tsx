@@ -6,11 +6,19 @@ import { useAppDispatch } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import RealtimeService from 'app/core/services/socket.service';
+import { referralsThunks } from 'app/store/slices/referrals';
 
 const SurveyDialog = (props: { isOpen: boolean }): JSX.Element => {
   const dispatch = useAppDispatch();
 
   const onClose = (): void => {
+    RealtimeService.getInstance().onEvent((data) => {
+      if (data.event === 'USER_STORAGE_UPDATED') {
+        dispatch(referralsThunks.refreshUserReferrals());
+      }
+    });
+
     dispatch(uiActions.setIsSurveyDialogOpen(false));
   };
 

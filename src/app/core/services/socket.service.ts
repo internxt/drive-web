@@ -1,7 +1,71 @@
 import io from 'socket.io-client';
+import localStorageService from './local-storage.service';
 
-export const socket = io(process.env.REACT_APP_API_URL, {
-  transports: ['websocket'],
-  upgrade: false,
-  path: '/api/sockets',
-});
+export default class RealtimeService {
+  private socket?: SocketIOClient.Socket;
+  private static instance: RealtimeService;
+
+  static getInstance(): RealtimeService {
+    if (!this.instance) {
+      this.instance = new RealtimeService();
+    }
+
+    return this.instance;
+  }
+
+  init(): void {
+    if (!isProduction()) {
+      console.log('[REALTIME]: CONNECTING...');
+    }
+
+    this.socket = io(process.env.REACT_APP_NOTIFICATIONS_URL, {
+      auth: {
+        token: getToken(),
+      }
+    });
+
+    this.socket.on('connect', () => {
+      if (!isProduction()) {
+        console.log('[REALTIME]: CONNECTED WITH ID', this.socket?.id);
+      }
+    });
+
+    this.socket.on('disconnect', (reason) => {
+      if (!isProduction()) {
+        console.log('[REALTIME] DISCONNECTED:', reason);
+      }
+    });
+
+    this.socket.on('connect_error', (error) => {
+      if (!isProduction())
+        console.error('[REALTIME] CONNECTION ERROR:', error);
+    });
+  }
+
+  onEvent(cb: (data: any) => void): void {
+    if (this.socket?.disconnected) {
+      return console.log('[REALTIME] SOCKET IS DISCONNECTED');
+    }
+
+    this.socket?.on('event', (data) => {
+      if (!isProduction()) {
+        console.log('[REALTIME] EVENT RECEIVED:', JSON.stringify(data, null, 2));
+      }
+
+      cb(data);
+    });
+  }
+
+  stop(): void {
+    this.socket?.close();
+  }
+}
+
+function isProduction(): boolean {
+  return process.env.NODE_ENV === 'production';
+}
+
+function getToken(): string {
+  return localStorageService.get('xNewToken') as string;
+}
+
