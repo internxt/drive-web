@@ -412,7 +412,6 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
 const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
   drop: (props, monitor) => {
     const droppedData: { files: File[]; items: DataTransferItemList } = monitor.getItem();
-    console.log('droppedData', droppedData);
     const isAlreadyDropped = monitor.didDrop();
     const namePathDestinationArray = props.namePath.map((level) => level.name);
 
