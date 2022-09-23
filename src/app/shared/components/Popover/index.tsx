@@ -2,17 +2,19 @@ import { Popover as HPopover, Transition } from '@headlessui/react';
 import { ReactNode } from 'react';
 
 export default function Popover({
-  button,
+  childrenButton,
   panel,
   className,
+  classButton
 }: {
-  button: ReactNode;
+  childrenButton: ReactNode;
   panel: ReactNode;
   className?: string;
+  classButton?: string
 }): JSX.Element {
   return (
     <HPopover style={{ lineHeight: 0 }} className={`relative ${className}`}>
-      <HPopover.Button className="cursor-pointer">{button}</HPopover.Button>
+      <HPopover.Button className={`cursor-pointer outline-none ${classButton}`}>{childrenButton}</HPopover.Button>
 
       <Transition
         enter="transition duration-100 ease-out"

@@ -235,12 +235,13 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 ) : (
                   <Popover
                     className={'z-40 mr-5'}
-                    button={
-                      <BaseButton className="primary flex items-center">
+                    classButton={'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'}
+                    childrenButton={
+                      <>
                         <span>{i18n.get('actions.upload.new')}</span>
                         <Plus className="ml-2.5 h-3 w-3" />
                         <CaretDown className="h-3 w-3" />
-                      </BaseButton>
+                      </>
                     }
                     panel={
                       <div className="w-52">
