@@ -6,7 +6,17 @@ import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download'
 import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
 import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
-import { Trash, DownloadSimple, UploadSimple, FolderSimplePlus, Rows, SquaresFour, FileArrowUp, Plus, CaretDown } from 'phosphor-react';
+import {
+  Trash,
+  DownloadSimple,
+  UploadSimple,
+  FolderSimplePlus,
+  Rows,
+  SquaresFour,
+  FileArrowUp,
+  Plus,
+  CaretDown,
+} from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -34,7 +44,10 @@ import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 import { IRoot } from 'app/store/slices/storage/storage.thunks/uploadFolderThunk';
-import { transformInputFilesToJSON, transformJsonFilesToItems } from 'app/drive/services/folder.service/uploadFolderInput.service';
+import {
+  transformInputFilesToJSON,
+  transformJsonFilesToItems,
+} from 'app/drive/services/folder.service/uploadFolderInput.service';
 import Popover from 'app/shared/components/Popover';
 
 //import shareService from 'app/share/services/share.service';
@@ -208,7 +221,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     const PopoverItem = ({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
       return (
         <div
-          className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-1 active:bg-gray-5"
+          className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
           onClick={onClick}
         >
           {children}
@@ -223,7 +236,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
         <div className="flex h-full w-full max-w-full flex-grow">
           <div className="flex w-1 flex-grow flex-col pt-6">
-            <div className="flex justify-between pb-4">
+            <div className="z-10 flex justify-between pb-4">
               <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
 
               <div className="flex">
@@ -234,32 +247,36 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                   </BaseButton>
                 ) : (
                   <Popover
-                    className={'z-40 mr-5'}
-                    classButton={'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'}
+                    classButton={
+                      'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base focus:outline-none transition-all duration-75 ease-in-out'
+                    }
                     childrenButton={
                       <>
-                        <span>{i18n.get('actions.upload.new')}</span>
-                        <Plus className="ml-2.5 h-3 w-3" />
-                        <CaretDown className="h-3 w-3" />
+                        <div className="flex flex-row items-center space-x-2.5">
+                          <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                          <Plus weight="bold" className="h-4 w-4" />
+                        </div>
+                        <CaretDown weight="fill" className="h-3 w-3" />
                       </>
                     }
                     panel={
                       <div className="w-52">
-                        <PopoverItem onClick={this.onCreateFolderButtonClicked} >
+                        <PopoverItem onClick={this.onCreateFolderButtonClicked}>
                           <FolderSimplePlus size={20} />
                           <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
                         </PopoverItem>
                         {separator}
-                        <PopoverItem onClick={this.onUploadFileButtonClicked} >
+                        <PopoverItem onClick={this.onUploadFileButtonClicked}>
                           <FileArrowUp size={20} />
                           <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
                         </PopoverItem>
-                        <PopoverItem onClick={this.onUploadFolderButtonClicked} >
+                        <PopoverItem onClick={this.onUploadFolderButtonClicked}>
                           <UploadSimple size={20} />
                           <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
                         </PopoverItem>
                       </div>
-                    } />
+                    }
+                  />
                 )}
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
