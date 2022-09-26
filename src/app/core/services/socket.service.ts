@@ -1,8 +1,8 @@
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 import localStorageService from './local-storage.service';
 
 export default class RealtimeService {
-  private socket?: SocketIOClient.Socket;
+  private socket?: Socket;
   private static instance: RealtimeService;
 
   static getInstance(): RealtimeService {
@@ -22,7 +22,27 @@ export default class RealtimeService {
       auth: {
         token: getToken(),
       },
-      transports: ['websocket', 'polling']
+      withCredentials: true
+    });
+
+    this.socket.io.on('open', () => {
+      this.socket?.io.engine.transport.on('pollComplete', () => {
+        const request = this.socket?.io.engine.transport.pollXhr.xhr;
+        const cookieHeader = request.getResponseHeader('set-cookie');
+        if (!cookieHeader) {
+          return;
+        }
+        cookieHeader.forEach((cookieString: string) => {
+          if (cookieString.includes('INGRESSCOOKIE=')) {
+            const cookie = cookieString.split(';')[0];
+            if (this.socket) {
+              this.socket.io.opts.extraHeaders = {
+                cookie,
+              };
+            }
+          }
+        });
+      });
     });
 
     this.socket.on('connect', () => {
@@ -83,23 +103,3 @@ function isProduction(): boolean {
 function getToken(): string {
   return localStorageService.get('xNewToken') as string;
 }
-
-// socket.io.on('open', () => {
-//   socket?.io.engine.transport.on('pollComplete', () => {
-//     const request = socket?.io.engine.transport.pollXhr.xhr;
-//     const cookieHeader = request.getResponseHeader('set-cookie');
-//     if (!cookieHeader) {
-//       return;
-//     }
-//     cookieHeader.forEach((cookieString: string) => {
-//       if (cookieString.includes('INGRESSCOOKIE=')) {
-//         const cookie = cookieString.split(';')[0];
-//         if (socket)
-//           socket.io.opts.extraHeaders = {
-//             cookie,
-//           };
-//       }
-//     });
-//   });
-// });
-
