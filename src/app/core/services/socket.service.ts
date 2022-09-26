@@ -25,26 +25,6 @@ export default class RealtimeService {
       withCredentials: true
     });
 
-    this.socket.io.on('open', () => {
-      this.socket?.io.engine.transport.on('pollComplete', () => {
-        const request = this.socket?.io.engine.transport.pollXhr.xhr;
-        const cookieHeader = request.getResponseHeader('set-cookie');
-        if (!cookieHeader) {
-          return;
-        }
-        cookieHeader.forEach((cookieString: string) => {
-          if (cookieString.includes('INGRESSCOOKIE=')) {
-            const cookie = cookieString.split(';')[0];
-            if (this.socket) {
-              this.socket.io.opts.extraHeaders = {
-                cookie,
-              };
-            }
-          }
-        });
-      });
-    });
-
     this.socket.on('connect', () => {
       if (!isProduction()) {
         console.log('[REALTIME]: CONNECTED WITH ID', this.socket?.id);
