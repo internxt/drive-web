@@ -66,7 +66,12 @@ export default class RealtimeService {
   }
 
   stop(): void {
-    this.socket?.close();
+    console.log('[REALTIME] STOPING...');
+
+    if (this.socket && this.socket?.connected) {
+      console.log('[REALTIME] SOCKET CLOSED.');
+      this.socket?.close();
+    }
   }
 }
 
@@ -77,4 +82,23 @@ function isProduction(): boolean {
 function getToken(): string {
   return localStorageService.get('xNewToken') as string;
 }
+
+// socket.io.on('open', () => {
+//   socket?.io.engine.transport.on('pollComplete', () => {
+//     const request = socket?.io.engine.transport.pollXhr.xhr;
+//     const cookieHeader = request.getResponseHeader('set-cookie');
+//     if (!cookieHeader) {
+//       return;
+//     }
+//     cookieHeader.forEach((cookieString: string) => {
+//       if (cookieString.includes('INGRESSCOOKIE=')) {
+//         const cookie = cookieString.split(';')[0];
+//         if (socket)
+//           socket.io.opts.extraHeaders = {
+//             cookie,
+//           };
+//       }
+//     });
+//   });
+// });
 
