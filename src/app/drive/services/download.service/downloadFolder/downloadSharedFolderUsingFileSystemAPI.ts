@@ -6,9 +6,9 @@ import { SharedDirectoryFolderIterator, SharedFolderFilesIterator } from '../../
 import { Iterator } from 'app/core/collections';
 
 interface FolderRef {
-  name: string
-  folderId: number
-  handle: FileSystemDirectoryHandle
+  name: string;
+  folderId: number;
+  handle: FileSystemDirectoryHandle;
 }
 
 export async function downloadSharedFolderUsingFileSystemAPI(
@@ -44,37 +44,42 @@ export async function downloadSharedFolderUsingFileSystemAPI(
   try {
     const fsDirectoryHandle = await window.showDirectoryPicker({ startIn: 'downloads' });
 
-    const sharedFolderDirectoryHandle = await fsDirectoryHandle
-      .getDirectoryHandle(sharedFolderMeta.name, { create: true });
+    const sharedFolderDirectoryHandle = await fsDirectoryHandle.getDirectoryHandle(sharedFolderMeta.name, {
+      create: true,
+    });
 
     const rootFolder: FolderRef = {
       name: sharedFolderMeta.name,
       folderId: sharedFolderMeta.id,
-      handle: sharedFolderDirectoryHandle
+      handle: sharedFolderDirectoryHandle,
     };
     const pendingFolders: FolderRef[] = [rootFolder];
 
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
 
-      const sharedDirectoryFilesIterator: Iterator<DownloadableFile> =
-        new SharedFolderFilesIterator({
+      const sharedDirectoryFilesIterator: Iterator<DownloadableFile> = new SharedFolderFilesIterator(
+        {
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
-          code: sharedFolderMeta.code
-        }, options.filesLimit);
+          code: sharedFolderMeta.code,
+        },
+        options.filesLimit,
+      );
 
-      const sharedDirectoryFoldersIterator: Iterator<DownloadableFolder> =
-        new SharedDirectoryFolderIterator({
+      const sharedDirectoryFoldersIterator: Iterator<DownloadableFolder> = new SharedDirectoryFolderIterator(
+        {
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
-        }, options.foldersLimit);
+        },
+        options.foldersLimit,
+      );
 
       const folderLevel = new FolderLevel(
         sharedDirectoryFoldersIterator,
         sharedDirectoryFilesIterator,
         bucket,
-        bucketToken
+        bucketToken,
       );
 
       const directory = folderToDownload.handle;
@@ -91,7 +96,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
               transform(chunk, controller) {
                 downloads[id] += chunk.length;
                 controller.enqueue(chunk);
-              }
+              },
             });
 
             await stream.pipeThrough(progressStream).pipeTo(downloadedFileWritable);
@@ -105,13 +110,13 @@ export async function downloadSharedFolderUsingFileSystemAPI(
             pendingFolders.push({
               folderId: id,
               handle: await directory.getDirectoryHandle(name, { create: true }),
-              name
+              name,
             });
             onFolderDownloaded(null);
           } catch (err) {
             onFolderDownloaded(err as Error);
           }
-        }
+        },
       });
     } while (pendingFolders.length > 0);
   } catch (err) {

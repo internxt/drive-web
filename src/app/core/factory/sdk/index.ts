@@ -10,26 +10,39 @@ import { Photos } from '@internxt/sdk/dist/photos';
 import authService from '../../../auth/services/auth.service';
 
 export class SdkFactory {
-  private static instance: SdkFactory;
-  private readonly dispatch: AppDispatch;
+  private static sdk: {
+    dispatch: AppDispatch,
+    localStorage: LocalStorageService,
+    instance: SdkFactory,
+    newApiInstance: SdkFactory,
+  };
   private readonly apiUrl: ApiUrl;
-  private readonly localStorage: LocalStorageService;
 
-  private constructor(apiUrl: ApiUrl, dispatch: AppDispatch, localStorage: LocalStorageService) {
+  private constructor(apiUrl: ApiUrl) {
     this.apiUrl = apiUrl;
-    this.dispatch = dispatch;
-    this.localStorage = localStorage;
   }
 
   public static initialize(dispatch: AppDispatch, localStorage: LocalStorageService): void {
-    this.instance = new SdkFactory(process.env.REACT_APP_API_URL, dispatch, localStorage);
+    this.sdk = {
+      dispatch,
+      localStorage,
+      instance: new SdkFactory(process.env.REACT_APP_API_URL + '/api'),
+      newApiInstance: new SdkFactory(process.env.REACT_APP_DRIVE_NEW_API_URL),
+    };
+  }
+
+  public static getNewApiInstance(): SdkFactory {
+    if (this.sdk.instance === undefined) {
+      throw new Error('Factory not initialized');
+    }
+    return this.sdk.newApiInstance;
   }
 
   public static getInstance(): SdkFactory {
-    if (this.instance === undefined) {
+    if (this.sdk.instance === undefined) {
       throw new Error('Factory not initialized');
     }
-    return this.instance;
+    return this.sdk.instance;
   }
 
   public createAuthClient(): Auth {
@@ -49,7 +62,7 @@ export class SdkFactory {
   public createShareClient(): Share {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
+    const apiSecurity = this.getNewApiSecurity();
     return Share.client(apiUrl, appDetails, apiSecurity);
   }
 
@@ -70,11 +83,11 @@ export class SdkFactory {
   public async createPaymentsClient(): Promise<Payments> {
     const appDetails = SdkFactory.getAppDetails();
 
-    let newToken = this.localStorage.get('xNewToken');
+    let newToken = SdkFactory.sdk.localStorage.get('xNewToken');
 
     if (!newToken) {
       newToken = await authService.getNewToken();
-      this.localStorage.set('xNewToken', newToken);
+      SdkFactory.sdk.localStorage.set('xNewToken', newToken);
     }
 
     const apiSecurity = { ...this.getApiSecurity(), token: newToken };
@@ -90,15 +103,15 @@ export class SdkFactory {
   }
 
   public async createPhotosClient(): Promise<Photos> {
-    if (!this.localStorage.get('xToken')) {
+    if (!SdkFactory.sdk.localStorage.get('xToken')) {
       return new Photos(process.env.REACT_APP_PHOTOS_API_URL);
     }
 
-    let newToken = this.localStorage.get('xNewToken');
+    let newToken = SdkFactory.sdk.localStorage.get('xNewToken');
 
     if (!newToken) {
       newToken = await authService.getNewToken();
-      this.localStorage.set('xNewToken', newToken);
+      SdkFactory.sdk.localStorage.set('xNewToken', newToken);
     }
     return new Photos(process.env.REACT_APP_PHOTOS_API_URL, newToken);
   }
@@ -106,18 +119,29 @@ export class SdkFactory {
   /** Helpers **/
 
   private getApiSecurity(): ApiSecurity {
-    const workspace = this.localStorage.getWorkspace();
+    const workspace = SdkFactory.sdk.localStorage.getWorkspace();
     return {
       mnemonic: this.getMnemonic(workspace),
       token: this.getToken(workspace),
       unauthorizedCallback: async () => {
-        this.dispatch(userThunks.logoutThunk());
+        SdkFactory.sdk.dispatch(userThunks.logoutThunk());
       },
     };
   }
 
-  private getApiUrl(): ApiUrl {
-    return this.apiUrl + '/api';
+  private getNewApiSecurity(): ApiSecurity {
+    const workspace = SdkFactory.sdk.localStorage.getWorkspace();
+    return {
+      mnemonic: this.getMnemonic(workspace),
+      token: this.getNewToken(workspace),
+      unauthorizedCallback: async () => {
+        SdkFactory.sdk.dispatch(userThunks.logoutThunk());
+      },
+    };
+  }
+
+  public getApiUrl(): ApiUrl {
+    return this.apiUrl;
   }
 
   private static getAppDetails(): AppDetails {
@@ -129,16 +153,24 @@ export class SdkFactory {
 
   private getMnemonic(workspace: string): string {
     const mnemonicByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: this.localStorage.get('xMnemonic') || '',
-      [Workspace.Business]: this.localStorage.getTeams()?.bridge_mnemonic || '',
+      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xMnemonic') || '',
+      [Workspace.Business]: SdkFactory.sdk.localStorage.getTeams()?.bridge_mnemonic || '',
     };
     return mnemonicByWorkspace[workspace];
   }
 
   private getToken(workspace: string): Token {
     const tokenByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: this.localStorage.get('xToken') || '',
-      [Workspace.Business]: this.localStorage.get('xTokenTeam') || '',
+      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xToken') || '',
+      [Workspace.Business]: SdkFactory.sdk.localStorage.get('xTokenTeam') || '',
+    };
+    return tokenByWorkspace[workspace];
+  }
+
+  private getNewToken(workspace: string): Token {
+    const tokenByWorkspace: { [key in Workspace]: string } = {
+      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xNewToken') || '',
+      [Workspace.Business]: SdkFactory.sdk.localStorage.get('xTokenTeam') || '',
     };
     return tokenByWorkspace[workspace];
   }

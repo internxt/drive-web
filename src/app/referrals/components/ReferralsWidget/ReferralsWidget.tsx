@@ -23,19 +23,18 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   const onReferralItemClicked = (referral) => {
     !referral.isCompleted && dispatch(referralsThunks.executeUserReferralActionThunk({ referralKey: referral.key }));
   };
+
   const referralsList = referrals.map((referral) => (
     <div
       key={referral.key}
-      className={` ${
-        usersReferralsService.hasClickAction(referral.key) && !referral.isCompleted ? 'cursor-pointer' : ''
-      } flex items-center`}
+      className={` ${usersReferralsService.hasClickAction(referral.key) && !referral.isCompleted ? 'cursor-pointer' : ''
+        } flex items-center`}
       onClick={() => onReferralItemClicked(referral)}
     >
       <div
         className={`flex h-5 w-10
-       flex-none justify-center rounded-lg text-xs font-medium ${
-         referral.isCompleted ? 'bg-green bg-opacity-10 text-green-dark' : 'bg-gray-5 text-gray-60'
-       }`}
+       flex-none justify-center rounded-lg text-xs font-medium ${referral.isCompleted ? 'bg-green bg-opacity-10 text-green-dark' : 'bg-gray-5 text-gray-60'
+          }`}
       >
         <p className="leading-5">{sizeService.bytesToString(referral.credit * referral.steps)}</p>
       </div>
@@ -56,9 +55,8 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   ) : (
     <div className="flex flex-grow flex-col justify-end">
       <div
-        className={`flex flex-col overflow-y-hidden rounded-xl border border-gray-10 p-5 shadow-subtle ${
-          props.className || ''
-        }`}
+        className={`flex flex-col overflow-y-hidden rounded-xl border border-gray-10 p-5 shadow-subtle ${props.className || ''
+          }`}
       >
         {/* HEADER */}
         <div className="flex items-center justify-between">

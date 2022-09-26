@@ -27,11 +27,13 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
+import RealtimeService from 'app/core/services/socket.service';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
+  RealtimeService.getInstance().stop();
   navigationService.push(AppView.Login);
 }
 
@@ -121,7 +123,7 @@ export const doLogin = async (
         mnemonic: clearMnemonic,
         privateKey: clearPrivateKeyBase64,
       };
-        
+
       localStorageService.set('xToken', token);
       localStorageService.set('xMnemonic', clearMnemonic);
       localStorageService.set('xNewToken', newToken);
@@ -129,8 +131,8 @@ export const doLogin = async (
       Sentry.setUser({
         id: user.uuid,
         email: user.email,
-        sharedWorkspace: user.sharedWorkspace
-       });
+        sharedWorkspace: user.sharedWorkspace,
+      });
 
       return {
         user: clearUser,

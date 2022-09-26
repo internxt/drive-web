@@ -8,7 +8,17 @@ module.exports = {
   },
   darkMode: false, // or 'media' or 'class'
   theme: {
+    screens: {
+      xs: '512px',
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+    },
     extend: {
+      outline: {
+        primary: '2px solid rgb(0,102,255)',
+      },
       backdropInvert: {
         25: '25%',
         50: '50%',
@@ -78,6 +88,7 @@ module.exports = {
         sidenav: '210px',
         'sidenav-collapsed': '64px',
         activity: '296px',
+        contextmenu: '128px',
         '0.5/12': '4.166667%',
       },
       margin: {
@@ -118,22 +129,7 @@ module.exports = {
         '1/2': '50%',
       },
       fontSize: {
-        'supporting-1': ['0.5rem', { lineHeight: '0.625rem' }],
-        'supporting-2': ['0.625rem', { lineHeight: '0.75rem' }],
-        xs: ['0.75rem', { lineHeight: '1rem' }],
-        sm: ['0.875rem', { lineHeight: '1.25rem' }],
-        base: ['1rem', { lineHeight: '1.5rem' }],
-        lg: ['1.125rem', { lineHeight: '1.75rem' }],
-        xl: ['1.25rem', { lineHeight: '1.75rem' }],
-        '2xl': ['1.5rem', { lineHeight: '2rem' }],
-        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
-        '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
-        '5xl': ['3rem', { lineHeight: '1' }],
-        '5xl-banner': ['3rem', { lineHeight: '0' }],
-        '6xl': ['3.75rem', { lineHeight: '1' }],
-        '7xl': ['4.5rem', { lineHeight: '1' }],
-        '8xl': ['6rem', { lineHeight: '1' }],
-        '9xl': ['8rem', { lineHeight: '1' }],
+        'supporting-2': '0.625rem', // 10px
       },
       spacing: {
         50: '12.7rem',
@@ -167,6 +163,7 @@ module.exports = {
       boxShadow: {
         b: '2px 1px 3px 0 rgba(0,0,0,0.1),2px 1px 2px 0 rgba(0,0,0,0.06)',
         'photo-select': '0px 12px 24px rgba(0, 0, 0, 0.16)',
+        soft: '0px 4px 8px rgba(0, 0, 0, 0.02), 0px 8px 16px rgba(0, 0, 0, 0.02), 0px 12px 20px rgba(0, 0, 0, 0.02), 0px 16px 24px rgba(0, 0, 0, 0.02), 0px 24px 32px rgba(0, 0, 0, 0.02);',
         subtle: '0 32px 40px 0 rgba(18, 22, 25, 0.04)',
         'subtle-hard': '0 32px 40px 0 rgba(18, 22, 25, 0.08)',
       },

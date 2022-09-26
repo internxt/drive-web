@@ -72,6 +72,10 @@ const codeExtensions: FileExtensionMap = {
   yaml: ['yaml', 'yml'],
 };
 
+const figmaExtensions: FileExtensionMap = {
+  fig: ['fig'],
+};
+
 const imageExtensions: FileExtensionMap = {
   tiff: ['tif', 'tiff'],
   bmp: ['bmp'],
@@ -139,7 +143,7 @@ const xmlExtensions: FileExtensionMap = {
 };
 
 const csvExtensions: FileExtensionMap = {
-  csv: ['csv']
+  csv: ['csv'],
 };
 
 const zipExtensions: FileExtensionMap = {
@@ -151,6 +155,7 @@ const defaultExtensions: FileExtensionMap = {};
 export enum FileExtensionGroup {
   Audio,
   Code,
+  Figma,
   Image,
   Pdf,
   Ppt,
@@ -172,6 +177,7 @@ type fileExtensionsPreviewableDictionary = {
 const fileExtensionGroups: fileExtensionsDictionary = {
   [FileExtensionGroup.Audio]: audioExtensions,
   [FileExtensionGroup.Code]: codeExtensions,
+  [FileExtensionGroup.Figma]: figmaExtensions,
   [FileExtensionGroup.Image]: imageExtensions,
   [FileExtensionGroup.Pdf]: pdfExtensions,
   [FileExtensionGroup.Ppt]: pptExtensions,
@@ -188,6 +194,7 @@ const fileExtensionGroups: fileExtensionsDictionary = {
 export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary = {
   [FileExtensionGroup.Audio]: [],
   [FileExtensionGroup.Code]: [],
+  [FileExtensionGroup.Figma]: [],
   [FileExtensionGroup.Image]: previewableImageExtensionGroups,
   [FileExtensionGroup.Pdf]: previewablePdfExtensionGroups,
   [FileExtensionGroup.Ppt]: [],

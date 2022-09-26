@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { match } from 'react-router';
 import { aes } from '@internxt/lib';
-import { getSharedFileInfo } from 'app/share/services/share.service';
+import shareService, { getSharedFileInfo } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
@@ -33,7 +33,7 @@ export interface ShareViewProps extends ShareViewState {
   }>;
 }
 
-interface GetShareInfoWithDecryptedName extends ShareTypes.SharedFileInfo {
+interface GetShareInfoWithDecryptedName extends ShareTypes.ShareLink {
   name: string | null;
 }
 
@@ -94,76 +94,56 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       .map((arr) => arr[1])
       .filter((arr) => arr.length > 0);
     for (const extensions of extensionsWithFileViewer) {
-      if (extensions.includes(info['fileMeta']['type'] || '')) {
+      if (extensions.includes(info['item']['type'] || '')) {
         return true;
       }
     }
   };
 
-  const getDecryptedName = (info: ShareTypes.SharedFileInfo): string => {
-    const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.fileMeta.folderId.toString()}`;
-    const decryptedFilename = aes.decrypt(info.fileMeta.name, salt);
+  const getDecryptedName = (info: ShareTypes.ShareLink): string => {
+    const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.item.id.toString()}`;
+    const decryptedFilename = aes.decrypt(info.item.name, salt);
 
     return decryptedFilename;
   };
 
   const getFormatFileName = (): string => {
-    const hasType = info['fileMeta']['type'] !== null;
-    const extension = hasType ? `.${info['fileMeta']['type']}` : '';
-    return `${info['fileMeta']['name']}${extension}`;
+    const hasType = info['item']['type'] !== null;
+    const extension = hasType ? `.${info['item']['type']}` : '';
+    return `${info['item']['name']}${extension}`;
   };
 
   const getFormatFileSize = (): string => {
-    return sizeService.bytesToString(info['fileMeta']['size']);
+    return sizeService.bytesToString(info['item']['size']);
   };
 
   const loadInfo = async () => {
     try {
-      const info = await getSharedFileInfo(token).catch(() => {
-        setIsError(true);
-        throw new Error(i18n.get('error.linkExpired'));
-      });
+      const info = await getSharedFileInfo(token, code);
 
       setInfo({
         ...info,
-        name: getDecryptedName(info),
+        name: info.item.name
       });
 
       setIsLoaded(true);
-
-      const updatedName = { ...info };
-      if (updatedName.fileMeta) {
-        updatedName.fileMeta.name = getDecryptedName(info);
-      }
-      setInfo({ ...updatedName });
     } catch (err) {
+      console.log('err', err);
       setIsError(true);
-      setErrorMSG(errorService.castError(err));
+      setErrorMSG(new Error('Link unavailable'));
     }
   };
 
-  function getEncryptionKey() {
-    const fileInfo = info as unknown as ShareTypes.SharedFileInfo;
-    let encryptionKey;
-    if (code) {
-      encryptionKey = aes.decrypt(fileInfo.encryptionKey, code);
-    } else {
-      encryptionKey = fileInfo.encryptionKey;
-    }
-
-    return encryptionKey;
-  }
-
   function getBlob(abortController: AbortController): Promise<Blob> {
-    const fileInfo = info as unknown as ShareTypes.SharedFileInfo;
+    const fileInfo = info as unknown as ShareTypes.ShareLink;
 
-    const encryptionKey = getEncryptionKey();
+    const encryptionKey = fileInfo.encryptionKey;
 
     const readable = network.downloadFile({
       bucketId: fileInfo.bucket,
-      fileId: fileInfo.file,
+      fileId: fileInfo.item.fileId,
       encryptionKey: Buffer.from(encryptionKey, 'hex'),
-      token: fileInfo.fileToken,
+      token: (fileInfo as any).fileToken,
       options: {
         abortController,
         notifyProgress: () => null,
@@ -180,22 +160,27 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
   const download = async (): Promise<void> => {
     if (!isDownloading) {
-      const fileInfo = info as unknown as ShareTypes.SharedFileInfo | null;
+      const fileInfo = info as unknown as ShareTypes.ShareLink;
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
-        const encryptionKey = getEncryptionKey();
+        const encryptionKey = fileInfo.encryptionKey;
 
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
         const readable = await network.downloadFile({
           bucketId: fileInfo.bucket,
-          fileId: fileInfo.file,
+          fileId: fileInfo.item.fileId,
           encryptionKey: Buffer.from(encryptionKey, 'hex'),
-          token: fileInfo.fileToken,
+          token: (fileInfo as any).fileToken,
           options: {
             notifyProgress: (totalProgress, downloadedBytes) => {
-              setProgress(Math.trunc((downloadedBytes / totalProgress) * 100));
+              const progress = Math.trunc((downloadedBytes / totalProgress) * 100);
+              setProgress(progress);
+              if (progress == 100) {
+                shareService.incrementShareView(fileInfo.token);
+                setIsDownloading(false);
+              }
             },
           },
         });
@@ -251,7 +236,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       </>
     );
   } else if (isLoaded) {
-    const FileIcon = iconService.getItemIcon(false, info['fileMeta']['type']);
+    const FileIcon = iconService.getItemIcon(false, info['item']['type']);
 
     body = (
       <>
@@ -291,8 +276,13 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
             className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
                         text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
           >
-            {isDownloading ? (
-              progress < 100 ? (
+            {Number(progress) == 100 ? (
+                <>
+                  {/* Download completed */}
+                  <UilCheck height="24" width="24" />
+                  <span className="font-medium">{i18n.get('actions.downloaded')}</span>
+                </>
+              ) : isDownloading ? (
                 <>
                   {/* Download in progress */}
                   <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
@@ -301,18 +291,12 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                 </>
               ) : (
                 <>
-                  {/* Download completed */}
-                  <UilCheck height="24" width="24" />
-                  <span className="font-medium">{i18n.get('actions.downloaded')}</span>
+                  {/* Download button */}
+                  <UilImport height="20" width="20" />
+                  <span className="font-medium">{i18n.get('actions.download')}</span>
                 </>
               )
-            ) : (
-              <>
-                {/* Download button */}
-                <UilImport height="20" width="20" />
-                <span className="font-medium">{i18n.get('actions.download')}</span>
-              </>
-            )}
+            }
           </button>
         </div>
       </>
@@ -325,7 +309,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     <>
       <FileViewer
         show={openPreview}
-        file={info['fileMeta']}
+        file={info['item']}
         onClose={closePreview}
         onDownload={onDownloadFromPreview}
         downloader={getBlob}

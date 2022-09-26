@@ -21,6 +21,7 @@ import { DriveFileData } from './app/drive/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import views from './app/core/config/views';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
+import SurveyDialog from 'app/survey/components/SurveyDialog/SurveyDialog';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 
@@ -29,6 +30,7 @@ interface AppProps {
   isInitialized: boolean;
   isFileViewerOpen: boolean;
   isNewsletterDialogOpen: boolean;
+  isSurveyDialogOpen: boolean;
   fileViewerItem: DriveFileData | null;
   user: UserSettings | undefined;
   dispatch: AppDispatch;
@@ -86,14 +88,14 @@ class App extends Component<AppProps> {
 
   render(): JSX.Element {
     const isDev = !envService.isProduction();
-    const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, fileViewerItem, dispatch } =
+    const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, isSurveyDialogOpen, fileViewerItem, dispatch } =
       this.props;
     const pathName = window.location.pathname.split('/')[1];
     let template = <PreparingWorkspaceAnimation />;
 
     if (window.location.pathname) {
       if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
-        window.analytics.page(PATH_NAMES[window.location.pathname]);
+        window.rudderanalytics.page(PATH_NAMES[window.location.pathname]);
         serverPage(PATH_NAMES[window.location.pathname]).catch(() => {
           // NO OP
         });
@@ -118,12 +120,16 @@ class App extends Component<AppProps> {
               <Route exact path="/">
                 <Redirect to="/login" />
               </Route>
+              <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
+              <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
+              <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
               {this.routes}
             </Switch>
 
             <Toaster position="bottom-center" />
 
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
+            {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
 
             <FileViewerWrapper
               file={fileViewerItem}
@@ -144,6 +150,7 @@ export default connect((state: RootState) => ({
   isInitialized: state.user.isInitialized,
   isFileViewerOpen: state.ui.isFileViewerOpen,
   isNewsletterDialogOpen: state.ui.isNewsletterDialogOpen,
+  isSurveyDialogOpen: state.ui.isSurveyDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,
 }))(App);
