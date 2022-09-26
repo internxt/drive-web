@@ -48,7 +48,7 @@ import {
   transformInputFilesToJSON,
   transformJsonFilesToItems,
 } from 'app/drive/services/folder.service/uploadFolderInput.service';
-import Popover from 'app/shared/components/Popover';
+import Dropdown from 'app/shared/components/Dropdown';
 
 //import shareService from 'app/share/services/share.service';
 
@@ -218,7 +218,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     );
 
     const separator = <div className="my-0.5 mx-3 border-t border-gray-10" />;
-    const PopoverItem = ({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
+    const MenuItem = ({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
       return (
         <div
           className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
@@ -246,37 +246,35 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                     <span>{i18n.get('actions.download')}</span>
                   </BaseButton>
                 ) : (
-                  <Popover
+                  <Dropdown
+                    classMenuItems={'right-0 mt-11'}
+                    menuItems={<div className="w-52">
+                      <MenuItem onClick={this.onCreateFolderButtonClicked}>
+                        <FolderSimplePlus size={20} />
+                        <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                      </MenuItem>
+                      {separator}
+                      <MenuItem onClick={this.onUploadFileButtonClicked}>
+                        <FileArrowUp size={20} />
+                        <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
+                      </MenuItem>
+                      <MenuItem onClick={this.onUploadFolderButtonClicked}>
+                        <UploadSimple size={20} />
+                        <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
+                      </MenuItem>
+                    </div>}
                     classButton={
-                      'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base focus:outline-none transition-all duration-75 ease-in-out'
+                      'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
                     }
-                    childrenButton={
-                      <>
-                        <div className="flex flex-row items-center space-x-2.5">
-                          <span className="font-medium">{i18n.get('actions.upload.new')}</span>
-                          <Plus weight="bold" className="h-4 w-4" />
-                        </div>
-                        <CaretDown weight="fill" className="h-3 w-3" />
-                      </>
-                    }
-                    panel={
-                      <div className="w-52">
-                        <PopoverItem onClick={this.onCreateFolderButtonClicked}>
-                          <FolderSimplePlus size={20} />
-                          <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
-                        </PopoverItem>
-                        {separator}
-                        <PopoverItem onClick={this.onUploadFileButtonClicked}>
-                          <FileArrowUp size={20} />
-                          <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
-                        </PopoverItem>
-                        <PopoverItem onClick={this.onUploadFolderButtonClicked}>
-                          <UploadSimple size={20} />
-                          <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
-                        </PopoverItem>
+                  >
+                    <>
+                      <div className="flex flex-row items-center space-x-2.5">
+                        <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                        <Plus weight="bold" className="h-4 w-4" />
                       </div>
-                    }
-                  />
+                      <CaretDown weight="fill" className="h-3 w-3" />
+                    </>
+                  </Dropdown>
                 )}
                 {this.hasAnyItemSelected ? (
                   <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
