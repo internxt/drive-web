@@ -11,7 +11,7 @@ export default function Dropdown({
   children: ReactNode;
   options?: { text: string; onClick: () => void }[];
   classButton?: string;
-  menuItems?: ReactNode;
+  menuItems?: ReactNode[];
   classMenuItems?: string;
 }): JSX.Element {
   return (
@@ -39,7 +39,14 @@ export default function Dropdown({
               </div>
             </Menu.Item>
           ))}
-          {menuItems}
+          {menuItems && <div className="w-52">
+            {menuItems?.map((item, index) => (
+              <Menu.Item key={index}>
+                {item}
+              </Menu.Item>
+            ))}
+          </div>
+          }
         </Menu.Items>
       </Transition>
     </Menu>

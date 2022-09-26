@@ -1,4 +1,4 @@
-import { createRef, ReactNode, Component } from 'react';
+import { createRef, ReactNode, Component, forwardRef } from 'react';
 import { connect } from 'react-redux';
 /*import UilTable from '@iconscout/react-unicons/icons/uil-table';
 import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
@@ -218,7 +218,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     );
 
     const separator = <div className="my-0.5 mx-3 border-t border-gray-10" />;
-    const MenuItem = ({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
+    const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
       return (
         <div
           className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
@@ -227,7 +227,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
           {children}
         </div>
       );
-    };
+    });
 
     return connectDropTarget(
       <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
@@ -248,21 +248,21 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                 ) : (
                   <Dropdown
                     classMenuItems={'right-0 mt-11'}
-                    menuItems={<div className="w-52">
+                    menuItems={[
                       <MenuItem onClick={this.onCreateFolderButtonClicked}>
                         <FolderSimplePlus size={20} />
                         <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
-                      </MenuItem>
-                      {separator}
+                      </MenuItem>,
+                      separator,
                       <MenuItem onClick={this.onUploadFileButtonClicked}>
                         <FileArrowUp size={20} />
                         <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
-                      </MenuItem>
+                      </MenuItem>,
                       <MenuItem onClick={this.onUploadFolderButtonClicked}>
                         <UploadSimple size={20} />
                         <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
                       </MenuItem>
-                    </div>}
+                    ]}
                     classButton={
                       'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
                     }
