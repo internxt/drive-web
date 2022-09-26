@@ -21,7 +21,8 @@ export default class RealtimeService {
     this.socket = io(process.env.REACT_APP_NOTIFICATIONS_URL, {
       auth: {
         token: getToken(),
-      }
+      },
+      transports: ['websocket', 'polling']
     });
 
     this.socket.on('connect', () => {
