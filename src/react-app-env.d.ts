@@ -12,6 +12,7 @@ declare namespace NodeJS {
     REACT_APP_CRYPTO_SECRET2: string;
     REACT_APP_BRIDGE: string;
     REACT_APP_PROXY: string;
+    REACT_APP_NOTIFICATIONS_URL: string;
     REACT_APP_STRIPE_PK: string;
     REACT_APP_STRIPE_TEST_PK: string;
     REACT_APP_SEGMENT_KEY: string;
