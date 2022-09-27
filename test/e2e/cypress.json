@@ -3,6 +3,7 @@
 	"chromeWebSecurity": false,
 	"defaultCommandTimeout": 60000,
 	"pluginsFile": "cypress/plugins/index.ts",
+	"modifyObstructiveCode": false,
 	"testFiles": [
 		"signup.spec.ts",
 		"unauthorized.spec.ts",
