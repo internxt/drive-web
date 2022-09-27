@@ -1,5 +1,5 @@
 import { sha256 } from '../crypto';
-import { NetworkWeb } from '@internxt/network-web/_bundles/prod';
+import { NetworkWeb } from '@internxt/network-web';
 const { downloadFile: downloadFileNetwork, NetworkFacade } = NetworkWeb;
 
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
@@ -35,6 +35,11 @@ type DownloadSharedFileFunction = (params: DownloadSharedFileParams) => Download
 type DownloadOwnFileFunction = (params: DownloadOwnFileParams) => DownloadFileResponse;
 type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFileParams) => DownloadFileResponse;
 
+const prependProxyToDownloadableUrl = (url: string): string => {
+  const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
+  return (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
+};
+
 const downloadSharedFile: DownloadSharedFileFunction = (params) => {
   const { bucketId, fileId, encryptionKey, token, options } = params;
 
@@ -54,6 +59,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
     token,
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
+    configureDownloadableUrl: prependProxyToDownloadableUrl,
   });
 };
 
@@ -82,6 +88,7 @@ const downloadOwnFile: DownloadOwnFileFunction = (params) => {
   return downloadFileNetwork(facade, bucketId, fileId, mnemonic, {
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
+    configureDownloadableUrl: prependProxyToDownloadableUrl,
   });
 };
 
