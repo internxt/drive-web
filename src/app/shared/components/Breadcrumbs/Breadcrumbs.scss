@@ -1,23 +1,17 @@
 @layer components {
-  .breadcrumb > li + li::before {
-    content: "/";
-
-    @apply text-blue-60 cursor-default px-2;
-  }
-
-  ol.breadcrumb {
+  div.breadcrumb {
     display: flex;
 
-    li {
-      @apply text-lg text-neutral-500;
+    div {
+      @apply text-lg text-black;
 
       .icon {
         @apply mr-1;
       }
     }
 
-    li.active {
-      @apply text-blue-60 cursor-pointer;
+    div.active {
+      @apply text-neutral-500;
     }
   }
 }

@@ -37,7 +37,9 @@ export default function UserHeader({ className = '' }: { className?: string }): 
 
   return (
     <div className={`${className} flex h-44 flex-col items-center p-5`}>
-      <Dropdown options={dropdownOptions}>
+      <Dropdown options={dropdownOptions}
+        classMenuItems={'-left-6 mt-22 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow'}
+        openDirection={'right'}>
         <div className="relative">
           <Avatar diameter={80} fullName={fullName} src={user.avatar} />
           <div className="absolute right-0 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full border-3 border-white bg-gray-5 text-gray-60">

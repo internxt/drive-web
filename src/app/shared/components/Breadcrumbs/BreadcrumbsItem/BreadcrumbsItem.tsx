@@ -7,9 +7,12 @@ import { BreadcrumbItemData } from '../Breadcrumbs';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
+import iconService from 'app/drive/services/icon.service';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
+  totalBreadcrumbsLength: number;
+  isHiddenInList?: boolean;
 }
 
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
@@ -28,8 +31,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     if (droppedType === DragAndDropType.DriveItem) {
       const itemsToMove = isSomeItemSelected
         ? [...selectedItems, droppedData as DriveItemData].filter(
-            (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
-          )
+          (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
+        )
         : [droppedData];
 
       dispatch(
@@ -79,16 +82,21 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   };
   const isDraggingOverClassNames = isOver && canDrop ? 'drag-over-effect' : '';
 
+  const ItemIconComponent = iconService.getItemIcon(true);
+
   return (
-    <li
+    <div
       ref={drop}
-      className={`p-1 flex items-center ${isDraggingOverClassNames} ${props.item.active ? 'active' : ''}`}
+      className={`p-1 flex items-center cursor-pointer ${isDraggingOverClassNames} ${props.item.active ? 'active' : ''}`}
+      style={{ maxWidth: props.isHiddenInList || props.item.isFirstPath ? '100%' : props.totalBreadcrumbsLength === 3 ? '25%' : '50%' }}
       key={props.item.id}
       onClick={() => onItemClicked(props.item)}
     >
+      {props.isHiddenInList && <div style={{ width: '10%' }}><ItemIconComponent className="h-full w-full" /></div>}
       {props.item.icon ? props.item.icon : null}
-      {props.item.label ? <span className="label">{props.item.label}</span> : null}
-    </li>
+      {props.item.label ? <span style={{ width: props.isHiddenInList ? '90%' : '100%' }}
+        className={`label overflow-hidden overflow-ellipsis whitespace-nowrap ${props.isHiddenInList && 'text-base pl-3'}`}>{props.item.label}</span> : null}
+    </div>
   );
 };
 

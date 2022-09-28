@@ -234,14 +234,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     <div className="flex h-full w-full max-w-full flex-grow">
       <div className="flex w-1 flex-grow flex-col pt-6">
         <div className="z-10 flex justify-between pb-4">
-          <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
+          <div className={`flex items-center text-lg w-full ${titleClassName || ''}`}>{title}</div>
 
           <div className="flex">
             <Dropdown
               classButton={
                 'primary base-button flex items-center justify-center rounded-lg py-1.5 mr-1 text-base transition-all duration-75 ease-in-out'
               }
-              classMenuItems={'right-0 mt-11'}
+              openDirection={'right'}
+              classMenuItems={'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow mt-11'}
               menuItems={[
                 <MenuItem onClick={onCreateFolderButtonClicked}>
                   <FolderSimplePlus size={20} />
