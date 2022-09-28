@@ -29,17 +29,17 @@ const trackFileDownloadError = (userEmail: string, file_id: string, msg: string)
 
 interface BlobWritable {
   getWriter: () => {
-    abort: () => Promise<void>
-    close: () => Promise<void>
-    closed: Promise<undefined>
-    desiredSize: number | null
-    ready: Promise<undefined>
-    releaseLock: () => void
-    write: (chunk: Uint8Array) => Promise<void>
-  },
-  locked: boolean,
-  abort: () => Promise<void>
-  close: () => Promise<void>
+    abort: () => Promise<void>;
+    close: () => Promise<void>;
+    closed: Promise<undefined>;
+    desiredSize: number | null;
+    ready: Promise<undefined>;
+    releaseLock: () => void;
+    write: (chunk: Uint8Array) => Promise<void>;
+  };
+  locked: boolean;
+  abort: () => Promise<void>;
+  close: () => Promise<void>;
 }
 
 function getBlobWritable(filename: string, onClose: (result: Blob) => void): BlobWritable {
@@ -57,10 +57,12 @@ function getBlobWritable(filename: string, onClose: (result: Blob) => void): Blo
         closed: Promise.resolve(undefined),
         desiredSize: 3 * 1024 * 1024,
         ready: Promise.resolve(undefined),
-        releaseLock: () => { null; },
+        releaseLock: () => {
+          null;
+        },
         write: async (chunk) => {
           blobParts.push(chunk);
-        }
+        },
       };
     },
     locked: false,
@@ -69,7 +71,7 @@ function getBlobWritable(filename: string, onClose: (result: Blob) => void): Blo
     },
     close: async () => {
       onClose(new File(blobParts, filename));
-    }
+    },
   };
 }
 
@@ -97,19 +99,22 @@ export default async function downloadFile(
   itemData: DriveFileData,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-  abortController?: AbortController
+  abortController?: AbortController,
 ): Promise<void> {
   const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
+  const isCypress = window['Cypress'] !== undefined;
 
   const writeToFsIsSupported = 'showSaveFilePicker' in window;
   const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
 
   let support: DownloadSupport;
 
-  if (isBrave) {
+  if (isCypress) {
+    support = DownloadSupport.PatchedStreamApi;
+  } else if (isBrave) {
     support = DownloadSupport.Blob;
   } else if (writeToFsIsSupported) {
     support = DownloadSupport.StreamApi;
@@ -123,15 +128,10 @@ export default async function downloadFile(
 
   const fileStreamPromise = fetchFileStream(
     { ...itemData, bucketId: itemData.bucket },
-    { isTeam, updateProgressCallback, abortController }
+    { isTeam, updateProgressCallback, abortController },
   );
 
-  await downloadToFs(
-    completeFilename,
-    fileStreamPromise,
-    support,
-    abortController
-  ).catch((err) => {
+  await downloadToFs(completeFilename, fileStreamPromise, support, abortController).catch((err) => {
     const errMessage = err instanceof Error ? err.message : (err as string);
 
     trackFileDownloadError(userEmail, fileId, errMessage);
@@ -145,10 +145,7 @@ export default async function downloadFile(
   });
 }
 
-async function downloadFileAsBlob(
-  filename: string,
-  source: ReadableStream
-): Promise<void> {
+async function downloadFileAsBlob(filename: string, source: ReadableStream): Promise<void> {
   const destination: BlobWritable = getBlobWritable(filename, (blob) => {
     downloadFileFromBlob(blob, filename);
   });
@@ -159,11 +156,10 @@ async function downloadFileAsBlob(
 function downloadFileUsingStreamApi(
   source: ReadableStream,
   destination: WritableStream,
-  abortController?: AbortController
+  abortController?: AbortController,
 ): Promise<void> {
   return (
-    source.pipeTo && source.pipeTo(destination, { signal: abortController?.signal }) ||
-    pipe(source, destination)
+    (source.pipeTo && source.pipeTo(destination, { signal: abortController?.signal })) || pipe(source, destination)
   );
 }
 
@@ -171,14 +167,14 @@ enum DownloadSupport {
   StreamApi = 'StreamApi',
   PartialStreamApi = 'PartialStreamApi',
   PatchedStreamApi = 'PartialStreamApi',
-  Blob = 'Blob'
+  Blob = 'Blob',
 }
 
 async function downloadToFs(
   filename: string,
   source: Promise<ReadableStream>,
   supports: DownloadSupport,
-  abortController?: AbortController
+  abortController?: AbortController,
 ): Promise<void> {
   switch (supports) {
     case DownloadSupport.StreamApi:
@@ -193,17 +189,9 @@ async function downloadToFs(
 
       streamSaver.WritableStream = window.WritableStream;
 
-      return downloadFileUsingStreamApi(
-        await source,
-        streamSaver.createWriteStream(filename),
-        abortController
-      );
+      return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
     case DownloadSupport.PartialStreamApi:
-      return downloadFileUsingStreamApi(
-        await source,
-        streamSaver.createWriteStream(filename),
-        abortController
-      );
+      return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
 
     default:
       return downloadFileAsBlob(filename, await source);
