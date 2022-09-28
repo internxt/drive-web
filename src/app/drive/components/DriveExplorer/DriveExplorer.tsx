@@ -1,4 +1,4 @@
-import { createRef, ReactNode, Component, forwardRef } from 'react';
+import { createRef, ReactNode, forwardRef, useState, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
 /*import UilTable from '@iconscout/react-unicons/icons/uil-table';
 import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
@@ -16,6 +16,8 @@ import {
   FileArrowUp,
   Plus,
   CaretDown,
+  Link,
+  PencilSimple,
 } from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -49,6 +51,8 @@ import {
   transformJsonFilesToItems,
 } from 'app/drive/services/folder.service/uploadFolderInput.service';
 import Dropdown from 'app/shared/components/Dropdown';
+import { useAppDispatch } from 'app/store/hooks';
+import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 
 //import shareService from 'app/share/services/share.service';
 
@@ -79,313 +83,314 @@ interface DriveExplorerProps {
   connectDropTarget: ConnectDropTarget;
 }
 
-interface DriveExplorerState {
-  fileInputRef: React.RefObject<HTMLInputElement>;
-  fileInputKey: number; //! Changing this forces the invisible file input to render
-  folderInputKey: number;
-  folderInputRef: React.RefObject<HTMLInputElement>;
-  email: string;
-  token: string;
-  isAdmin: boolean;
-  isMember: boolean;
-}
+const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
+  const dispatch = useAppDispatch();
 
-class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
-  constructor(props: DriveExplorerProps) {
-    super(props);
+  const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
+  const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
+  const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
+  const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
 
-    this.state = {
-      fileInputRef: createRef(),
-      fileInputKey: Date.now(),
-      folderInputKey: Date.now(),
-      folderInputRef: createRef(),
-      email: '',
-      token: '',
-      isAdmin: true,
-      isMember: false,
-    };
-  }
+  const {
+    selectedItems,
+    isLoading,
+    viewMode,
+    title,
+    titleClassName,
+    items,
+    isDeleteItemsDialogOpen,
+    isCreateFolderDialogOpen,
+    onItemsDeleted,
+    onFolderCreated,
+    isOver,
+    connectDropTarget,
+    storageFilters,
+    currentFolderId,
+    onFileUploaded
+  } = props;
 
-  get hasAnyItemSelected(): boolean {
-    return this.props.selectedItems.length > 0;
-  }
-
-  get hasItems(): boolean {
-    return this.props.items.length > 0;
-  }
-
-  get hasFilters(): boolean {
-    return this.props.storageFilters.text.length > 0;
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     deviceService.redirectForMobile();
-  }
+  }, []);
 
-  onUploadFileButtonClicked = (): void => {
-    this.state.fileInputRef.current?.click();
+  const hasAnyItemSelected = (): boolean => {
+    return selectedItems.length > 0;
   };
 
-  onUploadFolderButtonClicked = (): void => {
-    this.state.folderInputRef.current?.click();
+  const hasItems = (): boolean => {
+    return items.length > 0;
   };
 
-  onDownloadButtonClicked = (): void => {
-    const { dispatch, selectedItems } = this.props;
+  const hasFilters = (): boolean => {
+    return storageFilters.text.length > 0;
+  };
 
+  const onUploadFileButtonClicked = (): void => {
+    fileInputRef.current?.click();
+  };
+
+  const onUploadFolderButtonClicked = (): void => {
+    folderInputRef.current?.click();
+  };
+
+  const onDownloadButtonClicked = (): void => {
     dispatch(storageThunks.downloadItemsThunk(selectedItems));
   };
 
-  onUploadFileInputChanged = async (e) => {
-    const { dispatch, onFileUploaded, currentFolderId } = this.props;
-
+  const onUploadFileInputChanged = (e) => {
     dispatch(
       storageThunks.uploadItemsThunk({
         files: Array.from(e.target.files),
         parentFolderId: currentFolderId,
       }),
     ).then(() => onFileUploaded && onFileUploaded());
-
-    this.setState({ fileInputKey: Date.now() });
+    setFileInputKey(Date.now());
   };
 
-  onUploadFolderInputChanged = async (e) => {
+  const onUploadFolderInputChanged = async (e) => {
     const files = e?.target?.files as File[];
-    const { currentFolderId } = this.props;
 
     const filesJson = transformInputFilesToJSON(files);
     const { rootList, rootFiles } = transformJsonFilesToItems(filesJson, currentFolderId);
 
-    await uploadItems(this.props, rootList, rootFiles);
-
-    this.setState({ folderInputKey: Date.now() });
+    await uploadItems(props, rootList, rootFiles);
+    setFolderInputKey(Date.now());
   };
 
-  onViewModeButtonClicked = (): void => {
-    const viewMode: FileViewMode = this.props.viewMode === FileViewMode.List ? FileViewMode.Grid : FileViewMode.List;
+  const onViewModeButtonClicked = (): void => {
+    const setViewMode: FileViewMode = viewMode === FileViewMode.List ? FileViewMode.Grid : FileViewMode.List;
 
-    this.props.dispatch(storageActions.setViewMode(viewMode));
+    dispatch(storageActions.setViewMode(setViewMode));
   };
 
-  onCreateFolderButtonClicked = () => {
-    this.props.dispatch(uiActions.setIsCreateFolderDialogOpen(true));
+  const onCreateFolderButtonClicked = () => {
+    dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   };
 
-  onBulkDeleteButtonClicked = () => {
-    const { dispatch, selectedItems } = this.props;
-
+  const onBulkDeleteButtonClicked = () => {
     dispatch(storageActions.setItemsToDelete(selectedItems));
     dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   };
 
-  onPreviousPageButtonClicked = (): void => undefined;
+  const onSelectedOneItemShare = (e) => {
+    e.stopPropagation();
+    if (selectedItems.length === 1) {
+      dispatch(storageActions.setItemToShare(selectedItems[0]));
+      dispatch(uiActions.setIsShareItemDialogOpen(true));
+    }
+  };
 
-  onNextPageButtonClicked = (): void => undefined;
+  const { dirtyName } = useDriveItemStoreProps();
 
-  render(): ReactNode {
-    const {
-      isLoading,
-      viewMode,
-      title,
-      titleClassName,
-      items,
-      isDeleteItemsDialogOpen,
-      isCreateFolderDialogOpen,
-      onItemsDeleted,
-      onFolderCreated,
-      isOver,
-      connectDropTarget,
-    } = this.props;
-    const { fileInputRef, fileInputKey, folderInputKey, folderInputRef } = this.state;
-    const viewModesIcons = {
-      [FileViewMode.List]: <SquaresFour className="h-6 w-6" />,
-      [FileViewMode.Grid]: <Rows className="h-6 w-6" />,
-    };
-    const viewModes = {
-      [FileViewMode.List]: DriveExplorerList,
-      [FileViewMode.Grid]: DriveExplorerGrid,
-    };
-    const ViewModeComponent = viewModes[viewMode];
+  const onSelectedOneItemRename = (e) => {
+    e.stopPropagation();
+    if (selectedItems.length === 1) {
+      if (!dirtyName || dirtyName === null || dirtyName.trim() === '') {
+        dispatch(uiActions.setCurrentEditingNameDirty(selectedItems[0].name));
+      } else {
+        dispatch(uiActions.setCurrentEditingNameDirty(dirtyName));
+      }
+      dispatch(uiActions.setCurrentEditingNameDriveItem(selectedItems[0]));
+    }
+  };
 
-    const isRecents = title === 'Recents';
+  const viewModesIcons = {
+    [FileViewMode.List]: <SquaresFour className="h-6 w-6" />,
+    [FileViewMode.Grid]: <Rows className="h-6 w-6" />,
+  };
+  const viewModes = {
+    [FileViewMode.List]: DriveExplorerList,
+    [FileViewMode.Grid]: DriveExplorerGrid,
+  };
+  const ViewModeComponent = viewModes[viewMode];
 
-    const FileIcon = iconService.getItemIcon(false);
-    const filesEmptyImage = (
-      <div className="relative h-32 w-32">
-        <FileIcon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
-        <FileIcon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+  const isRecents = title === 'Recents';
+
+  const FileIcon = iconService.getItemIcon(false);
+  const filesEmptyImage = (
+    <div className="relative h-32 w-32">
+      <FileIcon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
+      <FileIcon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+    </div>
+  );
+
+  const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
+  const separatorH = <div className="my-0.5 mx-3 border-t border-gray-10" />;
+  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
+    return (
+      <div
+        className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
+        onClick={onClick}
+      >
+        {children}
       </div>
     );
+  });
 
-    const separator = <div className="my-0.5 mx-3 border-t border-gray-10" />;
-    const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
-      return (
-        <div
-          className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
-          onClick={onClick}
-        >
-          {children}
-        </div>
-      );
-    });
+  const driveExplorer = <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
+    {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
+    {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
 
-    return connectDropTarget(
-      <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
-        {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
-        {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
+    <div className="flex h-full w-full max-w-full flex-grow">
+      <div className="flex w-1 flex-grow flex-col pt-6">
+        <div className="z-10 flex justify-between pb-4">
+          <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
 
-        <div className="flex h-full w-full max-w-full flex-grow">
-          <div className="flex w-1 flex-grow flex-col pt-6">
-            <div className="z-10 flex justify-between pb-4">
-              <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
-
-              <div className="flex">
-                {this.hasAnyItemSelected ? (
-                  <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                    <DownloadSimple className="mr-2.5 h-5 w-5" />
-                    <span>{i18n.get('actions.download')}</span>
-                  </BaseButton>
-                ) : (
-                  <Dropdown
-                    classMenuItems={'right-0 mt-11'}
-                    menuItems={[
-                      <MenuItem onClick={this.onCreateFolderButtonClicked}>
-                        <FolderSimplePlus size={20} />
-                        <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
-                      </MenuItem>,
-                      separator,
-                      <MenuItem onClick={this.onUploadFileButtonClicked}>
-                        <FileArrowUp size={20} />
-                        <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
-                      </MenuItem>,
-                      <MenuItem onClick={this.onUploadFolderButtonClicked}>
-                        <UploadSimple size={20} />
-                        <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
-                      </MenuItem>
-                    ]}
-                    classButton={
-                      'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
-                    }
-                  >
-                    <>
-                      <div className="flex flex-row items-center space-x-2.5">
-                        <span className="font-medium">{i18n.get('actions.upload.new')}</span>
-                        <Plus weight="bold" className="h-4 w-4" />
-                      </div>
-                      <CaretDown weight="fill" className="h-3 w-3" />
-                    </>
-                  </Dropdown>
-                )}
-                {this.hasAnyItemSelected ? (
-                  <BaseButton className="tertiary square w-8" onClick={this.onBulkDeleteButtonClicked}>
-                    <Trash className="h-6 w-6" />
-                  </BaseButton>
-                ) : null}
-                <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
-                  {viewModesIcons[viewMode]}
+          <div className="flex">
+            <Dropdown
+              classButton={
+                'primary base-button flex items-center justify-center rounded-lg py-1.5 mr-1 text-base transition-all duration-75 ease-in-out'
+              }
+              classMenuItems={'right-0 mt-11'}
+              menuItems={[
+                <MenuItem onClick={onCreateFolderButtonClicked}>
+                  <FolderSimplePlus size={20} />
+                  <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                </MenuItem>,
+                separatorH,
+                <MenuItem onClick={onUploadFileButtonClicked}>
+                  <FileArrowUp size={20} />
+                  <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
+                </MenuItem>,
+                <MenuItem onClick={onUploadFolderButtonClicked}>
+                  <UploadSimple size={20} />
+                  <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
+                </MenuItem>
+              ]}
+            >
+              <>
+                <div className="flex flex-row items-center space-x-2.5">
+                  <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                  <Plus weight="bold" className="h-4 w-4" />
+                </div>
+                <CaretDown weight="fill" className="h-3 w-3" />
+              </>
+            </Dropdown>
+            {hasAnyItemSelected() && (
+              <>
+                {separatorV}
+                <BaseButton className="tertiary square w-8" onClick={onDownloadButtonClicked}>
+                  <DownloadSimple className="h-6 w-6" />
                 </BaseButton>
-              </div>
-            </div>
-
-            <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
-              {this.hasItems && (
-                <div className="flex flex-grow flex-col justify-between overflow-hidden">
-                  <ViewModeComponent items={items} isLoading={isLoading} />
-                </div>
-              )}
-
-              {/* PAGINATION */}
-              {/* !isLoading ? (
-                <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
-                  <span className="text-sm w-1/3" />
-                  <divconst droppedType = monitor.getItemType();
-      const droppedDataParentId = item.parentId || item.folderId || -1;
-
-      return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id; className="flex justify-center w-1/3">
-                    <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                      <UilAngleDoubleLeft />
-                    </button>
-                    <button className="pagination-button">1</button>
-                    <button onClick={this.onNextPageButtonClicked} className="pagination-button">
-                      <UilAngleDoubleRight />
-                    </button>
-                  </div>
-                  <div className="w-1/3"></div>
-                </div>
-              ) : null */}
-
-              {
-                /* EMPTY FOLDER */
-                !this.hasItems && !isLoading ? (
-                  this.hasFilters ? (
-                    <Empty
-                      icon={filesEmptyImage}
-                      title="There are no results for this search"
-                      subtitle="Drag and drop here or click on upload button"
-                      action={{
-                        icon: UploadSimple,
-                        style: 'elevated',
-                        text: 'Upload files',
-                        onClick: this.onUploadFileButtonClicked,
-                      }}
-                    />
-                  ) : isRecents ? (
-                    <Empty
-                      icon={filesEmptyImage}
-                      title="No recents files to show"
-                      subtitle="Recent uploads or files you recently interacted with will show up here automatically"
-                    />
-                  ) : (
-                    <Empty
-                      icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-                      title="This folder is empty"
-                      subtitle="Drag and drop files or click to select files and upload"
-                      action={{
-                        icon: UploadSimple,
-                        style: 'elevated',
-                        text: 'Upload files',
-                        onClick: this.onUploadFileButtonClicked,
-                      }}
-                    />
-                  )
-                ) : null
-              }
-
-              {
-                /* DRAG AND DROP */
-                isOver ? (
-                  <div
-                    className="drag-over-effect pointer-events-none\
-                   absolute flex h-full w-full items-end justify-center"
-                  ></div>
-                ) : null
-              }
-            </div>
-
-            <input
-              key={`file-${fileInputKey}`}
-              className="hidden"
-              ref={fileInputRef}
-              type="file"
-              onChange={this.onUploadFileInputChanged}
-              multiple={true}
-            />
-            <input
-              key={`folder-${folderInputKey}`}
-              className="hidden"
-              ref={folderInputRef}
-              type="file"
-              directory=""
-              webkitdirectory=""
-              onChange={this.onUploadFolderInputChanged}
-              multiple={true}
-            />
+                {selectedItems.length === 1 && <>
+                  <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
+                    <Link className="h-6 w-6" />
+                  </BaseButton>
+                  <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemRename}>
+                    <PencilSimple className="h-6 w-6" />
+                  </BaseButton>
+                </>}
+                <BaseButton className="tertiary square w-8" onClick={onBulkDeleteButtonClicked}>
+                  <Trash className="h-6 w-6" />
+                </BaseButton>
+              </>
+            )}
+            {separatorV}
+            <BaseButton className="tertiary square w-8" onClick={onViewModeButtonClicked}>
+              {viewModesIcons[viewMode]}
+            </BaseButton>
           </div>
         </div>
-      </div>,
-    );
-  }
-}
+
+        <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
+          {hasItems() && (
+            <div className="flex flex-grow flex-col justify-between overflow-hidden">
+              <ViewModeComponent items={items} isLoading={isLoading} />
+            </div>
+          )}
+
+          {/* PAGINATION */}
+          {/* !isLoading ? (
+            <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
+              <span className="text-sm w-1/3" />
+              <divconst droppedType = monitor.getItemType();
+              const droppedDataParentId = item.parentId || item.folderId || -1;
+
+              return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id; className="flex justify-center w-1/3">
+                <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
+                  <UilAngleDoubleLeft />
+                </button>
+                <button className="pagination-button">1</button>
+                <button onClick={this.onNextPageButtonClicked} className="pagination-button">
+                  <UilAngleDoubleRight />
+                </button>
+              </div>
+              <div className="w-1/3"></div>
+            </div>
+          ) : null */}
+
+          {
+            /* EMPTY FOLDER */
+            !hasItems() && !isLoading ? (
+              hasFilters() ? (
+                <Empty
+                  icon={filesEmptyImage}
+                  title="There are no results for this search"
+                  subtitle="Drag and drop here or click on upload button"
+                  action={{
+                    icon: UploadSimple,
+                    style: 'elevated',
+                    text: 'Upload files',
+                    onClick: onUploadFileButtonClicked,
+                  }}
+                />
+              ) : isRecents ? (
+                <Empty
+                  icon={filesEmptyImage}
+                  title="No recents files to show"
+                  subtitle="Recent uploads or files you recently interacted with will show up here automatically"
+                />
+              ) : (
+                <Empty
+                  icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+                  title="This folder is empty"
+                  subtitle="Drag and drop files or click to select files and upload"
+                  action={{
+                    icon: UploadSimple,
+                    style: 'elevated',
+                    text: 'Upload files',
+                    onClick: onUploadFileButtonClicked,
+                  }}
+                />
+              )
+            ) : null
+          }
+
+          {
+            /* DRAG AND DROP */
+            isOver ? (
+              <div
+                className="drag-over-effect pointer-events-none\
+             absolute flex h-full w-full items-end justify-center"
+              ></div>
+            ) : null
+          }
+        </div>
+
+        <input
+          key={`file-${fileInputKey}`}
+          className="hidden"
+          ref={fileInputRef}
+          type="file"
+          onChange={onUploadFileInputChanged}
+          multiple={true}
+        />
+        <input
+          key={`folder-${folderInputKey}`}
+          className="hidden"
+          ref={folderInputRef}
+          type="file"
+          directory=""
+          webkitdirectory=""
+          onChange={onUploadFolderInputChanged}
+          multiple={true}
+        />
+      </div>
+    </div>
+  </div>;
+
+  return connectDropTarget(driveExplorer) || driveExplorer;
+};
 
 declare module 'react' {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {

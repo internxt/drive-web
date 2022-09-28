@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Dropdown } from 'react-bootstrap';
 /*import UilPen from '@iconscout/react-unicons/icons/uil-pen';
 import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
@@ -6,7 +6,7 @@ import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
 import UilLinkedAlt from '@iconscout/react-unicons/icons/uil-link';
 import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
-import { PencilSimple, Link, Trash, DownloadSimple, DotsThree} from 'phosphor-react';
+import { PencilSimple, Link, Trash, DownloadSimple, DotsThree } from 'phosphor-react';
 import { items } from '@internxt/lib';
 
 import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
@@ -26,18 +26,16 @@ import './DriveExplorerListItem.scss';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const { isItemSelected, isSomeItemSelected } = useDriveItemStoreProps();
-  
+  const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
+
   const {
-    isEditingName,
-    //itemIsShared,
-    dirtyName,
     nameInputRef,
+    //itemIsShared,
     onNameChanged,
     onNameBlurred,
     onNameClicked,
     onEditNameButtonClicked,
-    onNameEnterKeyPressed,
+    onNameEnterKeyDown,
     onDownloadButtonClicked,
     onRenameButtonClicked,
     onInfoButtonClicked,
@@ -46,10 +44,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     onItemClicked,
     onItemRightClicked,
     onItemDoubleClicked,
-  
   } = useDriveItemActions(item);
-  
- 
 
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
@@ -61,12 +56,17 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     e.target.checked ? dispatch(storageActions.selectItems([item])) : dispatch(storageActions.deselectItems([item]));
   };
+
+  useEffect(() => {
+    isEditingName(item) && nameInputRef.current?.focus();
+  }, [isEditingName(item)]);
+
   const nameNodefactory = () => {
-    const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
+    const spanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
 
     return (
       <Fragment>
-        <div className={`${isEditingName ? 'flex' : 'hidden'}`}>
+        <div className={`${isEditingName(item) ? 'flex' : 'hidden'}`}>
           <input
             className="dense border border-white no-ring rect select-text"
             onClick={(e) => e.stopPropagation()}
@@ -77,7 +77,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             placeholder="Name"
             onChange={onNameChanged}
             onBlur={onNameBlurred}
-            onKeyPress={onNameEnterKeyPressed}
+            onKeyDown={onNameEnterKeyDown}
             autoFocus
           />
           <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
@@ -90,13 +90,13 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           >
             {items.getItemDisplayName(item)}
           </span>
-          {!isEditingName && <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />}
+          {!isEditingName(item) && <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />}
         </div>
       </Fragment>
     );
   };
+
   const template = (
-    
     <div
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
       onContextMenu={onItemRightClicked}
@@ -104,7 +104,6 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       onDoubleClick={onItemDoubleClicked}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
-      
       {/* SELECTION */}
       <div className="w-0.5/12 pl-3 flex items-center justify-start box-content">
         <input
@@ -117,7 +116,6 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {/* ICON */}
       <div className="w-1/12 flex items-center px-3 box-content">
-      
         <div className="h-10 w-10 flex justify-center filter drop-shadow-soft">
           <ItemIconComponent className="h-full" />
           {/*itemIsShared?
@@ -141,10 +139,8 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             <DownloadSimple className="h-5 w-5" />
           </button>
           <button
-            onClick={(e)=> {
-  
+            onClick={(e) => {
               onShareButtonClicked && onShareButtonClicked(e);
-              
             }}
             className="hover-action mr-3"
             data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
@@ -161,8 +157,8 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
         </div>
       </div>
 
-      {
-        /* DROPPABLE ZONE */ connectDropTarget(
+      { /* DROPPABLE ZONE */
+        connectDropTarget(
           <div className="group-hover:invisible absolute h-full w-1/2 top-0"></div>,
         )
       }
@@ -202,7 +198,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     </div>
   );
 
-  return isEditingName ? template : (connectDragSource(template) as JSX.Element);
+  return isEditingName(item) ? template : (connectDragSource(template) as JSX.Element);
 };
 
 export default DriveExplorerListItem;

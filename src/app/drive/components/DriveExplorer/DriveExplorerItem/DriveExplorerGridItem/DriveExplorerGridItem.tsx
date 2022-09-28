@@ -16,15 +16,13 @@ import './DriveExplorerGridItem.scss';
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
   const { item } = props;
-  const { isItemSelected } = useDriveItemStoreProps();
+  const { isItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
   const {
-    isEditingName,
-    dirtyName,
     nameInputRef,
     onNameChanged,
     onNameBlurred,
     onNameClicked,
-    onNameEnterKeyPressed,
+    onNameEnterKeyDown,
     onDownloadButtonClicked,
     onRenameButtonClicked,
     onInfoButtonClicked,
@@ -39,11 +37,11 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const forceUpdate = useForceUpdate();
   const updateHeight = () => forceUpdate();
   const nameNodeFactory = () => {
-    const ṣpanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
+    const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
 
     return (
       <Fragment>
-        <div className={isEditingName ? 'flex' : 'hidden'}>
+        <div className={isEditingName(item) ? 'flex' : 'hidden'}>
           <input
             className="w-full dense border border-white no-ring rect select-text"
             onClick={(e) => e.stopPropagation()}
@@ -53,7 +51,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
             placeholder="Name"
             onChange={onNameChanged}
             onBlur={onNameBlurred}
-            onKeyPress={onNameEnterKeyPressed}
+            onKeyDown={onNameEnterKeyDown}
             autoFocus
           />
           <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
@@ -83,6 +81,10 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       window.removeEventListener('resize', updateHeight);
     };
   }, []);
+
+  useEffect(() => {
+    isEditingName(item) && nameInputRef.current?.focus();
+  }, [isEditingName(item)]);
 
   const template = connectDropTarget(
     <div
@@ -118,7 +120,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     </div>,
   );
 
-  return (isEditingName ? template : connectDragSource(template)) as JSX.Element;
+  return (isEditingName(item) ? template : connectDragSource(template)) as JSX.Element;
 };
 
 export default DriveExplorerGridItem;

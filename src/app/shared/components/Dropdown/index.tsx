@@ -41,7 +41,7 @@ export default function Dropdown({
           ))}
           {menuItems && <div className="w-52">
             {menuItems?.map((item, index) => (
-              <Menu.Item key={index}>
+              <Menu.Item key={'menuitem-' + index}>
                 {item}
               </Menu.Item>
             ))}

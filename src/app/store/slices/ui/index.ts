@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import queryString from 'query-string';
 
-import { DriveFileData } from '../../../drive/types';
+import { DriveFileData, DriveItemData } from '../../../drive/types';
 import { FileInfoMenuItem } from '../../../drive/types';
 import navigationService from '../../../core/services/navigation.service';
 import { AccountViewTab } from '../../../core/views/AccountView/tabs';
@@ -24,6 +24,8 @@ interface UISliceState {
   fileViewerItem: DriveFileData | null;
   currentAccountTab: AccountViewTab;
   currentFileInfoMenuItem: FileInfoMenuItem | null;
+  currentEditingNameDriveItem: DriveItemData | null;
+  currentEditingNameDirty: string;
 }
 
 const initialState: UISliceState = {
@@ -44,6 +46,8 @@ const initialState: UISliceState = {
   fileViewerItem: null,
   currentAccountTab: AccountViewTab.Info,
   currentFileInfoMenuItem: null,
+  currentEditingNameDriveItem: null,
+  currentEditingNameDirty: '',
 };
 
 export const uiSlice = createSlice({
@@ -113,6 +117,12 @@ export const uiSlice = createSlice({
     setFileInfoItem: (state: UISliceState, action: PayloadAction<FileInfoMenuItem | null>) => {
       state.currentFileInfoMenuItem = action.payload;
     },
+    setCurrentEditingNameDriveItem: (state: UISliceState, action: PayloadAction<UISliceState['currentEditingNameDriveItem']>) => {
+      state.currentEditingNameDriveItem = action.payload;
+    },
+    setCurrentEditingNameDirty: (state: UISliceState, action: PayloadAction<UISliceState['currentEditingNameDirty']>) => {
+      state.currentEditingNameDirty = action.payload;
+    },
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
     },
@@ -136,6 +146,8 @@ export const {
   setCurrentAccountTab,
   setFileInfoItem,
   setIsGuestInvitationDialogOpen,
+  setCurrentEditingNameDriveItem,
+  setCurrentEditingNameDirty,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
