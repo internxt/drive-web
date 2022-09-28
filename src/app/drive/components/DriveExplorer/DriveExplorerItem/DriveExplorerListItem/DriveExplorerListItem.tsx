@@ -58,7 +58,14 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   };
 
   useEffect(() => {
-    isEditingName(item) && nameInputRef.current?.focus();
+    if (isEditingName(item)) {
+      const current = nameInputRef.current;
+      if (current && current !== null) {
+        nameInputRef.current.selectionStart = nameInputRef.current.value.length;
+        nameInputRef.current.selectionEnd = nameInputRef.current.value.length;
+        nameInputRef.current.focus();
+      }
+    }
   }, [isEditingName(item)]);
 
   const nameNodefactory = () => {
