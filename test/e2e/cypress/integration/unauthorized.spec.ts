@@ -11,7 +11,6 @@ describe('Unauthorized user', () => {
   });
 
   it('Should be sent to login', () => {
-    cy.itemsAreLoaded();
     cy.clearLocalStorage();
     cy.get('.file-list-item:first-child .file-list-item-name-span')
       .click({ force: true })

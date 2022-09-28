@@ -6,6 +6,7 @@
   "modifyObstructiveCode": false,
   "testFiles": [
     "signup.spec.ts",
+    "unauthorized.spec.ts",
     "upload-file.spec.ts",
     "download-file.spec.ts",
     "share-file.spec.ts",

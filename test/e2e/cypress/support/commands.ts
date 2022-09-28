@@ -43,7 +43,3 @@ Cypress.Commands.add('login', () => {
     },
   );
 });
-
-Cypress.Commands.add('itemsAreLoaded', () => {
-  cy.get('.file-list-item:first-child .file-list-item-name-span').should('be.visible');
-});
