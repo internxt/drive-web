@@ -60,6 +60,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
           data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
           className={`${ṣpanDisplayClass} cursor-pointer file-grid-item-name-span`}
           onClick={onNameClicked}
+          title={items.getItemDisplayName(item)}
         >
           {items.getItemDisplayName(item)}
         </span>

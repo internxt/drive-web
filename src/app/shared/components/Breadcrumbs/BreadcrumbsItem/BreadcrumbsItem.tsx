@@ -95,7 +95,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       {props.isHiddenInList && <div style={{ width: '10%' }}><ItemIconComponent className="h-full w-full" /></div>}
       {props.item.icon ? props.item.icon : null}
       {props.item.label ? <span style={{ width: props.isHiddenInList ? '90%' : '100%' }}
-        className={`label overflow-hidden overflow-ellipsis whitespace-nowrap ${props.isHiddenInList && 'text-base pl-3'}`}>{props.item.label}</span> : null}
+        className={`label overflow-hidden overflow-ellipsis whitespace-nowrap ${props.isHiddenInList && 'text-base pl-3'}`}
+        title={props.item.label}>{props.item.label}</span> : null}
     </div>
   );
 };

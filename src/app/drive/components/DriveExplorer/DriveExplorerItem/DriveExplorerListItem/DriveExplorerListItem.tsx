@@ -93,6 +93,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
+            title={items.getItemDisplayName(item)}
             onClick={onNameClicked}
           >
             {items.getItemDisplayName(item)}
