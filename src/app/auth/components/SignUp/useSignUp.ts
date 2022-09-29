@@ -80,7 +80,7 @@ export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: str
     const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
     const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
 
-    const authClient = SdkFactory.getInstance().createAuthClient();
+    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
     const keys: Keys = {
       privateKeyEncrypted: encPrivateKey,
@@ -102,7 +102,7 @@ export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: str
 
     const data = await authClient.register(registerDetails);
     const { token } = data;
-    const user: UserSettings = { ...data.user, bucket: '' };
+    const user: UserSettings = data.user as unknown as UserSettings;
 
     // user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
     user.mnemonic = decryptTextWithKey(user.mnemonic, password);
