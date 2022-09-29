@@ -86,11 +86,6 @@ interface DriveExplorerProps {
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const dispatch = useAppDispatch();
 
-  const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
-  const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
-  const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
-  const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
-
   const {
     selectedItems,
     isLoading,
@@ -109,21 +104,19 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     onFileUploaded
   } = props;
 
+  const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
+  const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
+  const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
+  const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
+
+  const hasItems = items.length > 0;
+  const hasFilters = storageFilters.text.length > 0;
+  const hasAnyItemSelected = selectedItems.length > 0;
+
   useEffect(() => {
     deviceService.redirectForMobile();
   }, []);
 
-  const hasAnyItemSelected = (): boolean => {
-    return selectedItems.length > 0;
-  };
-
-  const hasItems = (): boolean => {
-    return items.length > 0;
-  };
-
-  const hasFilters = (): boolean => {
-    return storageFilters.text.length > 0;
-  };
 
   const onUploadFileButtonClicked = (): void => {
     fileInputRef.current?.click();
@@ -267,7 +260,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 <CaretDown weight="fill" className="h-3 w-3" />
               </>
             </Dropdown>
-            {hasAnyItemSelected() && (
+            {hasAnyItemSelected && (
               <>
                 {separatorV}
                 <BaseButton className="tertiary square w-8" onClick={onDownloadButtonClicked}>
@@ -294,7 +287,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         </div>
 
         <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
-          {hasItems() && (
+          {hasItems && (
             <div className="flex flex-grow flex-col justify-between overflow-hidden">
               <ViewModeComponent items={items} isLoading={isLoading} />
             </div>
@@ -322,8 +315,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
           {
             /* EMPTY FOLDER */
-            !hasItems() && !isLoading ? (
-              hasFilters() ? (
+            !hasItems && !isLoading ? (
+              hasFilters ? (
                 <Empty
                   icon={filesEmptyImage}
                   title="There are no results for this search"

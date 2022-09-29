@@ -64,7 +64,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
   return (
     <BaseDialog isOpen={isOpen} title="Create folder" onClose={onClose}>
       <div className="mt-4 px-5">
-        <span className={'text-sm'}>Name</span>
+        <span className="text-sm">Name</span>
         <input
           autoFocus
           type="text"

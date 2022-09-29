@@ -25,6 +25,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     const itemsList = [] as JSX.Element[];
     const hiddenItemsList = [] as JSX.Element[];
     const breadcrumbSeparator = (key) => { return <div key={key} className='flex items-center active'><CaretRight className="h-5 w-5" /></div>; };
+
     for (let i = 0; i < items.length; i++) {
       if (items.length > 3 && i !== 0 && i < items.length - 1) {
         if (i === 1) {
@@ -41,12 +42,10 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
 
     if (hiddenItemsList.length > 0) {
       const menu = <Dropdown
-        key={'breadcrumbDropdownItems'}
-        classButton={
-          'mx-1 flex items-center justify-center transition-all duration-75 ease-in-out'
-        }
-        openDirection={'left'}
-        classMenuItems={'left-1 mt-10 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow'}
+        key="breadcrumbDropdownItems"
+        classButton="mx-1 flex items-center justify-center transition-all duration-75 ease-in-out"
+        openDirection="left"
+        classMenuItems="left-1 mt-10 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow"
         menuItems={hiddenItemsList}
       >
         {({ open }) => {
@@ -56,7 +55,6 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
             </>
           );
         }}
-
       </Dropdown>;
       itemsList.splice(2, 0, menu);
     }
