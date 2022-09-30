@@ -38,7 +38,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     };
 
     for (let i = 0; i < items.length; i++) {
-      if (items.length > 3 && i !== 0 && i < items.length - 1) {
+      if (items.length > 3 && i !== 0 && i < items.length - 2) {
         if (i === 1) {
           itemsList.push(breadcrumbSeparator('breadcrumbSeparator-' + items[i].id));
         }

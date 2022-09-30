@@ -95,7 +95,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         }`}
       style={{
         maxWidth:
-          props.isHiddenInList || props.item.isFirstPath ? '100%' : props.totalBreadcrumbsLength === 3 ? '25%' : '50%',
+          props.isHiddenInList || props.item.isFirstPath ? '100%' : 
+          (props.totalBreadcrumbsLength === 3 || props.totalBreadcrumbsLength === 4) ? '25%' : '50%',
       }}
       key={props.item.id}
       onClick={() => onItemClicked(props.item)}
