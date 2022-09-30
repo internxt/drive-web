@@ -1396,10 +1396,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/lib/1.2.0/283c36f4d8c443ca4d4bf41a856f43de94b290a3ea50d72cdaf1d6cb778ca838#172d7929abb3dc34fda044ad9977875791f7a471"
   integrity sha512-14byNxSU0S0KSc3g+BWiJb7/fcHUfqxkHQRz9fwJhAHNmgOo+Bhx13xXk07KKUzeNX1JymSGEZkVCk0AOQiM+Q==
 
-"@internxt/network-web@1.0.3":
-  version "1.0.3"
-  resolved "https://npm.pkg.github.com/download/@internxt/network-web/1.0.3/84a64791d2b9d1726a648b529a672e2d2e4ea859#84a64791d2b9d1726a648b529a672e2d2e4ea859"
-  integrity sha512-CIWR6snL5+qXd/gN5BEudCKzA8RQx+g0Q2ArvJfwFtdQMQVDjhkSVwGpnldzkTT5OzBnEsfC5wiSOdPz0H8KNw==
+"@internxt/network-web@1.0.4":
+  version "1.0.4"
+  resolved "https://npm.pkg.github.com/download/@internxt/network-web/1.0.4/6dc2b6c5c31b2dd65e7ba9789b1b4b7ed2544e51#6dc2b6c5c31b2dd65e7ba9789b1b4b7ed2544e51"
+  integrity sha512-OyuCKueUc8n8XHeahykQVrVf0AsVbdzJCmgHLXd7RsD5MZki6JF2nQjQ5YVSoczbzJthgeV7NU+k3irq3u6pCg==
   dependencies:
     asmcrypto.js "^2.3.2"
     axios "^0.24.0"

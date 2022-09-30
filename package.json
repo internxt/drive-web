@@ -8,7 +8,7 @@
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
     "@internxt/sdk": "1.4.4",
-    "@internxt/network-web": "1.0.3",
+    "@internxt/network-web": "1.0.4",
     "@reduxjs/toolkit": "^1.6.0",
     "@sentry/react": "^7.1.0",
     "@sentry/tracing": "^7.1.0",
