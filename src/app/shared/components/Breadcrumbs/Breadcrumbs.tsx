@@ -23,7 +23,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     const items = props.items;
     const itemsList = [] as JSX.Element[];
     const hiddenItemsList = [] as JSX.Element[];
-    const breadcrumbSeparator = (key) => { return <div key={key} className='flex items-center color-gray-50'><CaretRight className="h-5 w-5" /></div>; };
+    const breadcrumbSeparator = (key) => { return <div key={key} className='flex items-center text-gray-50'><CaretRight className="h-5 w-5" /></div>; };
 
     for (let i = 0; i < items.length; i++) {
       if (items.length > 3 && i !== 0 && i < items.length - 1) {
@@ -50,7 +50,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
         {({ open }) => {
           return (
             <>
-              <DotsThree className={`h-7 w-7 rounded-full hover:bg-gray-5 ${open ? 'bg-gray-5' : ''}`} />
+              <DotsThree className={`h-7 w-7 rounded-full text-gray-80 hover:bg-gray-5 ${open ? 'bg-gray-5' : ''}`} />
             </>
           );
         }}

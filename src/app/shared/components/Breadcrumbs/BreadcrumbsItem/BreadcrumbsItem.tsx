@@ -87,7 +87,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   return (
     <div
       ref={drop}
-      className={`p-1 flex items-center cursor-pointer ${isDraggingOverClassNames} ${props.item.active ? 'color-gray-80' : 'color-gray-50'}`}
+      className={`p-1 flex items-center cursor-pointer ${isDraggingOverClassNames} 
+        ${!props.item.active || (props.item.isFirstPath && props.totalBreadcrumbsLength === 1) ? 'text-gray-80' : 'text-gray-50'}`}
       style={{ maxWidth: props.isHiddenInList || props.item.isFirstPath ? '100%' : props.totalBreadcrumbsLength === 3 ? '25%' : '50%' }}
       key={props.item.id}
       onClick={() => onItemClicked(props.item)}
