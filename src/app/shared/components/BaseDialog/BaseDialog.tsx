@@ -5,8 +5,10 @@ interface BaseDialogProps {
   classes?: string;
   titleClasses?: string;
   panelClasses?: string;
+  bgColor?: string;
   onClose: () => void;
 }
+
 
 const BaseDialog = ({
   isOpen,
@@ -16,6 +18,7 @@ const BaseDialog = ({
   classes,
   panelClasses,
   titleClasses,
+  bgColor,
 }: BaseDialogProps): JSX.Element => {
   return (
     <div
@@ -24,7 +27,7 @@ const BaseDialog = ({
     >
       <div
         className={`${panelClasses || ''} absolute top-1/2 left-1/2 flex w-104 -translate-y-1/2
-        -translate-x-1/2 transform flex-col overflow-hidden rounded-lg bg-white pt-8 text-neutral-900`}
+        -translate-x-1/2 transform flex-col overflow-hidden rounded-lg pt-8 text-neutral-900 ${bgColor || 'bg-white'}`}
         onClick={(e) => { e.stopPropagation(); }}
       >
         <span

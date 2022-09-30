@@ -27,11 +27,13 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
+import RealtimeService from 'app/core/services/socket.service';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
+  RealtimeService.getInstance().stop();
   navigationService.push(AppView.Login);
 }
 

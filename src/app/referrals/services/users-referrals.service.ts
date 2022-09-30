@@ -8,7 +8,7 @@ const usersReferralsService = {
     return referralsClient.getReferrals();
   },
   hasClickAction(referralKey: ReferralKey): boolean {
-    return [ReferralKey.SubscribeToNewsletter, ReferralKey.InstallDesktopApp, ReferralKey.InviteFriends].includes(
+    return [ReferralKey.SubscribeToNewsletter, ReferralKey.InstallDesktopApp, ReferralKey.InviteFriends, ReferralKey.Invite2Friends, ReferralKey.CompleteSurvey].includes(
       referralKey,
     );
   },
