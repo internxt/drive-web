@@ -7,7 +7,7 @@ export default function Dropdown({
   classButton,
   menuItems,
   classMenuItems,
-  openDirection
+  openDirection,
 }: {
   children: ReactNode;
   options?: { text: string; onClick: () => void }[];
@@ -18,17 +18,17 @@ export default function Dropdown({
 }): JSX.Element {
   return (
     <Menu>
-      <div className='flex relative'>
-        <Menu.Button className={`cursor-pointer outline-none ${classButton}`}>{children}</Menu.Button>
+      <div className="relative flex items-center">
+        <Menu.Button className={`outline-none cursor-pointer ${classButton}`}>{children}</Menu.Button>
 
         <Transition
           className={`absolute ${openDirection === 'left' ? 'left-0' : 'right-0'}`}
-          enter="transition duration-100 ease-out"
-          enterFrom="transform scale-95 opacity-0"
-          enterTo="transform scale-100 opacity-100"
-          leave="transition duration-75 ease-out"
-          leaveFrom="transform scale-100 opacity-100"
-          leaveTo="transform scale-95 opacity-0"
+          enter="transform transition duration-50 ease-out"
+          enterFrom="scale-98 opacity-0"
+          enterTo="scale-100 opacity-100"
+          leave="transform transition duration-50 ease-out"
+          leaveFrom="scale-98 opacity-100"
+          leaveTo="scale-100 opacity-0"
         >
           <Menu.Items className={`absolute ${classMenuItems}`}>
             {options?.map((option) => (
@@ -42,14 +42,13 @@ export default function Dropdown({
                 </div>
               </Menu.Item>
             ))}
-            {menuItems && <div className="w-52">
-              {menuItems?.map((item, index) => (
-                <Menu.Item key={'menuitem-' + index}>
-                  {item}
-                </Menu.Item>
-              ))}
-            </div>
-            }
+            {menuItems && (
+              <div className="w-full max-w-xs">
+                {menuItems?.map((item, index) => (
+                  <Menu.Item key={'menuitem-' + index}>{item}</Menu.Item>
+                ))}
+              </div>
+            )}
           </Menu.Items>
         </Transition>
       </div>

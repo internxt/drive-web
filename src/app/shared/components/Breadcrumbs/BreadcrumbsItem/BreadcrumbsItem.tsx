@@ -31,8 +31,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     if (droppedType === DragAndDropType.DriveItem) {
       const itemsToMove = isSomeItemSelected
         ? [...selectedItems, droppedData as DriveItemData].filter(
-          (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
-        )
+            (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
+          )
         : [droppedData];
 
       dispatch(
@@ -87,17 +87,26 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   return (
     <div
       ref={drop}
-      className={`p-1 flex items-center cursor-pointer ${isDraggingOverClassNames} 
-        ${!props.item.active || (props.item.isFirstPath && props.totalBreadcrumbsLength === 1) ? 'text-gray-80' : 'text-gray-50'}`}
-      style={{ maxWidth: props.isHiddenInList || props.item.isFirstPath ? '100%' : props.totalBreadcrumbsLength === 3 ? '25%' : '50%' }}
+      className={`flex cursor-pointer items-center p-1 font-medium ${isDraggingOverClassNames} 
+        ${
+          !props.item.active || (props.item.isFirstPath && props.totalBreadcrumbsLength === 1)
+            ? 'text-gray-80'
+            : 'text-gray-50 hover:text-gray-80'
+        }`}
+      style={{
+        maxWidth:
+          props.isHiddenInList || props.item.isFirstPath ? '100%' : props.totalBreadcrumbsLength === 3 ? '25%' : '50%',
+      }}
       key={props.item.id}
       onClick={() => onItemClicked(props.item)}
     >
-      {props.isHiddenInList && <div style={{ width: '10%' }}><ItemIconComponent className="h-full w-full" /></div>}
+      {props.isHiddenInList && <ItemIconComponent className="h-5 w-5" />}
       {props.item.icon ? props.item.icon : null}
-      {props.item.label ? <span style={{ width: props.isHiddenInList ? '90%' : '100%' }}
-        className={`label overflow-hidden overflow-ellipsis whitespace-nowrap ${props.isHiddenInList && 'text-base pl-3'}`}
-        title={props.item.label}>{props.item.label}</span> : null}
+      {props.item.label ? (
+        <span className={`label w-full truncate ${props.isHiddenInList && 'pl-3 text-base'}`} title={props.item.label}>
+          {props.item.label}
+        </span>
+      ) : null}
     </div>
   );
 };
