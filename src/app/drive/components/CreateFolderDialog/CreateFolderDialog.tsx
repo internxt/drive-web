@@ -4,13 +4,14 @@ import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { uiActions } from 'app/store/slices/ui';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import i18n from 'app/i18n/services/i18n.service';
 import Spinner from 'app/shared/components/Spinner/Spinner';
+import Modal from 'app/shared/components/Modal';
+
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
   currentFolderId: number;
@@ -62,7 +63,8 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
   };
 
   return (
-    <BaseDialog isOpen={isOpen} title="Create folder" onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <h1 className="text-2xl font-medium text-gray-80">Create folder</h1>
       <div className="mt-4 px-5">
         <span className="text-sm">Name</span>
         <input
@@ -71,30 +73,33 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
           placeholder="Enter folder name"
           disabled={isLoading}
           value={folderName}
-          onChange={(e) => { setFolderName(e.target.value); setError(''); }}
+          onChange={(e) => {
+            setFolderName(e.target.value);
+            setError('');
+          }}
           onKeyPress={onKeyPressed}
           className={`w-full py-2 px-2.5 ${error !== '' ? 'error' : ''}`}
         />
-        {error !== '' && <span className={'text-sm error text-red-std'}>&#9888; {error}</span>}
+        {error !== '' && <span className={'error text-sm text-red-std'}>&#9888; {error}</span>}
       </div>
 
-      <div className="flex justify-end items-center py-6 px-5">
+      <div className="flex items-center justify-end py-6 px-5">
         <div className="flex w-64">
-          <BaseButton className="w-full cancel" onClick={onClose}>
+          <BaseButton className="cancel w-full" onClick={onClose}>
             Cancel
           </BaseButton>
-          <BaseButton className="w-full primary border" onClick={onCreateButtonClicked}>
-            {isLoading ?
+          <BaseButton className="primary w-full border" onClick={onCreateButtonClicked}>
+            {isLoading ? (
               <>
-                Creating <Spinner className="h-4 w-4 text-white ml-2" />
-              </> :
+                Creating <Spinner className="ml-2 h-4 w-4 text-white" />
+              </>
+            ) : (
               'Create'
-            }
-
+            )}
           </BaseButton>
         </div>
       </div>
-    </BaseDialog >
+    </Modal>
   );
 };
 
