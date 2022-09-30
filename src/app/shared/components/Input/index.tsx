@@ -1,5 +1,5 @@
 import { Eye, EyeSlash, MagnifyingGlass, X, WarningOctagon, Warning, CheckCircle } from 'phosphor-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Input({
   className = '',
@@ -14,6 +14,7 @@ export default function Input({
   message,
   onFocus,
   onBlur,
+  autofocus = false,
 }: {
   className?: string;
   label?: string;
@@ -27,12 +28,21 @@ export default function Input({
   onFocus?: () => void;
   onBlur?: () => void;
   message?: string;
+  autofocus?: boolean;
 }): JSX.Element {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const focusInput = () => inputRef.current?.focus();
+  if (autofocus || message) focusInput();
+
+  useEffect(() => {
+    message && focusInput();
+  }, [message, disabled]);
+
   let focusColor: string;
 
   switch (accent) {
     case 'error':
-      focusColor = 'focus:border-red-std ring-red-std';
+      focusColor = 'border-red-std focus:border-red-std ring-red-std';
       break;
     case 'warning':
       focusColor = 'focus:border-orange ring-orange';
@@ -61,6 +71,7 @@ export default function Input({
   const input = (
     <div className="relative">
       <input
+        ref={inputRef}
         disabled={disabled}
         className={`inxt-input outline-none h-11 w-full rounded-md border text-lg font-normal text-gray-80 ring-opacity-10 focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 
 				${borderColor} ${focusColor} ${placeholderColor} ${backgroundColor} ${padding}`}
@@ -85,7 +96,7 @@ export default function Input({
             e.preventDefault();
             setShowPassword(!showPassword);
           }}
-          className={`absolute top-1/2 right-4 -translate-y-1/2 bg-opacity-0 transform cursor-pointer py-2 pl-2 text-gray-80 ${backgroundColor}`}
+          className={`absolute top-1/2 right-4 -translate-y-1/2 transform cursor-pointer bg-opacity-0 py-2 pl-2 text-gray-80 ${backgroundColor}`}
         >
           {showPassword ? <Eye size={24} /> : <EyeSlash size={24} />}
         </div>
@@ -137,15 +148,16 @@ export default function Input({
   return (
     <div className={`${className}`}>
       {label ? (
-        <label className={`text-sm ${disabled ? 'text-gray-40' : 'text-gray-80'}`}>
-          {label} {input}
+        <label>
+          <span className={`text-sm ${disabled ? 'text-gray-40' : 'text-gray-80'}`}>{label}</span>
+          {input}
         </label>
       ) : (
         input
       )}
       {message && (
         <div className={`mt-0.5 flex items-center ${messageColor}`}>
-          {MessageIcon && <MessageIcon size={16} />}
+          {MessageIcon && <MessageIcon size={16} weight="fill" />}
           <p className="ml-1 text-sm">{message}</p>
         </div>
       )}

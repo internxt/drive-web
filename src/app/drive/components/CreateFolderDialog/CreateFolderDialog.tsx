@@ -1,15 +1,15 @@
-import { useState, KeyboardEventHandler } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 
 import { uiActions } from 'app/store/slices/ui';
-import BaseButton from 'app/shared/components/forms/BaseButton';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import i18n from 'app/i18n/services/i18n.service';
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import Button from 'app/shared/components/Button/Button';
+import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 
 interface CreateFolderDialogProps {
@@ -23,11 +23,19 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFolderName('');
+      setError('');
+    }
+  }, [isOpen]);
+
   const onClose = (): void => {
-    setError('');
     setIsLoading(false);
     dispatch(uiActions.setIsCreateFolderDialogOpen(false));
   };
+
   const createFolder = async () => {
     if (folderName && folderName.trim().length > 0) {
       setIsLoading(true);
@@ -50,55 +58,44 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
       setError(i18n.get('error.folderCannotBeEmpty'));
     }
   };
-  const onCreateButtonClicked = () => {
+
+  const onCreateButtonClicked = (e) => {
+    e.preventDefault();
     if (!isLoading) {
       setError('');
       createFolder();
     }
   };
-  const onKeyPressed: KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key === 'Enter') {
-      onCreateButtonClicked();
-    }
-  };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">Create folder</h1>
-      <div className="mt-4 px-5">
-        <span className="text-sm">Name</span>
-        <input
-          autoFocus
-          type="text"
-          placeholder="Enter folder name"
+    <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={onClose}>
+      <form className="flex flex-col space-y-5" onSubmit={(e) => onCreateButtonClicked(e)}>
+        <p className="text-2xl font-medium text-gray-100">New folder</p>
+
+        <Input
           disabled={isLoading}
+          className={`${error !== '' ? 'error' : ''}`}
+          label="Name"
           value={folderName}
-          onChange={(e) => {
-            setFolderName(e.target.value);
+          placeholder="Folder name"
+          onChange={(name) => {
+            setFolderName(name);
             setError('');
           }}
-          onKeyPress={onKeyPressed}
-          className={`w-full py-2 px-2.5 ${error !== '' ? 'error' : ''}`}
+          accent={error ? 'error' : undefined}
+          message={error}
+          autofocus
         />
-        {error !== '' && <span className={'error text-sm text-red-std'}>&#9888; {error}</span>}
-      </div>
 
-      <div className="flex items-center justify-end py-6 px-5">
-        <div className="flex w-64">
-          <BaseButton className="cancel w-full" onClick={onClose}>
-            Cancel
-          </BaseButton>
-          <BaseButton className="primary w-full border" onClick={onCreateButtonClicked}>
-            {isLoading ? (
-              <>
-                Creating <Spinner className="ml-2 h-4 w-4 text-white" />
-              </>
-            ) : (
-              'Create'
-            )}
-          </BaseButton>
+        <div className="flex flex-row items-center justify-end space-x-2">
+          <Button disabled={isLoading} variant="secondary" onClick={onClose}>
+            {i18n.get('actions.cancel')}
+          </Button>
+          <Button type="submit" loading={isLoading} variant="primary">
+            Create
+          </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 };

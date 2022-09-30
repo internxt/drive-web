@@ -1,11 +1,5 @@
 import { createRef, ReactNode, forwardRef, useState, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
-/*import UilTable from '@iconscout/react-unicons/icons/uil-table';
-import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
-import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
-import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
-import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
-import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
 import {
   Trash,
   DownloadSimple,
@@ -54,8 +48,6 @@ import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 
-//import shareService from 'app/share/services/share.service';
-
 interface DriveExplorerProps {
   title: JSX.Element | string;
   titleClassName?: string;
@@ -93,8 +85,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     title,
     titleClassName,
     items,
-    isDeleteItemsDialogOpen,
-    isCreateFolderDialogOpen,
     onItemsDeleted,
     onFolderCreated,
     isOver,
@@ -221,9 +211,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const driveExplorer = (
     <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
-      {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
+      <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
+      <CreateFolderDialog onFolderCreated={onFolderCreated} />
 
-      <div className="flex h-full w-full max-w-full flex-grow">
+      <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col pt-6">
           <div className="z-10 flex max-w-full justify-between pb-4">
             <div className={`flex w-full min-w-0 flex-1 flex-row items-center text-lg ${titleClassName || ''}`}>
@@ -233,11 +224,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             <div className="flex flex-shrink-0 flex-row">
               <Dropdown
                 classButton={
-                  'primary base-button flex items-center justify-center rounded-lg py-1.5 mr-1 text-base transition-all duration-75 ease-in-out'
+                  'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
                 }
                 openDirection={'right'}
                 classMenuItems={
-                  'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow mt-11'
+                  'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow mt-6'
                 }
                 menuItems={[
                   <MenuItem onClick={onCreateFolderButtonClicked}>
@@ -291,7 +282,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             </div>
           </div>
 
-          <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
+          <div className="z-0 mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
             {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent items={items} isLoading={isLoading} />
@@ -385,9 +376,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             multiple={true}
           />
         </div>
-      </div>
-      <div className="z-50">
-        <CreateFolderDialog onFolderCreated={onFolderCreated} />
       </div>
     </div>
   );

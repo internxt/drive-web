@@ -1,8 +1,6 @@
 import { useSelector } from 'react-redux';
 
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { useState } from 'react';
-import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
@@ -11,6 +9,8 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { DriveItemData } from '../../types';
 import i18n from 'app/i18n/services/i18n.service';
+import Button from 'app/shared/components/Button/Button';
+import Modal from 'app/shared/components/Modal';
 
 import './DeleteItemsDialog.scss';
 
@@ -29,7 +29,8 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
     dispatch(setItemsToDelete([]));
   };
 
-  const onAccept = async (): Promise<void> => {
+  const onDelete = async (e): Promise<void> => {
+    e.preventDefault();
     try {
       setIsLoading(true);
       if (itemsToDelete.length > 0) {
@@ -50,22 +51,23 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
   };
 
   return (
-    <BaseDialog isOpen={isOpen} title="Delete items" onClose={onClose}>
-      <span className="text-center block w-full text-base px-8 text-neutral-900 mt-2">
-        {i18n.get('drive.deleteItems.advice')}
-      </span>
-
-      <div className="flex justify-center items-center bg-neutral-20 py-6 mt-6">
-        <div className="flex w-64">
-          <BaseButton onClick={() => onClose()} className="cancel w-full mr-2">
-            {i18n.get('actions.cancel')}
-          </BaseButton>
-          <BaseButton className="primary w-11/12 ml-2" disabled={isLoading} onClick={() => onAccept()}>
-            {isLoading ? 'Deleting...' : 'Delete'}
-          </BaseButton>
+    <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={onClose}>
+      <form className="flex flex-col space-y-5" onSubmit={(e) => onDelete(e)}>
+        <div className="flex flex-col space-y-1">
+          <p className="text-2xl font-medium text-gray-100">Delete items</p>
+          <p className="text-gray-80">Items will be permanently deleted. This action cannot be undone.</p>
         </div>
-      </div>
-    </BaseDialog>
+
+        <div className="flex flex-row items-center justify-end space-x-2">
+          <Button disabled={isLoading} variant="secondary" onClick={onClose}>
+            {i18n.get('actions.cancel')}
+          </Button>
+          <Button loading={isLoading} variant="accent" type="submit">
+            Delete
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 };
 
