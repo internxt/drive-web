@@ -226,10 +226,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
     <div className="flex h-full w-full max-w-full flex-grow">
       <div className="flex w-1 flex-grow flex-col pt-6">
-        <div className="z-10 flex justify-between pb-4">
-          <div className={`flex items-center text-lg w-full ${titleClassName || ''}`}>{title}</div>
+        <div className="z-10 flex justify-between pb-4 max-w-full">
+          <div className={`flex flex-1 flex-row items-center min-w-0 w-full text-lg ${titleClassName || ''}`}>{title}</div>
 
-          <div className="flex">
+          <div className="flex flex-row flex-shrink-0">
             <Dropdown
               classButton={
                 'primary base-button flex items-center justify-center rounded-lg py-1.5 mr-1 text-base transition-all duration-75 ease-in-out'

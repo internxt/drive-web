@@ -106,7 +106,7 @@ class Navbar extends React.Component<NavbarProps> {
             <Gear size={24} />
           </Link>
           <AccountPopover
-            className="mr-5 z-50"
+            className="mr-5 z-40"
             user={user}
             plan={{
               ...this.props.plan,
