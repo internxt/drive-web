@@ -1,8 +1,16 @@
 import { CaretRight, DotsThree } from 'phosphor-react';
 import { forwardRef, ReactNode } from 'react';
 import Dropdown from '../Dropdown';
-
 import BreadcrumbsItem from './BreadcrumbsItem/BreadcrumbsItem';
+
+export interface BreadcrumbItemData {
+  id: number;
+  label: string;
+  icon: JSX.Element | null;
+  active: boolean;
+  isFirstPath?: boolean;
+  onClick?: () => void;
+}
 
 interface BreadcrumbsProps {
   items: BreadcrumbItemData[];
@@ -19,7 +27,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     );
   });
 
-  const itemsList = (): JSX.Element[] => {
+  const getItemsList = (): JSX.Element[] => {
     const items = props.items;
     const itemsList = [] as JSX.Element[];
     const hiddenItemsList = [] as JSX.Element[];
@@ -61,15 +69,5 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     return itemsList;
   };
 
-  return <>{itemsList().length > 0 && <div className="flex w-full">{itemsList()}</div>}</>;
+  return <>{<div className="flex w-full">{getItemsList()}</div>}</>;
 };
-
-
-export interface BreadcrumbItemData {
-  id: number;
-  label: string;
-  icon: JSX.Element | null;
-  active: boolean;
-  isFirstPath?: boolean;
-  onClick?: () => void;
-}

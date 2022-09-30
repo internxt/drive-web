@@ -4,10 +4,8 @@ import { connect } from 'react-redux';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
-import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
-import pollingService from 'app/core/services/polling.service';
 import { AppDispatch, RootState } from 'app/store';
-import { storageActions, storageSelectors } from 'app/store/slices/storage';
+import { storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 
 export interface DriveViewProps {
@@ -18,33 +16,12 @@ export interface DriveViewProps {
   dispatch: AppDispatch;
 }
 
-interface DriveViewState {
-  databasePolling: NodeJS.Timeout;
-}
-
-class DriveView extends Component<DriveViewProps, DriveViewState> {
+class DriveView extends Component<DriveViewProps> {
   componentDidMount(): void {
     const { dispatch } = this.props;
 
     dispatch(storageThunks.resetNamePathThunk());
     this.fetchItems();
-
-    this.setState({
-      databasePolling: pollingService.create(async () => {
-        const { currentFolderId } = this.props;
-        const currentFolderItems = await databaseService.get(DatabaseCollection.Levels, this.props.currentFolderId);
-
-        if (currentFolderItems) {
-          dispatch(storageActions.setItems({ folderId: currentFolderId, items: currentFolderItems }));
-        }
-      }, 1500),
-    });
-  }
-
-  componentWillUnmount(): void {
-    const { databasePolling } = this.state;
-
-    databasePolling && pollingService.destroy(databasePolling);
   }
 
   fetchItems = (): void => {
