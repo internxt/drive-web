@@ -217,7 +217,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col pt-6">
           <div className="z-10 flex max-w-full justify-between pb-4">
-            <div className={`flex w-full min-w-0 flex-1 flex-row items-center text-lg ${titleClassName || ''}`}>
+            <div className={`mr-20 flex w-full min-w-0 flex-1 flex-row items-center text-lg ${titleClassName || ''}`}>
               {title}
             </div>
 

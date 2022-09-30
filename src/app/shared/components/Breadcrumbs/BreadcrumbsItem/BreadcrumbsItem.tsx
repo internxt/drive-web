@@ -87,24 +87,24 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   return (
     <div
       ref={drop}
-      className={`flex cursor-pointer items-center p-1 font-medium ${isDraggingOverClassNames} 
+      className={`max-w-fit flex ${
+        props.item.isFirstPath ?? 'flex-1'
+      } cursor-pointer flex-row items-center truncate p-1 font-medium ${isDraggingOverClassNames} 
         ${
           !props.item.active || (props.item.isFirstPath && props.totalBreadcrumbsLength === 1)
             ? 'text-gray-80'
             : 'text-gray-50 hover:text-gray-80'
         }`}
-      style={{
-        maxWidth:
-          props.isHiddenInList || props.item.isFirstPath ? '100%' : 
-          (props.totalBreadcrumbsLength === 3 || props.totalBreadcrumbsLength === 4) ? '25%' : '50%',
-      }}
       key={props.item.id}
       onClick={() => onItemClicked(props.item)}
     >
       {props.isHiddenInList && <ItemIconComponent className="h-5 w-5" />}
       {props.item.icon ? props.item.icon : null}
       {props.item.label ? (
-        <span className={`label w-full truncate ${props.isHiddenInList && 'pl-3 text-base'}`} title={props.item.label}>
+        <span
+          className={`max-w-sm flex-1 cursor-pointer truncate ${props.isHiddenInList && 'pl-3 text-base'}`}
+          title={props.item.label}
+        >
           {props.item.label}
         </span>
       ) : null}

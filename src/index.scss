@@ -27,8 +27,16 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+/* TAILWIND FALLBACKS */
+
 .will-change {
   will-change: auto;
+}
+.max-w-fit {
+  max-width: fit-content;
+}
+.min-w-fit {
+  min-width: fit-content;
 }
 
 /* TEXT */
