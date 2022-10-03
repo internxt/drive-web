@@ -122,9 +122,11 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
       isOpen={isOpen}
       title={'Share settings'}
       subTitle={itemFullName}
+      dialogRounded={true}
+      textLeft={true}
       panelClasses="w-screen max-w-lg"
       titleClasses="text-black font-medium"
-      closeClasses="flex w-10 h-10 items-center mt-2 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
+      closeClass="flex w-10 h-10 items-center mt-2 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
       onClose={onClose}
     >
       <hr className="border-t-1 mb-5 w-screen border-neutral-40" />

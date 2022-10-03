@@ -5,11 +5,13 @@ interface BaseDialogProps {
   isOpen: boolean;
   title: string;
   subTitle?: string;
+  textLeft?: boolean;
+  dialogRounded?: boolean;
   children: JSX.Element | JSX.Element[];
   classes?: string;
   titleClasses?: string;
   panelClasses?: string;
-  closeClasses?: string;
+  closeClass?: string;
   bgColor?: string;
   onClose: () => void;
 }
@@ -18,12 +20,14 @@ const BaseDialog = ({
   isOpen,
   title,
   subTitle,
+  dialogRounded,
+  textLeft,
   children,
   onClose,
   classes,
   panelClasses,
   titleClasses,
-  closeClasses,
+  closeClass,
   bgColor,
 }: BaseDialogProps): JSX.Element => {
   return (
@@ -35,20 +39,18 @@ const BaseDialog = ({
       <div
         className={`${panelClasses || ''} absolute top-1/2 left-1/2 flex w-104 -translate-y-1/2
         -translate-x-1/2 transform flex-col overflow-hidden  ${
-          subTitle ? 'rounded-2xl' : 'rounded-lg pt-8'
+          dialogRounded ? 'rounded-2xl' : 'rounded-lg pt-8'
         } text-neutral-900 ${bgColor || 'bg-white'}`}
       >
         <div className={`${subTitle ? 'flex-row items-center bg-neutral-10 py-5 pl-5' : ''}`}>
           <UilTimes
-            className={`absolute right-8 cursor-pointer duration-200 ${
-              closeClasses || 'text-blue-60 hover:text-blue-70'
-            } 
+            className={`absolute right-8 cursor-pointer duration-200 ${closeClass || 'text-blue-60 hover:text-blue-70'} 
            transition ease-in-out `}
             onClick={onClose}
           />
           <span
             className={`${titleClasses || ''} overflow-hidden overflow-ellipsis whitespace-nowrap ${
-              subTitle ? 'text-left text-black' : ' px-16 text-center'
+              textLeft ? 'text-left text-black' : ' px-16 text-center'
             }  text-xl`}
           >
             {title}
