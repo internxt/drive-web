@@ -45,7 +45,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       <Fragment>
         <div className={isEditingName ? 'flex' : 'hidden'}>
           <input
-            className="w-full dense border border-white no-ring rect select-text"
+            className="dense no-ring rect w-full select-text border border-white"
             onClick={(e) => e.stopPropagation()}
             ref={nameInputRef}
             type="text"
@@ -60,7 +60,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         </div>
         <span
           data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-          className={`${ṣpanDisplayClass} cursor-pointer file-grid-item-name-span`}
+          className={`${ṣpanDisplayClass} file-grid-item-name-span cursor-pointer`}
           onClick={onNameClicked}
         >
           {items.getItemDisplayName(item)}
@@ -88,7 +88,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     <div
       ref={itemRef}
       style={{ height }}
-      className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-grid-item`}
+      className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-grid-item group`}
       onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}
@@ -96,7 +96,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     >
       <Dropdown>
         <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
-          <UilEllipsisH className="w-full h-full" />
+          <UilEllipsisH className="h-full w-full" />
         </Dropdown.Toggle>
         <Dropdown.Menu>
           <DriveItemDropdownActions
@@ -109,10 +109,10 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
           />
         </Dropdown.Menu>
       </Dropdown>
-      <div className="file-grid-item-icon-container filter drop-shadow-soft">
+      <div className="file-grid-item-icon-container drop-shadow-soft filter">
         <ItemIconComponent className="file-icon m-auto" />
       </div>
-      <div className="text-center mt-3">
+      <div className="mt-3 text-center">
         <div className="mb-1">{nameNodeFactory()}</div>
       </div>
     </div>,
