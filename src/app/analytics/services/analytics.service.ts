@@ -320,7 +320,6 @@ export async function trackPaymentConversion() {
     ); */
   }
   catch (err) {
-    console.log('error here', err);
     const castedError = errorService.castError(err);
     /* window.analytics.track('Error Signup After Payment Conversion', {
       message: castedError.message || '',
