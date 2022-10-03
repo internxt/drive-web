@@ -10,7 +10,7 @@ const CheckoutSuccessView = (): JSX.Element => {
 
   useEffectAsync(async () => {
     await dispatch(userThunks.refreshUserThunk());
-    analyticsService.trackPaymentConversion();
+    await analyticsService.trackPaymentConversion();
     navigationService.push(AppView.Drive);
   }, []);
 
