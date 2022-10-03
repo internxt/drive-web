@@ -3,6 +3,7 @@ import Spinner from '../Spinner/Spinner';
 
 export default function Button({
   variant = 'primary',
+  type = 'button',
   children,
   className = '',
   disabled = false,
@@ -11,6 +12,7 @@ export default function Button({
   loading,
 }: {
   variant?: 'primary' | 'accent' | 'secondary';
+  type?: 'button' | 'submit';
   children: ReactNode;
   className?: string;
   disabled?: boolean;
@@ -37,10 +39,10 @@ export default function Button({
     <button
       onClick={onClick}
       disabled={disabled || loading}
-      type="button"
+      type={type}
       className={`${
         size === 'default' ? 'h-10 px-5' : 'h-8 px-3.5'
-      } relative select-none rounded-lg text-base font-medium ${styles} ${className}`}
+      } outline-none relative select-none rounded-lg text-base font-medium ${styles} ${className}`}
     >
       {loading && (
         <div className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 transform">

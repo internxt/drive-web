@@ -1,14 +1,17 @@
-import { useState, KeyboardEventHandler } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { uiActions } from 'app/store/slices/ui';
-import BaseButton from 'app/shared/components/forms/BaseButton';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
+import i18n from 'app/i18n/services/i18n.service';
+import Button from 'app/shared/components/Button/Button';
+import Input from 'app/shared/components/Input';
+import Modal from 'app/shared/components/Modal';
+
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
   currentFolderId: number;
@@ -16,60 +19,84 @@ interface CreateFolderDialogProps {
 
 const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDialogProps) => {
   const [folderName, setFolderName] = useState('');
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFolderName('');
+      setError('');
+    }
+  }, [isOpen]);
+
   const onClose = (): void => {
+    setIsLoading(false);
     dispatch(uiActions.setIsCreateFolderDialogOpen(false));
   };
+
   const createFolder = async () => {
-    setIsLoading(true);
-    await dispatch(storageThunks.createFolderThunk({ folderName, parentFolderId: currentFolderId }))
-      .unwrap()
-      .then(() => {
-        setIsLoading(false);
-        onClose();
-        onFolderCreated && onFolderCreated();
-      })
-      .catch((e) => {
-        setIsLoading(false);
-        return e;
-      });
+    if (folderName && folderName.trim().length > 0) {
+      setIsLoading(true);
+      await dispatch(storageThunks.createFolderThunk({ folderName, parentFolderId: currentFolderId }))
+        .unwrap()
+        .then(() => {
+          setIsLoading(false);
+          onClose();
+          onFolderCreated && onFolderCreated();
+        })
+        .catch((e) => {
+          const errorMessage = e?.message?.includes('already exists')
+            ? i18n.get('error.folderAlreadyExists')
+            : i18n.get('error.creatingFolder');
+          setError(errorMessage);
+          setIsLoading(false);
+          return e;
+        });
+    } else {
+      setError(i18n.get('error.folderCannotBeEmpty'));
+    }
   };
-  const onCreateButtonClicked = () => {
-    createFolder();
-  };
-  const onKeyPressed: KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key === 'Enter') {
-      onCreateButtonClicked();
+
+  const onCreateButtonClicked = (e) => {
+    e.preventDefault();
+    if (!isLoading) {
+      setError('');
+      createFolder();
     }
   };
 
   return (
-    <BaseDialog isOpen={isOpen} title="Create folder" onClose={onClose}>
-      <div className="w-64 self-center mt-4">
-        <input
-          autoFocus
-          type="text"
-          placeholder="Enter folder name"
-          value={folderName}
-          onChange={(e) => setFolderName(e.target.value)}
-          onKeyPress={onKeyPressed}
-          className="w-full py-2 px-2.5"
-        />
-      </div>
+    <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={onClose}>
+      <form className="flex flex-col space-y-5" onSubmit={(e) => onCreateButtonClicked(e)}>
+        <p className="text-2xl font-medium text-gray-100">New folder</p>
 
-      <div className="flex justify-center items-center bg-neutral-20 py-6 mt-6">
-        <div className="flex w-64">
-          <BaseButton className="cancel w-full mr-4" onClick={onClose}>
-            Cancel
-          </BaseButton>
-          <BaseButton className="w-full primary border" disabled={isLoading} onClick={onCreateButtonClicked}>
+        <Input
+          disabled={isLoading}
+          className={`${error !== '' ? 'error' : ''}`}
+          label="Name"
+          value={folderName}
+          placeholder="Folder name"
+          onChange={(name) => {
+            setFolderName(name);
+            setError('');
+          }}
+          accent={error ? 'error' : undefined}
+          message={error}
+          autofocus
+        />
+
+        <div className="flex flex-row items-center justify-end space-x-2">
+          <Button disabled={isLoading} variant="secondary" onClick={onClose}>
+            {i18n.get('actions.cancel')}
+          </Button>
+          <Button type="submit" loading={isLoading} variant="primary">
             Create
-          </BaseButton>
+          </Button>
         </div>
-      </div>
-    </BaseDialog>
+      </form>
+    </Modal>
   );
 };
 

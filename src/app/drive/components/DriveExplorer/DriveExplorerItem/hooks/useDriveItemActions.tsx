@@ -10,12 +10,11 @@ import { storageActions } from '../../../../../store/slices/storage';
 import storageSelectors from '../../../../../store/slices/storage/storage.selectors';
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
+import useDriveItemStoreProps from './useDriveStoreProps';
 
 //import shareService from 'app/share/services/share.service';
 
 interface DriveItemActions {
-  isEditingName: boolean;
-  dirtyName: string;
   //itemIsShared: boolean;
   nameInputRef: RefObject<HTMLInputElement>;
   onRenameButtonClicked: (e: MouseEvent) => void;
@@ -24,7 +23,7 @@ interface DriveItemActions {
   onEditNameButtonClicked: (e: MouseEvent) => void;
   onNameBlurred: () => void;
   onNameChanged: (e: ChangeEvent<HTMLInputElement>) => void;
-  onNameEnterKeyPressed: KeyboardEventHandler<HTMLInputElement>;
+  onNameEnterKeyDown: KeyboardEventHandler<HTMLInputElement>;
   onDownloadButtonClicked: (e: MouseEvent) => void;
   onShareButtonClicked: (e: MouseEvent) => void;
   onInfoButtonClicked: (e: MouseEvent) => void;
@@ -32,44 +31,35 @@ interface DriveItemActions {
   onItemClicked: (e: MouseEvent) => void;
   onItemDoubleClicked: (e: MouseEvent) => void;
   onItemRightClicked: (e: MouseEvent) => void;
- 
 }
 //const {isItemShared } = useDriveItemStoreProps();
 const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
-  const [isEditingName, setIsEditingName] = useState(false);
+  const dispatch = useAppDispatch();
   //const [itemIsShared, setItemIsShared] = useState(false);
   const [nameEditPending, setNameEditPending] = useState(false);
-  const [dirtyName, setDirtyName] = useState('');
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
   const currentFolderPath = useAppSelector(storageSelectors.currentFolderPath);
-  const dispatch = useAppDispatch();
+  const { dirtyName } = useDriveItemStoreProps();
+
   const onRenameButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
-
-    setIsEditingName(true);
-    setDirtyName(item.name);
-
-    setTimeout(() => nameInputRef.current?.focus(), 0);
+    dispatch(uiActions.setCurrentEditingNameDirty(item.name));
+    dispatch(uiActions.setCurrentEditingNameDriveItem(item));
   };
   /*const isItemShared = useAppSelector((state) => (item)=>{
     //const page = state.shared.pagination.page;
     const perPage = state.shared.pagination.perPage;
     shareService.getAllShareLinks(0,perPage,undefined).then((response)=>{
-
-    setItemIsShared(response.items.some((i) => {
-      
-      return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
-    }));
-  });
+      setItemIsShared(response.items.some((i) => {
+        return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
+      }));
+    });
   });*/
 
   /*useEffect(() => {
-
     isItemShared(item);
-
   },[]);*/
-  
 
   const confirmNameChange = async () => {
     if (nameEditPending) return;
@@ -78,29 +68,35 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     if (item.name !== dirtyName) {
       setNameEditPending(true);
       await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }));
+      onNameBlurred();
       setNameEditPending(false);
     }
 
-    nameInputRef.current?.blur();
+    nameInputRef?.current?.blur();
   };
+
   const onEditNameButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
     e.preventDefault();
 
-    setIsEditingName(true);
-    setDirtyName(item.name);
+    dispatch(uiActions.setCurrentEditingNameDirty(item.name));
+    dispatch(uiActions.setCurrentEditingNameDriveItem(item));
+  };
 
-    setTimeout(() => nameInputRef.current?.focus(), 0);
-  };
   const onNameBlurred = (): void => {
-    setIsEditingName(false);
+    dispatch(uiActions.setCurrentEditingNameDirty(''));
+    dispatch(uiActions.setCurrentEditingNameDriveItem(null));
   };
+
   const onNameChanged = (e: ChangeEvent<HTMLInputElement>): void => {
-    setDirtyName(e.target.value);
+    dispatch(uiActions.setCurrentEditingNameDirty(e.target.value));
   };
-  const onNameEnterKeyPressed: KeyboardEventHandler<HTMLInputElement> = (e) => {
+
+  const onNameEnterKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === 'Enter') {
       confirmNameChange();
+    } else if (e.key === 'Escape') {
+      onNameBlurred();
     }
   };
 
@@ -185,9 +181,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   };
 
   return {
-    isEditingName,
     //itemIsShared,
-    dirtyName,
     nameInputRef,
     onRenameButtonClicked,
     confirmNameChange,
@@ -195,7 +189,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     onEditNameButtonClicked,
     onNameBlurred,
     onNameChanged,
-    onNameEnterKeyPressed,
+    onNameEnterKeyDown,
     onDownloadButtonClicked,
     onShareButtonClicked,
     onInfoButtonClicked,
@@ -203,7 +197,6 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     onItemClicked,
     onItemDoubleClicked,
     onItemRightClicked,
-   
   };
 };
 
