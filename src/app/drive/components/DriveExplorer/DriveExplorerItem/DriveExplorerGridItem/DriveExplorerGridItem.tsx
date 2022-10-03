@@ -16,15 +16,13 @@ import './DriveExplorerGridItem.scss';
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
   const { item } = props;
-  const { isItemSelected } = useDriveItemStoreProps();
+  const { isItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
   const {
-    isEditingName,
-    dirtyName,
     nameInputRef,
     onNameChanged,
     onNameBlurred,
     onNameClicked,
-    onNameEnterKeyPressed,
+    onNameEnterKeyDown,
     onDownloadButtonClicked,
     onRenameButtonClicked,
     onInfoButtonClicked,
@@ -39,11 +37,11 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const forceUpdate = useForceUpdate();
   const updateHeight = () => forceUpdate();
   const nameNodeFactory = () => {
-    const ṣpanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
+    const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
 
     return (
       <Fragment>
-        <div className={isEditingName ? 'flex' : 'hidden'}>
+        <div className={isEditingName(item) ? 'flex' : 'hidden'}>
           <input
             className="dense no-ring rect w-full select-text border border-white"
             onClick={(e) => e.stopPropagation()}
@@ -53,7 +51,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
             placeholder="Name"
             onChange={onNameChanged}
             onBlur={onNameBlurred}
-            onKeyPress={onNameEnterKeyPressed}
+            onKeyDown={onNameEnterKeyDown}
             autoFocus
           />
           <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
@@ -62,6 +60,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
           data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
           className={`${ṣpanDisplayClass} file-grid-item-name-span cursor-pointer`}
           onClick={onNameClicked}
+          title={items.getItemDisplayName(item)}
         >
           {items.getItemDisplayName(item)}
         </span>
@@ -83,6 +82,17 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       window.removeEventListener('resize', updateHeight);
     };
   }, []);
+
+  useEffect(() => {
+    if (isEditingName(item)) {
+      const current = nameInputRef.current;
+      if (current && current !== null) {
+        nameInputRef.current.selectionStart = nameInputRef.current.value.length;
+        nameInputRef.current.selectionEnd = nameInputRef.current.value.length;
+        nameInputRef.current.focus();
+      }
+    }
+  }, [isEditingName(item)]);
 
   const template = connectDropTarget(
     <div
@@ -118,7 +128,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     </div>,
   );
 
-  return (isEditingName ? template : connectDragSource(template)) as JSX.Element;
+  return (isEditingName(item) ? template : connectDragSource(template)) as JSX.Element;
 };
 
 export default DriveExplorerGridItem;

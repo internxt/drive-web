@@ -152,7 +152,8 @@
     "deleteTeamMember": "Error deleting team member",
     "changingName": "Error during name change",
     "fileAlreadyExists": "File with the same name already exists",
-    "folderAlreadyExists": "Folder with the same name already exists",
+    "folderAlreadyExists": "A folder with the same name already exists",
+    "folderCannotBeEmpty": "Folder name cannot be empty",
     "creatingFolder": "Error during folder creation",
     "sendReferralInvitation": "Could not send invitation email",
     "sendClaimEmail": "Could not send claim email",
@@ -373,7 +374,12 @@
     "subscribeToNewsletter": "{email} successfully subscribed to newsletter"
   },
   "actions": {
-    "upload": "Upload",
+    "upload": {
+      "new": "New",
+      "folder": "Folder",
+      "uploadFiles": "Upload files",
+      "uploadFolder": "Upload folder"
+    },
     "download": "Download",
     "downloading": "Downloading",
     "downloaded": "Downloaded",
