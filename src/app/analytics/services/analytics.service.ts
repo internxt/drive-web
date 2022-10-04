@@ -277,13 +277,13 @@ export function trackShareLinkBucketIdUndefined(payload: { email: string }): voi
 export async function trackPaymentConversion() {
   try {
     // window.analytics.page('Checkout Success');
-    const queryStringParsed = queryString.parse(location.search);
-    const checkoutSessionId = String(queryStringParsed.cs_id);
+    const checkoutSessionId = localStorage.getItem('sessionId');
     const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
       `${process.env.REACT_APP_API_URL}/api/stripe/session`, {
       params: {
         sessionId: checkoutSessionId
-      }
+      },
+      headers: httpService.getHeaders(true, false)
     });
     const { username, uuid } = getUser();
     const amount = amount_total * 0.01;
