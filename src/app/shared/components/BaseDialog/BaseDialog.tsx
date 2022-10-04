@@ -1,5 +1,3 @@
-import UilTimes from '@iconscout/react-unicons/icons/uil-times';
-
 interface BaseDialogProps {
   isOpen: boolean;
   title: string;
@@ -24,22 +22,16 @@ const BaseDialog = ({
 }: BaseDialogProps): JSX.Element => {
   return (
     <div
-      className={`${isOpen ? 'flex' : 'hidden'} ${classes || ''
-        } absolute top-0 left-0 right-0 bottom-0 bg-neutral-100 bg-opacity-80 z-10`}
+      className={`${isOpen ? 'flex' : 'hidden'} ${classes || ''} absolute top-0 left-0 right-0 bottom-0 z-50 bg-neutral-100 bg-opacity-80`}
+      onClick={onClose}
     >
       <div
-        className={`${panelClasses || ''} text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
-        transform -translate-y-1/2 -translate-x-1/2 w-104 pt-8 rounded-lg overflow-hidden ${bgColor || 'bg-white'}`}
+        className={`${panelClasses || ''} absolute top-1/2 left-1/2 flex w-104 -translate-y-1/2
+        -translate-x-1/2 transform flex-col overflow-hidden rounded-lg pt-8 text-neutral-900 ${bgColor || 'bg-white'}`}
+        onClick={(e) => { e.stopPropagation(); }}
       >
-        <UilTimes
-          className="absolute right-8 cursor-pointer transition duration-200\
-           ease-in-out text-blue-60 hover:text-blue-70"
-          onClick={onClose}
-        />
-
         <span
-          className={`${titleClasses || ''
-            } whitespace-nowrap text-xl text-center px-16 overflow-hidden overflow-ellipsis`}
+          className={`${titleClasses || ''} overflow-hidden overflow-ellipsis whitespace-nowrap px-5 text-left text-xl`}
         >
           {title}
         </span>
