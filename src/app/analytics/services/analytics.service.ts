@@ -12,7 +12,6 @@ import { getCookie, setCookie } from '../utils';
 import queryString from 'query-string';
 import { v4 as uuidv4 } from 'uuid';
 
-
 export const PATH_NAMES = {
   '/new': 'Register',
   '/appsumo': 'Register',
@@ -21,11 +20,8 @@ export const PATH_NAMES = {
   '/settings': 'Settings',
   '/invite': 'Invite',
   '/remove': 'Remove Account',
-  '/app': 'App'
+  '/app': 'App',
 };
-
-
-
 
 export function trackFileDownloadCompleted(properties): void {
   trackData(properties, 'file_downloaded');
@@ -279,53 +275,47 @@ export async function trackPaymentConversion() {
     // window.analytics.page('Checkout Success');
     const checkoutSessionId = localStorage.getItem('sessionId');
     const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
-      `${process.env.REACT_APP_API_URL}/api/stripe/session`, {
-      params: {
-        sessionId: checkoutSessionId
+      `${process.env.REACT_APP_API_URL}/api/stripe/session`,
+      {
+        params: {
+          sessionId: checkoutSessionId,
+        },
+        headers: httpService.getHeaders(true, false),
       },
-      headers: httpService.getHeaders(true, false)
-    });
+    );
     const { username, uuid } = getUser();
     const amount = amount_total * 0.01;
 
-    /* window.analytics.identify(
-      uuid,
-      {
-        email: username,
-        plan: metadata.priceId,
-        customer_id: customer,
-        storage_limit: metadata.maxSpaceBytes,
-        plan_name: metadata.name,
-        subscription_id: subscription,
-        payment_intent
-      }
-    );
-    window.analytics.track(
-      AnalyticsTrack.PaymentConversionEvent,
-      {
-        price_id: metadata.priceId,
-        product: metadata.product,
-        email: username,
-        customer_id: customer,
-        currency: currency.toUpperCase(),
-        value: amount,
-        revenue: amount,
-        quantity: 1,
-        type: metadata.type,
-        plan_name: metadata.name,
-        impact_value: amount_total === 0 ? 5 : amount,
-        subscription_id: subscription,
-        payment_intent,
-      }
-    ); */
-  }
-  catch (err) {
+    window.rudderanalytics.identify(uuid, {
+      email: username,
+      plan: metadata.priceId,
+      customer_id: customer,
+      storage_limit: metadata.maxSpaceBytes,
+      plan_name: metadata.name,
+      subscription_id: subscription,
+      payment_intent,
+    });
+    window.rudderanalytics.track(AnalyticsTrack.PaymentConversionEvent, {
+      price_id: metadata.priceId,
+      product: metadata.product,
+      email: username,
+      customer_id: customer,
+      currency: currency.toUpperCase(),
+      value: amount,
+      revenue: amount,
+      quantity: 1,
+      type: metadata.type,
+      plan_name: metadata.name,
+      impact_value: amount_total === 0 ? 5 : amount,
+      subscription_id: subscription,
+      payment_intent,
+    });
+  } catch (err) {
     const castedError = errorService.castError(err);
-    /* window.analytics.track('Error Signup After Payment Conversion', {
+    window.rudderanalytics.track('Error Signup After Payment Conversion', {
       message: castedError.message || '',
-    }); */
+    });
   }
-
 }
 
 async function getBodyPage(segmentName?: string) {
@@ -373,8 +363,8 @@ async function getBodyPage(segmentName?: string) {
 
 export async function serverPage(segmentName: string) {
   const page = await getBodyPage(segmentName);
-  return httpService.post(`${process.env.REACT_APP_API_URL}/api/data/p`,
-    {
+  return httpService
+    .post(`${process.env.REACT_APP_API_URL}/api/data/p`, {
       page,
     })
     .catch(() => {
@@ -397,17 +387,16 @@ export async function trackSignUpServer(payload: {
   userId: string;
 }) {
   const page = await getBodyPage();
-  return httpService.post(`${process.env.REACT_APP_API_URL}/api/data/t`,
-    {
+  return httpService
+    .post(`${process.env.REACT_APP_API_URL}/api/data/t`, {
       page,
       track: payload,
-      actionName: 'server_signup'
-    }
-  ).catch(() => {
-    // No op
-  });
+      actionName: 'server_signup',
+    })
+    .catch(() => {
+      // No op
+    });
 }
-
 
 const analyticsService = {
   page,
