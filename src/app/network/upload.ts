@@ -63,6 +63,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
   return uploadFileNetworkWeb(facade, bucketId, params.mnemonic, file, {
     uploadingCallback: params.progressCallback,
     abortController: params.abortController,
+    chunkSize: 100 * 1024 * 1024, // 100 MB
   }).catch((err: ErrorWithContext) => {
     Sentry.captureException(err, { extra: err.context });
 
