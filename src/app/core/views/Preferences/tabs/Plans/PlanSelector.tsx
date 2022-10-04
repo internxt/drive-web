@@ -46,6 +46,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           cancel_url: window.location.href,
           customer_email: user.email,
         });
+        localStorage.setItem('sessionId', response.sessionId);
         await paymentService.redirectToCheckout(response);
       } catch (err) {
         console.error(err);
