@@ -36,6 +36,8 @@ import iconService from '../../services/icon.service';
 
 //import shareService from 'app/share/services/share.service';
 
+const PAGINATION_LIMIT = 20;
+
 interface DriveExplorerProps {
   title: JSX.Element | string;
   titleClassName?: string;
@@ -69,6 +71,8 @@ interface DriveExplorerState {
   token: string;
   isAdmin: boolean;
   isMember: boolean;
+  fakePaginationLimit: number;
+  hasMoreItems: boolean;
 }
 
 class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
@@ -82,6 +86,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       token: '',
       isAdmin: true,
       isMember: false,
+      fakePaginationLimit: PAGINATION_LIMIT,
+      hasMoreItems: true,
     };
   }
 
@@ -145,6 +151,26 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
 
   onNextPageButtonClicked = (): void => undefined;
 
+  // Fake backend pagination - change when pagination in backend has been implemented
+  getMoreItems = () => {
+    const { fakePaginationLimit } = this.state;
+    const { items } = this.props;
+
+    const existsMoreItems = items.length > fakePaginationLimit;
+
+    this.setState({ hasMoreItems: existsMoreItems });
+    setTimeout(() => {
+      if (existsMoreItems) this.setState({ fakePaginationLimit: fakePaginationLimit + PAGINATION_LIMIT });
+    }, 1000);
+  };
+
+  getLimitedItems = () => {
+    const { fakePaginationLimit } = this.state;
+    const { items } = this.props;
+
+    return items.slice(0, fakePaginationLimit);
+  };
+
   render(): ReactNode {
     const {
       isLoading,
@@ -159,7 +185,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       isOver,
       connectDropTarget,
     } = this.props;
-    const { fileInputRef, fileInputKey } = this.state;
+    const { fileInputRef, fileInputKey, hasMoreItems } = this.state;
     const viewModesIcons = {
       [FileViewMode.List]: <SquaresFour className="h-6 w-6" />,
       [FileViewMode.Grid]: <Rows className="h-6 w-6" />,
@@ -169,6 +195,8 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
       [FileViewMode.Grid]: DriveExplorerGrid,
     };
     const ViewModeComponent = viewModes[viewMode];
+
+    const itemsList = this.getLimitedItems();
 
     const isRecents = title === 'Recents';
 
@@ -221,7 +249,12 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
             <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
               {this.hasItems && (
                 <div className="flex flex-grow flex-col justify-between overflow-hidden">
-                  <ViewModeComponent items={items} isLoading={isLoading} />
+                  <ViewModeComponent
+                    items={itemsList}
+                    isLoading={isLoading}
+                    onEndOfScroll={this.getMoreItems}
+                    hasMoreItems={hasMoreItems}
+                  />
                 </div>
               )}
 
