@@ -158,7 +158,7 @@ const ShareItemDialog = ({ item }: ShareItemDialogProps): JSX.Element => {
             <button
               className={`${
                 isLinkCopied ? ' z-10 flex bg-blue-10 bg-opacity-5' : ''
-              }flex h-10 w-32 flex-row items-center justify-center rounded-md border border-primary`}
+              } flex h-10 w-32 flex-row items-center justify-center rounded-md border border-primary`}
               onClick={() => {
                 setIsLinkCopied(true);
                 setTimeout(() => {
