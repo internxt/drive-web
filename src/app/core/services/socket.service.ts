@@ -52,7 +52,7 @@ export default class RealtimeService {
     return this.socket.id;
   }
 
-  onEvent(cb: (data: any) => void): void {
+  onEvent(cb: (data: unknown) => void): void {
     if (this.socket?.disconnected) {
       return console.log('[REALTIME] SOCKET IS DISCONNECTED');
     }
