@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Dropdown } from 'react-bootstrap';
 /*import UilPen from '@iconscout/react-unicons/icons/uil-pen';
 import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
@@ -25,18 +25,17 @@ import './DriveExplorerListItem.scss';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const { isItemSelected, isSomeItemSelected } = useDriveItemStoreProps();
+
+  const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
 
   const {
-    isEditingName,
-    //itemIsShared,
-    dirtyName,
     nameInputRef,
+    //itemIsShared,
     onNameChanged,
     onNameBlurred,
     onNameClicked,
     onEditNameButtonClicked,
-    onNameEnterKeyPressed,
+    onNameEnterKeyDown,
     onDownloadButtonClicked,
     onRenameButtonClicked,
     onInfoButtonClicked,
@@ -57,12 +56,24 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     e.target.checked ? dispatch(storageActions.selectItems([item])) : dispatch(storageActions.deselectItems([item]));
   };
+
+  useEffect(() => {
+    if (isEditingName(item)) {
+      const current = nameInputRef.current;
+      if (current && current !== null) {
+        nameInputRef.current.selectionStart = nameInputRef.current.value.length;
+        nameInputRef.current.selectionEnd = nameInputRef.current.value.length;
+        nameInputRef.current.focus();
+      }
+    }
+  }, [isEditingName(item)]);
+
   const nameNodefactory = () => {
-    const spanDisplayClass: string = !isEditingName ? 'block' : 'hidden';
+    const spanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
 
     return (
       <Fragment>
-        <div className={`${isEditingName ? 'flex' : 'hidden'}`}>
+        <div className={`${isEditingName(item) ? 'flex' : 'hidden'}`}>
           <input
             className="dense no-ring rect select-text border border-white"
             onClick={(e) => e.stopPropagation()}
@@ -73,7 +84,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             placeholder="Name"
             onChange={onNameChanged}
             onBlur={onNameBlurred}
-            onKeyPress={onNameEnterKeyPressed}
+            onKeyDown={onNameEnterKeyDown}
             autoFocus
           />
           <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
@@ -82,17 +93,19 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
+            title={items.getItemDisplayName(item)}
             onClick={onNameClicked}
           >
             {items.getItemDisplayName(item)}
           </span>
-          {!isEditingName && (
+          {!isEditingName(item) && (
             <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
           )}
         </div>
       </Fragment>
     );
   };
+
   const template = (
     <div
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
@@ -155,9 +168,8 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       </div>
 
       {
-        /* DROPPABLE ZONE */ connectDropTarget(
-          <div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>,
-        )
+        /* DROPPABLE ZONE */
+        connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
       }
 
       {/* DATE */}
@@ -195,7 +207,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     </div>
   );
 
-  return isEditingName ? template : (connectDragSource(template) as JSX.Element);
+  return isEditingName(item) ? template : (connectDragSource(template) as JSX.Element);
 };
 
 export default DriveExplorerListItem;

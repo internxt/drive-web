@@ -82,7 +82,7 @@ export default function AccountPopover({
     </div>
   );
 
-  return <Popover className={className} button={button} panel={panel} />;
+  return <Popover className={className} childrenButton={button} panel={panel} />;
 }
 
 function Item({ children, onClick }: { children: ReactNode; onClick: () => void }) {
