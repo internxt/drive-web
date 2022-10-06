@@ -116,7 +116,13 @@ export const storageSlice = createSlice({
         if (item.id === id && item.isFolder === isFolder) {
           Object.assign(item, patch);
         }
+        return item;
+      });
 
+      state.selectedItems = state.selectedItems.map((item) => {
+        if (item.id === id && item.isFolder === isFolder) {
+          Object.assign(item, patch);
+        }
         return item;
       });
 

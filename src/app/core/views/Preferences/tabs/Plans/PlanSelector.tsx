@@ -46,6 +46,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           cancel_url: window.location.href,
           customer_email: user.email,
         });
+        localStorage.setItem('sessionId', response.sessionId);
         await paymentService.redirectToCheckout(response);
       } catch (err) {
         console.error(err);
@@ -88,7 +89,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           <IntervalSwitch active={interval === 'year'} text="Annually" onClick={() => setInterval('year')} />
         </div>
       </div>
-      <div className="mt-5 flex flex-col lg:flex-row justify-center gap-y-5 lg:gap-y-0 lg:gap-x-5">
+      <div className="mt-5 flex flex-col justify-center gap-y-5 lg:flex-row lg:gap-y-0 lg:gap-x-5">
         {pricesFilteredAndSorted?.map((price) => (
           <Price
             key={price.id}
@@ -159,11 +160,11 @@ function Price({
   const displayButtonText = button === 'change' ? 'Change' : button === 'current' ? 'Current plan' : 'Upgrade';
 
   return (
-    <div className={`${className} w-full lg:w-64 rounded-xl border border-gray-10 p-6`}>
+    <div className={`${className} w-full rounded-xl border border-gray-10 p-6 lg:w-64`}>
       <h1 className="text-4xl font-medium text-primary">{bytesToString(bytes)}</h1>
       <div className="mt-5 border-t border-gray-10" />
-      <p className="mt-5 text-2xl font-medium text-gray-100">{`${displayAmount(amountMonthly)} €/ month`}</p>
-      <p className=" text-gray-50">{`${displayAmount(amountAnnually)}€ billed annually`}</p>
+      <p className="mt-5 text-2xl font-medium text-gray-100">{`€${displayAmount(amountMonthly)} per month`}</p>
+      <p className=" text-gray-50">{`€${displayAmount(amountAnnually)} billed annually`}</p>
       <Button
         loading={loading}
         onClick={onClick}
