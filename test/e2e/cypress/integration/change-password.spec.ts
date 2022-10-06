@@ -30,8 +30,8 @@ describe('Security account tab', () => {
           cy.get('button.change-password-button').click();
 
           // Logout
-          cy.get('#app-header-dropdown').click();
-          cy.get('#logout').click();
+          cy.get('#headlessui-popover-button-2').click();
+          cy.get('[data-test=logout]').parent().click();
 
           // Login
           cy.get('input[name=email]').type(user.username);
