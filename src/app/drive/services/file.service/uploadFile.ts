@@ -10,6 +10,7 @@ import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
 import { uploadFile as uploadToBucket } from 'app/network/upload';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { generateThumbnailFromFile } from '../thumbnail.service';
 
 export interface FileToUpload {
   name: string;
@@ -72,7 +73,21 @@ export async function uploadFile(
       encrypt_version: StorageTypes.EncryptionVersion.Aes03,
     };
 
-    const response = await storageClient.createFileEntry(fileEntry);
+    let response = await storageClient.createFileEntry(fileEntry);
+    if (!response.thumbnails) {
+      response = {
+        ...response,
+        thumbnails: []
+      };
+    }
+
+    const thumbnail = await generateThumbnailFromFile(file, response.id, userEmail, isTeam);
+    if (thumbnail && thumbnail.thumbnail) {
+      response.thumbnails.push(thumbnail.thumbnail);
+      if (thumbnail.currentThumbnail) {
+        response.currentThumbnail = URL.createObjectURL(thumbnail.currentThumbnail);
+      }
+    }
 
     analyticsService.trackFileUploadFinished({
       file_size: file.size,
