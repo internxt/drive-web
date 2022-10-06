@@ -31,6 +31,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     onItemClicked,
     onItemRightClicked,
     onItemDoubleClicked,
+    downloadAndSetThumbnail
   } = useDriveItemActions(item);
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
@@ -71,7 +72,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
   const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
-  const height = itemRef.current ? itemRef.current?.clientWidth + 'px' : 'auto';
+  const height = itemRef.current ? itemRef.current.clientWidth + 'px' : 'auto';
 
   useEffect(() => {
     updateHeight();
@@ -82,6 +83,10 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       window.removeEventListener('resize', updateHeight);
     };
   }, []);
+
+  useEffect(() => {
+    downloadAndSetThumbnail();
+  }, [item]);
 
   useEffect(() => {
     if (isEditingName(item)) {
@@ -120,7 +125,13 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         </Dropdown.Menu>
       </Dropdown>
       <div className="file-grid-item-icon-container filter drop-shadow-soft">
-        <ItemIconComponent className="file-icon m-auto" />
+        {item.currentThumbnail ?
+          <div className="file-thumbnail">
+            <img className="object-cover w-full h-full max-w-full max-h-full pt-5"
+              src={item.currentThumbnail} />
+          </div> :
+          <ItemIconComponent className="file-icon m-auto" />
+        }
       </div>
       <div className="text-center mt-3">
         <div className="mb-1">{nameNodeFactory()}</div>
