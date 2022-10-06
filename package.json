@@ -45,6 +45,7 @@
     "react-hook-form": "^7.11.0",
     "react-hot-toast": "^2.2.0",
     "react-hotkeys-hook": "^3.4.7",
+    "react-image-file-resizer": "^0.4.8",
     "react-infinite-scroll-component": "6.1.0",
     "react-loading-skeleton": "^2.2.0",
     "react-pdf": "^5.4.0",

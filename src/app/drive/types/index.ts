@@ -41,6 +41,26 @@ export interface DriveFileData {
   size: number;
   type: string;
   updatedAt: string;
+  thumbnails: Array<Thumbnail>;
+  currentThumbnail: string;
+}
+
+interface Thumbnail {
+  id: number;
+  file_id: number;
+  type: string;
+  size: number;
+  bucket_id: string;
+  bucket_file: string;
+  encrypt_version: string;
+}
+
+
+export enum ThumbnailConfig {
+  MaxWidth = 300,
+  MaxHeight = 300,
+  Quality = 100,
+  Type = 'png',
 }
 
 export interface DriveFileMetadataPayload {
@@ -51,6 +71,8 @@ export type DriveItemData = DriveFileData & DriveFolderData;
 
 export interface DriveItemPatch {
   name?: string;
+  currentThumbnail?: string;
+  thumbnails?: Thumbnail[];
 }
 
 export interface FileInfoMenuItem {
