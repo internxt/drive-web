@@ -81,11 +81,11 @@ export async function uploadFile(
       };
     }
 
-    const thumbnail = await generateThumbnailFromFile(file, response.id, userEmail, isTeam);
-    if (thumbnail && thumbnail.thumbnail) {
-      response.thumbnails.push(thumbnail.thumbnail);
-      if (thumbnail.currentThumbnail) {
-        response.currentThumbnail = URL.createObjectURL(thumbnail.currentThumbnail);
+    const generatedThumbnail = await generateThumbnailFromFile(file, response.id, userEmail, isTeam);
+    if (generatedThumbnail && generatedThumbnail.thumbnail) {
+      response.thumbnails.push(generatedThumbnail.thumbnail);
+      if (generatedThumbnail.currentThumbnail) {
+        response.currentThumbnail = URL.createObjectURL(generatedThumbnail.currentThumbnail);
       }
     }
 
