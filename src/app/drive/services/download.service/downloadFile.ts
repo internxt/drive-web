@@ -58,7 +58,7 @@ function getBlobWritable(filename: string, onClose: (result: Blob) => void): Blo
         desiredSize: 3 * 1024 * 1024,
         ready: Promise.resolve(undefined),
         releaseLock: () => {
-          null;
+          // no op
         },
         write: async (chunk) => {
           blobParts.push(chunk);
