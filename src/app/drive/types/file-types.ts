@@ -211,7 +211,7 @@ export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary
 export const thumbnailableImageExtension: string[] = [...imageExtensions['jpg'], ...imageExtensions['png'],
 ...imageExtensions['bmp'], ...imageExtensions['gif']];
 
-export const thumbnailablePdfExtension: string[] = [...pdfExtensions['pdf']];
+export const thumbnailablePdfExtension: string[] = pdfExtensions['pdf'];
 
 export const thumbnailableExtension: string[] = [...thumbnailableImageExtension, ...thumbnailablePdfExtension];
 
