@@ -4,6 +4,7 @@
   "defaultCommandTimeout": 60000,
   "pluginsFile": "cypress/plugins/index.ts",
   "modifyObstructiveCode": false,
+  "video": false,
   "testFiles": [
     "signup.spec.ts",
     "unauthorized.spec.ts",
