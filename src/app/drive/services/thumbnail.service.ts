@@ -25,8 +25,8 @@ export interface ThumbnailToUpload {
   content: File;
 }
 
-const getImageThumbnail = async (file: File): Promise<File | null> => {
-  return await new Promise((resolve) => {
+const getImageThumbnail = (file: File): Promise<File | null> => {
+  return new Promise((resolve) => {
     Resizer.imageFileResizer(
       file,
       ThumbnailConfig.MaxWidth,
