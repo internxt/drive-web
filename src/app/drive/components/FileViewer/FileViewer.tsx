@@ -75,12 +75,17 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
 
             //Don't upload generated thumbnail if it match in size and type with currentThumbnail
             if (thumbnail && thumbnail.file && thumbnail.type &&
-              (!currentThumbnail || (currentThumbnail &&
-                (Number(currentThumbnail.size) !== Number(thumbnail.file.size) || currentThumbnail.type !== thumbnail.type)))) {
+              (!currentThumbnail ||
+                (currentThumbnail && (Number(currentThumbnail.size) !== Number(thumbnail.file.size)
+                  || String(currentThumbnail.type) !== String(thumbnail.type)
+                  || (Number(currentThumbnail.max_width)) !== (Number(thumbnail.max_width))
+                  || (Number(currentThumbnail.max_height)) !== (Number(thumbnail.max_height)))))) {
 
               const thumbnailToUpload: ThumbnailToUpload = {
                 fileId: file.id,
                 size: thumbnail.file.size,
+                max_width: thumbnail.max_width,
+                max_height: thumbnail.max_height,
                 type: thumbnail.type,
                 content: thumbnail.file
               };

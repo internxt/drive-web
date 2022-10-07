@@ -21,8 +21,17 @@ import { AppDispatch } from 'app/store';
 export interface ThumbnailToUpload {
   fileId: number;
   size: number;
+  max_width: number;
+  max_height: number;
   type: string;
   content: File;
+}
+
+interface ThumbnailGenerated {
+  file: File | null,
+  max_width: number;
+  max_height: number;
+  type: string
 }
 
 const getImageThumbnail = (file: File): Promise<File | null> => {
@@ -80,6 +89,8 @@ export const uploadThumbnail = async (
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const thumbnailEntry: StorageTypes.ThumbnailEntry = {
     file_id: thumbnailToUpload.fileId,
+    max_width: thumbnailToUpload.max_width,
+    max_height: thumbnailToUpload.max_height,
     type: thumbnailToUpload.type,
     size: thumbnailToUpload.size,
     bucket_id: bucketId,
@@ -90,15 +101,19 @@ export const uploadThumbnail = async (
   return await storageClient.createThumbnailEntry(thumbnailEntry);
 };
 
-export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<{ file: File | null, type: string }> => {
-  const thumbnailType = ThumbnailConfig.MaxWidth + 'x' + ThumbnailConfig.MaxHeight + '.' + ThumbnailConfig.Type;
+export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<ThumbnailGenerated> => {
   let thumbnailFile: File | null = null;
   if (thumbnailableImageExtension.includes(fileToUpload.type)) {
     thumbnailFile = await getImageThumbnail(fileToUpload.content);
   } else if (thumbnailablePdfExtension.includes(fileToUpload.type)) {
     //thumbnailFile = await getPDFThumbnail(fileToUpload.content);
   }
-  return { file: thumbnailFile, type: thumbnailType };
+  return {
+    file: thumbnailFile,
+    type: String(ThumbnailConfig.Type),
+    max_width: Number(ThumbnailConfig.MaxWidth),
+    max_height: Number(ThumbnailConfig.MaxHeight)
+  };
 };
 
 export const generateThumbnailFromFile = async (
@@ -114,6 +129,8 @@ export const generateThumbnailFromFile = async (
         const thumbnailToUpload: ThumbnailToUpload = {
           fileId: fileId,
           size: thumbnail.file.size,
+          max_width: thumbnail.max_width,
+          max_height: thumbnail.max_height,
           type: thumbnail.type,
           content: thumbnail.file
         };

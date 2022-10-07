@@ -49,6 +49,8 @@ interface Thumbnail {
   id: number;
   file_id: number;
   type: string;
+  max_width: number;
+  max_height: number;
   size: number;
   bucket_id: string;
   bucket_file: string;
