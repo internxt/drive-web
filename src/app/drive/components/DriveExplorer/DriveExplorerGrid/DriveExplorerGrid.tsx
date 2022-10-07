@@ -60,7 +60,7 @@ class DriveExplorerGrid extends React.Component<DriveExplorerGridProps> {
     return (
       <>
         {isLoading ? (
-          <div className="files-grid flex-grow">this.loadingSkeleton</div>
+          <div className="files-grid flex-grow">{this.loadingSkeleton}</div>
         ) : (
           <div id="scrollableList" className="h-full w-full overflow-y-auto py-6">
             <InfiniteScroll
