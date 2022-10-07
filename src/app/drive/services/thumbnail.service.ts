@@ -16,7 +16,7 @@ import fetchFileBlob from './download.service/fetchFileBlob';
 import { Downloadable } from 'app/network/download';
 import { storageActions } from 'app/store/slices/storage';
 import { AppDispatch } from 'app/store';
-
+import { pdfjs } from 'react-pdf';
 
 export interface ThumbnailToUpload {
   fileId: number;
@@ -34,7 +34,7 @@ interface ThumbnailGenerated {
   type: string
 }
 
-const getImageThumbnail = (file: File): Promise<File | null> => {
+const getImageThumbnail = (file: File): Promise<ThumbnailGenerated['file']> => {
   return new Promise((resolve) => {
     Resizer.imageFileResizer(
       file,
@@ -52,6 +52,34 @@ const getImageThumbnail = (file: File): Promise<File | null> => {
       'file'
     );
   });
+};
+
+const getPDFThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
+  const loadingTask = pdfjs.getDocument(await file.arrayBuffer());
+  const pdfDocument = await loadingTask.promise;
+  const page = await pdfDocument.getPage(1);
+  const viewport = page.getViewport({ scale: 1.0 });
+
+  const canvas = document.createElement('canvas');
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  const canvasContext = canvas.getContext('2d', { alpha: false });
+
+  if (canvasContext) {
+    const renderTask = page.render({ canvasContext, viewport });
+    await renderTask.promise;
+    return new Promise((resolve) => {
+      // Convert the canvas to an image buffer.
+      canvas.toBlob((blob: Blob | null) => {
+        if (blob) {
+          resolve(new File([blob], ''));
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  }
+  return null;
 };
 
 export const uploadThumbnail = async (
@@ -106,7 +134,10 @@ export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<Thum
   if (thumbnailableImageExtension.includes(fileToUpload.type)) {
     thumbnailFile = await getImageThumbnail(fileToUpload.content);
   } else if (thumbnailablePdfExtension.includes(fileToUpload.type)) {
-    //thumbnailFile = await getPDFThumbnail(fileToUpload.content);
+    const firstPDFpageImage = await getPDFThumbnail(fileToUpload.content);
+    if (firstPDFpageImage) {
+      thumbnailFile = await getImageThumbnail(firstPDFpageImage);
+    }
   }
   return {
     file: thumbnailFile,
@@ -120,7 +151,7 @@ export const generateThumbnailFromFile = async (
   fileToUpload: FileToUpload,
   fileId: number,
   userEmail: string,
-  isTeam: boolean): Promise<{ thumbnail: Thumbnail, currentThumbnail: File } | undefined> => {
+  isTeam: boolean): Promise<{ thumbnail: Thumbnail, thumbnailFile: File } | null> => {
   if (thumbnailableExtension.includes(fileToUpload.type)) {
     try {
       const thumbnail = await getThumbnailFrom(fileToUpload);
@@ -141,11 +172,12 @@ export const generateThumbnailFromFile = async (
 
         return {
           thumbnail: thumbnailUploaded,
-          currentThumbnail: thumbnail.file
+          thumbnailFile: thumbnail.file
         };
       }
     } catch (error) { console.log(error); };
   }
+  return null;
 };
 
 export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isTeam: boolean): Promise<Blob> => {
@@ -157,8 +189,10 @@ export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isTeam: 
   );
 };
 
-export const setCurrentThumbnail = (thumbnailBlob: Blob, item: DriveItemData, dispatch: AppDispatch): void => {
-  const currentThumbnail = URL.createObjectURL(thumbnailBlob);
+export const setCurrentThumbnail = (thumbnailBlob: Blob, newThumbnail: Thumbnail, item: DriveItemData, dispatch: AppDispatch): void => {
+  const currentThumbnail = Object.assign({}, newThumbnail);
+  currentThumbnail.urlObject = URL.createObjectURL(thumbnailBlob);
+
   dispatch(
     storageActions.patchItem({
       id: item.id,

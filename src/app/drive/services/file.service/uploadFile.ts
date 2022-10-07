@@ -84,8 +84,9 @@ export async function uploadFile(
     const generatedThumbnail = await generateThumbnailFromFile(file, response.id, userEmail, isTeam);
     if (generatedThumbnail && generatedThumbnail.thumbnail) {
       response.thumbnails.push(generatedThumbnail.thumbnail);
-      if (generatedThumbnail.currentThumbnail) {
-        response.currentThumbnail = URL.createObjectURL(generatedThumbnail.currentThumbnail);
+      if (generatedThumbnail.thumbnailFile) {
+        generatedThumbnail.thumbnail.urlObject = URL.createObjectURL(generatedThumbnail.thumbnailFile);
+        response.currentThumbnail = generatedThumbnail.thumbnail;
       }
     }
 

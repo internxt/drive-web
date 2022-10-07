@@ -186,10 +186,9 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   const downloadAndSetThumbnail = async () => {
     if (item.thumbnails && item.thumbnails.length > 0 && !item.currentThumbnail) {
-      const thumbnailToDownload = item.thumbnails[0];
-      const thumbnailBlob = await downloadThumbnail(thumbnailToDownload, isTeam);
-
-      setCurrentThumbnail(thumbnailBlob, item, dispatch);
+      const newThumbnail = item.thumbnails[0];
+      const thumbnailBlob = await downloadThumbnail(newThumbnail, isTeam);
+      setCurrentThumbnail(thumbnailBlob, newThumbnail, item, dispatch);
     }
   };
 

@@ -95,7 +95,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
               const thumbnailUploaded = await uploadThumbnail(userEmail, thumbnailToUpload, isTeam, updateProgressCallback, abortController);
 
               if (thumbnailUploaded && thumbnail.file) {
-                setCurrentThumbnail(thumbnail.file, file as DriveItemData, dispatch);
+                setCurrentThumbnail(thumbnail.file, thumbnailUploaded, file as DriveItemData, dispatch);
 
                 let newThumbnails: Thumbnail[];
                 if (currentThumbnail) {
