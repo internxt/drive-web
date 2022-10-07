@@ -24,6 +24,8 @@ import NewsletterDialog from './app/newsletter/components/NewsletterDialog/Newsl
 import SurveyDialog from 'app/survey/components/SurveyDialog/SurveyDialog';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
+import { pdfjs } from 'react-pdf';
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
   isAuthenticated: boolean;

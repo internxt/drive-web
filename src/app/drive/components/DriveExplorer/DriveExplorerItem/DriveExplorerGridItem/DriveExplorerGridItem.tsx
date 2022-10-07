@@ -10,6 +10,7 @@ import { DriveItemAction, DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
+import { thumbnailablePdfExtension } from 'app/drive/types/file-types';
 
 import './DriveExplorerGridItem.scss';
 
@@ -129,8 +130,10 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       <div className="flex justify-center items-center w-full h-4/6 filter drop-shadow-soft">
         {item.currentThumbnail ?
           <div className="w-full h-full">
-            <img className="object-cover w-full h-full max-w-full max-h-full pt-5"
-              src={item.currentThumbnail} />
+            <img
+              className={`object-cover w-full h-full max-w-full max-h-full pt-5 
+                ${thumbnailablePdfExtension.includes(item.type) ? 'object-top' : 'object-center'}`}
+              src={item.currentThumbnail.urlObject} />
           </div> :
           <ItemIconComponent className="w-1/2 h-1/2 m-auto" />
         }
