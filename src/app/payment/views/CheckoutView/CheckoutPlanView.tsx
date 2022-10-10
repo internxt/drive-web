@@ -42,6 +42,7 @@ export default function CheckoutPlanView(): JSX.Element {
           cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
           customer_email: user.email,
         });
+        localStorage.setItem('sessionId', response.sessionId);
 
         await paymentService.redirectToCheckout(response);
       } catch (err) {
