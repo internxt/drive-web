@@ -25,20 +25,24 @@ export default function CheckoutPlanView(): JSX.Element {
     if (subscription) {
       const params = new URLSearchParams(window.location.search);
       const planId = String(params.get('planId'));
-      checkout(planId);
+      const coupon = String(params.get('couponCode'));
+      console.log('CheckpoutPlanView ', coupon);
+      coupon ? checkout(planId, coupon) : checkout(planId);
     }
   }, [subscription]);
 
-  async function checkout(planId: string) {
+  async function checkout(planId: string, coupon?: string) {
+    console.log('Coupon code in checkout ', coupon);
     if (subscription?.type !== 'subscription') {
       try {
         const response = await paymentService.createCheckoutSession({
           price_id: planId,
+          coupon_code: coupon,
           success_url: `${window.location.origin}/checkout/success`,
           cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
           customer_email: user.email,
         });
-        localStorage.setItem('sessionId', response.sessionId);
+
         await paymentService.redirectToCheckout(response);
       } catch (err) {
         console.error(err);
