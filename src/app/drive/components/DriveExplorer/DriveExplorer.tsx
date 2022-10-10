@@ -251,7 +251,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     <span className="font-medium">{i18n.get('actions.upload.new')}</span>
                     <Plus weight="bold" className="h-4 w-4" />
                   </div>
-                  <CaretDown weight="fill" className="h-3 w-3" />
                 </>
               </Dropdown>
               {hasAnyItemSelected && (
