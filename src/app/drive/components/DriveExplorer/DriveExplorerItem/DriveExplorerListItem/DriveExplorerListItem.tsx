@@ -21,11 +21,11 @@ import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 
-
 import './DriveExplorerListItem.scss';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
+
   const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
 
   const {
@@ -75,7 +75,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       <Fragment>
         <div className={`${isEditingName(item) ? 'flex' : 'hidden'}`}>
           <input
-            className="dense border border-white no-ring rect select-text"
+            className="dense no-ring rect select-text border border-white"
             onClick={(e) => e.stopPropagation()}
             onDoubleClick={(e) => e.stopPropagation()}
             ref={nameInputRef}
@@ -89,7 +89,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           />
           <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
         </div>
-        <div className="file-list-item-name flex items-center max-w-full">
+        <div className="file-list-item-name flex max-w-full items-center">
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
@@ -98,7 +98,9 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           >
             {items.getItemDisplayName(item)}
           </span>
-          {!isEditingName(item) && <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />}
+          {!isEditingName(item) && (
+            <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
+          )}
         </div>
       </Fragment>
     );
@@ -106,14 +108,14 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
   const template = (
     <div
-      className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group file-list-item`}
+      className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
       onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
       {/* SELECTION */}
-      <div className="w-0.5/12 pl-3 flex items-center justify-start box-content">
+      <div className="box-content flex w-0.5/12 items-center justify-start pl-3">
         <input
           onClick={(e) => e.stopPropagation()}
           type="checkbox"
@@ -123,8 +125,8 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       </div>
 
       {/* ICON */}
-      <div className="w-1/12 flex items-center px-3 box-content">
-        <div className="h-10 w-10 flex justify-center filter drop-shadow-soft">
+      <div className="box-content flex w-1/12 items-center px-3">
+        <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
           <ItemIconComponent className="h-full" />
           {/*itemIsShared?
           <Link 
@@ -134,10 +136,10 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       </div>
 
       {/* NAME */}
-      <div className="flex-grow flex items-center w-1 pr-2">{nameNodefactory()}</div>
+      <div className="flex w-1 flex-grow items-center pr-2">{nameNodefactory()}</div>
 
       {/* HOVER ACTIONS */}
-      <div className="pl-3 w-2/12 items-center hidden xl:flex">
+      <div className="hidden w-2/12 items-center pl-3 xl:flex">
         <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
           <button
             onClick={onDownloadButtonClicked}
@@ -165,19 +167,18 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
         </div>
       </div>
 
-      { /* DROPPABLE ZONE */
-        connectDropTarget(
-          <div className="group-hover:invisible absolute h-full w-1/2 top-0"></div>,
-        )
+      {
+        /* DROPPABLE ZONE */
+        connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
       }
 
       {/* DATE */}
-      <div className="hidden lg:flex items-center w-3/12 whitespace-nowrap overflow-ellipsis">
+      <div className="hidden w-3/12 items-center overflow-ellipsis whitespace-nowrap lg:flex">
         {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
 
       {/* SIZE */}
-      <div className="flex items-center w-1/12 whitespace-nowrap overflow-ellipsis">
+      <div className="flex w-1/12 items-center overflow-ellipsis whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' ? (
           <span className="opacity-25">—</span>
         ) : (
@@ -186,10 +187,10 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       </div>
 
       {/* ACTIONS BUTTON */}
-      <div className="flex items-center w-1/12">
+      <div className="flex w-1/12 items-center">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
-            <DotsThree className="w-full h-full" />
+            <DotsThree className="h-full w-full" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <DriveItemDropdownActions
