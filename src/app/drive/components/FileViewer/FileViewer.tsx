@@ -8,9 +8,16 @@ import i18n from '../../../i18n/services/i18n.service';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import spinnerIcon from '../../../../assets/icons/spinner.svg';
+import { DriveFileData, DriveItemData } from 'app/drive/types';
+import { compareThumbnail, getThumbnailFrom, setCurrentThumbnail, setThumbnails, ThumbnailToUpload, uploadThumbnail } from 'app/drive/services/thumbnail.service';
+import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { sessionSelectors } from 'app/store/slices/session/session.selectors';
+import localStorageService from 'app/core/services/local-storage.service';
+import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 
 interface FileViewerProps {
-  file?: { type: string | null; name: string };
+  file?: DriveFileData;
   onClose: () => void;
   onDownload: () => void;
   downloader: (abortController: AbortController) => Promise<Blob>
@@ -42,18 +49,67 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
 
   const [blob, setBlob] = useState<Blob | null>(null);
 
+  const dispatch = useAppDispatch();
+  const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const userEmail: string = localStorageService.getUser()?.email || '';
+
   useEffect(() => {
     if (isTypeAllowed && show) {
       const abortController = new AbortController();
 
-      downloader(abortController).then(setBlob).catch((err) =>{
-        if (abortController.signal.aborted) {
-          return;
-        } 
-        
-        console.error(err);
-      });
+      downloader(abortController)
+        .then(async (fileBlob) => {
+          setBlob(fileBlob);
+          if (file) {
+            const currentThumbnail = file.thumbnails && file.thumbnails.length > 0 ? file.thumbnails[0] : null;
+            const fileObject = new File([fileBlob], file.name);
+            const fileUpload: FileToUpload = {
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              content: fileObject,
+              parentFolderId: file.folderId,
+            };
 
+            const thumbnailGenerated = await getThumbnailFrom(fileUpload);
+
+            if (thumbnailGenerated && thumbnailGenerated.file && thumbnailGenerated.type &&
+              (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))) {
+
+              const thumbnailToUpload: ThumbnailToUpload = {
+                fileId: file.id,
+                size: thumbnailGenerated.file.size,
+                max_width: thumbnailGenerated.max_width,
+                max_height: thumbnailGenerated.max_height,
+                type: thumbnailGenerated.type,
+                content: thumbnailGenerated.file
+              };
+              const updateProgressCallback = () => { return; };
+              const abortController = new AbortController();
+
+              const thumbnailUploaded = await uploadThumbnail(userEmail, thumbnailToUpload, isTeam, updateProgressCallback, abortController);
+
+              if (thumbnailUploaded && thumbnailGenerated.file) {
+                setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, file as DriveItemData, dispatch);
+
+                let newThumbnails: Thumbnail[];
+                if (currentThumbnail) {
+                  //Replace existing thumbnail with the new uploadedThumbnail
+                  newThumbnails = file.thumbnails?.length > 0 ? [...file.thumbnails] : [thumbnailUploaded];
+                  newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
+                } else {
+                  newThumbnails = file.thumbnails?.length > 0 ? [...file.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
+                }
+                setThumbnails(newThumbnails, file as DriveItemData, dispatch);
+              }
+            }
+          }
+        })
+        .catch(() => {
+          if (abortController.signal.aborted) {
+            return;
+          }
+        });
       return () => abortController.abort();
     } else if (!show) setBlob(null);
   }, [show]);

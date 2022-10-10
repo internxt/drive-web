@@ -48,6 +48,8 @@ import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 
+const PAGINATION_LIMIT = 20;
+
 interface DriveExplorerProps {
   title: JSX.Element | string;
   titleClassName?: string;
@@ -98,6 +100,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
+  const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
+  const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -164,6 +168,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const { dirtyName } = useDriveItemStoreProps();
 
+  // Fake backend pagination - change when pagination in backend has been implemented
+  const getMoreItems = () => {
+    const existsMoreItems = items.length > fakePaginationLimit;
+
+    setHasMoreItems(existsMoreItems);
+    setTimeout(() => {
+      if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
+    }, 1000);
+  };
+
+  const getLimitedItems = () => items.slice(0, fakePaginationLimit);
+
   const onSelectedOneItemRename = (e) => {
     e.stopPropagation();
     if (selectedItems.length === 1) {
@@ -186,6 +202,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
   const ViewModeComponent = viewModes[viewMode];
 
+  const itemsList = getLimitedItems();
+
   const isRecents = title === 'Recents';
 
   const FileIcon = iconService.getItemIcon(false);
@@ -198,7 +216,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
   const separatorH = <div className="my-0.5 mx-3 border-t border-gray-10" />;
-  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
     return (
       <div
         className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
@@ -251,7 +270,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     <span className="font-medium">{i18n.get('actions.upload.new')}</span>
                     <Plus weight="bold" className="h-4 w-4" />
                   </div>
-                  <CaretDown weight="fill" className="h-3 w-3" />
                 </>
               </Dropdown>
               {hasAnyItemSelected && (
@@ -285,7 +303,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           <div className="z-0 mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
             {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
-                <ViewModeComponent items={items} isLoading={isLoading} />
+                <ViewModeComponent
+                  items={itemsList}
+                  isLoading={isLoading}
+                  onEndOfScroll={getMoreItems}
+                  hasMoreItems={hasMoreItems}
+                />
               </div>
             )}
 

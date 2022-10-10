@@ -10,6 +10,7 @@ import i18n from '../../../../i18n/services/i18n.service';
 import { DriveItemData } from '../../../types';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
 import DriveListItemSkeleton from '../../DriveListItemSkeleton/DriveListItemSkeleton';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 interface DriveExplorerListProps {
   isLoading: boolean;
@@ -17,6 +18,8 @@ interface DriveExplorerListProps {
   selectedItems: DriveItemData[];
   order: OrderSettings;
   dispatch: AppDispatch;
+  onEndOfScroll(): void;
+  hasMoreItems: boolean;
 }
 
 class DriveExplorerList extends React.Component<DriveExplorerListProps> {
@@ -38,21 +41,25 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
   }
 
   get itemsFileList(): JSX.Element[] {
-    return this.props.items.filter((item) => !item.isFolder).map((item: DriveItemData) => {
-      const itemParentId = item.parentId || item.folderId;
-      const itemKey = `'file'-${item.id}-${itemParentId}`;
+    return this.props.items
+      .filter((item) => !item.isFolder)
+      .map((item: DriveItemData) => {
+        const itemParentId = item.parentId || item.folderId;
+        const itemKey = `'file'-${item.id}-${itemParentId}`;
 
-      return <DriveExplorerListItem key={itemKey} item={item} />;
-    });
+        return <DriveExplorerListItem key={itemKey} item={item} />;
+      });
   }
 
   get itemsFolderList(): JSX.Element[] {
-    return this.props.items.filter((item) => item.isFolder).map((item: DriveItemData) => {
-      const itemParentId = item.parentId || item.folderId;
-      const itemKey = `'folder'-${item.id}-${itemParentId}`;
+    return this.props.items
+      .filter((item) => item.isFolder)
+      .map((item: DriveItemData) => {
+        const itemParentId = item.parentId || item.folderId;
+        const itemKey = `'folder'-${item.id}-${itemParentId}`;
 
-      return <DriveExplorerListItem key={itemKey} item={item} />;
-    });
+        return <DriveExplorerListItem key={itemKey} item={item} />;
+      });
   }
 
   get isAllSelected(): boolean {
@@ -62,7 +69,7 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
   }
 
   get loadingSkeleton(): JSX.Element[] {
-    return Array(10)
+    return Array(20)
       .fill(0)
       .map((n, i) => <DriveListItemSkeleton key={i} />);
   }
@@ -74,7 +81,8 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
   };
 
   render(): ReactNode {
-    const { dispatch, isLoading, order } = this.props;
+    const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll } = this.props;
+
     const sortBy = (orderBy: string) => {
       const direction =
         order.by === orderBy
@@ -90,11 +98,9 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
     };
 
     return (
-      <div className="flex flex-col flex-grow bg-white h-full">
-        <div
-          className="files-list font-semibold flex border-b border-neutral-30 bg-white text-neutral-500 py-3 text-sm"
-        >
-          <div className="w-0.5/12 pl-3 flex items-center justify-start box-content">
+      <div className="flex h-full flex-grow flex-col bg-white">
+        <div className="files-list flex border-b border-neutral-30 bg-white py-3 text-sm font-semibold text-neutral-500">
+          <div className="box-content flex w-0.5/12 items-center justify-start pl-3">
             <input
               disabled={!this.hasItems}
               readOnly
@@ -104,33 +110,44 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
               className="pointer-events-auto"
             />
           </div>
-          <div className="w-1/12 px-3 flex items-center box-content cursor-pointer" onClick={() => sortBy('type')}>
+          <div className="box-content flex w-1/12 cursor-pointer items-center px-3" onClick={() => sortBy('type')}>
             {i18n.get('drive.list.columns.type')}
             {order.by === 'type' && sortButtonFactory()}
           </div>
-          <div className="flex-grow flex items-center cursor-pointer" onClick={() => sortBy('name')}>
+          <div className="flex flex-grow cursor-pointer items-center" onClick={() => sortBy('name')}>
             {i18n.get('drive.list.columns.name')}
             {order.by === 'name' && sortButtonFactory()}
           </div>
-          <div className="w-2/12 hidden items-center xl:flex"></div>
-          <div className="w-3/12 hidden items-center lg:flex cursor-pointer" onClick={() => sortBy('updatedAt')}>
+          <div className="hidden w-2/12 items-center xl:flex"></div>
+          <div className="hidden w-3/12 cursor-pointer items-center lg:flex" onClick={() => sortBy('updatedAt')}>
             {i18n.get('drive.list.columns.modified')}
             {order.by === 'updatedAt' && sortButtonFactory()}
           </div>
-          <div className="w-1/12 flex items-center cursor-pointer" onClick={() => sortBy('size')}>
+          <div className="flex w-1/12 cursor-pointer items-center" onClick={() => sortBy('size')}>
             {i18n.get('drive.list.columns.size')}
             {order.by === 'size' && sortButtonFactory()}
           </div>
-          <div className="w-1/12 flex items-center rounded-tr-4px">{i18n.get('drive.list.columns.actions')}</div>
+          <div className="flex w-1/12 items-center rounded-tr-4px">{i18n.get('drive.list.columns.actions')}</div>
         </div>
-        <div className="h-full overflow-y-auto">{isLoading ? (
-          this.loadingSkeleton
+        <div className="h-full overflow-y-auto">
+          {isLoading ? (
+            this.loadingSkeleton
           ) : (
-            <>
-             { this.itemsFolderList}
-             { this.itemsFileList}
-            </>
-          )}</div>
+            <div id="scrollableList" className="h-full overflow-y-auto">
+              <InfiniteScroll
+                dataLength={this.itemsList.length}
+                next={onEndOfScroll}
+                hasMore={hasMoreItems}
+                loader={this.loadingSkeleton}
+                scrollableTarget="scrollableList"
+                className="h-full"
+              >
+                {this.itemsFolderList}
+                {this.itemsFileList}
+              </InfiniteScroll>
+            </div>
+          )}
+        </div>
       </div>
     );
   }

@@ -64,7 +64,7 @@ export default function AccountPopover({
       </Item>
       <Link
         to="/preferences"
-        className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:text-gray-80 hover:bg-gray-1 active:bg-gray-5 no-underline"
+        className="flex cursor-pointer items-center py-2 px-3 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 active:bg-gray-5"
       >
         <Gear size={20} />
         <p className="ml-3">Settings</p>
@@ -75,14 +75,16 @@ export default function AccountPopover({
           <p className="ml-3">Guest</p>
         </Item>
       )}
-      <Item onClick={onLogout}>
+      <Item onClick={onLogout} data-test="logout">
         <SignOut size={20} />
-        <p className="ml-3">Log out</p>
+        <p className="ml-3" data-test="logout">
+          Log out
+        </p>
       </Item>
     </div>
   );
 
-  return <Popover className={className} childrenButton={button} panel={panel} />;
+  return <Popover className={className} childrenButton={button} panel={panel} data-test="app-header-dropdown" />;
 }
 
 function Item({ children, onClick }: { children: ReactNode; onClick: () => void }) {

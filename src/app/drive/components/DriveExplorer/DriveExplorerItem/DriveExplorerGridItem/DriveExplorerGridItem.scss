@@ -1,38 +1,5 @@
 @layer components {
-  .file-grid-item {
-    @apply relative bg-white p-4 box-border rounded-lg;
-
-    &:hover, {
-      @apply bg-neutral-10;
-    }
-
-    &.selected {
-      @apply bg-blue-10;
-
-      box-shadow: inset 0 0 0 2px var(--color-blue-50);
-    }
-
-    &.is-dragging {
-      @apply opacity-50;
-    }
-
-    .file-grid-item-icon-container {
-      height: 70%;
-
-      @apply flex justify-center items-center w-full;
-
-      .file-icon {
-        height: 50%;
-        width: 50%;
-      }
-    }
-  }
-
-  .file-grid-item-actions-button {
-    @apply top-2 right-2 rounded-1/2 w-5 h-5 bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100;
-  }
-
-  .file-grid-item-name-span {
-    @apply whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-base px-1 hover:underline;
+  .grid-item-shadow {
+    box-shadow: inset 0 0 0 2px var(--color-blue-50);
   }
 }

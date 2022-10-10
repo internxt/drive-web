@@ -101,7 +101,7 @@ export const uiSlice = createSlice({
     setIsFileViewerOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isFileViewerOpen = action.payload;
     },
-    setFileViewerItem: (state: UISliceState, action: PayloadAction<DriveFileData>) => {
+    setFileViewerItem: (state: UISliceState, action: PayloadAction<UISliceState['fileViewerItem']>) => {
       state.fileViewerItem = action.payload;
     },
     setCurrentAccountTab: (state: UISliceState, action: PayloadAction<AccountViewTab>) => {

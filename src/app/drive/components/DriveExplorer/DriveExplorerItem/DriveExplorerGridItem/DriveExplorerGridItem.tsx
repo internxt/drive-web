@@ -10,6 +10,7 @@ import { DriveItemAction, DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
+import { thumbnailablePdfExtension } from 'app/drive/types/file-types';
 
 import './DriveExplorerGridItem.scss';
 
@@ -31,6 +32,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     onItemClicked,
     onItemRightClicked,
     onItemDoubleClicked,
+    downloadAndSetThumbnail,
   } = useDriveItemActions(item);
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
@@ -58,7 +60,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         </div>
         <span
           data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-          className={`${ṣpanDisplayClass} file-grid-item-name-span cursor-pointer`}
+          className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-base text-neutral-900 hover:underline`}
           onClick={onNameClicked}
           title={items.getItemDisplayName(item)}
         >
@@ -67,11 +69,11 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       </Fragment>
     );
   };
-  const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
+  const isDraggingClassNames: string = isDraggingThisItem ? 'opacity-50' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
-  const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
+  const selectedClassNames: string = isItemSelected(item) ? 'bg-blue-10 grid-item-shadow' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
-  const height = itemRef.current ? itemRef.current?.clientWidth + 'px' : 'auto';
+  const height = itemRef.current ? itemRef.current.clientWidth + 'px' : 'auto';
 
   useEffect(() => {
     updateHeight();
@@ -82,6 +84,10 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       window.removeEventListener('resize', updateHeight);
     };
   }, []);
+
+  useEffect(() => {
+    downloadAndSetThumbnail();
+  }, [item]);
 
   useEffect(() => {
     if (isEditingName(item)) {
@@ -98,14 +104,19 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     <div
       ref={itemRef}
       style={{ height }}
-      className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-grid-item group`}
+      className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group 
+        relative box-border rounded-lg bg-white p-4 hover:bg-neutral-10`}
       onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}
       draggable={false}
     >
       <Dropdown>
-        <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-grid-item-actions-button">
+        <Dropdown.Toggle
+          variant="success"
+          id="dropdown-basic"
+          className="absolute top-2 right-2 h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-blue-60 opacity-0 transition group-hover:opacity-100"
+        >
           <UilEllipsisH className="h-full w-full" />
         </Dropdown.Toggle>
         <Dropdown.Menu>
@@ -119,8 +130,18 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
           />
         </Dropdown.Menu>
       </Dropdown>
-      <div className="file-grid-item-icon-container drop-shadow-soft filter">
-        <ItemIconComponent className="file-icon m-auto" />
+      <div className="flex h-4/6 w-full items-center justify-center drop-shadow-soft filter">
+        {item.currentThumbnail ? (
+          <div className="h-full w-full">
+            <img
+              className={`h-full max-h-full w-full max-w-full object-cover pt-5 
+                ${thumbnailablePdfExtension.includes(item.type) ? 'object-top' : 'object-center'}`}
+              src={item.currentThumbnail.urlObject}
+            />
+          </div>
+        ) : (
+          <ItemIconComponent className="m-auto h-1/2 w-1/2" />
+        )}
       </div>
       <div className="mt-3 text-center">
         <div className="mb-1">{nameNodeFactory()}</div>

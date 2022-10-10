@@ -11,6 +11,8 @@ import storageSelectors from '../../../../../store/slices/storage/storage.select
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
 import useDriveItemStoreProps from './useDriveStoreProps';
+import { sessionSelectors } from 'app/store/slices/session/session.selectors';
+import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
 
 //import shareService from 'app/share/services/share.service';
 
@@ -31,6 +33,7 @@ interface DriveItemActions {
   onItemClicked: (e: MouseEvent) => void;
   onItemDoubleClicked: (e: MouseEvent) => void;
   onItemRightClicked: (e: MouseEvent) => void;
+  downloadAndSetThumbnail: () => void;
 }
 //const {isItemShared } = useDriveItemStoreProps();
 const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
@@ -40,6 +43,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
   const currentFolderPath = useAppSelector(storageSelectors.currentFolderPath);
+  const isTeam = useAppSelector(sessionSelectors.isTeam);
   const { dirtyName } = useDriveItemStoreProps();
 
   const onRenameButtonClicked = (e: MouseEvent): void => {
@@ -180,6 +184,14 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     e.preventDefault();
   };
 
+  const downloadAndSetThumbnail = async () => {
+    if (item.thumbnails && item.thumbnails.length > 0 && !item.currentThumbnail) {
+      const newThumbnail = item.thumbnails[0];
+      const thumbnailBlob = await downloadThumbnail(newThumbnail, isTeam);
+      setCurrentThumbnail(thumbnailBlob, newThumbnail, item, dispatch);
+    }
+  };
+
   return {
     //itemIsShared,
     nameInputRef,
@@ -197,6 +209,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     onItemClicked,
     onItemDoubleClicked,
     onItemRightClicked,
+    downloadAndSetThumbnail,
   };
 };
 
