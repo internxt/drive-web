@@ -130,6 +130,34 @@ export const storageSlice = createSlice({
         Object.assign(state.infoItem, patch);
       } */
     },
+    clearCurrentThumbnailItems: (
+      state: StorageState,
+      action: PayloadAction<{ folderId: number }>,
+    ) => {
+      const { folderId } = action.payload;
+
+      if (state.levels[folderId]) {
+        const itemsToDatabase = [] as DriveItemData[];
+        state.levels[folderId].forEach((item) => {
+          const newItem = Object.assign({}, item);
+          newItem.currentThumbnail = null;
+          itemsToDatabase.push(newItem);
+        });
+
+        state.levels[folderId] = itemsToDatabase;
+        databaseService.put(DatabaseCollection.Levels, folderId, itemsToDatabase);
+      }
+
+      state.recents = state.recents.map((item) => {
+        item.currentThumbnail = null;
+        return item;
+      });
+
+      state.selectedItems = state.selectedItems.map((item) => {
+        item.currentThumbnail = null;
+        return item;
+      });
+    },
     pushItems(
       state: StorageState,
       action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
@@ -200,6 +228,7 @@ export const {
   pathChangeWorkSpace,
   patchItem,
   pushItems,
+  clearCurrentThumbnailItems,
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

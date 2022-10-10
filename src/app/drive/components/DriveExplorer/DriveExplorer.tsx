@@ -198,7 +198,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
   const separatorH = <div className="my-0.5 mx-3 border-t border-gray-10" />;
-  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
     return (
       <div
         className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"

@@ -208,4 +208,11 @@ export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary
   [FileExtensionGroup.Default]: [],
 };
 
+export const thumbnailableImageExtension: string[] = [...imageExtensions['jpg'], ...imageExtensions['png'],
+...imageExtensions['bmp'], ...imageExtensions['gif']];
+
+export const thumbnailablePdfExtension: string[] = pdfExtensions['pdf'];
+
+export const thumbnailableExtension: string[] = [...thumbnailableImageExtension, ...thumbnailablePdfExtension];
+
 export default fileExtensionGroups;
