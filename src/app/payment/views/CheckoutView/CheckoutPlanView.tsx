@@ -26,7 +26,7 @@ export default function CheckoutPlanView(): JSX.Element {
       const params = new URLSearchParams(window.location.search);
       const planId = String(params.get('planId'));
       const coupon = String(params.get('couponCode'));
-      console.log('CheckpoutPlanView ', coupon);
+
       coupon ? checkout(planId, coupon) : checkout(planId);
     }
   }, [subscription]);
