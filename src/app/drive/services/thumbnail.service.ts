@@ -217,3 +217,10 @@ export const setThumbnails = (thumbnails: Thumbnail[], item: DriveItemData, disp
     }),
   );
 };
+
+export const compareThumbnail = (thumbnail: Thumbnail, compareTo: ThumbnailGenerated): boolean => {
+  return (Number(thumbnail.size) === Number(compareTo.file?.size)
+    && String(thumbnail.type) === String(compareTo.type)
+    && (Number(thumbnail.max_width)) === (Number(compareTo.max_width))
+    && (Number(thumbnail.max_height)) === (Number(compareTo.max_height)));
+};

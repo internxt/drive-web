@@ -9,7 +9,7 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import spinnerIcon from '../../../../assets/icons/spinner.svg';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { getThumbnailFrom, setCurrentThumbnail, setThumbnails, ThumbnailToUpload, uploadThumbnail } from 'app/drive/services/thumbnail.service';
+import { compareThumbnail, getThumbnailFrom, setCurrentThumbnail, setThumbnails, ThumbnailToUpload, uploadThumbnail } from 'app/drive/services/thumbnail.service';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
@@ -71,31 +71,26 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
               parentFolderId: file.folderId,
             };
 
-            const thumbnail = await getThumbnailFrom(fileUpload);
+            const thumbnailGenerated = await getThumbnailFrom(fileUpload);
 
-            //Don't upload generated thumbnail if it match in size and type with currentThumbnail
-            if (thumbnail && thumbnail.file && thumbnail.type &&
-              (!currentThumbnail ||
-                (currentThumbnail && (Number(currentThumbnail.size) !== Number(thumbnail.file.size)
-                  || String(currentThumbnail.type) !== String(thumbnail.type)
-                  || (Number(currentThumbnail.max_width)) !== (Number(thumbnail.max_width))
-                  || (Number(currentThumbnail.max_height)) !== (Number(thumbnail.max_height)))))) {
+            if (thumbnailGenerated && thumbnailGenerated.file && thumbnailGenerated.type &&
+              (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))) {
 
               const thumbnailToUpload: ThumbnailToUpload = {
                 fileId: file.id,
-                size: thumbnail.file.size,
-                max_width: thumbnail.max_width,
-                max_height: thumbnail.max_height,
-                type: thumbnail.type,
-                content: thumbnail.file
+                size: thumbnailGenerated.file.size,
+                max_width: thumbnailGenerated.max_width,
+                max_height: thumbnailGenerated.max_height,
+                type: thumbnailGenerated.type,
+                content: thumbnailGenerated.file
               };
               const updateProgressCallback = () => { return; };
               const abortController = new AbortController();
 
               const thumbnailUploaded = await uploadThumbnail(userEmail, thumbnailToUpload, isTeam, updateProgressCallback, abortController);
 
-              if (thumbnailUploaded && thumbnail.file) {
-                setCurrentThumbnail(thumbnail.file, thumbnailUploaded, file as DriveItemData, dispatch);
+              if (thumbnailUploaded && thumbnailGenerated.file) {
+                setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, file as DriveItemData, dispatch);
 
                 let newThumbnails: Thumbnail[];
                 if (currentThumbnail) {

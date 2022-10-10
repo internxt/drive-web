@@ -17,6 +17,7 @@ interface BreadcrumbsProps {
 }
 
 export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const MenuItem = forwardRef(({ children }: { children: ReactNode }, ref) => {
     return (
       <div className="cursor-pointer items-center py-0.5 px-2 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10">
