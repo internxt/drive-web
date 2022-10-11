@@ -136,7 +136,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           file,
           isTeam,
           updateProgressCallback,
-          abortController
+          abortController,
         );
 
         tasksService.updateTask({
@@ -223,6 +223,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
   async ({ files, parentFolderId, options }: UploadItemsPayload, { getState, dispatch }) => {
+    console.log('storage/uploadItems');
+
+    console.log({ files });
+
     const user = getState().user.user as UserSettings;
     const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
@@ -319,7 +323,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         file,
         isTeam,
         updateProgressCallback,
-        abortController
+        abortController,
       );
 
       tasksService.updateTask({
@@ -337,51 +341,53 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
           uploadedFile.name = file.name;
 
           return uploadedFile;
-        })
+        }),
       );
 
       file.parentFolderId = parentFolderId;
 
       uploadPromises.map((filePromise) => {
-        return filePromise.then((uploadedFile) => {
-          const currentFolderId = storageSelectors.currentFolderId(getState());
+        return filePromise
+          .then((uploadedFile) => {
+            const currentFolderId = storageSelectors.currentFolderId(getState());
 
-          if (uploadedFile.folderId === currentFolderId) {
-            dispatch(
-              storageActions.pushItems({
-                updateRecents: true,
-                folderIds: [currentFolderId],
-                items: uploadedFile as DriveItemData,
-              }),
-            );
-          }
+            if (uploadedFile.folderId === currentFolderId) {
+              dispatch(
+                storageActions.pushItems({
+                  updateRecents: true,
+                  folderIds: [currentFolderId],
+                  items: uploadedFile as DriveItemData,
+                }),
+              );
+            }
 
-          tasksService.updateTask({
-            taskId: taskId,
-            merge: { status: TaskStatus.Success },
-          });
-        }).catch((err: unknown) => {
-          if (abortController.signal.aborted) {
-            return tasksService.updateTask({
-              taskId: taskId,
-              merge: { status: TaskStatus.Cancelled },
-            });
-          }
-
-          const castedError = errorService.castError(err);
-          const task = tasksService.findTask(tasksIds[index]);
-
-          if (task?.status !== TaskStatus.Cancelled) {
             tasksService.updateTask({
               taskId: taskId,
-              merge: { status: TaskStatus.Error },
+              merge: { status: TaskStatus.Success },
             });
+          })
+          .catch((err: unknown) => {
+            if (abortController.signal.aborted) {
+              return tasksService.updateTask({
+                taskId: taskId,
+                merge: { status: TaskStatus.Cancelled },
+              });
+            }
 
-            console.error(castedError);
+            const castedError = errorService.castError(err);
+            const task = tasksService.findTask(tasksIds[index]);
 
-            errors.push(castedError);
-          }
-        });
+            if (task?.status !== TaskStatus.Cancelled) {
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: { status: TaskStatus.Error },
+              });
+
+              console.error(castedError);
+
+              errors.push(castedError);
+            }
+          });
       });
     }
 

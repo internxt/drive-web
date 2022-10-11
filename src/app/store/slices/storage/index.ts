@@ -130,10 +130,7 @@ export const storageSlice = createSlice({
         Object.assign(state.infoItem, patch);
       } */
     },
-    clearCurrentThumbnailItems: (
-      state: StorageState,
-      action: PayloadAction<{ folderId: number }>,
-    ) => {
+    clearCurrentThumbnailItems: (state: StorageState, action: PayloadAction<{ folderId: number }>) => {
       const { folderId } = action.payload;
 
       if (state.levels[folderId]) {

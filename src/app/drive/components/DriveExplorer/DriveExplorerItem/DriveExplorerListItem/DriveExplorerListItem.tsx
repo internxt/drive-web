@@ -96,7 +96,8 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             title={items.getItemDisplayName(item)}
             onClick={onNameClicked}
           >
-            {items.getItemDisplayName(item)}
+            {/* TODO: CHANGE getItemDisplayName OF internxt/lib IN ORDER TO USE plain_name*/}
+            {item.plain_name ?? item.name}
           </span>
           {!isEditingName(item) && (
             <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
