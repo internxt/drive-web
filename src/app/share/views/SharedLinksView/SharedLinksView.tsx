@@ -1,7 +1,7 @@
 import i18n from 'app/i18n/services/i18n.service';
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Link, ToggleRight, LinkBreak } from 'phosphor-react';
+import { Trash, Link, ToggleRight, LinkBreak, Gear, Copy } from 'phosphor-react';
 import List from 'app/shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
@@ -270,7 +270,7 @@ export default function SharedLinksView(): JSX.Element {
           menu={[
             {
               name: i18n.get('shared-links.item-menu.copy-link'),
-              icon: Link,
+              icon: Copy,
               action: (props) => {
                 const itemType = props.isFolder ? 'folder' : 'file';
                 const encryptedCode = props.code;
@@ -281,14 +281,16 @@ export default function SharedLinksView(): JSX.Element {
                 return false;
               },
             },
-            /*{
+            {
               name: i18n.get('shared-links.item-menu.link-settings'),
-              icon: ToggleRight,
-              action: onOpenLinkUpdateModal,
+              icon: Gear,
+              action: (props) => {
+                <></>;
+              },
               disabled: () => {
                 return false; // If item is selected and link is active
               },
-            },*/
+            },
             {
               name: i18n.get('shared-links.item-menu.delete-link'),
               icon: LinkBreak,

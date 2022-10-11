@@ -21,9 +21,8 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import crypto from 'crypto';
 import { Environment } from '@internxt/inxt-js';
 import PasswordInput from './components/PasswordInput';
-import { Check, Copy, Icon } from 'phosphor-react';
+import { Check, Copy } from 'phosphor-react';
 import dateService from 'app/core/services/date.service';
-import useDriveItemActions from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 
 interface ShareItemDialogProps {
   item: DriveItemData;
