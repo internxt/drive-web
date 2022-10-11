@@ -223,7 +223,12 @@ export default function SharedLinksView(): JSX.Element {
               const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
               return (
                 <div className={'flex w-full cursor-pointer flex-row items-center space-x-4 overflow-hidden'}>
-                  <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
+                  <div className="my-5 flex flex-shrink items-center justify-center">
+                    <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
+                    <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
+                      <Link size={10} />
+                    </div>
+                  </div>
                   <span
                     className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16"
                     title={`${(props.item as DriveFileData).name}${
