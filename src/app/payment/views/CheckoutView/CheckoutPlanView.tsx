@@ -32,7 +32,6 @@ export default function CheckoutPlanView(): JSX.Element {
   }, [subscription]);
 
   async function checkout(planId: string, coupon?: string) {
-    console.log('Coupon code in checkout ', coupon);
     if (subscription?.type !== 'subscription') {
       try {
         const response = await paymentService.createCheckoutSession({
