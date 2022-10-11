@@ -49,7 +49,9 @@ export interface TextInputProps {
   isPasswordInput?: boolean;
   pattern?: string;
   patternHint?: string;
+  passwordError?: boolean;
   onChange?: (e: any) => void | (() => void);
+  onChangeText?: (text: string) => void;
   onFocus?: (e: any) => void | (() => void);
   onBlur?: (e: any) => void | (() => void);
   autoCompleteOnFocus?: boolean;
@@ -71,12 +73,15 @@ const TextInput = (props: TextInputProps) => {
       disabled={props.disabled}
       readOnly={props.readonly || props.autoCompleteOnFocus}
       autoComplete={props.autoComplete ?? 'off'}
-      className={`h-11 w-full appearance-none rounded-lg border border-gray-30 bg-white px-3 ${
+      className={`h-11 w-full appearance-none rounded-lg  border-gray-30 bg-white px-3 ${
         props.isPasswordInput ? 'pr-12' : ''
-      } focus:outline-none text-lg text-gray-100 shadow-sm transition duration-100 focus:border-primary focus:shadow-none focus:ring focus:ring-primary/10 disabled:cursor-not-allowed disabled:border-gray-10 disabled:text-gray-30 md:text-base ${
+      } focus:outline-none text-lg text-gray-100 shadow-sm transition duration-100 ${
+        props.passwordError ? 'border-2 focus:border-red-std' : 'border focus:border-primary'
+      }  focus:shadow-none focus:ring focus:ring-primary/10 disabled:cursor-not-allowed disabled:border-gray-10 disabled:text-gray-30 md:text-base ${
         props.className ?? ''
       }`}
       onChange={props.onChange}
+      onKeyPress={() => props.onChangeText}
       onFocus={(e) => {
         if (props.autoCompleteOnFocus) {
           e.target.removeAttribute('readonly');

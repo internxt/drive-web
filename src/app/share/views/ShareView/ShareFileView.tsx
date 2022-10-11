@@ -25,6 +25,7 @@ import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import ShareItemPwdView from './ShareItemPwdView';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -60,6 +61,8 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const [errorMSG, setErrorMSG] = useState(Error);
   const [openPreview, setOpenPreview] = useState(false);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+  const [password, setPassword] = useState(true);
+  const folderPassword = 'Password'; //item.password;
 
   let body;
 
@@ -123,7 +126,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
       setInfo({
         ...info,
-        name: info.item.name
+        name: info.item.name,
       });
 
       setIsLoaded(true);
@@ -238,7 +241,9 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   } else if (isLoaded) {
     const FileIcon = iconService.getItemIcon(false, info['item']['type']);
 
-    body = (
+    body = password ? (
+      <ShareItemPwdView password={folderPassword} passwordChecked={setPassword} />
+    ) : (
       <>
         {/* File info */}
         <div className="flex flex-grow-0 flex-col items-center justify-center space-y-4">
@@ -277,26 +282,25 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                         text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
           >
             {Number(progress) == 100 ? (
-                <>
-                  {/* Download completed */}
-                  <UilCheck height="24" width="24" />
-                  <span className="font-medium">{i18n.get('actions.downloaded')}</span>
-                </>
-              ) : isDownloading ? (
-                <>
-                  {/* Download in progress */}
-                  <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
-                  <span>{i18n.get('actions.downloading')}</span>
-                  <span className="font-normal text-blue-20">{progress}%</span>
-                </>
-              ) : (
-                <>
-                  {/* Download button */}
-                  <UilImport height="20" width="20" />
-                  <span className="font-medium">{i18n.get('actions.download')}</span>
-                </>
-              )
-            }
+              <>
+                {/* Download completed */}
+                <UilCheck height="24" width="24" />
+                <span className="font-medium">{i18n.get('actions.downloaded')}</span>
+              </>
+            ) : isDownloading ? (
+              <>
+                {/* Download in progress */}
+                <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
+                <span>{i18n.get('actions.downloading')}</span>
+                <span className="font-normal text-blue-20">{progress}%</span>
+              </>
+            ) : (
+              <>
+                {/* Download button */}
+                <UilImport height="20" width="20" />
+                <span className="font-medium">{i18n.get('actions.download')}</span>
+              </>
+            )}
           </button>
         </div>
       </>

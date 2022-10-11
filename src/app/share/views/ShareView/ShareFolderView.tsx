@@ -11,6 +11,7 @@ import { useAppSelector } from '../../../store/hooks';
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
+import { Lock, LockSimple } from 'phosphor-react';
 import './ShareView.scss';
 import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
@@ -20,6 +21,7 @@ import shareService from 'app/share/services/share.service';
 import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
 import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import { loadWritableStreamPonyfill } from 'app/network/download';
+import ShareItemPwdView from './ShareItemPwdView';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -50,6 +52,8 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+  const [password, setPassword] = useState(true);
+  const folderPassword = 'Password'; //item.password;
 
   const canUseReadableStreamMethod =
     'WritableStream' in window &&
@@ -229,7 +233,11 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     );
   } else if (isLoaded) {
     const FileIcon = iconService.getItemIcon(true);
-    body = (
+    body = password ? (
+      //WITH PASSWORD
+      <ShareItemPwdView password={folderPassword} passwordChecked={setPassword} />
+    ) : (
+      //WITHOUT PASSWORD
       <>
         {/* File info */}
         <div className="flex flex-grow-0 flex-col items-center justify-center space-y-4">

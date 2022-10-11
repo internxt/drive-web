@@ -7,7 +7,12 @@ const PasswordInput = (props: TextInputProps) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   return (
     <div className="relative flex w-full">
-      <TextInput {...props} type={showPassword ? 'text' : 'password'} isPasswordInput />
+      <TextInput
+        {...props}
+        type={showPassword ? 'text' : 'password'}
+        isPasswordInput
+        passwordError={props.passwordError}
+      />
       <div
         onClick={() => setShowPassword(!showPassword)}
         className={`absolute top-0 right-0 flex h-11 w-11 flex-col items-center justify-center ${
