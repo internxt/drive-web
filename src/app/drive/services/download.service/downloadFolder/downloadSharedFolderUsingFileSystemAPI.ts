@@ -17,6 +17,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     id: number;
     token: string;
     code: string;
+    password?: string;
   },
   bucket: string,
   bucketToken: string,
@@ -63,6 +64,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
           code: sharedFolderMeta.code,
+          password: sharedFolderMeta.password,
         },
         options.filesLimit,
       );
@@ -71,6 +73,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
         {
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
+          password: sharedFolderMeta.password,
         },
         options.foldersLimit,
       );

@@ -20,6 +20,7 @@ export async function downloadSharedFolderUsingStreamSaver(
     token: string;
     code: string;
     size: number;
+    password?: string;
   },
   bucket: string,
   bucketToken: string,
@@ -103,6 +104,7 @@ export async function downloadSharedFolderUsingStreamSaver(
           directoryId: folderToDownload.folderId,
           offset: foldersOffset,
           limit: options.foldersLimit,
+          password: sharedFolderMeta.password,
         });
 
         folders.map(async ({ id, name }) => {
