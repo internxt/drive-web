@@ -19,6 +19,9 @@ import { DriveFileData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
 import localStorageService from 'app/core/services/local-storage.service';
 import sizeService from 'app/drive/services/size.service';
+import { useAppDispatch } from 'app/store/hooks';
+import { storageActions } from 'app/store/slices/storage';
+import { uiActions } from 'app/store/slices/ui';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -41,6 +44,7 @@ export default function SharedLinksView(): JSX.Element {
 
   const [isUpdateLinkModalOpen, setIsUpdateLinkModalOpen] = useState(false);
   const [linkToUpdate, setLinkToUpdate] = useState<(ListShareLinksItem & { code: string }) | undefined>(undefined);
+  const dispatch = useAppDispatch();
 
   function closeConfirmDelete() {
     setIsDeleteDialogModalOpen(false);
@@ -284,8 +288,9 @@ export default function SharedLinksView(): JSX.Element {
             {
               name: i18n.get('shared-links.item-menu.link-settings'),
               icon: Gear,
-              action: (props) => {
-                <></>;
+              action: (props: any) => {
+                dispatch(storageActions.setItemToShare({ share: props, item: props.item }));
+                dispatch(uiActions.setIsShareItemDialogOpen(true));
               },
               disabled: () => {
                 return false; // If item is selected and link is active
@@ -326,12 +331,12 @@ export default function SharedLinksView(): JSX.Element {
         primaryAction={selectedItems.length > 1 ? 'Delete links' : 'Delete link'}
         primaryActionColor="danger"
       />
-      <UpdateLinkModal
+      {/* <UpdateLinkModal
         isOpen={isUpdateLinkModalOpen}
         onClose={() => setIsUpdateLinkModalOpen(false)}
         onShareUpdated={updateLinkItem}
         linkToUpdate={linkToUpdate!}
-      />
+      /> */}
     </div>
   );
 }
@@ -358,6 +363,7 @@ function UpdateLinkModal({
   }, [isOpen]);
 
   // Could be used for implementing an update of the Share Link if they have more features
+  // To be deleted:
   async function updateShareLink(params: ShareTypes.UpdateShareLinkPayload) {
     setSavingLinkChanges(true);
     const updatedItem = await shareService.updateShareLink(params);
@@ -427,14 +433,14 @@ function UpdateLinkModal({
 
                   <div className="flex flex-row space-x-2">
                     <BaseButton
-                      onClick={() =>
-                        updateShareLink({
-                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                          itemId: linkToUpdate!.id,
-                          timesValid: -1,
-                          active: true,
-                        })
-                      }
+                      onClick={() => {
+                        // updateShareLink({
+                        //   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        //   itemId: linkToUpdate!.id,
+                        //   // timesValid: -1,
+                        //   // active: true,
+                        // })
+                      }}
                       isLoading={savingLinkChanges}
                       className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
                     >
