@@ -1,6 +1,7 @@
 import { SVGProps } from 'react';
 import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { RenewalPeriod } from '../../payment/types';
+import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 
 export interface DriveFolderData {
   id: number;
@@ -18,6 +19,7 @@ export interface DriveFolderData {
   updatedAt: string;
   userId: number;
   user_id: number;
+  shares?: Array<ShareLink>;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -43,6 +45,7 @@ export interface DriveFileData {
   updatedAt: string;
   thumbnails: Array<Thumbnail>;
   currentThumbnail: Thumbnail | null;
+  shares?: Array<ShareLink>;
 }
 
 interface Thumbnail {

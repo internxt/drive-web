@@ -15,7 +15,7 @@ import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
 import { storageActions } from '../../../../../store/slices/storage';
 import iconService from '../../../../services/icon.service';
-import { DriveExplorerItemProps } from '..';
+import { DriveExplorerItemProps, DriveItemAction } from '..';
 import { useAppDispatch } from '../../../../../store/hooks';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
@@ -41,6 +41,9 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     onInfoButtonClicked,
     onDeleteButtonClicked,
     onShareButtonClicked,
+    onShareCopyButtonClicked,
+    onShareSettingsButtonClicked,
+    onShareDeleteButtonClicked,
     onItemClicked,
     onItemRightClicked,
     onItemDoubleClicked,
@@ -106,6 +109,8 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     );
   };
 
+  const itemIsShared = item.shares?.length || 0 > 0;
+
   const template = (
     <div
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
@@ -128,10 +133,9 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       <div className="box-content flex w-1/12 items-center px-3">
         <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
           <ItemIconComponent className="h-full" />
-          {/*itemIsShared?
-          <Link 
-          className="items-center justify-center rounded-full flex flex-col h-5 w-5 ml-3 absolute -bottom-1 -right-2 place-self-end rounded-full p-0.5 bg-primary text-white border-2 border-white group-hover:border-slate-50 group-active:border-blue-100" 
-          /> : ''*/}
+          {itemIsShared && (
+            <Link className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full rounded-full border-2 border-white bg-primary p-0.5 text-white group-active:border-blue-100" />
+          )}
         </div>
       </div>
 
@@ -148,15 +152,17 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           >
             <DownloadSimple className="h-5 w-5" />
           </button>
-          <button
-            onClick={(e) => {
-              onShareButtonClicked && onShareButtonClicked(e);
-            }}
-            className="hover-action mr-3"
-            data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
-          >
-            <Link className="h-5 w-5" />
-          </button>
+          {!itemIsShared && (
+            <button
+              onClick={(e) => {
+                onShareButtonClicked && onShareButtonClicked(e);
+              }}
+              className="hover-action mr-3"
+              data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
+            >
+              <Link className="h-5 w-5" />
+            </button>
+          )}
           <button
             onClick={onDeleteButtonClicked}
             className="hover-action"
@@ -194,10 +200,17 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <DriveItemDropdownActions
-              hiddenActions={[]}
+              hiddenActions={
+                item?.shares?.length || 0 > 0
+                  ? [DriveItemAction.ShareGetLink]
+                  : [DriveItemAction.ShareCopyLink, DriveItemAction.ShareDeleteLink, DriveItemAction.ShareSettings]
+              }
               onRenameButtonClicked={onRenameButtonClicked}
               onDownloadButtonClicked={onDownloadButtonClicked}
               onShareButtonClicked={onShareButtonClicked}
+              onShareCopyButtonClicked={onShareCopyButtonClicked}
+              onShareSettingsButtonClicked={onShareSettingsButtonClicked}
+              onShareDeleteButtonClicked={onShareDeleteButtonClicked}
               onInfoButtonClicked={onInfoButtonClicked}
               onDeleteButtonClicked={onDeleteButtonClicked}
             />

@@ -161,7 +161,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onSelectedOneItemShare = (e) => {
     e.stopPropagation();
     if (selectedItems.length === 1) {
-      dispatch(storageActions.setItemToShare(selectedItems[0]));
+      dispatch(
+        storageActions.setItemToShare({
+          share: selectedItems[0].shares?.[0],
+          item: selectedItems[0],
+        }),
+      );
       dispatch(uiActions.setIsShareItemDialogOpen(true));
     }
   };

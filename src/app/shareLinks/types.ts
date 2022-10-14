@@ -7,10 +7,12 @@ export interface ShareLink {
   isFolder: boolean;
   createdAt: Date;
   updatedAt: Date;
+  name: string;
   item: {
     id: number;
     name: string;
     type: string;
     bucket: string;
+    size: number;
   };
 }

@@ -25,6 +25,7 @@ import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import ShareItemPwdView from './ShareItemPwdView';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -54,20 +55,28 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [info, setInfo] = useState({});
+  const [info, setInfo] = useState<Partial<ShareTypes.ShareLink & { name: string }>>({});
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [errorMSG, setErrorMSG] = useState(Error);
   const [openPreview, setOpenPreview] = useState(false);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+  const [requiresPassword, setRequiresPassword] = useState(false);
+  const [itemPassword, setItemPassword] = useState('');
 
   let body;
 
   useEffect(() => {
-    const getInfo = async () => {
-      await loadInfo();
-    };
-    getInfo();
+    loadInfo().catch((err) => {
+      if (err.message !== 'Forbidden') {
+        setIsLoaded(true);
+        setIsError(true);
+        /**
+         * TODO: Check that the server returns proper error message instead
+         * of assuming that everything means that the link has expired
+         */
+        throw new Error(i18n.get('error.linkExpired'));
+      }
+    });
   }, []);
 
   const Spinner = (
@@ -94,7 +103,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       .map((arr) => arr[1])
       .filter((arr) => arr.length > 0);
     for (const extensions of extensionsWithFileViewer) {
-      if (extensions.includes(info['item']['type'] || '')) {
+      if (extensions.includes(info?.item?.type || '')) {
         return true;
       }
     }
@@ -108,31 +117,34 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   };
 
   const getFormatFileName = (): string => {
-    const hasType = info['item']['type'] !== null;
-    const extension = hasType ? `.${info['item']['type']}` : '';
-    return `${info['item']['name']}${extension}`;
+    const hasType = info?.item?.type !== null;
+    const extension = hasType ? `.${info?.item?.type}` : '';
+    return `${info?.item?.name}${extension}`;
   };
 
   const getFormatFileSize = (): string => {
-    return sizeService.bytesToString(info['item']['size']);
+    return sizeService.bytesToString(info?.item?.size || 0);
   };
 
-  const loadInfo = async () => {
-    try {
-      const info = await getSharedFileInfo(token, code);
+  function loadInfo(password?: string) {
+    return getSharedFileInfo(token, code, password)
+      .then((info) => {
+        setIsLoaded(true);
+        setRequiresPassword(false);
+        setInfo({
+          ...info,
+          name: info.item.name,
+        });
+      })
+      .catch((err) => {
+        if (err.message === 'Forbidden') {
+          setRequiresPassword(true);
+          setIsLoaded(true);
+        }
 
-      setInfo({
-        ...info,
-        name: info.item.name
+        throw err;
       });
-
-      setIsLoaded(true);
-    } catch (err) {
-      console.log('err', err);
-      setIsError(true);
-      setErrorMSG(new Error('Link unavailable'));
-    }
-  };
+  }
 
   function getBlob(abortController: AbortController): Promise<Blob> {
     const fileInfo = info as unknown as ShareTypes.ShareLink;
@@ -207,7 +219,6 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   }, [progress]);
 
   if (isError) {
-    console.log(errorMSG.message);
     const ItemIconComponent = iconService.getItemIcon(false, 'default');
 
     body = (
@@ -236,9 +247,11 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       </>
     );
   } else if (isLoaded) {
-    const FileIcon = iconService.getItemIcon(false, info['item']['type']);
+    const FileIcon = iconService.getItemIcon(false, info?.item?.type);
 
-    body = (
+    body = requiresPassword ? (
+      <ShareItemPwdView onPasswordSubmitted={loadInfo} itemPassword={itemPassword} setItemPassword={setItemPassword} />
+    ) : (
       <>
         {/* File info */}
         <div className="flex flex-grow-0 flex-col items-center justify-center space-y-4">
@@ -277,26 +290,25 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                         text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
           >
             {Number(progress) == 100 ? (
-                <>
-                  {/* Download completed */}
-                  <UilCheck height="24" width="24" />
-                  <span className="font-medium">{i18n.get('actions.downloaded')}</span>
-                </>
-              ) : isDownloading ? (
-                <>
-                  {/* Download in progress */}
-                  <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
-                  <span>{i18n.get('actions.downloading')}</span>
-                  <span className="font-normal text-blue-20">{progress}%</span>
-                </>
-              ) : (
-                <>
-                  {/* Download button */}
-                  <UilImport height="20" width="20" />
-                  <span className="font-medium">{i18n.get('actions.download')}</span>
-                </>
-              )
-            }
+              <>
+                {/* Download completed */}
+                <UilCheck height="24" width="24" />
+                <span className="font-medium">{i18n.get('actions.downloaded')}</span>
+              </>
+            ) : isDownloading ? (
+              <>
+                {/* Download in progress */}
+                <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
+                <span>{i18n.get('actions.downloading')}</span>
+                <span className="font-normal text-blue-20">{progress}%</span>
+              </>
+            ) : (
+              <>
+                {/* Download button */}
+                <UilImport height="20" width="20" />
+                <span className="font-medium">{i18n.get('actions.download')}</span>
+              </>
+            )}
           </button>
         </div>
       </>

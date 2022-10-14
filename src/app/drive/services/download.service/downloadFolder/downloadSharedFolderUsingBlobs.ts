@@ -13,7 +13,7 @@ interface FolderPackage {
 }
 
 export async function downloadSharedFolderUsingBlobs(
-  sharedFolderMeta: { name: string; id: number; token: string; code: string; size: number },
+  sharedFolderMeta: { name: string; id: number; token: string; code: string; size: number; password?: string },
   bucket: string,
   bucketToken: string,
   options: {
@@ -87,6 +87,7 @@ export async function downloadSharedFolderUsingBlobs(
           directoryId: folderToDownload.folderId,
           offset: foldersOffset,
           limit: options.foldersLimit,
+          password: sharedFolderMeta.password,
         });
 
         folders.map(async ({ id, name }) => {

@@ -7,6 +7,7 @@ import databaseService, { DatabaseCollection } from '../../../database/services/
 import itemsListService from '../../../drive/services/items-list.service';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';
+import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 
 const initialState: StorageState = {
   loadingFolders: {},
@@ -70,7 +71,7 @@ export const storageSlice = createSlice({
     clearSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
     },
-    setItemToShare: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
+    setItemToShare: (state: StorageState, action: PayloadAction<{ share?: ShareLink; item: DriveItemData } | null>) => {
       state.itemToShare = action.payload;
     },
     setItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
@@ -130,10 +131,7 @@ export const storageSlice = createSlice({
         Object.assign(state.infoItem, patch);
       } */
     },
-    clearCurrentThumbnailItems: (
-      state: StorageState,
-      action: PayloadAction<{ folderId: number }>,
-    ) => {
+    clearCurrentThumbnailItems: (state: StorageState, action: PayloadAction<{ folderId: number }>) => {
       const { folderId } = action.payload;
 
       if (state.levels[folderId]) {

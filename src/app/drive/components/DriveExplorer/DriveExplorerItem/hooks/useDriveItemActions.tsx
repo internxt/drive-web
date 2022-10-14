@@ -13,6 +13,7 @@ import { uiActions } from '../../../../../store/slices/ui';
 import useDriveItemStoreProps from './useDriveStoreProps';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
 
 //import shareService from 'app/share/services/share.service';
 
@@ -28,6 +29,9 @@ interface DriveItemActions {
   onNameEnterKeyDown: KeyboardEventHandler<HTMLInputElement>;
   onDownloadButtonClicked: (e: MouseEvent) => void;
   onShareButtonClicked: (e: MouseEvent) => void;
+  onShareCopyButtonClicked: (e: MouseEvent) => void;
+  onShareSettingsButtonClicked: (e: MouseEvent) => void;
+  onShareDeleteButtonClicked: (e: MouseEvent) => void;
   onInfoButtonClicked: (e: MouseEvent) => void;
   onDeleteButtonClicked: (e: MouseEvent) => void;
   onItemClicked: (e: MouseEvent) => void;
@@ -112,11 +116,21 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   const onShareButtonClicked = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
+    dispatch(sharedThunks.getSharedLinkThunk({ item }));
+  };
 
-    dispatch(storageActions.setItemToShare(item));
+  const onShareCopyButtonClicked = async (e: React.MouseEvent): Promise<void> => {
+    e.stopPropagation();
+    dispatch(sharedThunks.getSharedLinkThunk({ item }));
+  };
+  const onShareSettingsButtonClicked = async (e: React.MouseEvent): Promise<void> => {
+    e.stopPropagation();
+    dispatch(storageActions.setItemToShare({ share: item?.shares?.[0], item }));
     dispatch(uiActions.setIsShareItemDialogOpen(true));
-
-    //isItemShared(item);
+  };
+  const onShareDeleteButtonClicked = async (e: React.MouseEvent): Promise<void> => {
+    e.stopPropagation();
+    dispatch(sharedThunks.deleteLinkThunk({ linkId: item?.shares?.[0]?.id as string }));
   };
 
   const onInfoButtonClicked = (e: React.MouseEvent): void => {
@@ -204,6 +218,9 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     onNameEnterKeyDown,
     onDownloadButtonClicked,
     onShareButtonClicked,
+    onShareCopyButtonClicked,
+    onShareSettingsButtonClicked,
+    onShareDeleteButtonClicked,
     onInfoButtonClicked,
     onDeleteButtonClicked,
     onItemClicked,
