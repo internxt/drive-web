@@ -16,27 +16,26 @@ export async function createShare(params: ShareTypes.GenerateShareLinkPayload): 
 export async function createShareLink(
   plainCode: string,
   mnemonic: string,
-  params: ShareTypes.GenerateShareLinkPayload
+  params: ShareTypes.GenerateShareLinkPayload,
 ): Promise<string> {
   const share = await createShare(params);
 
   if (share.created) {
     return `${window.location.origin}/sh/${params.type}/${share.token}/${plainCode}`;
   } else {
-    return `${window.location.origin}/sh/${params.type}/${share.token}/${aes.decrypt((share as any).encryptedCode, mnemonic)
-      }`;
+    return `${window.location.origin}/sh/${params.type}/${share.token}/${aes.decrypt(
+      (share as any).encryptedCode,
+      mnemonic,
+    )}`;
   }
 }
 
-export function buildLinkFromShare(
-  mnemonic: string,
-  share: ListShareLinksItem & { code: string }
-): string {
+export function buildLinkFromShare(mnemonic: string, share: ListShareLinksItem & { code: string }): string {
   const plainCode = aes.decrypt(share.code, mnemonic);
   return `${window.location.origin}/sh/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
 }
 
-export function incrementShareView(token: string): Promise<{ incremented: boolean, token: string }> {
+export function incrementShareView(token: string): Promise<{ incremented: boolean; token: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.incrementShareViewByToken(token).catch((error) => {
     throw errorService.castError(error);
@@ -50,21 +49,29 @@ export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Prom
   });
 }
 
-export function deleteShareLink(shareId: string): Promise<{ deleted: boolean, shareId: string }> {
+export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; shareId: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.deleteShareLink(shareId).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getSharedFileInfo(token: string, code: string): Promise<ShareTypes.ShareLink> {
+export function getSharedFileInfo(token: string, code: string, password?: string): Promise<ShareTypes.ShareLink> {
   const newApiURL = SdkFactory.getNewApiInstance().getApiUrl();
-  return httpService.get(newApiURL + '/storage/share/' + token + '?code=' + code);
+  return httpService
+    .get<ShareTypes.ShareLink>(newApiURL + '/storage/share/' + token + '?code=' + code, {
+      headers: {
+        'x-share-password': password,
+      },
+    })
+    .catch((error) => {
+      throw errorService.castError(error);
+    });
 }
 
-export function getSharedFolderInfo(token: string): Promise<ShareTypes.ShareLink> {
+export function getSharedFolderInfo(token: string, password?: string): Promise<ShareTypes.ShareLink> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getShareLink(token).catch((error) => {
+  return shareClient.getShareLink(token, password).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -82,6 +89,7 @@ interface SharedDirectoryFoldersPayload {
   directoryId: number;
   offset: number;
   limit: number;
+  password?: string;
 }
 
 interface SharedDirectoryFilesPayload {
@@ -90,6 +98,7 @@ interface SharedDirectoryFilesPayload {
   offset: number;
   limit: number;
   code: string;
+  password?: string;
 }
 
 export function getSharedDirectoryFolders(
@@ -102,6 +111,7 @@ export function getSharedDirectoryFolders(
     folderId: payload.directoryId,
     page: payload.offset / payload.limit,
     perPage: payload.limit,
+    password: payload.password,
   });
 }
 
@@ -116,6 +126,7 @@ export function getSharedDirectoryFiles(
     folderId: payload.directoryId,
     page: payload.offset / payload.limit,
     perPage: payload.limit,
+    password: payload.password,
   });
 }
 
@@ -141,7 +152,7 @@ const shareService = {
   getSharedDirectoryFolders,
   getAllShareLinks,
   buildLinkFromShare,
-  incrementShareView
+  incrementShareView,
 };
 
 export default shareService;
