@@ -5,7 +5,17 @@ import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
 import UilFileInfoAlt from '@iconscout/react-unicons/icons/uil-file-info-alt';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 */
-import { PencilSimple, Trash, DownloadSimple, Copy, Gear, LinkBreak, ArrowsOutCardinal, Eye } from 'phosphor-react';
+import {
+  PencilSimple,
+  Trash,
+  DownloadSimple,
+  Copy,
+  Link,
+  Gear,
+  LinkBreak,
+  ArrowsOutCardinal,
+  Eye,
+} from 'phosphor-react';
 import crypto from 'crypto';
 
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -17,6 +27,9 @@ interface FileDropdownActionsProps {
   onRenameButtonClicked: (e: MouseEvent) => void;
   onDownloadButtonClicked: (e: MouseEvent) => void;
   onShareButtonClicked: (e: MouseEvent) => void;
+  onShareCopyButtonClicked: (e: MouseEvent) => void;
+  onShareSettingsButtonClicked: (e: MouseEvent) => void;
+  onShareDeleteButtonClicked: (e: MouseEvent) => void;
   onInfoButtonClicked: (e: MouseEvent) => void;
   onDeleteButtonClicked: (e: MouseEvent) => void;
 }
@@ -44,6 +57,24 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
     onShareButtonClicked && onShareButtonClicked(e);
   };
 
+  onShareCopyButtonClicked = (e: MouseEvent): void => {
+    const { onShareCopyButtonClicked } = this.props;
+
+    onShareCopyButtonClicked && onShareCopyButtonClicked(e);
+  };
+
+  onShareSettingsButtonClicked = (e: MouseEvent): void => {
+    const { onShareSettingsButtonClicked } = this.props;
+
+    onShareSettingsButtonClicked && onShareSettingsButtonClicked(e);
+  };
+
+  onShareDeleteButtonClicked = (e: MouseEvent): void => {
+    const { onShareDeleteButtonClicked } = this.props;
+
+    onShareDeleteButtonClicked && onShareDeleteButtonClicked(e);
+  };
+
   onInfoButtonClicked = (e: MouseEvent): void => {
     const { onInfoButtonClicked } = this.props;
 
@@ -63,26 +94,32 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
       <div>
         {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
 
-        {!hiddenActions.includes(DriveItemAction.Share) ? (
+        {/* {!hiddenActions.includes(DriveItemAction.Share) ? (
           <Dropdown.Item id="share" onClick={this.onShareButtonClicked}>
             <Eye className="mr-1 h-5 w-5 text-blue-60" />
             <span>Open preview</span>
           </Dropdown.Item>
-        ) : null}
-        {!hiddenActions.includes(DriveItemAction.Share) ? (
+        ) : null} */}
+        {!hiddenActions.includes(DriveItemAction.ShareGetLink) ? (
           <Dropdown.Item id="share" onClick={this.onShareButtonClicked}>
+            <Link className="mr-1 h-5 w-5 text-blue-60" />
+            <span>Get link</span>
+          </Dropdown.Item>
+        ) : null}
+        {!hiddenActions.includes(DriveItemAction.ShareCopyLink) ? (
+          <Dropdown.Item id="share" onClick={this.onShareCopyButtonClicked}>
             <Copy className="mr-1 h-5 w-5 text-blue-60" />
             <span>Copy link</span>
           </Dropdown.Item>
         ) : null}
-        {!hiddenActions.includes(DriveItemAction.Share) ? (
-          <Dropdown.Item id="share" onClick={this.onShareButtonClicked}>
+        {!hiddenActions.includes(DriveItemAction.ShareSettings) ? (
+          <Dropdown.Item id="share" onClick={this.onShareSettingsButtonClicked}>
             <Gear className="mr-1 h-5 w-5 text-blue-60" />
             <span>Share settings</span>
           </Dropdown.Item>
         ) : null}
-        {!hiddenActions.includes(DriveItemAction.Share) ? (
-          <Dropdown.Item id="share" onClick={this.onShareButtonClicked}>
+        {!hiddenActions.includes(DriveItemAction.ShareDeleteLink) ? (
+          <Dropdown.Item id="share" onClick={this.onShareDeleteButtonClicked}>
             <LinkBreak className="mr-1 h-5 w-5 text-blue-60" />
             <span>Delete link</span>
           </Dropdown.Item>
