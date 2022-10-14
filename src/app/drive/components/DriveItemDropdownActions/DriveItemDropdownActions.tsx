@@ -5,18 +5,7 @@ import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
 import UilFileInfoAlt from '@iconscout/react-unicons/icons/uil-file-info-alt';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 */
-import {
-  PencilSimple,
-  Trash,
-  DownloadSimple,
-  Copy,
-  Link,
-  Gear,
-  LinkBreak,
-  ArrowsOutCardinal,
-  Eye,
-} from 'phosphor-react';
-import crypto from 'crypto';
+import { PencilSimple, Trash, DownloadSimple, Copy, Link, Gear, LinkBreak, ArrowsOutCardinal } from 'phosphor-react';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
@@ -134,12 +123,12 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
           </Dropdown.Item>
         ) : null}
 
-        {!hiddenActions.includes(DriveItemAction.Info) ? (
+        {/* {!hiddenActions.includes(DriveItemAction.Info) ? (
           <Dropdown.Item id="info" onClick={this.onInfoButtonClicked}>
             <ArrowsOutCardinal className="mr-1 h-5 w-5 text-blue-60" />
             <span>Move</span>
           </Dropdown.Item>
-        ) : null}
+        ) : null} */}
         {!hiddenActions.includes(DriveItemAction.Download) ? (
           <Dropdown.Item id="download" onClick={this.onDownloadButtonClicked}>
             <DownloadSimple className="mr-1 h-5 w-5 text-blue-60" />
