@@ -16,26 +16,26 @@ export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayloa
     fileId: fileId,
     metadata: metadata,
     bucketId: bucketId,
-    destinationPath: uuid.v4()
+    destinationPath: uuid.v4(),
   };
 
-  return storageClient.updateFile(payload)
-    .then(() => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackFileRename({
-        file_id: fileId,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
+  return storageClient.updateFile(payload).then(() => {
+    const user = localStorageService.getUser() as UserSettings;
+    analyticsService.trackFileRename({
+      file_id: fileId,
+      email: user.email,
+      platform: DevicePlatform.Web,
     });
+  });
 }
 
 export function deleteFile(fileData: DriveFileData): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.deleteFile({
-    fileId: fileData.id,
-    folderId: fileData.folderId
-  })
+  return storageClient
+    .deleteFile({
+      fileId: fileData.id,
+      folderId: fileData.folderId,
+    })
     .then(() => {
       const user = localStorageService.getUser() as UserSettings;
       analyticsService.trackDeleteItem(fileData as DriveItemData, {
@@ -46,17 +46,20 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
 }
 
 export async function moveFile(
-  fileId: string, destination: number, bucketId: string
+  fileId: string,
+  destination: number,
+  bucketId: string,
 ): Promise<StorageTypes.MoveFileResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.MoveFilePayload = {
     fileId: fileId,
     destination: destination,
     bucketId: bucketId,
-    destinationPath: uuid.v4()
+    destinationPath: uuid.v4(),
   };
-  return storageClient.moveFile(payload)
-    .then(response => {
+  return storageClient
+    .moveFile(payload)
+    .then((response) => {
       const user = localStorageService.getUser() as UserSettings;
       analyticsService.trackMoveItem('file', {
         file_id: response.item.id,
@@ -65,7 +68,7 @@ export async function moveFile(
       });
       return response;
     })
-    .catch(error => {
+    .catch((error) => {
       const castedError = errorService.castError(error);
       if (castedError.status) {
         castedError.message = i18n.get(`tasks.move-file.errors.${castedError.status}`);
