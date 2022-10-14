@@ -11,9 +11,7 @@ import { useAppSelector } from '../../../store/hooks';
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
-import { Lock, LockSimple } from 'phosphor-react';
 import './ShareView.scss';
-import errorService from 'app/core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
@@ -52,8 +50,8 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
-  const [password, setPassword] = useState(true);
-  const folderPassword = 'Password'; //item.password;
+  const [requiresPassword, setRequiresPassword] = useState(false);
+  const [itemPassword, setItemPassword] = useState('');
 
   const canUseReadableStreamMethod =
     'WritableStream' in window &&
@@ -65,42 +63,48 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   let body, downloadButton;
 
   useEffect(() => {
+    loadFolderInfo().catch((err) => {
+      if (err.message !== 'Forbidden') {
+        setIsLoaded(true);
+        /**
+         * TODO: Check that the server returns proper error message instead
+         * of assuming that everything means that the link has expired
+         */
+        throw new Error(i18n.get('error.linkExpired'));
+      }
+    });
+  }, []);
+
+  function loadFolderInfo(password?: string) {
     if (!canUseReadableStreamMethod) {
       // TODO: Hide inside download shared folder function
       loadWritableStreamPonyfill().then(() => {
         console.log('loaded ponyfill');
       });
     }
+    // ! iOS Chrome is not supported
+    if (navigator.userAgent.match('CriOS')) {
+      throw new Error('Chrome iOS not supported. Use Safari to proceed');
+    }
 
-    loadInfo()
+    return getSharedFolderInfo(token, password)
       .then((sharedFolderInfo) => {
         setInfo(sharedFolderInfo);
         setIsLoaded(true);
+        setRequiresPassword(false);
         return loadSize((sharedFolderInfo as unknown as { id: number }).id, sharedFolderInfo.item.id);
       })
       .then((folderSize) => {
         setSize(folderSize);
       })
       .catch((err) => {
-        setIsError(true);
-        setErrorMessage(errorService.castError(err).message);
+        if (err.message === 'Forbidden') {
+          setRequiresPassword(true);
+          setIsLoaded(true);
+        }
+        throw err;
       });
-  }, []);
-
-  const loadInfo = (): Promise<ShareTypes.ShareLink> => {
-    // ! iOS Chrome is not supported
-    if (navigator.userAgent.match('CriOS')) {
-      throw new Error('Chrome iOS not supported. Use Safari to proceed');
-    }
-
-    return getSharedFolderInfo(token).catch(() => {
-      /**
-       * TODO: Check that the server returns proper error message instead
-       * of assuming that everything means that the link has expired
-       */
-      throw new Error(i18n.get('error.linkExpired'));
-    });
-  };
+  }
 
   const loadSize = (shareId: number, folderId: number): Promise<number> => {
     return getSharedFolderSize(shareId.toString(), folderId.toString());
@@ -110,7 +114,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     setProgress(Number((progress * 100).toFixed(2)));
   };
 
-  const download = async (): Promise<void> => {
+  const download = async (password?: string): Promise<void> => {
     if (!isDownloading) {
       const folderInfo = info as unknown as ShareTypes.ShareLink | null;
 
@@ -134,6 +138,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
             code: code,
             id: folderInfo.item.id,
             token: token,
+            password,
           },
           folderInfo.bucket,
           (folderInfo as any).fileToken,
@@ -233,9 +238,13 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     );
   } else if (isLoaded) {
     const FileIcon = iconService.getItemIcon(true);
-    body = password ? (
+    body = requiresPassword ? (
       //WITH PASSWORD
-      <ShareItemPwdView password={folderPassword} passwordChecked={setPassword} />
+      <ShareItemPwdView
+        onPasswordSubmitted={loadFolderInfo}
+        itemPassword={itemPassword}
+        setItemPassword={setItemPassword}
+      />
     ) : (
       //WITHOUT PASSWORD
       <>
@@ -258,7 +267,9 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         {/* Actions */}
         <div className="flex flex-row items-center justify-center space-x-3">
           <button
-            onClick={download}
+            onClick={() => {
+              download(itemPassword);
+            }}
             className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
                         text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
           >
