@@ -3,13 +3,15 @@ import { LockSimple, WarningCircle } from 'phosphor-react';
 import PasswordInput from 'app/share/components/ShareItemDialog/components/PasswordInput';
 
 export interface ShareItemPwdViewProps {
-  password: string;
-  passwordChecked: (pasword: boolean) => void;
+  onPasswordSubmitted: (password: string) => Promise<void>;
+  itemPassword: string;
+  setItemPassword: (password: string) => void;
 }
 
 const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
+  const { onPasswordSubmitted, setItemPassword, itemPassword } = props;
   const [onPasswordError, setOnPasswordError] = useState(false);
-  const [itemPassword, setItemPassword] = useState('');
+
   if (!onPasswordError) {
     setTimeout(() => setOnPasswordError(false), 6000);
   }
@@ -48,13 +50,11 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
         </div>
         <button
           onClick={() => {
-            if (props.password === itemPassword) {
-              setOnPasswordError(false);
-              props.passwordChecked(false);
-            } else {
-              setOnPasswordError(true);
-              setItemPassword('');
-            }
+            onPasswordSubmitted(itemPassword).catch((err) => {
+              if (err.message === 'Forbidden') {
+                setOnPasswordError(true);
+              }
+            });
           }}
           className="flex h-11 items-center justify-center rounded-lg bg-blue-60 px-6 font-medium text-white"
         >
