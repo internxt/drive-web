@@ -6,6 +6,7 @@ import { getPhotoBlob, getPhotoPreview } from 'app/network/download';
 import { RootState } from '../../store';
 import { photosSlice, PhotosState } from '../../store/slices/photos';
 import useIdle from '../../core/hooks/useIdle';
+import { PhotosItemType } from '@internxt/sdk/dist/photos';
 
 export default function Preview({
   onDownloadClick,
@@ -41,6 +42,7 @@ export default function Preview({
   }, [previewIndex, items]);
 
   const [src, setSrc] = useState<string | null>(null);
+  const [itemType, setItemType] = useState<PhotosItemType>(PhotosItemType.PHOTO);
 
   useEffect(() => {
     if (previewIndex !== null && bucketId) {
@@ -48,9 +50,9 @@ export default function Preview({
 
       const abortController = new AbortController();
       const photo = items[previewIndex];
-
       getPhotoBlob({ photo, bucketId, abortController })
         .then((blob) => {
+          setItemType(photo.itemType);
           return setSrc(URL.createObjectURL(blob));
         })
         .catch((err) => {
@@ -131,7 +133,11 @@ export default function Preview({
             enterFrom="opacity-0"
             enterTo="opacity-100"
           >
-            <img className="will-change absolute inset-0 h-full w-full object-contain" draggable="false" src={src} />
+            {itemType === PhotosItemType.VIDEO ? (
+              <video className="will-change absolute inset-0 h-full w-full object-contain" controls src={src} />
+            ) : (
+              <img className="will-change absolute inset-0 h-full w-full object-contain" draggable="false" src={src} />
+            )}
           </Transition.Child>
         ) : (
           <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
