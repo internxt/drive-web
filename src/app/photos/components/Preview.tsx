@@ -141,7 +141,12 @@ export default function Preview({
           </Transition.Child>
         ) : (
           <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
-            {thumbnailSrc && <img className="h-64 w-64 rounded-xl object-cover" src={thumbnailSrc} />}
+            {thumbnailSrc &&
+              (itemType === PhotosItemType.VIDEO ? (
+                <video className="h-64 w-64 rounded-xl object-cover" src={thumbnailSrc} />
+              ) : (
+                <img className="h-64 w-64 rounded-xl object-cover" src={thumbnailSrc} />
+              ))}
             <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
               <Spinner />
               <p className="ml-3">Loading...</p>
