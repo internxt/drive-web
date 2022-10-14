@@ -29,6 +29,9 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     onInfoButtonClicked,
     onDeleteButtonClicked,
     onShareButtonClicked,
+    onShareCopyButtonClicked,
+    onShareSettingsButtonClicked,
+    onShareDeleteButtonClicked,
     onItemClicked,
     onItemRightClicked,
     onItemDoubleClicked,
@@ -121,10 +124,17 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         </Dropdown.Toggle>
         <Dropdown.Menu>
           <DriveItemDropdownActions
-            hiddenActions={item.isFolder ? [DriveItemAction.Download, DriveItemAction.Share] : []}
+            hiddenActions={
+              item?.shares?.length || 0 > 0
+                ? [DriveItemAction.ShareGetLink]
+                : [DriveItemAction.ShareCopyLink, DriveItemAction.ShareDeleteLink, DriveItemAction.ShareSettings]
+            }
             onRenameButtonClicked={onRenameButtonClicked}
             onDownloadButtonClicked={onDownloadButtonClicked}
             onShareButtonClicked={onShareButtonClicked}
+            onShareCopyButtonClicked={onShareCopyButtonClicked}
+            onShareSettingsButtonClicked={onShareSettingsButtonClicked}
+            onShareDeleteButtonClicked={onShareDeleteButtonClicked}
             onInfoButtonClicked={onInfoButtonClicked}
             onDeleteButtonClicked={onDeleteButtonClicked}
           />
