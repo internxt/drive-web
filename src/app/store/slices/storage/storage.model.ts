@@ -15,7 +15,7 @@ export interface StorageState {
   filters: StorageFilters;
   order: OrderSettings;
   selectedItems: DriveItemData[];
-  itemToShare: { share: ShareLink; item: DriveItemData } | null;
+  itemToShare: { share?: ShareLink; item: DriveItemData } | null;
   itemsToDelete: DriveItemData[];
   viewMode: FileViewMode;
   namePath: FolderPath[];

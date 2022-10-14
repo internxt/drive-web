@@ -19,7 +19,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 
 interface ShareItemDialogProps {
-  share: ShareLink;
+  share?: ShareLink;
   item: DriveItemData;
 }
 
@@ -48,7 +48,7 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
 
   const onSubmit = async () => {
     await shareService.updateShareLink({
-      itemId: share.id,
+      itemId: share?.id as string,
       plainPassword: isPasswordProtected ? itemPassword : null,
     });
     notificationsService.show({ text: 'Link updated', type: ToastType.Info });
@@ -118,10 +118,10 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
                   setIsLinkCopied(false);
                 }, 4000);
                 const temporaryShare = share as ShareLink & { is_folder: boolean };
-                const itemType = share.isFolder || temporaryShare.is_folder ? 'folder' : 'file';
-                const encryptedCode = share.code;
+                const itemType = share?.isFolder || temporaryShare.is_folder ? 'folder' : 'file';
+                const encryptedCode = share?.code as string;
                 const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
-                copyShareLink(itemType, plainCode, share.token);
+                copyShareLink(itemType, plainCode, share?.token as string);
               }}
             >
               {isLinkCopied ? (

@@ -130,7 +130,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   };
   const onShareDeleteButtonClicked = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
-    dispatch(sharedThunks.deleteLinkThunk({ linkId: item?.shares?.[0]?.id }));
+    dispatch(sharedThunks.deleteLinkThunk({ linkId: item?.shares?.[0]?.id as string }));
   };
 
   const onInfoButtonClicked = (e: React.MouseEvent): void => {
