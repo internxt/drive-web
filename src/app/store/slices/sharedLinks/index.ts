@@ -111,7 +111,7 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
           folderId: item.isFolder ? item.parentId : item.folderId,
           isFolder: item.isFolder,
           patch: {
-            // Thw objective of the following array is for it to be non-empty:
+            // The objective of the following array is for it to be non-empty, as it signals that the item has been shared, and so we can display the icon of a shared file/folder:
             shares: [coercedShareLink as ShareLink],
           },
         }),
