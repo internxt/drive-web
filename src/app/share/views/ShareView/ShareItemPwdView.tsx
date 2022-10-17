@@ -35,7 +35,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
         </p>
       </div>
       {/* </div> */}
-      <div className="flex w-full flex-col pt-10 text-left sm:px-0">
+      <form className="flex w-full flex-col pt-10 text-left sm:px-0">
         <p className="pb-2 text-sm font-medium">Password</p>
         <PasswordInput
           placeholder="Password"
@@ -50,7 +50,9 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
           </div>
         )}
         <button
-          onClick={() => {
+          type="submit"
+          onClick={(evt) => {
+            evt.preventDefault();
             onPasswordSubmitted(itemPassword).catch((err) => {
               if (err.message === 'Forbidden') {
                 setOnPasswordError(true);
@@ -61,7 +63,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
         >
           <p className="text-sm font-medium">Access</p>
         </button>
-      </div>
+      </form>
     </div>
   );
 };

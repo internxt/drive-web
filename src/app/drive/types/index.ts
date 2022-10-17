@@ -78,6 +78,7 @@ export interface DriveItemPatch {
   name?: string;
   currentThumbnail?: Thumbnail;
   thumbnails?: Thumbnail[];
+  shares?: ShareLink[];
 }
 
 export interface FileInfoMenuItem {

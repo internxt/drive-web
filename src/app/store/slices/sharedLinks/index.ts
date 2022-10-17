@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import shareService from 'app/share/services/share.service';
 import { RootState } from '../..';
 
-import { ListShareLinksItem, ListShareLinksResponse } from '@internxt/sdk/dist/drive/share/types'; //import { ShareLink } from '../../../shareLinks/types';
+import { ListShareLinksItem, ListShareLinksResponse, ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytics.service';
@@ -16,7 +16,7 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import errorService from 'app/core/services/error.service';
 import { DriveItemData } from 'app/drive/types';
 import storageThunks from '../storage/storage.thunks';
-import { storageSelectors } from '../storage';
+import { storageActions, storageSelectors } from '../storage';
 import { string } from 'prop-types';
 
 export interface ShareLinksState {
@@ -99,18 +99,25 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
         timesValid: -1,
       };
 
-      const link = await shareService.createShareLink(code, mnemonic, requestPayload);
+      const share = await shareService.createShare(requestPayload);
+      const link = shareService.getLinkFromShare(share, code, mnemonic, requestPayload.type);
       navigator.clipboard.writeText(link);
       notificationsService.show({ text: 'Share link copied to clipboard', type: ToastType.Success });
 
-      // Refresh currentFolder so that the new icon appears:
-      const currentFolderId = storageSelectors.currentFolderId(rootState);
-      dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
+      const coercedShareLink: unknown = share;
+      dispatch(
+        storageActions.patchItem({
+          id: item.id,
+          folderId: item.isFolder ? item.parentId : item.folderId,
+          isFolder: item.isFolder,
+          patch: {
+            // The objective of the following array is for it to be non-empty, as it signals that the item has been shared, and so we can display the icon of a shared file/folder:
+            shares: [coercedShareLink as ShareLink],
+          },
+        }),
+      );
 
       return link;
-      // dispatch(referralsThunks.refreshUserReferrals());
-
-      // window.analytics.track('file-share');
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
