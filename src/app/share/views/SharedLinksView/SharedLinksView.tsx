@@ -1,7 +1,7 @@
 import i18n from 'app/i18n/services/i18n.service';
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Link, ToggleRight, LinkBreak, Gear, Copy } from 'phosphor-react';
+import { Trash, Link, LinkBreak, Gear, Copy } from 'phosphor-react';
 import List from 'app/shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
@@ -229,8 +229,8 @@ export default function SharedLinksView(): JSX.Element {
                 <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
                   <div className="my-5 flex flex-shrink items-center justify-center">
                     <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
-                    <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
-                      <Link size={10} />
+                    <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
+                      <Link size={12} color="white" />
                     </div>
                   </div>
                   <span
