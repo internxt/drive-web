@@ -67,11 +67,12 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
       textLeft={true}
       panelClasses="w-screen max-w-lg"
       titleClasses="text-black font-medium"
-      closeClass="flex w-10 h-10 items-center mt-2 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
+      closeClass="flex items-center mt-2 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
       onClose={onClose}
+      wheightIcon="light"
     >
       <hr className="border-t-1 mb-5 w-screen border-neutral-40" />
-      <div className="share-dialog mb-5 flex flex-col">
+      <div className="mb-5 flex flex-col">
         <div className="mx-5">
           <div className="justify-left flex flex-col">
             <p className="text-base font-medium">Access</p>

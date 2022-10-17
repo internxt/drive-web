@@ -1,5 +1,5 @@
 import UilTimes from '@iconscout/react-unicons/icons/uil-times';
-import { subtract } from 'lodash';
+import { IconWeight, X } from 'phosphor-react';
 
 interface BaseDialogProps {
   isOpen: boolean;
@@ -12,6 +12,7 @@ interface BaseDialogProps {
   titleClasses?: string;
   panelClasses?: string;
   closeClass?: string;
+  wheightIcon?: IconWeight;
   bgColor?: string;
   onClose: () => void;
 }
@@ -28,6 +29,7 @@ const BaseDialog = ({
   panelClasses,
   titleClasses,
   closeClass,
+  wheightIcon,
   bgColor,
 }: BaseDialogProps): JSX.Element => {
   return (
@@ -43,10 +45,12 @@ const BaseDialog = ({
         } text-neutral-900 ${bgColor || 'bg-white'}`}
       >
         <div className={`${subTitle ? 'flex-row items-center bg-neutral-10 py-5 pl-5' : ''}`}>
-          <UilTimes
+          <X
             className={`absolute right-8 cursor-pointer duration-200 ${closeClass || 'text-blue-60 hover:text-blue-70'} 
            transition ease-in-out `}
             onClick={onClose}
+            size={40}
+            weight={wheightIcon}
           />
           <span
             className={`${titleClasses || ''} overflow-hidden overflow-ellipsis whitespace-nowrap ${
