@@ -5,11 +5,12 @@ import httpService from 'app/core/services/http.service';
 import { aes } from '@internxt/lib';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 
-export async function createShare(params: ShareTypes.GenerateShareLinkPayload): Promise<{
+interface CreateShareResponse {
   created: boolean;
   token: string;
-  code: string;
-}> {
+}
+
+export async function createShare(params: ShareTypes.GenerateShareLinkPayload): Promise<CreateShareResponse> {
   return await SdkFactory.getNewApiInstance().createShareClient().createShareLink(params);
 }
 
@@ -20,13 +21,19 @@ export async function createShareLink(
 ): Promise<string> {
   const share = await createShare(params);
 
+  return getLinkFromShare(share, plainCode, mnemonic, params.type);
+}
+
+export function getLinkFromShare(
+  share: CreateShareResponse,
+  plainCode: string,
+  mnemonic: string,
+  type: string,
+): string {
   if (share.created) {
-    return `${window.location.origin}/sh/${params.type}/${share.token}/${plainCode}`;
+    return `${window.location.origin}/sh/${type}/${share.token}/${plainCode}`;
   } else {
-    return `${window.location.origin}/sh/${params.type}/${share.token}/${aes.decrypt(
-      (share as any).encryptedCode,
-      mnemonic,
-    )}`;
+    return `${window.location.origin}/sh/${type}/${share.token}/${aes.decrypt((share as any).encryptedCode, mnemonic)}`;
   }
 }
 
@@ -150,6 +157,7 @@ const shareService = {
   getSharedFileInfo,
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
+  getLinkFromShare,
   getAllShareLinks,
   buildLinkFromShare,
   incrementShareView,
