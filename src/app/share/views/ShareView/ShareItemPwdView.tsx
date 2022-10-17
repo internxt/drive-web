@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { LockSimple, WarningCircle } from 'phosphor-react';
+import { WarningCircle } from 'phosphor-react';
 import PasswordInput from 'app/share/components/ShareItemDialog/components/PasswordInput';
+import { ReactComponent as LockLogo } from 'assets/icons/Lock.svg';
 
 export interface ShareItemPwdViewProps {
   onPasswordSubmitted: (password: string) => Promise<void>;
@@ -22,14 +23,16 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
   }
 
   return (
-    <div className="flex flex-col items-center space-y-8 px-5 sm:space-y-0">
+    <div className="flex w-full flex-col items-center space-y-8 px-5 sm:w-96 sm:space-y-0">
       {/* <div className="flex w-96 flex-col items-center justify-center px-5 sm:px-0"> */}
       <div className="flex flex-col items-center justify-center space-y-2 text-center">
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary">
-          <LockSimple size={32} color="white" weight="fill" />
-        </div>
-        <p className="text-2xl font-medium">This link is password protected</p>
-        <p className="text-xl font-normal sm:w-96">Please enter the password provided by the sender for access.</p>
+        <LockLogo className="mb-6 h-14 w-14 text-white" />
+        <p className="text-xl font-medium">This link is password protected</p>
+        <p className="text-base font-normal text-gray-80">
+          Please enter the password provided
+          <br />
+          by the sender for access.
+        </p>
       </div>
       {/* </div> */}
       <div className="flex w-full flex-col pt-10 text-left sm:px-0">

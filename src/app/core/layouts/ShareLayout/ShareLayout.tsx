@@ -11,6 +11,7 @@ import EndToEnd from 'assets/images/shared-file/icons/end-to-end.png';
 import Lock from 'assets/images/shared-file/icons/lock.png';
 import EyeSlash from 'assets/images/shared-file/icons/eye-slash.png';
 import '../../../share/views/ShareView/ShareView.scss';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 
 interface ShareLayoutProps {
   children: JSX.Element;
@@ -91,7 +92,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
         {/* Download container */}
         <div className="flex flex-1 flex-col">
           {/* Top bar */}
-          <div className="flex h-20 flex-shrink-0 flex-row items-center justify-end px-6">
+          <div className="hidden h-20 flex-shrink-0 flex-row items-center justify-end px-6 sm:flex">
             {isAuthenticated ? (
               <>
                 {/* User avatar */}
@@ -198,6 +199,19 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                 </div>
               </>
             )}
+          </div>
+
+          <div className="flex flex-row items-center justify-between p-4 sm:hidden">
+            <InternxtLogo className="h-3 w-auto" />
+            <Link to="/new" className="no-underline">
+              <div
+                className="flex h-9 cursor-pointer flex-row items-center justify-end rounded-full border border-primary
+                                    px-4 font-medium text-primary no-underline
+                                    hover:text-primary-dark"
+              >
+                Get started
+              </div>
+            </Link>
           </div>
 
           {/* File container */}

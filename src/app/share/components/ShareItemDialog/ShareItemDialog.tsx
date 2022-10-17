@@ -36,6 +36,7 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
   const [isPasswordProtected, setIsPasswordProtected] = useState(isSavedAlreadyWithPassword);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
   const isOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
+  const dateShareLink = share?.createdAt;
 
   const onClose = (): void => {
     close();
@@ -67,9 +68,9 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
       textLeft={true}
       panelClasses="w-screen max-w-lg"
       titleClasses="text-black font-medium"
-      closeClass="flex items-center mt-2 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
+      closeClass="flex-shrink-0 flex items-center justify-center h-10 w-10 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
       onClose={onClose}
-      wheightIcon="light"
+      weightIcon="light"
     >
       <hr className="border-t-1 mb-5 w-screen border-neutral-40" />
       <div className="mb-5 flex flex-col">
@@ -101,18 +102,20 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
           <div className="mb-8 flex flex-row justify-between">
             <div className="flex w-52 flex-col items-start">
               <p className="text-base font-medium">Views</p>
-              <p className="text-base font-normal">{'No views yet'}</p>
+              <p className="text-base font-normal">{share?.views === 0 ? 'No views yet' : share?.views}</p>
             </div>
             <div className="flex w-52 flex-col items-start">
               <p className="text-base font-medium">Date created</p>
-              <p className="text-base font-normal">{dateService.format(item.createdAt, 'dddd, D MMM YYYY, hh:mm')}</p>
+              <p className="text-base font-normal">
+                {dateService.format(dateShareLink as string, 'dddd, D MMM YYYY, hh:mm')}
+              </p>
             </div>
           </div>
           <div className="flex flex-row justify-between">
             <button
               className={`${
                 isLinkCopied ? ' z-10 flex bg-blue-10 bg-opacity-5' : ''
-              } flex h-10 w-32 flex-row items-center justify-center rounded-md border border-primary`}
+              } flex h-10 flex-row items-center justify-center rounded-md border border-primary px-5`}
               onClick={() => {
                 setIsLinkCopied(true);
                 setTimeout(() => {
