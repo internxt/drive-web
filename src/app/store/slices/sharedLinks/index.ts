@@ -17,7 +17,6 @@ import errorService from 'app/core/services/error.service';
 import { DriveItemData } from 'app/drive/types';
 import storageThunks from '../storage/storage.thunks';
 import { storageActions, storageSelectors } from '../storage';
-import { string } from 'prop-types';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -131,16 +130,26 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
 
 interface DeleteLinkPayload {
   linkId: string;
+  item: DriveItemData;
 }
 
 export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state: RootState }>(
   'shareds/deleteLink',
   async (payload: DeleteLinkPayload, { dispatch, getState }) => {
-    await shareService.deleteShareLink(payload.linkId);
+    const { linkId, item } = payload;
+    await shareService.deleteShareLink(linkId);
 
-    // Refresh currentFolder so that the share icon does not appear:
-    const currentFolderId = storageSelectors.currentFolderId(getState());
-    dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
+    dispatch(
+      storageActions.patchItem({
+        id: item.id,
+        folderId: item.isFolder ? item.parentId : item.folderId,
+        isFolder: item.isFolder,
+        patch: {
+          // The objective of the following array is for it to be empty, as it signals that the item share has been removed, and so we can hide the icon of a shared file/folder:
+          shares: [],
+        },
+      }),
+    );
 
     const stringLinksDeleted = i18n.get('shared-links.toast.link-deleted');
     notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
