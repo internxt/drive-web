@@ -275,9 +275,9 @@ export default function SharedLinksView(): JSX.Element {
             {
               name: i18n.get('shared-links.item-menu.copy-link'),
               icon: Copy,
-              action: (props) => {
+              action: (props: any) => {
                 const itemType = props.isFolder ? 'folder' : 'file';
-                const encryptedCode = props.code;
+                const encryptedCode = props.code || props.encryptedCode;
                 const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
                 copyShareLink(itemType, plainCode, props.token);
               },
