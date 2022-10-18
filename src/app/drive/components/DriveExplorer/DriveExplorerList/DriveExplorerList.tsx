@@ -133,14 +133,15 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
           {isLoading ? (
             this.loadingSkeleton
           ) : (
-            <div id="scrollableList" className="h-full overflow-y-auto">
+            <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
               <InfiniteScroll
                 dataLength={this.itemsList.length}
                 next={onEndOfScroll}
                 hasMore={hasMoreItems}
                 loader={this.loadingSkeleton}
                 scrollableTarget="scrollableList"
-                className="h-full"
+                className="z-0 h-full"
+                style={{ overflow: 'visible' }}
               >
                 {this.itemsFolderList}
                 {this.itemsFileList}
