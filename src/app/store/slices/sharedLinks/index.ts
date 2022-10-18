@@ -103,7 +103,7 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
       navigator.clipboard.writeText(link);
       notificationsService.show({ text: 'Share link copied to clipboard', type: ToastType.Success });
 
-      const coercedShareLink: unknown = share;
+      const coercedShareLink: unknown = { ...share, isFolder: item.isFolder };
       dispatch(
         storageActions.patchItem({
           id: item.id,

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { WarningCircle } from 'phosphor-react';
 import PasswordInput from 'app/share/components/ShareItemDialog/components/PasswordInput';
 import { ReactComponent as LockLogo } from 'assets/icons/Lock.svg';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'app/core/services/error.service';
 
 export interface ShareItemPwdViewProps {
   onPasswordSubmitted: (password: string) => Promise<void>;
@@ -56,7 +58,13 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
             onPasswordSubmitted(itemPassword).catch((err) => {
               if (err.message === 'Forbidden') {
                 setOnPasswordError(true);
+                return;
               }
+              notificationsService.show({
+                text: errorService.castError(err).message,
+                type: ToastType.Warning,
+                duration: 50000,
+              });
             });
           }}
           className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-blue-60 font-medium text-white"

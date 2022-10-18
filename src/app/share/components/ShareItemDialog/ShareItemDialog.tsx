@@ -121,9 +121,9 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
                 setTimeout(() => {
                   setIsLinkCopied(false);
                 }, 4000);
-                const temporaryShare = share as ShareLink & { is_folder: boolean };
+                const temporaryShare = share as ShareLink & { is_folder: boolean; encryptedCode?: string };
                 const itemType = share?.isFolder || temporaryShare.is_folder ? 'folder' : 'file';
-                const encryptedCode = share?.code as string;
+                const encryptedCode = share?.code || (temporaryShare?.encryptedCode as string);
                 const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
                 copyShareLink(itemType, plainCode, share?.token as string);
               }}
