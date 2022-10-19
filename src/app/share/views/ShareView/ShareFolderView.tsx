@@ -66,6 +66,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     loadFolderInfo().catch((err) => {
       if (err.message !== 'Forbidden') {
         setIsLoaded(true);
+        setIsError(true);
         /**
          * TODO: Check that the server returns proper error message instead
          * of assuming that everything means that the link has expired
@@ -210,7 +211,6 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
   if (isError) {
     const ItemIconComponent = iconService.getItemIcon(false, 'default');
-
     body = (
       <>
         <div className="relative h-32 w-32">
@@ -220,7 +220,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
         <div className="flex flex-col items-center justify-center">
           <span className="text-2xl font-semibold">Shared files no longer available</span>
-          <span className="text-cool-gray-60">{errorMessage}</span>
+          <span className="text-cool-gray-60">Link expired or folder deleted</span>
         </div>
 
         {isAuthenticated && (
@@ -256,10 +256,10 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
           <div className="flex flex-col items-center justify-center space-y-2">
             <div className="flex flex-col items-center justify-center text-center font-medium">
-              <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info.item.name}>
-                {info.item.name}
+              <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info?.item?.name}>
+                {info?.item?.name}
               </abbr>
-              <span className="text-cool-gray-60">{sizeService.bytesToString(info.item.size || 0)}</span>
+              <span className="text-cool-gray-60">{sizeService.bytesToString(info?.item?.size || 0)}</span>
             </div>
           </div>
         </div>
