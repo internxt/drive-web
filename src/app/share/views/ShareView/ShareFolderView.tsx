@@ -155,6 +155,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           },
         )
           .then(() => {
+            console.log('Link de descarga funciona');
             updateProgress(1);
             shareService.incrementShareView(folderInfo.token);
           })
@@ -221,7 +222,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
         <div className="flex flex-col items-center justify-center">
           <span className="text-2xl font-semibold">Shared files no longer available</span>
-          <span className="text-cool-gray-60">Link expired or folder deleted</span>
+          <span className="text-cool-gray-60">{errorMessage}</span>
         </div>
 
         {isAuthenticated && (
