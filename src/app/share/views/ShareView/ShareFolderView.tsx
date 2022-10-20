@@ -84,9 +84,10 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       });
     }
     // ! iOS Chrome is not supported
-    if (navigator.userAgent.match('CriOS')) {
-      throw new Error('Chrome iOS not supported. Use Safari to proceed');
-    }
+    // if (navigator.userAgent.match('CriOS')) {
+    //   console.log('Chrome iOS not supported. Use Safari to proceed');
+    //   throw new Error('Chrome iOS not supported. Use Safari to proceed');
+    // }
 
     return getSharedFolderInfo(token, password)
       .then((sharedFolderInfo) => {
