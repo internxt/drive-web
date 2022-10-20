@@ -21,6 +21,7 @@ import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.serv
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import ShareItemPwdView from './ShareItemPwdView';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'app/core/services/error.service';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -37,6 +38,8 @@ interface ShareViewState {
   ready: boolean;
   info: ShareTypes.ShareLink;
 }
+
+const CHROME_IOS_ERROR_MESSAGE = 'Chrome iOS not supported. Use Safari to proceed';
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const FOLDERS_LIMIT_BY_REQUEST = 16;
@@ -67,6 +70,15 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     loadFolderInfo().catch((err) => {
       if (err.message !== 'Forbidden') {
         setIsLoaded(true);
+        if (err.message === CHROME_IOS_ERROR_MESSAGE) {
+          notificationsService.show({
+            text: errorService.castError(err).message,
+            type: ToastType.Warning,
+            duration: 50000,
+          });
+          setErrorMessage(CHROME_IOS_ERROR_MESSAGE);
+          return;
+        }
         setIsError(true);
         /**
          * TODO: Check that the server returns proper error message instead
@@ -86,14 +98,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     }
     // ! iOS Chrome is not supported
     if (navigator.userAgent.match('CriOS')) {
-      notificationsService.show({
-        text: 'Chrome iOS not supported. Use Safari to proceed',
-        type: ToastType.Warning,
-        duration: 50000,
-      });
-      setErrorMessage('Chrome iOS not supported. Use Safari to proceed');
-      setIsError(true);
-      // return;
+      throw new Error(CHROME_IOS_ERROR_MESSAGE);
     }
 
     return getSharedFolderInfo(token, password)
