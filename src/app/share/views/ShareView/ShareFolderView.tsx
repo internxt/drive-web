@@ -39,7 +39,7 @@ interface ShareViewState {
   info: ShareTypes.ShareLink;
 }
 
-const CHROME_IOS_ERROR_MESSAGE = 'Chrome iOS not supported. Use Safari to proceed';
+const CHROME_IOS_ERROR_MESSAGE = 'Chrome on iOS is not supported. Use Safari to proceed';
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const FOLDERS_LIMIT_BY_REQUEST = 16;
@@ -89,7 +89,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     });
   }, []);
 
-  function loadFolderInfo(password?: string) {
+  async function loadFolderInfo(password?: string) {
     if (!canUseReadableStreamMethod) {
       // TODO: Hide inside download shared folder function
       loadWritableStreamPonyfill().then(() => {
