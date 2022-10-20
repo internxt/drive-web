@@ -20,6 +20,7 @@ import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/down
 import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import ShareItemPwdView from './ShareItemPwdView';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -84,10 +85,16 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       });
     }
     // ! iOS Chrome is not supported
-    // if (navigator.userAgent.match('CriOS')) {
-    //   console.log('Chrome iOS not supported. Use Safari to proceed');
-    //   throw new Error('Chrome iOS not supported. Use Safari to proceed');
-    // }
+    if (navigator.userAgent.match('CriOS')) {
+      notificationsService.show({
+        text: 'Chrome iOS not supported. Use Safari to proceed',
+        type: ToastType.Warning,
+        duration: 50000,
+      });
+      setErrorMessage('Chrome iOS not supported. Use Safari to proceed');
+      setIsError(true);
+      // return;
+    }
 
     return getSharedFolderInfo(token, password)
       .then((sharedFolderInfo) => {
@@ -155,7 +162,6 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           },
         )
           .then(() => {
-            console.log('Link de descarga funciona');
             updateProgress(1);
             shareService.incrementShareView(folderInfo.token);
           })
