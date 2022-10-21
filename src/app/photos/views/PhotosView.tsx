@@ -1,18 +1,16 @@
-import { PhotoId } from '@internxt/sdk/dist/photos';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Empty from '../../shared/components/Empty/Empty';
-import { getPhotoPreview } from 'app/network/download';
 import Dialog from '../../shared/components/Dialog/Dialog';
 import { RootState } from '../../store';
 import { photosSlice, PhotosState, SerializablePhoto } from '../../store/slices/photos';
 import photosThunks from '../../store/slices/photos/thunks';
 import EmptyPicture from '../../../assets/images/empty-photos.png';
-import PhotoThumbnail from '../components/PhotoThumbnail';
 import Preview from '../components/Preview';
 import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
+import { Grid } from '../components/Grid';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useDispatch();
@@ -38,6 +36,8 @@ export default function PhotosView({ className = '' }: { className?: string }): 
     return () => document.removeEventListener('keydown', listener);
   }, [photosState.previewIndex, deletePending, sharePending]);
 
+  // TODO: NEED TO CHANGE THE IMPLEMENTATION OF REMOVE TO WORK CORRECTLY
+  // PhotoStatus: Exists -> Trashed
   function onConfirmDelete() {
     if (deletePending === 'selected') {
       dispatch(photosThunks.deleteThunk(photosState.selectedItems));
@@ -53,6 +53,10 @@ export default function PhotosView({ className = '' }: { className?: string }): 
     }
     setDeletePending(null);
   }
+
+  const handleSetPreviewIndex = (index: number | null) => dispatch(photosSlice.actions.setPreviewIndex(index));
+
+  const handleToggleSelectPhotos = (id: string) => dispatch(photosSlice.actions.toggleSelect(id));
 
   const showEmpty = !photosState.isLoading && photosState.items.length === 0;
 
@@ -97,6 +101,8 @@ export default function PhotosView({ className = '' }: { className?: string }): 
                 selected={photosState.selectedItems}
                 photos={photosState.items}
                 onUserScrolledToTheEnd={fetchPhotos}
+                setPreviewIndex={handleSetPreviewIndex}
+                toggleSelect={handleToggleSelectPhotos}
               />
             )}
           </>
@@ -111,10 +117,13 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         }
         onClose={() => {
           if (photosState.previewIndex !== null && deletePending === null && sharePending === null)
-            dispatch(photosSlice.actions.setPreviewIndex(null));
+            handleSetPreviewIndex(null);
         }}
+        previewIndex={photosState.previewIndex}
+        photos={photosState.items}
+        setPreviewIndex={handleSetPreviewIndex}
       />
-      {/* These dialogs are duplicated to avoid flickering while using headless ui transitions */}
+      {/* These dialogs are duplicatded to avoid flickering while using headless ui transitions */}
       <Dialog
         onClose={() => setDeletePending(null)}
         onPrimaryAction={onConfirmDelete}
@@ -149,93 +158,4 @@ export default function PhotosView({ className = '' }: { className?: string }): 
       />
     </>
   );
-}
-
-function Grid({
-  photos,
-  selected,
-  onUserScrolledToTheEnd,
-}: {
-  photos: SerializablePhoto[];
-  selected: PhotoId[];
-  onUserScrolledToTheEnd: () => void;
-}) {
-  const dispatch = useDispatch();
-
-  const listRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const options = {};
-
-    const observer = new IntersectionObserver((entries) => {
-      const entry = entries[0];
-
-      if (entry.isIntersecting) {
-        onUserScrolledToTheEnd();
-      }
-    }, options);
-
-    const lastChild = listRef.current?.lastElementChild;
-
-    if (lastChild) observer.observe(lastChild as Element);
-
-    return () => observer.disconnect();
-  }, [photos]);
-
-  return (
-    <div
-      className="grid gap-1 overflow-y-auto px-5"
-      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
-      ref={listRef}
-    >
-      {photos.map((photo, i) => {
-        const isSelected = selected.some((el) => photo.id === el);
-        const thereAreSelected = selected.length > 0;
-        function onSelect() {
-          dispatch(photosSlice.actions.toggleSelect(photo.id));
-        }
-        return (
-          <PhotoItem
-            onClick={() => {
-              if (thereAreSelected) {
-                onSelect();
-              } else {
-                dispatch(photosSlice.actions.setPreviewIndex(i));
-              }
-            }}
-            onSelect={onSelect}
-            selected={isSelected}
-            photo={photo}
-            key={photo.id}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-function PhotoItem({
-  onClick,
-  onSelect,
-  selected,
-  photo,
-}: {
-  onClick: () => void;
-  onSelect: () => void;
-  selected: boolean;
-  photo: SerializablePhoto;
-}) {
-  const [src, setSrc] = useState<string | undefined>(undefined);
-  const bucketId = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
-
-  useEffect(() => {
-    if (bucketId) {
-      getPhotoPreview({
-        photo,
-        bucketId,
-      }).then(setSrc);
-    }
-  }, []);
-
-  return <PhotoThumbnail onClick={onClick} onSelect={onSelect} selected={selected} src={src} />;
 }

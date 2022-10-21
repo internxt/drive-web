@@ -1,4 +1,5 @@
 import { DownloadSimple, Share, Trash, X } from 'phosphor-react';
+import { Icon } from './Icon';
 
 export default function Toolbar({
   className = '',
@@ -29,19 +30,6 @@ export default function Toolbar({
         <Icon Target={Share} onClick={onShareClick} />
         <Icon Target={Trash} onClick={onDeleteClick} />
       </div>
-    </div>
-  );
-}
-
-function Icon({ Target, onClick }: { Target: typeof DownloadSimple; onClick?: () => void }) {
-  return (
-    <div
-      className={`${
-        onClick ? 'cursor-pointer text-gray-80 hover:bg-gray-5 active:bg-gray-10' : 'text-gray-40'
-      } flex h-10 w-10 items-center justify-center rounded-lg `}
-      onClick={onClick}
-    >
-      <Target size={24} />
     </div>
   );
 }

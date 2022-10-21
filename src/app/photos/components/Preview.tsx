@@ -1,10 +1,10 @@
 import { CaretLeft, DownloadSimple, Share, Trash, X } from 'phosphor-react';
 import { useState, useEffect, Fragment } from 'react';
 import { Transition } from '@headlessui/react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { getPhotoBlob, getPhotoPreview } from 'app/network/download';
 import { RootState } from '../../store';
-import { photosSlice, PhotosState } from '../../store/slices/photos';
+import { SerializablePhoto } from '../../store/slices/photos';
 import useIdle from '../../core/hooks/useIdle';
 import { PhotosItemType } from '@internxt/sdk/dist/photos';
 
@@ -13,18 +13,21 @@ export default function Preview({
   onDeleteClick,
   onShareClick,
   onClose,
+  setPreviewIndex,
+  previewIndex,
+  photos,
 }: {
   onDownloadClick?: () => void;
   onShareClick?: () => void;
   onDeleteClick?: () => void;
   onClose: () => void;
+  setPreviewIndex: (index: number) => void;
+  photos: SerializablePhoto[];
+  previewIndex: number | null;
 }): JSX.Element {
   const MS_TO_BE_IDLE = 5000;
   const isIdle = useIdle(MS_TO_BE_IDLE);
 
-  const dispatch = useDispatch();
-  const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
-  const { previewIndex, items } = photosState;
   const bucketId = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
 
   const [thumbnailSrc, setThumbnailSrc] = useState<string | null>(null);
@@ -33,13 +36,13 @@ export default function Preview({
     if (previewIndex !== null && bucketId) {
       setThumbnailSrc(null);
 
-      const photo = items[previewIndex];
+      const photo = photos[previewIndex];
       getPhotoPreview({
         photo,
         bucketId,
       }).then(setThumbnailSrc);
     }
-  }, [previewIndex, items]);
+  }, [previewIndex, photos]);
 
   const [src, setSrc] = useState<string | null>(null);
   const [itemType, setItemType] = useState<PhotosItemType>(PhotosItemType.PHOTO);
@@ -49,7 +52,7 @@ export default function Preview({
       setSrc(null);
 
       const abortController = new AbortController();
-      const photo = items[previewIndex];
+      const photo = photos[previewIndex];
       getPhotoBlob({ photo, bucketId, abortController })
         .then((blob) => {
           setItemType(photo.itemType);
@@ -67,16 +70,16 @@ export default function Preview({
         abortController.abort();
       };
     }
-  }, [previewIndex, items]);
+  }, [previewIndex, photos]);
 
-  const canGoRight = previewIndex !== null && previewIndex < photosState.items.length - 1;
+  const canGoRight = previewIndex !== null && previewIndex < photos.length - 1;
   const canGoLeft = previewIndex !== null && previewIndex > 0;
 
   function goRight() {
-    if (previewIndex !== null) dispatch(photosSlice.actions.setPreviewIndex(previewIndex + 1));
+    if (previewIndex !== null) setPreviewIndex(previewIndex + 1);
   }
   function goLeft() {
-    if (previewIndex !== null) dispatch(photosSlice.actions.setPreviewIndex(previewIndex - 1));
+    if (previewIndex !== null) setPreviewIndex(previewIndex - 1);
   }
 
   useEffect(() => {
@@ -99,7 +102,7 @@ export default function Preview({
   return (
     <Transition
       as={Fragment}
-      show={photosState.previewIndex !== null}
+      show={previewIndex !== null}
       enter="transform origin-center overflow-hidden transition-all duration-100 ease-out"
       enterFrom="opacity-0 scale-95"
       enterTo="opacity-100 scale-100"
@@ -188,7 +191,7 @@ function Toolbar({
         <TopIcon Target={X} onClick={onExit} />
         <div className="flex">
           <TopIcon Target={DownloadSimple} onClick={onDownloadClick} />
-          <TopIcon Target={Share} onClick={onShareClick} />
+          {onShareClick ? <TopIcon Target={Share} onClick={onShareClick} /> : null}
           <TopIcon Target={Trash} onClick={onDeleteClick} />
         </div>
       </div>

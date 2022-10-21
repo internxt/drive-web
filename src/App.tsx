@@ -90,8 +90,15 @@ class App extends Component<AppProps> {
 
   render(): JSX.Element {
     const isDev = !envService.isProduction();
-    const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, isSurveyDialogOpen, fileViewerItem, dispatch } =
-      this.props;
+    const {
+      isInitialized,
+      isAuthenticated,
+      isFileViewerOpen,
+      isNewsletterDialogOpen,
+      isSurveyDialogOpen,
+      fileViewerItem,
+      dispatch,
+    } = this.props;
     const pathName = window.location.pathname.split('/')[1];
     let template = <PreparingWorkspaceAnimation />;
 

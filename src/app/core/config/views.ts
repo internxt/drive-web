@@ -19,7 +19,7 @@ import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
 import SharedLinksView from 'app/share/views/SharedLinksView/SharedLinksView';
-
+import TrashView from 'app/trash/views/TrashView';
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import RecoverView from '../../auth/views/RecoverView/RecoverView';
@@ -42,6 +42,7 @@ const views: Array<{
   { id: AppView.Recover, component: RecoverView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
+  { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.SharedLinks, component: SharedLinksView },
   { id: AppView.Photos, component: PhotosView },

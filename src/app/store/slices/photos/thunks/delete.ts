@@ -5,6 +5,9 @@ import { photosSlice } from '..';
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 
+// TODO: NEED TO CREATE NEW IMPLEMENTATION OF REMOVE
+// IN ORDER TO ABLE PASS PHOTOS FROM EXISTS STATE TO TRASHED STATE
+// AND FROM TRASHED TO DELETED
 export const deleteThunk = createAsyncThunk<void, PhotoId[], { state: RootState }>(
   'photos/delete',
   async (payload: PhotoId[], { dispatch, getState }) => {

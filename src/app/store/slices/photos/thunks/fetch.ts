@@ -36,6 +36,37 @@ export const fetchThunk = createAsyncThunk<void, void, { state: RootState }>(
   },
 );
 
+export const fetchTrashedPhotosThunk = createAsyncThunk<void, void, { state: RootState }>(
+  'photos/fetchTrashPhotos',
+  async (payload: void, { dispatch, getState }) => {
+    const state = getState();
+    if (state.photos.isLoadingTrashPhotos || !state.photos.thereIsMoreTrashPhotos) return;
+
+    dispatch(photosSlice.actions.setIsLoadingTrashPhotos(true));
+
+    const { skippedTrashPhotos } = state.photos;
+
+    const { photos } = await SdkFactory.getInstance().createPhotosClient();
+
+    // TODO: CHANGE PhotoStatus.Deleted to PhotoStatus.Trashed before merge, for the moment
+    // is Deleted because it seems that not exists Trashed photos
+    const data = await photos.getPhotos({ status: PhotoStatus.Deleted }, skippedTrashPhotos, PAGE_SIZE, true);
+
+    dispatch(photosSlice.actions.setBucketId(data.bucketId));
+
+    const serializablePhotos = makePhotosSerializable(data.results);
+    dispatch(photosSlice.actions.pushTrashPhotos(serializablePhotos));
+
+    const thereIsMore = data.results.length === PAGE_SIZE;
+
+    if (!thereIsMore) {
+      dispatch(photosSlice.actions.setThereIsMoreTrashPhotos(false));
+    }
+
+    dispatch(photosSlice.actions.setSkippedTrashPhotos(skippedTrashPhotos + data.results.length));
+  },
+);
+
 export const fetchThunkExtraReducers = (builder: ActionReducerMapBuilder<PhotosState>): void => {
   builder
     .addCase(fetchThunk.fulfilled, (state) => {
@@ -43,6 +74,12 @@ export const fetchThunkExtraReducers = (builder: ActionReducerMapBuilder<PhotosS
     })
     .addCase(fetchThunk.rejected, (state) => {
       state.isLoading = false;
+    })
+    .addCase(fetchTrashedPhotosThunk.fulfilled, (state) => {
+      state.isLoadingTrashPhotos = false;
+    })
+    .addCase(fetchTrashedPhotosThunk.rejected, (state) => {
+      state.isLoadingTrashPhotos = false;
     });
 };
 

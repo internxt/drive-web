@@ -11,6 +11,12 @@ export interface PhotosState {
   selectedItems: PhotoId[];
   bucketId?: string;
   previewIndex: number | null;
+  isLoadingTrashPhotos: boolean;
+  trashPhotos: SerializablePhoto[];
+  selectedTrashPhotos: PhotoId[];
+  previewTrashPhotoIndex: number | null;
+  thereIsMoreTrashPhotos: boolean;
+  skippedTrashPhotos: number;
 }
 
 const initialState: PhotosState = {
@@ -20,6 +26,13 @@ const initialState: PhotosState = {
   items: [],
   selectedItems: [],
   previewIndex: null,
+  // TODO: CHECK WHEN FINISH TRASH IF IS NECESSARY TO CREATE ANOTHER SLICE
+  isLoadingTrashPhotos: false,
+  trashPhotos: [],
+  selectedTrashPhotos: [],
+  previewTrashPhotoIndex: null,
+  thereIsMoreTrashPhotos: true,
+  skippedTrashPhotos: 0,
 };
 
 export const photosSlice = createSlice({
@@ -32,6 +45,9 @@ export const photosSlice = createSlice({
     push: (state: PhotosState, action: PayloadAction<SerializablePhoto[]>) => {
       state.items.push(...action.payload);
     },
+    pushTrashPhotos: (state: PhotosState, action: PayloadAction<SerializablePhoto[]>) => {
+      state.trashPhotos.push(...action.payload);
+    },
     toggleSelect: (state: PhotosState, action: PayloadAction<PhotoId>) => {
       const id = action.payload;
       const isAlreadySelected = state.selectedItems.some((el) => el === id);
@@ -42,11 +58,27 @@ export const photosSlice = createSlice({
         state.selectedItems.push(id);
       }
     },
+    toggleSelectTrashPhotos: (state: PhotosState, action: PayloadAction<PhotoId>) => {
+      const id = action.payload;
+      const isAlreadySelected = state.selectedTrashPhotos.some((el) => el === id);
+
+      if (isAlreadySelected) {
+        state.selectedTrashPhotos = state.selectedTrashPhotos.filter((el) => el !== id);
+      } else {
+        state.selectedTrashPhotos.push(id);
+      }
+    },
     setThereIsMore: (state: PhotosState, action: PayloadAction<boolean>) => {
       state.thereIsMore = action.payload;
     },
+    setThereIsMoreTrashPhotos: (state: PhotosState, action: PayloadAction<boolean>) => {
+      state.thereIsMoreTrashPhotos = action.payload;
+    },
     setSkipped: (state: PhotosState, action: PayloadAction<number>) => {
       state.skipped = action.payload;
+    },
+    setSkippedTrashPhotos: (state: PhotosState, action: PayloadAction<number>) => {
+      state.skippedTrashPhotos = action.payload;
     },
     setBucketId: (state: PhotosState, action: PayloadAction<string>) => {
       state.bucketId = action.payload;
@@ -59,6 +91,15 @@ export const photosSlice = createSlice({
     },
     setPreviewIndex: (state: PhotosState, action: PayloadAction<PhotosState['previewIndex']>) => {
       state.previewIndex = action.payload;
+    },
+    setIsLoadingTrashPhotos: (state: PhotosState, action: PayloadAction<boolean>) => {
+      state.isLoadingTrashPhotos = action.payload;
+    },
+    setPreviewTrashPhotoIndex: (state: PhotosState, action: PayloadAction<PhotosState['previewIndex']>) => {
+      state.previewTrashPhotoIndex = action.payload;
+    },
+    unselectAllTrash: (state: PhotosState) => {
+      state.selectedTrashPhotos = [];
     },
   },
   extraReducers: photosExtraReducers,
