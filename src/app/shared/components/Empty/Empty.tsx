@@ -36,7 +36,7 @@ export default function Empty({ icon, title, subtitle, action }: EmptyProps): JS
         <div className="pointer-events-none mx-auto mb-10 w-max">{icon}</div>
         <div className="pointer-events-none text-center">
           <p className="mb-1 block text-3xl font-semibold text-gray-100">{title}</p>
-          <p className="block text-lg text-gray-60">{subtitle}</p>
+          <p className="block whitespace-pre-wrap text-lg text-gray-60">{subtitle}</p>
         </div>
         {button}
       </div>

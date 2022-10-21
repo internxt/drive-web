@@ -8,7 +8,7 @@ import Dialog from 'app/shared/components/Dialog/Dialog';
 import Preview from 'app/photos/components/Preview';
 import { Grid } from 'app/photos/components/Grid';
 
-import EmptyPicture from '../../../assets/images/empty-photos.png';
+import { Trash } from 'phosphor-react';
 
 import { PhotoId } from '@internxt/sdk/dist/photos';
 
@@ -18,6 +18,12 @@ export const DELETE_TYPES = {
   PREVIEW: 'preview',
   ALL: 'all',
 };
+
+const EmptyTrash = () => (
+  <div className="flex h-36 w-36 items-center justify-center rounded-full bg-gray-5">
+    <Trash size={80} weight="thin" />
+  </div>
+);
 
 export type TrashPhotosGalleryProps = {
   isLoading: boolean;
@@ -69,11 +75,9 @@ const TrashPhotosGallery: FC<TrashPhotosGalleryProps> = ({
     <div className="flex h-full w-full flex-col">
       {showEmpty ? (
         <Empty
-          title="Your photos trash is empty"
-          subtitle="Here will appear your deleted photos"
-          icon={
-            <img className="h-auto w-72" src={EmptyPicture} draggable="false" alt="Photos used in the Internxt app" />
-          }
+          title="Photos trash is empty"
+          subtitle={'All your deleted photos and\nvideos will appear here'}
+          icon={<EmptyTrash />}
         />
       ) : (
         <>

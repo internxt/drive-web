@@ -9,6 +9,7 @@ import { DriveItemData, FolderPath } from 'app/drive/types';
 
 import { Trash, ClockCounterClockwise } from 'phosphor-react';
 import { Icon } from 'app/photos/components/Icon';
+
 import { PreferencesTabID, TabSelector } from '../components/TabSelector';
 import { DELETE_TYPES, TrashPhotosGallery, TrashPhotosGalleryProps } from '../components/TrashPhotosGallery';
 
