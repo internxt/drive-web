@@ -131,7 +131,7 @@ export const uploadThumbnail = async (
 
 export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<ThumbnailGenerated> => {
   let thumbnailFile: File | null = null;
-  const fileType = fileToUpload.type.toLowerCase();
+  const fileType = fileToUpload.type ? String(fileToUpload.type).toLowerCase() : '';
   if (thumbnailableImageExtension.includes(fileType)) {
     thumbnailFile = await getImageThumbnail(fileToUpload.content);
   } else if (thumbnailablePdfExtension.includes(fileType)) {
@@ -153,7 +153,7 @@ export const generateThumbnailFromFile = async (
   fileId: number,
   userEmail: string,
   isTeam: boolean): Promise<{ thumbnail: Thumbnail, thumbnailFile: File } | null> => {
-  const fileType = fileToUpload.type.toLowerCase();
+    const fileType = fileToUpload.type ? String(fileToUpload.type).toLowerCase() : '';
   if (thumbnailableExtension.includes(fileType)) {
     try {
       const thumbnail = await getThumbnailFrom(fileToUpload);
