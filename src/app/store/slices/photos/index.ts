@@ -1,5 +1,6 @@
 import { PhotoId, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { sortBy } from 'lodash';
 import { photosExtraReducers } from './thunks';
 
 export type SerializablePhoto = Omit<PhotoWithDownloadLink, 'statusChangedAt' | 'takenAt' | 'createdAt' | 'updatedAt'>;
@@ -44,6 +45,9 @@ export const photosSlice = createSlice({
     },
     push: (state: PhotosState, action: PayloadAction<SerializablePhoto[]>) => {
       state.items.push(...action.payload);
+    },
+    sortItems: (state: PhotosState, action: PayloadAction<keyof SerializablePhoto>) => {
+      state.items = sortBy(state.items, action.payload);
     },
     pushTrashPhotos: (state: PhotosState, action: PayloadAction<SerializablePhoto[]>) => {
       state.trashPhotos.push(...action.payload);

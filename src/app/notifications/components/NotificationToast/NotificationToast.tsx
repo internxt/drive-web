@@ -9,6 +9,7 @@ const NotificationToast = ({
   visible,
   closable,
   onClose,
+  onUndo,
 }: Omit<ToastShowProps, 'duration'> & { visible: boolean; onClose: () => void }): JSX.Element => {
   let Icon: typeof CheckCircle | undefined;
   let IconColor: string | undefined;
@@ -53,6 +54,11 @@ const NotificationToast = ({
         {action && (
           <button onClick={action.onClick} className="ml-3 truncate font-medium text-primary">
             {action.text}
+          </button>
+        )}
+        {!!onUndo && (
+          <button onClick={onUndo} className="ml-3 text-gray-40">
+            <span className="font-medium text-primary">Undo</span>
           </button>
         )}
         {closable && (

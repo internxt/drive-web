@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Empty from '../../shared/components/Empty/Empty';
-import Dialog from '../../shared/components/Dialog/Dialog';
 import { RootState } from '../../store';
 import { photosSlice, PhotosState, SerializablePhoto } from '../../store/slices/photos';
 import photosThunks from '../../store/slices/photos/thunks';
@@ -11,19 +10,16 @@ import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
 import { Grid } from '../components/Grid';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useDispatch();
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
 
-  function fetchPhotos() {
-    dispatch(photosThunks.fetchThunk());
-  }
-
-  useEffect(fetchPhotos, []);
-
   const [deletePending, setDeletePending] = useState<null | 'selected' | 'preview'>(null);
   const [sharePending, setSharePending] = useState<null | 'selected' | 'preview'>(null);
+
+  useEffect(fetchPhotos, []);
 
   useEffect(() => {
     const listener = (e) => {
@@ -36,32 +32,77 @@ export default function PhotosView({ className = '' }: { className?: string }): 
     return () => document.removeEventListener('keydown', listener);
   }, [photosState.previewIndex, deletePending, sharePending]);
 
+  useEffect(() => {
+    if (deletePending) removeSelectedItems();
+  }, [deletePending]);
+
+  function fetchPhotos() {
+    dispatch(photosThunks.fetchThunk());
+  }
+
   // TODO: NEED TO CHANGE THE IMPLEMENTATION OF REMOVE TO WORK CORRECTLY
   // PhotoStatus: Exists -> Trashed
-  function onConfirmDelete() {
-    if (deletePending === 'selected') {
+  function onConfirmDelete(typeOfDelete: string | null, deleteItemId?: string) {
+    if (typeOfDelete === 'selected') {
       dispatch(photosThunks.deleteThunk(photosState.selectedItems));
+    } else if (typeOfDelete === 'preview' && deleteItemId !== undefined) {
+      dispatch(photosThunks.deleteThunk([deleteItemId]));
+    }
+  }
+
+  const getSelectedItemsIds = () =>
+    deletePending === 'selected'
+      ? photosState.selectedItems
+      : photosState.previewIndex !== null
+      ? [photosState.items[photosState.previewIndex].id]
+      : [];
+
+  const removeSelectedItems = () => {
+    const selectedItemsId = getSelectedItemsIds();
+    const selectedItems = photosState.items.filter((item) => selectedItemsId.includes(item.id));
+
+    dispatch(photosSlice.actions.removeItems(selectedItemsId));
+
+    resetDeleteAndSelectStates();
+
+    const deleteItemId = deletePending === 'preview' ? selectedItemsId[0] : undefined;
+    callUndoToast(selectedItems, deleteItemId);
+  };
+
+  const resetDeleteAndSelectStates = () => {
+    if (deletePending === 'selected') {
       dispatch(photosSlice.actions.unselectAll());
     } else if (deletePending === 'preview' && photosState.previewIndex !== null) {
       const { items, previewIndex } = photosState;
       const previewIndexIsOutOfBounds = previewIndex > items.length - 2;
       if (previewIndexIsOutOfBounds) {
-        dispatch(photosSlice.actions.setPreviewIndex(items.length - 1 > 0 ? previewIndex - 1 : null));
+        const index = items.length - 1 > 0 ? previewIndex - 1 : null;
+        handleSetPreviewIndex(index);
       }
-
-      dispatch(photosThunks.deleteThunk([items[previewIndex].id]));
     }
     setDeletePending(null);
-  }
+  };
+
+  const callUndoToast = (selectedItems: SerializablePhoto[], deleteItemId?: string) => {
+    notificationsService.show({
+      text: `${numberOfSelectedItems > 1 ? 'Items' : 'Item'} moved to trash`,
+      type: ToastType.Info,
+      closable: false,
+      onFinishDuration: () => onConfirmDelete(deletePending, deleteItemId),
+      onUndo: () => {
+        dispatch(photosSlice.actions.push(selectedItems));
+        //TODO: reminder before merge, ask how photos are sorted in backend when fetching
+        dispatch(photosSlice.actions.sortItems('size'));
+      },
+    });
+  };
 
   const handleSetPreviewIndex = (index: number | null) => dispatch(photosSlice.actions.setPreviewIndex(index));
 
   const handleToggleSelectPhotos = (id: string) => dispatch(photosSlice.actions.toggleSelect(id));
 
   const showEmpty = !photosState.isLoading && photosState.items.length === 0;
-
   const showSkeleton = photosState.isLoading && photosState.items.length === 0;
-
   const numberOfSelectedItems = photosState.selectedItems.length;
 
   const toolbarProps =
@@ -122,29 +163,6 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         previewIndex={photosState.previewIndex}
         photos={photosState.items}
         setPreviewIndex={handleSetPreviewIndex}
-      />
-      {/* These dialogs are duplicatded to avoid flickering while using headless ui transitions */}
-      <Dialog
-        onClose={() => setDeletePending(null)}
-        onPrimaryAction={onConfirmDelete}
-        isOpen={deletePending === 'selected'}
-        title={`Delete ${numberOfSelectedItems} selected ${numberOfSelectedItems > 1 ? 'items' : 'item'}?`}
-        subtitle="You can't undo this action"
-        onSecondaryAction={() => setDeletePending(null)}
-        primaryAction="Delete"
-        secondaryAction="Cancel"
-        primaryActionColor="danger"
-      />
-      <Dialog
-        onClose={() => setDeletePending(null)}
-        onPrimaryAction={onConfirmDelete}
-        isOpen={deletePending === 'preview'}
-        title="Delete this item?"
-        subtitle="You can't undo this action"
-        onSecondaryAction={() => setDeletePending(null)}
-        primaryAction="Delete"
-        secondaryAction="Cancel"
-        primaryActionColor="danger"
       />
       <ShareDialog
         onClose={() => setSharePending(null)}
