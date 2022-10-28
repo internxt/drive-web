@@ -7,11 +7,12 @@ import { BreadcrumbItemData } from '../Breadcrumbs';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
-import { items } from '@internxt/lib';
-
+import iconService from 'app/drive/services/icon.service';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
+  totalBreadcrumbsLength: number;
+  isHiddenInList?: boolean;
 }
 
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
@@ -81,16 +82,33 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   };
   const isDraggingOverClassNames = isOver && canDrop ? 'drag-over-effect' : '';
 
+  const ItemIconComponent = iconService.getItemIcon(true);
+
   return (
-    <><li
+    <div
       ref={drop}
-      className={`p-1 flex items-center ${isDraggingOverClassNames} ${props.item.active ? 'active' : ''}`}
+      className={`max-w-fit flex ${
+        props.item.isFirstPath ?? 'flex-1'
+      } cursor-pointer flex-row items-center truncate p-1 font-medium ${isDraggingOverClassNames} 
+        ${
+          !props.item.active || (props.item.isFirstPath && props.totalBreadcrumbsLength === 1)
+            ? 'text-gray-80'
+            : 'text-gray-50 hover:text-gray-80'
+        }`}
       key={props.item.id}
       onClick={() => onItemClicked(props.item)}
     >
+      {props.isHiddenInList && <ItemIconComponent className="h-5 w-5" />}
       {props.item.icon ? props.item.icon : null}
-      {props.item.label ? <span className={`label overflow-hidden overflow-ellipsis ${props.item.label === '···' ? 'font-black' : ''}`} style={{ maxWidth: '150px' }}>{items.getItemDisplayName({ name: props.item.label })} </span> : null}
-    </li></>
+      {props.item.label ? (
+        <span
+          className={`max-w-sm flex-1 cursor-pointer truncate ${props.isHiddenInList && 'pl-3 text-base'}`}
+          title={props.item.label}
+        >
+          {props.item.label}
+        </span>
+      ) : null}
+    </div>
   );
 };
 

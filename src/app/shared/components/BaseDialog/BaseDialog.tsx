@@ -1,50 +1,66 @@
-import UilTimes from '@iconscout/react-unicons/icons/uil-times';
+import { IconWeight, X } from 'phosphor-react';
 
 interface BaseDialogProps {
   isOpen: boolean;
   title: string;
+  subTitle?: string;
+  textLeft?: boolean;
+  dialogRounded?: boolean;
   children: JSX.Element | JSX.Element[];
   classes?: string;
   titleClasses?: string;
   panelClasses?: string;
+  closeClass?: string;
+  weightIcon?: IconWeight;
+  bgColor?: string;
   onClose: () => void;
-  closable?: boolean;
 }
 
 const BaseDialog = ({
   isOpen,
   title,
+  subTitle,
+  dialogRounded,
+  textLeft,
   children,
   onClose,
   classes,
   panelClasses,
   titleClasses,
-  closable = true,
+  closeClass,
+  weightIcon,
+  bgColor,
 }: BaseDialogProps): JSX.Element => {
   return (
     <div
       className={`${isOpen ? 'flex' : 'hidden'} ${
         classes || ''
-      } absolute top-0 left-0 right-0 bottom-0 bg-neutral-100 bg-opacity-80 z-10`}
+      } absolute top-0 left-0 right-0 bottom-0 z-10 bg-black bg-opacity-40`}
     >
       <div
-        className={`${panelClasses || ''} text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
-        transform -translate-y-1/2 -translate-x-1/2 w-104 ${panelClasses?.includes('pt-')? '' : 'pt-8'} rounded-lg overflow-hidden bg-white`}
+        className={`${panelClasses || ''} absolute top-1/2 left-1/2 flex w-104 -translate-y-1/2
+        -translate-x-1/2 transform flex-col overflow-hidden  ${
+          dialogRounded ? 'rounded-2xl' : 'rounded-lg pt-8'
+        } text-neutral-900 ${bgColor || 'bg-white'}`}
       >
-        <UilTimes
-          className={`${closable ? '' : 'hidden'} absolute right-8 cursor-pointer transition duration-200\
-           ease-in-out text-blue-60 hover:text-blue-70`}
-          onClick={onClose}
-        />
-
-        <span
-          className={`${
-            titleClasses || ''
-          } whitespace-nowrap text-xl ${titleClasses?.includes('text-')?'':'text-center'} ${titleClasses?.includes('px-')?'':'px-16'} overflow-hidden overflow-ellipsis`}
-        >
-          {title}
-        </span>
-
+        <div className={`${subTitle ? 'flex flex-row items-start justify-between space-x-5 bg-neutral-10 p-5' : ''}`}>
+          <div className="max-w-fit relative flex flex-1 flex-col truncate">
+            <p
+              className={`${titleClasses || ''} overflow-hidden overflow-ellipsis whitespace-nowrap ${
+                textLeft ? 'text-left text-black' : ' px-16 text-center'
+              }  text-xl`}
+            >
+              {title}
+            </p>
+            <p className="max-w-fit flex-1 truncate text-base font-normal text-neutral-100">{subTitle}</p>
+          </div>
+          <div
+            className={`relative cursor-pointer transition
+           duration-200 ease-in-out ${closeClass || 'text-blue-60 hover:text-blue-70'} `}
+          >
+            <X onClick={onClose} size={28} weight={weightIcon} />
+          </div>
+        </div>
         {children}
       </div>
     </div>

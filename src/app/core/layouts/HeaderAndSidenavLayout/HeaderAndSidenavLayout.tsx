@@ -44,7 +44,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
   return isAuthenticated ? (
     <div className="flex h-auto min-h-full flex-col">
-      {isShareItemDialogOpen && itemToShare && <ShareItemDialog item={itemToShare} />}
+      {isShareItemDialogOpen && itemToShare && <ShareItemDialog share={itemToShare?.share} item={itemToShare.item} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
       {isSharedFolderTooBigDialogOpen && <SharedFolderTooBigDialog />}
       {isInviteMemberDialogOpen && <InviteTeamMemberDialog />}
@@ -55,7 +55,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
         <div className="flex w-1 flex-grow flex-col bg-white">
           <Navbar hideSearch={hideSearch} />
-          <div className="flex h-1 w-full flex-grow">
+          <div className="z-0 flex h-1 w-full flex-grow">
             {children}
 
             {isDriveItemInfoMenuOpen && driveItemInfo && (

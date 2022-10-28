@@ -7,6 +7,7 @@ import databaseService, { DatabaseCollection } from '../../../database/services/
 import itemsListService from '../../../drive/services/items-list.service';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';
+import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 
 const initialState: StorageState = {
   loadingFolders: {},
@@ -79,7 +80,7 @@ export const storageSlice = createSlice({
     clearSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
     },
-    setItemToShare: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
+    setItemToShare: (state: StorageState, action: PayloadAction<{ share?: ShareLink; item: DriveItemData } | null>) => {
       state.itemToShare = action.payload;
     },
     setItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
@@ -137,13 +138,44 @@ export const storageSlice = createSlice({
         if (item.id === id && item.isFolder === isFolder) {
           Object.assign(item, patch);
         }
+        return item;
+      });
 
+      state.selectedItems = state.selectedItems.map((item) => {
+        if (item.id === id && item.isFolder === isFolder) {
+          Object.assign(item, patch);
+        }
         return item;
       });
 
       /* if (state.infoItem?.id === id && state.infoItem?.isFolder === isFolder) {
         Object.assign(state.infoItem, patch);
       } */
+    },
+    clearCurrentThumbnailItems: (state: StorageState, action: PayloadAction<{ folderId: number }>) => {
+      const { folderId } = action.payload;
+
+      if (state.levels[folderId]) {
+        const itemsToDatabase = [] as DriveItemData[];
+        state.levels[folderId].forEach((item) => {
+          const newItem = Object.assign({}, item);
+          newItem.currentThumbnail = null;
+          itemsToDatabase.push(newItem);
+        });
+
+        state.levels[folderId] = itemsToDatabase;
+        databaseService.put(DatabaseCollection.Levels, folderId, itemsToDatabase);
+      }
+
+      state.recents = state.recents.map((item) => {
+        item.currentThumbnail = null;
+        return item;
+      });
+
+      state.selectedItems = state.selectedItems.map((item) => {
+        item.currentThumbnail = null;
+        return item;
+      });
     },
     pushItems(
       state: StorageState,
@@ -217,6 +249,7 @@ export const {
   pathChangeWorkSpace,
   patchItem,
   pushItems,
+  clearCurrentThumbnailItems,
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

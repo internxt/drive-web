@@ -1,6 +1,7 @@
 import { SVGProps } from 'react';
 import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { RenewalPeriod } from '../../payment/types';
+import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 
 export interface DriveFolderData {
   id: number;
@@ -18,6 +19,8 @@ export interface DriveFolderData {
   updatedAt: string;
   userId: number;
   user_id: number;
+  shares?: Array<ShareLink>;
+  plain_name: string | null;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -41,6 +44,29 @@ export interface DriveFileData {
   size: number;
   type: string;
   updatedAt: string;
+  thumbnails: Array<Thumbnail>;
+  currentThumbnail: Thumbnail | null;
+  shares?: Array<ShareLink>;
+}
+
+interface Thumbnail {
+  id: number;
+  file_id: number;
+  type: string;
+  max_width: number;
+  max_height: number;
+  size: number;
+  bucket_id: string;
+  bucket_file: string;
+  encrypt_version: string;
+  urlObject?: string;
+}
+
+export enum ThumbnailConfig {
+  MaxWidth = 300,
+  MaxHeight = 300,
+  Quality = 100,
+  Type = 'png',
 }
 
 export interface DriveFileMetadataPayload {
@@ -51,6 +77,9 @@ export type DriveItemData = DriveFileData & DriveFolderData;
 
 export interface DriveItemPatch {
   name?: string;
+  currentThumbnail?: Thumbnail;
+  thumbnails?: Thumbnail[];
+  shares?: ShareLink[];
 }
 
 export interface FileInfoMenuItem {

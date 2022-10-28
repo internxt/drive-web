@@ -11,6 +11,7 @@ import { storageActions } from '..';
 export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootState }>(
   'storage/goToFolder',
   async (path: FolderPath, { getState, dispatch }) => {
+    dispatch(storageActions.clearCurrentThumbnailItems({ folderId: path.id }),);
     const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
 
     dispatch(storageActions.clearSelectedItems());

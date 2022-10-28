@@ -124,7 +124,7 @@ export default function LogIn(): JSX.Element {
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <span className="text-2xl font-medium">Log in</span>
+        <h1 className="text-2xl font-medium">Log in</h1>
 
         <div className="flex flex-col space-y-3">
           <label className="space-y-0.5">

@@ -15,7 +15,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { ItemToUpload } from 'app/drive/services/file.service/uploadFile';
+import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import fileService from 'app/drive/services/file.service';
 import { SdkFactory } from '../../../../core/factory/sdk';
 
@@ -45,7 +45,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const user = getState().user.user as UserSettings;
     const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const filesToUpload: ItemToUpload[] = [];
+    const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
     const tasksIds: string[] = [];
 
@@ -226,7 +226,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     const user = getState().user.user as UserSettings;
     const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const filesToUpload: ItemToUpload[] = [];
+    const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
     const tasksIds: string[] = [];
 

@@ -17,6 +17,7 @@ import { storeTeamsInfo } from '../../../teams/services/teams.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { referralsActions } from '../referrals';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import RealtimeService from 'app/core/services/socket.service';
 
 interface UserState {
   isInitializing: boolean;
@@ -157,6 +158,7 @@ export const userSlice = createSlice({
       localStorageService.set(LocalStorageItem.User, JSON.stringify(action.payload));
     },
     setToken: (state: UserState, action: PayloadAction<string>) => {
+      RealtimeService.getInstance().init();
       localStorageService.set(LocalStorageItem.UserToken, action.payload);
     },
     resetState: (state: UserState) => {

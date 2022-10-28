@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, ClockCounterClockwise, Link, Desktop, Trash, FolderSimple, ImageSquare } from 'phosphor-react';
+import { Clock, ClockCounterClockwise, Link, Desktop, FolderSimple, ImageSquare, Trash } from 'phosphor-react';
 import { connect } from 'react-redux';
 
 import { AppView } from '../../types';

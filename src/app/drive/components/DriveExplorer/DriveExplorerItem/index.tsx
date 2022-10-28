@@ -6,6 +6,10 @@ export enum DriveItemAction {
   Share,
   Info,
   Delete,
+  ShareCopyLink,
+  ShareGetLink,
+  ShareSettings,
+  ShareDeleteLink,
 }
 
 export interface DriveExplorerItemProps {

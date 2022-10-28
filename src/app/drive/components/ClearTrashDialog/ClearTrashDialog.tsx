@@ -42,7 +42,7 @@ const ClearTrashDialog = (props: ClearTrashDialogProps): JSX.Element => {
   };
 
   return (
-    <BaseDialog isOpen={isOpen} title={i18n.get('drive.clearTrash.title')} onClose={onClose} panelClasses='w-96 rounded-2xl pt-5' closable={false} titleClasses='text-left px-5 text-2xl font-medium'>
+    <BaseDialog isOpen={isOpen} title={i18n.get('drive.clearTrash.title')} onClose={onClose} panelClasses='w-96 rounded-2xl pt-5' titleClasses='text-left px-5 text-2xl font-medium'>
       <span className="text-left block w-full text-base px-5 text-neutral-900 mt-5">
         {i18n.get('drive.clearTrash.advice')}
       </span>

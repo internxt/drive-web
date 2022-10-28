@@ -1,5 +1,4 @@
 describe('Unauthorized user', () => {
-
   beforeEach(() => {
     Cypress.on('uncaught:exception', () => {
       // returning false here prevents Cypress from
@@ -19,5 +18,4 @@ describe('Unauthorized user', () => {
         cy.url().should('include', '/login');
       });
   });
-
 });

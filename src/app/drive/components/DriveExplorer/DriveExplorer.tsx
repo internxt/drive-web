@@ -1,12 +1,18 @@
-import { Component, createRef, ReactNode } from 'react';
+import { createRef, ReactNode, forwardRef, useState, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
-/*import UilTable from '@iconscout/react-unicons/icons/uil-table';
-import UilListUiAlt from '@iconscout/react-unicons/icons/uil-list-ui-alt';
-import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
-import UilCloudUpload from '@iconscout/react-unicons/icons/uil-cloud-upload';
-import UilFolderPlus from '@iconscout/react-unicons/icons/uil-folder-plus';
-import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
-import { Trash, DownloadSimple, UploadSimple, FolderSimplePlus, Rows, SquaresFour, ClockCounterClockwise } from 'phosphor-react';
+import {
+  Trash,
+  DownloadSimple,
+  UploadSimple,
+  FolderSimplePlus,
+  Rows,
+  SquaresFour,
+  FileArrowUp,
+  Plus,
+  ClockCounterClockwise,
+  Link,
+  PencilSimple,
+} from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -16,7 +22,7 @@ import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import Empty from '../../../shared/components/Empty/Empty';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
-import { AppDispatch, RootState, store } from 'app/store';
+import { AppDispatch, RootState } from 'app/store';
 import { Workspace } from 'app/core/types';
 
 import './DriveExplorer.scss';
@@ -36,8 +42,16 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
+import { IRoot } from 'app/store/slices/storage/storage.thunks/uploadFolderThunk';
+import {
+  transformInputFilesToJSON,
+  transformJsonFilesToItems,
+} from 'app/drive/services/folder.service/uploadFolderInput.service';
+import Dropdown from 'app/shared/components/Dropdown';
+import { useAppDispatch } from 'app/store/hooks';
+import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 
-//import shareService from 'app/share/services/share.service';
+const PAGINATION_LIMIT = 20;
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -47,6 +61,7 @@ interface DriveExplorerProps {
   onItemsDeleted?: () => void;
   onItemsMoved?: () => void;
   onFileUploaded?: () => void;
+  onFolderUploaded?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
   user: UserSettings | undefined;
@@ -68,86 +83,88 @@ interface DriveExplorerProps {
   connectDropTarget: ConnectDropTarget;
 }
 
-interface DriveExplorerState {
-  fileInputRef: React.RefObject<HTMLInputElement>;
-  fileInputKey: number; //! Changing this forces the invisible file input to render
-  email: string;
-  token: string;
-  isAdmin: boolean;
-  isMember: boolean;
-}
+const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
+  const dispatch = useAppDispatch();
 
-class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
-  constructor(props: DriveExplorerProps) {
-    super(props);
+  const {
+    selectedItems,
+    isLoading,
+    viewMode,
+    title,
+    titleClassName,
+    items,
+    onItemsDeleted,
+    onFolderCreated,
+    isOver,
+    connectDropTarget,
+    storageFilters,
+    currentFolderId,
+    onFileUploaded,
+    onItemsMoved,
+  } = props;
 
-    this.state = {
-      fileInputRef: createRef(),
-      fileInputKey: Date.now(),
-      email: '',
-      token: '',
-      isAdmin: true,
-      isMember: false,
-    };
-  }
+  const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
+  const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
+  const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
+  const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
+  const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
+  const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
 
-  get hasAnyItemSelected(): boolean {
-    return this.props.selectedItems.length > 0;
-  }
+  const hasItems = items.length > 0;
+  const hasFilters = storageFilters.text.length > 0;
+  const hasAnyItemSelected = selectedItems.length > 0;
 
-  get hasItems(): boolean {
-    return this.props.items.length > 0;
-  }
-
-  get hasFilters(): boolean {
-    return this.props.storageFilters.text.length > 0;
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     deviceService.redirectForMobile();
-    store.dispatch(storageActions.clearSelectedItems());
-  }
+  }, []);
 
-  onUploadButtonClicked = (): void => {
-    this.state.fileInputRef.current?.click();
+  const onUploadFileButtonClicked = (): void => {
+    fileInputRef.current?.click();
   };
 
-  onDownloadButtonClicked = (): void => {
-    const { dispatch, selectedItems } = this.props;
+  const onUploadFolderButtonClicked = (): void => {
+    folderInputRef.current?.click();
+  };
 
+  const onDownloadButtonClicked = (): void => {
     dispatch(storageThunks.downloadItemsThunk(selectedItems));
   };
 
-  onUploadInputChanged = async (e) => {
-    const { dispatch, onFileUploaded, currentFolderId } = this.props;
-
+  const onUploadFileInputChanged = (e) => {
     dispatch(
       storageThunks.uploadItemsThunk({
         files: Array.from(e.target.files),
         parentFolderId: currentFolderId,
       }),
     ).then(() => onFileUploaded && onFileUploaded());
-
-    this.setState({ fileInputKey: Date.now() });
+    setFileInputKey(Date.now());
   };
 
-  onViewModeButtonClicked = (): void => {
-    const viewMode: FileViewMode = this.props.viewMode === FileViewMode.List ? FileViewMode.Grid : FileViewMode.List;
+  const onUploadFolderInputChanged = async (e) => {
+    const files = e?.target?.files as File[];
 
-    this.props.dispatch(storageActions.setViewMode(viewMode));
+    const filesJson = transformInputFilesToJSON(files);
+    const { rootList, rootFiles } = transformJsonFilesToItems(filesJson, currentFolderId);
+
+    await uploadItems(props, rootList, rootFiles);
+    setFolderInputKey(Date.now());
   };
 
-  onCreateFolderButtonClicked = () => {
-    this.props.dispatch(uiActions.setIsCreateFolderDialogOpen(true));
+  const onViewModeButtonClicked = (): void => {
+    const setViewMode: FileViewMode = viewMode === FileViewMode.List ? FileViewMode.Grid : FileViewMode.List;
+
+    dispatch(storageActions.setViewMode(setViewMode));
   };
 
-  onBulkDeleteButtonClicked = () => {
-    const { selectedItems } = this.props;
+  const onCreateFolderButtonClicked = () => {
+    dispatch(uiActions.setIsCreateFolderDialogOpen(true));
+  };
+
+  const onBulkDeleteButtonClicked = () => {
     moveItemsToTrash(selectedItems);
   };
 
-  onDeletePermanentlyButtonClicked = () => {
-    const { dispatch, selectedItems } = this.props;
+  const onDeletePermanentlyButtonClicked = () => {
     if (selectedItems.length > 0) {
       dispatch(storageActions.setItemsToDelete(selectedItems));
       dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
@@ -156,139 +173,209 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
     }
   };
 
-  onRecoverButtonClicked = () => {
+  const onRecoverButtonClicked = () => {
     //Recover selected (you can select all) files or folders from Trash
-
-    const { dispatch, selectedItems } = this.props;
-
     dispatch(storageActions.setItemsToMove(selectedItems));
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-
   };
 
-  onPreviousPageButtonClicked = (): void => undefined;
+  const onSelectedOneItemShare = (e) => {
+    e.stopPropagation();
+    if (selectedItems.length === 1) {
+      dispatch(
+        storageActions.setItemToShare({
+          share: selectedItems[0].shares?.[0],
+          item: selectedItems[0],
+        }),
+      );
+      dispatch(uiActions.setIsShareItemDialogOpen(true));
+    }
+  };
 
-  onNextPageButtonClicked = (): void => undefined;
+  const { dirtyName } = useDriveItemStoreProps();
 
-  render(): ReactNode {
-    const {
-      isLoading,
-      viewMode,
-      title,
-      titleClassName,
-      items,
-      isDeleteItemsDialogOpen,
-      isMoveItemsDialogOpen,
-      isCreateFolderDialogOpen,
-      isClearTrashDialogOpen,
-      onItemsDeleted,
-      onItemsMoved,
-      onFolderCreated,
-      isOver,
-      connectDropTarget,
-    } = this.props;
-    const { fileInputRef, fileInputKey } = this.state;
-    const viewModesIcons = {
-      [FileViewMode.List]: <SquaresFour className="h-6 w-6" />,
-      [FileViewMode.Grid]: <Rows className="h-6 w-6" />,
-    };
-    const viewModes = {
-      [FileViewMode.List]: DriveExplorerList,
-      [FileViewMode.Grid]: DriveExplorerGrid,
-    };
-    const isRecents = title === 'Recents';
-    const isTrash = title === 'Trash';
-    const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
+  // Fake backend pagination - change when pagination in backend has been implemented
+  const getMoreItems = () => {
+    const existsMoreItems = items.length > fakePaginationLimit;
 
-    const FileIcon = iconService.getItemIcon(false);
-    const filesEmptyImage = (
-      <div className="relative h-32 w-32">
-        <FileIcon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
-        <FileIcon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+    setHasMoreItems(existsMoreItems);
+    setTimeout(() => {
+      if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
+    }, 1000);
+  };
+
+  const getLimitedItems = () => items.slice(0, fakePaginationLimit);
+
+  const onSelectedOneItemRename = (e) => {
+    e.stopPropagation();
+    if (selectedItems.length === 1) {
+      if (!dirtyName || dirtyName === null || dirtyName.trim() === '') {
+        dispatch(uiActions.setCurrentEditingNameDirty(selectedItems[0].name));
+      } else {
+        dispatch(uiActions.setCurrentEditingNameDirty(dirtyName));
+      }
+      dispatch(uiActions.setCurrentEditingNameDriveItem(selectedItems[0]));
+    }
+  };
+
+  const viewModesIcons = {
+    [FileViewMode.List]: <SquaresFour className="h-6 w-6" />,
+    [FileViewMode.Grid]: <Rows className="h-6 w-6" />,
+  };
+  const viewModes = {
+    [FileViewMode.List]: DriveExplorerList,
+    [FileViewMode.Grid]: DriveExplorerGrid,
+  };
+  const isRecents = title === 'Recents';
+  const isTrash = title === 'Trash';
+  const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
+  const itemsList = getLimitedItems();
+
+  const FileIcon = iconService.getItemIcon(false);
+  const filesEmptyImage = (
+    <div className="relative h-32 w-32">
+      <FileIcon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
+      <FileIcon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+    </div>
+  );
+
+  const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
+  const separatorH = <div className="my-0.5 mx-3 border-t border-gray-10" />;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
+    return (
+      <div
+        className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
+        onClick={onClick}
+      >
+        {children}
       </div>
     );
+  });
 
-    const driveExplorer = <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
-      {isDeleteItemsDialogOpen && <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />}
-      {isMoveItemsDialogOpen && <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />}
-      {isCreateFolderDialogOpen && <CreateFolderDialog onFolderCreated={onFolderCreated} />}
-      {isClearTrashDialogOpen && <ClearTrashDialog onItemsDeleted={onItemsDeleted} />}
+  const driveExplorer = (
+    <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
+      <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
+      <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
+      <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
+      <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
 
-      <div className="flex h-full w-full max-w-full flex-grow">
+      <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col pt-6">
-          <div className="flex justify-between pb-4">
-            <div className={`flex items-center text-lg ${titleClassName || ''}`}>{title}</div>
-
-            <div className="flex">
-              {(this.hasAnyItemSelected && !isTrash) ? (
-                <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onDownloadButtonClicked}>
-                  <DownloadSimple className="mr-2.5 h-5 w-5" />
-                  <span>{i18n.get('actions.download')}</span>
-                </BaseButton>
-              ) : !isTrash && (
-                <BaseButton className="primary mr-1.5 flex items-center" onClick={this.onUploadButtonClicked}>
-                  <UploadSimple className="mr-2.5 h-5 w-5" />
-                  <span>{i18n.get('actions.upload')}</span>
-                </BaseButton>
-              )}
-              {(!this.hasAnyItemSelected && !isTrash) && (
-                <BaseButton className="tertiary square w-8" onClick={this.onCreateFolderButtonClicked}>
-                  <FolderSimplePlus className="h-6 w-6" />
-                </BaseButton>
-              )}
-              {(this.hasAnyItemSelected && isTrash) && (
-                <BaseButton className="tertiary square w-8" onClick={this.onRecoverButtonClicked}>
-                  <ClockCounterClockwise className="h-6 w-6" />
-                </BaseButton>
-              )}
-              {(this.hasAnyItemSelected || isTrash) && (
-                <BaseButton
-                  className="tertiary square w-8"
-                  disabled={isTrash && !this.hasItems}
-                  onClick={!isTrash ? this.onBulkDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}
-                >
-                  <Trash className="h-5 w-5" />
-                </BaseButton>
-              )}
-
-              {!isTrash && (
-                <BaseButton className="tertiary square ml-1.5 w-8" onClick={this.onViewModeButtonClicked}>
-                  {viewModesIcons[viewMode]}
-                </BaseButton>
-              )}
+          <div className="z-10 flex max-w-full justify-between pb-4">
+            <div className={`mr-20 flex w-full min-w-0 flex-1 flex-row items-center text-lg ${titleClassName || ''}`}>
+              {title}
             </div>
+
+            {!isTrash && <div className="flex flex-shrink-0 flex-row">
+              <Dropdown
+                classButton={
+                  'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
+                }
+                openDirection={'right'}
+                classMenuItems={
+                  'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow mt-6'
+                }
+                menuItems={[
+                  <MenuItem onClick={onCreateFolderButtonClicked}>
+                    <FolderSimplePlus size={20} />
+                    <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                  </MenuItem>,
+                  separatorH,
+                  <MenuItem onClick={onUploadFileButtonClicked}>
+                    <FileArrowUp size={20} />
+                    <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
+                  </MenuItem>,
+                  <MenuItem onClick={onUploadFolderButtonClicked}>
+                    <UploadSimple size={20} />
+                    <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
+                  </MenuItem>,
+                ]}
+              >
+                <>
+                  <div className="flex flex-row items-center space-x-2.5">
+                    <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                    <Plus weight="bold" className="h-4 w-4" />
+                  </div>
+                </>
+              </Dropdown>
+              {hasAnyItemSelected && (
+                <>
+                  {separatorV}
+                  <BaseButton className="tertiary square w-8" onClick={onDownloadButtonClicked}>
+                    <DownloadSimple className="h-6 w-6" />
+                  </BaseButton>
+                  {selectedItems.length === 1 && (
+                    <>
+                      <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
+                        <Link className="h-6 w-6" />
+                      </BaseButton>
+                      <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemRename}>
+                        <PencilSimple className="h-6 w-6" />
+                      </BaseButton>
+                    </>
+                  )}
+                  <BaseButton className="tertiary square w-8" onClick={onBulkDeleteButtonClicked}>
+                    <Trash className="h-6 w-6" />
+                  </BaseButton>
+                </>
+              )}
+              {separatorV}
+              <BaseButton className="tertiary square w-8" onClick={onViewModeButtonClicked}>
+                {viewModesIcons[viewMode]}
+              </BaseButton>
+            </div>}
+            {isTrash && hasAnyItemSelected && (
+              <BaseButton className="tertiary square w-8" onClick={onRecoverButtonClicked}>
+                <ClockCounterClockwise className="h-6 w-6" />
+              </BaseButton>
+            )}
+            {isTrash && (
+              <BaseButton
+                className="tertiary square w-8"
+                disabled={!hasItems}
+                onClick={onDeletePermanentlyButtonClicked}
+              >
+                <Trash className="h-5 w-5" />
+              </BaseButton>
+            )}
           </div>
 
-          <div className="mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
-            {this.hasItems && (
+          <div className="z-0 mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
+            {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
-                <ViewModeComponent items={items} isLoading={isLoading} isTrash={isTrash} />
+                <ViewModeComponent
+                  items={itemsList}
+                  isLoading={isLoading}
+                  onEndOfScroll={getMoreItems}
+                  hasMoreItems={hasMoreItems}
+                />
               </div>
             )}
 
             {/* PAGINATION */}
-            {/* !isLoading && (
-                <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
-                  <span className="text-sm w-1/3" />
-                  <divconst droppedType = monitor.getItemType();
-      const droppedDataParentId = item.parentId || item.folderId || -1;
+            {/* !isLoading ? (
+            <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
+              <span className="text-sm w-1/3" />
+              <divconst droppedType = monitor.getItemType();
+              const droppedDataParentId = item.parentId || item.folderId || -1;
 
-      return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id; className="flex justify-center w-1/3">
-                    <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                      <UilAngleDoubleLeft />
-                    </button>
-                    <button className="pagination-button">1</button>
-                    <button onClick={this.onNextPageButtonClicked} className="pagination-button">
-                      <UilAngleDoubleRight />
-                    </button>
-                  </div>
-                  <div className="w-1/3"></div>
-                </div>
-              )*/}
+              return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id; className="flex justify-center w-1/3">
+                <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
+                  <UilAngleDoubleLeft />
+                </button>
+                <button className="pagination-button">1</button>
+                <button onClick={this.onNextPageButtonClicked} className="pagination-button">
+                  <UilAngleDoubleRight />
+                </button>
+              </div>
+              <div className="w-1/3"></div>
+            </div>
+          ) : null */}
 
-            { /* EMPTY FOLDER */
-              (!this.hasItems && !isLoading) && (
-                this.hasFilters ? (
+            {/* EMPTY FOLDER */
+              !hasItems && !isLoading && (
+                hasFilters ? (
                   <Empty
                     icon={filesEmptyImage}
                     title="There are no results for this search"
@@ -297,7 +384,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                       icon: UploadSimple,
                       style: 'elevated',
                       text: 'Upload files',
-                      onClick: this.onUploadButtonClicked,
+                      onClick: onUploadFileButtonClicked,
                     }}
                   />
                 ) : isRecents ? (
@@ -321,7 +408,7 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
                       icon: UploadSimple,
                       style: 'elevated',
                       text: 'Upload files',
-                      onClick: this.onUploadButtonClicked,
+                      onClick: onUploadFileButtonClicked,
                     }}
                   />
                 )
@@ -332,31 +419,80 @@ class DriveExplorer extends Component<DriveExplorerProps, DriveExplorerState> {
               (isOver && !isTrash) && (
                 <div
                   className="drag-over-effect pointer-events-none\
-                   absolute flex h-full w-full items-end justify-center"
+                    absolute flex h-full w-full items-end justify-center"
                 ></div>
               )
             }
           </div>
 
-          {!isTrash && <input
-            key={fileInputKey}
-            className="hidden"
-            ref={fileInputRef}
-            type="file"
-            onChange={this.onUploadInputChanged}
-            multiple={true}
-          />}
+          {!isTrash && <>
+            <input
+              key={`file-${fileInputKey}`}
+              className="hidden"
+              ref={fileInputRef}
+              type="file"
+              onChange={onUploadFileInputChanged}
+              multiple={true}
+            />
+            <input
+              key={`folder-${folderInputKey}`}
+              className="hidden"
+              ref={folderInputRef}
+              type="file"
+              directory=""
+              webkitdirectory=""
+              onChange={onUploadFolderInputChanged}
+              multiple={true}
+            />
+          </>}
         </div>
       </div>
-    </div>;
+    </div>
+  );
 
-    return !isTrash ? connectDropTarget(driveExplorer) : driveExplorer;
+  return !isTrash ? connectDropTarget(driveExplorer) || driveExplorer : driveExplorer;
+};
+
+declare module 'react' {
+  interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
+    // extends React's HTMLAttributes
+    directory?: string;
+    webkitdirectory?: string;
   }
 }
 
+const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
+  const { dispatch, currentFolderId, onDragAndDropEnd } = props;
+  if (files.length) {
+    // files where dragged directly
+    await dispatch(
+      storageThunks.uploadItemsThunk({
+        files,
+        parentFolderId: currentFolderId,
+        options: {
+          onSuccess: onDragAndDropEnd,
+        },
+      }),
+    );
+  }
+
+  if (rootList.length) {
+    for (const root of rootList) {
+      await dispatch(
+        storageThunks.uploadFolderThunk({
+          root,
+          currentFolderId,
+          options: {
+            onSuccess: onDragAndDropEnd,
+          },
+        }),
+      );
+    }
+  }
+};
+
 const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
   drop: (props, monitor) => {
-    const { dispatch, currentFolderId, onDragAndDropEnd } = props;
     const droppedData: { files: File[]; items: DataTransferItemList } = monitor.getItem();
     const isAlreadyDropped = monitor.didDrop();
     const namePathDestinationArray = props.namePath.map((level) => level.name);
@@ -370,32 +506,7 @@ const dropTargetSpec: DropTargetSpec<DriveExplorerProps> = {
     const folderPath = namePathDestinationArray.join('/');
 
     transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
-      if (files.length) {
-        // files where dragged directly
-        await dispatch(
-          storageThunks.uploadItemsThunk({
-            files,
-            parentFolderId: currentFolderId,
-            options: {
-              onSuccess: onDragAndDropEnd,
-            },
-          }),
-        );
-      }
-
-      if (rootList.length) {
-        for (const root of rootList) {
-          await dispatch(
-            storageThunks.uploadFolderThunk({
-              root,
-              currentFolderId,
-              options: {
-                onSuccess: onDragAndDropEnd,
-              },
-            }),
-          );
-        }
-      }
+      await uploadItems(props, rootList, files);
     });
   },
 };

@@ -1,44 +1,98 @@
-import { CaretRight } from 'phosphor-react';
-import React, { ReactNode } from 'react';
-
-import './Breadcrumbs.scss';
+import { CaretRight, DotsThree } from 'phosphor-react';
+import { forwardRef, ReactNode } from 'react';
+import Dropdown from '../Dropdown';
 import BreadcrumbsItem from './BreadcrumbsItem/BreadcrumbsItem';
-
-
-interface BreadcrumbsProps {
-  items: BreadcrumbItemData[];
-}
-
-class Breadcrumbs extends React.Component<BreadcrumbsProps> {
-  constructor(props: BreadcrumbsProps) {
-    super(props);
-  }
-
-  get itemsList(): JSX.Element[] {
-    if(this.props.items.length > 3){
-      this.props.items.splice(1, this.props.items.length - 3, 
-        {
-          id: this.props.items[this.props.items.length - 3].id,
-          label: '···',
-          icon: null,
-          active: true,
-          onClick: this.props.items[this.props.items.length - 3].onClick,
-        });
-    }
-    return this.props.items.map((item) => <>{!(item.id === this.props.items[0].id) && <CaretRight className='mt-2.5 text-gray-50 font-medium'/>}<BreadcrumbsItem key={item.id} item={item} /></>);
-  }
-
-  render(): ReactNode {
-    return <nav>{this.itemsList.length > 0 ? <ol className="breadcrumb">{this.itemsList}</ol> : ''}</nav>;
-  }
-}
 
 export interface BreadcrumbItemData {
   id: number;
   label: string;
   icon: JSX.Element | null;
   active: boolean;
+  isFirstPath?: boolean;
   onClick?: () => void;
 }
 
-export default Breadcrumbs;
+interface BreadcrumbsProps {
+  items: BreadcrumbItemData[];
+}
+
+export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const MenuItem = forwardRef(({ children }: { children: ReactNode }, ref) => {
+    return (
+      <div className="cursor-pointer items-center py-0.5 px-2 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10">
+        {children}
+      </div>
+    );
+  });
+
+  const getItemsList = (): JSX.Element[] => {
+    const items = props.items;
+    const itemsList = [] as JSX.Element[];
+    const hiddenItemsList = [] as JSX.Element[];
+    const breadcrumbSeparator = (key) => {
+      return (
+        <div key={key} className="flex items-center text-gray-50">
+          <CaretRight weight="bold" className="h-4 w-4" />
+        </div>
+      );
+    };
+
+    for (let i = 0; i < items.length; i++) {
+      if (items.length > 3 && i !== 0 && i < items.length - 2) {
+        if (i === 1) {
+          itemsList.push(breadcrumbSeparator('breadcrumbSeparator-' + items[i].id));
+        }
+        hiddenItemsList.push(
+          <MenuItem>
+            <BreadcrumbsItem
+              key={'breadcrumbItem' + items[i].id}
+              item={items[i]}
+              isHiddenInList
+              totalBreadcrumbsLength={items.length}
+            />
+          </MenuItem>,
+        );
+      } else {
+        itemsList.push(
+          <BreadcrumbsItem
+            key={'breadcrumbItem' + items[i].id}
+            item={items[i]}
+            totalBreadcrumbsLength={items.length}
+          />,
+        );
+        if (i < items.length - 1) {
+          itemsList.push(breadcrumbSeparator('breadcrumbSeparator-' + items[i].id));
+        }
+      }
+    }
+
+    if (hiddenItemsList.length > 0) {
+      const menu = (
+        <Dropdown
+          key="breadcrumbDropdownItems"
+          openDirection="left"
+          classMenuItems="left-0 top-5 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow"
+          menuItems={hiddenItemsList}
+        >
+          {({ open }) => {
+            return (
+              <div
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-gray-60 transition-all duration-75 ease-in-out hover:bg-gray-5 hover:text-gray-80 ${
+                  open ? 'bg-gray-5' : ''
+                }`}
+              >
+                <DotsThree weight="bold" className="h-5 w-5" />
+              </div>
+            );
+          }}
+        </Dropdown>
+      );
+      itemsList.splice(2, 0, menu);
+    }
+
+    return itemsList;
+  };
+
+  return <>{<div className="flex w-full">{getItemsList()}</div>}</>;
+};

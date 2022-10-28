@@ -3,11 +3,9 @@ import UilArrowRight from '@iconscout/react-unicons/icons/uil-angle-right-b';
 import UilMinus from '@iconscout/react-unicons/icons/uil-minus';
 import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
 
-import { Document, Page, pdfjs } from 'react-pdf';
+import { Document, Page } from 'react-pdf';
 import { useState, Fragment } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const fileUrl = URL.createObjectURL(props.blob);

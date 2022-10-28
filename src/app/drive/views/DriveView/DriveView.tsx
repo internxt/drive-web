@@ -1,14 +1,11 @@
-import UilHdd from '@iconscout/react-unicons/icons/uil-hdd';
 import { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
-import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
-import pollingService from 'app/core/services/polling.service';
 import { AppDispatch, RootState } from 'app/store';
-import { storageActions, storageSelectors } from 'app/store/slices/storage';
+import { storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 
 export interface DriveViewProps {
@@ -19,33 +16,12 @@ export interface DriveViewProps {
   dispatch: AppDispatch;
 }
 
-interface DriveViewState {
-  databasePolling: NodeJS.Timeout;
-}
-
-class DriveView extends Component<DriveViewProps, DriveViewState> {
+class DriveView extends Component<DriveViewProps> {
   componentDidMount(): void {
     const { dispatch } = this.props;
 
     dispatch(storageThunks.resetNamePathThunk());
     this.fetchItems();
-
-    this.setState({
-      databasePolling: pollingService.create(async () => {
-        const { currentFolderId } = this.props;
-        const currentFolderItems = await databaseService.get(DatabaseCollection.Levels, this.props.currentFolderId);
-
-        if (currentFolderItems) {
-          dispatch(storageActions.setItems({ folderId: currentFolderId, items: currentFolderItems }));
-        }
-      }, 1500),
-    });
-  }
-
-  componentWillUnmount(): void {
-    const { databasePolling } = this.state;
-
-    databasePolling && pollingService.destroy(databasePolling);
   }
 
   fetchItems = (): void => {
@@ -64,8 +40,9 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
       items.push({
         id: firstPath.id,
         label: 'Drive',
-        icon: <UilHdd className="w-4 h-4 mr-1" />,
+        icon: null, //<UilHdd className="w-4 h-4 mr-1" />
         active: true,
+        isFirstPath: true,
         onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath)),
       });
       namePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
@@ -96,14 +73,19 @@ class DriveView extends Component<DriveViewProps, DriveViewState> {
   }
 }
 
+// TODO: THIS IS TEMPORARY, REMOVE WHEN FALSE PAGINATION IS REMOVED
+const sortFoldersFirst = (items: DriveItemData[]) =>
+  items.sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
+
 export default connect((state: RootState) => {
   const currentFolderId = storageSelectors.currentFolderId(state);
   const items = storageSelectors.filteredItems(state)(storageSelectors.currentFolderItems(state));
+  const sortedItems = sortFoldersFirst(items);
 
   return {
     namePath: state.storage.namePath,
     isLoading: state.storage.loadingFolders[currentFolderId],
     currentFolderId,
-    items,
+    items: sortedItems,
   };
 })(DriveView);

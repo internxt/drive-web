@@ -59,7 +59,7 @@ function ForgotPassword(): JSX.Element {
           </Link>
 
           <div className="flex flex-col space-y-1">
-            <span className="text-2xl font-medium text-gray-100">Forgot password</span>
+            <h1 className="text-2xl font-medium text-gray-100">Forgot password</h1>
             <p className="font-regular text-sm text-gray-80">
               As specified in the security section of the app, your password is used for encryption and decryption and
               only you have access to it. Therefore, we can't restore your account without the password. You can

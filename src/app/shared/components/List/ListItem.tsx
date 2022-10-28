@@ -81,8 +81,8 @@ export default function ListItem<T extends { id: string }>({
                 minWidth: '180px',
               }}
             >
-              {menu?.map((option) => (
-                <>
+              {menu?.map((option, i) => (
+                <div key={i}>
                   {option.separator ? (
                     <div className="my-0.5 flex w-full flex-row px-4">
                       <div className="h-px w-full bg-gray-10" />
@@ -111,7 +111,7 @@ export default function ListItem<T extends { id: string }>({
                       )}
                     </Menu.Item>
                   )}
-                </>
+                </div>
               ))}
             </div>
           </Menu.Items>
