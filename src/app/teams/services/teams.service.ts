@@ -1,13 +1,13 @@
+import dynamicEnvService from '../../core/services/dynamicEnv.service';
 import envService from '../../core/services/env.service';
 import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
 import { Workspace } from '../../core/types';
 import { decryptPGP, encryptPGPInvitations } from '../../crypto/services/utilspgp';
 import { InfoInvitationsMembers, TeamsSettings } from '../types';
-import EnvService from 'app/core/services/dynamicEnv.service';
 
 export async function getTeamsInfo(): Promise<{ userTeam: TeamsSettings; tokenTeams: string }> {
-  return fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/teams/info`, {
+  return fetch(`${dynamicEnvService.selectedEnv.REACT_APP_API_URL}/api/teams/info`, {
     method: 'get',
     headers: httpService.getHeaders(true, false, false),
   })
@@ -20,7 +20,7 @@ export async function getTeamsInfo(): Promise<{ userTeam: TeamsSettings; tokenTe
 }
 
 export async function getKeys(mail: string): Promise<{ publicKey: string }> {
-  return fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/user/keys/${mail}`, {
+  return fetch(`${dynamicEnvService.selectedEnv.REACT_APP_API_URL}/api/user/keys/${mail}`, {
     method: 'GET',
     headers: httpService.getHeaders(true, false),
   }).then(async (res) => {
@@ -58,7 +58,7 @@ export async function storeTeamsInfo(): Promise<void> {
 }
 
 export function getMembers(): Promise<InfoInvitationsMembers[]> {
-  return fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/teams/members`, {
+  return fetch(`${dynamicEnvService.selectedEnv.REACT_APP_API_URL}/api/teams/members`, {
     method: 'get',
     headers: httpService.getHeaders(true, false),
   })
@@ -73,7 +73,7 @@ export function getMembers(): Promise<InfoInvitationsMembers[]> {
 export function removeMember(item: InfoInvitationsMembers): Promise<void> {
   const typeMember = item.isMember ? 'member' : 'invitation';
 
-  return fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/teams/${typeMember}`, {
+  return fetch(`${dynamicEnvService.selectedEnv.REACT_APP_API_URL}/api/teams/${typeMember}`, {
     method: 'delete',
     headers: httpService.getHeaders(true, false),
     body: JSON.stringify({
@@ -110,7 +110,7 @@ export async function sendEmailTeamsMember(mail: string): Promise<void> {
 }
 
 const fetchInvitation = (email: string, bridgePass: string, mnemonicTeam: string, bridgeuser: string) => {
-  return fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/teams/team/invitations`, {
+  return fetch(`${dynamicEnvService.selectedEnv.REACT_APP_API_URL}/api/teams/team/invitations`, {
     method: 'POST',
     headers: httpService.getHeaders(true, false, true),
     body: JSON.stringify({

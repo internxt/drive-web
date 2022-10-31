@@ -26,7 +26,7 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import ShareItemPwdView from './ShareItemPwdView';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../../core/services/dynamicEnv.service';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -111,7 +111,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   };
 
   const getDecryptedName = (info: ShareTypes.ShareLink): string => {
-    const salt = `${EnvService.selectedEnv.REACT_APP_CRYPTO_SECRET2}-${info.item.id.toString()}`;
+    const salt = `${dynamicEnvService.selectedEnv.REACT_APP_CRYPTO_SECRET2}-${info.item.id.toString()}`;
     const decryptedFilename = aes.decrypt(info.item.name, salt);
 
     return decryptedFilename;

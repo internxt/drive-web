@@ -2,7 +2,7 @@ import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../core/services/dynamicEnv.service';
 
 interface PassObjectInterface {
   salt?: string | null;
@@ -23,12 +23,12 @@ function passToHash(passObject: PassObjectInterface): { salt: string; hash: stri
 
 // AES Plain text encryption method
 function encryptText(textToEncrypt: string): string {
-  return encryptTextWithKey(textToEncrypt, EnvService.selectedEnv.REACT_APP_CRYPTO_SECRET);
+  return encryptTextWithKey(textToEncrypt, dynamicEnvService.selectedEnv.REACT_APP_CRYPTO_SECRET);
 }
 
 // AES Plain text decryption method
 function decryptText(encryptedText: string): string {
-  return decryptTextWithKey(encryptedText, EnvService.selectedEnv.REACT_APP_CRYPTO_SECRET);
+  return decryptTextWithKey(encryptedText, dynamicEnvService.selectedEnv.REACT_APP_CRYPTO_SECRET);
 }
 
 // AES Plain text encryption method with enc. key

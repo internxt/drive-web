@@ -9,7 +9,7 @@ import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../../core/services/dynamicEnv.service';
 
 type UpdateInfoFunction = (
   email: string,
@@ -64,7 +64,7 @@ export function useSignUp(
       }
     };
 
-    const raw = await fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/${registerSource}/update`, {
+    const raw = await fetch(`${dynamicEnvService.selectedEnv.REACT_APP_API_URL}/api/${registerSource}/update`, {
       method: 'POST',
       headers: httpService.getHeaders(true, false),
       body: JSON.stringify(registerUserPayload),

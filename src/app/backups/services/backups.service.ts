@@ -2,8 +2,8 @@ import { aes } from '@internxt/lib';
 import { Device, DeviceBackup } from '@internxt/sdk/dist/drive/backups/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from '../../core/factory/sdk';
+import dynamicEnvService from '../../core/services/dynamicEnv.service';
 import httpService from '../../core/services/http.service';
-import EnvService from 'app/core/services/dynamicEnv.service';
 
 const backupsService = {
   async getAllDevices(): Promise<Device[]> {
@@ -13,13 +13,13 @@ const backupsService = {
   },
 
   async getAllDevicesAsFolders(): Promise<DriveFolderData[]> {
-    const res = await fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/backup/deviceAsFolder`, {
+    const res = await fetch(`${dynamicEnvService.selectedEnv.REACT_APP_API_URL}/api/backup/deviceAsFolder`, {
       headers: httpService.getHeaders(true, false),
     });
     if (res.ok) {
       const encryptedFolders = await res.json();
       return encryptedFolders.map(({ name, ...rest }: DriveFolderData) => ({
-        name: aes.decrypt(name, `${EnvService.selectedEnv.REACT_APP_CRYPTO_SECRET2}-${rest.bucket}`),
+        name: aes.decrypt(name, `${dynamicEnvService.selectedEnv.REACT_APP_CRYPTO_SECRET2}-${rest.bucket}`),
         ...rest,
         isFolder: true,
       }));
@@ -30,7 +30,10 @@ const backupsService = {
     const backupsClient = SdkFactory.getInstance().createBackupsClient();
     const backups = await backupsClient.getAllBackups(mac);
     return backups.map((backup) => {
-      const path = aes.decrypt(backup.path, `${EnvService.selectedEnv.REACT_APP_CRYPTO_SECRET2}-${backup.bucket}`);
+      const path = aes.decrypt(
+        backup.path,
+        `${dynamicEnvService.selectedEnv.REACT_APP_CRYPTO_SECRET2}-${backup.bucket}`,
+      );
       const name = path.split(/[/\\]/).pop() as string;
       return {
         ...backup,

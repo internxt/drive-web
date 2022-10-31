@@ -28,7 +28,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
 import RealtimeService from 'app/core/services/socket.service';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../core/services/dynamicEnv.service';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -237,7 +237,7 @@ export const deactivate2FA = (
 };
 
 export async function getNewToken(): Promise<string> {
-  const res = await fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/new-token`, {
+  const res = await fetch(`${dynamicEnvService.selectedEnv.REACT_APP_API_URL}/api/new-token`, {
     headers: httpService.getHeaders(true, false),
   });
   if (!res.ok) {

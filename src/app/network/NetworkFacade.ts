@@ -9,7 +9,7 @@ import { getEncryptedFile } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../core/services/dynamicEnv.service';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -61,8 +61,9 @@ export class NetworkFacade {
       },
       async (url: string) => {
         const useProxy =
-          EnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
-        const fetchUrl = (useProxy ? EnvService.selectedEnv.REACT_APP_PROXY + '/' : '') + url;
+          dynamicEnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true' &&
+          !new URL(url).hostname.includes('internxt');
+        const fetchUrl = (useProxy ? dynamicEnvService.selectedEnv.REACT_APP_PROXY + '/' : '') + url;
 
         await uploadFileBlob(fileToUpload, fetchUrl, {
           progressCallback: options.uploadingCallback,
@@ -105,9 +106,9 @@ export class NetworkFacade {
           }
 
           const useProxy =
-            EnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true' &&
+            dynamicEnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true' &&
             !new URL(downloadable.url).hostname.includes('internxt');
-          const fetchUrl = (useProxy ? EnvService.selectedEnv.REACT_APP_PROXY + '/' : '') + downloadable.url;
+          const fetchUrl = (useProxy ? dynamicEnvService.selectedEnv.REACT_APP_PROXY + '/' : '') + downloadable.url;
 
           const encryptedContentStream = await fetch(fetchUrl, { signal: options?.abortController?.signal }).then(
             (res) => {

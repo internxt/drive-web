@@ -8,7 +8,7 @@ import i18n from '../../../i18n/services/i18n.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import paymentService, { CreatePaymentSessionPayload } from '../../../payment/services/payment.service';
 import analyticsService from '../../../analytics/services/analytics.service';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../../core/services/dynamicEnv.service';
 
 interface PaymentState {
   isBuying: boolean;
@@ -36,7 +36,7 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
       test: envService.isProduction() ? undefined : true,
       // eslint-disable-next-line max-len
       successUrl:
-        EnvService.selectedEnv.REACT_APP_HOSTNAME +
+        dynamicEnvService.selectedEnv.REACT_APP_HOSTNAME +
         `/checkout/success?price_id=${payload.product.price.id}&cs_id={CHECKOUT_SESSION_ID}`,
       mode:
         payload.product.price.type === ProductPriceType.OneTime

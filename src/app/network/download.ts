@@ -13,7 +13,7 @@ import { getEnvironmentConfig } from 'app/drive/services/network.service';
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 import downloadFileV2 from './download/v2';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../core/services/dynamicEnv.service';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string };
@@ -111,8 +111,9 @@ async function getFileDownloadStream(
 
   for (const downloadUrl of downloadUrls) {
     const useProxy =
-      EnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadUrl).hostname.includes('internxt');
-    const fetchUrl = (useProxy ? EnvService.selectedEnv.REACT_APP_PROXY + '/' : '') + downloadUrl;
+      dynamicEnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true' &&
+      !new URL(downloadUrl).hostname.includes('internxt');
+    const fetchUrl = (useProxy ? dynamicEnvService.selectedEnv.REACT_APP_PROXY + '/' : '') + downloadUrl;
     const encryptedStream = await fetch(fetchUrl, { signal: abortController?.signal }).then((res) => {
       if (!res.body) {
         throw new Error('No content received');
@@ -199,7 +200,7 @@ async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
   }
 
   const { mirrors, fileMeta } = metadata;
-  const downloadUrls: string[] = mirrors.map((m) => EnvService.selectedEnv.REACT_APP_PROXY + '/' + m.url);
+  const downloadUrls: string[] = mirrors.map((m) => dynamicEnvService.selectedEnv.REACT_APP_PROXY + '/' + m.url);
 
   const index = Buffer.from(fileMeta.index, 'hex');
   const iv = index.slice(0, 16);

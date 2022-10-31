@@ -13,7 +13,7 @@ import { SdkFactory } from '../../../core/factory/sdk';
 import { Iterator } from 'app/core/collections';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { downloadFile } from 'app/network/download';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../../core/services/dynamicEnv.service';
 
 export interface IFolders {
   bucket: string;
@@ -340,13 +340,13 @@ async function fetchFolderTree(folderId: number): Promise<{
 
     folderDecryptedNames[currentTree.id] = aes.decrypt(
       currentTree.name,
-      `${EnvService.selectedEnv.REACT_APP_CRYPTO_SECRET2}-${currentTree.parentId}`,
+      `${dynamicEnvService.selectedEnv.REACT_APP_CRYPTO_SECRET2}-${currentTree.parentId}`,
     );
 
     for (const file of files) {
       fileDecryptedNames[file.id] = aes.decrypt(
         file.name,
-        `${EnvService.selectedEnv.REACT_APP_CRYPTO_SECRET2}-${file.folderId}`,
+        `${dynamicEnvService.selectedEnv.REACT_APP_CRYPTO_SECRET2}-${file.folderId}`,
       );
     }
 

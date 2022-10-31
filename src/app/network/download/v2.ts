@@ -1,7 +1,7 @@
 import { Network } from '@internxt/sdk/dist/network';
+import dynamicEnvService from '../../core/services/dynamicEnv.service';
 import { sha256 } from '../crypto';
 import { NetworkFacade } from '../NetworkFacade';
-import EnvService from 'app/core/services/dynamicEnv.service';
 
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 type FileStream = ReadableStream<Uint8Array>;
@@ -41,7 +41,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
 
   return new NetworkFacade(
     Network.client(
-      EnvService.selectedEnv.REACT_APP_STORJ_BRIDGE as string,
+      dynamicEnvService.selectedEnv.REACT_APP_STORJ_BRIDGE as string,
       {
         clientName: 'drive-web',
         clientVersion: '1.0',
@@ -72,7 +72,7 @@ const downloadOwnFile: DownloadOwnFileFunction = (params) => {
 
   return new NetworkFacade(
     Network.client(
-      EnvService.selectedEnv.REACT_APP_STORJ_BRIDGE as string,
+      dynamicEnvService.selectedEnv.REACT_APP_STORJ_BRIDGE as string,
       {
         clientName: 'drive-web',
         clientVersion: '1.0',

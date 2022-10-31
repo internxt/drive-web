@@ -8,7 +8,7 @@ import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { Photos } from '@internxt/sdk/dist/photos';
 import authService from '../../../auth/services/auth.service';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../services/dynamicEnv.service';
 
 export class SdkFactory {
   private static sdk: {
@@ -27,8 +27,8 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      instance: new SdkFactory(EnvService.selectedEnv.REACT_APP_API_URL + '/api'),
-      newApiInstance: new SdkFactory(EnvService.selectedEnv.REACT_APP_DRIVE_NEW_API_URL),
+      instance: new SdkFactory(dynamicEnvService.selectedEnv.REACT_APP_API_URL + '/api'),
+      newApiInstance: new SdkFactory(dynamicEnvService.selectedEnv.REACT_APP_DRIVE_NEW_API_URL),
     };
   }
 
@@ -93,7 +93,7 @@ export class SdkFactory {
 
     const apiSecurity = { ...this.getApiSecurity(), token: newToken };
 
-    return Payments.client(EnvService.selectedEnv.REACT_APP_PAYMENTS_API_URL, appDetails, apiSecurity);
+    return Payments.client(dynamicEnvService.selectedEnv.REACT_APP_PAYMENTS_API_URL, appDetails, apiSecurity);
   }
 
   public createBackupsClient(): Backups {
@@ -105,7 +105,7 @@ export class SdkFactory {
 
   public async createPhotosClient(): Promise<Photos> {
     if (!SdkFactory.sdk.localStorage.get('xToken')) {
-      return new Photos(EnvService.selectedEnv.REACT_APP_PHOTOS_API_URL);
+      return new Photos(dynamicEnvService.selectedEnv.REACT_APP_PHOTOS_API_URL);
     }
 
     let newToken = SdkFactory.sdk.localStorage.get('xNewToken');
@@ -114,7 +114,7 @@ export class SdkFactory {
       newToken = await authService.getNewToken();
       SdkFactory.sdk.localStorage.set('xNewToken', newToken);
     }
-    return new Photos(EnvService.selectedEnv.REACT_APP_PHOTOS_API_URL, newToken);
+    return new Photos(dynamicEnvService.selectedEnv.REACT_APP_PHOTOS_API_URL, newToken);
   }
 
   /** Helpers **/

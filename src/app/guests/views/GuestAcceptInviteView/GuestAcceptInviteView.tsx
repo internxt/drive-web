@@ -10,7 +10,7 @@ import localStorageService from '../../../core/services/local-storage.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { useAppDispatch } from 'app/store/hooks';
 import { userThunks } from 'app/store/slices/user';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../../core/services/dynamicEnv.service';
 
 export default function GuestAcceptInvitationView(): JSX.Element {
   const [loading, setLoading] = useState(false);
@@ -27,7 +27,7 @@ export default function GuestAcceptInvitationView(): JSX.Element {
       password: details.encryptedCurrentPassword,
     });
 
-    return fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/access`, {
+    return fetch(`${dynamicEnvService.selectedEnv.REACT_APP_API_URL}/api/access`, {
       method: 'post',
       headers: httpService.getHeaders(false, false),
       body,

@@ -12,7 +12,7 @@ import {
   PaymentMethod,
   UserSubscription,
 } from '@internxt/sdk/dist/drive/payments/types';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../core/services/dynamicEnv.service';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;
@@ -40,8 +40,8 @@ const paymentService = {
     if (!stripe) {
       stripe = (await loadStripe(
         envService.isProduction()
-          ? EnvService.selectedEnv.REACT_APP_STRIPE_PK
-          : EnvService.selectedEnv.REACT_APP_STRIPE_TEST_PK,
+          ? dynamicEnvService.selectedEnv.REACT_APP_STRIPE_PK
+          : dynamicEnvService.selectedEnv.REACT_APP_STRIPE_TEST_PK,
       )) as Stripe;
     }
 
@@ -115,7 +115,7 @@ const paymentService = {
       test: !envService.isProduction(),
     };
 
-    const response = await fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/stripe/teams/session`, {
+    const response = await fetch(`${dynamicEnvService.selectedEnv.REACT_APP_API_URL}/api/stripe/teams/session`, {
       method: 'POST',
       headers: httpService.getHeaders(true, false),
       body: JSON.stringify(payload),

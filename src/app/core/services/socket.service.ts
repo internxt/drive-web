@@ -1,6 +1,6 @@
 import io, { Socket } from 'socket.io-client';
+import dynamicEnvService from './dynamicEnv.service';
 import localStorageService from './local-storage.service';
-import EnvService from 'app/core/services/dynamicEnv.service';
 
 export default class RealtimeService {
   private socket?: Socket;
@@ -19,7 +19,7 @@ export default class RealtimeService {
       console.log('[REALTIME]: CONNECTING...');
     }
 
-    this.socket = io(EnvService.selectedEnv.REACT_APP_NOTIFICATIONS_URL, {
+    this.socket = io(dynamicEnvService.selectedEnv.REACT_APP_NOTIFICATIONS_URL, {
       auth: {
         token: getToken(),
       },

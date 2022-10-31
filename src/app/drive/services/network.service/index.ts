@@ -6,7 +6,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { uploadFile } from 'app/network/upload';
 import { Abortable } from 'app/network/Abortable';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../../core/services/dynamicEnv.service';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 3 * 1024 * 1024 * 1024;
 
@@ -65,7 +65,7 @@ export class Network {
       bridgePass,
       bridgeUser,
       encryptionKey,
-      bridgeUrl: EnvService.selectedEnv.REACT_APP_STORJ_BRIDGE,
+      bridgeUrl: dynamicEnvService.selectedEnv.REACT_APP_STORJ_BRIDGE,
     });
   }
 
@@ -176,7 +176,7 @@ export class Network {
         {
           label: 'OneStreamOnly',
           params: {
-            useProxy: EnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true',
+            useProxy: dynamicEnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true',
             concurrency: 6,
           },
         },
@@ -209,7 +209,7 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
       bridgePass: team.bridge_password,
       encryptionKey: team.bridge_mnemonic,
       bucketId: team.bucket,
-      useProxy: EnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true',
+      useProxy: dynamicEnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true',
     };
   }
 
@@ -220,7 +220,7 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
     bridgePass: user.userId,
     encryptionKey: user.mnemonic,
     bucketId: user.bucket,
-    useProxy: EnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true',
+    useProxy: dynamicEnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true',
   };
 }
 

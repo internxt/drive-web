@@ -1,10 +1,10 @@
 import errorService from 'app/core/services/error.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
+import dynamicEnvService from '../core/services/dynamicEnv.service';
 import { encryptFilename, generateHMAC, sha256 } from './crypto';
-import EnvService from 'app/core/services/dynamicEnv.service';
 
 // TODO: Make this injectable
-const networkApiUrl = EnvService.selectedEnv.REACT_APP_STORJ_BRIDGE;
+const networkApiUrl = dynamicEnvService.selectedEnv.REACT_APP_STORJ_BRIDGE;
 
 interface FileInfo {
   bucket: string;

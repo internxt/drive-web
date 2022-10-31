@@ -2,12 +2,12 @@ import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 import { AppPlugin } from '../../core/types';
 import packageJson from '../../../../package.json';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../services/dynamicEnv.service';
 
 const sentryPlugin: AppPlugin = {
   install(): void {
     Sentry.init({
-      dsn: EnvService.selectedEnv.REACT_APP_SENTRY_DSN,
+      dsn: dynamicEnvService.selectedEnv.REACT_APP_SENTRY_DSN,
       integrations: [new BrowserTracing()],
       tracesSampleRate: 1.0,
       debug: process.env.NODE_ENV !== 'production',

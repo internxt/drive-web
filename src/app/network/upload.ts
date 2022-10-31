@@ -4,7 +4,7 @@ import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 
 import { sha256 } from './crypto';
 import { NetworkFacade } from './NetworkFacade';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../core/services/dynamicEnv.service';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
@@ -84,7 +84,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
 
   return new NetworkFacade(
     Network.client(
-      EnvService.selectedEnv.REACT_APP_STORJ_BRIDGE as string,
+      dynamicEnvService.selectedEnv.REACT_APP_STORJ_BRIDGE as string,
       {
         clientName: 'drive-web',
         clientVersion: '1.0',

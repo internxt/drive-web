@@ -17,7 +17,7 @@ import errorService from 'app/core/services/error.service';
 import { DriveItemData } from 'app/drive/types';
 import storageThunks from '../storage/storage.thunks';
 import { storageActions, storageSelectors } from '../storage';
-import EnvService from 'app/core/services/dynamicEnv.service';
+import dynamicEnvService from '../../../core/services/dynamicEnv.service';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -92,7 +92,7 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
         itemToken: await new Environment({
           bridgePass: userId,
           bridgeUser,
-          bridgeUrl: EnvService.selectedEnv.REACT_APP_STORJ_BRIDGE,
+          bridgeUrl: dynamicEnvService.selectedEnv.REACT_APP_STORJ_BRIDGE,
         }).createFileToken(bucket, item.fileId, 'PULL'),
         encryptedMnemonic,
         encryptedCode,
