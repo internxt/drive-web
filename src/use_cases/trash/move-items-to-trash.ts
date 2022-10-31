@@ -5,6 +5,7 @@ import notificationsService, { ToastType } from '../../app/notifications/service
 import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import RecoverItemsFromTrash from './recover-items-from-trash';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
 
 const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
@@ -13,12 +14,6 @@ const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
       type: item.isFolder ? 'folder' : 'file',
     };
   });
-
-  const recoverFromTrash = () => {
-    if (itemsToTrash.length > 0) {
-      RecoverItemsFromTrash(itemsToTrash, itemsToTrash[0].isFolder ? itemsToTrash[0].parentId : itemsToTrash[0].folderId);
-    }
-  };
 
   const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
   await trashClient.addItemsToTrash({ items } as AddItemsToTrashPayload);
@@ -32,10 +27,16 @@ const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
       } moved to trash`,
     action: {
       text: 'Undo',
-      onClick: () => {
-        recoverFromTrash();
+      onClick: async () => {
+        if (itemsToTrash.length > 0) {
+          const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentId : itemsToTrash[0].folderId;
+          await RecoverItemsFromTrash(itemsToTrash, destinationId);
+          setTimeout(() => {
+            store.dispatch(storageActions.resetNamePath());
+            store.dispatch(storageThunks.goToFolderThunk({ name: '', id: destinationId }));
+          }, 600);
+        }
         notificationsService.dismiss(id);
-        //console.log('UNDO');
       },
     },
   });
