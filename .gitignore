@@ -32,3 +32,6 @@ debug.log
 **/cypress/videos
 **/cypress/screenshots
 **/cypress/fixtures/test-user.json
+
+/infrastructure/staging/local.staging.env
+/infrastructure/staging/nginx.conf
