@@ -64,7 +64,7 @@ export default function Auth(): JSX.Element {
   //   const grecaptcha = window.grecaptcha;
 
   //   grecaptcha.ready(() => {
-  //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
+  //     grecaptcha.execute(EnvService.selectedEnv.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
   //       // Can't wait or token will expire
   //       data.token = token;
   //       signup(data);

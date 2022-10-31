@@ -8,6 +8,8 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
 import { AnalyticsTrack } from '../types';
+import EnvService from 'app/core/services/dynamicEnv.service';
+
 import { getCookie, setCookie } from '../utils';
 import queryString from 'query-string';
 import { v4 as uuidv4 } from 'uuid';
@@ -29,7 +31,7 @@ export function trackFileDownloadCompleted(properties): void {
 
 function trackData(properties, actionName) {
   const user = localStorageService.getUser();
-  httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {
+  httpService.post(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/data`, {
     actionName,
     user,
     properties,
@@ -275,7 +277,7 @@ export async function trackPaymentConversion() {
     // window.analytics.page('Checkout Success');
     const checkoutSessionId = localStorage.getItem('sessionId');
     const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
-      `${process.env.REACT_APP_API_URL}/api/stripe/session`,
+      `${EnvService.selectedEnv.REACT_APP_API_URL}/api/stripe/session`,
       {
         params: {
           sessionId: checkoutSessionId,
@@ -364,7 +366,7 @@ async function getBodyPage(segmentName?: string) {
 export async function serverPage(segmentName: string) {
   const page = await getBodyPage(segmentName);
   return httpService
-    .post(`${process.env.REACT_APP_API_URL}/api/data/p`, {
+    .post(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/data/p`, {
       page,
     })
     .catch(() => {
@@ -388,7 +390,7 @@ export async function trackSignUpServer(payload: {
 }) {
   const page = await getBodyPage();
   return httpService
-    .post(`${process.env.REACT_APP_API_URL}/api/data/t`, {
+    .post(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/data/t`, {
       page,
       track: payload,
       actionName: 'server_signup',

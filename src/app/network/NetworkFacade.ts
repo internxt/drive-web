@@ -9,6 +9,7 @@ import { getEncryptedFile } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
+import EnvService from 'app/core/services/dynamicEnv.service';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -23,7 +24,7 @@ interface DownloadOptions {
 }
 
 /**
- * The entry point for interacting with the network 
+ * The entry point for interacting with the network
  */
 export class NetworkFacade {
   private cryptoLib: NetworkModule.Crypto;
@@ -35,13 +36,9 @@ export class NetworkFacade {
         return validateMnemonic(mnemonic);
       },
       generateFileKey: (mnemonic, bucketId, index) => {
-        return Environment.utils.generateFileKey(
-          mnemonic,
-          bucketId,
-          (index as Buffer)
-        );
+        return Environment.utils.generateFileKey(mnemonic, bucketId, index as Buffer);
       },
-      randomBytes
+      randomBytes,
     };
   }
 
@@ -56,24 +53,21 @@ export class NetworkFacade {
       mnemonic,
       file.size,
       async (algorithm, key, iv) => {
-        const cipher = createCipheriv('aes-256-ctr', (key as Buffer), (iv as Buffer));
+        const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
         const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
 
         fileToUpload = encryptedFile;
         fileHash = hash;
       },
       async (url: string) => {
-        const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
-        const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
+        const useProxy =
+          EnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
+        const fetchUrl = (useProxy ? EnvService.selectedEnv.REACT_APP_PROXY + '/' : '') + url;
 
-        await uploadFileBlob(
-          fileToUpload,
-          fetchUrl,
-          {
-            progressCallback: options.uploadingCallback,
-            abortController: options.abortController
-          }
-        );
+        await uploadFileBlob(fileToUpload, fetchUrl, {
+          progressCallback: options.uploadingCallback,
+          abortController: options.abortController,
+        });
 
         /**
          * TODO: Memory leak here, probably due to closures usage with this variable.
@@ -82,7 +76,7 @@ export class NetworkFacade {
         fileToUpload = new Blob([]);
 
         return fileHash;
-      }
+      },
     );
   }
 
@@ -90,7 +84,7 @@ export class NetworkFacade {
     bucketId: string,
     fileId: string,
     mnemonic: string,
-    options?: DownloadOptions
+    options?: DownloadOptions,
   ): Promise<ReadableStream> {
     const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
     let fileStream: ReadableStream<Uint8Array>;
@@ -110,17 +104,20 @@ export class NetworkFacade {
             throw new Error('Download aborted');
           }
 
-          const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadable.url).hostname.includes('internxt');
-          const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + downloadable.url;
+          const useProxy =
+            EnvService.selectedEnv.REACT_APP_DONT_USE_PROXY !== 'true' &&
+            !new URL(downloadable.url).hostname.includes('internxt');
+          const fetchUrl = (useProxy ? EnvService.selectedEnv.REACT_APP_PROXY + '/' : '') + downloadable.url;
 
-          const encryptedContentStream = await fetch(fetchUrl, { signal: options?.abortController?.signal })
-            .then((res) => {
+          const encryptedContentStream = await fetch(fetchUrl, { signal: options?.abortController?.signal }).then(
+            (res) => {
               if (!res.body) {
                 throw new Error('No content received');
               }
 
               return res.body;
-            });
+            },
+          );
 
           encryptedContentStreams.push(encryptedContentStream);
         }
@@ -128,14 +125,14 @@ export class NetworkFacade {
       async (algorithm, key, iv, fileSize) => {
         const decryptedStream = getDecryptedStream(
           encryptedContentStreams,
-          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), (iv as Buffer)),
+          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer),
         );
 
         fileStream = buildProgressStream(decryptedStream, (readBytes) => {
           options && options.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
         });
       },
-      options && options.token && { token: options.token } || undefined
+      (options && options.token && { token: options.token }) || undefined,
     );
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

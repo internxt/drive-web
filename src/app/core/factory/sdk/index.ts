@@ -8,13 +8,14 @@ import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { Photos } from '@internxt/sdk/dist/photos';
 import authService from '../../../auth/services/auth.service';
+import EnvService from 'app/core/services/dynamicEnv.service';
 
 export class SdkFactory {
   private static sdk: {
-    dispatch: AppDispatch,
-    localStorage: LocalStorageService,
-    instance: SdkFactory,
-    newApiInstance: SdkFactory,
+    dispatch: AppDispatch;
+    localStorage: LocalStorageService;
+    instance: SdkFactory;
+    newApiInstance: SdkFactory;
   };
   private readonly apiUrl: ApiUrl;
 
@@ -26,8 +27,8 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      instance: new SdkFactory(process.env.REACT_APP_API_URL + '/api'),
-      newApiInstance: new SdkFactory(process.env.REACT_APP_DRIVE_NEW_API_URL),
+      instance: new SdkFactory(EnvService.selectedEnv.REACT_APP_API_URL + '/api'),
+      newApiInstance: new SdkFactory(EnvService.selectedEnv.REACT_APP_DRIVE_NEW_API_URL),
     };
   }
 
@@ -92,7 +93,7 @@ export class SdkFactory {
 
     const apiSecurity = { ...this.getApiSecurity(), token: newToken };
 
-    return Payments.client(process.env.REACT_APP_PAYMENTS_API_URL, appDetails, apiSecurity);
+    return Payments.client(EnvService.selectedEnv.REACT_APP_PAYMENTS_API_URL, appDetails, apiSecurity);
   }
 
   public createBackupsClient(): Backups {
@@ -104,7 +105,7 @@ export class SdkFactory {
 
   public async createPhotosClient(): Promise<Photos> {
     if (!SdkFactory.sdk.localStorage.get('xToken')) {
-      return new Photos(process.env.REACT_APP_PHOTOS_API_URL);
+      return new Photos(EnvService.selectedEnv.REACT_APP_PHOTOS_API_URL);
     }
 
     let newToken = SdkFactory.sdk.localStorage.get('xNewToken');
@@ -113,7 +114,7 @@ export class SdkFactory {
       newToken = await authService.getNewToken();
       SdkFactory.sdk.localStorage.set('xNewToken', newToken);
     }
-    return new Photos(process.env.REACT_APP_PHOTOS_API_URL, newToken);
+    return new Photos(EnvService.selectedEnv.REACT_APP_PHOTOS_API_URL, newToken);
   }
 
   /** Helpers **/

@@ -99,9 +99,9 @@ function SignUp(props: SignUpProps): JSX.Element {
     try {
       const { isNewUser } = props;
       const { email, password, token } = formData;
-      const { xUser, xToken, mnemonic } = isNewUser ? 
-        await doRegister(email, password, token) : 
-        await updateInfo(email, password);
+      const { xUser, xToken, mnemonic } = isNewUser
+        ? await doRegister(email, password, token)
+        : await updateInfo(email, password);
 
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
@@ -117,7 +117,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email });
-      
+
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({
       //   userId: xUser.uuid,
@@ -164,7 +164,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   //   const grecaptcha = window.grecaptcha;
 
   //   grecaptcha.ready(() => {
-  //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
+  //     grecaptcha.execute(EnvService.selectedEnv.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
   //       // Can't wait or token will expire
   //       formValues.token = token;
   //       if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);

@@ -1,5 +1,6 @@
 import io, { Socket } from 'socket.io-client';
 import localStorageService from './local-storage.service';
+import EnvService from 'app/core/services/dynamicEnv.service';
 
 export default class RealtimeService {
   private socket?: Socket;
@@ -18,11 +19,11 @@ export default class RealtimeService {
       console.log('[REALTIME]: CONNECTING...');
     }
 
-    this.socket = io(process.env.REACT_APP_NOTIFICATIONS_URL, {
+    this.socket = io(EnvService.selectedEnv.REACT_APP_NOTIFICATIONS_URL, {
       auth: {
         token: getToken(),
       },
-      withCredentials: true
+      withCredentials: true,
     });
 
     this.socket.on('connect', () => {
@@ -40,8 +41,7 @@ export default class RealtimeService {
     });
 
     this.socket.on('connect_error', (error) => {
-      if (!isProduction())
-        console.error('[REALTIME] CONNECTION ERROR:', error);
+      if (!isProduction()) console.error('[REALTIME] CONNECTION ERROR:', error);
     });
   }
 

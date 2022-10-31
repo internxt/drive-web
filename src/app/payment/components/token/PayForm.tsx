@@ -8,6 +8,7 @@ import { AppView } from '../../../core/types';
 
 import './PayForm.scss';
 import httpService from '../../../core/services/http.service';
+import EnvService from 'app/core/services/dynamicEnv.service';
 
 interface PayTokenProps {
   match: match<{ token: string }>;
@@ -107,7 +108,7 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
 
     const json = JSON.stringify(object);
 
-    return fetch(`${process.env.REACT_APP_API_URL}/api/token/buy`, {
+    return fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/token/buy`, {
       method: 'post',
       headers: httpService.getHeaders(true, false),
       body: json,

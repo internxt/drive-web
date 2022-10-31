@@ -9,21 +9,32 @@ import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
+import EnvService from 'app/core/services/dynamicEnv.service';
 
-type UpdateInfoFunction = (email: string, password: string) => Promise<{
-  xUser: UserSettings
-  xToken: string,
-  mnemonic: string
+type UpdateInfoFunction = (
+  email: string,
+  password: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  mnemonic: string;
 }>;
-type RegisterFunction = (email: string, password: string, captcha: string) => Promise<{
-  xUser: UserSettings
-  xToken: string,
-  mnemonic: string
+type RegisterFunction = (
+  email: string,
+  password: string,
+  captcha: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  mnemonic: string;
 }>;
 
-export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: string): {
-  updateInfo: UpdateInfoFunction,
-  doRegister: RegisterFunction
+export function useSignUp(
+  registerSource: 'activate' | 'appsumo',
+  referrer?: string,
+): {
+  updateInfo: UpdateInfoFunction;
+  doRegister: RegisterFunction;
 } {
   const updateInfo: UpdateInfoFunction = async (email: string, password: string) => {
     // Setup hash and salt
@@ -53,7 +64,7 @@ export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: str
       }
     };
 
-    const raw = await fetch(`${process.env.REACT_APP_API_URL}/api/${registerSource}/update`, {
+    const raw = await fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/${registerSource}/update`, {
       method: 'POST',
       headers: httpService.getHeaders(true, false),
       body: JSON.stringify(registerUserPayload),
@@ -97,7 +108,7 @@ export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: str
       keys: keys,
       captcha: captcha,
       referral: readReferalCookie(),
-      referrer: referrer
+      referrer: referrer,
     };
 
     const data = await authClient.register(registerDetails);

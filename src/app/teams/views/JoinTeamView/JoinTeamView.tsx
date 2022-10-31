@@ -11,6 +11,7 @@ import errorService from '../../../core/services/error.service';
 import navigationService from '../../../core/services/navigation.service';
 import httpService from '../../../core/services/http.service';
 import { AppView } from '../../../core/types';
+import EnvService from 'app/core/services/dynamicEnv.service';
 
 export interface JoinTeamViewProps {
   dispatch: AppDispatch;
@@ -42,7 +43,7 @@ class JoinTeamView extends React.Component<JoinTeamViewProps, JoinTeamViewState>
   joinToTheTeam = (token): void => {
     const { dispatch } = this.props;
 
-    fetch(`${process.env.REACT_APP_API_URL}/api/teams/join/${token}`, {
+    fetch(`${EnvService.selectedEnv.REACT_APP_API_URL}/api/teams/join/${token}`, {
       method: 'post',
       headers: httpService.getHeaders(false, false),
       body: JSON.stringify({
