@@ -51,31 +51,22 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   };
 
   const onCreateFolderButtonClicked = () => {
-
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   };
 
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
     try {
-
-
       setIsLoading(true);
       if (itemsToMove.length > 0) {
-
         if (destinationFolderId != currentFolderId) {
-
           namePaths.push({ id: destinationId, name: selectedFolderName });
-
         }
 
         if (!destinationFolderId) {
           destinationFolderId = currentFolderId;
         }
-
         restoreItemsFromTrash(itemsToMove, destinationFolderId, (destinationFolderId != currentFolderId) ? selectedFolderName : name, namePaths);
       }
-
-
 
       props.onItemsMoved && props.onItemsMoved();
 
@@ -83,24 +74,17 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
       onClose();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-
       setIsLoading(false);
-
       console.log(castedError.message);
     }
   };
 
 
   const breadcrumbItems = (currentFolderPaths): BreadcrumbItemData[] => {
-
     const items: BreadcrumbItemData[] = [];
 
     if (currentFolderPaths.length > 0) {
-
-
       currentFolderPaths.forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
-
-
         items.push({
           id: path.id,
           label: path.name,
@@ -108,15 +92,10 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           active: i < namePath.length - 1,
           onClick: () => onShowFolderContentClicked(path.id, path.name),
         });
-
       });
-
     }
-
     return items;
   };
-
-
 
   useEffect(() => {
     setCurrentNamePaths([]);
@@ -129,18 +108,14 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     if (!isFirstTime) {
       onShowFolderContentClicked(currentFolderId, currentFolderName);
     }
-
   }, [newFolderIsOpen]);
 
   const onShowFolderContentClicked = (folderId: number, name: string): void => {
 
     dispatch(fetchFolderContentThunk(folderId)).unwrap().then(() => {
-
       setIsLoading(true);
-
       databaseService.get(DatabaseCollection.Levels, folderId).then(
         (items) => {
-
           setCurrentFolderId(folderId);
           setCurrentFolderName(name);
           setDestinationId(folderId);
@@ -156,8 +131,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             auxCurrentPaths.push({ id: folderId, name: name });
             dispatch(storageActions.pushNamePath({ id: folderId, name: name }));
           }
-
-
 
           setCurrentNamePaths(auxCurrentPaths);
           if (folders) {
@@ -176,15 +149,12 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   };
 
   const onFolderClicked = (folderId: number, name?: string): void => {
-
     if (destinationId != folderId) {
       setDestinationId(folderId);
-
     } else {
       setDestinationId(currentFolderId);
     }
     name && setSelectedFolderName(name);
-
   };
 
 
@@ -250,7 +220,10 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
         <div className="flex ml-auto mt-5">
           <BaseButton className="tertiary square w-28 h-8 ml-5 mt-1 mr-auto" onClick={onCreateFolderButtonClicked}>
-            <div className='flex text-primary text-base text-medium cursor-pointer'><FolderPlus className="h-5 w-5 text-primary mr-2" />  <span className='text-primary text-base font-medium cursor-pointer'>{'New folder'}</span></div>
+            <div className='flex text-primary text-base text-medium cursor-pointer'>
+              <FolderPlus className="h-5 w-5 text-primary mr-2" />
+              <span className='text-primary text-base font-medium cursor-pointer'>New folder</span>
+            </div>
           </BaseButton>
           <BaseButton onClick={() => onClose()} className="quaternary text-base font-medium h-10 rounded-lg w-20 px-1">
             {i18n.get('actions.cancel')}

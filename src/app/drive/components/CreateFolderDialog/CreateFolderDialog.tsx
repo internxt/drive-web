@@ -12,10 +12,11 @@ import Modal from 'app/shared/components/Modal';
 
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
-  currentFolderId: number;
+  currentFolderId?: number;
+  neededFolderId: number;
 }
 
-const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDialogProps) => {
+const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }: CreateFolderDialogProps) => {
   const [folderName, setFolderName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +38,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId }: CreateFolderDi
   const createFolder = async () => {
     if (folderName && folderName.trim().length > 0) {
       setIsLoading(true);
-      await dispatch(storageThunks.createFolderThunk({ folderName, parentFolderId: currentFolderId }))
+      await dispatch(storageThunks.createFolderThunk({ folderName, parentFolderId: currentFolderId? currentFolderId : neededFolderId }))
         .unwrap()
         .then(() => {
           setIsLoading(false);
