@@ -135,7 +135,7 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
           </Dropdown.Item>
         ) : null}
 
-        <hr className="my-1.5 text-neutral-30"></hr>
+        {!this.props.isTrash && <hr className="my-1.5 text-neutral-30"></hr>}
 
         {!hiddenActions.includes(DriveItemAction.Rename) && !this.props.isTrash ? (
           <Dropdown.Item id="rename" onClick={this.onRenameButtonClicked}>
@@ -150,7 +150,7 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
             <span>Move</span>
           </Dropdown.Item>
         ) : null} */}
-        {!hiddenActions.includes(DriveItemAction.Download)  && !this.props.isTrash ? (
+        {!hiddenActions.includes(DriveItemAction.Download) && !this.props.isTrash ? (
           <Dropdown.Item id="download" onClick={this.onDownloadButtonClicked}>
             <DownloadSimple className="mr-1 h-5 w-5 text-blue-60" />
             <span>Download</span>
@@ -158,9 +158,9 @@ class FileDropdownActions extends React.Component<FileDropdownActionsProps> {
         ) : null}
         <hr className="my-1.5 text-neutral-30"></hr>
         {!hiddenActions.includes(DriveItemAction.Delete) ? (
-          <Dropdown.Item id="delete" className={`${!this.props.isTrash?'text-red-60 hover:text-red-60':''}`} onClick={!this.props.isTrash? this.onDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}>
-            <Trash className={`h-5 w-5 mr-1 ${this.props.isTrash?'text-blue-60':''}`} />
-            <span>{this.props.isTrash? 'Delete permanently' : 'Move to trash'}</span>
+          <Dropdown.Item id="delete" className={`${!this.props.isTrash ? 'text-red-60 hover:text-red-60' : ''}`} onClick={!this.props.isTrash ? this.onDeleteButtonClicked : this.onDeletePermanentlyButtonClicked}>
+            <Trash className={`h-5 w-5 mr-1 ${this.props.isTrash ? 'text-blue-60' : ''}`} />
+            <span>{this.props.isTrash ? 'Delete permanently' : 'Move to trash'}</span>
           </Dropdown.Item>
         ) : null}
       </div>

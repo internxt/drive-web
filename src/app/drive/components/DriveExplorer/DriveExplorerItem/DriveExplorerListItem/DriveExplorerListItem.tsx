@@ -97,7 +97,7 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
             title={items.getItemDisplayName(item)}
-            onClick={onNameClicked}
+            onClick={!isTrash ? onNameClicked : undefined}
           >
             {items.getItemDisplayName(item)}
           </span>
@@ -114,7 +114,7 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
       onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
-      onDoubleClick={!isTrash ? onItemDoubleClicked : item.isFolder ? (undefined) : (onItemDoubleClicked)}
+      onDoubleClick={!isTrash ? onItemDoubleClicked : undefined}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
 

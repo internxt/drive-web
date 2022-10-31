@@ -349,6 +349,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   isLoading={isLoading}
                   onEndOfScroll={getMoreItems}
                   hasMoreItems={hasMoreItems}
+                  isTrash={isTrash}
                 />
               </div>
             )}
