@@ -6,8 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - name: Setup staging.env
+      - uses: actions/checkout@v2
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./infrastructure/staging/staging.env
@@ -27,6 +27,7 @@ jobs:
       - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./infrastructure/staging/staging.env
 
       - name: Add NGINX Config
+      - uses: actions/checkout@v2
       - run: echo ${{ secrets.STAGING_NGINX_CONFIG }} > ./infrastructure/staging/nginx.conf
 
       - name: Login to DockerHub
