@@ -6,8 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup staging.env
       - uses: actions/checkout@v2
+      - run: echo ${{ secrets.STAGING_NGINX_CONFIG }} > ./infrastructure/staging/nginx.conf
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./infrastructure/staging/staging.env
@@ -25,10 +25,6 @@ jobs:
       - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./infrastructure/staging/staging.env
-
-      - name: Add NGINX Config
-      - uses: actions/checkout@v2
-      - run: echo ${{ secrets.STAGING_NGINX_CONFIG }} > ./infrastructure/staging/nginx.conf
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -49,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Updates drive cluster image
+      - name: Updates drive-web cluster image
         uses: steebchen/kubectl@v2.0.0
         with: # defaults to latest kubectl binary version
           config: ${{ secrets.KUBE_CONFIG_DRIVE_SERVER }}
