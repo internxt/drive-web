@@ -20,6 +20,7 @@ export interface DriveFolderData {
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
+  plain_name: string | null;
 }
 
 export interface DriveFolderMetadataPayload {

@@ -12,9 +12,10 @@ export enum ToastType {
 export type ToastShowProps = {
   text: string;
   type?: ToastType;
-  action?: { text: string; onClick: () => void };
+  action?: { text: string; to?: string; onClick: () => void };
   duration?: number;
   closable?: boolean;
+
 };
 
 const notificationsService = {

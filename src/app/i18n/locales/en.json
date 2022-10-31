@@ -411,6 +411,12 @@
     },
     "deleteItems": {
       "advice": "Please confirm that you want to delete these items. This action can't be undone."
+    },
+    "clearTrash": {
+      "title": "Empty Drive Trash?",
+      "advice": "All items in the Drive Trash will be permanently deleted. This action can't be undone.",
+      "accept": "Empty Trash",
+      "progress": "Emptying Trash..."
     }
   },
   "appSumo": {

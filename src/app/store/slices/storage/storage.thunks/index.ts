@@ -15,6 +15,7 @@ import { goToFolderThunk, goToFolderThunkExtraReducers } from './goToFolderThunk
 import { uploadFolderThunk, uploadFolderThunkNoCheck, uploadFolderThunkExtraReducers } from './uploadFolderThunk';
 import { updateItemMetadataThunk, updateItemMetadataThunkExtraReducers } from './updateItemMetadataThunk';
 import { moveItemsThunk, moveItemsThunkExtraReducers } from './moveItemsThunk';
+import { fetchDeletedThunk, fetchDeletedThunkExtraReducers } from './fetchDeletedThunk';
 
 const storageThunks = {
   initializeThunk,
@@ -33,6 +34,7 @@ const storageThunks = {
   fetchRecentsThunk,
   createFolderThunk,
   moveItemsThunk,
+  fetchDeletedThunk,
 };
 
 export const storageExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
@@ -50,6 +52,7 @@ export const storageExtraReducers = (builder: ActionReducerMapBuilder<StorageSta
   fetchRecentsThunkExtraReducers(builder);
   createFolderThunkExtraReducers(builder);
   moveItemsThunkExtraReducers(builder);
+  fetchDeletedThunkExtraReducers(builder);
 };
 
 export default storageThunks;

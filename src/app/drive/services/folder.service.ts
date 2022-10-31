@@ -100,35 +100,34 @@ export async function updateMetaData(folderId: number, metadata: DriveFolderMeta
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.UpdateFolderMetadataPayload = {
     folderId: folderId,
-    changes: metadata
+    changes: metadata,
   };
-  return storageClient.updateFolder(payload)
-    .then(() => {
-      const user: UserSettings = localStorageService.getUser() as UserSettings;
-      analyticsService.trackFolderRename({
-        email: user.email,
-        fileId: folderId,
-        platform: DevicePlatform.Web,
-      });
+  return storageClient.updateFolder(payload).then(() => {
+    const user: UserSettings = localStorageService.getUser() as UserSettings;
+    analyticsService.trackFolderRename({
+      email: user.email,
+      fileId: folderId,
+      platform: DevicePlatform.Web,
     });
+  });
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.deleteFolder(folderData.id)
-    .then(() => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackDeleteItem(folderData as DriveItemData, {
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
+  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+  return trashClient.deleteFolder(folderData.id).then(() => {
+    const user = localStorageService.getUser() as UserSettings;
+    analyticsService.trackDeleteItem(folderData as DriveItemData, {
+      email: user.email,
+      platform: DevicePlatform.Web,
     });
+  });
 }
 
 interface GetDirectoryFoldersResponse {
-  folders: DriveFolderData[],
-  last: boolean
+  folders: DriveFolderData[];
+  last: boolean;
 }
+
 class DirectoryFolderIterator implements Iterator<DriveFolderData> {
   private offset: number;
   private limit: number;
@@ -143,7 +142,7 @@ class DirectoryFolderIterator implements Iterator<DriveFolderData> {
   async next() {
     const { directoryId } = this.queryValues;
     const { folders, last } = await httpService.get<GetDirectoryFoldersResponse>(
-      `/api/storage/v2/folders/${directoryId}/folders?limit=${this.limit}&offset=${this.offset}`
+      `/api/storage/v2/folders/${directoryId}/folders?limit=${this.limit}&offset=${this.offset}`,
     );
 
     this.offset += this.limit;
@@ -393,10 +392,10 @@ export async function moveFolder(
 const folderService = {
   createFolder,
   updateMetaData,
-  deleteFolder,
+  // deleteFolder,
   moveFolder,
   fetchFolderTree,
-  downloadFolderAsZip
+  downloadFolderAsZip,
 };
 
 export default folderService;

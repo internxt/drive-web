@@ -1,8 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import queryString from 'query-string';
 
-import { DriveFileData, DriveItemData } from '../../../drive/types';
-import { FileInfoMenuItem } from '../../../drive/types';
+import { DriveFileData, DriveItemData, FileInfoMenuItem } from '../../../drive/types';
 import navigationService from '../../../core/services/navigation.service';
 import { AccountViewTab } from '../../../core/views/AccountView/tabs';
 
@@ -13,10 +12,12 @@ interface UISliceState {
   isFileInfoMenuOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
+  isMoveItemsDialogOpen: boolean;
+  isClearTrashDialogOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
-  isSharedFolderTooBigDialogOpen: boolean,
+  isSharedFolderTooBigDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
@@ -36,6 +37,8 @@ const initialState: UISliceState = {
   isFileInfoMenuOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
+  isMoveItemsDialogOpen: false,
+  isClearTrashDialogOpen: false,
   isNewsletterDialogOpen: false,
   isSurveyDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
@@ -73,6 +76,12 @@ export const uiSlice = createSlice({
     },
     setIsDeleteItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDeleteItemsDialogOpen = action.payload;
+    },
+    setIsMoveItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isMoveItemsDialogOpen = action.payload;
+    },
+    setIsClearTrashDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isClearTrashDialogOpen = action.payload;
     },
     setIsNewsletterDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isNewsletterDialogOpen = action.payload;
@@ -138,6 +147,7 @@ export const {
   setIsReferralsWidgetCollapsed,
   setIsCreateFolderDialogOpen,
   setIsDeleteItemsDialogOpen,
+  setIsMoveItemsDialogOpen,
   setIsNewsletterDialogOpen,
   setIsSurveyDialogOpen,
   setIsFileLoggerOpen,

@@ -71,6 +71,7 @@ export async function uploadFile(
       bucket: bucketId,
       folder_id: file.parentFolderId,
       encrypt_version: StorageTypes.EncryptionVersion.Aes03,
+      plain_name: null
     };
 
     let response = await storageClient.createFileEntry(fileEntry);

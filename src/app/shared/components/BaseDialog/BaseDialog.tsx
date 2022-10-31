@@ -43,7 +43,7 @@ const BaseDialog = ({
           dialogRounded ? 'rounded-2xl' : 'rounded-lg pt-8'
         } text-neutral-900 ${bgColor || 'bg-white'}`}
       >
-        <div className={`${subTitle ? 'flex flex-row items-start justify-between space-x-5 bg-neutral-10 p-5' : ''}`}>
+        <div className={`${subTitle ? 'justify-between bg-neutral-10 p-5' : ''} flex flex-row items-start space-x-5`}>
           <div className="max-w-fit relative flex flex-1 flex-col truncate">
             <p
               className={`${titleClasses || ''} overflow-hidden overflow-ellipsis whitespace-nowrap ${

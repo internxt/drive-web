@@ -14,6 +14,7 @@ import useDriveItemStoreProps from './useDriveStoreProps';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
+import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-trash';
 
 //import shareService from 'app/share/services/share.service';
 
@@ -34,6 +35,8 @@ interface DriveItemActions {
   onShareDeleteButtonClicked: (e: MouseEvent) => void;
   onInfoButtonClicked: (e: MouseEvent) => void;
   onDeleteButtonClicked: (e: MouseEvent) => void;
+  onDeletePermanentlyButtonClicked: (e: MouseEvent) => void;
+  onRecoverButtonClicked: (e: MouseEvent) => void;
   onItemClicked: (e: MouseEvent) => void;
   onItemDoubleClicked: (e: MouseEvent) => void;
   onItemRightClicked: (e: MouseEvent) => void;
@@ -123,11 +126,13 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     e.stopPropagation();
     dispatch(sharedThunks.getSharedLinkThunk({ item }));
   };
+
   const onShareSettingsButtonClicked = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
     dispatch(storageActions.setItemToShare({ share: item?.shares?.[0], item }));
     dispatch(uiActions.setIsShareItemDialogOpen(true));
   };
+
   const onShareDeleteButtonClicked = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
     dispatch(sharedThunks.deleteLinkThunk({ linkId: item?.shares?.[0]?.id as string, item }));
@@ -171,17 +176,31 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
     e.stopPropagation();
   };
+
   const onDeleteButtonClicked = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    moveItemsToTrash([item]);
+  };
+
+  const onDeletePermanentlyButtonClicked = (e: React.MouseEvent): void => {
     e.stopPropagation();
 
     dispatch(storageActions.setItemsToDelete([item]));
     dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   };
+
+  const onRecoverButtonClicked = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    dispatch(storageActions.setItemsToMove([item]));
+    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+  };
+
   const onItemClicked = (): void => {
     isItemSelected(item)
       ? dispatch(storageActions.deselectItems([item]))
       : dispatch(storageActions.selectItems([item]));
   };
+
   const onItemDoubleClicked = (): void => {
     if (item.isFolder) {
       dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
@@ -190,10 +209,12 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
       dispatch(uiActions.setFileViewerItem(item));
     }
   };
+
   const onNameClicked = (e: MouseEvent) => {
     e.stopPropagation();
     onItemDoubleClicked();
   };
+
   const onItemRightClicked = (e: React.MouseEvent): void => {
     e.preventDefault();
   };
@@ -223,6 +244,8 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     onShareDeleteButtonClicked,
     onInfoButtonClicked,
     onDeleteButtonClicked,
+    onDeletePermanentlyButtonClicked,
+    onRecoverButtonClicked,
     onItemClicked,
     onItemDoubleClicked,
     onItemRightClicked,
