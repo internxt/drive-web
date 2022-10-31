@@ -1,7 +1,7 @@
 name: CD to share.internxt.com
 on:
   push:
-    branches: [master, 'feat/share-domain']
+    branches: [master]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,6 +25,8 @@ jobs:
       - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./infrastructure/staging/staging.env
+      - run: echo PUBLIC_URL=https://share.internxt.com/d >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_BASE_URL=/d >> ./infrastructure/staging/staging.env
       - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
       # You cannot read packages from other private repos with GITHUB_TOKEN
