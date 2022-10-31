@@ -215,6 +215,168 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
   },
 );
 
+export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
+  'storage/uploadItems',
+  async ({ files, parentFolderId, options }: UploadItemsPayload, { getState, dispatch }) => {
+    const user = getState().user.user as UserSettings;
+    const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
+    const isTeam: boolean = sessionSelectors.isTeam(getState());
+    const filesToUpload: FileToUpload[] = [];
+    const errors: Error[] = [];
+    const tasksIds: string[] = [];
+    const abortController = new AbortController();
+
+    options = Object.assign(DEFAULT_OPTIONS, options || {});
+
+    try {
+      const planLimit = getState().plan.planLimit;
+      const planUsage = getState().plan.planUsage;
+
+      if (planLimit && planUsage >= planLimit) {
+        dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+        return;
+      }
+    } catch (err: unknown) {
+      console.error(err);
+    }
+
+    if (showSizeWarning) {
+      notificationsService.show({
+        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        type: ToastType.Warning,
+      });
+      return;
+    }
+
+    for (const file of files) {
+      const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
+      const taskId = tasksService.create<UploadFileTask>({
+        relatedTaskId: options?.relatedTaskId,
+        action: TaskType.UploadFile,
+        fileName: filename,
+        fileType: extension,
+        isFileNameValidated: false,
+        showNotification: !!options?.showNotifications,
+        cancellable: true,
+        stop: async () => abortController.abort(),
+      });
+      const fileContent = renameFile(file, filename);
+
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          fileName: filename,
+          isFileNameValidated: true,
+        },
+      });
+
+      filesToUpload.push({
+        name: filename,
+        size: file.size,
+        type: extension,
+        content: fileContent,
+        parentFolderId,
+      });
+
+      tasksIds.push(taskId);
+    }
+
+    // 2.
+    for (const [index, file] of filesToUpload.entries()) {
+      if (abortController.signal.aborted) break;
+
+      const taskId = tasksIds[index];
+      const updateProgressCallback = (progress) => {
+        const task = tasksService.findTask(taskId);
+
+        if (task?.status !== TaskStatus.Cancelled) {
+          tasksService.updateTask({
+            taskId: taskId,
+            merge: {
+              status: TaskStatus.InProcess,
+              progress,
+            },
+          });
+        }
+      };
+      const taskFn = async (): Promise<DriveFileData> => {
+        const uploadFilePromise = fileService.uploadFile(
+          user.email,
+          file,
+          isTeam,
+          updateProgressCallback,
+          abortController
+        );
+
+        tasksService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Encrypting,
+            stop: async () => {
+              abortController.abort();
+            },
+          },
+        });
+
+        const uploadedFile = await uploadFilePromise;
+        uploadedFile.name = file.name;
+        return uploadedFile;
+      };
+
+      file.parentFolderId = parentFolderId;
+
+      await taskFn()
+        .then((uploadedFile) => {
+          const currentFolderId = storageSelectors.currentFolderId(getState());
+
+          if (uploadedFile.folderId === currentFolderId) {
+            dispatch(
+              storageActions.pushItems({
+                updateRecents: true,
+                folderIds: [currentFolderId],
+                items: uploadedFile as DriveItemData,
+              }),
+            );
+          }
+
+          tasksService.updateTask({
+            taskId: taskId,
+            merge: { status: TaskStatus.Success },
+          });
+        })
+        .catch((err: unknown) => {
+          if (abortController.signal.aborted) {
+            return tasksService.updateTask({
+              taskId: taskId,
+              merge: { status: TaskStatus.Cancelled },
+            });
+          }
+
+          const castedError = errorService.castError(err);
+          const task = tasksService.findTask(tasksIds[index]);
+
+          if (task?.status !== TaskStatus.Cancelled) {
+            tasksService.updateTask({
+              taskId: taskId,
+              merge: { status: TaskStatus.Error },
+            });
+            console.error(castedError);
+            errors.push(castedError);
+          }
+        });
+    }
+    options.onSuccess?.();
+    dispatch(planThunks.fetchUsageThunk());
+
+    if (errors.length > 0) {
+      for (const error of errors) {
+        notificationsService.show({ text: error.message, type: ToastType.Error });
+      }
+      throw new Error(i18n.get('error.uploadingItems'));
+    }
+  },
+);
+
 /**
  * @description
  *  1. Prepare files to upload
@@ -292,6 +454,181 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     }
 
     const abortController = new AbortController();
+
+    // 2.
+    const uploadPromises: Promise<DriveFileData>[] = [];
+
+    for (const [index, file] of filesToUpload.entries()) {
+      if (abortController.signal.aborted) break;
+
+      const taskId = tasksIds[index];
+      const updateProgressCallback = (progress) => {
+        const task = tasksService.findTask(taskId);
+
+        if (task?.status !== TaskStatus.Cancelled) {
+          tasksService.updateTask({
+            taskId: taskId,
+            merge: {
+              status: TaskStatus.InProcess,
+              progress,
+            },
+          });
+        }
+      };
+
+      const uploadFilePromise = fileService.uploadFile(
+        user.email,
+        file,
+        isTeam,
+        updateProgressCallback,
+        abortController
+      );
+
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.Encrypting,
+          stop: async () => {
+            abortController.abort();
+          },
+        },
+      });
+
+      uploadPromises.push(
+        uploadFilePromise.then((uploadedFile) => {
+          uploadedFile.name = file.name;
+
+          return uploadedFile;
+        })
+      );
+
+      file.parentFolderId = parentFolderId;
+
+      uploadPromises.map((filePromise) => {
+        return filePromise.then((uploadedFile) => {
+          const currentFolderId = storageSelectors.currentFolderId(getState());
+
+          if (uploadedFile.folderId === currentFolderId) {
+            dispatch(
+              storageActions.pushItems({
+                updateRecents: true,
+                folderIds: [currentFolderId],
+                items: uploadedFile as DriveItemData,
+              }),
+            );
+          }
+
+          tasksService.updateTask({
+            taskId: taskId,
+            merge: { status: TaskStatus.Success },
+          });
+        }).catch((err: unknown) => {
+          if (abortController.signal.aborted) {
+            return tasksService.updateTask({
+              taskId: taskId,
+              merge: { status: TaskStatus.Cancelled },
+            });
+          }
+
+          const castedError = errorService.castError(err);
+          const task = tasksService.findTask(tasksIds[index]);
+
+          if (task?.status !== TaskStatus.Cancelled) {
+            tasksService.updateTask({
+              taskId: taskId,
+              merge: { status: TaskStatus.Error },
+            });
+
+            console.error(castedError);
+
+            errors.push(castedError);
+          }
+        });
+      });
+    }
+
+    await Promise.all(uploadPromises);
+
+    options.onSuccess?.();
+
+    dispatch(planThunks.fetchUsageThunk());
+
+    if (errors.length > 0) {
+      for (const error of errors) {
+        notificationsService.show({ text: error.message, type: ToastType.Error });
+      }
+
+      throw new Error(i18n.get('error.uploadingItems'));
+    }
+  },
+);
+
+export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
+  'storage/uploadItems',
+  async ({ files, parentFolderId, options }: UploadItemsPayload, { getState, dispatch }) => {
+    const user = getState().user.user as UserSettings;
+    const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
+    const isTeam: boolean = sessionSelectors.isTeam(getState());
+    const filesToUpload: FileToUpload[] = [];
+    const errors: Error[] = [];
+    const tasksIds: string[] = [];
+    const abortController = new AbortController();
+
+    options = Object.assign(DEFAULT_OPTIONS, options || {});
+
+    try {
+      const planLimit = getState().plan.planLimit;
+      const planUsage = getState().plan.planUsage;
+
+      if (planLimit && planUsage >= planLimit) {
+        dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+        return;
+      }
+    } catch (err: unknown) {
+      console.error(err);
+    }
+
+    if (showSizeWarning) {
+      notificationsService.show({
+        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        type: ToastType.Warning,
+      });
+      return;
+    }
+
+    for (const file of files) {
+      const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
+      const taskId = tasksService.create<UploadFileTask>({
+        relatedTaskId: options?.relatedTaskId,
+        action: TaskType.UploadFile,
+        fileName: filename,
+        fileType: extension,
+        isFileNameValidated: false,
+        showNotification: !!options?.showNotifications,
+        cancellable: true,
+        stop: async () => abortController.abort(),
+      });
+
+      const fileContent = renameFile(file, filename);
+
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          fileName: filename,
+          isFileNameValidated: true,
+        },
+      });
+
+      filesToUpload.push({
+        name: filename,
+        size: file.size,
+        type: extension,
+        content: fileContent,
+        parentFolderId,
+      });
+
+      tasksIds.push(taskId);
+    }
 
     // 2.
     const uploadPromises: Promise<DriveFileData>[] = [];
