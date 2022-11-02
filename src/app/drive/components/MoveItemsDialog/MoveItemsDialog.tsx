@@ -42,7 +42,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const newFolderIsOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
-  const [isFirstTime, setIsFirstTime] = useState(true);
 
 
   const onClose = (): void => {
@@ -98,20 +97,20 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   };
 
   useEffect(() => {
-    setCurrentNamePaths([]);
+    if (isOpen) {
+      setCurrentNamePaths([]);
 
-    onShowFolderContentClicked(rootFolderID, 'Drive');
-    setIsFirstTime(false);
-  }, []);
+      onShowFolderContentClicked(rootFolderID, 'Drive');
+    }
+  }, [isOpen]);
 
   useEffect(() => {
-    if (!isFirstTime) {
+    if (isOpen && !newFolderIsOpen) {
       onShowFolderContentClicked(currentFolderId, currentFolderName);
     }
   }, [newFolderIsOpen]);
 
   const onShowFolderContentClicked = (folderId: number, name: string): void => {
-
     dispatch(fetchFolderContentThunk(folderId)).unwrap().then(() => {
       setIsLoading(true);
       databaseService.get(DatabaseCollection.Levels, folderId).then(
@@ -141,7 +140,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             setCurrentFolderId(folderId);
             setCurrentFolderName(name);
           }
-
           setIsLoading(false);
         }
       );
@@ -161,7 +159,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   return (
     <BaseDialog isOpen={isOpen} titleClasses='flex px-5 text-left font-medium' panelClasses='text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
         transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-8 rounded-lg overflow-hidden bg-white' title={`${props.isTrash ? 'Restore' : 'Move'} ${itemsToMove.length > 1 ? (itemsToMove.length) + ' items' : ('"' + itemsToMove[0]?.name + '"')}`} onClose={onClose}>
-      <div style={{ width: '512px' }}>{newFolderIsOpen && <CreateFolderDialog currentFolderId={currentFolderId} />}</div>
+      <div style={{ width: '512px' }}>
+        <CreateFolderDialog currentFolderId={currentFolderId} />
+      </div>
       <div className="block text-left justify-left items-center w-fill bg-white py-6">
         <div className='ml-5'>{isLoading ?
           <svg
