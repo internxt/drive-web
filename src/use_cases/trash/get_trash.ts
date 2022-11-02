@@ -6,14 +6,13 @@ import { DriveItemData } from '../../app/drive/types';
 const GetTrash = async (): Promise<void> => {
   const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
   const itemsInTrash = await trashClient.getTrash();
+  itemsInTrash.children.forEach((folder) => {
+    Object.assign(folder, { isFolder: true });
+  });
   const items: DriveItemData[] = [
     ...(itemsInTrash.files as DriveItemData[]),
     ...(itemsInTrash.children as DriveItemData[]),
   ];
-  items.forEach((item) => {
-    item.isFolder = item.type == 'folder' || false;
-    item.type = '';
-  });
   store.dispatch(storageActions.clearSelectedItems());
   store.dispatch(storageActions.setItemsOnTrash(items));
 };
