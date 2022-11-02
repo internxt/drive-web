@@ -97,7 +97,7 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
             title={items.getItemDisplayName(item)}
-            onClick={!isTrash ? onNameClicked : undefined}
+            onClick={!isTrash || !item.isFolder ? onNameClicked : undefined}
           >
             {items.getItemDisplayName(item)}
           </span>
@@ -114,7 +114,7 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
       onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
-      onDoubleClick={!isTrash ? onItemDoubleClicked : undefined}
+      onDoubleClick={!isTrash || !item.isFolder ? onItemDoubleClicked : undefined}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
 
@@ -144,7 +144,7 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
 
       {/* HOVER ACTIONS */}
       <div className="pl-3 w-2/12 items-center hidden xl:flex">
-        {!isTrash ? (<div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
+        {!isTrash && <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
           <button
             onClick={onDownloadButtonClicked}
             className="hover-action mr-3"
@@ -170,7 +170,7 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
           >
             <Trash className="h-5 w-5" />
           </button>
-        </div>) : ('')}
+        </div>}
       </div>
 
       {/* DROPPABLE ZONE */

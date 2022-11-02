@@ -4,7 +4,6 @@ interface BaseDialogProps {
   isOpen: boolean;
   title: string;
   subTitle?: string;
-  textLeft?: boolean;
   dialogRounded?: boolean;
   children: JSX.Element | JSX.Element[];
   classes?: string;
@@ -21,7 +20,6 @@ const BaseDialog = ({
   title,
   subTitle,
   dialogRounded,
-  textLeft,
   children,
   onClose,
   classes,
@@ -46,9 +44,7 @@ const BaseDialog = ({
         <div className={`${subTitle ? 'justify-between bg-neutral-10 p-5' : ''} flex flex-row items-start space-x-5`}>
           <div className="max-w-fit relative flex flex-1 flex-col truncate">
             <p
-              className={`${titleClasses || ''} overflow-hidden overflow-ellipsis whitespace-nowrap ${
-                textLeft ? 'text-left text-black' : ' px-16 text-center'
-              }  text-xl`}
+              className={`${titleClasses || ''} overflow-hidden overflow-ellipsis whitespace-nowrap text-xl`}
             >
               {title}
             </p>
