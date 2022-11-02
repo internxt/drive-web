@@ -161,7 +161,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   return (
     <BaseDialog isOpen={isOpen} titleClasses='flex mx-5 text-left font-medium' panelClasses='text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
-        transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-8 rounded-lg overflow-hidden bg-white' title={title}
+        transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-5 rounded-lg overflow-hidden bg-white' title={title}
       onClose={onClose} closeClass={'hidden'}>
       <div style={{ width: '512px' }}>
         <CreateFolderDialog currentFolderId={currentFolderId} />
