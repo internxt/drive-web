@@ -424,7 +424,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
   if (files.length) {
     // files where dragged directly
     await dispatch(
-      storageThunks.uploadItemsThunk({
+      storageThunks.uploadItemsThunkNoCheck({
         files,
         parentFolderId: currentFolderId,
         options: {
@@ -437,7 +437,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
   if (rootList.length) {
     for (const root of rootList) {
       await dispatch(
-        storageThunks.uploadFolderThunk({
+        storageThunks.uploadFolderThunkNoCheck({
           root,
           currentFolderId,
           options: {

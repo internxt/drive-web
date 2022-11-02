@@ -37,7 +37,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
   let fileExtensionGroup: number | null = null;
 
   for (const [groupKey, extensions] of Object.entries(extensionsList)) {
-    isTypeAllowed = extensions.includes(file && file.type ? file.type.toLowerCase() : '');
+    isTypeAllowed = extensions.includes(file && file.type ? String(file.type).toLowerCase() : '');
 
     if (isTypeAllowed) {
       fileExtensionGroup = FileExtensionGroup[groupKey];

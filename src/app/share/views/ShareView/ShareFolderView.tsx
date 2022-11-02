@@ -20,6 +20,8 @@ import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/down
 import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import ShareItemPwdView from './ShareItemPwdView';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'app/core/services/error.service';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -36,6 +38,8 @@ interface ShareViewState {
   ready: boolean;
   info: ShareTypes.ShareLink;
 }
+
+const CHROME_IOS_ERROR_MESSAGE = 'Chrome on iOS is not supported. Use Safari to proceed';
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const FOLDERS_LIMIT_BY_REQUEST = 16;
@@ -66,6 +70,16 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     loadFolderInfo().catch((err) => {
       if (err.message !== 'Forbidden') {
         setIsLoaded(true);
+        if (err.message === CHROME_IOS_ERROR_MESSAGE) {
+          notificationsService.show({
+            text: errorService.castError(err).message,
+            type: ToastType.Warning,
+            duration: 50000,
+          });
+          setErrorMessage(CHROME_IOS_ERROR_MESSAGE);
+          return;
+        }
+        setIsError(true);
         /**
          * TODO: Check that the server returns proper error message instead
          * of assuming that everything means that the link has expired
@@ -75,7 +89,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     });
   }, []);
 
-  function loadFolderInfo(password?: string) {
+  async function loadFolderInfo(password?: string) {
     if (!canUseReadableStreamMethod) {
       // TODO: Hide inside download shared folder function
       loadWritableStreamPonyfill().then(() => {
@@ -84,7 +98,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     }
     // ! iOS Chrome is not supported
     if (navigator.userAgent.match('CriOS')) {
-      throw new Error('Chrome iOS not supported. Use Safari to proceed');
+      throw new Error(CHROME_IOS_ERROR_MESSAGE);
     }
 
     return getSharedFolderInfo(token, password)
@@ -210,7 +224,6 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
   if (isError) {
     const ItemIconComponent = iconService.getItemIcon(false, 'default');
-
     body = (
       <>
         <div className="relative h-32 w-32">
@@ -256,10 +269,10 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
           <div className="flex flex-col items-center justify-center space-y-2">
             <div className="flex flex-col items-center justify-center text-center font-medium">
-              <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info.item.name}>
-                {info.item.name}
+              <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info?.item?.name}>
+                {info?.item?.name}
               </abbr>
-              <span className="text-cool-gray-60">{sizeService.bytesToString(info.item.size || 0)}</span>
+              <span className="text-cool-gray-60">{sizeService.bytesToString(info?.item?.size || 0)}</span>
             </div>
           </div>
         </div>

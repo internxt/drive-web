@@ -69,7 +69,8 @@ class DriveExplorerGrid extends React.Component<DriveExplorerGridProps> {
               hasMore={hasMoreItems}
               loader={this.loadingSkeleton}
               scrollableTarget="scrollableList"
-              className="files-grid flex-grow"
+              className="files-grid z-0 flex-grow"
+              style={{ overflow: 'visible' }}
             >
               {this.itemsFolderList}
               {this.itemsFileList}
