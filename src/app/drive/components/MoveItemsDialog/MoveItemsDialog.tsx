@@ -179,11 +179,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
               return (
                 <div className={`${destinationId === folder.id ? 'bg-blue-20 text-primary' : ''} border border-t-0 border-l-0 border-r-0 border-white`} key={folder.id.toString()}>
                   <div className={`${destinationId === folder.id ? 'bg-blue-20 border-none text-primary' : ''} flex justify-left align-middle w-fill h-12 border border-t-0 border-r-0 border-l-0 border-gray-10 items-center mx-4 bg-white cursor-pointer`} key={folder.id}>
-                    <div className='flex cursor-pointer w-96'
+                    <div className='flex cursor-pointer w-96 items-center'
                       onDoubleClick={() => onShowFolderContentClicked(folder.id, folder.name)}
                       onClick={() => onFolderClicked(folder.id, folder.name)}>
                       <img className="h-8 w-8" alt="" src={folderImage} />
-                      <span className='inline-block ml-4 text-base text-regular align-baseline mt-1 overflow-hidden overflow-ellipsis' style={{ maxWidth: '280px' }}>
+                      <span className='inline-block ml-4 text-base text-regular align-baseline mt-1 truncate' style={{ maxWidth: '280px' }} title={folder.name}>
                         {folder.name}
                       </span>
                     </div>
@@ -197,7 +197,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
         <div className="flex ml-auto mt-5">
           <BaseButton disabled={isLoading} className="tertiary square w-28 h-8 ml-5 mt-1 mr-auto" onClick={onCreateFolderButtonClicked}>
-            <div className='flex text-primary text-base text-medium cursor-pointer'>
+            <div className='flex text-primary text-base text-medium cursor-pointer items-center'>
               <FolderPlus className="h-5 w-5 text-primary mr-2" />
               <span className='text-primary text-base font-medium cursor-pointer'>New folder</span>
             </div>
