@@ -246,8 +246,8 @@
       "moved-to-trash": "Moved to trash"
     },
     "empty-state": {
-      "title": "Trash is empty",
-      "subtitle": "Items moved to the trash will appear here"
+      "title": "Drive trash is empty",
+      "subtitle": "Deleted files and folders will appear here"
     },
     "item-menu": {
       "restore": "Restore",

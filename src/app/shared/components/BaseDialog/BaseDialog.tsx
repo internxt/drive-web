@@ -38,13 +38,11 @@ const BaseDialog = ({
         } text-neutral-900 ${bgColor || 'bg-white'}`}
       >
         <div className={`${subTitle ? 'justify-between bg-neutral-10 p-5' : ''} flex flex-row items-start`}>
-          <div className="max-w-fit relative flex flex-1 flex-col truncate">
-            <p
-              className={`${titleClasses || ''} overflow-hidden overflow-ellipsis whitespace-nowrap text-xl`}
-            >
+          <div className="relative flex flex-1 flex-col max-w-full truncate">
+            <span className={`${titleClasses || ''} truncate text-xl`} title={title}>
               {title}
-            </p>
-            <p className="max-w-fit flex-1 truncate text-base font-normal text-neutral-100">{subTitle}</p>
+            </span>
+            <span className="max-w-fit flex-1 truncate text-base font-normal text-neutral-100">{subTitle}</span>
           </div>
           <div className={`relative cursor-pointer transition
            duration-200 ease-in-out ml-auto ${closeClass || 'text-blue-60 hover:text-blue-70'} `}

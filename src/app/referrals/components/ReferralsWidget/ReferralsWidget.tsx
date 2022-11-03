@@ -53,7 +53,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   ));
 
   return isWidgetHidden || referralsList.length === 0 ? (
-    <></>
+    <div className="flex-grow"></div>
   ) : (
     <div className="flex flex-grow flex-col justify-end">
       <div className={`flex flex-col overflow-y-hidden rounded-xl border border-gray-10 p-5 shadow-subtle ${props.className || ''}`}>

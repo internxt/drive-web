@@ -253,6 +253,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     );
   });
 
+  const EmptyTrash = () => (
+    <div className="flex h-36 w-36 items-center justify-center rounded-full bg-gray-5">
+      <Trash size={80} weight="thin" />
+    </div>
+  );
+
   const driveExplorer = (
     <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
@@ -396,9 +402,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   />
                 ) : isTrash ? (
                   <Empty
-                    icon={filesEmptyImage}
-                    title="Trash is empty"
-                    subtitle="Move items you no longer need to the trash."
+                    icon={<EmptyTrash />}
+                    title={i18n.get('trash.empty-state.title')}
+                    subtitle={i18n.get('trash.empty-state.subtitle')}
                   />
                 ) : (
                   <Empty

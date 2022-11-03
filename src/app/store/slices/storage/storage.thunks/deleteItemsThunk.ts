@@ -9,7 +9,6 @@ import { planThunks } from '../../plan';
 export const deleteItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
   'storage/deleteItems',
   async (itemsToDelete: DriveItemData[], { dispatch }) => {
-    // await storageService.deleteItems(itemsToDelete);
     dispatch(planThunks.fetchUsageThunk());
     dispatch(storageActions.popItems({ updateRecents: true, items: itemsToDelete }));
     dispatch(storageActions.clearSelectedItems());
