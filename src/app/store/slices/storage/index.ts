@@ -181,8 +181,9 @@ export const storageSlice = createSlice({
       state: StorageState,
       action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
     ) {
-      const itemsToPush = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
-      const folderIds = !Array.isArray(action.payload.folderIds) ? [action.payload.folderIds] : (action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId)));
+      const itemsToPush = Array.isArray(action.payload.items) ? action.payload.items : [action.payload.items];
+      const folderItems = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
+      const folderIds = Array.isArray(folderItems) ? folderItems : [folderItems];
 
       folderIds.forEach((folderId) => {
         const items = itemsListService.pushItems(itemsToPush, state.levels[folderId]);
