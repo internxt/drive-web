@@ -39,10 +39,6 @@ class Navbar extends React.Component<NavbarProps> {
     // TODO: do search
   };
 
-  onAccountButtonClicked = (): void => {
-    navigationService.push(AppView.Account);
-  };
-
   onSupportButtonClicked = (): void => {
     window.open('https://help.internxt.com/');
   };

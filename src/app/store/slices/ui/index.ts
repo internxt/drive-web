@@ -1,9 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import queryString from 'query-string';
 
 import { DriveFileData, DriveItemData, FileInfoMenuItem } from '../../../drive/types';
-import navigationService from '../../../core/services/navigation.service';
-import { AccountViewTab } from '../../../core/views/AccountView/tabs';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -24,7 +21,6 @@ interface UISliceState {
   isGuestInviteDialogOpen: boolean;
   isFileViewerOpen: boolean;
   fileViewerItem: DriveFileData | null;
-  currentAccountTab: AccountViewTab;
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
@@ -49,7 +45,6 @@ const initialState: UISliceState = {
   isGuestInviteDialogOpen: false,
   isFileViewerOpen: false,
   fileViewerItem: null,
-  currentAccountTab: AccountViewTab.Info,
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
@@ -113,21 +108,6 @@ export const uiSlice = createSlice({
     setFileViewerItem: (state: UISliceState, action: PayloadAction<UISliceState['fileViewerItem']>) => {
       state.fileViewerItem = action.payload;
     },
-    setCurrentAccountTab: (state: UISliceState, action: PayloadAction<AccountViewTab>) => {
-      const currentQueryParams = queryString.parse(navigationService.history.location.search);
-      const newQueryParams = {
-        ...currentQueryParams,
-        tab: action.payload,
-      };
-      const newQueryString = queryString.stringify(newQueryParams);
-
-      state.currentAccountTab = action.payload;
-
-      navigationService.history.push({
-        pathname: navigationService.history.location.pathname,
-        search: newQueryString && `?${newQueryString}`,
-      });
-    },
     setFileInfoItem: (state: UISliceState, action: PayloadAction<FileInfoMenuItem | null>) => {
       state.currentFileInfoMenuItem = action.payload;
     },
@@ -159,7 +139,6 @@ export const {
   setIsDriveItemInfoMenuOpen,
   setIsFileViewerOpen,
   setFileViewerItem,
-  setCurrentAccountTab,
   setFileInfoItem,
   setIsGuestInvitationDialogOpen,
   setCurrentEditingNameDriveItem,

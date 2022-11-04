@@ -90,14 +90,6 @@
       "hideSearch": true
     },
     {
-      "id": "account",
-      "layout": "header-and-sidenav",
-      "path": "/account",
-      "exact": true,
-      "auth": true,
-      "hideSearch": true
-    },
-    {
       "id": "preferences",
       "layout": "header-and-sidenav",
       "path": "/preferences",

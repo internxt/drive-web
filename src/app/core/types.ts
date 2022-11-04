@@ -110,7 +110,6 @@ export enum AppView {
   Backups = 'backups',
   SharedLinks = 'shared-links',
   Photos = 'photos',
-  Account = 'account',
   Preferences = 'preferences',
   TeamsJoin = 'teams-join',
   Deactivation = 'deactivation',
