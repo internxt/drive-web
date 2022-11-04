@@ -12,9 +12,6 @@ import { DriveItemData, FolderPath } from '../../types';
 import i18n from 'app/i18n/services/i18n.service';
 import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
 import folderImage from 'assets/icons/light/folder.svg';
-
-import './MoveItemsDialog.scss';
-
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';

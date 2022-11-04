@@ -3,8 +3,6 @@ import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import { uiActions } from 'app/store/slices/ui';
 import navigationService from 'app/core/services/navigation.service';
-
-import './ReachedPlanLimitDialog.scss';
 import { AppView } from 'app/core/types';
 import i18n from 'app/i18n/services/i18n.service';
 
