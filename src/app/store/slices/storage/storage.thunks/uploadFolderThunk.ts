@@ -85,7 +85,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
           let currentPackFiles = 0;
 
           for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-            const concurrencyBytesLimitNotReached = accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
+            const concurrencyBytesLimitNotReached =
+              accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
             const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
 
             if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
@@ -106,19 +107,21 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
               uploadItemsParallelThunk({
                 files: pack,
                 parentFolderId: createdFolder.id,
-                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false }
-              })
-            ).unwrap().then(() => {
-              alreadyUploaded += pack.length;
+                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              }),
+            )
+              .unwrap()
+              .then(() => {
+                alreadyUploaded += pack.length;
 
-              tasksService.updateTask({
-                taskId: taskId,
-                merge: {
-                  status: TaskStatus.InProcess,
-                  progress: alreadyUploaded / itemsUnderRoot,
-                },
+                tasksService.updateTask({
+                  taskId: taskId,
+                  merge: {
+                    status: TaskStatus.InProcess,
+                    progress: alreadyUploaded / itemsUnderRoot,
+                  },
+                });
               });
-            });
           }
         }
 
@@ -162,6 +165,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
 
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
+    let folderSize = 0;
+    let folderItems = 0;
     const levels = [root];
     const itemsUnderRoot = countItemsUnderRoot(root);
     const taskId = tasksService.create<UploadFolderTask>({
@@ -187,8 +192,22 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       },
     });
 
+    levels.map((level) => {
+      //All files in folder
+      folderItems += level.childrenFiles.length;
+      //Folder size
+      level.childrenFiles.forEach((file) => {
+        folderSize += file.size;
+      });
+    });
+
     try {
       root.folderId = currentFolderId;
+
+      window.rudderanalytics.track('Folder Upload Started', {
+        number_of_items: folderItems,
+        size: folderSize,
+      });
 
       while (levels.length > 0) {
         const level: IRoot = levels.shift() as IRoot;
@@ -211,7 +230,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
           let currentPackFiles = 0;
 
           for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-            const concurrencyBytesLimitNotReached = accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
+            const concurrencyBytesLimitNotReached =
+              accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
             const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
 
             if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
@@ -232,19 +252,21 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
               uploadItemsParallelThunkNoCheck({
                 files: pack,
                 parentFolderId: createdFolder.id,
-                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false }
-              })
-            ).unwrap().then(() => {
-              alreadyUploaded += pack.length;
+                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              }),
+            )
+              .unwrap()
+              .then(() => {
+                alreadyUploaded += pack.length;
 
-              tasksService.updateTask({
-                taskId: taskId,
-                merge: {
-                  status: TaskStatus.InProcess,
-                  progress: alreadyUploaded / itemsUnderRoot,
-                },
+                tasksService.updateTask({
+                  taskId: taskId,
+                  merge: {
+                    status: TaskStatus.InProcess,
+                    progress: alreadyUploaded / itemsUnderRoot,
+                  },
+                });
               });
-            });
           }
         }
 
@@ -263,7 +285,15 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       });
 
       options.onSuccess?.();
-    } catch (err: unknown) {
+      window.rudderanalytics.track('Folder Upload Completed', {
+        number_of_items: folderItems,
+        size: folderSize,
+      });
+    } catch (err: any) {
+      window.rudderanalytics.track('Folder Upload Error', {
+        message: err.message,
+        size: folderSize,
+      });
       const castedError = errorService.castError(err);
       const updatedTask = tasksService.findTask(taskId);
 

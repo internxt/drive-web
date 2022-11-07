@@ -87,7 +87,10 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
             if (files.length) {
               // Only files
-              await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id }));
+              await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id })).then(() => {
+                window.rudderanalytics.track('File uploaded', {});
+                console.log('Then de uploadItemsThunk');
+              });
             }
             if (rootList.length) {
               // Directory tree

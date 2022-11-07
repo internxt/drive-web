@@ -30,7 +30,7 @@ import httpService from '../../core/services/http.service';
 import RealtimeService from 'app/core/services/socket.service';
 
 export async function logOut(): Promise<void> {
-  analyticsService.trackSignOut();
+  analyticsService.rudderanalyticsSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
@@ -46,7 +46,7 @@ export function cancelAccount(): Promise<void> {
 export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
-    analyticsService.signInAttempted(email, error.message);
+    analyticsService.rudderanalyticsSignInError(email, error.message);
     throw new Error(error.message ?? 'Login error');
   });
 
@@ -140,9 +140,7 @@ export const doLogin = async (
       };
     })
     .catch((error) => {
-      if (error instanceof UserAccessError) {
-        analyticsService.signInAttempted(email, error.message);
-      }
+      analyticsService.rudderanalyticsSignInError(email, error.message);
       throw error;
     });
 };

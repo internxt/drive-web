@@ -93,16 +93,18 @@ export function identifyPlan(newValue: number) {
   }
 }
 
-export function trackSignOut() {
-  /* window.analytics.track(AnalyticsTrack.SignOut);
-  window.analytics.reset(); */
+export function rudderanalyticsSignOut() {
+  window.rudderanalytics.track('User Logout');
 }
 
-export function trackSignIn(payload: { email: string; userId: string }): void {
-  // window.analytics.track(AnalyticsTrack.SignIn, payload);
+export function rudderanalyticsSignIn(uuid: string, email: string): void {
+  window.rudderanalytics.identify(uuid, { email: email, uuid: uuid }, () => {
+    console.log('Identify callback'); //For debugging
+    window.rudderanalytics.track('User Signin', { email: email });
+  });
 }
 
-export function signInAttempted(email: string, error: string | Error): void {
+export function rudderanalyticsSignInError(email: string, error: string | Error): void {
   /* window.analytics.track(AnalyticsTrack.SignInAttempted, {
     status: 'error',
     msg: error ? error : 'Login error',
@@ -110,23 +112,14 @@ export function signInAttempted(email: string, error: string | Error): void {
   }); */
 }
 
-export function trackSignUp(payload: {
-  properties: { signup_source; email: string };
-  traits: {
-    member_tier?: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    usage: number;
-    createdAt: string;
-    signup_device_source: string;
-    acquisition_channel;
-  };
-  userId: string;
-}): void {
-  /* window.analytics.identify(payload.userId, payload.traits);
-  window.analytics.track(AnalyticsTrack.SignUp, payload.properties); */
-  trackSignUpServer(payload);
+export function rudderanalyticsSignUp(email: string, uuid: string): void {
+  window.rudderanalytics.identify(uuid, { email, uuid: uuid }, () => {
+    window.rudderanalytics.track('User Signup', { email });
+  });
+}
+
+export function rudderanalyticsSignUpError(email: string, error: string): void {
+  window.rudderanalytics.track('User Signup Error', { email: email, error: error });
 }
 
 export function trackUserEnterPayments(priceId: string): void {
@@ -185,34 +178,28 @@ export function trackFileDownloadFinished(payload: {
   // window.analytics.track(AnalyticsTrack.FileDownloadFinished, payload);
 }
 
-export function trackFileUploadStart(payload: {
-  file_size: number;
-  file_type: string;
-  folder_id: number;
-  email: string;
-  platform: DevicePlatform;
-}): void {
-  // window.analytics.track(AnalyticsTrack.FileUploadStart, payload);
+export function rudderanalyticsFileUploadStarted(type: string, size: number): void {
+  window.rudderanalytics.track('File Upload Started', {
+    type: type,
+    size: size,
+  });
 }
 
-export function trackFileUploadError(payload: {
-  file_size: number;
-  file_type: string;
-  folder_id: number;
-  email: string;
-  msg: string;
-  platform: DevicePlatform;
-}): void {
-  // window.analytics.track(AnalyticsTrack.FileUploadError, payload);
+export function rudderanalyticsFileUploadError(error, type, size): void {
+  window.rudderanalytics.track('File Upload Error', {
+    message: error,
+    size: size,
+    type: type,
+  });
 }
 
-export function trackFileUploadFinished(payload: {
-  file_type: string;
-  file_id: number;
-  file_size: number;
-  email: string;
-}): void {
-  // window.analytics.track(AnalyticsTrack.FileUploadFinished, payload);
+export function rudderanalyticsFileUploadCompleted(type, size, parentFolderId, fileId): void {
+  window.rudderanalytics.track('File Upload Completed', {
+    type: type,
+    size: size,
+    parent_folder_id: parentFolderId,
+    file_id: fileId,
+  });
 }
 
 export function trackMoveItem(
@@ -274,7 +261,7 @@ export async function trackPaymentConversion() {
   try {
     // window.analytics.page('Checkout Success');
     const checkoutSessionId = localStorage.getItem('sessionId');
-    const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
+    const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get<any>(
       `${process.env.REACT_APP_API_URL}/api/stripe/session`,
       {
         params: {
@@ -403,9 +390,10 @@ const analyticsService = {
   identify,
   identifyUsage,
   identifyPlan,
-  trackSignOut,
-  trackSignIn,
-  trackSignUp,
+  rudderanalyticsSignIn,
+  rudderanalyticsSignOut,
+  rudderanalyticsSignUp,
+  rudderanalyticsSignUpError,
   trackUserEnterPayments,
   trackPlanSubscriptionSelected,
   trackFolderCreated,
@@ -414,15 +402,15 @@ const analyticsService = {
   trackFileDownloadStart,
   trackFileDownloadError,
   trackFileDownloadFinished,
-  trackFileUploadStart,
-  trackFileUploadError,
-  trackFileUploadFinished,
+  rudderanalyticsFileUploadStarted,
+  rudderanalyticsFileUploadError,
+  rudderanalyticsFileUploadCompleted,
   trackMoveItem,
   trackDeleteItem,
   trackOpenWelcomeFile,
   trackDeleteWelcomeFile,
   trackFileShare,
-  signInAttempted,
+  rudderanalyticsSignInError,
   trackUserResetPasswordRequest,
   track,
   trackFileUploadBucketIdUndefined,

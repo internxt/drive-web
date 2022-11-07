@@ -1,5 +1,4 @@
 import { XCircle } from 'phosphor-react';
-
 import tasksService from '../../services/tasks.service';
 import { TaskNotification, TaskStatus } from '../../types';
 
@@ -22,7 +21,6 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   return (
     <div className={'flex items-center space-x-2 px-2'}>
       <notification.icon className="h-8 w-8" />
-
       <div className="flex flex-1 flex-col overflow-hidden text-left">
         <span className="truncate text-sm font-medium text-gray-80">{notification.title}</span>
 

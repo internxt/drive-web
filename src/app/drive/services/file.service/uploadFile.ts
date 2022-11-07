@@ -25,18 +25,18 @@ export async function uploadFile(
   file: FileToUpload,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-  abortController?: AbortController
+  abortController?: AbortController,
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
   try {
-    analyticsService.trackFileUploadStart({
-      file_size: file.size,
-      file_type: file.type,
-      folder_id: file.parentFolderId,
-      email: userEmail,
-      platform: DevicePlatform.Web,
-    });
+    // analyticsService.trackFileUploadStart({
+    //   file_size: file.size,
+    //   file_type: file.type,
+    //   folder_id: file.parentFolderId,
+    //   email: userEmail,
+    //   platform: DevicePlatform.Web,
+    // });
 
     if (!bucketId) {
       analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
@@ -50,7 +50,7 @@ export async function uploadFile(
     const fileId = await uploadToBucket(bucketId, {
       creds: {
         pass: bridgePass,
-        user: bridgeUser
+        user: bridgeUser,
       },
       filecontent: file.content,
       filesize: file.size,
@@ -58,7 +58,7 @@ export async function uploadFile(
       progressCallback: (totalBytes, uploadedBytes) => {
         updateProgressCallback(uploadedBytes / totalBytes);
       },
-      abortController
+      abortController,
     });
 
     const name = encryptFilename(file.name, file.parentFolderId);
@@ -77,7 +77,7 @@ export async function uploadFile(
     if (!response.thumbnails) {
       response = {
         ...response,
-        thumbnails: []
+        thumbnails: [],
       };
     }
 
@@ -90,26 +90,10 @@ export async function uploadFile(
       }
     }
 
-    analyticsService.trackFileUploadFinished({
-      file_size: file.size,
-      file_id: response.id,
-      file_type: file.type,
-      email: userEmail,
-    });
-
     return response;
-  } catch (err: unknown) {
-    const castedError = errorService.castError(err);
-
+  } catch (err: any) {
     if (!abortController?.signal.aborted) {
-      analyticsService.trackFileUploadError({
-        file_size: file.size,
-        file_type: file.type,
-        folder_id: file.parentFolderId,
-        email: userEmail,
-        msg: castedError.message,
-        platform: DevicePlatform.Web,
-      });
+      // analyticsService.rudderanalyticsFileUploadError(err.message, file.type, file.size);
     }
 
     throw err;

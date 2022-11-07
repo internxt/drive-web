@@ -22,6 +22,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export default function LogIn(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -58,8 +59,7 @@ export default function LogIn(): JSX.Element {
         const { token, user } = await doLogin(email, password, twoFactorCode);
         dispatch(userActions.setUser(user));
 
-        window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
-        window.rudderanalytics.track('User Signin', { email: user.email });
+        analyticsService.rudderanalyticsSignIn(user.uuid, user.email);
 
         // analyticsService.identify(user, user.email);
         // analyticsService.trackSignIn({
