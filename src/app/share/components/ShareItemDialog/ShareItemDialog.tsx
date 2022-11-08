@@ -24,7 +24,8 @@ interface ShareItemDialogProps {
 }
 
 function copyShareLink(type: string, code: string, token: string) {
-  copy(`${document.location.origin}/s/${type}/${token}/${code}`);
+  const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
+  copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 

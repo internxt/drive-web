@@ -3,7 +3,7 @@ import { storageActions } from '../../app/store/slices/storage';
 import { store } from '../../app/store';
 import { DriveItemData } from '../../app/drive/types';
 
-const GetTrash = async (): Promise<void> => {
+const getTrash = async (): Promise<void> => {
   const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
   const itemsInTrash = await trashClient.getTrash();
   itemsInTrash.children.forEach((folder) => {
@@ -17,4 +17,4 @@ const GetTrash = async (): Promise<void> => {
   store.dispatch(storageActions.setItemsOnTrash(items));
 };
 
-export default GetTrash;
+export default getTrash;

@@ -4,10 +4,10 @@ import { store } from '../../app/store';
 import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
 import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
-import RecoverItemsFromTrash from './recover-items-from-trash';
+import recoverItemsFromTrash from './recover-items-from-trash';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 
-const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
+const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
     return {
       id: item.isFolder ? item.id : item.fileId,
@@ -30,11 +30,9 @@ const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
       onClick: async () => {
         if (itemsToTrash.length > 0) {
           const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentId : itemsToTrash[0].folderId;
-          await RecoverItemsFromTrash(itemsToTrash, destinationId);
-          setTimeout(() => {
-            store.dispatch(storageActions.resetNamePath());
-            store.dispatch(storageThunks.goToFolderThunk({ name: '', id: destinationId }));
-          }, 600);
+          await recoverItemsFromTrash(itemsToTrash, destinationId);
+          store.dispatch(storageActions.resetNamePath());
+          store.dispatch(storageThunks.goToFolderThunk({ name: '', id: destinationId }));
         }
         notificationsService.dismiss(id);
       },
@@ -42,4 +40,4 @@ const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
   });
 };
 
-export default MoveItemsToTrash;
+export default moveItemsToTrash;

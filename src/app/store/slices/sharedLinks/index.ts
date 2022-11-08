@@ -83,7 +83,6 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
       const encryptedCode = aes.encrypt(code, mnemonic);
 
       const item = payload.item;
-      console.log('item', item);
       const requestPayload: ShareTypes.GenerateShareLinkPayload = {
         itemId: item.id.toString(),
         type: item.isFolder ? 'folder' : 'file',

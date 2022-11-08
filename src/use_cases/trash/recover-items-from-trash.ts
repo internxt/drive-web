@@ -10,13 +10,11 @@ import * as uuid from 'uuid';
 import { store } from '../../app/store';
 import { storageActions } from 'app/store/slices/storage';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import itemsListService from 'app/drive/services/items-list.service';
 import { DriveItemData } from 'app/drive/types';
 
 const failedItems: DriveItemData[] = [];
-
 
 async function trackMove(response, type) {
   const user = localStorageService.getUser() as UserSettings;
@@ -28,23 +26,18 @@ async function trackMove(response, type) {
   return response;
 }
 
-async function catchError(error) {
-  {
-    const castedError = errorService.castError(error);
-    if (castedError.message.includes('same name')) {
-
-      notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
-    } else {
-      if (castedError.status) {
-        castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
-        //throw castedError;
-      }
+function handleError(err: unknown) {
+  const castedError = errorService.castError(err);
+  if (castedError.message.includes('same name')) {
+    notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
+  } else {
+    if (castedError.status) {
+      castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
     }
-    //throw error;
   }
 }
 
-async function moveFile(
+function moveFile(
   item: DriveItemData,
   fileId: string,
   destination: number,
@@ -61,11 +54,11 @@ async function moveFile(
     .then((response) => trackMove(response, 'file'))
     .catch((error) => {
       failedItems.push(item);
-      catchError(error);
+      handleError(error);
     });
 }
 
-async function moveFolder(
+function moveFolder(
   item: DriveItemData,
   folderId: number,
   destination: number
@@ -75,16 +68,15 @@ async function moveFolder(
     folderId: folderId,
     destinationFolderId: destination
   };
-
   return storageClient.moveFolder(payload)
     .then(response => trackMove(response, 'folder'))
     .catch((error) => {
       failedItems.push(item);
-      catchError(error);
+      handleError(error);
     });
 }
 
-async function afterMoving(itemsToRecover, destinationId, name?, namePaths?) {
+async function afterMoving(itemsToRecover, destinationId) {
   itemsToRecover = itemsToRecover.filter((el) => !failedItems.includes(el));
 
   if (itemsToRecover.length > 0) {
@@ -102,7 +94,6 @@ async function afterMoving(itemsToRecover, destinationId, name?, namePaths?) {
     store.dispatch(storageActions.popItemsToDelete(itemsToRecover));
     store.dispatch(storageActions.clearSelectedItems());
 
-
     notificationsService.show({
       type: ToastType.Success,
       text: `Item${itemsToRecover.length > 1 ? 's' : ''} restored`,
@@ -111,16 +102,16 @@ async function afterMoving(itemsToRecover, destinationId, name?, namePaths?) {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const RecoverItemsFromTrash = async (itemsToRecover: DriveItemData[], destinationId, name?, namePaths?) => {
-  itemsToRecover?.forEach((item) => {
+const recoverItemsFromTrash = async (itemsToRecover: DriveItemData[], destinationId) => {
+  for (const item of itemsToRecover) {
     if (item.isFolder) {
-      moveFolder(item, item.id, destinationId).catch((err) => { if (err) { return err; } });
+      await moveFolder(item, item.id, destinationId).catch(handleError);
     } else {
-      moveFile(item, item.fileId, destinationId, item.bucket).catch((err) => { if (err) { return err; } });
+      await moveFile(item, item.fileId, destinationId, item.bucket).catch(handleError);
     }
-  });
-  afterMoving(itemsToRecover, destinationId, name, namePaths);
+  }
+  await afterMoving(itemsToRecover, destinationId);
   failedItems.splice(0);
 };
 
-export default RecoverItemsFromTrash;
+export default recoverItemsFromTrash;

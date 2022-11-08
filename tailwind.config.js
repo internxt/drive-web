@@ -92,6 +92,7 @@ module.exports = {
         '0.5/12': '4.166667%',
       },
       margin: {
+        '20px': '20px',
         '24px': '24px',
       },
       minWidth: {
@@ -99,6 +100,7 @@ module.exports = {
         activity: '296px',
       },
       padding: {
+        '20px': '20px',
         '42px': '42px',
       },
       borderWidth: {
