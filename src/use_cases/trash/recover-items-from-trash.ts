@@ -10,13 +10,11 @@ import * as uuid from 'uuid';
 import { store } from '../../app/store';
 import { storageActions } from 'app/store/slices/storage';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import itemsListService from 'app/drive/services/items-list.service';
 import { DriveItemData } from 'app/drive/types';
 
 const failedItems: DriveItemData[] = [];
-
 
 async function trackMove(response, type) {
   const user = localStorageService.getUser() as UserSettings;
@@ -84,7 +82,7 @@ async function moveFolder(
     });
 }
 
-async function afterMoving(itemsToRecover, destinationId, name?, namePaths?) {
+async function afterMoving(itemsToRecover, destinationId) {
   itemsToRecover = itemsToRecover.filter((el) => !failedItems.includes(el));
 
   if (itemsToRecover.length > 0) {
@@ -101,7 +99,6 @@ async function afterMoving(itemsToRecover, destinationId, name?, namePaths?) {
     }
     store.dispatch(storageActions.popItemsToDelete(itemsToRecover));
     store.dispatch(storageActions.clearSelectedItems());
-
 
     notificationsService.show({
       type: ToastType.Success,

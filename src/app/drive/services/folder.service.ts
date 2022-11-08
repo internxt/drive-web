@@ -392,7 +392,6 @@ export async function moveFolder(
 const folderService = {
   createFolder,
   updateMetaData,
-  // deleteFolder,
   moveFolder,
   fetchFolderTree,
   downloadFolderAsZip,

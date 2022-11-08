@@ -1,11 +1,5 @@
 import React, { Fragment, useEffect } from 'react';
 import { Dropdown } from 'react-bootstrap';
-/*import UilPen from '@iconscout/react-unicons/icons/uil-pen';
-import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
-import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
-import UilLinkedAlt from '@iconscout/react-unicons/icons/uil-link';
-import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
-import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';*/
 import { PencilSimple, Link, Trash, DownloadSimple, DotsThree } from 'phosphor-react';
 import { items } from '@internxt/lib';
 
@@ -28,7 +22,6 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
   const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
   const {
     nameInputRef,
-    //itemIsShared,
     onNameChanged,
     onNameBlurred,
     onNameClicked,
@@ -54,7 +47,6 @@ const DriveExplorerListItem = ({ isTrash, item }: DriveExplorerItemProps): JSX.E
   const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
   const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
-  //const sharedClassNames: string = itemIsShared? 'shared' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
   const onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     e.target.checked ? dispatch(storageActions.selectItems([item])) : dispatch(storageActions.deselectItems([item]));

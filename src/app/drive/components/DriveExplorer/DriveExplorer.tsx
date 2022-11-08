@@ -360,26 +360,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               </div>
             )}
 
-            {/* PAGINATION */}
-            {/* !isLoading ? (
-            <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
-              <span className="text-sm w-1/3" />
-              <divconst droppedType = monitor.getItemType();
-              const droppedDataParentId = item.parentId || item.folderId || -1;
-
-              return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id; className="flex justify-center w-1/3">
-                <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                  <UilAngleDoubleLeft />
-                </button>
-                <button className="pagination-button">1</button>
-                <button onClick={this.onNextPageButtonClicked} className="pagination-button">
-                  <UilAngleDoubleRight />
-                </button>
-              </div>
-              <div className="w-1/3"></div>
-            </div>
-          ) : null */}
-
             {/* EMPTY FOLDER */
               !hasItems && !isLoading && (
                 hasFilters ? (
@@ -532,16 +512,6 @@ const dropTargetCollect: DropTargetCollector<
 
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
-
-  /*shareService.getAllShareLinks(0,state.shared.pagination.perPage,undefined).then((response)=>{
-   
-    const sharedItems: DriveItemData[] = items.filter((item)=>{
-      response.items.some((i) => {
-        
-        return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
-      });
-    });
-  });*/
 
   return {
     isAuthenticated: state.user.isAuthenticated,

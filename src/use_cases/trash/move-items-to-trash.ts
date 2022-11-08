@@ -30,11 +30,9 @@ const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
       onClick: async () => {
         if (itemsToTrash.length > 0) {
           const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentId : itemsToTrash[0].folderId;
-          await RecoverItemsFromTrash(itemsToTrash, destinationId);
-          setTimeout(() => {
-            store.dispatch(storageActions.resetNamePath());
-            store.dispatch(storageThunks.goToFolderThunk({ name: '', id: destinationId }));
-          }, 600);
+          await recoverItemsFromTrash(itemsToTrash, destinationId);
+          store.dispatch(storageActions.resetNamePath());
+          store.dispatch(storageThunks.goToFolderThunk({ name: '', id: destinationId }));
         }
         notificationsService.dismiss(id);
       },

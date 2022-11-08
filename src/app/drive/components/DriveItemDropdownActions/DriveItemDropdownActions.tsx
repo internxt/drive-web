@@ -1,12 +1,5 @@
 import React, { MouseEvent, ReactNode } from 'react';
-/*import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download';
-import UilEditAlt from '@iconscout/react-unicons/icons/uil-edit-alt';
-import UilShareAlt from '@iconscout/react-unicons/icons/uil-share-alt';
-import UilFileInfoAlt from '@iconscout/react-unicons/icons/uil-file-info-alt';
-import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
-*/
 import { PencilSimple, Trash, DownloadSimple, Copy, Link, Gear, LinkBreak, ClockCounterClockwise } from 'phosphor-react';
-
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
 

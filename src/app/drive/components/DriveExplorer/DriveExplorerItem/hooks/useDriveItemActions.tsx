@@ -16,10 +16,7 @@ import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumb
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-trash';
 
-//import shareService from 'app/share/services/share.service';
-
 interface DriveItemActions {
-  //itemIsShared: boolean;
   nameInputRef: RefObject<HTMLInputElement>;
   onRenameButtonClicked: (e: MouseEvent) => void;
   confirmNameChange: () => Promise<void>;
@@ -42,10 +39,9 @@ interface DriveItemActions {
   onItemRightClicked: (e: MouseEvent) => void;
   downloadAndSetThumbnail: () => void;
 }
-//const {isItemShared } = useDriveItemStoreProps();
+
 const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const dispatch = useAppDispatch();
-  //const [itemIsShared, setItemIsShared] = useState(false);
   const [nameEditPending, setNameEditPending] = useState(false);
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
@@ -58,19 +54,6 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     dispatch(uiActions.setCurrentEditingNameDirty(item.name));
     dispatch(uiActions.setCurrentEditingNameDriveItem(item));
   };
-  /*const isItemShared = useAppSelector((state) => (item)=>{
-    //const page = state.shared.pagination.page;
-    const perPage = state.shared.pagination.perPage;
-    shareService.getAllShareLinks(0,perPage,undefined).then((response)=>{
-      setItemIsShared(response.items.some((i) => {
-        return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
-      }));
-    });
-  });*/
-
-  /*useEffect(() => {
-    isItemShared(item);
-  },[]);*/
 
   const confirmNameChange = async () => {
     if (nameEditPending) return;
@@ -228,7 +211,6 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   };
 
   return {
-    //itemIsShared,
     nameInputRef,
     onRenameButtonClicked,
     confirmNameChange,
