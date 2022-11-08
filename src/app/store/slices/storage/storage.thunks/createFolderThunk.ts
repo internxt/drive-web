@@ -51,6 +51,8 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
         isFolder: true,
         color: null,
         encrypt_version: null,
+        plain_name: createdFolder.plain_name,
+        deleted: false,
       };
 
       tasksService.updateTask({
