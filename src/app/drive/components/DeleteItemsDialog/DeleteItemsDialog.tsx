@@ -30,7 +30,7 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
     try {
       setIsLoading(true);
       if (itemsToDelete.length > 0) {
-        deleteItems(itemsToDelete);
+        await deleteItems(itemsToDelete);
       }
 
       props.onItemsDeleted && props.onItemsDeleted();
