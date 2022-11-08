@@ -11,6 +11,7 @@
     "upload-file.spec.ts",
     "download-file.spec.ts",
     "share-file.spec.ts",
+    "rename-file.spec.ts",
     "delete-file.spec.ts",
     "drag-and-drop.spec.ts",
     "change-password.spec.ts"
