@@ -4,10 +4,10 @@ import { store } from '../../app/store';
 import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
 import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
-import RecoverItemsFromTrash from './recover-items-from-trash';
+import recoverItemsFromTrash from './recover-items-from-trash';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 
-const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
+const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
     return {
       id: item.isFolder ? item.id : item.fileId,
@@ -40,4 +40,4 @@ const MoveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
   });
 };
 
-export default MoveItemsToTrash;
+export default moveItemsToTrash;

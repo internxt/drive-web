@@ -26,23 +26,18 @@ async function trackMove(response, type) {
   return response;
 }
 
-async function catchError(error) {
-  {
-    const castedError = errorService.castError(error);
-    if (castedError.message.includes('same name')) {
-
-      notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
-    } else {
-      if (castedError.status) {
-        castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
-        //throw castedError;
-      }
+function handleError(err: unknown) {
+  const castedError = errorService.castError(err);
+  if (castedError.message.includes('same name')) {
+    notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
+  } else {
+    if (castedError.status) {
+      castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
     }
-    //throw error;
   }
 }
 
-async function moveFile(
+function moveFile(
   item: DriveItemData,
   fileId: string,
   destination: number,
@@ -59,11 +54,11 @@ async function moveFile(
     .then((response) => trackMove(response, 'file'))
     .catch((error) => {
       failedItems.push(item);
-      catchError(error);
+      handleError(error);
     });
 }
 
-async function moveFolder(
+function moveFolder(
   item: DriveItemData,
   folderId: number,
   destination: number
@@ -78,7 +73,7 @@ async function moveFolder(
     .then(response => trackMove(response, 'folder'))
     .catch((error) => {
       failedItems.push(item);
-      catchError(error);
+      handleError(error);
     });
 }
 
@@ -108,16 +103,16 @@ async function afterMoving(itemsToRecover, destinationId) {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const RecoverItemsFromTrash = async (itemsToRecover: DriveItemData[], destinationId, name?, namePaths?) => {
+const recoverItemsFromTrash = async (itemsToRecover: DriveItemData[], destinationId) => {
   itemsToRecover?.forEach((item) => {
     if (item.isFolder) {
-      moveFolder(item, item.id, destinationId).catch((err) => { if (err) { return err; } });
+      moveFolder(item, item.id, destinationId).catch(handleError);
     } else {
-      moveFile(item, item.fileId, destinationId, item.bucket).catch((err) => { if (err) { return err; } });
+      moveFile(item, item.fileId, destinationId, item.bucket).catch(handleError);
     }
   });
   await afterMoving(itemsToRecover, destinationId);
   failedItems.splice(0);
 };
 
-export default RecoverItemsFromTrash;
+export default recoverItemsFromTrash;
