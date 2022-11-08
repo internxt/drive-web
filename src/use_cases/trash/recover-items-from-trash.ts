@@ -116,7 +116,7 @@ const RecoverItemsFromTrash = async (itemsToRecover: DriveItemData[], destinatio
       moveFile(item, item.fileId, destinationId, item.bucket).catch((err) => { if (err) { return err; } });
     }
   });
-  afterMoving(itemsToRecover, destinationId, name, namePaths);
+  await afterMoving(itemsToRecover, destinationId);
   failedItems.splice(0);
 };
 

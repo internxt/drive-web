@@ -63,7 +63,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         if (!destinationFolderId) {
           destinationFolderId = currentFolderId;
         }
-        restoreItemsFromTrash(itemsToMove, destinationFolderId, (destinationFolderId != currentFolderId) ? selectedFolderName : name, namePaths);
+        await restoreItemsFromTrash(itemsToMove, destinationFolderId);
       }
 
       props.onItemsMoved && props.onItemsMoved();
