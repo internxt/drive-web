@@ -68,7 +68,6 @@ function moveFolder(
     folderId: folderId,
     destinationFolderId: destination
   };
-
   return storageClient.moveFolder(payload)
     .then(response => trackMove(response, 'folder'))
     .catch((error) => {
@@ -104,13 +103,13 @@ async function afterMoving(itemsToRecover, destinationId) {
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const recoverItemsFromTrash = async (itemsToRecover: DriveItemData[], destinationId) => {
-  itemsToRecover?.forEach((item) => {
+  for (const item of itemsToRecover) {
     if (item.isFolder) {
-      moveFolder(item, item.id, destinationId).catch(handleError);
+      await moveFolder(item, item.id, destinationId).catch(handleError);
     } else {
-      moveFile(item, item.fileId, destinationId, item.bucket).catch(handleError);
+      await moveFile(item, item.fileId, destinationId, item.bucket).catch(handleError);
     }
-  });
+  }
   await afterMoving(itemsToRecover, destinationId);
   failedItems.splice(0);
 };
