@@ -66,9 +66,8 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
       title="Share settings"
       subTitle={itemFullName}
       dialogRounded={true}
-      textLeft={true}
       panelClasses="w-screen max-w-lg"
-      titleClasses="text-black font-medium"
+      titleClasses="text-black font-medium text-left"
       closeClass="flex-shrink-0 flex items-center justify-center h-10 w-10 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
       onClose={onClose}
       weightIcon="light"

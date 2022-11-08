@@ -2,7 +2,8 @@ import i18n from 'app/i18n/services/i18n.service';
 import limitService from 'app/drive/services/limit.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import usageService from 'app/drive/services/usage.service';
-import { useHistory } from 'react-router';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 
 export default function PlanUsage({
   limit,
@@ -15,11 +16,11 @@ export default function PlanUsage({
   isLoading: boolean;
   className?: string;
 }): JSX.Element {
-  const history = useHistory();
-  const onUpgradeButtonClicked = () => {
-    history.push('/preferences?tab=plans');
-  };
   const usagePercent = usageService.getUsagePercent(usage, limit);
+
+  const onUpgradeButtonClicked = () => {
+    navigationService.push(AppView.Preferences, { tab: 'plans' });
+  };
 
   return (
     <div className={`flex w-full flex-col justify-center rounded-md ${className}`}>
