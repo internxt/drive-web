@@ -27,13 +27,13 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], currentFolderId: 
     action: {
       text: 'Undo',
       onClick: async () => {
+        notificationsService.dismiss(id);
         if (itemsToTrash.length > 0) {
           const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentId : itemsToTrash[0].folderId;
           store.dispatch(storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [currentFolderId] }));
           store.dispatch(storageActions.clearSelectedItems());
           await recoverItemsFromTrash(itemsToTrash, destinationId);
         }
-        notificationsService.dismiss(id);
       },
     },
   });
