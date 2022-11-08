@@ -161,7 +161,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onBulkDeleteButtonClicked = () => {
-    moveItemsToTrash(selectedItems);
+    moveItemsToTrash(selectedItems, currentFolderId);
   };
 
   const onDeletePermanentlyButtonClicked = () => {
