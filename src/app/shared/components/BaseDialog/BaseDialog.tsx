@@ -4,7 +4,6 @@ interface BaseDialogProps {
   isOpen: boolean;
   title: string;
   subTitle?: string;
-  textLeft?: boolean;
   dialogRounded?: boolean;
   children: JSX.Element | JSX.Element[];
   classes?: string;
@@ -21,7 +20,6 @@ const BaseDialog = ({
   title,
   subTitle,
   dialogRounded,
-  textLeft,
   children,
   onClose,
   classes,
@@ -32,31 +30,22 @@ const BaseDialog = ({
   bgColor,
 }: BaseDialogProps): JSX.Element => {
   return (
-    <div
-      className={`${isOpen ? 'flex' : 'hidden'} ${
-        classes || ''
+    <div className={`${isOpen ? 'flex' : 'hidden'} ${classes || ''
       } absolute top-0 left-0 right-0 bottom-0 z-10 bg-black bg-opacity-40`}
     >
-      <div
-        className={`${panelClasses || ''} absolute top-1/2 left-1/2 flex w-104 -translate-y-1/2
-        -translate-x-1/2 transform flex-col overflow-hidden  ${
-          dialogRounded ? 'rounded-2xl' : 'rounded-lg pt-8'
+      <div className={`${panelClasses || ''} absolute top-1/2 left-1/2 flex w-104 -translate-y-1/2
+        -translate-x-1/2 transform flex-col overflow-hidden  ${dialogRounded ? 'rounded-2xl' : 'rounded-lg pt-8'
         } text-neutral-900 ${bgColor || 'bg-white'}`}
       >
-        <div className={`${subTitle ? 'flex flex-row items-start justify-between space-x-5 bg-neutral-10 p-5' : ''}`}>
-          <div className="max-w-fit relative flex flex-1 flex-col truncate">
-            <p
-              className={`${titleClasses || ''} overflow-hidden overflow-ellipsis whitespace-nowrap ${
-                textLeft ? 'text-left text-black' : ' px-16 text-center'
-              }  text-xl`}
-            >
+        <div className={`${subTitle ? 'justify-between bg-neutral-10 p-5' : ''} flex flex-row items-start`}>
+          <div className="relative flex flex-1 flex-col max-w-full truncate">
+            <span className={`${titleClasses || ''} truncate text-xl`} title={title}>
               {title}
-            </p>
-            <p className="max-w-fit flex-1 truncate text-base font-normal text-neutral-100">{subTitle}</p>
+            </span>
+            <span className="max-w-fit flex-1 truncate text-base font-normal text-neutral-100">{subTitle}</span>
           </div>
-          <div
-            className={`relative cursor-pointer transition
-           duration-200 ease-in-out ${closeClass || 'text-blue-60 hover:text-blue-70'} `}
+          <div className={`relative cursor-pointer transition
+           duration-200 ease-in-out ml-auto ${closeClass || 'text-blue-60 hover:text-blue-70'} `}
           >
             <X onClick={onClose} size={28} weight={weightIcon} />
           </div>

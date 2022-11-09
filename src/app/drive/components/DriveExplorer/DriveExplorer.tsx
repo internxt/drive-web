@@ -9,7 +9,7 @@ import {
   SquaresFour,
   FileArrowUp,
   Plus,
-  CaretDown,
+  ClockCounterClockwise,
   Link,
   PencilSimple,
 } from 'phosphor-react';
@@ -32,6 +32,7 @@ import { storageActions } from '../../../store/slices/storage';
 import { uiActions } from '../../../store/slices/ui';
 import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
+import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
@@ -39,6 +40,8 @@ import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
+import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
+import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
 import { IRoot } from 'app/store/slices/storage/storage.thunks/uploadFolderThunk';
 import {
   transformInputFilesToJSON,
@@ -56,6 +59,7 @@ interface DriveExplorerProps {
   isLoading: boolean;
   items: DriveItemData[];
   onItemsDeleted?: () => void;
+  onItemsMoved?: () => void;
   onFileUploaded?: () => void;
   onFolderUploaded?: () => void;
   onFolderCreated?: () => void;
@@ -66,7 +70,9 @@ interface DriveExplorerProps {
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
   isCreateFolderDialogOpen: boolean;
+  isMoveItemsDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
+  isClearTrashDialogOpen: boolean;
   viewMode: FileViewMode;
   namePath: FolderPath[];
   dispatch: AppDispatch;
@@ -94,6 +100,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     storageFilters,
     currentFolderId,
     onFileUploaded,
+    onItemsMoved,
   } = props;
 
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -154,8 +161,22 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onBulkDeleteButtonClicked = () => {
-    dispatch(storageActions.setItemsToDelete(selectedItems));
-    dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    moveItemsToTrash(selectedItems);
+  };
+
+  const onDeletePermanentlyButtonClicked = () => {
+    if (selectedItems.length > 0) {
+      dispatch(storageActions.setItemsToDelete(selectedItems));
+      dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    } else {
+      dispatch(uiActions.setIsClearTrashDialogOpen(true));
+    }
+  };
+
+  const onRecoverButtonClicked = () => {
+    //Recover selected (you can select all) files or folders from Trash
+    dispatch(storageActions.setItemsToMove(selectedItems));
+    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
   };
 
   const onSelectedOneItemShare = (e) => {
@@ -205,11 +226,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     [FileViewMode.List]: DriveExplorerList,
     [FileViewMode.Grid]: DriveExplorerGrid,
   };
-  const ViewModeComponent = viewModes[viewMode];
-
-  const itemsList = getLimitedItems();
-
   const isRecents = title === 'Recents';
+  const isTrash = title === 'Trash';
+  const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
+  const itemsList = getLimitedItems();
 
   const FileIcon = iconService.getItemIcon(false);
   const filesEmptyImage = (
@@ -233,10 +253,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     );
   });
 
+  const EmptyTrash = () => (
+    <div className="flex h-36 w-36 items-center justify-center rounded-full bg-gray-5">
+      <Trash size={80} weight="thin" />
+    </div>
+  );
+
   const driveExplorer = (
     <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
-      <CreateFolderDialog onFolderCreated={onFolderCreated} />
+      <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
+      <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
+      <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col pt-6">
@@ -245,64 +273,80 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               {title}
             </div>
 
-            <div className="flex flex-shrink-0 flex-row">
-              <Dropdown
-                classButton={
-                  'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
-                }
-                openDirection={'right'}
-                classMenuItems={
-                  'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow mt-6'
-                }
-                menuItems={[
-                  <MenuItem onClick={onCreateFolderButtonClicked}>
-                    <FolderSimplePlus size={20} />
-                    <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
-                  </MenuItem>,
-                  separatorH,
-                  <MenuItem onClick={onUploadFileButtonClicked}>
-                    <FileArrowUp size={20} />
-                    <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
-                  </MenuItem>,
-                  <MenuItem onClick={onUploadFolderButtonClicked}>
-                    <UploadSimple size={20} />
-                    <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
-                  </MenuItem>,
-                ]}
-              >
-                <>
-                  <div className="flex flex-row items-center space-x-2.5">
-                    <span className="font-medium">{i18n.get('actions.upload.new')}</span>
-                    <Plus weight="bold" className="h-4 w-4" />
-                  </div>
-                </>
-              </Dropdown>
-              {hasAnyItemSelected && (
-                <>
-                  {separatorV}
-                  <BaseButton className="tertiary square w-8" onClick={onDownloadButtonClicked}>
-                    <DownloadSimple className="h-6 w-6" />
-                  </BaseButton>
-                  {selectedItems.length === 1 && (
-                    <>
-                      <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
-                        <Link className="h-6 w-6" />
-                      </BaseButton>
-                      <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemRename}>
-                        <PencilSimple className="h-6 w-6" />
-                      </BaseButton>
-                    </>
-                  )}
-                  <BaseButton className="tertiary square w-8" onClick={onBulkDeleteButtonClicked}>
-                    <Trash className="h-6 w-6" />
-                  </BaseButton>
-                </>
-              )}
-              {separatorV}
-              <BaseButton className="tertiary square w-8" onClick={onViewModeButtonClicked}>
-                {viewModesIcons[viewMode]}
+            {!isTrash && (
+              <div className="flex flex-shrink-0 flex-row">
+                <Dropdown
+                  classButton={
+                    'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
+                  }
+                  openDirection={'right'}
+                  classMenuItems={
+                    'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow mt-6'
+                  }
+                  menuItems={[
+                    <MenuItem onClick={onCreateFolderButtonClicked}>
+                      <FolderSimplePlus size={20} />
+                      <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                    </MenuItem>,
+                    separatorH,
+                    <MenuItem onClick={onUploadFileButtonClicked}>
+                      <FileArrowUp size={20} />
+                      <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
+                    </MenuItem>,
+                    <MenuItem onClick={onUploadFolderButtonClicked}>
+                      <UploadSimple size={20} />
+                      <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
+                    </MenuItem>,
+                  ]}
+                >
+                  <>
+                    <div className="flex flex-row items-center space-x-2.5">
+                      <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                      <Plus weight="bold" className="h-4 w-4" />
+                    </div>
+                  </>
+                </Dropdown>
+                {hasAnyItemSelected && (
+                  <>
+                    {separatorV}
+                    <BaseButton className="tertiary square w-8" onClick={onDownloadButtonClicked}>
+                      <DownloadSimple className="h-6 w-6" />
+                    </BaseButton>
+                    {selectedItems.length === 1 && (
+                      <>
+                        <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
+                          <Link className="h-6 w-6" />
+                        </BaseButton>
+                        <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemRename}>
+                          <PencilSimple className="h-6 w-6" />
+                        </BaseButton>
+                      </>
+                    )}
+                    <BaseButton className="tertiary square w-8" onClick={onBulkDeleteButtonClicked}>
+                      <Trash className="h-6 w-6" />
+                    </BaseButton>
+                  </>
+                )}
+                {separatorV}
+                <BaseButton className="tertiary square w-8" onClick={onViewModeButtonClicked}>
+                  {viewModesIcons[viewMode]}
+                </BaseButton>
+              </div>
+            )}
+            {isTrash && hasAnyItemSelected && (
+              <BaseButton className="tertiary square w-8" onClick={onRecoverButtonClicked}>
+                <ClockCounterClockwise className="h-6 w-6" />
               </BaseButton>
-            </div>
+            )}
+            {isTrash && (
+              <BaseButton
+                className="tertiary square w-8"
+                disabled={!hasItems}
+                onClick={onDeletePermanentlyButtonClicked}
+              >
+                <Trash className="h-5 w-5" />
+              </BaseButton>
+            )}
           </div>
 
           <div className="z-0 mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
@@ -313,34 +357,16 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   isLoading={isLoading}
                   onEndOfScroll={getMoreItems}
                   hasMoreItems={hasMoreItems}
+                  isTrash={isTrash}
                 />
               </div>
             )}
 
-            {/* PAGINATION */}
-            {/* !isLoading ? (
-            <div className="pointer-events-none bg-white p-4 h-12 flex justify-center items-center rounded-b-4px">
-              <span className="text-sm w-1/3" />
-              <divconst droppedType = monitor.getItemType();
-              const droppedDataParentId = item.parentId || item.folderId || -1;
-
-              return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id; className="flex justify-center w-1/3">
-                <button onClick={this.onPreviousPageButtonClicked} className="pagination-button">
-                  <UilAngleDoubleLeft />
-                </button>
-                <button className="pagination-button">1</button>
-                <button onClick={this.onNextPageButtonClicked} className="pagination-button">
-                  <UilAngleDoubleRight />
-                </button>
-              </div>
-              <div className="w-1/3"></div>
-            </div>
-          ) : null */}
-
             {
               /* EMPTY FOLDER */
-              !hasItems && !isLoading ? (
-                hasFilters ? (
+              !hasItems &&
+                !isLoading &&
+                (hasFilters ? (
                   <Empty
                     icon={filesEmptyImage}
                     title="There are no results for this search"
@@ -358,6 +384,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     title="No recents files to show"
                     subtitle="Recent uploads or files you recently interacted with will show up here automatically"
                   />
+                ) : isTrash ? (
+                  <Empty
+                    icon={<EmptyTrash />}
+                    title={i18n.get('trash.empty-state.title')}
+                    subtitle={i18n.get('trash.empty-state.subtitle')}
+                  />
                 ) : (
                   <Empty
                     icon={<img className="w-36" alt="" src={folderEmptyImage} />}
@@ -370,47 +402,50 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                       onClick: onUploadFileButtonClicked,
                     }}
                   />
-                )
-              ) : null
+                ))
             }
 
             {
               /* DRAG AND DROP */
-              isOver ? (
+              isOver && !isTrash && (
                 <div
                   className="drag-over-effect pointer-events-none\
-             absolute flex h-full w-full items-end justify-center"
+                    absolute flex h-full w-full items-end justify-center"
                 ></div>
-              ) : null
+              )
             }
           </div>
 
-          <input
-            key={`file-${fileInputKey}`}
-            className="hidden"
-            ref={fileInputRef}
-            type="file"
-            data-test="input-file"
-            onChange={onUploadFileInputChanged}
-            multiple={true}
-          />
-          <input
-            key={`folder-${folderInputKey}`}
-            className="hidden"
-            ref={folderInputRef}
-            type="file"
-            data-test="input-folder"
-            directory=""
-            webkitdirectory=""
-            onChange={onUploadFolderInputChanged}
-            multiple={true}
-          />
+          {!isTrash && (
+            <>
+              <input
+                key={`file-${fileInputKey}`}
+                className="hidden"
+                ref={fileInputRef}
+                type="file"
+                onChange={onUploadFileInputChanged}
+                multiple={true}
+                data-test="input-file"
+              />
+              <input
+                key={`folder-${folderInputKey}`}
+                className="hidden"
+                ref={folderInputRef}
+                type="file"
+                directory=""
+                webkitdirectory=""
+                onChange={onUploadFolderInputChanged}
+                multiple={true}
+                data-test="input-folder"
+              />
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 
-  return connectDropTarget(driveExplorer) || driveExplorer;
+  return !isTrash ? connectDropTarget(driveExplorer) || driveExplorer : driveExplorer;
 };
 
 declare module 'react' {
@@ -486,16 +521,6 @@ const dropTargetCollect: DropTargetCollector<
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
 
-  /*shareService.getAllShareLinks(0,state.shared.pagination.perPage,undefined).then((response)=>{
-   
-    const sharedItems: DriveItemData[] = items.filter((item)=>{
-      response.items.some((i) => {
-        
-        return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
-      });
-    });
-  });*/
-
   return {
     isAuthenticated: state.user.isAuthenticated,
     user: state.user.user,
@@ -503,7 +528,9 @@ export default connect((state: RootState) => {
     selectedItems: state.storage.selectedItems,
     storageFilters: state.storage.filters,
     isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,
+    isMoveItemsDialogOpen: state.ui.isMoveItemsDialogOpen,
     isDeleteItemsDialogOpen: state.ui.isDeleteItemsDialogOpen,
+    isClearTrashDialogOpen: state.ui.isClearTrashDialogOpen,
     viewMode: state.storage.viewMode,
     namePath: state.storage.namePath,
     workspace: state.session.workspace,
