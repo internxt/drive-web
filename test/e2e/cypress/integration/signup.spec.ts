@@ -4,6 +4,10 @@ describe('Signup user', () => {
   const username = `${crypto.randomBytes(32).toString('hex')}@inxt.com`;
   const password = `Pw4${crypto.randomBytes(4).toString('hex')}`;
 
+  beforeEach(() => {
+    cy.visit('/');
+  });
+
   it('Should signup an user correctly', () => {
     cy.visit('/new');
 

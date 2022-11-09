@@ -62,7 +62,7 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
           <Button disabled={isLoading} variant="secondary" onClick={onClose}>
             {i18n.get('actions.cancel')}
           </Button>
-          <Button loading={isLoading} variant="accent" type="submit">
+          <Button loading={isLoading} variant="accent" type="submit" dataTest="delete-button">
             Delete
           </Button>
         </div>
