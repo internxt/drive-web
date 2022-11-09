@@ -46,7 +46,6 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
   const currentFolderPath = useAppSelector(storageSelectors.currentFolderPath);
-  const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const { dirtyName } = useDriveItemStoreProps();
 
@@ -163,7 +162,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   const onDeleteButtonClicked = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    moveItemsToTrash([item], currentFolderId);
+    moveItemsToTrash([item]);
   };
 
   const onDeletePermanentlyButtonClicked = (e: React.MouseEvent): void => {
