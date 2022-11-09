@@ -6,7 +6,7 @@ import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import recoverItemsFromTrash from './recover-items-from-trash';
 
-const moveItemsToTrash = async (itemsToTrash: DriveItemData[], currentFolderId: number): Promise<void> => {
+const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
     return {
       id: item.isFolder ? item.id : item.fileId,
@@ -30,7 +30,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], currentFolderId: 
         notificationsService.dismiss(id);
         if (itemsToTrash.length > 0) {
           const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentId : itemsToTrash[0].folderId;
-          store.dispatch(storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [currentFolderId] }));
+          store.dispatch(storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [destinationId] }));
           store.dispatch(storageActions.clearSelectedItems());
           await recoverItemsFromTrash(itemsToTrash, destinationId);
         }
