@@ -165,9 +165,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
 
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
-    let folderSize = 0;
-    let folderItems = 0;
     const levels = [root];
+    const folderSize = getItemsSize(root);
     const itemsUnderRoot = countItemsUnderRoot(root);
     const taskId = tasksService.create<UploadFolderTask>({
       action: TaskType.UploadFolder,
@@ -192,20 +191,11 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       },
     });
 
-    levels.map((level) => {
-      //All files in folder
-      folderItems += level.childrenFiles.length;
-      //Folder size
-      level.childrenFiles.forEach((file) => {
-        folderSize += file.size;
-      });
-    });
-
     try {
       root.folderId = currentFolderId;
 
       window.rudderanalytics.track('Folder Upload Started', {
-        number_of_items: folderItems,
+        number_of_items: itemsUnderRoot,
         size: folderSize,
       });
 
@@ -286,7 +276,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
 
       options.onSuccess?.();
       window.rudderanalytics.track('Folder Upload Completed', {
-        number_of_items: folderItems,
+        number_of_items: itemsUnderRoot,
         size: folderSize,
       });
     } catch (err: any) {
@@ -325,6 +315,21 @@ function countItemsUnderRoot(root: IRoot): number {
   }
 
   return count;
+}
+function getItemsSize(root: IRoot): number {
+  let size = 0;
+
+  const queueOfFolders: Array<IRoot> = [root];
+
+  while (queueOfFolders.length) {
+    const folder = queueOfFolders.shift() as IRoot;
+
+    size += folder.childrenFiles?.map((file) => file.size).reduce((a, b) => a + b, 0) ?? 0;
+
+    queueOfFolders.push(...folder.childrenFolders);
+  }
+
+  return size;
 }
 
 export const uploadFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {

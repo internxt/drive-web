@@ -227,7 +227,6 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     const tasksIds: string[] = [];
     const abortController = new AbortController();
     console.log(parentFolderId, '-', files);
-    //Start tracking
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 
