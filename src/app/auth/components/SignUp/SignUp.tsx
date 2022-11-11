@@ -97,13 +97,12 @@ function SignUp(props: SignUpProps): JSX.Element {
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoading(true);
 
-    const { isNewUser } = props;
-    const { email, password, token } = formData;
-    const { xUser, xToken, mnemonic } = isNewUser
-      ? await doRegister(email, password, token)
-      : await updateInfo(email, password);
-
     try {
+      const { isNewUser } = props;
+      const { email, password, token } = formData;
+      const { xUser, xToken, mnemonic } = isNewUser
+        ? await doRegister(email, password, token)
+        : await updateInfo(email, password);
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
 

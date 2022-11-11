@@ -76,12 +76,12 @@ export default function Auth(): JSX.Element {
   const signup = async (data) => {
     const { inline } = data;
     const { email, password, token } = data;
-    const res = await doRegister(email, password, token);
-    const xUser = res.xUser;
-    const xToken = res.xToken;
-    const mnemonic = res.mnemonic;
 
     try {
+      const res = await doRegister(email, password, token);
+      const xUser = res.xUser;
+      const xToken = res.xToken;
+      const mnemonic = res.mnemonic;
       localStorageService.set('xToken', xToken);
       dispatch(userActions.setUser(xUser));
       localStorageService.set('xMnemonic', mnemonic);
