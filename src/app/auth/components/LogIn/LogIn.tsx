@@ -72,7 +72,7 @@ export default function LogIn(): JSX.Element {
         setToken(token);
         userActions.setUser(user);
         setRegisterCompleted(user.registerCompleted);
-        analyticsService.rudderanalyticsSignIn(user.uuid, user.email);
+        analyticsService.trackSignIn(user.uuid, user.email);
       } else {
         setShowTwoFactor(true);
       }
@@ -86,7 +86,7 @@ export default function LogIn(): JSX.Element {
 
       setLoginError([castedError.message]);
       setShowErrors(true);
-      analyticsService.rudderanalyticsSignInError(email, castedError.message);
+      analyticsService.trackSignInError(email, castedError.message);
     } finally {
       setIsLoggingIn(false);
     }
@@ -137,7 +137,7 @@ export default function LogIn(): JSX.Element {
               <span className="font-normal">Password</span>
               <Link
                 onClick={(): void => {
-                  analyticsService.rudderanalyticsForgotPassword(email);
+                  analyticsService.trackForgotPassword(email);
                 }}
                 to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
