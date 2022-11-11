@@ -51,7 +51,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const tasksIds: string[] = [];
     const fileAnalyticData = files.map((file) => ({ type: file.type, size: file.size }));
     files.forEach((file) => {
-      analyticsService.rudderanalyticsFileUploadStarted(file.type, file.size);
+      analyticsService.trackFileUploadStarted(file.type, file.size);
     });
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
@@ -75,7 +75,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         type: ToastType.Warning,
       });
       files.map((file) => {
-        analyticsService.rudderanalyticsFileUploadError('File too large', file.type, file.size);
+        analyticsService.trackFileUploadError('File too large', file.type, file.size);
       });
       return;
     }
@@ -185,7 +185,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
             taskId: taskId,
             merge: { status: TaskStatus.Success },
           });
-          analyticsService.rudderanalyticsFileUploadCompleted(
+          analyticsService.trackFileUploadCompleted(
             uploadedFile.type,
             uploadedFile.size,
             uploadedFile.folderId,
@@ -209,7 +209,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
               merge: { status: TaskStatus.Error },
             });
 
-            analyticsService.rudderanalyticsFileUploadError(
+            analyticsService.trackFileUploadError(
               castedError.message,
               fileAnalyticData[index].type,
               fileAnalyticData[index].size,
@@ -271,7 +271,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     }
 
     for (const file of files) {
-      analyticsService.rudderanalyticsFileUploadStarted(file.type, file.size);
+      analyticsService.trackFileUploadStarted(file.type, file.size);
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
@@ -365,12 +365,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
             taskId: taskId,
             merge: { status: TaskStatus.Success },
           });
-          analyticsService.rudderanalyticsFileUploadCompleted(
-            file.type,
-            file.size,
-            file.parentFolderId,
-            uploadedFile.id,
-          );
+          analyticsService.trackFileUploadCompleted(file.type, file.size, file.parentFolderId, uploadedFile.id);
         })
         .catch((err: any) => {
           if (abortController.signal.aborted) {
@@ -388,7 +383,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
               taskId: taskId,
               merge: { status: TaskStatus.Error },
             });
-            analyticsService.rudderanalyticsFileUploadError(err.message, file.type, file.size);
+            analyticsService.trackFileUploadError(err.message, file.type, file.size);
 
             console.error(castedError);
             errors.push(castedError);

@@ -11,6 +11,7 @@ import errorService from '../../../../core/services/error.service';
 import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export interface IRoot {
   name: string;
@@ -194,10 +195,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
     try {
       root.folderId = currentFolderId;
 
-      window.rudderanalytics.track('Folder Upload Started', {
-        number_of_items: itemsUnderRoot,
-        size: folderSize,
-      });
+      analyticsService.trackFolderUploadStarted(itemsUnderRoot, folderSize);
 
       while (levels.length > 0) {
         const level: IRoot = levels.shift() as IRoot;
@@ -275,15 +273,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       });
 
       options.onSuccess?.();
-      window.rudderanalytics.track('Folder Upload Completed', {
-        number_of_items: itemsUnderRoot,
-        size: folderSize,
-      });
+      analyticsService.trackFolderUploadCompleted(itemsUnderRoot, folderSize);
     } catch (err: any) {
-      window.rudderanalytics.track('Folder Upload Error', {
-        message: err.message,
-        size: folderSize,
-      });
       const castedError = errorService.castError(err);
       const updatedTask = tasksService.findTask(taskId);
 
@@ -294,7 +285,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
             status: TaskStatus.Error,
           },
         });
-
+        analyticsService.trackFolderUploadError(castedError.message, folderSize);
         throw castedError;
       }
     }

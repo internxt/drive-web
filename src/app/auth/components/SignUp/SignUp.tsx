@@ -115,7 +115,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      analyticsService.rudderanalyticsSignUp(email, xUser.uuid);
+      analyticsService.trackSignUp(email, xUser.uuid);
 
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({

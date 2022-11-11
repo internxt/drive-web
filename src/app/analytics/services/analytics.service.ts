@@ -8,9 +8,6 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
 import { AnalyticsTrack } from '../types';
-import { getCookie, setCookie } from '../utils';
-import queryString from 'query-string';
-import { v4 as uuidv4 } from 'uuid';
 
 export const PATH_NAMES = {
   '/new': 'Register',
@@ -22,6 +19,8 @@ export const PATH_NAMES = {
   '/remove': 'Remove Account',
   '/app': 'App',
 };
+
+const analytics = window.rudderanalytics;
 
 export function trackFileDownloadCompleted(properties): void {
   trackData(properties, 'file_downloaded');
@@ -43,7 +42,7 @@ const payload = {
 };
 
 export function page(pageName: string): void {
-  window.rudderanalytics.page(pageName);
+  analytics.page(pageName);
 }
 
 export function signupDevicesource(userAgent: string): string {
@@ -93,32 +92,32 @@ export function identifyPlan(newValue: number) {
   }
 }
 
-export function rudderanalyticsSignOut() {
-  window.rudderanalytics.track('User Logout');
+export function trackSignOut() {
+  analytics.track('User Logout');
 }
 
-export function rudderanalyticsSignIn(uuid: string, email: string): void {
-  window.rudderanalytics.identify(uuid, { email: email, uuid: uuid }, () => {
+export function trackSignIn(uuid: string, email: string): void {
+  analytics.identify(uuid, { email: email, uuid: uuid }, () => {
     console.log('Identify callback'); //For debugging
-    window.rudderanalytics.track('User Signin', { email: email });
+    analytics.track('User Signin', { email: email });
   });
 }
 
-export function rudderanalyticsSignInError(email: string, error: string | Error): void {
-  window.rudderanalytics.track('User Signin Failed', {
+export function trackSignInError(email: string, error: string | Error): void {
+  analytics.track('User Signin Failed', {
     message: error ? error : 'Login error',
     email: email,
   });
 }
 
-export function rudderanalyticsSignUp(email: string, uuid: string): void {
-  window.rudderanalytics.identify(uuid, { email, uuid: uuid }, () => {
-    window.rudderanalytics.track('User Signup', { email });
+export function trackSignUp(email: string, uuid: string): void {
+  analytics.identify(uuid, { email, uuid: uuid }, () => {
+    analytics.track('User Signup', { email });
   });
 }
 
-export function rudderanalyticsSignUpError(email: string, error: string): void {
-  window.rudderanalytics.track('User Signup Failed', { email: email, error: error });
+export function trackSignUpError(email: string, error: string): void {
+  analytics.track('User Signup Failed', { email: email, error: error });
 }
 
 export function trackUserEnterPayments(priceId: string): void {
@@ -177,23 +176,45 @@ export function trackFileDownloadFinished(payload: {
   // window.analytics.track(AnalyticsTrack.FileDownloadFinished, payload);
 }
 
-export function rudderanalyticsFileUploadStarted(type: string, size: number): void {
-  window.rudderanalytics.track('File Upload Started', {
+//File/folder upload track
+export function trackFolderUploadStarted(itemsUnderRoot: number, folderSize: number): void {
+  analytics.track('Folder Upload Started', {
+    number_of_items: itemsUnderRoot,
+    size: folderSize,
+  });
+}
+
+export function trackFolderUploadError(errorMessage: string, folderSize) {
+  analytics.track('Folder Upload Error', {
+    message: errorMessage,
+    size: folderSize,
+  });
+}
+
+export function trackFolderUploadCompleted(itemsUnderRoot: number, folderSize: number): void {
+  analytics.track('Folder Upload Completed', {
+    number_of_items: itemsUnderRoot,
+    size: folderSize,
+  });
+}
+
+export function trackFileUploadStarted(type: string, size: number): void {
+  analytics.track('File Upload Started', {
     type: type,
     size: size,
   });
 }
 
-export function rudderanalyticsFileUploadError(error, type, size): void {
-  window.rudderanalytics.track('File Upload Error', {
+export function trackFileUploadError(error, type, size): void {
+  analytics.track('File Upload Error', {
     message: error,
     size: size,
     type: type,
   });
 }
 
-export function rudderanalyticsFileUploadCompleted(type, size, parentFolderId, fileId): void {
-  window.rudderanalytics.track('File Upload Completed', {
+export function trackFileUploadCompleted(type, size, parentFolderId, fileId): void {
+  analytics.track('File Upload Completed', {
     type: type,
     size: size,
     parent_folder_id: parentFolderId,
@@ -237,8 +258,8 @@ export function identify(user: UserSettings, email: string): void {
   }); */
 }
 
-export function rudderanalyticsForgotPassword(email: string): void {
-  window.rudderanalytics.track('Forgot password clicked', { email: email || 'No email provided' });
+export function trackForgotPassword(email: string): void {
+  analytics.track('Forgot password clicked', { email: email || 'No email provided' });
 }
 
 export function track(email: string, status: 'error' | 'success'): void {
@@ -272,7 +293,7 @@ export async function trackPaymentConversion() {
     const { username, uuid } = getUser();
     const amount = amount_total * 0.01;
 
-    window.rudderanalytics.identify(uuid, {
+    analytics.identify(uuid, {
       email: username,
       plan: metadata.priceId,
       customer_id: customer,
@@ -281,7 +302,7 @@ export async function trackPaymentConversion() {
       subscription_id: subscription,
       payment_intent,
     });
-    window.rudderanalytics.track(AnalyticsTrack.PaymentConversionEvent, {
+    analytics.track(AnalyticsTrack.PaymentConversionEvent, {
       price_id: metadata.priceId,
       product: metadata.product,
       email: username,
@@ -298,7 +319,7 @@ export async function trackPaymentConversion() {
     });
   } catch (err) {
     const castedError = errorService.castError(err);
-    window.rudderanalytics.track('Error Signup After Payment Conversion', {
+    analytics.track('Error Signup After Payment Conversion', {
       message: castedError.message || '',
     });
   }
@@ -389,10 +410,10 @@ const analyticsService = {
   identify,
   identifyUsage,
   identifyPlan,
-  rudderanalyticsSignIn,
-  rudderanalyticsSignOut,
-  rudderanalyticsSignUp,
-  rudderanalyticsSignUpError,
+  trackSignIn,
+  trackSignOut,
+  trackSignUp,
+  trackSignUpError,
   trackUserEnterPayments,
   trackPlanSubscriptionSelected,
   trackFolderCreated,
@@ -401,16 +422,19 @@ const analyticsService = {
   trackFileDownloadStart,
   trackFileDownloadError,
   trackFileDownloadFinished,
-  rudderanalyticsFileUploadStarted,
-  rudderanalyticsFileUploadError,
-  rudderanalyticsFileUploadCompleted,
+  trackFolderUploadStarted,
+  trackFolderUploadError,
+  trackFolderUploadCompleted,
+  trackFileUploadStarted,
+  trackFileUploadError,
+  trackFileUploadCompleted,
   trackMoveItem,
   trackDeleteItem,
   trackOpenWelcomeFile,
   trackDeleteWelcomeFile,
   trackFileShare,
-  rudderanalyticsSignInError,
-  rudderanalyticsForgotPassword,
+  trackSignInError,
+  trackForgotPassword,
   track,
   trackFileUploadBucketIdUndefined,
   trackFileDownloadCompleted,

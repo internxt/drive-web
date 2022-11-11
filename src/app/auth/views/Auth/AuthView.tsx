@@ -90,16 +90,16 @@ export default function Auth(): JSX.Element {
       dispatch(referralsThunks.initializeThunk());
       await dispatch(userThunks.initializeUserThunk());
 
-      analyticsService.rudderanalyticsSignUp(email, xUser.uuid);
+      analyticsService.trackSignUp(email, xUser.uuid);
 
       postMessage({ action: 'redirect' });
     } catch (err: any) {
-      analyticsService.rudderanalyticsSignUpError(err, email);
       if (inline === true) {
         postMessage({ action: 'error_inline', msg: errorService.castError(err).message });
       } else {
         postMessage({ action: 'error', msg: errorService.castError(err).message });
       }
+      analyticsService.trackSignUpError(err, email);
     }
   };
 
@@ -136,7 +136,7 @@ export default function Auth(): JSX.Element {
         setIsAuthenticated(true);
         setRegisterCompleted(user.registerCompleted);
         userActions.setUser(user);
-        analyticsService.rudderanalyticsSignIn(user.uuid, user.email);
+        analyticsService.trackSignIn(user.uuid, user.email);
       } else {
         postMessage({ action: '2fa' });
         setIsLoggingIn(false);
@@ -151,7 +151,7 @@ export default function Auth(): JSX.Element {
 
       postMessage({ action: 'error', msg: errorService.castError(err).message });
       setIsLoggingIn(false);
-      analyticsService.rudderanalyticsSignInError(email, castedError.message);
+      analyticsService.trackSignInError(email, castedError.message);
     }
   };
 

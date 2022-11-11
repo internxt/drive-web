@@ -36,7 +36,7 @@ export async function logOut(): Promise<void> {
   localStorageService.clear();
   RealtimeService.getInstance().stop();
   navigationService.push(AppView.Login);
-  analyticsService.rudderanalyticsSignOut();
+  analyticsService.trackSignOut();
 }
 
 export function cancelAccount(): Promise<void> {
