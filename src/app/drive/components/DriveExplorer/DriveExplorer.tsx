@@ -9,7 +9,6 @@ import {
   SquaresFour,
   FileArrowUp,
   Plus,
-  CaretDown,
   Link,
   PencilSimple,
 } from 'phosphor-react';

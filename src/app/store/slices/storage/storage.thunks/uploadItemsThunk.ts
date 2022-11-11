@@ -49,6 +49,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
     const tasksIds: string[] = [];
+    const fileAnalyticData = files.map((file) => ({ type: file.type, size: file.size }));
+    files.forEach((file) => {
+      analyticsService.rudderanalyticsFileUploadStarted(file.type, file.size);
+    });
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 
@@ -58,6 +62,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
       if (planLimit && planUsage >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+
         return;
       }
     } catch (err: unknown) {
@@ -68,6 +73,9 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       notificationsService.show({
         text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
         type: ToastType.Warning,
+      });
+      files.map((file) => {
+        analyticsService.rudderanalyticsFileUploadError('File too large', file.type, file.size);
       });
       return;
     }
@@ -177,6 +185,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
             taskId: taskId,
             merge: { status: TaskStatus.Success },
           });
+          analyticsService.rudderanalyticsFileUploadCompleted(
+            uploadedFile.type,
+            uploadedFile.size,
+            uploadedFile.folderId,
+            uploadedFile.id,
+          );
         })
         .catch((err: unknown) => {
           if (abortController.signal.aborted) {
@@ -194,6 +208,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
               taskId: taskId,
               merge: { status: TaskStatus.Error },
             });
+
+            analyticsService.rudderanalyticsFileUploadError(
+              castedError.message,
+              fileAnalyticData[index].type,
+              fileAnalyticData[index].size,
+            );
 
             console.error(castedError);
 
@@ -351,12 +371,6 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
             file.parentFolderId,
             uploadedFile.id,
           );
-          window.rudderanalytics.track('File Upload Completed', {
-            type: file.type,
-            size: file.size,
-            parent_folder_id: file.parentFolderId,
-            file_id: uploadedFile.id,
-          });
         })
         .catch((err: any) => {
           if (abortController.signal.aborted) {
