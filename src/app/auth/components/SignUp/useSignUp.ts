@@ -112,7 +112,7 @@ export function useSignUp(
     };
 
     const data: any = await authClient.register(registerDetails).catch((err) => {
-      analyticsService.rudderanalyticsSignUpError(err, email);
+      analyticsService.rudderanalyticsSignUpError(email, err.message);
     });
 
     const { token } = data;

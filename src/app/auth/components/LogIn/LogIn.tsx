@@ -59,14 +59,6 @@ export default function LogIn(): JSX.Element {
         const { token, user } = await doLogin(email, password, twoFactorCode);
         dispatch(userActions.setUser(user));
 
-        analyticsService.rudderanalyticsSignIn(user.uuid, user.email);
-
-        // analyticsService.identify(user, user.email);
-        // analyticsService.trackSignIn({
-        //   email: user.email,
-        //   userId: user.uuid,
-        // });
-
         try {
           dispatch(productsThunks.initializeThunk());
           dispatch(planThunks.initializeThunk());
@@ -80,20 +72,21 @@ export default function LogIn(): JSX.Element {
         setToken(token);
         userActions.setUser(user);
         setRegisterCompleted(user.registerCompleted);
+        analyticsService.rudderanalyticsSignIn(user.uuid, user.email);
       } else {
         setShowTwoFactor(true);
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         navigationService.history.push(`/activate/${email}`);
       } else {
-        // analyticsService.signInAttempted(email, castedError);
+        // analyticsService.rudderanalyticsSignInError(email, castedError.message);
       }
 
       setLoginError([castedError.message]);
       setShowErrors(true);
+      analyticsService.rudderanalyticsSignInError(email, castedError.message);
     } finally {
       setIsLoggingIn(false);
     }
@@ -144,7 +137,7 @@ export default function LogIn(): JSX.Element {
               <span className="font-normal">Password</span>
               <Link
                 onClick={(): void => {
-                  // analyticsService.trackUserResetPasswordRequest();
+                  analyticsService.rudderanalyticsForgotPassword(email);
                 }}
                 to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"

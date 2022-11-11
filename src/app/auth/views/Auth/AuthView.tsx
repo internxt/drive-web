@@ -92,37 +92,6 @@ export default function Auth(): JSX.Element {
 
       analyticsService.rudderanalyticsSignUp(email, xUser.uuid);
 
-      // analyticsService.trackPaymentConversion();
-      // analyticsService.trackSignUp({
-      //   userId: xUser.uuid,
-      //   properties: {
-      //     email: xUser.email,
-      //     signup_source: signupCampaignSource(window.location.search),
-      //   },
-      //   traits: {
-      //     email: xUser.email,
-      //     first_name: xUser.name,
-      //     last_name: xUser.lastname,
-      //     usage: 0,
-      //     createdAt: new Date().toISOString(),
-      //     signup_device_source: signupDevicesource(window.navigator.userAgent),
-      //     acquisition_channel: signupCampaignSource(window.location.search),
-      //   },
-      // });
-
-      // adtrack script
-      // window._adftrack = Array.isArray(window._adftrack)
-      //   ? window._adftrack
-      //   : window._adftrack
-      //   ? [window._adftrack]
-      //   : [];
-      // window._adftrack.push({
-      //   HttpHost: 'track.adform.net',
-      //   pm: 2370627,
-      //   divider: encodeURIComponent('|'),
-      //   pagename: encodeURIComponent('New'),
-      // });
-
       postMessage({ action: 'redirect' });
     } catch (err: any) {
       analyticsService.rudderanalyticsSignUpError(err, email);
@@ -151,18 +120,9 @@ export default function Auth(): JSX.Element {
 
     try {
       const isTfaEnabled = await is2FANeeded(email);
-
       if (!isTfaEnabled || tfa) {
         const { user } = await doLogin(email, password, tfa);
         dispatch(userActions.setUser(user));
-
-        analyticsService.rudderanalyticsSignIn(user.uuid, user.email);
-
-        // analyticsService.identify(user, user.email);
-        // analyticsService.trackSignIn({
-        //   email: user.email,
-        //   userId: user.uuid,
-        // });
 
         try {
           dispatch(productsThunks.initializeThunk());
@@ -176,13 +136,13 @@ export default function Auth(): JSX.Element {
         setIsAuthenticated(true);
         setRegisterCompleted(user.registerCompleted);
         userActions.setUser(user);
+        analyticsService.rudderanalyticsSignIn(user.uuid, user.email);
       } else {
         postMessage({ action: '2fa' });
         setIsLoggingIn(false);
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-
       if (castedError.message.includes('not activated')) {
         navigationService.history.push(`/activate/${email}`);
       } else {
@@ -191,6 +151,7 @@ export default function Auth(): JSX.Element {
 
       postMessage({ action: 'error', msg: errorService.castError(err).message });
       setIsLoggingIn(false);
+      analyticsService.rudderanalyticsSignInError(email, castedError.message);
     }
   };
 

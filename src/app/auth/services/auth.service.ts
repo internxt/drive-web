@@ -28,13 +28,15 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
 import RealtimeService from 'app/core/services/socket.service';
+import LogIn from '../components/LogIn/LogIn';
+import { UnauthorizedCallback } from '@internxt/sdk/dist/shared/http/types';
 
 export async function logOut(): Promise<void> {
-  analyticsService.rudderanalyticsSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
   navigationService.push(AppView.Login);
+  analyticsService.rudderanalyticsSignOut();
 }
 
 export function cancelAccount(): Promise<void> {
@@ -46,7 +48,6 @@ export function cancelAccount(): Promise<void> {
 export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
-    analyticsService.rudderanalyticsSignInError(email, error.message);
     throw new Error(error.message ?? 'Login error');
   });
 
@@ -100,7 +101,6 @@ export const doLogin = async (
     .login(loginDetails, cryptoProvider)
     .then(async (data) => {
       const { user, token, newToken } = data;
-
       const publicKey = user.publicKey;
       const privateKey = user.privateKey;
       const revocationCertificate = user.revocationKey;
@@ -140,7 +140,6 @@ export const doLogin = async (
       };
     })
     .catch((error) => {
-      analyticsService.rudderanalyticsSignInError(email, error.message);
       throw error;
     });
 };

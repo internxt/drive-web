@@ -105,11 +105,10 @@ export function rudderanalyticsSignIn(uuid: string, email: string): void {
 }
 
 export function rudderanalyticsSignInError(email: string, error: string | Error): void {
-  /* window.analytics.track(AnalyticsTrack.SignInAttempted, {
-    status: 'error',
-    msg: error ? error : 'Login error',
+  window.rudderanalytics.track('User Signin Failed', {
+    message: error ? error : 'Login error',
     email: email,
-  }); */
+  });
 }
 
 export function rudderanalyticsSignUp(email: string, uuid: string): void {
@@ -119,7 +118,7 @@ export function rudderanalyticsSignUp(email: string, uuid: string): void {
 }
 
 export function rudderanalyticsSignUpError(email: string, error: string): void {
-  window.rudderanalytics.track('User Signup Error', { email: email, error: error });
+  window.rudderanalytics.track('User Signup Failed', { email: email, error: error });
 }
 
 export function trackUserEnterPayments(priceId: string): void {
@@ -238,8 +237,8 @@ export function identify(user: UserSettings, email: string): void {
   }); */
 }
 
-export function trackUserResetPasswordRequest(): void {
-  // window.analytics.track(AnalyticsTrack.UserResetPasswordRequest);
+export function rudderanalyticsForgotPassword(email: string): void {
+  window.rudderanalytics.track('Forgot password clicked', { email: email || 'No email provided' });
 }
 
 export function track(email: string, status: 'error' | 'success'): void {
@@ -411,7 +410,7 @@ const analyticsService = {
   trackDeleteWelcomeFile,
   trackFileShare,
   rudderanalyticsSignInError,
-  trackUserResetPasswordRequest,
+  rudderanalyticsForgotPassword,
   track,
   trackFileUploadBucketIdUndefined,
   trackFileDownloadCompleted,
