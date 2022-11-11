@@ -126,7 +126,7 @@ export class SdkFactory {
       token: this.getToken(workspace),
       unauthorizedCallback: async () => {
         if (!localStorage.getItem('xUser')) {
-          await navigationService.push(AppView.Login);
+          navigationService.push(AppView.Login);
         } else {
           await SdkFactory.sdk.dispatch(userThunks.logoutThunk());
         }
