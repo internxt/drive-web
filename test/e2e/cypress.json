@@ -9,6 +9,7 @@
     "signup.spec.ts",
     "unauthorized.spec.ts",
     "upload-file.spec.ts",
+    "recents-panel.spec.ts",
     "download-file.spec.ts",
     "share-file.spec.ts",
     "delete-file.spec.ts",
