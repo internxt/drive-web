@@ -13,7 +13,7 @@ describe('Remove Folder', () => {
       .find('[data-test=delete-folder-button]', { includeShadowDom: true })
       .click({ force: true });
 
-    cy.get('[data-test=delete-button').click();
+    cy.get('[data-test=delete-button').click({ force: true });
 
     cy.get('[data-test=file-list-folder]').contains(RENAMED_FOLDER_NAME).should('not.exist');
   });

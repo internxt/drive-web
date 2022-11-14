@@ -1,5 +1,4 @@
-const CLASS_FILE_LIST_ITEM_NAME = '.file-list-item-name';
-const CLASS_ITEM_RENAME_BUTTON = '.file-list-item-edit-name-button';
+const ID_DROPDOWN = 'button[id="dropdown-basic"]';
 
 const DATA_TEST_FILE_LIST_FOLDER = '[data-test=file-list-folder]';
 const DATA_TEST_FILE_LIST_FILE = '[data-test=file-list-file]';
@@ -14,21 +13,15 @@ describe('Rename item', () => {
   });
 
   it('Should rename a folder item', () => {
-    cy.get(DATA_TEST_FILE_LIST_FOLDER)
-      .eq(0)
-      .find(CLASS_FILE_LIST_ITEM_NAME)
-      .find(CLASS_ITEM_RENAME_BUTTON)
-      .click({ force: true });
+    cy.get(DATA_TEST_FILE_LIST_FOLDER).eq(0).find(ID_DROPDOWN).click();
+    cy.get('a[id="rename"]').click({ force: true });
     cy.get(DATA_TEST_FILE_LIST_FOLDER).eq(0).find('input[type="text"]').clear().type(`${newFolderName}{enter}`);
     cy.get(DATA_TEST_FILE_LIST_FOLDER).contains(newFolderName);
   });
 
   it('Should rename a file item', () => {
-    cy.get(DATA_TEST_FILE_LIST_FILE)
-      .eq(0)
-      .find(CLASS_FILE_LIST_ITEM_NAME)
-      .find(CLASS_ITEM_RENAME_BUTTON)
-      .click({ force: true });
+    cy.get(DATA_TEST_FILE_LIST_FILE).eq(0).find(ID_DROPDOWN).click();
+    cy.get('a[id="rename"]').click({ force: true });
 
     cy.get(DATA_TEST_FILE_LIST_FILE).eq(0).find('input[type="text"]').clear().type(`${newFileName}{enter}`);
 
