@@ -297,7 +297,7 @@ function countItemsUnderRoot(root: IRoot): number {
 
   const queueOfFolders: Array<IRoot> = [root];
 
-  while (queueOfFolders.length) {
+  while (queueOfFolders.length > 0) {
     const folder = queueOfFolders.shift() as IRoot;
 
     count += folder.childrenFiles?.length ?? 0;
@@ -312,7 +312,7 @@ function getItemsSize(root: IRoot): number {
 
   const queueOfFolders: Array<IRoot> = [root];
 
-  while (queueOfFolders.length) {
+  while (queueOfFolders.length > 0) {
     const folder = queueOfFolders.shift() as IRoot;
 
     folder.childrenFiles?.forEach((file) => (size += file.size));
