@@ -5,6 +5,7 @@ import httpService from 'app/core/services/http.service';
 import { aes } from '@internxt/lib';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 
+const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 interface CreateShareResponse {
   created: boolean;
   token: string;
@@ -31,15 +32,18 @@ export function getLinkFromShare(
   type: string,
 ): string {
   if (share.created) {
-    return `${window.location.origin}/sh/${type}/${share.token}/${plainCode}`;
+    return `${REACT_APP_SHARE_LINKS_DOMAIN}/sh/${type}/${share.token}/${plainCode}`;
   } else {
-    return `${window.location.origin}/sh/${type}/${share.token}/${aes.decrypt((share as any).encryptedCode, mnemonic)}`;
+    return `${REACT_APP_SHARE_LINKS_DOMAIN}/sh/${type}/${share.token}/${aes.decrypt(
+      (share as any).encryptedCode,
+      mnemonic,
+    )}`;
   }
 }
 
 export function buildLinkFromShare(mnemonic: string, share: ListShareLinksItem & { code: string }): string {
   const plainCode = aes.decrypt(share.code, mnemonic);
-  return `${window.location.origin}/sh/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
+  return `${REACT_APP_SHARE_LINKS_DOMAIN}/sh/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
 }
 
 export function incrementShareView(token: string): Promise<{ incremented: boolean; token: string }> {

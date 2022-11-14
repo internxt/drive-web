@@ -1,4 +1,4 @@
-import { Storage, Share, Users, Referrals, Payments, Backups } from '@internxt/sdk/dist/drive';
+import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
 import { Auth, Token } from '@internxt/sdk/dist/auth';
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import packageJson from '../../../../../package.json';
@@ -67,6 +67,13 @@ export class SdkFactory {
     return Share.client(apiUrl, appDetails, apiSecurity);
   }
 
+  public createTrashClient(): Trash {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getNewApiSecurity();
+    return Trash.client(apiUrl, appDetails, apiSecurity);
+  }
+
   public createUsersClient(): Users {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
@@ -116,7 +123,6 @@ export class SdkFactory {
     }
     return new Photos(process.env.REACT_APP_PHOTOS_API_URL, newToken);
   }
-
   /** Helpers **/
 
   private getApiSecurity(): ApiSecurity {

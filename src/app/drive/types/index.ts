@@ -8,6 +8,7 @@ export interface DriveFolderData {
   bucket: string | null;
   color: string | null;
   createdAt: string;
+  deleted: boolean;
   encrypt_version: string | null;
   icon: string | null;
   iconId: number | null;
@@ -20,6 +21,7 @@ export interface DriveFolderData {
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
+  plain_name: string;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -32,7 +34,7 @@ export interface DriveFileData {
   bucket: string;
   createdAt: string;
   created_at: string;
-  deleted: false;
+  deleted: boolean;
   deletedAt: null;
   encrypt_version: string;
   fileId: string;

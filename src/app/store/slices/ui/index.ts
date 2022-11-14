@@ -1,10 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import queryString from 'query-string';
 
-import { DriveFileData, DriveItemData } from '../../../drive/types';
-import { FileInfoMenuItem } from '../../../drive/types';
-import navigationService from '../../../core/services/navigation.service';
-import { AccountViewTab } from '../../../core/views/AccountView/tabs';
+import { DriveFileData, DriveItemData, FileInfoMenuItem } from '../../../drive/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -13,17 +9,18 @@ interface UISliceState {
   isFileInfoMenuOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
+  isMoveItemsDialogOpen: boolean;
+  isClearTrashDialogOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
-  isSharedFolderTooBigDialogOpen: boolean,
+  isSharedFolderTooBigDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
   isGuestInviteDialogOpen: boolean;
   isFileViewerOpen: boolean;
   fileViewerItem: DriveFileData | null;
-  currentAccountTab: AccountViewTab;
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
@@ -36,6 +33,8 @@ const initialState: UISliceState = {
   isFileInfoMenuOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
+  isMoveItemsDialogOpen: false,
+  isClearTrashDialogOpen: false,
   isNewsletterDialogOpen: false,
   isSurveyDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
@@ -46,7 +45,6 @@ const initialState: UISliceState = {
   isGuestInviteDialogOpen: false,
   isFileViewerOpen: false,
   fileViewerItem: null,
-  currentAccountTab: AccountViewTab.Info,
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
@@ -73,6 +71,12 @@ export const uiSlice = createSlice({
     },
     setIsDeleteItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDeleteItemsDialogOpen = action.payload;
+    },
+    setIsMoveItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isMoveItemsDialogOpen = action.payload;
+    },
+    setIsClearTrashDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isClearTrashDialogOpen = action.payload;
     },
     setIsNewsletterDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isNewsletterDialogOpen = action.payload;
@@ -104,21 +108,6 @@ export const uiSlice = createSlice({
     setFileViewerItem: (state: UISliceState, action: PayloadAction<UISliceState['fileViewerItem']>) => {
       state.fileViewerItem = action.payload;
     },
-    setCurrentAccountTab: (state: UISliceState, action: PayloadAction<AccountViewTab>) => {
-      const currentQueryParams = queryString.parse(navigationService.history.location.search);
-      const newQueryParams = {
-        ...currentQueryParams,
-        tab: action.payload,
-      };
-      const newQueryString = queryString.stringify(newQueryParams);
-
-      state.currentAccountTab = action.payload;
-
-      navigationService.history.push({
-        pathname: navigationService.history.location.pathname,
-        search: newQueryString && `?${newQueryString}`,
-      });
-    },
     setFileInfoItem: (state: UISliceState, action: PayloadAction<FileInfoMenuItem | null>) => {
       state.currentFileInfoMenuItem = action.payload;
     },
@@ -138,6 +127,7 @@ export const {
   setIsReferralsWidgetCollapsed,
   setIsCreateFolderDialogOpen,
   setIsDeleteItemsDialogOpen,
+  setIsMoveItemsDialogOpen,
   setIsNewsletterDialogOpen,
   setIsSurveyDialogOpen,
   setIsFileLoggerOpen,
@@ -149,7 +139,6 @@ export const {
   setIsDriveItemInfoMenuOpen,
   setIsFileViewerOpen,
   setFileViewerItem,
-  setCurrentAccountTab,
   setFileInfoItem,
   setIsGuestInvitationDialogOpen,
   setCurrentEditingNameDriveItem,
