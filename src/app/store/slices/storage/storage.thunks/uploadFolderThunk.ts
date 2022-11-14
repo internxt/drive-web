@@ -315,7 +315,7 @@ function getItemsSize(root: IRoot): number {
   while (queueOfFolders.length) {
     const folder = queueOfFolders.shift() as IRoot;
 
-    size += folder.childrenFiles?.map((file) => file.size).reduce((a, b) => a + b, 0) ?? 0;
+    folder.childrenFiles?.forEach((file) => (size += file.size));
 
     queueOfFolders.push(...folder.childrenFolders);
   }

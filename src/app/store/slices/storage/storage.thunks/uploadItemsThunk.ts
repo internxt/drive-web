@@ -246,7 +246,6 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     const errors: Error[] = [];
     const tasksIds: string[] = [];
     const abortController = new AbortController();
-    console.log(parentFolderId, '-', files);
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 

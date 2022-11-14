@@ -97,51 +97,46 @@ export const doLogin = async (
     },
   };
 
-  return authClient
-    .login(loginDetails, cryptoProvider)
-    .then(async (data) => {
-      const { user, token, newToken } = data;
-      const publicKey = user.publicKey;
-      const privateKey = user.privateKey;
-      const revocationCertificate = user.revocationKey;
+  return authClient.login(loginDetails, cryptoProvider).then(async (data) => {
+    const { user, token, newToken } = data;
+    const publicKey = user.publicKey;
+    const privateKey = user.privateKey;
+    const revocationCertificate = user.revocationKey;
 
-      const { update, privkeyDecrypted, newPrivKey } = await validateFormat(privateKey, password);
-      const newKeys: Keys = {
-        privateKeyEncrypted: newPrivKey,
-        publicKey: publicKey,
-        revocationCertificate: revocationCertificate,
-      };
-      if (update) {
-        await authClient.updateKeys(newKeys, token);
-      }
+    const { update, privkeyDecrypted, newPrivKey } = await validateFormat(privateKey, password);
+    const newKeys: Keys = {
+      privateKeyEncrypted: newPrivKey,
+      publicKey: publicKey,
+      revocationCertificate: revocationCertificate,
+    };
+    if (update) {
+      await authClient.updateKeys(newKeys, token);
+    }
 
-      const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
-      const clearPrivateKeyBase64 = Buffer.from(privkeyDecrypted).toString('base64');
+    const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
+    const clearPrivateKeyBase64 = Buffer.from(privkeyDecrypted).toString('base64');
 
-      const clearUser = {
-        ...user,
-        mnemonic: clearMnemonic,
-        privateKey: clearPrivateKeyBase64,
-      };
+    const clearUser = {
+      ...user,
+      mnemonic: clearMnemonic,
+      privateKey: clearPrivateKeyBase64,
+    };
 
-      localStorageService.set('xToken', token);
-      localStorageService.set('xMnemonic', clearMnemonic);
-      localStorageService.set('xNewToken', newToken);
+    localStorageService.set('xToken', token);
+    localStorageService.set('xMnemonic', clearMnemonic);
+    localStorageService.set('xNewToken', newToken);
 
-      Sentry.setUser({
-        id: user.uuid,
-        email: user.email,
-        sharedWorkspace: user.sharedWorkspace,
-      });
-
-      return {
-        user: clearUser,
-        token: token,
-      };
-    })
-    .catch((error) => {
-      throw error;
+    Sentry.setUser({
+      id: user.uuid,
+      email: user.email,
+      sharedWorkspace: user.sharedWorkspace,
     });
+
+    return {
+      user: clearUser,
+      token: token,
+    };
+  });
 };
 
 export const readReferalCookie = (): string | undefined => {
