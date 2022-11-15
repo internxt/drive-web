@@ -5,7 +5,6 @@ import notificationsService, { ToastType } from '../../app/notifications/service
 import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import recoverItemsFromTrash from './recover-items-from-trash';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
@@ -15,11 +14,11 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
     };
   });
 
-  const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
-  await trashClient.addItemsToTrash({ items } as AddItemsToTrashPayload);
-
   store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
   store.dispatch(storageActions.clearSelectedItems());
+
+  const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
+  await trashClient.addItemsToTrash({ items } as AddItemsToTrashPayload);
 
   const id = notificationsService.show({
     type: ToastType.Success,
@@ -28,15 +27,13 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
     action: {
       text: 'Undo',
       onClick: async () => {
+        notificationsService.dismiss(id);
         if (itemsToTrash.length > 0) {
           const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentId : itemsToTrash[0].folderId;
+          store.dispatch(storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [destinationId] }));
+          store.dispatch(storageActions.clearSelectedItems());
           await recoverItemsFromTrash(itemsToTrash, destinationId);
-          setTimeout(() => {
-            store.dispatch(storageActions.resetNamePath());
-            store.dispatch(storageThunks.goToFolderThunk({ name: '', id: destinationId }));
-          }, 500);
         }
-        notificationsService.dismiss(id);
       },
     },
   });

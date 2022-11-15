@@ -11,6 +11,7 @@
     "upload-file.spec.ts",
     "download-file.spec.ts",
     "download-shared-file.spec.ts",
+    "share-links.spec.ts",
     "rename-file.spec.ts",
     "download-folder.spec.ts",
     "remove-folder.spec.ts",
