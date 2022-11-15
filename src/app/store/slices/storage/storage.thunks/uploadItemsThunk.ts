@@ -74,6 +74,13 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const storageClient = SdkFactory.getInstance().createStorageClient();
 
     for (const file of files) {
+      if (file.size === 0) {
+        notificationsService.show({
+          text: 'File is empty.\nEmpty files are ignored when uploading.',
+          type: ToastType.Warning,
+        });
+        break;
+      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const [parentFolderContentPromise, requestCanceler] = storageClient.getFolderContent(parentFolderId);
       const taskId = tasksService.create<UploadFileTask>({
@@ -249,6 +256,13 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     }
 
     for (const file of files) {
+      if (file.size === 0) {
+        notificationsService.show({
+          text: 'File is empty.\nEmpty files are ignored when uploading.',
+          type: ToastType.Warning,
+        });
+        break;
+      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
@@ -419,6 +433,13 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     const parentFolderContent = await parentFolderContentPromise;
 
     for (const file of files) {
+      if (file.size === 0) {
+        notificationsService.show({
+          text: 'File is empty.\nEmpty files are ignored when uploading.',
+          type: ToastType.Warning,
+        });
+        break;
+      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
@@ -597,6 +618,13 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
     }
 
     for (const file of files) {
+      if (file.size === 0) {
+        notificationsService.show({
+          text: 'File is empty.\nEmpty files are ignored when uploading.',
+          type: ToastType.Warning,
+        });
+        break;
+      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
