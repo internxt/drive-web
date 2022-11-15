@@ -50,6 +50,8 @@ import {
 import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
+import { items as itemUtils } from '@internxt/lib';
+import { renameFile } from 'app/crypto/services/utils';
 
 const PAGINATION_LIMIT = 20;
 
@@ -60,7 +62,6 @@ interface DriveExplorerProps {
   items: DriveItemData[];
   onItemsDeleted?: () => void;
   onItemsMoved?: () => void;
-  onFileUploaded?: () => void;
   onFolderUploaded?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
@@ -99,7 +100,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     connectDropTarget,
     storageFilters,
     currentFolderId,
-    onFileUploaded,
     onItemsMoved,
   } = props;
 
@@ -130,13 +130,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     dispatch(storageThunks.downloadItemsThunk(selectedItems));
   };
 
-  const onUploadFileInputChanged = (e) => {
-    dispatch(
-      storageThunks.uploadItemsThunk({
-        files: Array.from(e.target.files),
-        parentFolderId: currentFolderId,
-      }),
-    ).then(() => onFileUploaded && onFileUploaded());
+  const onUploadFileInputChanged = async (e) => {
+    const files = e?.target?.files as File[];
+
+    const filesJson = transformInputFilesToJSON(files);
+    const { rootList, rootFiles } = transformJsonFilesToItems(filesJson, currentFolderId);
+
+    await uploadItems(props, rootList, rootFiles);
     setFileInputKey(Date.now());
   };
 
@@ -448,13 +448,23 @@ declare module 'react' {
   }
 }
 
-const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
-  const { dispatch, currentFolderId, onDragAndDropEnd } = props;
-  if (files.length) {
-    // files where dragged directly
+const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], rootFiles: File[]) => {
+  const { dispatch, currentFolderId, onDragAndDropEnd, items } = props;
+
+  rootList = rootList.map((item) => {
+    const [, , finalFilename] = itemUtils.renameIfNeeded(items, item.name, '');
+    return Object.assign({}, item, { name: finalFilename });
+  });
+
+  rootFiles = rootFiles.map((item) => {
+    const [, , finalFilename] = itemUtils.renameIfNeeded(items, item.name, '');
+    return renameFile(item, finalFilename);
+  });
+
+  if (rootFiles.length) {
     await dispatch(
-      storageThunks.uploadItemsThunkNoCheck({
-        files,
+      storageThunks.uploadItemsParallelThunkNoCheck({
+        files: rootFiles,
         parentFolderId: currentFolderId,
         options: {
           onSuccess: onDragAndDropEnd,

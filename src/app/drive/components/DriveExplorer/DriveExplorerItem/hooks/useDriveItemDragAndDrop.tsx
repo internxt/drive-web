@@ -87,7 +87,7 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
             if (files.length) {
               // Only files
-              await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id }));
+              await dispatch(storageThunks.uploadItemsParallelThunk({ files, parentFolderId: item.id }));
             }
             if (rootList.length) {
               // Directory tree
