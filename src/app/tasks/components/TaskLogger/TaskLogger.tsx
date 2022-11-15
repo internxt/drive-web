@@ -1,11 +1,9 @@
 import { Fragment, useState, useEffect } from 'react';
-
 import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
 import { TaskStatus } from '../../types';
 import { useTaskManagerGetNotifications } from '../../hooks';
 import tasksService from '../../services/tasks.service';
 import i18n from '../../../i18n/services/i18n.service';
-
 import { uiActions } from '../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { CaretDown, CircleNotch, X } from 'phosphor-react';
@@ -20,6 +18,7 @@ const TaskLogger = (): JSX.Element => {
     status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled],
   });
   const items: JSX.Element[] = allNotifications.map((n) => <TaskLoggerItem notification={n} key={n.taskId} />);
+
   const onCloseButtonClicked = () => {
     if (hasFinished) {
       dispatch(uiActions.setIsFileLoggerOpen(false));

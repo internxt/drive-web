@@ -59,6 +59,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
         await Promise.all(promises);
       },
+      currentProgress: 0,
+      totalProgress: itemsUnderRoot
     });
 
     try {
@@ -116,6 +118,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
                 merge: {
                   status: TaskStatus.InProcess,
                   progress: alreadyUploaded / itemsUnderRoot,
+                  currentProgress: alreadyUploaded,
+                  totalProgress: itemsUnderRoot,
                 },
               });
             });
@@ -185,6 +189,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
 
         await Promise.all(promises);
       },
+      currentProgress: 0,
+      totalProgress: itemsUnderRoot
     });
 
     try {
@@ -242,6 +248,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
                 merge: {
                   status: TaskStatus.InProcess,
                   progress: alreadyUploaded / itemsUnderRoot,
+                  currentProgress: alreadyUploaded,
+                  totalProgress: itemsUnderRoot,
                 },
               });
             });
