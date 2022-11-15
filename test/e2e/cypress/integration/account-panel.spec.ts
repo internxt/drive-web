@@ -1,6 +1,7 @@
 describe('Account panel', () => {
   const firstName = 'Name';
   const lastName = 'Lastname';
+  const email = 'name@intx.com';
 
     beforeEach(() => {
       cy.clearLocalStorage();
@@ -15,6 +16,13 @@ describe('Account panel', () => {
       cy.get('button').contains('Save').click();
       cy.contains(firstName);
       cy.contains(lastName);
+    });
+
+    it('Should invite friend', () => {
+      cy.get('input:first').should('have.attr', 'placeholder', 'Enter friend email').type(email);
+      cy.get('button').contains('Send invitation').click();
+      cy.get('button').contains('See all invitations').click();
+      cy.contains(email);
     });
 
 });
