@@ -30,7 +30,7 @@ export default function ChangePassword({
           Remember that if you forget the password, you will lose access to all your files. We recommend using a
           password manager.
         </p>
-        <Button className="mt-3" onClick={() => setIsModalOpen(true)}>
+        <Button className="mt-3" onClick={() => setIsModalOpen(true)} dataTest="change-password-button">
           Change password
         </Button>
       </Card>
@@ -95,6 +95,7 @@ function ChangePasswordModal({
         value={passwordPayload.password}
         onChange={setPasswordPayload}
         disabled={isLoading}
+        dataTest="new-password"
       />
       <Input
         value={passwordConfirmation}
@@ -105,6 +106,7 @@ function ChangePasswordModal({
         accent={isConfirmationWrong ? 'error' : undefined}
         message={isConfirmationWrong ? 'Password confirmation does not match the password' : undefined}
         disabled={isLoading}
+        dataTest="new-password-confirmation"
       />
       <div className="mt-3 flex justify-end">
         <Button variant="secondary" disabled={isLoading} onClick={onClose}>
@@ -115,6 +117,7 @@ function ChangePasswordModal({
           onClick={handleSubmit}
           disabled={!passwordPayload.valid || passwordConfirmation !== passwordPayload.password}
           className="ml-2"
+          dataTest="next-button"
         >
           Next
         </Button>

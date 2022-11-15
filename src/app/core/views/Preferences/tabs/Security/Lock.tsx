@@ -59,7 +59,12 @@ export default function Lock({
           disabled={formState.tag === 'loading'}
         />
         <div className="mt-4 flex justify-end">
-          <Button loading={formState.tag === 'loading'} disabled={!password} onClick={onAccess}>
+          <Button
+            loading={formState.tag === 'loading'}
+            disabled={!password}
+            onClick={onAccess}
+            dataTest="access-button"
+          >
             Access
           </Button>
         </div>
