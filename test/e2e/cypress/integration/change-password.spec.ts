@@ -19,6 +19,8 @@ describe('Security account tab', () => {
     });
     cy.clearLocalStorage();
     cy.login();
+    // Upload file
+    cy.get('input[type=file]').attachFile(filename);
   });
 
   it('Should have valid files after changing password', () => {
