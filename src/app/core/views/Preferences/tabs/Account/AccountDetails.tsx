@@ -148,7 +148,7 @@ function AccountDetailsModal({
         onChange={setNameValue}
         accent={nameIsInvalid ? 'error' : undefined}
         message={nameIsInvalid ? 'This name is invalid' : undefined}
-        name='firstName'
+        name="firstName"
       />
       <Input
         disabled={status.tag === 'loading'}
@@ -158,7 +158,7 @@ function AccountDetailsModal({
         onChange={setLastnameValue}
         accent={lastnameIsInvalid ? 'error' : undefined}
         message={lastnameIsInvalid ? 'This lastname is invalid' : undefined}
-        name='lastName'
+        name="lastName"
       />
       <div className="mt-3 flex justify-end">
         <Button disabled={status.tag === 'loading'} variant="secondary" onClick={onClose}>
