@@ -9,21 +9,32 @@ import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
+import analyticsService from 'app/analytics/services/analytics.service';
 
-type UpdateInfoFunction = (email: string, password: string) => Promise<{
-  xUser: UserSettings
-  xToken: string,
-  mnemonic: string
+type UpdateInfoFunction = (
+  email: string,
+  password: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  mnemonic: string;
 }>;
-type RegisterFunction = (email: string, password: string, captcha: string) => Promise<{
-  xUser: UserSettings
-  xToken: string,
-  mnemonic: string
+type RegisterFunction = (
+  email: string,
+  password: string,
+  captcha: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  mnemonic: string;
 }>;
 
-export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: string): {
-  updateInfo: UpdateInfoFunction,
-  doRegister: RegisterFunction
+export function useSignUp(
+  registerSource: 'activate' | 'appsumo',
+  referrer?: string,
+): {
+  updateInfo: UpdateInfoFunction;
+  doRegister: RegisterFunction;
 } {
   const updateInfo: UpdateInfoFunction = async (email: string, password: string) => {
     // Setup hash and salt
@@ -97,10 +108,13 @@ export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: str
       keys: keys,
       captcha: captcha,
       referral: readReferalCookie(),
-      referrer: referrer
+      referrer: referrer,
     };
 
-    const data = await authClient.register(registerDetails);
+    const data: any = await authClient.register(registerDetails).catch((err) => {
+      analyticsService.trackSignUpError(email, err.message);
+    });
+
     const { token } = data;
     const user: UserSettings = data.user as unknown as UserSettings;
 

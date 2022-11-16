@@ -18,6 +18,7 @@ import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import fileService from 'app/drive/services/file.service';
 import { SdkFactory } from '../../../../core/factory/sdk';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -48,6 +49,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
     const tasksIds: string[] = [];
+    const fileAnalyticData = files.map((file) => ({ type: file.type, size: file.size }));
+    files.forEach((file) => {
+      analyticsService.trackFileUploadStarted(file.type, file.size);
+    });
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 
@@ -57,6 +62,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
       if (planLimit && planUsage >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+
         return;
       }
     } catch (err: unknown) {
@@ -67,6 +73,9 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       notificationsService.show({
         text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
         type: ToastType.Warning,
+      });
+      files.map((file) => {
+        analyticsService.trackFileUploadError('File too large', file.type, file.size);
       });
       return;
     }
@@ -136,7 +145,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           file,
           isTeam,
           updateProgressCallback,
-          abortController
+          abortController,
         );
 
         tasksService.updateTask({
@@ -176,6 +185,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
             taskId: taskId,
             merge: { status: TaskStatus.Success },
           });
+          analyticsService.trackFileUploadCompleted(
+            uploadedFile.type,
+            uploadedFile.size,
+            uploadedFile.folderId,
+            uploadedFile.id,
+          );
         })
         .catch((err: unknown) => {
           if (abortController.signal.aborted) {
@@ -193,6 +208,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
               taskId: taskId,
               merge: { status: TaskStatus.Error },
             });
+
+            analyticsService.trackFileUploadError(
+              castedError.message,
+              fileAnalyticData[index].type,
+              fileAnalyticData[index].size,
+            );
 
             console.error(castedError);
 
@@ -249,6 +270,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     }
 
     for (const file of files) {
+      analyticsService.trackFileUploadStarted(file.type, file.size);
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
@@ -284,7 +306,6 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     // 2.
     for (const [index, file] of filesToUpload.entries()) {
       if (abortController.signal.aborted) break;
-
       const taskId = tasksIds[index];
       const updateProgressCallback = (progress) => {
         const task = tasksService.findTask(taskId);
@@ -305,7 +326,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
           file,
           isTeam,
           updateProgressCallback,
-          abortController
+          abortController,
         );
 
         tasksService.updateTask({
@@ -343,8 +364,9 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
             taskId: taskId,
             merge: { status: TaskStatus.Success },
           });
+          analyticsService.trackFileUploadCompleted(file.type, file.size, file.parentFolderId, uploadedFile.id);
         })
-        .catch((err: unknown) => {
+        .catch((err: any) => {
           if (abortController.signal.aborted) {
             return tasksService.updateTask({
               taskId: taskId,
@@ -360,6 +382,8 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
               taskId: taskId,
               merge: { status: TaskStatus.Error },
             });
+            analyticsService.trackFileUploadError(err.message, file.type, file.size);
+
             console.error(castedError);
             errors.push(castedError);
           }
@@ -481,7 +505,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         file,
         isTeam,
         updateProgressCallback,
-        abortController
+        abortController,
       );
 
       tasksService.updateTask({
@@ -499,51 +523,53 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
           uploadedFile.name = file.name;
 
           return uploadedFile;
-        })
+        }),
       );
 
       file.parentFolderId = parentFolderId;
 
       uploadPromises.map((filePromise) => {
-        return filePromise.then((uploadedFile) => {
-          const currentFolderId = storageSelectors.currentFolderId(getState());
+        return filePromise
+          .then((uploadedFile) => {
+            const currentFolderId = storageSelectors.currentFolderId(getState());
 
-          if (uploadedFile.folderId === currentFolderId) {
-            dispatch(
-              storageActions.pushItems({
-                updateRecents: true,
-                folderIds: [currentFolderId],
-                items: uploadedFile as DriveItemData,
-              }),
-            );
-          }
+            if (uploadedFile.folderId === currentFolderId) {
+              dispatch(
+                storageActions.pushItems({
+                  updateRecents: true,
+                  folderIds: [currentFolderId],
+                  items: uploadedFile as DriveItemData,
+                }),
+              );
+            }
 
-          tasksService.updateTask({
-            taskId: taskId,
-            merge: { status: TaskStatus.Success },
-          });
-        }).catch((err: unknown) => {
-          if (abortController.signal.aborted) {
-            return tasksService.updateTask({
-              taskId: taskId,
-              merge: { status: TaskStatus.Cancelled },
-            });
-          }
-
-          const castedError = errorService.castError(err);
-          const task = tasksService.findTask(tasksIds[index]);
-
-          if (task?.status !== TaskStatus.Cancelled) {
             tasksService.updateTask({
               taskId: taskId,
-              merge: { status: TaskStatus.Error },
+              merge: { status: TaskStatus.Success },
             });
+          })
+          .catch((err: unknown) => {
+            if (abortController.signal.aborted) {
+              return tasksService.updateTask({
+                taskId: taskId,
+                merge: { status: TaskStatus.Cancelled },
+              });
+            }
 
-            console.error(castedError);
+            const castedError = errorService.castError(err);
+            const task = tasksService.findTask(tasksIds[index]);
 
-            errors.push(castedError);
-          }
-        });
+            if (task?.status !== TaskStatus.Cancelled) {
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: { status: TaskStatus.Error },
+              });
+
+              console.error(castedError);
+
+              errors.push(castedError);
+            }
+          });
       });
     }
 
@@ -656,7 +682,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
         file,
         isTeam,
         updateProgressCallback,
-        abortController
+        abortController,
       );
 
       tasksService.updateTask({
@@ -674,51 +700,53 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
           uploadedFile.name = file.name;
 
           return uploadedFile;
-        })
+        }),
       );
 
       file.parentFolderId = parentFolderId;
 
       uploadPromises.map((filePromise) => {
-        return filePromise.then((uploadedFile) => {
-          const currentFolderId = storageSelectors.currentFolderId(getState());
+        return filePromise
+          .then((uploadedFile) => {
+            const currentFolderId = storageSelectors.currentFolderId(getState());
 
-          if (uploadedFile.folderId === currentFolderId) {
-            dispatch(
-              storageActions.pushItems({
-                updateRecents: true,
-                folderIds: [currentFolderId],
-                items: uploadedFile as DriveItemData,
-              }),
-            );
-          }
+            if (uploadedFile.folderId === currentFolderId) {
+              dispatch(
+                storageActions.pushItems({
+                  updateRecents: true,
+                  folderIds: [currentFolderId],
+                  items: uploadedFile as DriveItemData,
+                }),
+              );
+            }
 
-          tasksService.updateTask({
-            taskId: taskId,
-            merge: { status: TaskStatus.Success },
-          });
-        }).catch((err: unknown) => {
-          if (abortController.signal.aborted) {
-            return tasksService.updateTask({
-              taskId: taskId,
-              merge: { status: TaskStatus.Cancelled },
-            });
-          }
-
-          const castedError = errorService.castError(err);
-          const task = tasksService.findTask(tasksIds[index]);
-
-          if (task?.status !== TaskStatus.Cancelled) {
             tasksService.updateTask({
               taskId: taskId,
-              merge: { status: TaskStatus.Error },
+              merge: { status: TaskStatus.Success },
             });
+          })
+          .catch((err: unknown) => {
+            if (abortController.signal.aborted) {
+              return tasksService.updateTask({
+                taskId: taskId,
+                merge: { status: TaskStatus.Cancelled },
+              });
+            }
 
-            console.error(castedError);
+            const castedError = errorService.castError(err);
+            const task = tasksService.findTask(tasksIds[index]);
 
-            errors.push(castedError);
-          }
-        });
+            if (task?.status !== TaskStatus.Cancelled) {
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: { status: TaskStatus.Error },
+              });
+
+              console.error(castedError);
+
+              errors.push(castedError);
+            }
+          });
       });
     }
 

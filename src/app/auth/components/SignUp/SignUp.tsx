@@ -22,6 +22,7 @@ import Button from '../../components/Button/Button';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export interface SignUpProps {
   location: {
@@ -99,10 +100,9 @@ function SignUp(props: SignUpProps): JSX.Element {
     try {
       const { isNewUser } = props;
       const { email, password, token } = formData;
-      const { xUser, xToken, mnemonic } = isNewUser ? 
-        await doRegister(email, password, token) : 
-        await updateInfo(email, password);
-
+      const { xUser, xToken, mnemonic } = isNewUser
+        ? await doRegister(email, password, token)
+        : await updateInfo(email, password);
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
 
@@ -115,9 +115,8 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email });
-      
+      analyticsService.trackSignUp(email, xUser.uuid);
+
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({
       //   userId: xUser.uuid,

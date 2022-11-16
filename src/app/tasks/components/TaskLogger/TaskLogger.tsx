@@ -35,9 +35,9 @@ const TaskLogger = (): JSX.Element => {
   };
 
   useEffect(() => {
-    const processingItems = allNotifications.findIndex(
-      (notification) => !tasksService.isTaskFinished(notification.taskId),
-    );
+    const processingItems = allNotifications.findIndex((notification) => {
+      !tasksService.isTaskFinished(notification.taskId);
+    });
 
     if (processingItems !== -1) {
       setHasFinished(false);
