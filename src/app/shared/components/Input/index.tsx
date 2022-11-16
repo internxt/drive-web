@@ -15,6 +15,7 @@ export default function Input({
   onFocus,
   onBlur,
   autofocus = false,
+  name,
 }: {
   className?: string;
   label?: string;
@@ -29,6 +30,7 @@ export default function Input({
   onBlur?: () => void;
   message?: string;
   autofocus?: boolean;
+  name?: string;
 }): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -95,6 +97,7 @@ export default function Input({
           setIsFocused(false);
         }}
         value={value}
+        name={name}
       />
       {variant === 'password' && isFocused && (
         <div
