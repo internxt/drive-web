@@ -9,6 +9,8 @@ describe('Security account tab', () => {
   const downloadedFileFullPath = join(downloadsFolder, filename);
   const userFilename = 'test-user.json';
   const second_password = `Pw4${randomBytes(4).toString('hex')}-nla`;
+  const DATA_TEST_FILE_LIST_FILE = '[data-test=file-list-file]';
+  const ID_DROPDOWN = 'button[id="dropdown-basic"]';
 
   beforeEach(() => {
     Cypress.on('uncaught:exception', () => {
@@ -21,6 +23,7 @@ describe('Security account tab', () => {
     cy.login();
     // Upload file
     cy.get('input[type=file]').attachFile(filename);
+    cy.get('[data-test=file-name]').should('have.text', filename);
   });
 
   it('Should have valid files after changing password', () => {
@@ -50,8 +53,10 @@ describe('Security account tab', () => {
       cy.url().should('include', '/app');
 
       // Download file
-      cy.get('[data-test=download-file-button]')
-        .click({ force: true })
+      cy.get(DATA_TEST_FILE_LIST_FILE).eq(0).find(ID_DROPDOWN).click();
+
+      cy.contains('Download')
+        .click()
         .then(() => {
           // Check content
           cy.readFile(path.join(fixturesFolder as string, filename)).then((originalFile) => {
