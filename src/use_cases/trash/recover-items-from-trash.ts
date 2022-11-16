@@ -14,8 +14,6 @@ import databaseService, { DatabaseCollection } from 'app/database/services/datab
 import itemsListService from 'app/drive/services/items-list.service';
 import { DriveItemData } from 'app/drive/types';
 
-const failedItems: DriveItemData[] = [];
-
 async function trackMove(response, type) {
   const user = localStorageService.getUser() as UserSettings;
   analyticsService.trackMoveItem(type, {
@@ -42,6 +40,7 @@ function moveFile(
   fileId: string,
   destination: number,
   bucketId: string,
+  failedItems: DriveItemData[],
 ): Promise<StorageTypes.MoveFileResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.MoveFilePayload = {
@@ -61,14 +60,14 @@ function moveFile(
 function moveFolder(
   item: DriveItemData,
   folderId: number,
-  destination: number
+  destination: number,
+  failedItems: DriveItemData[],
 ): Promise<StorageTypes.MoveFolderResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.MoveFolderPayload = {
     folderId: folderId,
     destinationFolderId: destination
   };
-
   return storageClient.moveFolder(payload)
     .then(response => trackMove(response, 'folder'))
     .catch((error) => {
@@ -77,7 +76,11 @@ function moveFolder(
     });
 }
 
-async function afterMoving(itemsToRecover, destinationId) {
+async function afterMoving(
+  itemsToRecover: DriveItemData[],
+  destinationId: number,
+  failedItems: DriveItemData[],
+): Promise<void> {
   itemsToRecover = itemsToRecover.filter((el) => !failedItems.includes(el));
 
   if (itemsToRecover.length > 0) {
@@ -100,19 +103,23 @@ async function afterMoving(itemsToRecover, destinationId) {
       text: `Item${itemsToRecover.length > 1 ? 's' : ''} restored`,
     });
   }
+
+  if (failedItems.length > 0) {
+    store.dispatch(storageActions.popItems({ updateRecents: true, items: failedItems }));
+    store.dispatch(storageActions.clearSelectedItems());
+  }
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const recoverItemsFromTrash = async (itemsToRecover: DriveItemData[], destinationId) => {
-  itemsToRecover?.forEach((item) => {
+const recoverItemsFromTrash = async (itemsToRecover: DriveItemData[], destinationId: number): Promise<void> => {
+  const failedItems: DriveItemData[] = [];
+  for (const item of itemsToRecover) {
     if (item.isFolder) {
-      moveFolder(item, item.id, destinationId).catch(handleError);
+      await moveFolder(item, item.id, destinationId, failedItems);
     } else {
-      moveFile(item, item.fileId, destinationId, item.bucket).catch(handleError);
+      await moveFile(item, item.fileId, destinationId, item.bucket, failedItems);
     }
-  });
-  await afterMoving(itemsToRecover, destinationId);
-  failedItems.splice(0);
+  }
+  return afterMoving(itemsToRecover, destinationId, failedItems);
 };
 
 export default recoverItemsFromTrash;

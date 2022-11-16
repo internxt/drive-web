@@ -425,6 +425,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 type="file"
                 onChange={onUploadFileInputChanged}
                 multiple={true}
+                data-test="input-file"
               />
               <input
                 key={`folder-${folderInputKey}`}
@@ -435,6 +436,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 webkitdirectory=""
                 onChange={onUploadFolderInputChanged}
                 multiple={true}
+                data-test="input-folder"
               />
             </>
           )}

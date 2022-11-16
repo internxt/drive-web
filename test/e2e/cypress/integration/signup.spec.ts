@@ -4,7 +4,11 @@ describe('Signup user', () => {
   const username = `${crypto.randomBytes(32).toString('hex')}@inxt.com`;
   const password = `Pw4${crypto.randomBytes(4).toString('hex')}`;
 
-  it('Should signup an user correctly', () => {
+  beforeEach(() => {
+    cy.visit('/');
+  });
+
+  it('Should signup an user correctly and redirect new users to /app', () => {
     cy.visit('/new');
 
     cy.contains('Create account');
@@ -14,9 +18,7 @@ describe('Signup user', () => {
     cy.get('input[name=password]').type(password);
 
     cy.get('button[type=submit]').click();
-  });
 
-  it('Should redirect new users to /app', () => {
     cy.url().should('include', '/app');
 
     cy.writeFile(
