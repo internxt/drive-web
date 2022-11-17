@@ -23,7 +23,7 @@ import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStreng
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
 
-const MAX_PASSWORD_LENGHT = 20;
+const MAX_PASSWORD_LENGTH = 20;
 
 export interface SignUpProps {
   location: {
@@ -79,7 +79,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   }, [password]);
 
   function onChangeHandler(input: string) {
-    if (input.length > MAX_PASSWORD_LENGHT) {
+    if (input.length > MAX_PASSWORD_LENGTH) {
       setPasswordState({ tag: 'error', label: 'Password is too long' });
       return;
     }
@@ -205,7 +205,7 @@ function SignUp(props: SignUpProps): JSX.Element {
               className={passwordState ? passwordState.tag : ''}
               placeholder="Password"
               label="password"
-              maxLength={MAX_PASSWORD_LENGHT}
+              maxLength={MAX_PASSWORD_LENGTH}
               register={register}
               onFocus={() => setShowPasswordIndicator(true)}
               required={true}
