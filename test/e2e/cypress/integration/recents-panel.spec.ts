@@ -6,7 +6,7 @@ describe('Recents panel', () => {
   const downloadsFolder = Cypress.config('downloadsFolder');
   const fixturesFolder = Cypress.config('fixturesFolder');
   const downloadedFileFullPath = join(downloadsFolder, filename);
-  
+
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
@@ -24,8 +24,18 @@ describe('Recents panel', () => {
     cy.contains('Delete link');
   });
 
+  it('Should delete shared link', () => {
+    cy.get('button.file-list-item-actions-button').click();
+    cy.get('a').contains('Get link').click();
+    cy.get('button.file-list-item-actions-button').click();
+    cy.get('a').contains('Delete link').click();
+    cy.get('button.file-list-item-actions-button').click();
+    cy.contains('Get link');
+  });
+
   it('Should download a single file', () => {
-    cy.get('[data-test=download-file-button]').click({ force: true })
+    cy.get('[data-test=download-file-button]')
+      .click({ force: true })
       .then(() => {
         cy.readFile(join(fixturesFolder as string, filename)).then((originalFile) => {
           cy.readFile(downloadedFileFullPath).should('eq', originalFile);
@@ -43,5 +53,4 @@ describe('Recents panel', () => {
     cy.get('input[name=fileName]').clear().type(filenameRenamed).type('{enter}');
     cy.contains(filenameRenamed);
   });
-
 });
