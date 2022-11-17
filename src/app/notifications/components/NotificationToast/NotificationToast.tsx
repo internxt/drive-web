@@ -50,20 +50,23 @@ const NotificationToast = ({
       >
         {Icon && <Icon weight="fill" className={`${IconColor} mr-1.5`} size={24} />}
 
-        <p className="flex-1 break-words text-gray-80 line-clamp-2">{text}</p>
-        {action && (
-          action.to? (<NavLink className="ml-3 truncate font-medium text-primary no-underline" exact to={action.to} onClick={action.onClick}>
-            
+        <p className="flex-1 whitespace-pre break-words text-gray-80 line-clamp-2">{text}</p>
+        {action &&
+          (action.to ? (
+            <NavLink
+              className="ml-3 truncate font-medium text-primary no-underline"
+              exact
+              to={action.to}
+              onClick={action.onClick}
+            >
               {action.text}
-            
-          </NavLink>) : (    <button onClick={action.onClick} className="ml-3 truncate font-medium text-primary">
+            </NavLink>
+          ) : (
+            <button onClick={action.onClick} className="ml-3 truncate font-medium text-primary">
               {action.text}
-            </button>)
-        )}
-         
-          
-          
-        
+            </button>
+          ))}
+
         {closable && (
           <button onClick={onClose} className="ml-3 text-gray-40">
             <X size={20} />
