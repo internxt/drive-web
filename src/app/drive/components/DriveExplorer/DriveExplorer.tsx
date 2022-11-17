@@ -273,64 +273,66 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               {title}
             </div>
 
-            {!isTrash && <div className="flex flex-shrink-0 flex-row">
-              <Dropdown
-                classButton={
-                  'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
-                }
-                openDirection={'right'}
-                classMenuItems={
-                  'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow mt-6'
-                }
-                menuItems={[
-                  <MenuItem onClick={onCreateFolderButtonClicked}>
-                    <FolderSimplePlus size={20} />
-                    <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
-                  </MenuItem>,
-                  separatorH,
-                  <MenuItem onClick={onUploadFileButtonClicked}>
-                    <FileArrowUp size={20} />
-                    <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
-                  </MenuItem>,
-                  <MenuItem onClick={onUploadFolderButtonClicked}>
-                    <UploadSimple size={20} />
-                    <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
-                  </MenuItem>,
-                ]}
-              >
-                <>
-                  <div className="flex flex-row items-center space-x-2.5">
-                    <span className="font-medium">{i18n.get('actions.upload.new')}</span>
-                    <Plus weight="bold" className="h-4 w-4" />
-                  </div>
-                </>
-              </Dropdown>
-              {hasAnyItemSelected && (
-                <>
-                  {separatorV}
-                  <BaseButton className="tertiary square w-8" onClick={onDownloadButtonClicked}>
-                    <DownloadSimple className="h-6 w-6" />
-                  </BaseButton>
-                  {selectedItems.length === 1 && (
-                    <>
-                      <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
-                        <Link className="h-6 w-6" />
-                      </BaseButton>
-                      <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemRename}>
-                        <PencilSimple className="h-6 w-6" />
-                      </BaseButton>
-                    </>
-                  )}
-                  <BaseButton className="tertiary square w-8" onClick={onBulkDeleteButtonClicked}>
-                    <Trash className="h-6 w-6" />
-                  </BaseButton>
-                </>
-              )}
-              {separatorV}
-              <BaseButton className="tertiary square w-8" onClick={onViewModeButtonClicked}>
-                {viewModesIcons[viewMode]}
-              </BaseButton>
-            </div>}
+            {!isTrash && (
+              <div className="flex flex-shrink-0 flex-row">
+                <Dropdown
+                  classButton={
+                    'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
+                  }
+                  openDirection={'right'}
+                  classMenuItems={
+                    'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow mt-6'
+                  }
+                  menuItems={[
+                    <MenuItem onClick={onCreateFolderButtonClicked}>
+                      <FolderSimplePlus size={20} />
+                      <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                    </MenuItem>,
+                    separatorH,
+                    <MenuItem onClick={onUploadFileButtonClicked}>
+                      <FileArrowUp size={20} />
+                      <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
+                    </MenuItem>,
+                    <MenuItem onClick={onUploadFolderButtonClicked}>
+                      <UploadSimple size={20} />
+                      <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
+                    </MenuItem>,
+                  ]}
+                >
+                  <>
+                    <div className="flex flex-row items-center space-x-2.5">
+                      <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                      <Plus weight="bold" className="h-4 w-4" />
+                    </div>
+                  </>
+                </Dropdown>
+                {hasAnyItemSelected && (
+                  <>
+                    {separatorV}
+                    <BaseButton className="tertiary square w-8" onClick={onDownloadButtonClicked}>
+                      <DownloadSimple className="h-6 w-6" />
+                    </BaseButton>
+                    {selectedItems.length === 1 && (
+                      <>
+                        <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
+                          <Link className="h-6 w-6" />
+                        </BaseButton>
+                        <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemRename}>
+                          <PencilSimple className="h-6 w-6" />
+                        </BaseButton>
+                      </>
+                    )}
+                    <BaseButton className="tertiary square w-8" onClick={onBulkDeleteButtonClicked}>
+                      <Trash className="h-6 w-6" />
+                    </BaseButton>
+                  </>
+                )}
+                {separatorV}
+                <BaseButton className="tertiary square w-8" onClick={onViewModeButtonClicked}>
+                  {viewModesIcons[viewMode]}
+                </BaseButton>
+              </div>
+            )}
             {isTrash && hasAnyItemSelected && (
               <BaseButton className="tertiary square w-8" onClick={onRecoverButtonClicked}>
                 <ClockCounterClockwise className="h-6 w-6" />
@@ -360,9 +362,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               </div>
             )}
 
-            {/* EMPTY FOLDER */
-              !hasItems && !isLoading && (
-                hasFilters ? (
+            {
+              /* EMPTY FOLDER */
+              !hasItems &&
+                !isLoading &&
+                (hasFilters ? (
                   <Empty
                     icon={filesEmptyImage}
                     title="There are no results for this search"
@@ -398,12 +402,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                       onClick: onUploadFileButtonClicked,
                     }}
                   />
-                )
-              )
+                ))
             }
 
-            {/* DRAG AND DROP */
-              (isOver && !isTrash) && (
+            {
+              /* DRAG AND DROP */
+              isOver && !isTrash && (
                 <div
                   className="drag-over-effect pointer-events-none\
                     absolute flex h-full w-full items-end justify-center"
@@ -412,26 +416,30 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             }
           </div>
 
-          {!isTrash && <>
-            <input
-              key={`file-${fileInputKey}`}
-              className="hidden"
-              ref={fileInputRef}
-              type="file"
-              onChange={onUploadFileInputChanged}
-              multiple={true}
-            />
-            <input
-              key={`folder-${folderInputKey}`}
-              className="hidden"
-              ref={folderInputRef}
-              type="file"
-              directory=""
-              webkitdirectory=""
-              onChange={onUploadFolderInputChanged}
-              multiple={true}
-            />
-          </>}
+          {!isTrash && (
+            <>
+              <input
+                key={`file-${fileInputKey}`}
+                className="hidden"
+                ref={fileInputRef}
+                type="file"
+                onChange={onUploadFileInputChanged}
+                multiple={true}
+                data-test="input-file"
+              />
+              <input
+                key={`folder-${folderInputKey}`}
+                className="hidden"
+                ref={folderInputRef}
+                type="file"
+                directory=""
+                webkitdirectory=""
+                onChange={onUploadFolderInputChanged}
+                multiple={true}
+                data-test="input-folder"
+              />
+            </>
+          )}
         </div>
       </div>
     </div>

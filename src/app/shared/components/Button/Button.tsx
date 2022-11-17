@@ -10,6 +10,7 @@ export default function Button({
   onClick = () => undefined,
   size = 'default',
   loading,
+  dataTest,
 }: {
   variant?: 'primary' | 'accent' | 'secondary';
   type?: 'button' | 'submit';
@@ -19,6 +20,7 @@ export default function Button({
   onClick?: () => void;
   size?: 'medium' | 'default';
   loading?: boolean;
+  dataTest?: string;
 }): JSX.Element {
   let styles = '';
 
@@ -40,6 +42,7 @@ export default function Button({
       onClick={onClick}
       disabled={disabled || loading}
       type={type}
+      data-test={dataTest}
       className={`${
         size === 'default' ? 'h-10 px-5' : 'h-8 px-3.5'
       } outline-none relative select-none rounded-lg text-base font-medium ${styles} ${className}`}
