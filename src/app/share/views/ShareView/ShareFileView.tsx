@@ -26,6 +26,7 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import ShareItemPwdView from './ShareItemPwdView';
+import SendBanner from './SendBanner';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -62,6 +63,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [itemPassword, setItemPassword] = useState('');
+  const [sendBannerVisible, setIsSendBannerVisible] = useState(false);
 
   let body;
 
@@ -201,6 +203,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
       }
     }
+    setIsSendBannerVisible(true);
   };
 
   const handleLeavePage = (e) => {
@@ -319,6 +322,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
   return (
     <>
+      <SendBanner sendBannerVisible={sendBannerVisible} setIsSendBannerVisible={setIsSendBannerVisible} />
       <FileViewer
         show={openPreview}
         file={info['item']}
