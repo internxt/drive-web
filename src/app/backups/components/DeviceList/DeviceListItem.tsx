@@ -19,7 +19,7 @@ export default function DeviceListItem({
   device: Device | DriveFolderData;
   onClick: (clickedDevice: typeof device) => void;
   onDeleteClick: (clickedDevice: typeof device) => void;
-  dataTest: string;
+  dataTest?: string;
 }): JSX.Element {
   let Icon;
 

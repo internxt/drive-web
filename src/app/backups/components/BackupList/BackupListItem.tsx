@@ -18,7 +18,7 @@ export default function BackupsListItem({
   backup: DeviceBackup;
   onDownloadBackupClicked: (backup: DeviceBackup) => void;
   onDeleteBackupClicked: (backup: DeviceBackup) => void;
-  dataTest: string;
+  dataTest?: string;
 }): JSX.Element {
   const dispatch = useAppDispatch();
   const isUploaded = !!backup.fileId;

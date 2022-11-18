@@ -19,7 +19,7 @@ export default function BackupsAsFoldersListItem({
   onDownloadClicked: (target: typeof item) => void;
   onDeleteClicked: (target: typeof item) => void;
   onDoubleClick: (target: typeof item) => void;
-  dataTest: string;
+  dataTest?: string;
 }): JSX.Element {
   const Icon = iconService.getItemIcon(item.isFolder, item.type);
   const size = 'size' in item ? sizeService.bytesToString(item.size) : '';
