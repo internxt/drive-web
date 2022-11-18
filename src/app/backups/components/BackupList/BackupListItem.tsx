@@ -13,10 +13,12 @@ export default function BackupsListItem({
   backup,
   onDownloadBackupClicked,
   onDeleteBackupClicked,
+  dataTest,
 }: {
   backup: DeviceBackup;
   onDownloadBackupClicked: (backup: DeviceBackup) => void;
   onDeleteBackupClicked: (backup: DeviceBackup) => void;
+  dataTest: string;
 }): JSX.Element {
   const dispatch = useAppDispatch();
   const isUploaded = !!backup.fileId;
@@ -57,24 +59,25 @@ export default function BackupsListItem({
 
   return (
     <div
-      className={`py-3.5 border-b border-neutral-30 flex items-center hover:bg-blue-20 ${
+      className={`flex items-center border-b border-neutral-30 py-3.5 hover:bg-blue-20 ${
         isUploaded ? '' : 'text-gray-40'
       }`}
       onDoubleClick={onDownload}
+      data-test={dataTest}
     >
-      <div className="w-0.5/12 px-3 flex items-center justify-center box-content">
-        <BackupIcon className={`w-8 h-8 ${isUploaded ? '' : 'filter grayscale opacity-40'}`} />
+      <div className="box-content flex w-0.5/12 items-center justify-center px-3">
+        <BackupIcon className={`h-8 w-8 ${isUploaded ? '' : 'opacity-40 grayscale filter'}`} />
       </div>
       <p className="flex-grow pr-3">{backup.name}</p>
-      <div className="w-2/12 hidden items-center xl:flex"></div>
-      <div className="w-3/12 hidden items-center lg:flex">
+      <div className="hidden w-2/12 items-center xl:flex"></div>
+      <div className="hidden w-3/12 items-center lg:flex">
         {backup.lastBackupAt ? dateService.format(backup.lastBackupAt, 'DD MMMM YYYY. HH:mm') : 'Not uploaded yet'}
       </div>
-      <div className="w-2/12 flex items-center">{backup.size ? sizeService.bytesToString(backup.size, false) : ''}</div>
-      <div className="w-1/12 flex items-center rounded-tr-4px">
+      <div className="flex w-2/12 items-center">{backup.size ? sizeService.bytesToString(backup.size, false) : ''}</div>
+      <div className="flex w-1/12 items-center rounded-tr-4px">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
-            <UilEllipsisH className="w-full h-full" />
+            <UilEllipsisH className="h-full w-full" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <BackupDropdownActions

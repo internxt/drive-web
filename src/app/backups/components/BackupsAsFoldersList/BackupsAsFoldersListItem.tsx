@@ -13,11 +13,13 @@ export default function BackupsAsFoldersListItem({
   onDownloadClicked,
   onDeleteClicked,
   onDoubleClick,
+  dataTest,
 }: {
   item: DriveItemData;
   onDownloadClicked: (target: typeof item) => void;
   onDeleteClicked: (target: typeof item) => void;
   onDoubleClick: (target: typeof item) => void;
+  dataTest: string;
 }): JSX.Element {
   const Icon = iconService.getItemIcon(item.isFolder, item.type);
   const size = 'size' in item ? sizeService.bytesToString(item.size) : '';
@@ -27,6 +29,7 @@ export default function BackupsAsFoldersListItem({
     <div
       className={'flex items-center border-b border-neutral-30 py-3.5 hover:bg-blue-20'}
       onDoubleClick={() => onDoubleClick(item)}
+      data-test={dataTest}
     >
       <div className="box-content flex w-0.5/12 items-center justify-center px-3">
         <Icon className={'h-8 w-8'} />

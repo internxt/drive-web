@@ -29,6 +29,7 @@ const DeviceList = (props: Props): JSX.Element => {
       device={item}
       onClick={props.onDeviceSelected}
       onDeleteClick={props.onDeviceDeleted}
+      dataTest="device-list-item"
     />
   ));
 

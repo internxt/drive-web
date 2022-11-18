@@ -89,6 +89,7 @@ export default function BackupsAsFoldersList({
               onDeleteClicked={onDelete}
               onDownloadClicked={onDownload}
               onDoubleClick={onDoubleClick}
+              dataTest="backup-list-folder"
             />
           ))}
         {currentItems.length === 0 && !isLoading && (
