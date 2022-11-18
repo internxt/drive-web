@@ -5,7 +5,7 @@ import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrum
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
 import { AppDispatch, RootState } from 'app/store';
-import { storageSelectors } from 'app/store/slices/storage';
+import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 
 export interface DriveViewProps {
@@ -27,6 +27,7 @@ class DriveView extends Component<DriveViewProps> {
   fetchItems = (): void => {
     const { dispatch, currentFolderId } = this.props;
 
+    dispatch(storageActions.clearSelectedItems());
     dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
   };
 

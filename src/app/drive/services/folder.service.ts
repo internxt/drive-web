@@ -110,8 +110,8 @@ export async function updateMetaData(folderId: number, metadata: DriveFolderMeta
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.deleteFolder(folderData.id).then(() => {
+  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+  return trashClient.deleteFolder(folderData.id).then(() => {
     const user = localStorageService.getUser() as UserSettings;
     analyticsService.trackDeleteItem(folderData as DriveItemData, {
       email: user.email,
@@ -124,6 +124,7 @@ interface GetDirectoryFoldersResponse {
   folders: DriveFolderData[];
   last: boolean;
 }
+
 class DirectoryFolderIterator implements Iterator<DriveFolderData> {
   private offset: number;
   private limit: number;
@@ -389,7 +390,6 @@ export async function moveFolder(folderId: number, destination: number): Promise
 const folderService = {
   createFolder,
   updateMetaData,
-  deleteFolder,
   moveFolder,
   fetchFolderTree,
   downloadFolderAsZip,

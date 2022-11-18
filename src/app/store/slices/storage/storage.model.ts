@@ -12,11 +12,14 @@ export interface StorageState {
   levels: Record<number, DriveItemData[]>;
   recents: DriveItemData[];
   isLoadingRecents: boolean;
+  isLoadingDeleted: boolean;
   filters: StorageFilters;
   order: OrderSettings;
   selectedItems: DriveItemData[];
   itemToShare: { share?: ShareLink; item: DriveItemData } | null;
   itemsToDelete: DriveItemData[];
+  itemsToMove: DriveItemData[];
+  itemsOnTrash: DriveItemData[];
   viewMode: FileViewMode;
   namePath: FolderPath[];
 }

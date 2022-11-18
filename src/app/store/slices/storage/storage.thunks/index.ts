@@ -3,7 +3,7 @@ import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { initializeThunk, initializeThunkExtraReducers } from './initializeThunk';
 import { resetNamePathThunk, resetNamePathThunkExtraReducers } from './resetNamePathThunk';
-import { uploadItemsThunk, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
+import { uploadItemsThunk, uploadItemsThunkNoCheck, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
 import { downloadItemsThunk, downloadItemsThunkExtraReducers } from './downloadItemsThunk';
 import { downloadFileThunk, downloadFileThunkExtraReducers } from './downloadFileThunk';
 import { downloadFolderThunk, downloadFolderThunkExtraReducers } from './downloadFolderThunk';
@@ -12,14 +12,16 @@ import { fetchRecentsThunk, fetchRecentsThunkExtraReducers } from './fetchRecent
 import { fetchFolderContentThunk, fetchFolderContentThunkExtraReducers } from './fetchFolderContentThunk';
 import { deleteItemsThunk, deleteItemsThunkExtraReducers } from './deleteItemsThunk';
 import { goToFolderThunk, goToFolderThunkExtraReducers } from './goToFolderThunk';
-import { uploadFolderThunk, uploadFolderThunkExtraReducers } from './uploadFolderThunk';
+import { uploadFolderThunk, uploadFolderThunkNoCheck, uploadFolderThunkExtraReducers } from './uploadFolderThunk';
 import { updateItemMetadataThunk, updateItemMetadataThunkExtraReducers } from './updateItemMetadataThunk';
 import { moveItemsThunk, moveItemsThunkExtraReducers } from './moveItemsThunk';
+import { fetchDeletedThunk, fetchDeletedThunkExtraReducers } from './fetchDeletedThunk';
 
 const storageThunks = {
   initializeThunk,
   resetNamePathThunk,
   uploadItemsThunk,
+  uploadItemsThunkNoCheck,
   downloadItemsThunk,
   downloadFileThunk,
   downloadFolderThunk,
@@ -27,10 +29,12 @@ const storageThunks = {
   deleteItemsThunk,
   goToFolderThunk,
   uploadFolderThunk,
+  uploadFolderThunkNoCheck,
   updateItemMetadataThunk,
   fetchRecentsThunk,
   createFolderThunk,
   moveItemsThunk,
+  fetchDeletedThunk,
 };
 
 export const storageExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
@@ -48,6 +52,7 @@ export const storageExtraReducers = (builder: ActionReducerMapBuilder<StorageSta
   fetchRecentsThunkExtraReducers(builder);
   createFolderThunkExtraReducers(builder);
   moveItemsThunkExtraReducers(builder);
+  fetchDeletedThunkExtraReducers(builder);
 };
 
 export default storageThunks;

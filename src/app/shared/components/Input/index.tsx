@@ -15,6 +15,7 @@ export default function Input({
   onFocus,
   onBlur,
   autofocus = false,
+  name,
 }: {
   className?: string;
   label?: string;
@@ -29,14 +30,23 @@ export default function Input({
   onBlur?: () => void;
   message?: string;
   autofocus?: boolean;
+  name?: string;
 }): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
-  const focusInput = () => inputRef.current?.focus();
-  if (autofocus || message) focusInput();
+
+  const focusInput = () => {
+    if (inputRef && inputRef.current) {
+      inputRef.current.selectionStart = inputRef.current.value.length;
+      inputRef.current.selectionEnd = inputRef.current.value.length;
+      inputRef.current.focus();
+    }
+  };
 
   useEffect(() => {
-    message && focusInput();
-  }, [message, disabled]);
+    if (message || autofocus) {
+      focusInput();
+    }
+  }, [message, autofocus, disabled]);
 
   let focusColor: string;
 
@@ -74,7 +84,7 @@ export default function Input({
         ref={inputRef}
         disabled={disabled}
         className={`inxt-input outline-none h-11 w-full rounded-md border text-lg font-normal text-gray-80 ring-opacity-10 focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 
-				${borderColor} ${focusColor} ${placeholderColor} ${backgroundColor} ${padding}`}
+          ${borderColor} ${focusColor} ${placeholderColor} ${backgroundColor} ${padding}`}
         type={variant === 'password' && !showPassword ? 'password' : 'text'}
         placeholder={placeholder}
         onChange={(e) => onChange && onChange(e.target.value)}
@@ -87,6 +97,7 @@ export default function Input({
           setIsFocused(false);
         }}
         value={value}
+        name={name}
       />
       {variant === 'password' && isFocused && (
         <div
@@ -115,9 +126,8 @@ export default function Input({
             e.preventDefault();
             if (onClear) onClear();
           }}
-          className={`absolute top-1/2 right-4 -translate-y-1/2 transform cursor-pointer py-2 pl-2 text-gray-40  ${
-            isFocused ? 'bg-white' : 'bg-gray-5'
-          }`}
+          className={`absolute top-1/2 right-4 -translate-y-1/2 transform cursor-pointer py-2 pl-2 text-gray-40 
+            ${isFocused ? 'bg-white' : 'bg-gray-5'}`}
         >
           <X size={20} />
         </div>

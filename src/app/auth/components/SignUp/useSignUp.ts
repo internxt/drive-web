@@ -101,7 +101,7 @@ export function useSignUp(
     const registerDetails: RegisterDetails = {
       name: 'My',
       lastname: 'Internxt',
-      email: email,
+      email: email.toLowerCase(),
       password: encPass,
       salt: encSalt,
       mnemonic: encMnemonic,

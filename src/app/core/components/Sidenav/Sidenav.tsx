@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, ClockCounterClockwise, Link, Desktop, FolderSimple, ImageSquare } from 'phosphor-react';
+import { Clock, ClockCounterClockwise, Link, Desktop, FolderSimple, ImageSquare, Trash } from 'phosphor-react';
 import { connect } from 'react-redux';
 
 import { AppView } from '../../types';
@@ -78,8 +78,8 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
             <SidenavItem label="Backups" to="/app/backups" Icon={ClockCounterClockwise} />
             <SidenavItem label="Shared links" to="/app/shared-links" Icon={Link} />
             <SidenavItem label="Recents" to="/app/recents" Icon={Clock} />
+            <SidenavItem label="Trash" to="/app/trash" Icon={Trash} />
             <SidenavItem label="Desktop App" Icon={Desktop} onClick={this.onDownloadAppButtonClicked} />
-            {/*<SidenavItem label="Trash" to="/app/trash" Icon={Trash} />*/}
           </div>
           {this.props.subscription && this.props.subscription.type === 'free' ? (
             <ReferralsWidget />

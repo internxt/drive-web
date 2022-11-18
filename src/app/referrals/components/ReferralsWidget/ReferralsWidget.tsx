@@ -1,7 +1,6 @@
 import i18n from 'app/i18n/services/i18n.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
-
 import { userSelectors } from 'app/store/slices/user';
 import { referralsThunks } from 'app/store/slices/referrals';
 import usersReferralsService from 'app/referrals/services/users-referrals.service';
@@ -19,7 +18,13 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   const creditSum = referrals.reduce((t, x) => t + x.credit * x.steps, 0);
   const currentCredit = referrals.reduce((t, x) => x.completedSteps * x.credit + t, 0);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
-  const isWidgetHidden = !hasReferralsProgram || isLoadingReferrals || isTeam;
+  const completedReferrals = referrals.every(referral => referral.isCompleted === true);
+  const isWidgetHidden = !hasReferralsProgram || isLoadingReferrals || isTeam || completedReferrals;
+
+  const onCollapseButtonClicked = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   const onReferralItemClicked = (referral) => {
     !referral.isCompleted && dispatch(referralsThunks.executeUserReferralActionThunk({ referralKey: referral.key }));
   };
@@ -46,18 +51,12 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
       </span>
     </div>
   ));
-  const onCollapseButtonClicked = () => {
-    setIsCollapsed(!isCollapsed);
-  };
 
   return isWidgetHidden || referralsList.length === 0 ? (
     <div className="flex-grow"></div>
   ) : (
     <div className="flex flex-grow flex-col justify-end">
-      <div
-        className={`flex flex-col overflow-y-hidden rounded-xl border border-gray-10 p-5 shadow-subtle ${props.className || ''
-          }`}
-      >
+      <div className={`flex flex-col overflow-y-hidden rounded-xl border border-gray-10 p-5 shadow-subtle ${props.className || ''}`}>
         {/* HEADER */}
         <div className="flex items-center justify-between">
           <div className="">
