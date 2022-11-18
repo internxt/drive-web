@@ -72,7 +72,7 @@ export default function LogIn(): JSX.Element {
         setToken(token);
         userActions.setUser(user);
         setRegisterCompleted(user.registerCompleted);
-        analyticsService.trackSignIn(user.uuid, user.email);
+        analyticsService.trackSignIn(user.userId, user.email);
       } else {
         setShowTwoFactor(true);
       }
