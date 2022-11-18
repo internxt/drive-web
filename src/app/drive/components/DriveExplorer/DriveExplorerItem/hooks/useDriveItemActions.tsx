@@ -13,11 +13,10 @@ import { uiActions } from '../../../../../store/slices/ui';
 import useDriveItemStoreProps from './useDriveStoreProps';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
-
-//import shareService from 'app/share/services/share.service';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
+import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-trash';
 
 interface DriveItemActions {
-  //itemIsShared: boolean;
   nameInputRef: RefObject<HTMLInputElement>;
   onRenameButtonClicked: (e: MouseEvent) => void;
   confirmNameChange: () => Promise<void>;
@@ -28,17 +27,21 @@ interface DriveItemActions {
   onNameEnterKeyDown: KeyboardEventHandler<HTMLInputElement>;
   onDownloadButtonClicked: (e: MouseEvent) => void;
   onShareButtonClicked: (e: MouseEvent) => void;
+  onShareCopyButtonClicked: (e: MouseEvent) => void;
+  onShareSettingsButtonClicked: (e: MouseEvent) => void;
+  onShareDeleteButtonClicked: (e: MouseEvent) => void;
   onInfoButtonClicked: (e: MouseEvent) => void;
   onDeleteButtonClicked: (e: MouseEvent) => void;
+  onDeletePermanentlyButtonClicked: (e: MouseEvent) => void;
+  onRecoverButtonClicked: (e: MouseEvent) => void;
   onItemClicked: (e: MouseEvent) => void;
   onItemDoubleClicked: (e: MouseEvent) => void;
   onItemRightClicked: (e: MouseEvent) => void;
   downloadAndSetThumbnail: () => void;
 }
-//const {isItemShared } = useDriveItemStoreProps();
+
 const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const dispatch = useAppDispatch();
-  //const [itemIsShared, setItemIsShared] = useState(false);
   const [nameEditPending, setNameEditPending] = useState(false);
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
   const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
@@ -51,19 +54,6 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     dispatch(uiActions.setCurrentEditingNameDirty(item.name));
     dispatch(uiActions.setCurrentEditingNameDriveItem(item));
   };
-  /*const isItemShared = useAppSelector((state) => (item)=>{
-    //const page = state.shared.pagination.page;
-    const perPage = state.shared.pagination.perPage;
-    shareService.getAllShareLinks(0,perPage,undefined).then((response)=>{
-      setItemIsShared(response.items.some((i) => {
-        return item.id.toString() === (i.item as DriveItemData).id.toString() && (item.isFolder === i.isFolder || (item.isFolder === undefined && i.isFolder === false));
-      }));
-    });
-  });*/
-
-  /*useEffect(() => {
-    isItemShared(item);
-  },[]);*/
 
   const confirmNameChange = async () => {
     if (nameEditPending) return;
@@ -112,11 +102,23 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   const onShareButtonClicked = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
+    dispatch(sharedThunks.getSharedLinkThunk({ item }));
+  };
 
-    dispatch(storageActions.setItemToShare(item));
+  const onShareCopyButtonClicked = async (e: React.MouseEvent): Promise<void> => {
+    e.stopPropagation();
+    dispatch(sharedThunks.getSharedLinkThunk({ item }));
+  };
+
+  const onShareSettingsButtonClicked = async (e: React.MouseEvent): Promise<void> => {
+    e.stopPropagation();
+    dispatch(storageActions.setItemToShare({ share: item?.shares?.[0], item }));
     dispatch(uiActions.setIsShareItemDialogOpen(true));
+  };
 
-    //isItemShared(item);
+  const onShareDeleteButtonClicked = async (e: React.MouseEvent): Promise<void> => {
+    e.stopPropagation();
+    dispatch(sharedThunks.deleteLinkThunk({ linkId: item?.shares?.[0]?.id as string, item }));
   };
 
   const onInfoButtonClicked = (e: React.MouseEvent): void => {
@@ -157,17 +159,31 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
     e.stopPropagation();
   };
+
   const onDeleteButtonClicked = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    moveItemsToTrash([item]);
+  };
+
+  const onDeletePermanentlyButtonClicked = (e: React.MouseEvent): void => {
     e.stopPropagation();
 
     dispatch(storageActions.setItemsToDelete([item]));
     dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
   };
+
+  const onRecoverButtonClicked = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    dispatch(storageActions.setItemsToMove([item]));
+    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+  };
+
   const onItemClicked = (): void => {
     isItemSelected(item)
       ? dispatch(storageActions.deselectItems([item]))
       : dispatch(storageActions.selectItems([item]));
   };
+
   const onItemDoubleClicked = (): void => {
     if (item.isFolder) {
       dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
@@ -176,10 +192,12 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
       dispatch(uiActions.setFileViewerItem(item));
     }
   };
+
   const onNameClicked = (e: MouseEvent) => {
     e.stopPropagation();
     onItemDoubleClicked();
   };
+
   const onItemRightClicked = (e: React.MouseEvent): void => {
     e.preventDefault();
   };
@@ -193,7 +211,6 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   };
 
   return {
-    //itemIsShared,
     nameInputRef,
     onRenameButtonClicked,
     confirmNameChange,
@@ -204,8 +221,13 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     onNameEnterKeyDown,
     onDownloadButtonClicked,
     onShareButtonClicked,
+    onShareCopyButtonClicked,
+    onShareSettingsButtonClicked,
+    onShareDeleteButtonClicked,
     onInfoButtonClicked,
     onDeleteButtonClicked,
+    onDeletePermanentlyButtonClicked,
+    onRecoverButtonClicked,
     onItemClicked,
     onItemDoubleClicked,
     onItemRightClicked,

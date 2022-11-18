@@ -28,11 +28,15 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     onRenameButtonClicked,
     onInfoButtonClicked,
     onDeleteButtonClicked,
+    onDeletePermanentlyButtonClicked,
     onShareButtonClicked,
+    onShareCopyButtonClicked,
+    onShareSettingsButtonClicked,
+    onShareDeleteButtonClicked,
     onItemClicked,
     onItemRightClicked,
     onItemDoubleClicked,
-    downloadAndSetThumbnail
+    downloadAndSetThumbnail,
   } = useDriveItemActions(item);
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
@@ -45,7 +49,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       <Fragment>
         <div className={isEditingName(item) ? 'flex' : 'hidden'}>
           <input
-            className="w-full dense border border-white no-ring rect select-text"
+            className="dense no-ring rect w-full select-text border border-white"
             onClick={(e) => e.stopPropagation()}
             ref={nameInputRef}
             type="text"
@@ -60,7 +64,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         </div>
         <span
           data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-          className={`${ṣpanDisplayClass} cursor-pointer whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 text-base px-1 hover:underline`}
+          className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-base text-neutral-900 hover:underline`}
           onClick={onNameClicked}
           title={items.getItemDisplayName(item)}
         >
@@ -105,40 +109,53 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       ref={itemRef}
       style={{ height }}
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group 
-        relative bg-white p-4 box-border rounded-lg hover:bg-neutral-10`}
+        relative box-border rounded-lg bg-white p-4 hover:bg-neutral-10`}
       onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}
       draggable={false}
     >
       <Dropdown>
-        <Dropdown.Toggle variant="success" id="dropdown-basic"
-          className="top-2 right-2 rounded-1/2 w-5 h-5 bg-white cursor-pointer font-bold text-blue-60 absolute transition opacity-0 group-hover:opacity-100">
-          <UilEllipsisH className="w-full h-full" />
+        <Dropdown.Toggle
+          variant="success"
+          id="dropdown-basic"
+          className="absolute top-2 right-2 h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-blue-60 opacity-0 transition group-hover:opacity-100"
+        >
+          <UilEllipsisH className="h-full w-full" />
         </Dropdown.Toggle>
         <Dropdown.Menu>
           <DriveItemDropdownActions
-            hiddenActions={item.isFolder ? [DriveItemAction.Download, DriveItemAction.Share] : []}
+            hiddenActions={
+              item?.shares?.length || 0 > 0
+                ? [DriveItemAction.ShareGetLink]
+                : [DriveItemAction.ShareCopyLink, DriveItemAction.ShareDeleteLink, DriveItemAction.ShareSettings]
+            }
             onRenameButtonClicked={onRenameButtonClicked}
             onDownloadButtonClicked={onDownloadButtonClicked}
             onShareButtonClicked={onShareButtonClicked}
+            onShareCopyButtonClicked={onShareCopyButtonClicked}
+            onShareSettingsButtonClicked={onShareSettingsButtonClicked}
+            onShareDeleteButtonClicked={onShareDeleteButtonClicked}
             onInfoButtonClicked={onInfoButtonClicked}
             onDeleteButtonClicked={onDeleteButtonClicked}
+            onDeletePermanentlyButtonClicked={onDeletePermanentlyButtonClicked}
           />
         </Dropdown.Menu>
       </Dropdown>
-      <div className="flex justify-center items-center w-full h-4/6 filter drop-shadow-soft">
-        {item.currentThumbnail ?
-          <div className="w-full h-full">
+      <div className="flex h-4/6 w-full items-center justify-center drop-shadow-soft filter">
+        {item.currentThumbnail ? (
+          <div className="h-full w-full">
             <img
-              className={`object-cover w-full h-full max-w-full max-h-full pt-5 
+              className={`h-full max-h-full w-full max-w-full object-cover pt-5 
                 ${thumbnailablePdfExtension.includes(item.type) ? 'object-top' : 'object-center'}`}
-              src={item.currentThumbnail.urlObject} />
-          </div> :
-          <ItemIconComponent className="w-1/2 h-1/2 m-auto" />
-        }
+              src={item.currentThumbnail.urlObject}
+            />
+          </div>
+        ) : (
+          <ItemIconComponent className="m-auto h-1/2 w-1/2" />
+        )}
       </div>
-      <div className="text-center mt-3">
+      <div className="mt-3 text-center">
         <div className="mb-1">{nameNodeFactory()}</div>
       </div>
     </div>,

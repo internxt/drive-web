@@ -1,4 +1,4 @@
-import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../../types';
+import { DriveFileData, DriveFileMetadataPayload } from '../../types';
 import analyticsService from '../../../analytics/services/analytics.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
@@ -27,22 +27,6 @@ export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayloa
       platform: DevicePlatform.Web,
     });
   });
-}
-
-export function deleteFile(fileData: DriveFileData): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient
-    .deleteFile({
-      fileId: fileData.id,
-      folderId: fileData.folderId,
-    })
-    .then(() => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackDeleteItem(fileData as DriveItemData, {
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
-    });
 }
 
 export async function moveFile(
@@ -82,12 +66,23 @@ async function fetchRecents(limit: number): Promise<DriveFileData[]> {
   return storageClient.getRecentFiles(limit);
 }
 
+async function fetchDeleted(): Promise<DriveFileData[]> {
+  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
+
+  const trashRequest = trashClient.getTrash();
+
+  return trashRequest[0].then((response) => {
+    const { files } = response;
+    return files;
+  });
+}
+
 const fileService = {
   updateMetaData,
-  deleteFile,
   moveFile,
   fetchRecents,
   uploadFile,
+  fetchDeleted,
 };
 
 export default fileService;

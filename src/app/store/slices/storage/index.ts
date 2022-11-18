@@ -2,11 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import selectors from './storage.selectors';
 import { storageExtraReducers } from '../storage/storage.thunks';
-import { StorageState, StorageSetFiltersPayload, filtersFactory, orderFactory } from './storage.model';
+import { filtersFactory, orderFactory, StorageSetFiltersPayload, StorageState } from './storage.model';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import itemsListService from '../../../drive/services/items-list.service';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';
+import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 
 const initialState: StorageState = {
   loadingFolders: {},
@@ -14,11 +15,14 @@ const initialState: StorageState = {
   levels: {},
   recents: [],
   isLoadingRecents: false,
+  isLoadingDeleted: false,
   filters: filtersFactory(),
   order: orderFactory('updatedAt', OrderDirection.Desc),
   selectedItems: [],
   itemToShare: null,
   itemsToDelete: [],
+  itemsToMove: [],
+  itemsOnTrash: [],
   viewMode: FileViewMode.List,
   namePath: [],
 };
@@ -33,11 +37,17 @@ export const storageSlice = createSlice({
     setIsLoadingRecents: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoadingRecents = action.payload;
     },
+    setIsLoadingDeleted: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.isLoadingDeleted = action.payload;
+    },
     setItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
       state.levels[action.payload.folderId] = action.payload.items;
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;
+    },
+    setItemsOnTrash: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      state.itemsOnTrash = action.payload;
     },
     setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
       Object.assign(state.filters, action.payload);
@@ -70,17 +80,29 @@ export const storageSlice = createSlice({
     clearSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
     },
-    setItemToShare: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
+    setItemToShare: (state: StorageState, action: PayloadAction<{ share?: ShareLink; item: DriveItemData } | null>) => {
       state.itemToShare = action.payload;
     },
     setItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.itemsToDelete = action.payload;
+    },
+    setItemsToMove: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      state.itemsToMove = action.payload;
     },
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
     },
     resetNamePath: (state: StorageState) => {
       state.namePath = [];
+    },
+    popItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      action.payload.forEach((itemToPop) => {
+        const index: number = state.itemsOnTrash.findIndex(
+          (item) => item.id === itemToPop.id && item.isFolder === itemToPop.isFolder,
+        );
+
+        state.itemsOnTrash.splice(index, 1);
+      });
     },
     popNamePathUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
       const folderIndex: number = state.namePath.map((path) => path.id).indexOf(action.payload.id);
@@ -159,8 +181,9 @@ export const storageSlice = createSlice({
       state: StorageState,
       action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
     ) {
-      const itemsToPush = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
-      const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
+      const itemsToPush = Array.isArray(action.payload.items) ? action.payload.items : [action.payload.items];
+      const folderItems = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
+      const folderIds = Array.isArray(folderItems) ? folderItems : [folderItems];
 
       folderIds.forEach((folderId) => {
         const items = itemsListService.pushItems(itemsToPush, state.levels[folderId]);
@@ -209,6 +232,7 @@ export const storageSlice = createSlice({
 export const {
   setIsLoadingFolder,
   setIsLoadingRecents,
+  setIsLoadingDeleted,
   setItems,
   setRecents,
   setFilters,
@@ -218,6 +242,7 @@ export const {
   clearSelectedItems,
   setItemToShare,
   setItemsToDelete,
+  setItemsToMove,
   setViewMode,
   resetNamePath,
   pushNamePath,

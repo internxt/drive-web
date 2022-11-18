@@ -3,9 +3,10 @@ import { Iterator } from 'app/core/collections';
 import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
 
 interface RequiredQueryValues {
-  token: string,
-  directoryId: number,
-  code: string
+  token: string;
+  directoryId: number;
+  code: string;
+  password?: string;
 }
 
 export class SharedFolderFilesIterator implements Iterator<SharedDirectoryFile> {
@@ -19,15 +20,16 @@ export class SharedFolderFilesIterator implements Iterator<SharedDirectoryFile> 
     this.queryValues = queryValues;
   }
 
-  async next(): Promise<{ value: SharedDirectoryFile[], done: boolean }> {
-    const { code, directoryId, token } = this.queryValues;
+  async next(): Promise<{ value: SharedDirectoryFile[]; done: boolean }> {
+    const { code, directoryId, token, password } = this.queryValues;
 
     const { files, last } = await getSharedDirectoryFiles({
       code,
       directoryId,
       token,
       offset: this.offset,
-      limit: this.limit
+      limit: this.limit,
+      password,
     });
 
     this.offset += this.limit;
@@ -47,14 +49,15 @@ export class SharedDirectoryFolderIterator implements Iterator<SharedDirectoryFo
     this.queryValues = queryValues;
   }
 
-  async next(): Promise<{ value: SharedDirectoryFolder[], done: boolean }> {
-    const { directoryId, token } = this.queryValues;
+  async next(): Promise<{ value: SharedDirectoryFolder[]; done: boolean }> {
+    const { directoryId, token, password } = this.queryValues;
 
     const { folders, last } = await getSharedDirectoryFolders({
       directoryId,
       token,
       offset: this.offset,
-      limit: this.limit
+      limit: this.limit,
+      password,
     });
 
     this.offset += this.limit;

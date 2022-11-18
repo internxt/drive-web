@@ -20,6 +20,7 @@ interface DriveExplorerListProps {
   dispatch: AppDispatch;
   onEndOfScroll(): void;
   hasMoreItems: boolean;
+  isTrash?: boolean;
 }
 
 class DriveExplorerList extends React.Component<DriveExplorerListProps> {
@@ -36,7 +37,7 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
       const itemParentId = item.parentId || item.folderId;
       const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}-${itemParentId}`;
 
-      return <DriveExplorerListItem key={itemKey} item={item} />;
+      return <DriveExplorerListItem isTrash={this.props.isTrash} key={itemKey} item={item} />;
     });
   }
 
@@ -47,8 +48,8 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
         const itemParentId = item.parentId || item.folderId;
         const itemKey = `'file'-${item.id}-${itemParentId}`;
 
-        return <DriveExplorerListItem key={itemKey} item={item} />;
-      });
+      return <DriveExplorerListItem key={itemKey} item={item} isTrash={this.props.isTrash} />;
+    });
   }
 
   get itemsFolderList(): JSX.Element[] {
@@ -58,8 +59,8 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
         const itemParentId = item.parentId || item.folderId;
         const itemKey = `'folder'-${item.id}-${itemParentId}`;
 
-        return <DriveExplorerListItem key={itemKey} item={item} />;
-      });
+      return <DriveExplorerListItem key={itemKey} item={item} isTrash= {this.props.isTrash} />;
+    });
   }
 
   get isAllSelected(): boolean {
@@ -133,14 +134,15 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
           {isLoading ? (
             this.loadingSkeleton
           ) : (
-            <div id="scrollableList" className="h-full overflow-y-auto">
+            <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
               <InfiniteScroll
                 dataLength={this.itemsList.length}
                 next={onEndOfScroll}
                 hasMore={hasMoreItems}
                 loader={this.loadingSkeleton}
                 scrollableTarget="scrollableList"
-                className="h-full"
+                className="z-0 h-full"
+                style={{ overflow: 'visible' }}
               >
                 {this.itemsFolderList}
                 {this.itemsFileList}

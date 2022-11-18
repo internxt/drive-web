@@ -218,7 +218,7 @@
     },
     "item-menu": {
       "copy-link": "Copy link",
-      "link-settings": "Link settings",
+      "link-settings": "Share settings",
       "delete-link": "Delete link"
     },
     "link-settings": {
@@ -246,8 +246,8 @@
       "moved-to-trash": "Moved to trash"
     },
     "empty-state": {
-      "title": "Trash is empty",
-      "subtitle": "Items moved to the trash will appear here"
+      "title": "Drive trash is empty",
+      "subtitle": "Deleted files and folders will appear here"
     },
     "item-menu": {
       "restore": "Restore",
@@ -410,7 +410,13 @@
       }
     },
     "deleteItems": {
-      "advice": "Please confirm that you want to delete these items. This action can't be undone."
+      "advice": "This action cannot be undone."
+    },
+    "clearTrash": {
+      "title": "Empty Drive Trash?",
+      "advice": "All items in the Drive Trash will be permanently deleted. This action cannot be undone.",
+      "accept": "Empty Trash",
+      "progress": "Emptying Trash..."
     }
   },
   "appSumo": {

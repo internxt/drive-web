@@ -5,7 +5,7 @@ import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrum
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
 import { AppDispatch, RootState } from 'app/store';
-import { storageSelectors } from 'app/store/slices/storage';
+import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 
 export interface DriveViewProps {
@@ -27,6 +27,7 @@ class DriveView extends Component<DriveViewProps> {
   fetchItems = (): void => {
     const { dispatch, currentFolderId } = this.props;
 
+    dispatch(storageActions.clearSelectedItems());
     dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
   };
 
@@ -73,14 +74,19 @@ class DriveView extends Component<DriveViewProps> {
   }
 }
 
+// TODO: THIS IS TEMPORARY, REMOVE WHEN FALSE PAGINATION IS REMOVED
+const sortFoldersFirst = (items: DriveItemData[]) =>
+  items.sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
+
 export default connect((state: RootState) => {
   const currentFolderId = storageSelectors.currentFolderId(state);
   const items = storageSelectors.filteredItems(state)(storageSelectors.currentFolderItems(state));
+  const sortedItems = sortFoldersFirst(items);
 
   return {
     namePath: state.storage.namePath,
     isLoading: state.storage.loadingFolders[currentFolderId],
     currentFolderId,
-    items,
+    items: sortedItems,
   };
 })(DriveView);

@@ -1,3 +1,4 @@
+import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, FileViewMode, FolderPath } from '../../../drive/types';
 
@@ -11,11 +12,14 @@ export interface StorageState {
   levels: Record<number, DriveItemData[]>;
   recents: DriveItemData[];
   isLoadingRecents: boolean;
+  isLoadingDeleted: boolean;
   filters: StorageFilters;
   order: OrderSettings;
   selectedItems: DriveItemData[];
-  itemToShare: DriveItemData | null;
+  itemToShare: { share?: ShareLink; item: DriveItemData } | null;
   itemsToDelete: DriveItemData[];
+  itemsToMove: DriveItemData[];
+  itemsOnTrash: DriveItemData[];
   viewMode: FileViewMode;
   namePath: FolderPath[];
 }

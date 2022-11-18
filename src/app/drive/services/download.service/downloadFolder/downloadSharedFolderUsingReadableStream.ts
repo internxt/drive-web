@@ -8,15 +8,15 @@ import createZipReadable from './zipStream';
 import { Iterator } from 'app/core/collections';
 
 interface FolderRef {
-  name: string
-  folderId: number
+  name: string;
+  folderId: number;
 }
 
 type FileType = 'file';
 type FolderType = 'folder';
 type Downloadable<T> = {
-  name: string,
-  stream: T extends FileType ? ReadableStream : undefined
+  name: string;
+  stream: T extends FileType ? ReadableStream : undefined;
 };
 type Downloadables = Record<string, Downloadable<FileType | FolderType>>;
 
@@ -26,6 +26,7 @@ export async function downloadSharedFolderUsingReadableStream(
     id: number;
     token: string;
     code: string;
+    password?: string;
   },
   bucket: string,
   bucketToken: string,
@@ -55,12 +56,12 @@ export async function downloadSharedFolderUsingReadableStream(
     },
     async pull(ctrl: {
       enqueue: (content: {
-        name: string
-        stream?: () => ReadableStream<Uint8Array> | undefined, directory?: boolean
-      }) => void,
-      close: () => void
+        name: string;
+        stream?: () => ReadableStream<Uint8Array> | undefined;
+        directory?: boolean;
+      }) => void;
+      close: () => void;
     }) {
-
       eventBus.emit('task-processed');
 
       return new Promise((resolve: (fileOrFolderId: number | null, type: 'file' | 'folder') => void, reject) => {
@@ -78,7 +79,7 @@ export async function downloadSharedFolderUsingReadableStream(
         if (fileOrFolder.stream) {
           ctrl.enqueue({
             name: fileOrFolder.name,
-            stream: () => fileOrFolder.stream
+            stream: () => fileOrFolder.stream,
           });
         } else {
           ctrl.enqueue({ name: fileOrFolder.name, directory: true });
@@ -105,62 +106,69 @@ export async function downloadSharedFolderUsingReadableStream(
 
       await reader.closed;
       controller.close();
-    }
+    },
   });
 
   const abortable = new AbortController();
   let error: Error | null = null;
 
   try {
-    const zipDownloadPromise = passThrough.pipeTo(
-      createWriteStream(rootFolder.name + '.zip'),
-      { signal: abortable.signal }
-    );
+    const zipDownloadPromise = passThrough.pipeTo(createWriteStream(rootFolder.name + '.zip'), {
+      signal: abortable.signal,
+    });
     const pendingFolders: FolderRef[] = [rootFolder];
 
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
 
-      const sharedDirectoryFilesIterator: Iterator<DownloadableFile> =
-        new SharedFolderFilesIterator({
+      const sharedDirectoryFilesIterator: Iterator<DownloadableFile> = new SharedFolderFilesIterator(
+        {
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
-          code: sharedFolderMeta.code
-        }, options.filesLimit);
+          code: sharedFolderMeta.code,
+          password: sharedFolderMeta.password,
+        },
+        options.filesLimit,
+      );
 
-      const sharedDirectoryFoldersIterator: Iterator<DownloadableFolder> =
-        new SharedDirectoryFolderIterator({
+      const sharedDirectoryFoldersIterator: Iterator<DownloadableFolder> = new SharedDirectoryFolderIterator(
+        {
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
-        }, options.foldersLimit);
+          password: sharedFolderMeta.password,
+        },
+        options.foldersLimit,
+      );
 
       const folderLevel = new FolderLevel(
         sharedDirectoryFoldersIterator,
         sharedDirectoryFilesIterator,
         bucket,
-        bucketToken
+        bucketToken,
       );
 
-      await folderLevel.download({
-        onFileRetrieved: ({ name, id, stream }, onFileDownloaded) => {
-          const fullPath = folderToDownload.name + '/' + name;
+      await folderLevel
+        .download({
+          onFileRetrieved: ({ name, id, stream }, onFileDownloaded) => {
+            const fullPath = folderToDownload.name + '/' + name;
 
-          downloadables[id] = { name: fullPath, stream };
-          eventBus.once('task-processed', onFileDownloaded);
-          eventBus.emit('file-ready', id);
-        },
-        onFolderRetrieved: ({ name, id }, onFolderDownloaded) => {
-          const fullPath = folderToDownload.name + '/' + name;
+            downloadables[id] = { name: fullPath, stream };
+            eventBus.once('task-processed', onFileDownloaded);
+            eventBus.emit('file-ready', id);
+          },
+          onFolderRetrieved: ({ name, id }, onFolderDownloaded) => {
+            const fullPath = folderToDownload.name + '/' + name;
 
-          downloadables[id] = { name: fullPath, stream: undefined };
-          eventBus.once('task-processed', onFolderDownloaded);
-          eventBus.emit('folder-ready', id);
-          pendingFolders.push({ folderId: id, name: fullPath });
-        }
-      }).catch((err) => {
-        error = err;
-        abortable.abort();
-      });
+            downloadables[id] = { name: fullPath, stream: undefined };
+            eventBus.once('task-processed', onFolderDownloaded);
+            eventBus.emit('folder-ready', id);
+            pendingFolders.push({ folderId: id, name: fullPath });
+          },
+        })
+        .catch((err) => {
+          error = err;
+          abortable.abort();
+        });
     } while (pendingFolders.length > 0);
 
     eventBus.emit('end');

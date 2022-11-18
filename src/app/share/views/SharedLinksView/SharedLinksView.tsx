@@ -1,7 +1,7 @@
 import i18n from 'app/i18n/services/i18n.service';
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Link, ToggleRight, LinkBreak } from 'phosphor-react';
+import { Trash, Link, LinkBreak, Gear, Copy } from 'phosphor-react';
 import List from 'app/shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
@@ -19,11 +19,16 @@ import { DriveFileData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
 import localStorageService from 'app/core/services/local-storage.service';
 import sizeService from 'app/drive/services/size.service';
+import { useAppDispatch } from 'app/store/hooks';
+import { storageActions } from 'app/store/slices/storage';
+import { uiActions } from 'app/store/slices/ui';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
+const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
+
 function copyShareLink(type: string, code: string, token: string) {
-  copy(`${document.location.origin}/s/${type}/${token}/${code}`);
+  copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
@@ -41,6 +46,7 @@ export default function SharedLinksView(): JSX.Element {
 
   const [isUpdateLinkModalOpen, setIsUpdateLinkModalOpen] = useState(false);
   const [linkToUpdate, setLinkToUpdate] = useState<(ListShareLinksItem & { code: string }) | undefined>(undefined);
+  const dispatch = useAppDispatch();
 
   function closeConfirmDelete() {
     setIsDeleteDialogModalOpen(false);
@@ -222,8 +228,13 @@ export default function SharedLinksView(): JSX.Element {
             (props) => {
               const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
               return (
-                <div className={'flex w-full cursor-pointer flex-row items-center space-x-4 overflow-hidden'}>
-                  <Icon className="flex h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
+                <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
+                  <div className="my-5 flex flex-shrink items-center justify-center">
+                    <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
+                    <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
+                      <Link size={12} color="white" />
+                    </div>
+                  </div>
                   <span
                     className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16"
                     title={`${(props.item as DriveFileData).name}${
@@ -265,10 +276,10 @@ export default function SharedLinksView(): JSX.Element {
           menu={[
             {
               name: i18n.get('shared-links.item-menu.copy-link'),
-              icon: Link,
-              action: (props) => {
+              icon: Copy,
+              action: (props: any) => {
                 const itemType = props.isFolder ? 'folder' : 'file';
-                const encryptedCode = props.code;
+                const encryptedCode = props.code || props.encryptedCode;
                 const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
                 copyShareLink(itemType, plainCode, props.token);
               },
@@ -276,14 +287,17 @@ export default function SharedLinksView(): JSX.Element {
                 return false;
               },
             },
-            /*{
+            {
               name: i18n.get('shared-links.item-menu.link-settings'),
-              icon: ToggleRight,
-              action: onOpenLinkUpdateModal,
+              icon: Gear,
+              action: (props: any) => {
+                dispatch(storageActions.setItemToShare({ share: props, item: props.item }));
+                dispatch(uiActions.setIsShareItemDialogOpen(true));
+              },
               disabled: () => {
                 return false; // If item is selected and link is active
               },
-            },*/
+            },
             {
               name: i18n.get('shared-links.item-menu.delete-link'),
               icon: LinkBreak,
@@ -319,12 +333,12 @@ export default function SharedLinksView(): JSX.Element {
         primaryAction={selectedItems.length > 1 ? 'Delete links' : 'Delete link'}
         primaryActionColor="danger"
       />
-      <UpdateLinkModal
+      {/* <UpdateLinkModal
         isOpen={isUpdateLinkModalOpen}
         onClose={() => setIsUpdateLinkModalOpen(false)}
         onShareUpdated={updateLinkItem}
         linkToUpdate={linkToUpdate!}
-      />
+      /> */}
     </div>
   );
 }
@@ -351,6 +365,7 @@ function UpdateLinkModal({
   }, [isOpen]);
 
   // Could be used for implementing an update of the Share Link if they have more features
+  // To be deleted:
   async function updateShareLink(params: ShareTypes.UpdateShareLinkPayload) {
     setSavingLinkChanges(true);
     const updatedItem = await shareService.updateShareLink(params);
@@ -420,14 +435,14 @@ function UpdateLinkModal({
 
                   <div className="flex flex-row space-x-2">
                     <BaseButton
-                      onClick={() =>
-                        updateShareLink({
-                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                          itemId: linkToUpdate!.id,
-                          timesValid: -1,
-                          active: true,
-                        })
-                      }
+                      onClick={() => {
+                        // updateShareLink({
+                        //   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        //   itemId: linkToUpdate!.id,
+                        //   // timesValid: -1,
+                        //   // active: true,
+                        // })
+                      }}
                       isLoading={savingLinkChanges}
                       className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
                     >
