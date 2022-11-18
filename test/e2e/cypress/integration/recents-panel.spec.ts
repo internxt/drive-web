@@ -20,6 +20,7 @@ describe('Recents panel', () => {
   it('Should get link', () => {
     cy.get('button.file-list-item-actions-button').click();
     cy.get('a').contains('Get link').click();
+    // If the link has been created the delete link is displayed
     cy.get('button.file-list-item-actions-button').click();
     cy.contains('Delete link');
   });
