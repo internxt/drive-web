@@ -1,0 +1,64 @@
+name: CD to staging.internxt.com
+on:
+  push:
+    branches: [staging]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo ${{ secrets.STAGING_NGINX_CONFIG }} | base64 -d > ./infrastructure/staging/nginx.conf
+      - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_SEGMENT_KEY=${{ secrets.REACT_APP_SEGMENT_KEY }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_MAGIC_IV=${{ secrets.REACT_APP_MAGIC_IV }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_MAGIC_SALT=${{ secrets.REACT_APP_MAGIC_SALT }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_CRYPTO_SECRET2=${{ secrets.REACT_APP_CRYPTO_SECRET2 }} >> ./infrastructure/staging/staging.env
+      - run: echo GENERATE_SOURCEMAP=${{ secrets.GENERATE_SOURCEMAP }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_RECAPTCHA_V3=${{ secrets.REACT_APP_RECAPTCHA_V3 }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_STORJ_BRIDGE=${{ secrets.REACT_APP_STORJ_BRIDGE }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_HOSTNAME=${{ secrets.REACT_APP_HOSTNAME }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_PROXY=${{ secrets.REACT_APP_PROXY }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_PHOTOS_API_URL=${{ secrets.REACT_APP_PHOTOS_API_URL }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./infrastructure/staging/staging.env
+      - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./infrastructure/staging/staging.env
+      - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
+      - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
+      # You cannot read packages from other private repos with GITHUB_TOKEN
+      # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
+      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
+      - run: echo "always-auth=true" >> .npmrc
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push to drive-web-dev
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./infrastructure/staging/staging.Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/drive-web-dev:${{ github.sha }}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Updates drive-web cluster image
+        uses: steebchen/kubectl@v2.0.0
+        with: # defaults to latest kubectl binary version
+          config: ${{ secrets.KUBE_CONFIG_DATA_DEVELOPMENT }}
+          command: set image --record deployment/drive-web-staging drive-web-staging=${{ secrets.DOCKERHUB_USERNAME }}/drive-web-dev:${{ github.sha }}
+      - name: Verify deployment
+        uses: steebchen/kubectl@v2.0.0
+        with:
+          config: ${{ secrets.KUBE_CONFIG_DATA_DEVELOPMENT }}
+          version: v1.20.2 # specify kubectl binary version explicitly
+          command: rollout status deployment/drive-web-staging
