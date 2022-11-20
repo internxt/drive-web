@@ -1,6 +1,7 @@
 import { X } from 'phosphor-react';
 import React from 'react';
 import { ReactComponent as SendIcon } from 'assets/images/shared-file/visual.svg';
+import BackgroundImage from 'assets/images/shared-file/banner-bg.png';
 
 export interface Props {
   sendBannerVisible: boolean;
@@ -19,10 +20,11 @@ const SendBanner = (props: Props) => {
       }  fixed top-0 left-0 right-0 bottom-0 z-50 h-screen bg-black bg-opacity-50 px-10`}
     >
       <div
-        className={`${props.sendBannerVisible ? 'flex' : 'hidden'} absolute top-1/2 left-1/2 flex h-auto w-auto
-        -translate-y-1/2 -translate-x-1/2 transform flex-col overflow-hidden rounded-2xl text-neutral-900`}
+        className={`${props.sendBannerVisible ? 'flex' : 'hidden'} absolute top-1/2 left-1/2 flex h-auto
+        w-auto -translate-y-1/2 -translate-x-1/2 transform flex-col rounded-2xl  text-neutral-900`}
+        style={{ backgroundImage: `url(${BackgroundImage})` }}
       >
-        <button className="absolute  right-0 m-7 flex text-white" onClick={onClose}>
+        <button className="absolute right-0 m-7 flex text-white" onClick={onClose}>
           <X size={32} />
         </button>
         <div className="flex w-auto flex-col p-14 lg:flex-row lg:p-20">
@@ -50,7 +52,6 @@ const SendBanner = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className="absolute flex  bg-center bg-no-repeat " />
       </div>
     </div>
   );
