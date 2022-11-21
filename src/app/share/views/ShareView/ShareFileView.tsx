@@ -203,7 +203,9 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
       }
     }
-    setIsSendBannerVisible(true);
+    setTimeout(() => {
+      setIsSendBannerVisible(true);
+    }, 3000);
   };
 
   const handleLeavePage = (e) => {

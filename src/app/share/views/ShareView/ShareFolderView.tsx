@@ -171,7 +171,9 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           .then(() => {
             updateProgress(1);
             shareService.incrementShareView(folderInfo.token);
-            setIsSendBannerVisible(true);
+            setTimeout(() => {
+              setIsSendBannerVisible(true);
+            }, 3000);
           })
           .catch((err) => {
             if (err && err.message && err.message.includes('user aborted')) {
