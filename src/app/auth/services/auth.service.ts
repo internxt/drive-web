@@ -75,7 +75,7 @@ export const doLogin = async (
 }> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const loginDetails: LoginDetails = {
-    email: email,
+    email: email.toLowerCase(),
     password: password,
     tfaCode: twoFactorCode,
   };

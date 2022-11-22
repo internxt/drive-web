@@ -71,6 +71,7 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
       closeClass="flex-shrink-0 flex items-center justify-center h-10 w-10 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
       onClose={onClose}
       weightIcon="light"
+      dataTest="share-item-dialog"
     >
       <hr className="border-t-1 mb-5 w-screen border-neutral-40" />
       <div className="mb-5 flex flex-col">

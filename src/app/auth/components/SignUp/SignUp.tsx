@@ -24,6 +24,8 @@ import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthInd
 import { useSignUp } from './useSignUp';
 import analyticsService from 'app/analytics/services/analytics.service';
 
+const MAX_PASSWORD_LENGTH = 20;
+
 export interface SignUpProps {
   location: {
     search: string;
@@ -78,6 +80,11 @@ function SignUp(props: SignUpProps): JSX.Element {
   }, [password]);
 
   function onChangeHandler(input: string) {
+    if (input.length > MAX_PASSWORD_LENGTH) {
+      setPasswordState({ tag: 'error', label: 'Password is too long' });
+      return;
+    }
+
     const result = testPasswordStrength(input, (qs.email as string) === undefined ? '' : (qs.email as string));
     if (!result.valid) {
       setPasswordState({
@@ -103,6 +110,7 @@ function SignUp(props: SignUpProps): JSX.Element {
       const { xUser, xToken, mnemonic } = isNewUser
         ? await doRegister(email, password, token)
         : await updateInfo(email, password);
+
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
 
@@ -115,7 +123,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      analyticsService.trackSignUp(email, xUser.userId);
+      analyticsService.trackSignUp(xUser.userId, email);
 
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({
@@ -197,6 +205,7 @@ function SignUp(props: SignUpProps): JSX.Element {
               className={passwordState ? passwordState.tag : ''}
               placeholder="Password"
               label="password"
+              maxLength={MAX_PASSWORD_LENGTH}
               register={register}
               onFocus={() => setShowPasswordIndicator(true)}
               required={true}
