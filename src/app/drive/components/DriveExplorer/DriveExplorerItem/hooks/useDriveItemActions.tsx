@@ -163,10 +163,12 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const onDeleteButtonClicked = (e: React.MouseEvent): void => {
     e.stopPropagation();
     moveItemsToTrash([item]);
+    console.log('onDeleteButtonClicked');
   };
 
   const onDeletePermanentlyButtonClicked = (e: React.MouseEvent): void => {
     e.stopPropagation();
+    console.log('onDeletePermanentlyButtonClicked');
 
     dispatch(storageActions.setItemsToDelete([item]));
     dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
