@@ -123,7 +123,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      analyticsService.trackSignUp(xUser.userId, email);
+      analyticsService.trackSignUp(email, xUser.uuid);
 
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({

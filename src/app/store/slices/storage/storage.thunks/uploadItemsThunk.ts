@@ -61,12 +61,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const errors: Error[] = [];
     const tasksIds: string[] = [];
     const fileAnalyticData = files.map((file) => ({ type: file.type, size: file.size }));
-    files.forEach((file) => {
-      analyticsService.trackFileUploadStarted(file.type, file.size);
-    });
-
     options = Object.assign(DEFAULT_OPTIONS, options || {});
-
     try {
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
@@ -85,7 +80,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
         type: ToastType.Warning,
       });
-      files.map((file) => {
+      files.forEach((file) => {
         analyticsService.trackFileUploadError('File too large', file.type, file.size);
       });
       return;
@@ -268,6 +263,10 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 
     try {
+      files.forEach((file) => {
+        analyticsService.trackFileUploadStarted(file.type, file.size);
+      });
+
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
 
