@@ -35,6 +35,17 @@ interface UploadItemsPayload {
 
 const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = { showNotifications: true, showErrors: true };
 
+const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
+  if (zeroLengthFilesNumber > 0) {
+    const fileText = zeroLengthFilesNumber === 1 ? 'file' : 'files';
+
+    notificationsService.show({
+      text: `Empty files are not supported.\n${zeroLengthFilesNumber} empty ${fileText} not uploaded.`,
+      type: ToastType.Warning,
+    });
+  }
+};
+
 /**
  * @description
  *  1. Prepare files to upload
@@ -82,7 +93,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     const storageClient = SdkFactory.getInstance().createStorageClient();
 
+    let zeroLengthFilesNumber = 0;
     for (const file of files) {
+      if (file.size === 0) {
+        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
+        continue;
+      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const [parentFolderContentPromise, requestCanceler] = storageClient.getFolderContent(parentFolderId);
       const taskId = tasksService.create<UploadFileTask>({
@@ -118,6 +134,8 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
       tasksIds.push(taskId);
     }
+
+    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const abortController = new AbortController();
 
@@ -269,8 +287,12 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
       return;
     }
 
+    let zeroLengthFilesNumber = 0;
     for (const file of files) {
-      analyticsService.trackFileUploadStarted(file.type, file.size);
+      if (file.size === 0) {
+        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
+        continue;
+      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
@@ -302,6 +324,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
 
       tasksIds.push(taskId);
     }
+    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     // 2.
     for (const [index, file] of filesToUpload.entries()) {
@@ -442,7 +465,12 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     const [parentFolderContentPromise, requestCanceler] = storageClient.getFolderContent(parentFolderId);
     const parentFolderContent = await parentFolderContentPromise;
 
+    let zeroLengthFilesNumber = 0;
     for (const file of files) {
+      if (file.size === 0) {
+        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
+        continue;
+      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
@@ -476,6 +504,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
       tasksIds.push(taskId);
     }
+    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const abortController = new AbortController();
 
@@ -622,7 +651,12 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
       return;
     }
 
+    let zeroLengthFilesNumber = 0;
     for (const file of files) {
+      if (file.size === 0) {
+        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
+        continue;
+      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const taskId = tasksService.create<UploadFileTask>({
         relatedTaskId: options?.relatedTaskId,
@@ -655,6 +689,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
       tasksIds.push(taskId);
     }
+    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     // 2.
     const uploadPromises: Promise<DriveFileData>[] = [];

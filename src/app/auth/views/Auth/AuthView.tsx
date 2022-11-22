@@ -90,7 +90,7 @@ export default function Auth(): JSX.Element {
       dispatch(referralsThunks.initializeThunk());
       await dispatch(userThunks.initializeUserThunk());
 
-      analyticsService.trackSignUp(email, xUser.uuid);
+      analyticsService.trackSignUp(email, xUser.userId);
 
       postMessage({ action: 'redirect' });
     } catch (err: any) {
@@ -136,7 +136,7 @@ export default function Auth(): JSX.Element {
         setIsAuthenticated(true);
         setRegisterCompleted(user.registerCompleted);
         userActions.setUser(user);
-        analyticsService.trackSignIn(user.uuid, user.email);
+        analyticsService.trackSignIn(user.userId, user.email);
       } else {
         postMessage({ action: '2fa' });
         setIsLoggingIn(false);

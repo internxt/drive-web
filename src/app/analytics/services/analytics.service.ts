@@ -96,8 +96,8 @@ export function trackSignOut() {
   analytics.track('User Logout');
 }
 
-export function trackSignIn(uuid: string, email: string): void {
-  analytics.identify(uuid, { email: email, uuid: uuid }, () => {
+export function trackSignIn(id: string, email: string): void {
+  analytics.identify(id, { email: email, id: id }, () => {
     console.log('Identify callback'); //For debugging
     analytics.track('User Signin', { email: email });
   });
@@ -110,9 +110,9 @@ export function trackSignInError(email: string, error: string | Error): void {
   });
 }
 
-export function trackSignUp(email: string, uuid: string): void {
-  analytics.identify(uuid, { email, uuid: uuid }, () => {
-    analytics.track('User Signup', { email });
+export function trackSignUp(email: string, id: string): void {
+  analytics.identify(id, { email: email, id: id }, () => {
+    analytics.track('User Signup', { email: email });
   });
 }
 
