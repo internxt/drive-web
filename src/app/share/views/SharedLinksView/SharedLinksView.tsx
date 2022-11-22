@@ -75,7 +75,7 @@ export default function SharedLinksView(): JSX.Element {
       items = [...shareLinks, ...items];
     }
     setShareLinks(items);
-    setHasMoreItems(ITEMS_PER_PAGE * page < response.pagination.countAll);
+    setHasMoreItems(ITEMS_PER_PAGE === response.items.length);
     setOrderBy(orderBy);
     setPage(page);
 
