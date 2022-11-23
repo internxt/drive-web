@@ -96,28 +96,28 @@ export function trackSignOut() {
   analytics.track('User Logout');
 }
 
-export function trackSignIn(id: string, email: string): void {
-  analytics.identify(id, { email: email, id: id }, () => {
+export function trackSignIn(properties): void {
+  analytics.identify(properties.userId, properties, () => {
     console.log('Identify callback'); //For debugging
-    analytics.track('User Signin', { email: email });
+    analytics.track('User SignIn', properties);
   });
 }
 
 export function trackSignInError(email: string, error: string | Error): void {
-  analytics.track('User Signin Failed', {
+  analytics.track('User SignIn Failed', {
     message: error ? error : 'Login error',
     email: email,
   });
 }
 
-export function trackSignUp(email: string, id: string): void {
-  analytics.identify(id, { email: email, id: id }, () => {
-    analytics.track('User Signup', { email: email });
+export function trackSignUp(properties): void {
+  analytics.identify(properties.userId, properties, () => {
+    analytics.track('User SignUp', properties);
   });
 }
 
 export function trackSignUpError(email: string, error: string): void {
-  analytics.track('User Signup Failed', { email: email, error: error });
+  analytics.track('User SignUp Failed', { email: email, error: error ? error : 'Signup error' });
 }
 
 export function trackUserEnterPayments(priceId: string): void {
