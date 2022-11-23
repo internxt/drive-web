@@ -36,17 +36,6 @@ export default function BackupsView(): JSX.Element {
     dispatch(backupsActions.setCurrentDevice(null));
   };
 
-  const onDeviceDeleted = async (target: Device | DriveFolderData) => {
-    console.log({ target });
-
-    if ('mac' in target) dispatch(backupsThunks.deleteDeviceThunk(target));
-    else {
-      await dispatch(deleteItemsThunk([target as DriveItemData])).unwrap();
-      await deleteBackupDeviceAsFolder(target as DriveWebFolderData);
-      dispatch(backupsThunks.fetchDevicesThunk());
-    }
-  };
-
   const onOpenDeleteModal = (target: Device | DriveFolderData) => {
     setSelectedDevices(target);
     setIsDeleteModalOpen(true);
