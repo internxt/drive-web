@@ -30,19 +30,20 @@ const SendBanner = (props: Props) => {
         <div className="flex w-auto flex-col p-14 lg:flex-row lg:p-20">
           <div className="flex flex-col items-center justify-center text-center lg:items-start lg:justify-between lg:pr-20 lg:text-left">
             <div className="flex flex-col items-start lg:max-w-[323px]">
-              <p className="w-48 text-5xl font-bold text-white">Try it for yourself</p>
+              <p className="w-48 text-5xl font-bold text-white">Try out Internxt</p>
               <p className="w-full py-4 text-3xl font-semibold text-white">
-                Encrypt and share large <br /> files with Internxt Send.
+                Encrypt, save and share <br />
+                large files with Internxt.
               </p>
             </div>
             <div className="flex pt-6">
               <button
                 className="focus:outline-none relative flex h-14 w-48 flex-row items-center justify-center space-x-4 rounded-full bg-primary px-8 text-base text-white transition duration-100 focus-visible:bg-primary-dark active:bg-primary-dark sm:text-lg"
                 onClick={() => {
-                  window.location.replace('https://send.internxt.com');
+                  window.location.replace('https://internxt.com');
                 }}
               >
-                Send for free!
+                Start for free!
               </button>
             </div>
           </div>
