@@ -279,7 +279,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
         fileName: filename,
         fileType: extension,
         isFileNameValidated: false,
-        showNotification: true,
+        showNotification: !!options?.showNotifications,
         cancellable: true,
         stop: async () => abortController.abort(),
       });
@@ -764,6 +764,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
     await Promise.all(uploadPromises);
 
+    options.showNotifications = true;
     options.onSuccess?.();
 
     dispatch(planThunks.fetchUsageThunk());
