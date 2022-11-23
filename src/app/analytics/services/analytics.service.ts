@@ -180,35 +180,35 @@ export function trackFileDownloadFinished(payload: {
 export function trackFolderUploadStarted(itemsUnderRoot: number, folderSize: number): void {
   analytics.track('Folder Upload Started', {
     number_of_items: itemsUnderRoot,
-    size: folderSize,
+    size: Number(folderSize),
   });
 }
 
 export function trackFolderUploadError(errorMessage: string, folderSize) {
   analytics.track('Folder Upload Error', {
     message: errorMessage,
-    size: folderSize,
+    size: Number(folderSize),
   });
 }
 
 export function trackFolderUploadCompleted(itemsUnderRoot: number, folderSize: number): void {
   analytics.track('Folder Upload Completed', {
     number_of_items: itemsUnderRoot,
-    size: folderSize,
+    size: Number(folderSize),
   });
 }
 
 export function trackFileUploadStarted(type: string, size: number): void {
   analytics.track('File Upload Started', {
     type: type,
-    size: size,
+    size: Number(size),
   });
 }
 
 export function trackFileUploadError(error, type, size): void {
   analytics.track('File Upload Error', {
     message: error,
-    size: size,
+    size: Number(size),
     type: type,
   });
 }
@@ -216,7 +216,7 @@ export function trackFileUploadError(error, type, size): void {
 export function trackFileUploadCompleted(type, size, parentFolderId, fileId): void {
   analytics.track('File Upload Completed', {
     type: type,
-    size: size,
+    size: Number(size),
     parent_folder_id: parentFolderId,
     file_id: fileId,
   });
