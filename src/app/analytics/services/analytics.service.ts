@@ -99,7 +99,7 @@ export function trackSignOut() {
 export function trackSignIn(properties): void {
   analytics.identify(properties.userId, properties, () => {
     console.log('Identify callback'); //For debugging
-    analytics.track('User SignIn', properties);
+    analytics.track('User SignIn', { email: properties.email });
   });
 }
 
@@ -112,7 +112,7 @@ export function trackSignInError(email: string, error: string | Error): void {
 
 export function trackSignUp(properties): void {
   analytics.identify(properties.userId, properties, () => {
-    analytics.track('User SignUp', properties);
+    analytics.track('User SignUp', { email: properties.email });
   });
 }
 
