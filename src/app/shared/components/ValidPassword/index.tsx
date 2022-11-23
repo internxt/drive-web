@@ -10,6 +10,7 @@ export default function ValidPassword({
   onChange,
   value,
   disabled,
+  dataTest,
 }: {
   className?: string;
   label?: string;
@@ -17,6 +18,7 @@ export default function ValidPassword({
   onChange: (payload: { valid: boolean; password: string }) => void;
   value: string;
   disabled?: boolean;
+  dataTest?: string;
 }): JSX.Element {
   const [state, setState] = useState<{ tag: 'error' | 'warning' | 'success'; label: string } | null>(null);
 
@@ -52,6 +54,7 @@ export default function ValidPassword({
         value={value}
         accent={state?.tag}
         disabled={disabled}
+        dataTest={dataTest}
       />
       {showIndicator && state && (
         <PasswordStrengthIndicator className="mt-2" strength={state.tag} label={state.label} />

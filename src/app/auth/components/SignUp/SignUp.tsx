@@ -23,6 +23,8 @@ import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStreng
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
 
+const MAX_PASSWORD_LENGTH = 20;
+
 export interface SignUpProps {
   location: {
     search: string;
@@ -77,6 +79,11 @@ function SignUp(props: SignUpProps): JSX.Element {
   }, [password]);
 
   function onChangeHandler(input: string) {
+    if (input.length > MAX_PASSWORD_LENGTH) {
+      setPasswordState({ tag: 'error', label: 'Password is too long' });
+      return;
+    }
+
     const result = testPasswordStrength(input, (qs.email as string) === undefined ? '' : (qs.email as string));
     if (!result.valid) {
       setPasswordState({
@@ -99,9 +106,9 @@ function SignUp(props: SignUpProps): JSX.Element {
     try {
       const { isNewUser } = props;
       const { email, password, token } = formData;
-      const { xUser, xToken, mnemonic } = isNewUser ? 
-        await doRegister(email, password, token) : 
-        await updateInfo(email, password);
+      const { xUser, xToken, mnemonic } = isNewUser
+        ? await doRegister(email, password, token)
+        : await updateInfo(email, password);
 
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
@@ -117,7 +124,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email });
-      
+
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({
       //   userId: xUser.uuid,
@@ -198,6 +205,7 @@ function SignUp(props: SignUpProps): JSX.Element {
               className={passwordState ? passwordState.tag : ''}
               placeholder="Password"
               label="password"
+              maxLength={MAX_PASSWORD_LENGTH}
               register={register}
               onFocus={() => setShowPasswordIndicator(true)}
               required={true}

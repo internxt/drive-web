@@ -6,7 +6,6 @@ export interface getAllSharedLinksResponse {
     pagination: {
         page: number;
         perPage: number;
-        totalItems: number;
     };
     sharedLinks: ListShareLinksItem[] | [];//Array<ShareLink> | [];
 }
@@ -20,7 +19,6 @@ const sharedService = {
             pagination: {
                 page: pagination.page,
                 perPage: pagination.perPage,
-                totalItems: pagination.countAll,
             },
             sharedLinks: items,
         };
