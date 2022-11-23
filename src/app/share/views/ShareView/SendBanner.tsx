@@ -17,23 +17,22 @@ const SendBanner = (props: Props) => {
     <div
       className={`${
         props.sendBannerVisible ? 'flex' : 'hidden'
-      }  fixed top-0 left-0 right-0 bottom-0 z-50 h-screen bg-black bg-opacity-50 px-10`}
+      }  fixed top-0 left-0 right-0 bottom-0 z-50 h-screen bg-black bg-opacity-50 px-10 lg:px-0`}
     >
       <div
-        className={`${props.sendBannerVisible ? 'flex' : 'hidden'} absolute top-1/2 left-1/2 flex h-auto
-        w-auto -translate-y-1/2 -translate-x-1/2 transform flex-col rounded-2xl  text-neutral-900`}
+        className={`${props.sendBannerVisible ? 'flex' : 'hidden'} absolute top-1/2 left-1/2 flex
+        w-auto max-w-[800px] -translate-y-1/2 -translate-x-1/2 transform flex-col rounded-2xl text-neutral-900`}
         style={{ backgroundImage: `url(${BackgroundImage})` }}
       >
-        <button className="absolute right-0 m-7 flex text-white" onClick={onClose}>
+        <button className="absolute right-0 m-7 flex w-auto text-white" onClick={onClose}>
           <X size={32} />
         </button>
-        <div className="flex w-auto flex-col p-14 lg:flex-row lg:p-20">
-          <div className="flex flex-col items-center justify-center text-center lg:items-start lg:justify-between lg:pr-20 lg:text-left">
-            <div className="flex flex-col items-start lg:max-w-[323px]">
-              <p className="w-48 text-5xl font-bold text-white">Try out Internxt</p>
-              <p className="w-full py-4 text-3xl font-semibold text-white">
-                Encrypt, save and share <br />
-                large files with Internxt.
+        <div className="flex flex-col space-x-20 p-14 lg:flex-row lg:p-20">
+          <div className="flex w-full flex-col items-center justify-center text-center lg:items-start lg:text-left">
+            <div className="flex max-w-[323px] flex-col items-start">
+              <p className="text-5xl font-bold text-white lg:w-48">Try out Internxt</p>
+              <p className=" pt-4 text-3xl font-semibold text-white lg:w-96">
+                Encrypt, save and share large files with Internxt.
               </p>
             </div>
             <div className="flex pt-6">
@@ -47,7 +46,7 @@ const SendBanner = (props: Props) => {
               </button>
             </div>
           </div>
-          <div className="hidden items-center lg:flex">
+          <div className="ml-80 hidden items-center lg:flex">
             <div className="flex w-[340px]">
               <SendIcon height={208} width={208} />
             </div>
