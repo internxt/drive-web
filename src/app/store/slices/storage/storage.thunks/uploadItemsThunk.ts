@@ -279,7 +279,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
         fileName: filename,
         fileType: extension,
         isFileNameValidated: false,
-        showNotification: !!options?.showNotifications,
+        showNotification: true,
         cancellable: true,
         stop: async () => abortController.abort(),
       });
