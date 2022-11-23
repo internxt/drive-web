@@ -11,7 +11,9 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
-import { DriveItemData } from '../../../drive/types';
+import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
+import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
+import Dialog from '../../../shared/components/Dialog/Dialog';
 
 export default function BackupsView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -20,6 +22,9 @@ export default function BackupsView(): JSX.Element {
   const devices = useAppSelector((state) => state.backups.devices);
   const currentDeviceBackups = useAppSelector((state) => state.backups.backups);
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedDevices, setSelectedDevices] = useState<Device | DriveFolderData>();
 
   const onDeviceSelected = (target: Device | DriveFolderData) => {
     dispatch(backupsActions.setCurrentDevice(target));
@@ -31,12 +36,24 @@ export default function BackupsView(): JSX.Element {
     dispatch(backupsActions.setCurrentDevice(null));
   };
 
-  const onDeviceDeleted = async (target: Device | DriveFolderData) => {
-    if ('mac' in target) dispatch(backupsThunks.deleteDeviceThunk(target));
+  const onOpenDeleteModal = (target: Device | DriveFolderData) => {
+    setSelectedDevices(target);
+    setIsDeleteModalOpen(true);
+  };
+
+  const onConfirmDelete = async () => {
+    if (selectedDevices && 'mac' in selectedDevices) dispatch(backupsThunks.deleteDeviceThunk(selectedDevices));
     else {
-      await dispatch(deleteItemsThunk([target as DriveItemData])).unwrap();
+      await dispatch(deleteItemsThunk([selectedDevices as DriveItemData])).unwrap();
+      await deleteBackupDeviceAsFolder(selectedDevices as DriveWebFolderData);
       dispatch(backupsThunks.fetchDevicesThunk());
     }
+    onCloseDeleteModal();
+  };
+
+  const onCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedDevices(undefined);
   };
 
   useEffect(() => {
@@ -59,7 +76,7 @@ export default function BackupsView(): JSX.Element {
     {
       id: -1,
       label: 'Devices',
-      icon: <UilHdd className="w-4 h-4 mr-1" />,
+      icon: <UilHdd className="mr-1 h-4 w-4" />,
       active: true,
       onClick: () => goBack(),
     },
@@ -96,7 +113,7 @@ export default function BackupsView(): JSX.Element {
         isLoading={isLoadingDevices}
         items={devices}
         onDeviceSelected={onDeviceSelected}
-        onDeviceDeleted={onDeviceDeleted}
+        onDeviceDeleted={onOpenDeleteModal}
       />
     );
   } else if (currentDevice && 'mac' in currentDevice) {
@@ -111,9 +128,20 @@ export default function BackupsView(): JSX.Element {
   }
 
   return (
-    <div className="flex flex-col flex-grow pt-6 px-8 mb-5">
-      <div className="pb-4 flex items-baseline">
-        {currentDevice ? backupsBreadcrumbs : <p className="text-lg px-3 py-1"> {i18n.get('backups.your-devices')}</p>}
+    <div className="mb-5 flex flex-grow flex-col px-8 pt-6">
+      <Dialog
+        isOpen={isDeleteModalOpen}
+        onClose={onCloseDeleteModal}
+        onSecondaryAction={onCloseDeleteModal}
+        onPrimaryAction={onConfirmDelete}
+        secondaryAction="Cancel"
+        primaryAction="Confirm"
+        title="Are you sure?"
+        subtitle="Your backup device will be deleted."
+        primaryActionColor="danger"
+      />
+      <div className="flex items-baseline pb-4">
+        {currentDevice ? backupsBreadcrumbs : <p className="px-3 py-1 text-lg"> {i18n.get('backups.your-devices')}</p>}
       </div>
       {body}
     </div>

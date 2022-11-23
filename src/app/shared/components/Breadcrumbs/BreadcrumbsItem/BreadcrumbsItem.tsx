@@ -46,7 +46,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         async ({ rootList, files }) => {
           if (files.length) {
             // Only files
-            await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.id }));
+            await dispatch(storageThunks.uploadItemsParallelThunk({ files, parentFolderId: props.item.id }));
           }
           if (rootList.length) {
             // Directory tree

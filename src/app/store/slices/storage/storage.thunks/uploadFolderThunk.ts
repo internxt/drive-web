@@ -60,6 +60,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
         await Promise.all(promises);
       },
+      currentProgress: 0,
+      totalProgress: itemsUnderRoot
     });
 
     try {
@@ -115,14 +117,16 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
               .then(() => {
                 alreadyUploaded += pack.length;
 
-                tasksService.updateTask({
-                  taskId: taskId,
-                  merge: {
-                    status: TaskStatus.InProcess,
-                    progress: alreadyUploaded / itemsUnderRoot,
-                  },
-                });
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: {
+                  status: TaskStatus.InProcess,
+                  progress: alreadyUploaded / itemsUnderRoot,
+                  currentProgress: alreadyUploaded,
+                  totalProgress: itemsUnderRoot,
+                },
               });
+            });
           }
         }
 
@@ -190,6 +194,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
 
         await Promise.all(promises);
       },
+      currentProgress: 0,
+      totalProgress: itemsUnderRoot
     });
 
     try {
@@ -247,14 +253,16 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
               .then(() => {
                 alreadyUploaded += pack.length;
 
-                tasksService.updateTask({
-                  taskId: taskId,
-                  merge: {
-                    status: TaskStatus.InProcess,
-                    progress: alreadyUploaded / itemsUnderRoot,
-                  },
-                });
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: {
+                  status: TaskStatus.InProcess,
+                  progress: alreadyUploaded / itemsUnderRoot,
+                  currentProgress: alreadyUploaded,
+                  totalProgress: itemsUnderRoot,
+                },
               });
+            });
           }
         }
 
@@ -274,7 +282,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
 
       options.onSuccess?.();
       analyticsService.trackFolderUploadCompleted(itemsUnderRoot, folderSize);
-    } catch (err: any) {
+    } catch (err: unknown) {
       const castedError = errorService.castError(err);
       const updatedTask = tasksService.findTask(taskId);
 

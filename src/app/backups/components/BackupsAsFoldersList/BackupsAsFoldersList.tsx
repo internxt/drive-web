@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { SdkFactory } from '../../../core/factory/sdk';
 import Empty from '../../../shared/components/Empty/Empty';
-import { DriveItemData } from '../../../drive/types';
+import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
@@ -12,6 +12,8 @@ import { uiActions } from '../../../store/slices/ui';
 import BackupsAsFoldersListItem from './BackupsAsFoldersListItem';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
 import i18n from '../../../i18n/services/i18n.service';
+import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
+import { deleteFile } from '../../../drive/services/file.service';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -51,6 +53,11 @@ export default function BackupsAsFoldersList({
   }
 
   async function onDelete(item: DriveItemData) {
+    if (item.isFolder) {
+      await deleteBackupDeviceAsFolder(item as DriveWebFolderData);
+    } else {
+      await deleteFile(item);
+    }
     dispatch(deleteItemsThunk([item]));
     setCurrentItems((items) => items.filter((i) => !(i.id === item.id && i.isFolder === item.isFolder)));
   }

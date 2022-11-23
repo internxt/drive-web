@@ -18,7 +18,7 @@ export default function PhotoThumbnail({
       className={`${className} group relative ${src ? 'cursor-pointer' : ''} ${selected && 'p-1.5'} transition-all duration-100 ease-in-out`}
       style={{ aspectRatio: '1/1' }}
     >
-      {src ? (
+      {src && src.trim().length > 0 ? (
         <img
           onClick={onClick}
           className={`h-full w-full object-cover ${selected && 'rounded-lg brightness-80 filter'} transition-all duration-100 ease-in-out`}

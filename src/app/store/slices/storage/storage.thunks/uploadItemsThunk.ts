@@ -77,7 +77,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: 'File too large.\nYou can only upload or download files of up to 3GB through the web app',
         type: ToastType.Warning,
       });
       files.forEach((file) => {
@@ -280,7 +280,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: 'File too large.\nYou can only upload or download files of up to 3GB through the web app',
         type: ToastType.Warning,
       });
       return;
@@ -454,7 +454,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: 'File too large.\nYou can only upload or download files of up to 3GB through the web app',
         type: ToastType.Warning,
       });
       return;
@@ -644,7 +644,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: 'File too large.\nYou can only upload or download files of up to 3GB through the web app',
         type: ToastType.Warning,
       });
       return;
