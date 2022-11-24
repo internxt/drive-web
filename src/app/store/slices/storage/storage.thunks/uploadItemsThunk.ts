@@ -764,6 +764,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
     await Promise.all(uploadPromises);
 
+    options.showNotifications = true;
     options.onSuccess?.();
 
     dispatch(planThunks.fetchUsageThunk());
