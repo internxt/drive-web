@@ -103,13 +103,10 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   }
 
-  async function clearKey(user: UserSettings, password: string) {
-    const { privkeyDecrypted } = await validateFormat(user.privateKey, password);
+  async function clearKey(privateKey: string, password: string) {
+    const { privkeyDecrypted } = await validateFormat(privateKey, password);
 
-    return {
-      clearMnemonic: decryptTextWithKey(user.mnemonic, password),
-      clearPrivateKeyBase64: Buffer.from(privkeyDecrypted).toString('base64'),
-    };
+    return Buffer.from(privkeyDecrypted).toString('base64');
   }
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
@@ -125,17 +122,14 @@ function SignUp(props: SignUpProps): JSX.Element {
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
 
-      const privateKey = xUser.privateKey;
+      const privateKey = xUser.privateKey ? await clearKey(xUser.privateKey, password) : undefined;
 
-      const keys = privateKey ? await clearKey(xUser, password) : undefined;
-
-      const clearUser = {
+      const user = {
         ...xUser,
-        mnemonic: keys?.clearMnemonic,
-        privateKey: keys?.clearPrivateKeyBase64,
+        privateKey,
       } as UserSettings;
 
-      dispatch(userActions.setUser(clearUser));
+      dispatch(userActions.setUser(user));
       await dispatch(userThunks.initializeUserThunk());
       dispatch(productsThunks.initializeThunk());
       dispatch(planThunks.initializeThunk());
