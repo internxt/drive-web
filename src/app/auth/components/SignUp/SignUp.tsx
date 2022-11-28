@@ -22,9 +22,6 @@ import Button from '../../components/Button/Button';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
-import { validateFormat } from 'app/crypto/services/keys.service';
-import { Keys } from '@internxt/sdk/dist/auth/types';
-import { decryptTextWithKey } from 'app/crypto/services/utils';
 
 const MAX_PASSWORD_LENGTH = 20;
 
@@ -116,20 +113,7 @@ function SignUp(props: SignUpProps): JSX.Element {
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
 
-      const privateKey = xUser.privateKey;
-
-      const { privkeyDecrypted } = await validateFormat(privateKey, password);
-
-      const clearMnemonic = decryptTextWithKey(xUser.mnemonic, password);
-      const clearPrivateKeyBase64 = Buffer.from(privkeyDecrypted).toString('base64');
-
-      const clearUser = {
-        ...xUser,
-        mnemonic: clearMnemonic,
-        privateKey: clearPrivateKeyBase64,
-      };
-
-      dispatch(userActions.setUser(clearUser));
+      dispatch(userActions.setUser(xUser));
       await dispatch(userThunks.initializeUserThunk());
       dispatch(productsThunks.initializeThunk());
       dispatch(planThunks.initializeThunk());
