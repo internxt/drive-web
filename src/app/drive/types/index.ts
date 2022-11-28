@@ -15,7 +15,7 @@ export interface DriveFolderData {
   icon_id: number | null;
   isFolder: boolean;
   name: string;
-  plain_name: string | null;
+  plain_name: string;
   parentId: number;
   parent_id: number | null;
   updatedAt: string;
