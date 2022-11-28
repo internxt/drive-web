@@ -50,6 +50,7 @@ import {
 import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 const PAGINATION_LIMIT = 20;
 
@@ -131,13 +132,20 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onUploadFileInputChanged = (e) => {
-    dispatch(
-      storageThunks.uploadItemsThunk({
-        files: Array.from(e.target.files),
-        parentFolderId: currentFolderId,
-      }),
-    ).then(() => onFileUploaded && onFileUploaded());
-    setFileInputKey(Date.now());
+    if (e.target.files.length < 1000) {
+      dispatch(
+        storageThunks.uploadItemsThunk({
+          files: Array.from(e.target.files),
+          parentFolderId: currentFolderId,
+        }),
+      ).then(() => onFileUploaded && onFileUploaded());
+      setFileInputKey(Date.now());
+    } else {
+      notificationsService.show({
+        text: 'The maximum is 1000 files per upload.',
+        type: ToastType.Warning,
+      });
+    }
   };
 
   const onUploadFolderInputChanged = async (e) => {
@@ -458,31 +466,53 @@ declare module 'react' {
 
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
   const { dispatch, currentFolderId, onDragAndDropEnd } = props;
-  if (files.length) {
-    // files where dragged directly
-    await dispatch(
-      storageThunks.uploadItemsThunkNoCheck({
-        files,
-        parentFolderId: currentFolderId,
-        options: {
-          onSuccess: onDragAndDropEnd,
-        },
-      }),
-    );
-  }
 
-  if (rootList.length) {
-    for (const root of rootList) {
+  let totalFilesToUpload: number;
+
+  totalFilesToUpload = files.length;
+
+  const countTotalItemsToUpload = (rootList) => {
+    rootList.forEach((n) => {
+      totalFilesToUpload += n.childrenFiles.length;
+      if (n.childrenFolders.length >= 1) {
+        countTotalItemsToUpload(n.childrenFolders);
+      }
+    });
+  };
+
+  countTotalItemsToUpload(rootList);
+
+  if (totalFilesToUpload < 1000) {
+    if (files.length) {
+      // files where dragged directly
       await dispatch(
-        storageThunks.uploadFolderThunkNoCheck({
-          root,
-          currentFolderId,
+        storageThunks.uploadItemsThunkNoCheck({
+          files,
+          parentFolderId: currentFolderId,
           options: {
             onSuccess: onDragAndDropEnd,
           },
         }),
       );
     }
+    if (rootList.length) {
+      for (const root of rootList) {
+        await dispatch(
+          storageThunks.uploadFolderThunkNoCheck({
+            root,
+            currentFolderId,
+            options: {
+              onSuccess: onDragAndDropEnd,
+            },
+          }),
+        );
+      }
+    }
+  } else {
+    notificationsService.show({
+      text: 'The maximum is 1000 files per upload.',
+      type: ToastType.Warning,
+    });
   }
 };
 
