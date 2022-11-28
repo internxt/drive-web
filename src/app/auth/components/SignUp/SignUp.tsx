@@ -25,6 +25,7 @@ import { useSignUp } from './useSignUp';
 import { validateFormat } from 'app/crypto/services/keys.service';
 import { Keys } from '@internxt/sdk/dist/auth/types';
 import { decryptTextWithKey } from 'app/crypto/services/utils';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 export interface SignUpProps {
   location: {
@@ -96,6 +97,15 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   }
 
+  async function clearKey(user: UserSettings, password: string) {
+    const { privkeyDecrypted } = await validateFormat(user.privateKey, password);
+
+    return {
+      clearMnemonic: decryptTextWithKey(user.mnemonic, password),
+      clearPrivateKeyBase64: Buffer.from(privkeyDecrypted).toString('base64'),
+    };
+  }
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoading(true);
 
@@ -111,16 +121,13 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       const privateKey = xUser.privateKey;
 
-      const { privkeyDecrypted } = await validateFormat(privateKey, password);
-
-      const clearMnemonic = decryptTextWithKey(xUser.mnemonic, password);
-      const clearPrivateKeyBase64 = Buffer.from(privkeyDecrypted).toString('base64');
+      const keys = privateKey ? await clearKey(xUser, password) : undefined;
 
       const clearUser = {
         ...xUser,
-        mnemonic: clearMnemonic,
-        privateKey: clearPrivateKeyBase64,
-      };
+        mnemonic: keys?.clearMnemonic,
+        privateKey: keys?.clearPrivateKeyBase64,
+      } as UserSettings;
 
       dispatch(userActions.setUser(clearUser));
       await dispatch(userThunks.initializeUserThunk());
