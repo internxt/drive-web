@@ -1,4 +1,4 @@
-import { DriveFileData, DriveFileMetadataPayload } from '../../types';
+import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../../types';
 import analyticsService from '../../../analytics/services/analytics.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
@@ -59,6 +59,18 @@ export async function moveFile(
       }
       throw castedError;
     });
+}
+
+export function deleteFile(fileData: DriveFileData): Promise<void> {
+  const storageClient = SdkFactory.getInstance().createStorageClient();
+
+  return storageClient.deleteFile({ fileId: fileData.id, folderId: fileData.folderId }).then(() => {
+    const user = localStorageService.getUser() as UserSettings;
+    analyticsService.trackDeleteItem(fileData as DriveItemData, {
+      email: user.email,
+      platform: DevicePlatform.Web,
+    });
+  });
 }
 
 async function fetchRecents(limit: number): Promise<DriveFileData[]> {
