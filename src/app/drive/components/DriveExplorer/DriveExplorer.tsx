@@ -66,6 +66,7 @@ interface DriveExplorerProps {
   onDragAndDropEnd?: () => void;
   user: UserSettings | undefined;
   currentFolderId: number;
+  hasMoreItems: boolean;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
@@ -101,14 +102,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     currentFolderId,
     onFileUploaded,
     onItemsMoved,
+    hasMoreItems,
   } = props;
 
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
-  const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
-  const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
+  // const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -195,16 +196,22 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const { dirtyName } = useDriveItemStoreProps();
 
   // Fake backend pagination - change when pagination in backend has been implemented
-  const getMoreItems = () => {
-    const existsMoreItems = items.length > fakePaginationLimit;
+  // const getMoreItems = () => {
+  // const existsMoreItems = items.length > fakePaginationLimit;
 
-    setHasMoreItems(existsMoreItems);
-    setTimeout(() => {
-      if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
-    }, 1000);
+  // setHasMoreItems(existsMoreItems);
+  // setTimeout(() => {
+  //   if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
+  // }, 1000);
+  // };
+
+  // const getLimitedItems = () => items.slice(0, fakePaginationLimit);
+
+  const getMoreItemsCall = () => {
+    console.log({ itemsInDriveExplorer: items.length });
+    const limit = viewMode === FileViewMode.List ? 20 : 50;
+    dispatch(storageThunks.fetchPaginatedFolderContentThunk({ folderId: currentFolderId, index: items.length }));
   };
-
-  const getLimitedItems = () => items.slice(0, fakePaginationLimit);
 
   const onSelectedOneItemRename = (e) => {
     e.stopPropagation();
@@ -229,7 +236,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const isRecents = title === 'Recents';
   const isTrash = title === 'Trash';
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
-  const itemsList = getLimitedItems();
 
   const FileIcon = iconService.getItemIcon(false);
   const filesEmptyImage = (
@@ -353,9 +359,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
-                  items={itemsList}
+                  items={items}
                   isLoading={isLoading}
-                  onEndOfScroll={getMoreItems}
+                  onEndOfScroll={getMoreItemsCall}
                   hasMoreItems={hasMoreItems}
                   isTrash={isTrash}
                 />
@@ -520,11 +526,13 @@ const dropTargetCollect: DropTargetCollector<
 
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
-
+  const hasMoreItems: boolean = storageSelectors.hasMoreItems(state);
+  console.log({ driveExplorerHasMoreItems: hasMoreItems });
   return {
     isAuthenticated: state.user.isAuthenticated,
     user: state.user.user,
     currentFolderId,
+    hasMoreItems,
     selectedItems: state.storage.selectedItems,
     storageFilters: state.storage.filters,
     isCreateFolderDialogOpen: state.ui.isCreateFolderDialogOpen,

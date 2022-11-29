@@ -9,8 +9,7 @@ import { StorageFilters } from '../../../store/slices/storage/storage.model';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import sessionThunks from '../../../store/slices/session/session.thunks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
-import navigationService from '../../services/navigation.service';
-import { AppView, Workspace } from '../../types';
+import { Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { Gear, MagnifyingGlass } from 'phosphor-react';
@@ -97,12 +96,12 @@ class Navbar extends React.Component<NavbarProps> {
         <div className="flex">
           <Link
             to="/preferences"
-            className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:text-gray-80 hover:bg-gray-5 active:bg-gray-10"
+            className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10"
           >
             <Gear size={24} />
           </Link>
           <AccountPopover
-            className="mr-5 z-40"
+            className="z-40 mr-5"
             user={user}
             plan={{
               ...this.props.plan,

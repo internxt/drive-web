@@ -28,7 +28,7 @@ class DriveView extends Component<DriveViewProps> {
     const { dispatch, currentFolderId } = this.props;
 
     dispatch(storageActions.clearSelectedItems());
-    dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
+    dispatch(storageThunks.fetchPaginatedFolderContentThunk({ folderId: currentFolderId, index: 0 }));
   };
 
   get breadcrumbItems(): BreadcrumbItemData[] {

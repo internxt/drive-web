@@ -20,7 +20,7 @@ class DriveExplorerGrid extends React.Component<DriveExplorerGridProps> {
   }
 
   get loadingSkeleton(): JSX.Element[] {
-    return Array(20)
+    return Array(50)
       .fill(0)
       .map((n, i) => <DriveGridItemSkeleton key={i} />);
   }

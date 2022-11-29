@@ -61,7 +61,8 @@ const storageSelectors = {
   isItemSelected(state: RootState): (item: DriveItemData) => boolean {
     return (item) => state.storage.selectedItems.some((i) => item.id === i.id && item.isFolder === i.isFolder);
   },
-  isSomeItemSelected: (state: RootState): boolean => state.storage.selectedItems.length > 0
+  isSomeItemSelected: (state: RootState): boolean => state.storage.selectedItems.length > 0,
+  hasMoreItems: (state: RootState): boolean => state.storage.hasMoreItems,
 };
 
 export default storageSelectors;

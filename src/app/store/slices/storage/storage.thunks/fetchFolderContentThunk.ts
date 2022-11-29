@@ -10,6 +10,12 @@ import databaseService, { DatabaseCollection } from '../../../../database/servic
 import { DriveItemData } from '../../../../drive/types';
 import { SdkFactory } from '../../../../core/factory/sdk';
 
+interface FolderContentThunkType {
+  folderId: number;
+  index?: number;
+  limit?: number;
+}
+
 export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchFolderContent',
   async (folderId, { dispatch }) => {
@@ -44,6 +50,54 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
   },
 );
 
+export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, FolderContentThunkType, { state: RootState }>(
+  'storage/fetchPaginatedFolderContent',
+  async ({ folderId, index = 0, limit = 20 }, thunkAPI) => {
+    const { dispatch, getState } = thunkAPI;
+    const storageClient = SdkFactory.getInstance().createStorageClient();
+    const [responsePromise] = storageClient.getFolderContentByName(folderId, false, index, limit);
+    const databaseContent = await databaseService.get<DatabaseCollection.Levels>(DatabaseCollection.Levels, folderId);
+
+    dispatch(storageActions.resetOrder());
+
+    if (databaseContent) {
+      console.log({ databaseContent });
+      dispatch(
+        storageActions.setItems({
+          folderId,
+          items: databaseContent,
+        }),
+      );
+    } else {
+      await responsePromise;
+    }
+
+    responsePromise.then((response) => {
+      const state = getState();
+      const hasMoreItems = !response.finished;
+      console.log({ response });
+      const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
+      console.log({ hasMoreItems });
+      const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
+
+      const existingItems = state.storage.levels?.[folderId] ?? [];
+      console.log({ index });
+      const newItemsList = index > 0 ? existingItems.concat(items) : items;
+
+      dispatch(storageActions.setHasMoreItems(hasMoreItems));
+
+      dispatch(
+        storageActions.setItems({
+          folderId,
+          items: newItemsList,
+        }),
+      );
+
+      databaseService.put(DatabaseCollection.Levels, folderId, newItemsList);
+    });
+  },
+);
+
 export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
     .addCase(fetchFolderContentThunk.pending, (state, action) => {
@@ -54,6 +108,16 @@ export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBu
     })
     .addCase(fetchFolderContentThunk.rejected, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
+      notificationsService.show({ text: i18n.get('error.fetchingFolderContent'), type: ToastType.Error });
+    })
+    .addCase(fetchPaginatedFolderContentThunk.pending, (state, action) => {
+      state.loadingFolders[action.meta.arg.folderId] = true;
+    })
+    .addCase(fetchPaginatedFolderContentThunk.fulfilled, (state, action) => {
+      state.loadingFolders[action.meta.arg.folderId] = false;
+    })
+    .addCase(fetchPaginatedFolderContentThunk.rejected, (state, action) => {
+      state.loadingFolders[action.meta.arg.folderId] = false;
       notificationsService.show({ text: i18n.get('error.fetchingFolderContent'), type: ToastType.Error });
     });
 };

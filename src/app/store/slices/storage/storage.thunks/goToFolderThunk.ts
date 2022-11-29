@@ -5,18 +5,18 @@ import { RootState } from '../../..';
 import { FolderPath } from '../../../../drive/types';
 import { uiActions } from '../../ui';
 import storageSelectors from '../storage.selectors';
-import { fetchFolderContentThunk } from './fetchFolderContentThunk';
+import { fetchPaginatedFolderContentThunk } from './fetchFolderContentThunk';
 import { storageActions } from '..';
 
 export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootState }>(
   'storage/goToFolder',
   async (path: FolderPath, { getState, dispatch }) => {
-    dispatch(storageActions.clearCurrentThumbnailItems({ folderId: path.id }),);
+    dispatch(storageActions.clearCurrentThumbnailItems({ folderId: path.id }));
     const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
 
     dispatch(storageActions.clearSelectedItems());
-
-    dispatch(fetchFolderContentThunk(path.id)).unwrap();
+    console.log('GO TO FOLDER THUNK');
+    dispatch(fetchPaginatedFolderContentThunk({ folderId: path.id, index: 0, limit: 20 })).unwrap();
 
     isInNamePath ? dispatch(storageActions.popNamePathUpTo(path)) : dispatch(storageActions.pushNamePath(path));
 

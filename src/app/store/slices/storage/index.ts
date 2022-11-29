@@ -19,6 +19,7 @@ const initialState: StorageState = {
   filters: filtersFactory(),
   order: orderFactory('updatedAt', OrderDirection.Desc),
   selectedItems: [],
+  hasMoreItems: true,
   itemToShare: null,
   itemsToDelete: [],
   itemsToMove: [],
@@ -42,6 +43,9 @@ export const storageSlice = createSlice({
     },
     setItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
       state.levels[action.payload.folderId] = action.payload.items;
+    },
+    setHasMoreItems: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.hasMoreItems = action.payload;
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;

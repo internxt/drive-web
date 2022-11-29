@@ -9,7 +9,7 @@ import { downloadFileThunk, downloadFileThunkExtraReducers } from './downloadFil
 import { downloadFolderThunk, downloadFolderThunkExtraReducers } from './downloadFolderThunk';
 import { createFolderThunk, createFolderThunkExtraReducers } from './createFolderThunk';
 import { fetchRecentsThunk, fetchRecentsThunkExtraReducers } from './fetchRecentsThunk';
-import { fetchFolderContentThunk, fetchFolderContentThunkExtraReducers } from './fetchFolderContentThunk';
+import { fetchFolderContentThunk,fetchPaginatedFolderContentThunk, fetchFolderContentThunkExtraReducers } from './fetchFolderContentThunk';
 import { deleteItemsThunk, deleteItemsThunkExtraReducers } from './deleteItemsThunk';
 import { goToFolderThunk, goToFolderThunkExtraReducers } from './goToFolderThunk';
 import { uploadFolderThunk, uploadFolderThunkNoCheck, uploadFolderThunkExtraReducers } from './uploadFolderThunk';
@@ -26,6 +26,7 @@ const storageThunks = {
   downloadFileThunk,
   downloadFolderThunk,
   fetchFolderContentThunk,
+  fetchPaginatedFolderContentThunk,
   deleteItemsThunk,
   goToFolderThunk,
   uploadFolderThunk,
