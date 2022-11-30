@@ -7,6 +7,7 @@ import { uiActions } from '../../ui';
 import storageSelectors from '../storage.selectors';
 import { fetchPaginatedFolderContentThunk } from './fetchFolderContentThunk';
 import { storageActions } from '..';
+import { PAGINATION_LIMIT } from '../constans';
 
 export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootState }>(
   'storage/goToFolder',
@@ -15,8 +16,7 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
     const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
 
     dispatch(storageActions.clearSelectedItems());
-    console.log('GO TO FOLDER THUNK');
-    dispatch(fetchPaginatedFolderContentThunk({ folderId: path.id, index: 0, limit: 20 })).unwrap();
+    dispatch(fetchPaginatedFolderContentThunk({ folderId: path.id, index: 0, limit: PAGINATION_LIMIT })).unwrap();
 
     isInNamePath ? dispatch(storageActions.popNamePathUpTo(path)) : dispatch(storageActions.pushNamePath(path));
 

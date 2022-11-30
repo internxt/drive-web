@@ -52,16 +52,15 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
 
 export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, FolderContentThunkType, { state: RootState }>(
   'storage/fetchPaginatedFolderContent',
-  async ({ folderId, index = 0, limit = 20 }, thunkAPI) => {
+  async ({ folderId, index = 0, limit = 50 }, thunkAPI) => {
     const { dispatch, getState } = thunkAPI;
     const storageClient = SdkFactory.getInstance().createStorageClient();
     const [responsePromise] = storageClient.getFolderContentByName(folderId, false, index, limit);
     const databaseContent = await databaseService.get<DatabaseCollection.Levels>(DatabaseCollection.Levels, folderId);
 
-    dispatch(storageActions.resetOrder());
+    if (index === 0) dispatch(storageActions.resetOrder());
 
     if (databaseContent) {
-      console.log({ databaseContent });
       dispatch(
         storageActions.setItems({
           folderId,
@@ -75,17 +74,13 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, FolderCon
     responsePromise.then((response) => {
       const state = getState();
       const hasMoreItems = !response.finished;
-      console.log({ response });
-      const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
-      console.log({ hasMoreItems });
-      const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
 
+      const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
+      const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
       const existingItems = state.storage.levels?.[folderId] ?? [];
-      console.log({ index });
       const newItemsList = index > 0 ? existingItems.concat(items) : items;
 
       dispatch(storageActions.setHasMoreItems(hasMoreItems));
-
       dispatch(
         storageActions.setItems({
           folderId,

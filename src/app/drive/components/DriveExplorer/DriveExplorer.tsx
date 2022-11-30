@@ -50,8 +50,10 @@ import {
 import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
-
-const PAGINATION_LIMIT = 20;
+import { SdkFactory } from '../../../core/factory/sdk';
+import _ from 'lodash';
+import { PAGINATION_LIMIT } from '../../../store/slices/storage/constans';
+import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -104,20 +106,28 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     onItemsMoved,
     hasMoreItems,
   } = props;
+  const storageClient = SdkFactory.getInstance().createStorageClient();
 
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
-  // const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
+  const [paginatedItems, setPaginatedItems] = useState<DriveItemData[]>(items);
 
-  const hasItems = items.length > 0;
+  console.log({ paginatedItems });
+  console.log({ items });
+
+  const hasItems = paginatedItems.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
 
   useEffect(() => {
     deviceService.redirectForMobile();
   }, []);
+
+  useEffect(() => {
+    setPaginatedItems(items);
+  }, [items]);
 
   const onUploadFileButtonClicked = (): void => {
     fileInputRef.current?.click();
@@ -195,22 +205,20 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const { dirtyName } = useDriveItemStoreProps();
 
-  // Fake backend pagination - change when pagination in backend has been implemented
-  // const getMoreItems = () => {
-  // const existsMoreItems = items.length > fakePaginationLimit;
+  const getMoreItems = async () => {
+    const index = paginatedItems.length;
 
-  // setHasMoreItems(existsMoreItems);
-  // setTimeout(() => {
-  //   if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
-  // }, 1000);
-  // };
+    const [responsePromise] = storageClient.getFolderContentByName(currentFolderId, false, index, PAGINATION_LIMIT);
 
-  // const getLimitedItems = () => items.slice(0, fakePaginationLimit);
+    responsePromise.then((response) => {
+      const hasMoreItems = !response.finished;
+      const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
+      const itemsDonwloaded = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
+      const newItemsList = paginatedItems.concat(itemsDonwloaded);
 
-  const getMoreItemsCall = () => {
-    console.log({ itemsInDriveExplorer: items.length });
-    const limit = viewMode === FileViewMode.List ? 20 : 50;
-    dispatch(storageThunks.fetchPaginatedFolderContentThunk({ folderId: currentFolderId, index: items.length }));
+      // setPaginatedItems(newItemsList);
+      addItemsToStore({ dispatch, currentFolderId, hasMoreItems, items: newItemsList });
+    });
   };
 
   const onSelectedOneItemRename = (e) => {
@@ -359,9 +367,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
-                  items={items}
+                  items={paginatedItems}
                   isLoading={isLoading}
-                  onEndOfScroll={getMoreItemsCall}
+                  onEndOfScroll={getMoreItems}
                   hasMoreItems={hasMoreItems}
                   isTrash={isTrash}
                 />
@@ -524,10 +532,31 @@ const dropTargetCollect: DropTargetCollector<
   };
 };
 
+const addItemsToStore = ({
+  dispatch,
+  hasMoreItems,
+  currentFolderId,
+  items,
+}: {
+  dispatch: AppDispatch;
+  hasMoreItems: boolean;
+  currentFolderId: number;
+  items: DriveItemData[];
+}) => {
+  dispatch(storageActions.setHasMoreItems(hasMoreItems));
+  dispatch(
+    storageActions.setItems({
+      folderId: currentFolderId,
+      items: items,
+    }),
+  );
+  databaseService.put(DatabaseCollection.Levels, currentFolderId, items);
+};
+
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
   const hasMoreItems: boolean = storageSelectors.hasMoreItems(state);
-  console.log({ driveExplorerHasMoreItems: hasMoreItems });
+
   return {
     isAuthenticated: state.user.isAuthenticated,
     user: state.user.user,

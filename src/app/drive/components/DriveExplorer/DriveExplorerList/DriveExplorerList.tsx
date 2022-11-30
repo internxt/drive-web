@@ -70,7 +70,7 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
   }
 
   get loadingSkeleton(): JSX.Element[] {
-    return Array(20)
+    return Array(50)
       .fill(0)
       .map((n, i) => <DriveListItemSkeleton key={i} />);
   }

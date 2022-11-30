@@ -7,6 +7,7 @@ import { DriveItemData, FolderPath } from '../../types';
 import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { PAGINATION_LIMIT } from '../../../store/slices/storage/constans';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -28,7 +29,9 @@ class DriveView extends Component<DriveViewProps> {
     const { dispatch, currentFolderId } = this.props;
 
     dispatch(storageActions.clearSelectedItems());
-    dispatch(storageThunks.fetchPaginatedFolderContentThunk({ folderId: currentFolderId, index: 0 }));
+    dispatch(
+      storageThunks.fetchPaginatedFolderContentThunk({ folderId: currentFolderId, index: 0, limit: PAGINATION_LIMIT }),
+    );
   };
 
   get breadcrumbItems(): BreadcrumbItemData[] {
@@ -74,19 +77,14 @@ class DriveView extends Component<DriveViewProps> {
   }
 }
 
-// TODO: THIS IS TEMPORARY, REMOVE WHEN FALSE PAGINATION IS REMOVED
-const sortFoldersFirst = (items: DriveItemData[]) =>
-  items.sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
-
 export default connect((state: RootState) => {
   const currentFolderId = storageSelectors.currentFolderId(state);
   const items = storageSelectors.filteredItems(state)(storageSelectors.currentFolderItems(state));
-  const sortedItems = sortFoldersFirst(items);
 
   return {
     namePath: state.storage.namePath,
     isLoading: state.storage.loadingFolders[currentFolderId],
     currentFolderId,
-    items: sortedItems,
+    items,
   };
 })(DriveView);
