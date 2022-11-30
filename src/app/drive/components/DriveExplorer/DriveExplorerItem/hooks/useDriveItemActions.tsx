@@ -44,7 +44,6 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const dispatch = useAppDispatch();
   const [nameEditPending, setNameEditPending] = useState(false);
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
-  const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
   const currentFolderPath = useAppSelector(storageSelectors.currentFolderPath);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const { dirtyName } = useDriveItemStoreProps();
