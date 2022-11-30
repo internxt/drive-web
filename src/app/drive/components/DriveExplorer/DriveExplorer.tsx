@@ -113,6 +113,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
+  const isSelectedItemShared = selectedItems[0]?.shares?.length != 0;
 
   useEffect(() => {
     deviceService.redirectForMobile();
@@ -314,9 +315,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     </BaseButton>
                     {selectedItems.length === 1 && (
                       <>
-                        <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
-                          <Link className="h-6 w-6" />
-                        </BaseButton>
+                        {isSelectedItemShared && (
+                          <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
+                            <Link className="h-6 w-6" />
+                          </BaseButton>
+                        )}
                         <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemRename}>
                           <PencilSimple className="h-6 w-6" />
                         </BaseButton>
