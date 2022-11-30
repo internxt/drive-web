@@ -179,9 +179,8 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   };
 
   const onItemClicked = (): void => {
-    isItemSelected(item)
-      ? dispatch(storageActions.deselectItems([item]))
-      : dispatch(storageActions.selectItems([item]));
+    dispatch(storageActions.clearSelectedItems());
+    dispatch(storageActions.selectItems([item]));
   };
 
   const onItemDoubleClicked = (): void => {
