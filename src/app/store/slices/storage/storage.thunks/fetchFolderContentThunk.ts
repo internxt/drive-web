@@ -58,8 +58,6 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, FolderCon
     const [responsePromise] = storageClient.getFolderContentByName(folderId, false, index, limit);
     const databaseContent = await databaseService.get<DatabaseCollection.Levels>(DatabaseCollection.Levels, folderId);
 
-    if (index === 0) dispatch(storageActions.resetOrder());
-
     if (databaseContent) {
       dispatch(
         storageActions.setItems({

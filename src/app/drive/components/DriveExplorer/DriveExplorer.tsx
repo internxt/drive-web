@@ -114,9 +114,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
   const [paginatedItems, setPaginatedItems] = useState<DriveItemData[]>(items);
 
-  console.log({ paginatedItems });
-  console.log({ items });
-
   const hasItems = paginatedItems.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
@@ -216,7 +213,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       const itemsDonwloaded = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
       const newItemsList = paginatedItems.concat(itemsDonwloaded);
 
-      // setPaginatedItems(newItemsList);
       addItemsToStore({ dispatch, currentFolderId, hasMoreItems, items: newItemsList });
     });
   };
