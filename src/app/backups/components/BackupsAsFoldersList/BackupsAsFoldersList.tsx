@@ -63,7 +63,7 @@ export default function BackupsAsFoldersList({
   }
 
   function onDoubleClick(item: DriveItemData) {
-    if (item.isFolder) onFolderPush(item);
+    if (item.isFolder) onFolderPush(item as DriveFolderData);
     else {
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item));

@@ -54,16 +54,17 @@ export async function uploadFile(
     });
 
     const name = encryptFilename(file.name, file.parentFolderId);
+
     const storageClient = SdkFactory.getInstance().createStorageClient();
     const fileEntry: StorageTypes.FileEntry = {
       id: fileId,
       type: file.type,
       size: file.size,
       name: name,
+      plain_name: file.name,
       bucket: bucketId,
       folder_id: file.parentFolderId,
       encrypt_version: StorageTypes.EncryptionVersion.Aes03,
-      plain_name: file.name
     };
 
     let response = await storageClient.createFileEntry(fileEntry);
