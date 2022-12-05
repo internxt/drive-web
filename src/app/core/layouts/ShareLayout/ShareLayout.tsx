@@ -81,7 +81,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                     className="flex h-12 w-full flex-row items-center justify-center rounded-lg bg-white
                                   px-6 text-xl font-semibold text-blue-70 no-underline"
                   >
-                    <span>Get 10GB for FREE</span>
+                    <span>Try out Internxt</span>
                   </div>
                 </div>
               </Link>
