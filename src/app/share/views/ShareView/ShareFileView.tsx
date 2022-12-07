@@ -200,12 +200,12 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         });
         const fileBlob = await binaryStreamToBlob(readable);
 
-        downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
+        await downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
+        setTimeout(() => {
+          setIsSendBannerVisible(true);
+        }, 3000);
       }
     }
-    setTimeout(() => {
-      setIsSendBannerVisible(true);
-    }, 3000);
   };
 
   const handleLeavePage = (e) => {
