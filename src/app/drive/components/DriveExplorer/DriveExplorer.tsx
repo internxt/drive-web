@@ -33,6 +33,7 @@ import { uiActions } from '../../../store/slices/ui';
 import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
+import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
@@ -141,6 +142,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       ).then(() => onFileUploaded && onFileUploaded());
       setFileInputKey(Date.now());
     } else {
+      dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
         text: 'The maximum is 1000 files per upload.',
         type: ToastType.Warning,
@@ -273,6 +275,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
+      <UploadItemsFailsDialog />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col pt-6">
@@ -508,6 +511,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
       }
     }
   } else {
+    dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
     notificationsService.show({
       text: 'The maximum is 1000 files per upload.',
       type: ToastType.Warning,

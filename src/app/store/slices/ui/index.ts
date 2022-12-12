@@ -17,6 +17,7 @@ interface UISliceState {
   isSharedFolderTooBigDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isInviteMemberDialogOpen: boolean;
+  isUploadItemsFailsDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
   isGuestInviteDialogOpen: boolean;
   isFileViewerOpen: boolean;
@@ -41,6 +42,7 @@ const initialState: UISliceState = {
   isSharedFolderTooBigDialogOpen: false,
   isShareItemDialogOpen: false,
   isInviteMemberDialogOpen: false,
+  isUploadItemsFailsDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
   isGuestInviteDialogOpen: false,
   isFileViewerOpen: false,
@@ -99,6 +101,9 @@ export const uiSlice = createSlice({
     setIsGuestInvitationDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isGuestInviteDialogOpen = action.payload;
     },
+    setIsUploadItemsFailsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isUploadItemsFailsDialogOpen = action.payload;
+    },
     setIsDriveItemInfoMenuOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDriveItemInfoMenuOpen = action.payload;
     },
@@ -111,10 +116,16 @@ export const uiSlice = createSlice({
     setFileInfoItem: (state: UISliceState, action: PayloadAction<FileInfoMenuItem | null>) => {
       state.currentFileInfoMenuItem = action.payload;
     },
-    setCurrentEditingNameDriveItem: (state: UISliceState, action: PayloadAction<UISliceState['currentEditingNameDriveItem']>) => {
+    setCurrentEditingNameDriveItem: (
+      state: UISliceState,
+      action: PayloadAction<UISliceState['currentEditingNameDriveItem']>,
+    ) => {
       state.currentEditingNameDriveItem = action.payload;
     },
-    setCurrentEditingNameDirty: (state: UISliceState, action: PayloadAction<UISliceState['currentEditingNameDirty']>) => {
+    setCurrentEditingNameDirty: (
+      state: UISliceState,
+      action: PayloadAction<UISliceState['currentEditingNameDirty']>,
+    ) => {
       state.currentEditingNameDirty = action.payload;
     },
     resetState: (state: UISliceState) => {
@@ -136,6 +147,7 @@ export const {
   setIsSharedFolderTooBigDialogOpen,
   setIsShareItemDialogOpen,
   setIsInviteMemberDialogOpen,
+  setIsUploadItemsFailsDialogOpen,
   setIsDriveItemInfoMenuOpen,
   setIsFileViewerOpen,
   setFileViewerItem,
