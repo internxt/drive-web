@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import i18n from '../../../i18n/services/i18n.service';
 import DeviceListItem from './DeviceListItem';
 import desktopService from '../../../core/services/desktop.service';
@@ -17,11 +18,22 @@ interface Props {
 
 const DeviceList = (props: Props): JSX.Element => {
   const { isLoading } = props;
+  const getDownloadApp = async () => {
+    const download = await desktopService.getDownloadAppUrl();
+    return download;
+  };
   const getLoadingSkeleton = () => {
     return Array(10)
       .fill(0)
       .map((n, i) => <DriveListItemSkeleton key={i} />);
   };
+
+  let downloaded;
+  useEffect(() => {
+    const first = getDownloadApp().then((download) => {
+      downloaded = download;
+    });
+  }, []);
 
   const items = props.items.map((item) => (
     <DeviceListItem
@@ -53,7 +65,9 @@ const DeviceList = (props: Props): JSX.Element => {
         icon: DownloadSimple,
         style: 'plain',
         text: 'Download desktop app',
-        onClick: () => window.open(desktopService.getDownloadAppUrl(), '_newtab' + Date.now()),
+        onClick: () => {
+          window.open(downloaded, '_newtab' + Date.now());
+        },
       }}
     />
   );

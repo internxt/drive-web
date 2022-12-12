@@ -27,8 +27,15 @@ export default function AccountPopover({
 
   const separator = <div className="my-0.5 mx-3 border-t border-gray-10" />;
 
+  const getDownloadApp = async () => {
+    const download = await desktopService.getDownloadAppUrl();
+    return download;
+  };
+
   function onDownloadAppButtonClicked() {
-    window.open(desktopService.getDownloadAppUrl(), '_self');
+    getDownloadApp().then((download) => {
+      window.open(download, '_self');
+    });
   }
   function onLogout() {
     dispatch(userThunks.logoutThunk());

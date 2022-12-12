@@ -50,13 +50,19 @@ const refreshUserReferrals = createAsyncThunk<void, void, { state: RootState }>(
 const executeUserReferralActionThunk = createAsyncThunk<void, { referralKey: ReferralKey }, { state: RootState }>(
   'referrals/executeUserReferralActionThunk',
   ({ referralKey }, { dispatch }) => {
+    const getDownloadApp = async () => {
+      const download = await desktopService.getDownloadAppUrl();
+      return download;
+    };
     switch (referralKey) {
       case ReferralKey.SubscribeToNewsletter: {
         dispatch(uiActions.setIsNewsletterDialogOpen(true));
         break;
       }
       case ReferralKey.InstallDesktopApp: {
-        window.open(desktopService.getDownloadAppUrl(), '_blank');
+        getDownloadApp().then((url) => {
+          window.open(url, '_blank');
+        });
         break;
       }
       case ReferralKey.InviteFriends: {

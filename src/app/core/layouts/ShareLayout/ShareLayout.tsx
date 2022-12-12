@@ -28,8 +28,15 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
     return initials;
   };
 
+  const getDownloadApp = async () => {
+    const download = await desktopService.getDownloadAppUrl();
+    return download;
+  };
+
   const downloadDesktopApp = () => {
-    window.open(desktopService.getDownloadAppUrl(), '_self');
+    getDownloadApp().then((download) => {
+      window.open(download, '_self');
+    });
   };
 
   const logout = () => {
