@@ -464,25 +464,24 @@ declare module 'react' {
   }
 }
 
+const countTotalItemsInIRoot = (rootList: IRoot[]) => {
+  let totalFilesToUpload = 0;
+
+  rootList.forEach((n) => {
+    totalFilesToUpload += n.childrenFiles.length;
+    if (n.childrenFolders.length >= 1) {
+      countTotalItemsInIRoot(n.childrenFolders);
+    }
+  });
+
+  return totalFilesToUpload;
+};
+
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
   const { dispatch, currentFolderId, onDragAndDropEnd } = props;
+  const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
-  let totalFilesToUpload: number;
-
-  totalFilesToUpload = files.length;
-
-  const countTotalItemsToUpload = (rootList) => {
-    rootList.forEach((n) => {
-      totalFilesToUpload += n.childrenFiles.length;
-      if (n.childrenFolders.length >= 1) {
-        countTotalItemsToUpload(n.childrenFolders);
-      }
-    });
-  };
-
-  countTotalItemsToUpload(rootList);
-
-  if (totalFilesToUpload < 1000) {
+  if (countTotalItemsToUpload < 1000) {
     if (files.length) {
       // files where dragged directly
       await dispatch(
