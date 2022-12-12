@@ -28,13 +28,6 @@ const DeviceList = (props: Props): JSX.Element => {
       .map((n, i) => <DriveListItemSkeleton key={i} />);
   };
 
-  let downloaded;
-  useEffect(() => {
-    const first = getDownloadApp().then((download) => {
-      downloaded = download;
-    });
-  }, []);
-
   const items = props.items.map((item) => (
     <DeviceListItem
       key={item.id}
@@ -66,7 +59,9 @@ const DeviceList = (props: Props): JSX.Element => {
         style: 'plain',
         text: 'Download desktop app',
         onClick: () => {
-          window.open(downloaded, '_newtab' + Date.now());
+          getDownloadApp().then((downloaded) => {
+            window.open(downloaded, '_newtab' + Date.now());
+          });
         },
       }}
     />
