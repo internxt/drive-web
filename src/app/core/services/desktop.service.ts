@@ -66,17 +66,16 @@ async function getDownloadAppUrl(): Promise<string> {
 
   switch (operatingSystemService.getOperatingSystem()) {
     case 'WindowsOS':
-      url = release.links.windows || 'https://internxt.com/downloads/drive.exe';
+      url = release.links.windows || '';
       break;
     case 'MacOS':
-      url = release.links.macos || 'https://internxt.com/downloads/drive.dmg';
+      url = release.links.macos || '';
       break;
     case 'LinuxOS':
-    case 'UNIXOS':
-      url = release.links.linux || 'https://internxt.com/downloads/drive.deb';
+      url = release.links.linux || '';
       break;
     default:
-      url = 'https://github.com/internxt/drive-desktop/releases';
+      url = '';
       break;
   }
 
