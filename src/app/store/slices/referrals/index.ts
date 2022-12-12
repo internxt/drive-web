@@ -9,6 +9,7 @@ import { RootState } from 'app/store';
 import { planThunks } from '../plan';
 import { uiActions } from '../ui';
 import { userSelectors } from '../user';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface ReferralsState {
   isLoading: boolean;
@@ -50,13 +51,26 @@ const refreshUserReferrals = createAsyncThunk<void, void, { state: RootState }>(
 const executeUserReferralActionThunk = createAsyncThunk<void, { referralKey: ReferralKey }, { state: RootState }>(
   'referrals/executeUserReferralActionThunk',
   ({ referralKey }, { dispatch }) => {
+    const getDownloadApp = async () => {
+      const download = await desktopService.getDownloadAppUrl();
+      return download;
+    };
     switch (referralKey) {
       case ReferralKey.SubscribeToNewsletter: {
         dispatch(uiActions.setIsNewsletterDialogOpen(true));
         break;
       }
       case ReferralKey.InstallDesktopApp: {
-        window.open(desktopService.getDownloadAppUrl(), '_blank');
+        getDownloadApp()
+          .then((url) => {
+            window.open(url, '_blank');
+          })
+          .catch(() => {
+            notificationsService.show({
+              text: 'Something went wrong while downloading the desktop app',
+              type: ToastType.Error,
+            });
+          });
         break;
       }
       case ReferralKey.InviteFriends: {
