@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import i18n from '../../../i18n/services/i18n.service';
 import DeviceListItem from './DeviceListItem';
 import desktopService from '../../../core/services/desktop.service';
