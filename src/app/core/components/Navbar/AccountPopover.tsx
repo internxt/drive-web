@@ -1,4 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Desktop, SignOut, UserPlus, Gear } from 'phosphor-react';
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
@@ -33,9 +34,16 @@ export default function AccountPopover({
   };
 
   function onDownloadAppButtonClicked() {
-    getDownloadApp().then((download) => {
-      window.open(download, '_self');
-    });
+    getDownloadApp()
+      .then((download) => {
+        window.open(download, '_self');
+      })
+      .catch(() => {
+        notificationsService.show({
+          text: 'Something went wrong while downloading the desktop app',
+          type: ToastType.Error,
+        });
+      });
   }
   function onLogout() {
     dispatch(userThunks.logoutThunk());

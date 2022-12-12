@@ -12,6 +12,7 @@ import Lock from 'assets/images/shared-file/icons/lock.png';
 import EyeSlash from 'assets/images/shared-file/icons/eye-slash.png';
 import '../../../share/views/ShareView/ShareView.scss';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface ShareLayoutProps {
   children: JSX.Element;
@@ -34,9 +35,16 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
   };
 
   const downloadDesktopApp = () => {
-    getDownloadApp().then((download) => {
-      window.open(download, '_self');
-    });
+    getDownloadApp()
+      .then((download) => {
+        window.open(download, '_self');
+      })
+      .catch(() => {
+        notificationsService.show({
+          text: 'Something went wrong while downloading the desktop app',
+          type: ToastType.Error,
+        });
+      });
   };
 
   const logout = () => {
