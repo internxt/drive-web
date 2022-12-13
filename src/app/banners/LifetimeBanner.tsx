@@ -1,6 +1,5 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { X } from 'phosphor-react';
-import React from 'react';
 import { ReactComponent as Infinity } from 'assets/images/banner/infinity.svg';
 import { ReactComponent as InxtWhiteLogo } from 'assets/images/banner/inxt-logo.svg';
 
