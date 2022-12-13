@@ -37,6 +37,7 @@ const LifetimeBanner = () => {
                 window.open(
                   'https://internxt.com/lifetime?utm_source=driveweb&utm_medium=banner&utm_campaign=lifetime',
                   '_blank',
+                  'noopener,noreferrer',
                 );
               }}
             >
