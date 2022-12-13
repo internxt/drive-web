@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { X } from 'phosphor-react';
 import React from 'react';
 import { ReactComponent as Infinity } from 'assets/images/banner/infinity.svg';
@@ -7,7 +8,20 @@ const LifetimeBanner = () => {
   const [showLifetimeBanner, setShowLifetimeBanner] = React.useState(true);
   const onClose = () => {
     setShowLifetimeBanner(false);
+    localStorage.setItem('showLifetimeBanner', 'false');
   };
+
+  useEffect(() => {
+    localStorage.getItem('showLifetimeBanner') === 'false' && setShowLifetimeBanner(false);
+    window.addEventListener('unload', function (e) {
+      e.preventDefault();
+      localStorage.removeItem('showLifetimeBanner');
+    });
+    return () => {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      window.removeEventListener('unload', () => {});
+    };
+  }, []);
 
   return (
     <div
