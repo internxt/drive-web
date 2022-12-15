@@ -489,7 +489,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
   const { dispatch, currentFolderId, onDragAndDropEnd } = props;
   const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
-  if (countTotalItemsToUpload < 2) {
+  if (countTotalItemsToUpload < 1000) {
     if (files.length) {
       // files where dragged directly
       await dispatch(
