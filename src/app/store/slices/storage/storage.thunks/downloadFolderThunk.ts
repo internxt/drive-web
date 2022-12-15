@@ -10,6 +10,8 @@ import tasksService from 'app/tasks/services/tasks.service';
 import AppError from 'app/core/types';
 import { DriveFolderData } from 'app/drive/types';
 import folderService from 'app/drive/services/folder.service';
+import downloadFolderUsingBlobs from '../../../../drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
+import { isFirefox } from 'react-device-detect';
 
 interface DownloadFolderThunkOptions {
   taskId: string;
@@ -71,13 +73,17 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
         taskId: options.taskId,
         merge: {
           cancellable: true,
-          stop: async () => abort()
+          stop: async () => abort(),
         },
       });
 
-      await folderService.downloadFolderAsZip(folder.id, folder.name, (progress) => {
-        updateProgressCallback(progress);
-      });
+      if (isFirefox) {
+        await downloadFolderUsingBlobs({ folder, updateProgressCallback });
+      } else {
+        await folderService.downloadFolderAsZip(folder.id, folder.name, (progress) => {
+          updateProgressCallback(progress);
+        });
+      }
 
       tasksService.updateTask({
         taskId: options.taskId,
@@ -90,8 +96,8 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
         return tasksService.updateTask({
           taskId: options.taskId,
           merge: {
-            status: TaskStatus.Cancelled
-          }
+            status: TaskStatus.Cancelled,
+          },
         });
       }
 

@@ -52,6 +52,7 @@ import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import LifetimeBanner from 'app/banners/LifetimeBanner';
 
 const PAGINATION_LIMIT = 20;
 
@@ -115,6 +116,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
+  const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
 
   useEffect(() => {
     deviceService.redirectForMobile();
@@ -276,6 +278,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <UploadItemsFailsDialog />
+      <LifetimeBanner />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col pt-6">
@@ -325,9 +328,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     </BaseButton>
                     {selectedItems.length === 1 && (
                       <>
-                        <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
-                          <Link className="h-6 w-6" />
-                        </BaseButton>
+                        {isSelectedItemShared && (
+                          <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
+                            <Link className="h-6 w-6" />
+                          </BaseButton>
+                        )}
                         <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemRename}>
                           <PencilSimple className="h-6 w-6" />
                         </BaseButton>
@@ -484,7 +489,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
   const { dispatch, currentFolderId, onDragAndDropEnd } = props;
   const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
-  if (countTotalItemsToUpload < 1000) {
+  if (countTotalItemsToUpload < 2) {
     if (files.length) {
       // files where dragged directly
       await dispatch(

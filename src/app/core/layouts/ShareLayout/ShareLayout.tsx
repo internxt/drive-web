@@ -12,6 +12,7 @@ import Lock from 'assets/images/shared-file/icons/lock.png';
 import EyeSlash from 'assets/images/shared-file/icons/eye-slash.png';
 import '../../../share/views/ShareView/ShareView.scss';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface ShareLayoutProps {
   children: JSX.Element;
@@ -28,8 +29,22 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
     return initials;
   };
 
+  const getDownloadApp = async () => {
+    const download = await desktopService.getDownloadAppUrl();
+    return download;
+  };
+
   const downloadDesktopApp = () => {
-    window.open(desktopService.getDownloadAppUrl(), '_self');
+    getDownloadApp()
+      .then((download) => {
+        window.open(download, '_self');
+      })
+      .catch(() => {
+        notificationsService.show({
+          text: 'Something went wrong while downloading the desktop app',
+          type: ToastType.Error,
+        });
+      });
   };
 
   const logout = () => {
@@ -72,7 +87,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
             </div>
 
             {!isAuthenticated && (
-              <Link to="/new" className="no-underline">
+              <Link to="https://internxt.com" className="no-underline">
                 <div
                   className="flex cursor-pointer flex-row items-center justify-center rounded-xl p-1 no-underline
                                 ring-3 ring-blue-30"
@@ -81,7 +96,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                     className="flex h-12 w-full flex-row items-center justify-center rounded-lg bg-white
                                   px-6 text-xl font-semibold text-blue-70 no-underline"
                   >
-                    <span>Get 10GB for FREE</span>
+                    <span>Try out Internxt</span>
                   </div>
                 </div>
               </Link>

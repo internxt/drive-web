@@ -7,6 +7,7 @@ import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from 'phosphor-react';
 import Empty from '../../../shared/components/Empty/Empty';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface Props {
   items: (Device | DriveFolderData)[];
@@ -17,6 +18,10 @@ interface Props {
 
 const DeviceList = (props: Props): JSX.Element => {
   const { isLoading } = props;
+  const getDownloadApp = async () => {
+    const download = await desktopService.getDownloadAppUrl();
+    return download;
+  };
   const getLoadingSkeleton = () => {
     return Array(10)
       .fill(0)
@@ -53,7 +58,18 @@ const DeviceList = (props: Props): JSX.Element => {
         icon: DownloadSimple,
         style: 'plain',
         text: 'Download desktop app',
-        onClick: () => window.open(desktopService.getDownloadAppUrl(), '_newtab' + Date.now()),
+        onClick: () => {
+          getDownloadApp()
+            .then((downloaded) => {
+              window.open(downloaded, '_newtab' + Date.now());
+            })
+            .catch(() => {
+              notificationsService.show({
+                text: 'Something went wrong while downloading the desktop app',
+                type: ToastType.Error,
+              });
+            });
+        },
       }}
     />
   );
