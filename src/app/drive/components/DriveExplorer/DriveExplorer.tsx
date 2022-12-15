@@ -33,6 +33,7 @@ import { uiActions } from '../../../store/slices/ui';
 import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
+import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
@@ -50,6 +51,7 @@ import {
 import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import LifetimeBanner from 'app/banners/LifetimeBanner';
 
 const PAGINATION_LIMIT = 20;
@@ -133,13 +135,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onUploadFileInputChanged = (e) => {
-    dispatch(
-      storageThunks.uploadItemsThunk({
-        files: Array.from(e.target.files),
-        parentFolderId: currentFolderId,
-      }),
-    ).then(() => onFileUploaded && onFileUploaded());
-    setFileInputKey(Date.now());
+    if (e.target.files.length < 1000) {
+      dispatch(
+        storageThunks.uploadItemsThunk({
+          files: Array.from(e.target.files),
+          parentFolderId: currentFolderId,
+        }),
+      ).then(() => onFileUploaded && onFileUploaded());
+      setFileInputKey(Date.now());
+    } else {
+      dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
+      notificationsService.show({
+        text: 'The maximum is 1000 files per upload.',
+        type: ToastType.Warning,
+      });
+    }
   };
 
   const onUploadFolderInputChanged = async (e) => {
@@ -267,6 +277,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
+      <UploadItemsFailsDialog />
       <LifetimeBanner />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
@@ -461,33 +472,55 @@ declare module 'react' {
   }
 }
 
+const countTotalItemsInIRoot = (rootList: IRoot[]) => {
+  let totalFilesToUpload = 0;
+
+  rootList.forEach((n) => {
+    totalFilesToUpload += n.childrenFiles.length;
+    if (n.childrenFolders.length >= 1) {
+      countTotalItemsInIRoot(n.childrenFolders);
+    }
+  });
+
+  return totalFilesToUpload;
+};
+
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
   const { dispatch, currentFolderId, onDragAndDropEnd } = props;
-  if (files.length) {
-    // files where dragged directly
-    await dispatch(
-      storageThunks.uploadItemsThunkNoCheck({
-        files,
-        parentFolderId: currentFolderId,
-        options: {
-          onSuccess: onDragAndDropEnd,
-        },
-      }),
-    );
-  }
+  const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
-  if (rootList.length) {
-    for (const root of rootList) {
+  if (countTotalItemsToUpload < 1000) {
+    if (files.length) {
+      // files where dragged directly
       await dispatch(
-        storageThunks.uploadFolderThunkNoCheck({
-          root,
-          currentFolderId,
+        storageThunks.uploadItemsThunkNoCheck({
+          files,
+          parentFolderId: currentFolderId,
           options: {
             onSuccess: onDragAndDropEnd,
           },
         }),
       );
     }
+    if (rootList.length) {
+      for (const root of rootList) {
+        await dispatch(
+          storageThunks.uploadFolderThunkNoCheck({
+            root,
+            currentFolderId,
+            options: {
+              onSuccess: onDragAndDropEnd,
+            },
+          }),
+        );
+      }
+    }
+  } else {
+    dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
+    notificationsService.show({
+      text: 'The maximum is 1000 files per upload.',
+      type: ToastType.Warning,
+    });
   }
 };
 
