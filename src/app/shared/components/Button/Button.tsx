@@ -25,17 +25,23 @@ export default function Button({
   let styles = '';
 
   if (variant === 'primary' && !disabled) {
-    styles = `${loading ? 'bg-primary-dark' : 'bg-primary'} active:bg-primary-dark text-white`;
+    styles = `${
+      loading ? 'bg-primary-dark' : 'bg-primary'
+    } active:bg-primary-dark text-white shadow-sm transition-all duration-100 ease-in-out`;
   } else if (variant === 'primary' && disabled) {
-    styles = 'bg-gray-30 text-white';
+    styles = 'bg-gray-30 text-white shadow-sm transition-all duration-100 ease-in-out';
   } else if (variant === 'accent' && !disabled) {
-    styles = `${loading ? 'bg-red-dark' : 'bg-red-std'} active:bg-red-dark text-white`;
+    styles = `${
+      loading ? 'bg-red-dark' : 'bg-red-std'
+    } active:bg-red-dark text-white shadow-sm transition-all duration-100 ease-in-out`;
   } else if (variant === 'accent' && disabled) {
-    styles = 'bg-gray-30 text-white';
+    styles = 'bg-gray-30 text-white shadow-sm transition-all duration-100 ease-in-out';
   } else if (variant === 'secondary' && !disabled) {
-    styles = `${loading ? 'bg-gray-20' : 'bg-gray-5'} hover:bg-gray-10 active:bg-gray-20 text-gray-80`;
+    styles =
+      'bg-white border border-black border-opacity-10 hover:border-opacity-15 active:bg-gray-1 text-gray-80 shadow-sm transition-all duration-100 ease-in-out';
   } else if (variant === 'secondary' && disabled) {
-    styles = 'bg-gray-5 text-gray-30';
+    styles =
+      'bg-white text-gray-30 border border-black border-opacity-5 shadow-sm transition-all duration-100 ease-in-out';
   }
   return (
     <button

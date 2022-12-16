@@ -33,7 +33,7 @@ function copyShareLink(type: string, code: string, token: string) {
 }
 
 export default function SharedLinksView(): JSX.Element {
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 50;
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [page, setPage] = useState<number>(0);
@@ -229,7 +229,7 @@ export default function SharedLinksView(): JSX.Element {
               const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
               return (
                 <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
-                  <div className="my-5 flex flex-shrink items-center justify-center">
+                  <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
                     <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
                     <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
                       <Link size={12} color="white" />
@@ -254,11 +254,11 @@ export default function SharedLinksView(): JSX.Element {
             },
             (props) => (
               <span
-                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'}`}
+                className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}
               >{`${props.views} views`}</span>
             ),
             (props) => (
-              <span className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'}`}>
+              <span className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}>
                 {dateService.format(props.createdAt, 'D MMM YYYY')}
               </span>
             ),
