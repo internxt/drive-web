@@ -52,7 +52,6 @@ import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import LifetimeBanner from 'app/banners/LifetimeBanner';
 
 const PAGINATION_LIMIT = 20;
 
@@ -278,7 +277,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <UploadItemsFailsDialog />
-      <LifetimeBanner />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col pt-6">
