@@ -7,7 +7,6 @@ import i18n from '../../../../i18n/services/i18n.service';
 import { CreateFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../../tasks/types';
 import tasksService from '../../../../tasks/services/tasks.service';
 import errorService from '../../../../core/services/error.service';
-//import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import folderService from '../../../../drive/services/folder.service';
 
 interface CreateFolderThunkOptions {
@@ -52,6 +51,8 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
         isFolder: true,
         color: null,
         encrypt_version: null,
+        plain_name: createdFolder.plain_name,
+        deleted: false,
       };
 
       tasksService.updateTask({

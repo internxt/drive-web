@@ -8,12 +8,14 @@ export interface DriveFolderData {
   bucket: string | null;
   color: string | null;
   createdAt: string;
+  deleted: boolean;
   encrypt_version: string | null;
   icon: string | null;
   iconId: number | null;
   icon_id: number | null;
   isFolder: boolean;
   name: string;
+  plain_name: string | null;
   parentId: number;
   parent_id: number | null;
   updatedAt: string;
@@ -32,7 +34,7 @@ export interface DriveFileData {
   bucket: string;
   createdAt: string;
   created_at: string;
-  deleted: false;
+  deleted: boolean;
   deletedAt: null;
   encrypt_version: string;
   fileId: string;
@@ -40,6 +42,7 @@ export interface DriveFileData {
   folder_id: number;
   id: number;
   name: string;
+  plain_name: string | null;
   size: number;
   type: string;
   updatedAt: string;

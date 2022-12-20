@@ -1,9 +1,0 @@
-@layer components {
-  .account-plans-renewal-period-item {
-    @apply cursor-pointer h-full bg-neutral-20 text-neutral-80 rounded-lg flex-1 flex justify-center items-center;
-
-    &.active {
-      @apply bg-white text-neutral-500;
-    }
-  }
-}

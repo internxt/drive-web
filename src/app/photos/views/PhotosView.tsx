@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Empty from '../../shared/components/Empty/Empty';
-
 import { RootState } from '../../store';
 import { photosSlice, PhotosState, SerializablePhoto } from '../../store/slices/photos';
 import photosThunks from '../../store/slices/photos/thunks';

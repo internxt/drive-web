@@ -25,8 +25,10 @@ import { uiActions } from 'app/store/slices/ui';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
+const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
+
 function copyShareLink(type: string, code: string, token: string) {
-  copy(`${document.location.origin}/s/${type}/${token}/${code}`);
+  copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
@@ -73,7 +75,7 @@ export default function SharedLinksView(): JSX.Element {
       items = [...shareLinks, ...items];
     }
     setShareLinks(items);
-    setHasMoreItems(ITEMS_PER_PAGE * page < response.pagination.countAll);
+    setHasMoreItems(ITEMS_PER_PAGE === response.items.length);
     setOrderBy(orderBy);
     setPage(page);
 

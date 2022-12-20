@@ -6,7 +6,6 @@ import AuthView from 'app/auth/views/Auth/AuthView';
 import DriveView from 'app/drive/views/DriveView/DriveView';
 import RecentsView from 'app/drive/views/RecentsView/RecentsView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
-import AccountView from 'app/core/views/AccountView/AccountView';
 import Preferences from 'app/core/views/Preferences';
 import DeactivationView from 'app/core/views/DeactivationView/DeactivationView';
 import JoinTeamView from 'app/teams/views/JoinTeamView/JoinTeamView';
@@ -28,6 +27,7 @@ import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import PhotosView from '../../photos/views/PhotosView';
 import VerifyEmailView from '../views/VerifyEmailView';
+import TrashView from 'app/drive/views/TrashView/TrashView';
 
 const views: Array<{
   id: string;
@@ -46,7 +46,6 @@ const views: Array<{
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.SharedLinks, component: SharedLinksView },
   { id: AppView.Photos, component: PhotosView },
-  { id: AppView.Account, component: AccountView },
   { id: AppView.Preferences, component: Preferences },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },

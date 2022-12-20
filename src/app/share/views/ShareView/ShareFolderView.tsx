@@ -22,6 +22,7 @@ import { loadWritableStreamPonyfill } from 'app/network/download';
 import ShareItemPwdView from './ShareItemPwdView';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import errorService from 'app/core/services/error.service';
+import SendBanner from './SendBanner';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -56,6 +57,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [itemPassword, setItemPassword] = useState('');
+  const [sendBannerVisible, setIsSendBannerVisible] = useState(false);
 
   const canUseReadableStreamMethod =
     'WritableStream' in window &&
@@ -169,6 +171,9 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           .then(() => {
             updateProgress(1);
             shareService.incrementShareView(folderInfo.token);
+            setTimeout(() => {
+              setIsSendBannerVisible(true);
+            }, 3000);
           })
           .catch((err) => {
             if (err && err.message && err.message.includes('user aborted')) {
@@ -261,6 +266,8 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     ) : (
       //WITHOUT PASSWORD
       <>
+        <SendBanner sendBannerVisible={sendBannerVisible} setIsSendBannerVisible={setIsSendBannerVisible} />
+
         {/* File info */}
         <div className="flex flex-grow-0 flex-col items-center justify-center space-y-4">
           <div className="h-32 w-32 drop-shadow-soft filter">

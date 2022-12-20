@@ -25,7 +25,7 @@ export async function uploadFile(
   file: FileToUpload,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-  abortController?: AbortController
+  abortController?: AbortController,
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
@@ -50,7 +50,7 @@ export async function uploadFile(
     const fileId = await uploadToBucket(bucketId, {
       creds: {
         pass: bridgePass,
-        user: bridgeUser
+        user: bridgeUser,
       },
       filecontent: file.content,
       filesize: file.size,
@@ -58,16 +58,18 @@ export async function uploadFile(
       progressCallback: (totalBytes, uploadedBytes) => {
         updateProgressCallback(uploadedBytes / totalBytes);
       },
-      abortController
+      abortController,
     });
 
     const name = encryptFilename(file.name, file.parentFolderId);
+
     const storageClient = SdkFactory.getInstance().createStorageClient();
     const fileEntry: StorageTypes.FileEntry = {
       id: fileId,
       type: file.type,
       size: file.size,
       name: name,
+      plain_name: file.name,
       bucket: bucketId,
       folder_id: file.parentFolderId,
       encrypt_version: StorageTypes.EncryptionVersion.Aes03,
@@ -77,7 +79,7 @@ export async function uploadFile(
     if (!response.thumbnails) {
       response = {
         ...response,
-        thumbnails: []
+        thumbnails: [],
       };
     }
 

@@ -1,5 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { CheckCircle, Info, Warning, WarningOctagon, X } from 'phosphor-react';
+import { NavLink } from 'react-router-dom';
 import { ToastShowProps, ToastType } from '../../services/notifications.service';
 
 const NotificationToast = ({
@@ -50,18 +51,28 @@ const NotificationToast = ({
       >
         {Icon && <Icon weight="fill" className={`${IconColor} mr-1.5`} size={24} />}
 
-        <p className="flex-1 break-words text-gray-80 line-clamp-2">{text}</p>
-        {action && (
-          <button onClick={action.onClick} className="ml-3 truncate font-medium text-primary">
-            {action.text}
-          </button>
-        )}
+        <p className="flex-1 whitespace-pre break-words text-gray-80 line-clamp-2">{text}</p>
+        {action &&
+          (action.to ? (
+            <NavLink
+              className="ml-3 truncate font-medium text-primary no-underline"
+              exact
+              to={action.to}
+              onClick={action.onClick}
+            >
+              {action.text}
+            </NavLink>
+          ) : (
+            <button onClick={action.onClick} className="ml-3 truncate font-medium text-primary">
+              {action.text}
+            </button>
+          ))}
         {!!onUndo && (
           <button onClick={onUndo} className="ml-3 text-gray-40">
             <span className="font-medium text-primary">Undo</span>
           </button>
         )}
-        {closable && (
+         {closable && (
           <button onClick={onClose} className="ml-3 text-gray-40">
             <X size={20} />
           </button>

@@ -24,7 +24,8 @@ interface ShareItemDialogProps {
 }
 
 function copyShareLink(type: string, code: string, token: string) {
-  copy(`${document.location.origin}/s/${type}/${token}/${code}`);
+  const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
+  copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
@@ -65,12 +66,12 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
       title="Share settings"
       subTitle={itemFullName}
       dialogRounded={true}
-      textLeft={true}
       panelClasses="w-screen max-w-lg"
-      titleClasses="text-black font-medium"
+      titleClasses="text-black font-medium text-left"
       closeClass="flex-shrink-0 flex items-center justify-center h-10 w-10 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
       onClose={onClose}
       weightIcon="light"
+      dataTest="share-item-dialog"
     >
       <hr className="border-t-1 mb-5 w-screen border-neutral-40" />
       <div className="mb-5 flex flex-col">
