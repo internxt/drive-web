@@ -27,7 +27,6 @@ import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import PhotosView from '../../photos/views/PhotosView';
 import VerifyEmailView from '../views/VerifyEmailView';
-import TrashView from 'app/drive/views/TrashView/TrashView';
 
 const views: Array<{
   id: string;
