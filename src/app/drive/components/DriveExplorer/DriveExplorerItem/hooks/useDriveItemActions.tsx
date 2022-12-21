@@ -44,7 +44,6 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const dispatch = useAppDispatch();
   const [nameEditPending, setNameEditPending] = useState(false);
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
-  const isItemSelected = useAppSelector(storageSelectors.isItemSelected);
   const currentFolderPath = useAppSelector(storageSelectors.currentFolderPath);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const { dirtyName } = useDriveItemStoreProps();
@@ -179,9 +178,8 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   };
 
   const onItemClicked = (): void => {
-    isItemSelected(item)
-      ? dispatch(storageActions.deselectItems([item]))
-      : dispatch(storageActions.selectItems([item]));
+    dispatch(storageActions.clearSelectedItems());
+    dispatch(storageActions.selectItems([item]));
   };
 
   const onItemDoubleClicked = (): void => {

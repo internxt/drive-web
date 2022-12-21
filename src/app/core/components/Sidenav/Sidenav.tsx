@@ -16,6 +16,7 @@ import screenService from 'app/core/services/screen.service';
 import './Sidenav.scss';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -53,7 +54,20 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
   };
 
   onDownloadAppButtonClicked = (): void => {
-    window.open(desktopService.getDownloadAppUrl(), '_self');
+    const getDownloadApp = async () => {
+      const download = await desktopService.getDownloadAppUrl();
+      return download;
+    };
+    getDownloadApp()
+      .then((download) => {
+        window.open(download, '_self');
+      })
+      .catch(() => {
+        notificationsService.show({
+          text: 'Something went wrong while downloading the desktop app',
+          type: ToastType.Error,
+        });
+      });
   };
 
   onLogoClicked = (): void => {

@@ -33,6 +33,7 @@ import { uiActions } from '../../../store/slices/ui';
 import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
+import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
@@ -54,6 +55,7 @@ import { SdkFactory } from '../../../core/factory/sdk';
 import _ from 'lodash';
 import { PAGINATION_LIMIT } from '../../../store/slices/storage/constans';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -117,6 +119,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasItems = paginatedItems.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
+  const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
 
   useEffect(() => {
     deviceService.redirectForMobile();
@@ -139,13 +142,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onUploadFileInputChanged = (e) => {
-    dispatch(
-      storageThunks.uploadItemsThunk({
-        files: Array.from(e.target.files),
-        parentFolderId: currentFolderId,
-      }),
-    ).then(() => onFileUploaded && onFileUploaded());
-    setFileInputKey(Date.now());
+    if (e.target.files.length < 1000) {
+      dispatch(
+        storageThunks.uploadItemsThunk({
+          files: Array.from(e.target.files),
+          parentFolderId: currentFolderId,
+        }),
+      ).then(() => onFileUploaded && onFileUploaded());
+      setFileInputKey(Date.now());
+    } else {
+      dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
+      notificationsService.show({
+        text: 'The maximum is 1000 files per upload.',
+        type: ToastType.Warning,
+      });
+    }
   };
 
   const onUploadFolderInputChanged = async (e) => {
@@ -275,6 +286,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
+      <UploadItemsFailsDialog />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col pt-6">
@@ -324,9 +336,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     </BaseButton>
                     {selectedItems.length === 1 && (
                       <>
-                        <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
-                          <Link className="h-6 w-6" />
-                        </BaseButton>
+                        {isSelectedItemShared && (
+                          <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
+                            <Link className="h-6 w-6" />
+                          </BaseButton>
+                        )}
                         <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemRename}>
                           <PencilSimple className="h-6 w-6" />
                         </BaseButton>
@@ -466,33 +480,55 @@ declare module 'react' {
   }
 }
 
+const countTotalItemsInIRoot = (rootList: IRoot[]) => {
+  let totalFilesToUpload = 0;
+
+  rootList.forEach((n) => {
+    totalFilesToUpload += n.childrenFiles.length;
+    if (n.childrenFolders.length >= 1) {
+      countTotalItemsInIRoot(n.childrenFolders);
+    }
+  });
+
+  return totalFilesToUpload;
+};
+
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
   const { dispatch, currentFolderId, onDragAndDropEnd } = props;
-  if (files.length) {
-    // files where dragged directly
-    await dispatch(
-      storageThunks.uploadItemsThunkNoCheck({
-        files,
-        parentFolderId: currentFolderId,
-        options: {
-          onSuccess: onDragAndDropEnd,
-        },
-      }),
-    );
-  }
+  const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
-  if (rootList.length) {
-    for (const root of rootList) {
+  if (countTotalItemsToUpload < 1000) {
+    if (files.length) {
+      // files where dragged directly
       await dispatch(
-        storageThunks.uploadFolderThunkNoCheck({
-          root,
-          currentFolderId,
+        storageThunks.uploadItemsThunkNoCheck({
+          files,
+          parentFolderId: currentFolderId,
           options: {
             onSuccess: onDragAndDropEnd,
           },
         }),
       );
     }
+    if (rootList.length) {
+      for (const root of rootList) {
+        await dispatch(
+          storageThunks.uploadFolderThunkNoCheck({
+            root,
+            currentFolderId,
+            options: {
+              onSuccess: onDragAndDropEnd,
+            },
+          }),
+        );
+      }
+    }
+  } else {
+    dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
+    notificationsService.show({
+      text: 'The maximum is 1000 files per upload.',
+      type: ToastType.Warning,
+    });
   }
 };
 
