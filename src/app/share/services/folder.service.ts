@@ -5,6 +5,7 @@ import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/se
 interface RequiredQueryValues {
   token: string;
   directoryId: number;
+  parentId: number;
   code: string;
   password?: string;
 }
@@ -21,11 +22,12 @@ export class SharedFolderFilesIterator implements Iterator<SharedDirectoryFile> 
   }
 
   async next(): Promise<{ value: SharedDirectoryFile[]; done: boolean }> {
-    const { code, directoryId, token, password } = this.queryValues;
+    const { code, directoryId, parentId, token, password } = this.queryValues;
 
     const { files, last } = await getSharedDirectoryFiles({
       code,
       directoryId,
+      parentId,
       token,
       offset: this.offset,
       limit: this.limit,
@@ -50,10 +52,11 @@ export class SharedDirectoryFolderIterator implements Iterator<SharedDirectoryFo
   }
 
   async next(): Promise<{ value: SharedDirectoryFolder[]; done: boolean }> {
-    const { directoryId, token, password } = this.queryValues;
+    const { directoryId, parentId, token, password } = this.queryValues;
 
     const { folders, last } = await getSharedDirectoryFolders({
       directoryId,
+      parentId,
       token,
       offset: this.offset,
       limit: this.limit,
