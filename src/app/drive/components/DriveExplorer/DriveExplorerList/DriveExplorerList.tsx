@@ -5,12 +5,14 @@ import { connect } from 'react-redux';
 
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
 import { AppDispatch, RootState } from '../../../../store';
-import { storageActions } from '../../../../store/slices/storage';
+import { storageActions, storageSelectors } from '../../../../store/slices/storage';
 import i18n from '../../../../i18n/services/i18n.service';
 import { DriveItemData } from '../../../types';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
 import DriveListItemSkeleton from '../../DriveListItemSkeleton/DriveListItemSkeleton';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import storageThunks from '../../../../store/slices/storage/storage.thunks';
+import { PAGINATION_LIMIT } from '../../../../store/slices/storage/constans';
 
 interface DriveExplorerListProps {
   isLoading: boolean;
@@ -20,6 +22,7 @@ interface DriveExplorerListProps {
   dispatch: AppDispatch;
   onEndOfScroll(): void;
   hasMoreItems: boolean;
+  currentFolderId: number;
   isTrash?: boolean;
 }
 
@@ -48,8 +51,8 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
         const itemParentId = item.parentId || item.folderId;
         const itemKey = `'file'-${item.id}-${itemParentId}`;
 
-      return <DriveExplorerListItem key={itemKey} item={item} isTrash={this.props.isTrash} />;
-    });
+        return <DriveExplorerListItem key={itemKey} item={item} isTrash={this.props.isTrash} />;
+      });
   }
 
   get itemsFolderList(): JSX.Element[] {
@@ -59,8 +62,8 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
         const itemParentId = item.parentId || item.folderId;
         const itemKey = `'folder'-${item.id}-${itemParentId}`;
 
-      return <DriveExplorerListItem key={itemKey} item={item} isTrash= {this.props.isTrash} />;
-    });
+        return <DriveExplorerListItem key={itemKey} item={item} isTrash={this.props.isTrash} />;
+      });
   }
 
   get isAllSelected(): boolean {
@@ -82,7 +85,18 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
   };
 
   render(): ReactNode {
-    const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll } = this.props;
+    const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll, currentFolderId } = this.props;
+
+    const fetchFolderContent = () => {
+      dispatch(storageActions.clearSelectedItems());
+      dispatch(
+        storageThunks.fetchPaginatedFolderContentThunk({
+          folderId: currentFolderId,
+          index: 0,
+          limit: PAGINATION_LIMIT,
+        }),
+      );
+    };
 
     const sortBy = (orderBy: string) => {
       const direction =
@@ -91,6 +105,9 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
             ? OrderDirection.Asc
             : OrderDirection.Desc
           : OrderDirection.Asc;
+
+      //TODO: The type of sort is missing, need to add when backend calls was done
+      fetchFolderContent();
       dispatch(storageActions.setOrder({ by: orderBy, direction }));
     };
     const sortButtonFactory = () => {
@@ -155,7 +172,12 @@ class DriveExplorerList extends React.Component<DriveExplorerListProps> {
   }
 }
 
-export default connect((state: RootState) => ({
-  selectedItems: state.storage.selectedItems,
-  order: state.storage.order,
-}))(DriveExplorerList);
+export default connect((state: RootState) => {
+  const currentFolderId = storageSelectors.currentFolderId(state);
+
+  return {
+    currentFolderId,
+    selectedItems: state.storage.selectedItems,
+    order: state.storage.order,
+  };
+})(DriveExplorerList);
