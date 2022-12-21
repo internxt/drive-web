@@ -52,6 +52,8 @@ import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import tasksService from '../../../../app/tasks/services/tasks.service';
+import { TaskStatus, TaskType, UploadFolderTask } from '../../../../app/tasks/types';
 
 const PAGINATION_LIMIT = 20;
 
@@ -484,8 +486,14 @@ const countTotalItemsInIRoot = (rootList: IRoot[]) => {
 };
 
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
-  const { dispatch, currentFolderId, onDragAndDropEnd } = props;
+  const { dispatch, currentFolderId, onDragAndDropEnd, items } = props;
   const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
+  const foldersUploadedNotExist = rootList.filter(
+    (folder) => !items.find((existFolder) => folder.name === existFolder.name),
+  );
+  const foldersUploadedAlreadyExist = rootList.filter((folder) =>
+    items.find((existFolder) => folder.name === existFolder.name),
+  );
 
   if (countTotalItemsToUpload < 1000) {
     if (files.length) {
@@ -500,8 +508,9 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         }),
       );
     }
-    if (rootList.length) {
-      for (const root of rootList) {
+
+    if (foldersUploadedNotExist.length) {
+      for (const root of foldersUploadedNotExist) {
         await dispatch(
           storageThunks.uploadFolderThunkNoCheck({
             root,
@@ -512,6 +521,29 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           }),
         );
       }
+    }
+
+    if (foldersUploadedAlreadyExist.length) {
+      foldersUploadedAlreadyExist.forEach((folder) => {
+        const taskId = tasksService.create<UploadFolderTask>({
+          action: TaskType.UploadFolder,
+          folderName: folder.name,
+          showNotification: true,
+          cancellable: true,
+        });
+
+        notificationsService.show({
+          text: `Folder "${folder.name}" already exist`,
+          type: ToastType.Error,
+        });
+
+        tasksService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Error,
+          },
+        });
+      });
     }
   } else {
     dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
