@@ -8,6 +8,7 @@ import { Iterator } from 'app/core/collections';
 interface FolderRef {
   name: string;
   folderId: number;
+  parentId: number;
   handle: FileSystemDirectoryHandle;
 }
 
@@ -52,6 +53,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     const rootFolder: FolderRef = {
       name: sharedFolderMeta.name,
       folderId: sharedFolderMeta.id,
+      parentId: sharedFolderMeta.id,
       handle: sharedFolderDirectoryHandle,
     };
     const pendingFolders: FolderRef[] = [rootFolder];
@@ -63,6 +65,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
         {
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
+          parentId: folderToDownload.parentId,
           code: sharedFolderMeta.code,
           password: sharedFolderMeta.password,
         },
@@ -73,6 +76,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
         {
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
+          parentId: folderToDownload.parentId,
           password: sharedFolderMeta.password,
         },
         options.foldersLimit,
@@ -112,6 +116,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
           try {
             pendingFolders.push({
               folderId: id,
+              parentId: folderToDownload.folderId,
               handle: await directory.getDirectoryHandle(name, { create: true }),
               name,
             });

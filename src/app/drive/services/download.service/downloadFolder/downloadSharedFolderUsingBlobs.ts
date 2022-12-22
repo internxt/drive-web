@@ -8,6 +8,7 @@ import { Network } from '../../network.service';
 
 interface FolderPackage {
   folderId: number;
+  parentId: number;
   name: string;
   pack: JSZip;
 }
@@ -35,6 +36,7 @@ export async function downloadSharedFolderUsingBlobs(
 
   const rootFolder: FolderPackage = {
     folderId: sharedFolderMeta.id,
+    parentId: sharedFolderMeta.id,
     pack: zip,
     name: sharedFolderMeta.name,
   };
@@ -53,6 +55,7 @@ export async function downloadSharedFolderUsingBlobs(
         const { files, last } = await getSharedDirectoryFiles({
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
+          parentId: folderToDownload.parentId,
           offset: filesOffset,
           limit: options.foldersLimit,
           code: sharedFolderMeta.code,
@@ -85,6 +88,7 @@ export async function downloadSharedFolderUsingBlobs(
         const { folders, last } = await getSharedDirectoryFolders({
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
+          parentId: folderToDownload.parentId,
           offset: foldersOffset,
           limit: options.foldersLimit,
           password: sharedFolderMeta.password,
@@ -93,6 +97,7 @@ export async function downloadSharedFolderUsingBlobs(
         folders.map(async ({ id, name }) => {
           pendingFolders.push({
             folderId: id,
+            parentId: folderToDownload.folderId,
             name: name,
             pack: currentFolderZip,
           });
