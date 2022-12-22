@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo ${{ secrets.SHARE_NGINX_CONFIG }} | base64 -d > ./infrastructure/share/nginx.conf
+      - run: echo ${{ secrets.STAGING_NGINX_CONFIG }} | base64 -d > ./infrastructure/share/nginx.conf
       - run: echo REACT_APP_SEGMENT_KEY=${{ secrets.REACT_APP_SEGMENT_KEY }} >> ./infrastructure/share/share.env
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./infrastructure/share/share.env
       - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./infrastructure/share/share.env
