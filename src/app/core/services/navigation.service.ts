@@ -1,11 +1,19 @@
-import { createBrowserHistory } from 'history';
+import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
 import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView, AppViewConfig } from '../types';
 import configService from './config.service';
 
-const instance = createBrowserHistory({ forceRefresh: false });
+const browserHistoryConfig: BrowserHistoryBuildOptions = {
+  forceRefresh: false,
+};
+
+if (process.env.REACT_APP_BASE_URL) {
+  browserHistoryConfig.basename = process.env.REACT_APP_BASE_URL;
+}
+
+const instance = createBrowserHistory(browserHistoryConfig);
 
 instance.listen((nav) => {
   const keys = Object.keys(PATH_NAMES);
