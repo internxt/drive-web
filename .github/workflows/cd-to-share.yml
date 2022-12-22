@@ -1,0 +1,65 @@
+name: CD to share.internxt.com
+on:
+  push:
+    branches: [master, chore/share-domain]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo ${{ secrets.SHARE_NGINX_CONFIG }} | base64 -d > ./infrastructure/share/nginx.conf
+
+      - run: echo REACT_APP_SEGMENT_KEY=${{ secrets.REACT_APP_SEGMENT_KEY }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} >> ./infrastructure/share/share.env
+      - run: echo GENERATE_SOURCEMAP=${{ secrets.GENERATE_SOURCEMAP }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_MAGIC_IV=${{ secrets.REACT_APP_MAGIC_IV }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_MAGIC_SALT=${{ secrets.REACT_APP_MAGIC_SALT }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_CRYPTO_SECRET2=${{ secrets.REACT_APP_CRYPTO_SECRET2 }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_PROXY=${{ secrets.REACT_APP_PROXY }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_NETWORK_URL=${{ secrets.REACT_APP_NETWORK_URL }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_SEND_USER=${{ secrets.REACT_APP_SEND_USER }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_SEND_PASS=${{ secrets.REACT_APP_SEND_PASS }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_SEND_ENCRYPTION_KEY=${{ secrets.REACT_APP_SEND_ENCRYPTION_KEY }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_SEND_BUCKET_ID=${{ secrets.REACT_APP_SEND_BUCKET_ID }} >> ./infrastructure/share/share.env
+      - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./infrastructure/share/share.env
+
+      - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
+      - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
+      # You cannot read packages from other private repos with GITHUB_TOKEN
+      # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
+      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
+      - run: echo "always-auth=true" >> .npmrc
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push to send-web
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./infrastructure/share/share.Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/drive-web-dev:${{ github.sha }}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Updates drive-web cluster image
+        uses: steebchen/kubectl@v2.0.0
+        with: # defaults to latest kubectl binary version
+          config: ${{ secrets.KUBE_CONFIG_DRIVE_SERVER }}
+          command: set image --record deployment/drive-web-share-dp drive-web-share-dp=${{ secrets.DOCKERHUB_USERNAME }}/drive-web-dev:${{ github.sha }}
+      - name: Verify deployment
+        uses: steebchen/kubectl@v2.0.0
+        with:
+          config: ${{ secrets.KUBE_CONFIG_DRIVE_SERVER }}
+          version: v1.20.2 # specify kubectl binary version explicitly
+          command: rollout status deployment/drive-web-share-dp
