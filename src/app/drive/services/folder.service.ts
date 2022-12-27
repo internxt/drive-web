@@ -209,8 +209,23 @@ async function addAllFilesToZip(
     allFiles.push(...files);
 
     for (const file of files) {
-      const fileStream = await downloadFile(file);
-      await zip.addFile(path + '/' + file.name + (file.type ? '.' + file.type : ''), fileStream);
+      const fileSize = Number(file.size);
+
+      if (fileSize === 0) {
+        const emptyUinit8Array = new Uint8Array();
+        const stream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(emptyUinit8Array);
+            controller.close();
+          },
+        });
+        await zip.addFile(path + '/' + file.name + (file.type ? '.' + file.type : ''), stream);
+      }
+
+      if (fileSize !== 0) {
+        const fileStream = await downloadFile(file);
+        await zip.addFile(path + '/' + file.name + (file.type ? '.' + file.type : ''), fileStream);
+      }
     }
 
     pack = await nextChunkRequest;

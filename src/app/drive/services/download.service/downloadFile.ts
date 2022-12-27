@@ -1,4 +1,5 @@
 import streamSaver from 'streamsaver';
+import { saveAs } from 'file-saver';
 
 import analyticsService from 'app/analytics/services/analytics.service';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -104,6 +105,7 @@ export default async function downloadFile(
 ): Promise<void> {
   const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId;
+  const fileSize = Number(itemData.size);
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
   const isCypress = window['Cypress'] !== undefined;
@@ -127,18 +129,22 @@ export default async function downloadFile(
 
   trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
 
-  const fileStreamPromise = fetchFileStream(
-    { ...itemData, bucketId: itemData.bucket },
-    { isTeam, updateProgressCallback, abortController },
-  );
+  if (fileSize !== 0) {
+    const fileStreamPromise = fetchFileStream(
+      { ...itemData, bucketId: itemData.bucket },
+      { isTeam, updateProgressCallback, abortController },
+    );
 
-  await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController).catch((err) => {
-    const errMessage = err instanceof Error ? err.message : (err as string);
+    await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController).catch((err) => {
+      const errMessage = err instanceof Error ? err.message : (err as string);
 
-    trackFileDownloadError(userEmail, fileId, errMessage);
+      trackFileDownloadError(userEmail, fileId, errMessage);
 
-    throw new Error(errMessage);
-  });
+      throw new Error(errMessage);
+    });
+  } else {
+    saveAs(new Blob(['']), `${itemData.name}.${itemData.type}`);
+  }
 
   analyticsService.trackFileDownloadCompleted({
     size: itemData.size,
