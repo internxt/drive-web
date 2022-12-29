@@ -31,6 +31,11 @@ export function generateHMAC(
   return hmac.digest();
 }
 
+
+export function testPR() {
+  console.log('Changes in netork');
+}
+
 function getDeterministicKey(key: string, data: string): Buffer {
   const input = key + data;
 
