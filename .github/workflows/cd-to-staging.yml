@@ -5,7 +5,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
+    steps
       - uses: actions/checkout@v2
       - run: echo ${{ secrets.STAGING_NGINX_CONFIG }} | base64 -d > ./infrastructure/staging/nginx.conf
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./infrastructure/staging/staging.env
