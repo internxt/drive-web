@@ -53,7 +53,7 @@ import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
-const PAGINATION_LIMIT = 20;
+const PAGINATION_LIMIT = 60;
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
