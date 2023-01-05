@@ -45,6 +45,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           success_url: `${window.location.origin}/checkout/success`,
           cancel_url: window.location.href,
           customer_email: user.email,
+          mode: interval === 'lifetime' ? 'payment' : 'subscription',
         });
         localStorage.setItem('sessionId', response.sessionId);
         await paymentService.redirectToCheckout(response);
