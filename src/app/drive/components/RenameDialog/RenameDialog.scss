@@ -1,0 +1,64 @@
+@layer components {
+  /* The container */
+  .container {
+    display: block;
+    position: relative;
+    padding-left: 26px;
+    margin-bottom: 12px;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 120%;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .checkDot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: white;
+    border-radius: 50%;
+    border-color: #aeaeb3;
+    border-width: 1px;
+  }
+
+  .container:hover input ~ .checkDot {
+    background-color: #ccc;
+  }
+
+  .container input:checked ~ .checkDot {
+    background-color: #06f;
+    border-width: 0;
+  }
+
+  .checkDot::after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+
+  .container .checkDot::after {
+    top: 5px;
+    left: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: white;
+  }
+
+  .container input:checked ~ .checkDot::after {
+    display: block;
+  }
+}

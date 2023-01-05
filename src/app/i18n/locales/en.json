@@ -173,6 +173,7 @@
     "downloadingItems": "Some of the elements could not be downloaded",
     "movingItemInsideItself": "You can't move a folder inside itself",
     "movingItem": "Error when moving item/s",
+    "renamingItem": "Error when renaming item/s",
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent",
     "noSpaceAvailable": "Your Internxt Drive is full. Get more space upgrading your account.",
@@ -355,6 +356,26 @@
       "errors": {
         "409": "A folder with that name already exists in the destination folder"
       }
+    },
+    "rename-file": {
+      "status": {
+        "pending": "Pending to rename",
+        "in-process": "Renaming file",
+        "success": "File renamed",
+        "error": "Error during renaming",
+        "cancelled": "Cancelled renaming"
+      },
+      "errors": {}
+    },
+    "rename-folder": {
+      "status": {
+        "pending": "Pending to rename",
+        "in-process": "Renaming folder",
+        "success": "Folder renamed",
+        "error": "Error during renaming",
+        "cancelled": "Cancelled renaming"
+      },
+      "errors": {}
     }
   },
   "success": {

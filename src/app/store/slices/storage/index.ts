@@ -8,6 +8,7 @@ import itemsListService from '../../../drive/services/items-list.service';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { IRoot } from './storage.thunks/uploadFolderThunk';
 
 const initialState: StorageState = {
   loadingFolders: {},
@@ -25,6 +26,11 @@ const initialState: StorageState = {
   itemsOnTrash: [],
   viewMode: FileViewMode.List,
   namePath: [],
+  filesToRename: [],
+  driveFilesToRename: [],
+  foldersToRename: [],
+  driveFoldersToRename: [],
+  destinationFolderId: null,
 };
 
 export const storageSlice = createSlice({
@@ -48,6 +54,21 @@ export const storageSlice = createSlice({
     },
     setItemsOnTrash: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.itemsOnTrash = action.payload;
+    },
+    setFilesToRename: (state: StorageState, action: PayloadAction<File[]>) => {
+      state.filesToRename = action.payload;
+    },
+    setDriveFilesToRename: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      state.driveFilesToRename = action.payload;
+    },
+    setFoldersToRename: (state: StorageState, action: PayloadAction<IRoot[]>) => {
+      state.foldersToRename = action.payload;
+    },
+    setDriveFoldersToRename: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      state.driveFoldersToRename = action.payload;
+    },
+    setDestinationFolderId: (state: StorageState, action: PayloadAction<number | null>) => {
+      state.destinationFolderId = action.payload;
     },
     setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
       Object.assign(state.filters, action.payload);
@@ -234,6 +255,8 @@ export const {
   setIsLoadingRecents,
   setIsLoadingDeleted,
   setItems,
+  setFilesToRename,
+  setDriveFilesToRename,
   setRecents,
   setFilters,
   resetFilters,
