@@ -107,7 +107,7 @@ export default function Preview({
       leaveFrom="opacity-100 scale-100"
       leaveTo="opacity-0 scale-95"
     >
-      <div className="absolute inset-0 isolate">
+      <div className="absolute inset-0 isolate" data-test="photos-preview">
         <Transition.Child
           as={Fragment}
           enter="transition-all duration-200 ease-out"
