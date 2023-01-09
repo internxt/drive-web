@@ -30,7 +30,7 @@ const initialState: StorageState = {
   driveFilesToRename: [],
   foldersToRename: [],
   driveFoldersToRename: [],
-  destinationFolderId: null,
+  moveDestinationFolderId: null,
 };
 
 export const storageSlice = createSlice({
@@ -55,20 +55,20 @@ export const storageSlice = createSlice({
     setItemsOnTrash: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.itemsOnTrash = action.payload;
     },
-    setFilesToRename: (state: StorageState, action: PayloadAction<File[]>) => {
+    setFilesToRename: (state: StorageState, action: PayloadAction<(File | DriveItemData)[]>) => {
       state.filesToRename = action.payload;
     },
     setDriveFilesToRename: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.driveFilesToRename = action.payload;
     },
-    setFoldersToRename: (state: StorageState, action: PayloadAction<IRoot[]>) => {
+    setFoldersToRename: (state: StorageState, action: PayloadAction<(DriveItemData | IRoot)[]>) => {
       state.foldersToRename = action.payload;
     },
     setDriveFoldersToRename: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.driveFoldersToRename = action.payload;
     },
-    setDestinationFolderId: (state: StorageState, action: PayloadAction<number | null>) => {
-      state.destinationFolderId = action.payload;
+    setMoveDestinationFolderId: (state: StorageState, action: PayloadAction<number | null>) => {
+      state.moveDestinationFolderId = action.payload;
     },
     setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
       Object.assign(state.filters, action.payload);

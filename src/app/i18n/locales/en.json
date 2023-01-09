@@ -139,6 +139,16 @@
       "goToApp": "Go back to app"
     }
   },
+  "modals": {
+    "renameModal": {
+      "title": "Item already exists",
+      "description": "{itemName} already exists in this location. Do you want to replace it with with the one you’re moving?",
+      "replaceItem": "Replace current item",
+      "keepBoth": "Keep both",
+      "upload": "Upload",
+      "move": "Move"
+    }
+  },
   "form": {
     "fields": {
       "email": {

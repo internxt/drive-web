@@ -69,7 +69,7 @@ interface DriveExplorerProps {
   driveFilesToRename: DriveItemData[];
   foldersToRename: (IRoot | DriveItemData)[];
   driveFoldersToRename: DriveItemData[];
-  destinationFolderId: number | null;
+  moveDestinationFolderId: number | null;
   onItemsDeleted?: () => void;
   onItemsMoved?: () => void;
   onFileUploaded?: () => void;
@@ -109,7 +109,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     driveFilesToRename,
     foldersToRename,
     driveFoldersToRename,
-    destinationFolderId,
+    moveDestinationFolderId,
     onItemsDeleted,
     onFolderCreated,
     isOver,
@@ -168,7 +168,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     const files = e.target.files;
 
     if (files.length < 1000) {
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch); // funcion comentada handleRepeatedUploadingFiles(e.target.files);
+      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
       dispatch(
         storageThunks.uploadItemsThunk({
           files: Array.from(unrepeatedUploadedFiles),
@@ -304,18 +304,19 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  const folderId = useMemo(() => destinationFolderId ?? currentFolderId, [destinationFolderId, currentFolderId]);
+  const folderId = useMemo(
+    () => moveDestinationFolderId ?? currentFolderId,
+    [moveDestinationFolderId, currentFolderId],
+  );
 
-  const onUploadReplacingButtonPressed = async (itemsToReplace, itemsToUpload) => {
+  const onReplacingButtonPressed = async (itemsToReplace, itemsToUpload) => {
     await moveItemsToTrash(itemsToReplace);
 
-    // Si hay destinationFolderId es que se esta moviendo items, no subiendo.
-    // cambiar este check por algo mas intuitivo
-    if (destinationFolderId) {
+    if (moveDestinationFolderId) {
       dispatch(
         storageThunks.moveItemsThunk({
           items: itemsToUpload,
-          destinationFolderId: destinationFolderId,
+          destinationFolderId: moveDestinationFolderId,
         }),
       );
     } else {
@@ -337,13 +338,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     }
   };
 
-  const onUploadKeepingBothButtonPressed = async (itemToUpload) => {
-    if (destinationFolderId) {
+  const onKeepingBothButtonPressed = async (itemToUpload) => {
+    if (moveDestinationFolderId) {
       await dispatch(storageThunks.renameItemsThunk({ items: [itemToUpload], destinationFolderId: folderId }));
       dispatch(
         storageThunks.moveItemsThunk({
           items: [itemToUpload],
-          destinationFolderId: destinationFolderId,
+          destinationFolderId: moveDestinationFolderId,
         }),
       );
     } else {
@@ -367,7 +368,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const closeRenameDialog = () => {
     dispatch(uiActions.setIsRenameDialogOpen(false));
-    dispatch(storageActions.setDestinationFolderId(null));
+    dispatch(storageActions.setMoveDestinationFolderId(null));
   };
 
   const onCancelRenameDialogButtonPressed = () => {
@@ -410,9 +411,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         newItems={newItems}
         driveItems={driveItems}
         onCancelButtonPressed={onCancelRenameDialogButtonPressed}
-        onUploadReplacingButtonPressed={onUploadReplacingButtonPressed}
-        onUploadKeepingBothButtonPressed={onUploadKeepingBothButtonPressed}
+        onReplacingButtonPressed={onReplacingButtonPressed}
+        onKeepingBothButtonPressed={onKeepingBothButtonPressed}
         onCloseDialog={closeRenameDialog}
+        isMoveModal={!!moveDestinationFolderId}
       />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
@@ -626,7 +628,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
 
   if (countTotalItemsToUpload < 1000) {
     if (files.length) {
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch);
+      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
       // files where dragged directly
       await dispatch(
         storageThunks.uploadItemsThunkNoCheck({
@@ -639,7 +641,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
       );
     }
     if (rootList.length) {
-      const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch);
+      const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch) as IRoot[];
       if (unrepeatedUploadedFolders.length > 0)
         await dispatch(
           storageThunks.uploadFolderThunkNoCheck({
@@ -714,6 +716,6 @@ export default connect((state: RootState) => {
     driveFilesToRename: state.storage.driveFilesToRename,
     foldersToRename: state.storage.foldersToRename,
     driveFoldersToRename: state.storage.driveFoldersToRename,
-    destinationFolderId: state.storage.destinationFolderId,
+    moveDestinationFolderId: state.storage.moveDestinationFolderId,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));

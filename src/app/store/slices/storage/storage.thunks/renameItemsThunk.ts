@@ -1,14 +1,11 @@
-import { ActionReducerMapBuilder, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, createAsyncThunk, Dispatch } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from 'app/drive/types';
+import { DriveItemData } from 'app/drive/types';
 import i18n from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import storageService from 'app/drive/services/storage.service';
-import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
-import itemsListService from 'app/drive/services/items-list.service';
 import storageSelectors from '../storage.selectors';
 import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
@@ -18,15 +15,14 @@ import { SdkFactory } from '../../../../core/factory/sdk';
 import renameIfNeeded from '@internxt/lib/dist/src/items/renameIfNeeded';
 import storageThunks from '.';
 
-// ACORDARSE DE REVISAR ANYS ANTES DE ABRIR EL PR!
-const checkRepeatedNameFiles = (folderFiles: DriveItemData[], filesToUpload: any[]) => {
-  const repeatedFilesInDrive = [] as DriveItemData[];
-  const unrepeatedUploadedFiles = [] as File[];
-  const filesToUploadRepeated = filesToUpload.reduce((acc, file) => {
-    const exists = folderFiles.some((folderFile) => {
+const checkRepeatedNameFiles = (destinationFolderFiles: DriveItemData[], files: (DriveItemData | File)[]) => {
+  const repeatedFilesInDrive: DriveItemData[] = [];
+  const unrepeatedFiles: (DriveItemData | File)[] = [];
+  const filesRepeated = files.reduce((acc, file) => {
+    const exists = destinationFolderFiles.some((folderFile) => {
       const fullFolderFileName = folderFile.name + '.' + folderFile.type;
 
-      const fileName = file?.fileId ? file.name + '.' + file.type : file.name;
+      const fileName = (file as DriveItemData)?.fileId ? file.name + '.' + file.type : file.name;
       if (fullFolderFileName === fileName) {
         repeatedFilesInDrive.push(folderFile);
         return true;
@@ -37,19 +33,19 @@ const checkRepeatedNameFiles = (folderFiles: DriveItemData[], filesToUpload: any
     if (exists) {
       return [...acc, file];
     }
-    unrepeatedUploadedFiles.push(file);
+    unrepeatedFiles.push(file);
 
     return acc;
-  }, [] as File[]);
+  }, [] as (DriveItemData | File)[]);
 
-  return { filesToUploadRepeated, repeatedFilesInDrive, unrepeatedUploadedFiles };
+  return { filesRepeated, repeatedFilesInDrive, unrepeatedFiles };
 };
 
-const checkRepeatedNameFolders = (folderFolders: any[], foldersToUpload: any[]) => {
-  const repeatedFoldersInDrive: any[] = [];
-  const unrepeatedUploadedFolders: any[] = [];
-  const foldersToUploadRepeated = foldersToUpload.reduce((acc, file) => {
-    const exists = folderFolders.some((folderFile) => {
+const checkRepeatedNameFolders = (destinationFolderFolders: DriveItemData[], folders: (DriveItemData | IRoot)[]) => {
+  const repeatedFoldersInDrive: DriveItemData[] = [];
+  const unrepeatedFolders: (DriveItemData | IRoot)[] = [];
+  const foldersRepeated = folders.reduce((acc, file) => {
+    const exists = destinationFolderFolders.some((folderFile) => {
       if (folderFile.name === file.name) {
         repeatedFoldersInDrive.push(folderFile);
         return true;
@@ -60,40 +56,43 @@ const checkRepeatedNameFolders = (folderFolders: any[], foldersToUpload: any[]) 
     if (exists) {
       return [...acc, file];
     }
-    unrepeatedUploadedFolders.push(file);
+    unrepeatedFolders.push(file);
 
     return acc;
-  }, [] as IRoot[]);
+  }, [] as (DriveItemData | IRoot)[]);
 
-  return { foldersToUploadRepeated, repeatedFoldersInDrive, unrepeatedUploadedFolders };
+  return { foldersRepeated, repeatedFoldersInDrive, unrepeatedFolders };
 };
 
-//tipo driveItem o File
-export const handleRepeatedUploadingFiles = (files: any[], items, dispatch) => {
-  const { filesToUploadRepeated, repeatedFilesInDrive, unrepeatedUploadedFiles } = checkRepeatedNameFiles(items, files);
+export const handleRepeatedUploadingFiles = (
+  files: (DriveItemData | File)[],
+  items: DriveItemData[],
+  dispatch: Dispatch,
+): (DriveItemData | File)[] => {
+  const { filesRepeated, repeatedFilesInDrive, unrepeatedFiles } = checkRepeatedNameFiles(items, files);
 
-  const hasRepeatedNameFiles = !!filesToUploadRepeated.length;
+  const hasRepeatedNameFiles = !!filesRepeated.length;
   if (hasRepeatedNameFiles) {
-    dispatch(storageActions.setFilesToRename(filesToUploadRepeated));
+    dispatch(storageActions.setFilesToRename(filesRepeated));
     dispatch(storageActions.setDriveFilesToRename(repeatedFilesInDrive));
     dispatch(uiActions.setIsRenameDialogOpen(true));
   }
-  return unrepeatedUploadedFiles;
+  return unrepeatedFiles;
 };
 
-//tipo driveItem o IRoot
-export const handleRepeatedUploadingFolders = (folders: any[], items, dispatch) => {
-  const { foldersToUploadRepeated, repeatedFoldersInDrive, unrepeatedUploadedFolders } = checkRepeatedNameFolders(
-    items,
-    folders,
-  );
-  const hasRepeatedNameFiles = !!foldersToUploadRepeated.length;
+export const handleRepeatedUploadingFolders = (
+  folders: (DriveItemData | IRoot)[],
+  items: DriveItemData[],
+  dispatch: Dispatch,
+): (DriveItemData | IRoot)[] => {
+  const { foldersRepeated, repeatedFoldersInDrive, unrepeatedFolders } = checkRepeatedNameFolders(items, folders);
+  const hasRepeatedNameFiles = !!foldersRepeated.length;
   if (hasRepeatedNameFiles) {
-    dispatch(storageActions.setFoldersToRename(foldersToUploadRepeated));
+    dispatch(storageActions.setFoldersToRename(foldersRepeated));
     dispatch(storageActions.setDriveFoldersToRename(repeatedFoldersInDrive));
     dispatch(uiActions.setIsRenameDialogOpen(true));
   }
-  return unrepeatedUploadedFolders;
+  return unrepeatedFolders;
 };
 
 export interface RenameItemsPayload {
@@ -160,18 +159,6 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
               status: TaskStatus.Success,
             },
           });
-          // Updates destination folder content in local database
-          //  const destinationLevelDatabaseContent = await databaseService.get(
-          //    DatabaseCollection.Levels,
-          //    destinationFolderId,
-          //  );
-          //  if (destinationLevelDatabaseContent) {
-          //    databaseService.put(
-          //      DatabaseCollection.Levels,
-          //      destinationFolderId,
-          //      itemsListService.pushItems(items, destinationLevelDatabaseContent), // renombrar estos items
-          //    );
-          //  }
         })
         .catch(() => {
           tasksService.updateTask({

@@ -1,5 +1,5 @@
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC, useMemo } from 'react';
 import { DriveItemData } from '../../types';
 import i18n from 'app/i18n/services/i18n.service';
 import Button from 'app/shared/components/Button/Button';
@@ -12,8 +12,9 @@ interface RenameDialogProps {
   newItems: (File | IRoot)[];
   onCloseDialog(): void;
   onCancelButtonPressed(): void;
-  onUploadReplacingButtonPressed(itemsToReplace: (DriveItemData | IRoot)[], itemsToUpload: (File | IRoot)[]): void;
-  onUploadKeepingBothButtonPressed(itemToUpload: File | IRoot): void;
+  onReplacingButtonPressed(itemsToReplace: (DriveItemData | IRoot)[], itemsToUpload: (File | IRoot)[]): void;
+  onKeepingBothButtonPressed(itemToUpload: File | IRoot): void;
+  isMoveModal?: boolean;
 }
 const RADIO_BUTTONS = {
   REPLACE: 0,
@@ -24,15 +25,23 @@ const RenameDialog: FC<RenameDialogProps> = ({
   isOpen,
   newItems,
   driveItems,
-  onUploadKeepingBothButtonPressed,
-  onUploadReplacingButtonPressed,
+  onKeepingBothButtonPressed,
+  onReplacingButtonPressed,
   onCancelButtonPressed,
   onCloseDialog,
+  isMoveModal,
 }): JSX.Element => {
   const [itemsIndex, setItemsIndex] = useState<number>(0);
   const [selectedItem, setSelectedItem] = useState<File | IRoot>({} as File);
   const [selectedDriveItem, setSelectedDriveItem] = useState<DriveItemData | IRoot>({} as DriveItemData);
   const [selectedRadioButton, setSelectedRadioButton] = useState<number>(0);
+
+  const title = i18n.get('modals.renameModal.title');
+  const description = i18n.get('modals.renameModal.description', { itemName: selectedItem?.name });
+  const primaryButtonText = useMemo(
+    () => (isMoveModal ? i18n.get('modals.renameModal.move') : i18n.get('modals.renameModal.upload')),
+    [isMoveModal],
+  );
 
   useEffect(() => {
     setSelectedItem(newItems?.[0]);
@@ -51,21 +60,22 @@ const RenameDialog: FC<RenameDialogProps> = ({
       setItemsIndex(0);
       setSelectedItem({} as File);
       setSelectedDriveItem({} as DriveItemData);
-      onCloseDialog();
       setSelectedRadioButton(RADIO_BUTTONS.REPLACE);
+      onCloseDialog();
       onCancelButtonPressed();
     }
   };
 
-  const title = 'Item already exists';
-  const description = `${selectedItem?.name} already exists in this location. Do you want to replace it with with the one you’re moving?`;
+    const onPrimaryButtonPressed = () => {
+      if (selectedRadioButton === RADIO_BUTTONS.REPLACE) {
+        onReplacingButtonPressed([selectedDriveItem], [selectedItem]);
+      } else {
+        onKeepingBothButtonPressed(selectedItem);
+      }
+      nextItems();
+    };
 
-  const onUploadButtonPressed = () => {
-    if (selectedRadioButton === RADIO_BUTTONS.REPLACE) {
-      onUploadReplacingButtonPressed([selectedDriveItem], [selectedItem]);
-    } else {
-      onUploadKeepingBothButtonPressed(selectedItem);
-    }
+  const handleCancelButtonPressed = () => {
     nextItems();
   };
 
@@ -88,7 +98,7 @@ const RenameDialog: FC<RenameDialogProps> = ({
         <div className="ml-5 mt-5">
           <div className="form-check mb-3 flex items-center">
             <label className="container">
-              Replace current item
+              {i18n.get('modals.renameModal.replaceItem')}
               <input
                 id="radio-1"
                 type="radio"
@@ -102,7 +112,7 @@ const RenameDialog: FC<RenameDialogProps> = ({
           </div>
           <div className="flex items-center">
             <label className="container">
-              Keep both
+              {i18n.get('modals.renameModal.keepBoth')}
               <input
                 id="radio-2"
                 type="radio"
@@ -119,11 +129,11 @@ const RenameDialog: FC<RenameDialogProps> = ({
         {/* Modal buttons */}
         <div className="ml-auto mt-5 flex">
           <div className="tertiary square ml-5 mt-1 mr-auto h-8 w-28"></div>
-          <Button variant="secondary" onClick={onCancelButtonPressed} className="mr-3">
+          <Button variant="secondary" onClick={handleCancelButtonPressed} className="mr-3">
             {i18n.get('actions.cancel')}
           </Button>
-          <Button variant="primary" className="mr-5" onClick={onUploadButtonPressed}>
-            Upload
+          <Button variant="primary" className="mr-5" onClick={onPrimaryButtonPressed}>
+            {primaryButtonText}
           </Button>
         </div>
       </div>

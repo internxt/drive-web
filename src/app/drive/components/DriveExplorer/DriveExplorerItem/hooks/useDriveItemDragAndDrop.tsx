@@ -89,22 +89,26 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
 
           const storageClient = SdkFactory.getInstance().createStorageClient();
 
-          dispatch(storageActions.setDestinationFolderId(item.id));
+          dispatch(storageActions.setMoveDestinationFolderId(item.id));
           const [folderContentPromise] = storageClient.getFolderContent(item.id);
           const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
           const foldersInDestinationFolderParsed = foldersInDestinationFolder.map((folder) => ({
             ...folder,
             isFolder: true,
           }));
-          const unrepeatedFiles = handleRepeatedUploadingFiles(filesToMove, filesInDestinationFolder, dispatch);
-          const unrepeatedFolders = handleRepeatedUploadingFolders(
-            foldersToMove,
-            foldersInDestinationFolderParsed,
+          const unrepeatedFiles = handleRepeatedUploadingFiles(
+            filesToMove,
+            filesInDestinationFolder as DriveItemData[],
             dispatch,
           );
-          const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders];
+          const unrepeatedFolders = handleRepeatedUploadingFolders(
+            foldersToMove,
+            foldersInDestinationFolderParsed as DriveItemData[],
+            dispatch,
+          );
+          const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
 
-          if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setDestinationFolderId(null));
+          if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(null));
           
           dispatch(
             storageThunks.moveItemsThunk({

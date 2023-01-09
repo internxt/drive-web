@@ -47,7 +47,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         return i.isFolder;
       });
 
-      dispatch(storageActions.setDestinationFolderId(props.item.id));
+      dispatch(storageActions.setMoveDestinationFolderId(props.item.id));
       const storageClient = SdkFactory.getInstance().createStorageClient();
       const [folderContentPromise] = storageClient.getFolderContent(props.item.id);
 
@@ -58,15 +58,19 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         isFolder: true,
       }));
 
-      const unrepeatedFiles = handleRepeatedUploadingFiles(filesToMove, filesInDestinationFolder, dispatch);
-      const unrepeatedFolders = handleRepeatedUploadingFolders(
-        foldersToMove,
-        foldersInDestinationFolderParsed,
+      const unrepeatedFiles = handleRepeatedUploadingFiles(
+        filesToMove,
+        filesInDestinationFolder as DriveItemData[],
         dispatch,
       );
-      const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders];
+      const unrepeatedFolders = handleRepeatedUploadingFolders(
+        foldersToMove,
+        foldersInDestinationFolderParsed as DriveItemData[],
+        dispatch,
+      );
+      const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
 
-      if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setDestinationFolderId(null));
+      if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(null));
 
       dispatch(
         storageThunks.moveItemsThunk({
