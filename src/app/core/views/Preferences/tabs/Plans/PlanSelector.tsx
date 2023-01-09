@@ -23,7 +23,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const priceButtons = subscription?.type === 'subscription' ? 'change' : 'upgrade';
 
   const [prices, setPrices] = useState<DisplayPrice[] | null>(null);
-  const [interval, setInterval] = useState<'month' | 'year' | 'lifetime'>('year');
+  const [interval, setInterval] = useState<DisplayPrice['interval']>('year');
 
   useEffect(() => {
     paymentService.getPrices().then(setPrices);
