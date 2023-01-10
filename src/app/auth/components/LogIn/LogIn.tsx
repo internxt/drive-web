@@ -22,6 +22,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export default function LogIn(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -58,15 +59,6 @@ export default function LogIn(): JSX.Element {
         const { token, user } = await doLogin(email, password, twoFactorCode);
         dispatch(userActions.setUser(user));
 
-        window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
-        window.rudderanalytics.track('User Signin', { email: user.email });
-
-        // analyticsService.identify(user, user.email);
-        // analyticsService.trackSignIn({
-        //   email: user.email,
-        //   userId: user.uuid,
-        // });
-
         try {
           dispatch(productsThunks.initializeThunk());
           dispatch(planThunks.initializeThunk());
@@ -80,20 +72,21 @@ export default function LogIn(): JSX.Element {
         setToken(token);
         userActions.setUser(user);
         setRegisterCompleted(user.registerCompleted);
+        analyticsService.trackSignIn(user.uuid, user.email);
       } else {
         setShowTwoFactor(true);
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         navigationService.history.push(`/activate/${email}`);
       } else {
-        // analyticsService.signInAttempted(email, castedError);
+        // analyticsService.rudderanalyticsSignInError(email, castedError.message);
       }
 
       setLoginError([castedError.message]);
       setShowErrors(true);
+      analyticsService.trackSignInError(email, castedError.message);
     } finally {
       setIsLoggingIn(false);
     }
@@ -144,7 +137,7 @@ export default function LogIn(): JSX.Element {
               <span className="font-normal">Password</span>
               <Link
                 onClick={(): void => {
-                  // analyticsService.trackUserResetPasswordRequest();
+                  analyticsService.trackForgotPassword(email);
                 }}
                 to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"

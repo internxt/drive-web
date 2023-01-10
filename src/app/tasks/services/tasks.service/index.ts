@@ -38,11 +38,12 @@ class TaskManagerService {
   }
 
   public updateTask(patch: UpdateTaskPayload) {
-    const taskToUpdate = this.tasks.find((task) => task.id === patch.taskId);
+    const taskToUpdate = this.findTask(patch.taskId);
+    if (taskToUpdate) {
+      Object.assign(taskToUpdate, patch.merge);
 
-    Object.assign(taskToUpdate, patch.merge);
-
-    this.eventEmitter.emit(TaskEvent.TaskUpdated, taskToUpdate);
+      this.eventEmitter.emit(TaskEvent.TaskUpdated, taskToUpdate);
+    }
   }
 
   public clearTasks() {
@@ -64,30 +65,33 @@ class TaskManagerService {
 
   public isTaskFinished(taskId: string) {
     return [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled].includes(
-      this.tasks.find((task) => task.id === taskId)?.status || TaskStatus.Pending,
+      this.findTask(taskId)?.status || TaskStatus.Pending,
     );
   }
 
   public isTaskProgressCompleted(taskId: string) {
-    return this.tasks.find((task) => task.id === taskId)?.progress === TaskProgress.Max;
+    return this.findTask(taskId)?.progress === TaskProgress.Max;
   }
 
   public getNotifications(filter: TaskFilter = {}) {
     return this.getTasks(filter)
       .filter((task) => task.showNotification)
-      .map((task) => this.findNotification(task))
+      .map((task) => this.getNotification(task))
       .reverse();
   }
 
-  public findNotification(task: TaskData): TaskNotification {
+  public getNotification(task: TaskData): TaskNotification {
     return {
       taskId: task.id,
+      action: task.action,
       status: task.status,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),
       icon: this.getTaskNotificationIcon(task),
       progress: task.progress,
       isTaskCancellable: task.cancellable,
+      currentProgress: task.currentProgress,
+      totalProgress: task.totalProgress,
     };
   }
 
@@ -186,9 +190,14 @@ class TaskManagerService {
   }
 
   private getTaskNotificationSubtitle(task: TaskData): string {
-    return i18n.get(`tasks.${task.action}.status.${task.status}`, {
-      progress: task.progress ? (task.progress * 100).toFixed(0) : 0,
-    });
+    const params: { progress: string, currentProgress?: string, totalProgress?: string } = {
+      progress: task.progress ? (task.progress * 100).toFixed(0) : '0',
+    };
+    if (task.action === TaskType.UploadFolder) {
+      params.currentProgress = String(task.currentProgress) || '0';
+      params.totalProgress = String(task.totalProgress) || '0';
+    }
+    return i18n.get(`tasks.${task.action}.status.${task.status}`, params);
   }
 
   private getTaskNotificationIcon(task: TaskData): FunctionComponent<SVGProps<SVGSVGElement>> {

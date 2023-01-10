@@ -8,9 +8,6 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
 import { AnalyticsTrack } from '../types';
-import { getCookie, setCookie } from '../utils';
-import queryString from 'query-string';
-import { v4 as uuidv4 } from 'uuid';
 
 export const PATH_NAMES = {
   '/new': 'Register',
@@ -22,6 +19,8 @@ export const PATH_NAMES = {
   '/remove': 'Remove Account',
   '/app': 'App',
 };
+
+const analytics = window.rudderanalytics;
 
 export function trackFileDownloadCompleted(properties): void {
   trackData(properties, 'file_downloaded');
@@ -43,7 +42,7 @@ const payload = {
 };
 
 export function page(pageName: string): void {
-  window.rudderanalytics.page(pageName);
+  analytics.page(pageName);
 }
 
 export function signupDevicesource(userAgent: string): string {
@@ -94,39 +93,31 @@ export function identifyPlan(newValue: number) {
 }
 
 export function trackSignOut() {
-  /* window.analytics.track(AnalyticsTrack.SignOut);
-  window.analytics.reset(); */
+  analytics.track('User Logout');
 }
 
-export function trackSignIn(payload: { email: string; userId: string }): void {
-  // window.analytics.track(AnalyticsTrack.SignIn, payload);
+export function trackSignIn(id: string, email: string): void {
+  analytics.identify(id, { email: email, id: id }, () => {
+    console.log('Identify callback'); //For debugging
+    analytics.track('User Signin', { email: email });
+  });
 }
 
-export function signInAttempted(email: string, error: string | Error): void {
-  /* window.analytics.track(AnalyticsTrack.SignInAttempted, {
-    status: 'error',
-    msg: error ? error : 'Login error',
+export function trackSignInError(email: string, error: string | Error): void {
+  analytics.track('User Signin Failed', {
+    message: error ? error : 'Login error',
     email: email,
-  }); */
+  });
 }
 
-export function trackSignUp(payload: {
-  properties: { signup_source; email: string };
-  traits: {
-    member_tier?: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    usage: number;
-    createdAt: string;
-    signup_device_source: string;
-    acquisition_channel;
-  };
-  userId: string;
-}): void {
-  /* window.analytics.identify(payload.userId, payload.traits);
-  window.analytics.track(AnalyticsTrack.SignUp, payload.properties); */
-  trackSignUpServer(payload);
+export function trackSignUp(email: string, id: string): void {
+  analytics.identify(id, { email: email, id: id }, () => {
+    analytics.track('User Signup', { email: email });
+  });
+}
+
+export function trackSignUpError(email: string, error: string): void {
+  analytics.track('User Signup Failed', { email: email, error: error });
 }
 
 export function trackUserEnterPayments(priceId: string): void {
@@ -185,34 +176,50 @@ export function trackFileDownloadFinished(payload: {
   // window.analytics.track(AnalyticsTrack.FileDownloadFinished, payload);
 }
 
-export function trackFileUploadStart(payload: {
-  file_size: number;
-  file_type: string;
-  folder_id: number;
-  email: string;
-  platform: DevicePlatform;
-}): void {
-  // window.analytics.track(AnalyticsTrack.FileUploadStart, payload);
+//File/folder upload track
+export function trackFolderUploadStarted(itemsUnderRoot: number, folderSize: number): void {
+  analytics.track('Folder Upload Started', {
+    number_of_items: itemsUnderRoot,
+    size: folderSize,
+  });
 }
 
-export function trackFileUploadError(payload: {
-  file_size: number;
-  file_type: string;
-  folder_id: number;
-  email: string;
-  msg: string;
-  platform: DevicePlatform;
-}): void {
-  // window.analytics.track(AnalyticsTrack.FileUploadError, payload);
+export function trackFolderUploadError(errorMessage: string, folderSize) {
+  analytics.track('Folder Upload Error', {
+    message: errorMessage,
+    size: folderSize,
+  });
 }
 
-export function trackFileUploadFinished(payload: {
-  file_type: string;
-  file_id: number;
-  file_size: number;
-  email: string;
-}): void {
-  // window.analytics.track(AnalyticsTrack.FileUploadFinished, payload);
+export function trackFolderUploadCompleted(itemsUnderRoot: number, folderSize: number): void {
+  analytics.track('Folder Upload Completed', {
+    number_of_items: itemsUnderRoot,
+    size: folderSize,
+  });
+}
+
+export function trackFileUploadStarted(type: string, size: number): void {
+  analytics.track('File Upload Started', {
+    type: type,
+    size: size,
+  });
+}
+
+export function trackFileUploadError(error, type, size): void {
+  analytics.track('File Upload Error', {
+    message: error,
+    size: size,
+    type: type,
+  });
+}
+
+export function trackFileUploadCompleted(type, size, parentFolderId, fileId): void {
+  analytics.track('File Upload Completed', {
+    type: type,
+    size: size,
+    parent_folder_id: parentFolderId,
+    file_id: fileId,
+  });
 }
 
 export function trackMoveItem(
@@ -251,8 +258,8 @@ export function identify(user: UserSettings, email: string): void {
   }); */
 }
 
-export function trackUserResetPasswordRequest(): void {
-  // window.analytics.track(AnalyticsTrack.UserResetPasswordRequest);
+export function trackForgotPassword(email: string): void {
+  analytics.track('Forgot password clicked', { email: email || 'No email provided' });
 }
 
 export function track(email: string, status: 'error' | 'success'): void {
@@ -274,7 +281,7 @@ export async function trackPaymentConversion() {
   try {
     // window.analytics.page('Checkout Success');
     const checkoutSessionId = localStorage.getItem('sessionId');
-    const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
+    const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get<any>(
       `${process.env.REACT_APP_API_URL}/api/stripe/session`,
       {
         params: {
@@ -286,7 +293,7 @@ export async function trackPaymentConversion() {
     const { username, uuid } = getUser();
     const amount = amount_total * 0.01;
 
-    window.rudderanalytics.identify(uuid, {
+    analytics.identify(uuid, {
       email: username,
       plan: metadata.priceId,
       customer_id: customer,
@@ -295,7 +302,7 @@ export async function trackPaymentConversion() {
       subscription_id: subscription,
       payment_intent,
     });
-    window.rudderanalytics.track(AnalyticsTrack.PaymentConversionEvent, {
+    analytics.track(AnalyticsTrack.PaymentConversionEvent, {
       price_id: metadata.priceId,
       product: metadata.product,
       email: username,
@@ -312,7 +319,7 @@ export async function trackPaymentConversion() {
     });
   } catch (err) {
     const castedError = errorService.castError(err);
-    window.rudderanalytics.track('Error Signup After Payment Conversion', {
+    analytics.track('Error Signup After Payment Conversion', {
       message: castedError.message || '',
     });
   }
@@ -403,9 +410,10 @@ const analyticsService = {
   identify,
   identifyUsage,
   identifyPlan,
-  trackSignOut,
   trackSignIn,
+  trackSignOut,
   trackSignUp,
+  trackSignUpError,
   trackUserEnterPayments,
   trackPlanSubscriptionSelected,
   trackFolderCreated,
@@ -414,16 +422,19 @@ const analyticsService = {
   trackFileDownloadStart,
   trackFileDownloadError,
   trackFileDownloadFinished,
-  trackFileUploadStart,
+  trackFolderUploadStarted,
+  trackFolderUploadError,
+  trackFolderUploadCompleted,
+  trackFileUploadStarted,
   trackFileUploadError,
-  trackFileUploadFinished,
+  trackFileUploadCompleted,
   trackMoveItem,
   trackDeleteItem,
   trackOpenWelcomeFile,
   trackDeleteWelcomeFile,
   trackFileShare,
-  signInAttempted,
-  trackUserResetPasswordRequest,
+  trackSignInError,
+  trackForgotPassword,
   track,
   trackFileUploadBucketIdUndefined,
   trackFileDownloadCompleted,

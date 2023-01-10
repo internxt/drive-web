@@ -11,6 +11,7 @@ import errorService from '../../../../core/services/error.service';
 import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export interface IRoot {
   name: string;
@@ -59,6 +60,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
         await Promise.all(promises);
       },
+      currentProgress: 0,
+      totalProgress: itemsUnderRoot
     });
 
     try {
@@ -85,7 +88,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
           let currentPackFiles = 0;
 
           for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-            const concurrencyBytesLimitNotReached = accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
+            const concurrencyBytesLimitNotReached =
+              accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
             const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
 
             if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
@@ -106,16 +110,20 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
               uploadItemsParallelThunk({
                 files: pack,
                 parentFolderId: createdFolder.id,
-                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false }
-              })
-            ).unwrap().then(() => {
-              alreadyUploaded += pack.length;
+                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              }),
+            )
+              .unwrap()
+              .then(() => {
+                alreadyUploaded += pack.length;
 
               tasksService.updateTask({
                 taskId: taskId,
                 merge: {
                   status: TaskStatus.InProcess,
                   progress: alreadyUploaded / itemsUnderRoot,
+                  currentProgress: alreadyUploaded,
+                  totalProgress: itemsUnderRoot,
                 },
               });
             });
@@ -163,6 +171,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
     const levels = [root];
+    const folderSize = getItemsSize(root);
     const itemsUnderRoot = countItemsUnderRoot(root);
     const taskId = tasksService.create<UploadFolderTask>({
       action: TaskType.UploadFolder,
@@ -185,10 +194,14 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
 
         await Promise.all(promises);
       },
+      currentProgress: 0,
+      totalProgress: itemsUnderRoot
     });
 
     try {
       root.folderId = currentFolderId;
+
+      analyticsService.trackFolderUploadStarted(itemsUnderRoot, folderSize);
 
       while (levels.length > 0) {
         const level: IRoot = levels.shift() as IRoot;
@@ -211,7 +224,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
           let currentPackFiles = 0;
 
           for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-            const concurrencyBytesLimitNotReached = accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
+            const concurrencyBytesLimitNotReached =
+              accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
             const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
 
             if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
@@ -232,16 +246,20 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
               uploadItemsParallelThunkNoCheck({
                 files: pack,
                 parentFolderId: createdFolder.id,
-                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false }
-              })
-            ).unwrap().then(() => {
-              alreadyUploaded += pack.length;
+                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              }),
+            )
+              .unwrap()
+              .then(() => {
+                alreadyUploaded += pack.length;
 
               tasksService.updateTask({
                 taskId: taskId,
                 merge: {
                   status: TaskStatus.InProcess,
                   progress: alreadyUploaded / itemsUnderRoot,
+                  currentProgress: alreadyUploaded,
+                  totalProgress: itemsUnderRoot,
                 },
               });
             });
@@ -263,6 +281,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       });
 
       options.onSuccess?.();
+      analyticsService.trackFolderUploadCompleted(itemsUnderRoot, folderSize);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       const updatedTask = tasksService.findTask(taskId);
@@ -274,7 +293,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
             status: TaskStatus.Error,
           },
         });
-
+        analyticsService.trackFolderUploadError(castedError.message, folderSize);
         throw castedError;
       }
     }
@@ -286,7 +305,7 @@ function countItemsUnderRoot(root: IRoot): number {
 
   const queueOfFolders: Array<IRoot> = [root];
 
-  while (queueOfFolders.length) {
+  while (queueOfFolders.length > 0) {
     const folder = queueOfFolders.shift() as IRoot;
 
     count += folder.childrenFiles?.length ?? 0;
@@ -295,6 +314,21 @@ function countItemsUnderRoot(root: IRoot): number {
   }
 
   return count;
+}
+function getItemsSize(root: IRoot): number {
+  let size = 0;
+
+  const queueOfFolders: Array<IRoot> = [root];
+
+  while (queueOfFolders.length > 0) {
+    const folder = queueOfFolders.shift() as IRoot;
+
+    folder.childrenFiles?.forEach((file) => (size += file.size));
+
+    queueOfFolders.push(...folder.childrenFolders);
+  }
+
+  return size;
 }
 
 export const uploadFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {

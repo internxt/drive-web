@@ -45,6 +45,8 @@ export interface BaseTask {
   cancellable: boolean;
   showNotification: boolean;
   stop?: () => Promise<void>;
+  currentProgress?: number;
+  totalProgress?: number;
 }
 
 export interface CreateFolderTask extends BaseTask {
@@ -120,12 +122,15 @@ export type TaskData =
 
 export interface TaskNotification {
   taskId: string;
+  action: TaskType;
   status: TaskStatus;
   title: string;
   subtitle: string;
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   progress: number;
   isTaskCancellable: boolean;
+  currentProgress?: number;
+  totalProgress?: number;
 }
 
 export interface TaskFilter {

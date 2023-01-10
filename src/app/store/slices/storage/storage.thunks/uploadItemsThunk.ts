@@ -18,6 +18,7 @@ import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import fileService from 'app/drive/services/file.service';
 import { SdkFactory } from '../../../../core/factory/sdk';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -59,15 +60,15 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
     const tasksIds: string[] = [];
-
+    const fileAnalyticData = files.map((file) => ({ type: file.type, size: file.size }));
     options = Object.assign(DEFAULT_OPTIONS, options || {});
-
     try {
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
 
       if (planLimit && planUsage >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+
         return;
       }
     } catch (err: unknown) {
@@ -76,8 +77,11 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: 'File too large.\nYou can only upload or download files of up to 3GB through the web app',
         type: ToastType.Warning,
+      });
+      files.forEach((file) => {
+        analyticsService.trackFileUploadError('File too large', file.type, file.size);
       });
       return;
     }
@@ -194,6 +198,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
             taskId: taskId,
             merge: { status: TaskStatus.Success },
           });
+          analyticsService.trackFileUploadCompleted(
+            uploadedFile.type,
+            uploadedFile.size,
+            uploadedFile.folderId,
+            uploadedFile.id,
+          );
         })
         .catch((err: unknown) => {
           if (abortController.signal.aborted) {
@@ -211,6 +221,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
               taskId: taskId,
               merge: { status: TaskStatus.Error },
             });
+
+            analyticsService.trackFileUploadError(
+              castedError.message,
+              fileAnalyticData[index].type,
+              fileAnalyticData[index].size,
+            );
 
             console.error(castedError);
 
@@ -247,6 +263,10 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 
     try {
+      files.forEach((file) => {
+        analyticsService.trackFileUploadStarted(file.type, file.size);
+      });
+
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
 
@@ -260,7 +280,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: 'File too large.\nYou can only upload or download files of up to 3GB through the web app',
         type: ToastType.Warning,
       });
       return;
@@ -308,7 +328,6 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     // 2.
     for (const [index, file] of filesToUpload.entries()) {
       if (abortController.signal.aborted) break;
-
       const taskId = tasksIds[index];
       const updateProgressCallback = (progress) => {
         const task = tasksService.findTask(taskId);
@@ -367,8 +386,9 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
             taskId: taskId,
             merge: { status: TaskStatus.Success },
           });
+          analyticsService.trackFileUploadCompleted(file.type, file.size, file.parentFolderId, uploadedFile.id);
         })
-        .catch((err: unknown) => {
+        .catch((err: any) => {
           if (abortController.signal.aborted) {
             return tasksService.updateTask({
               taskId: taskId,
@@ -384,6 +404,8 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
               taskId: taskId,
               merge: { status: TaskStatus.Error },
             });
+            analyticsService.trackFileUploadError(err.message, file.type, file.size);
+
             console.error(castedError);
             errors.push(castedError);
           }
@@ -432,7 +454,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: 'File too large.\nYou can only upload or download files of up to 3GB through the web app',
         type: ToastType.Warning,
       });
       return;
@@ -622,7 +644,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: 'File too large.\nYou can only upload or download files of up to 3GB through the web app',
         type: ToastType.Warning,
       });
       return;

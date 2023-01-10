@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="utf-8" />
-  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Secure file storage" />
-  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-  <!--
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Secure file storage" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-  <!--
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
@@ -22,19 +21,54 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-  <title>Internxt Drive</title>
+    <title>Internxt Drive</title>
 
-  <!-- <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_V3%"></script> -->
-  <script type="text/javascript">
-    !function () {
-      var e = window.rudderanalytics = window.rudderanalytics || []; e.methods = ["load", "page", "track", "identify", "alias", "group", "ready", "reset", "getAnonymousId", "setAnonymousId", "getUserId", "getUserTraits", "getGroupId", "getGroupTraits"], e.factory = function (t) { return function () { var r = Array.prototype.slice.call(arguments); return r.unshift(t), e.push(r), e } }; for (var t = 0; t < e.methods.length; t++) { var r = e.methods[t]; e[r] = e.factory(r) } e.loadJS = function (e, t) { var r = document.createElement("script"); r.type = "text/javascript", r.async = !0, r.src = "https://s3.us-east-1.wasabisys.com/djdjdkwl/ruddersnippet.js"; var a = document.getElementsByTagName("script")[0]; a.parentNode.insertBefore(r, a) }, e.loadJS(),
-        e.load("2EL15xyzDYBZ1V8C4ov6vX6MSOV", "https://cdp.internxt.com"),
-        e.page()
-    }();
-  </script>
+    <!-- <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_V3%"></script> -->
+    <script type="text/javascript">
+      !(function () {
+        var e = (window.rudderanalytics = window.rudderanalytics || []);
+        (e.methods = [
+          'load',
+          'page',
+          'track',
+          'identify',
+          'alias',
+          'group',
+          'ready',
+          'reset',
+          'getAnonymousId',
+          'setAnonymousId',
+          'getUserId',
+          'getUserTraits',
+          'getGroupId',
+          'getGroupTraits',
+        ]),
+          (e.factory = function (t) {
+            return function () {
+              var r = Array.prototype.slice.call(arguments);
+              return r.unshift(t), e.push(r), e;
+            };
+          });
+        for (var t = 0; t < e.methods.length; t++) {
+          var r = e.methods[t];
+          e[r] = e.factory(r);
+        }
+        (e.loadJS = function (e, t) {
+          var r = document.createElement('script');
+          (r.type = 'text/javascript'),
+            (r.async = !0),
+            (r.src = 'https://s3.us-east-1.wasabisys.com/djdjdkwl/ruddersnippet.js');
+          var a = document.getElementsByTagName('script')[0];
+          a.parentNode.insertBefore(r, a);
+        }),
+          e.loadJS(),
+          e.load('%REACT_APP_RUDDER_API_KEY%', 'https://cdp.internxt.com'),
+          e.page();
+      })();
+    </script>
 
-  <!-- Segment -->
-  <!-- <script type="text/javascript">
+    <!-- Segment -->
+    <!-- <script type="text/javascript">
     if ('development' === '%NODE_ENV%') {
       document.querySelector("link[rel~='icon']").href = '/development-favicon.ico';
     }
@@ -153,28 +187,31 @@
     }
   </script> -->
 
-  <!-- MailerLite Universal -->
-  <script>
-    if ('%NODE_ENV%' === 'production') {
-      (function (w, d, e, u, f, l, n) {
-        w[f] = w[f] || function () {
-          (w[f].q = w[f].q || [])
-            .push(arguments);
-        }, l = d.createElement(e), l.async = 1, l.src = u,
-          n = d.getElementsByTagName(e)[0], n.parentNode.insertBefore(l, n);
-      })
-        (window, document, 'script', 'https://assets.mailerlite.com/js/universal.js', 'ml');
-      ml('account', '16439');
-    }
-  </script>
-  <!-- < !--End MailerLite Universal-->
+    <!-- MailerLite Universal -->
+    <script>
+      if ('%NODE_ENV%' === 'production') {
+        (function (w, d, e, u, f, l, n) {
+          (w[f] =
+            w[f] ||
+            function () {
+              (w[f].q = w[f].q || []).push(arguments);
+            }),
+            (l = d.createElement(e)),
+            (l.async = 1),
+            (l.src = u),
+            (n = d.getElementsByTagName(e)[0]),
+            n.parentNode.insertBefore(l, n);
+        })(window, document, 'script', 'https://assets.mailerlite.com/js/universal.js', 'ml');
+        ml('account', '16439');
+      }
+    </script>
+    <!-- < !--End MailerLite Universal-->
+  </head>
 
-</head>
-
-<body>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
-  <div id="root"></div>
-  <!--
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
         This HTML file is a template.
         If you open it directly in the browser, you will see an empty page.
 
@@ -184,6 +221,5 @@
           To begin the development, run `npm start` or `yarn start`.
           To create a production bundle, use `npm run build` or `yarn build`.
     -->
-</body>
-
+  </body>
 </html>

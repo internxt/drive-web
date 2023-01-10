@@ -183,6 +183,10 @@ function Grid({
     return () => observer.disconnect();
   }, [photos]);
 
+  const onSelect = (photoId: PhotoId) => {
+    dispatch(photosSlice.actions.toggleSelect(photoId));
+  };
+
   return (
     <div
       className="grid gap-1 overflow-y-auto px-5"
@@ -191,22 +195,17 @@ function Grid({
       data-test="photos-grid"
     >
       {photos.map((photo, i) => {
-        const isSelected = selected.some((el) => photo.id === el);
-        const thereAreSelected = selected.length > 0;
-        function onSelect() {
-          dispatch(photosSlice.actions.toggleSelect(photo.id));
-        }
         return (
           <PhotoItem
             onClick={() => {
-              if (thereAreSelected) {
-                onSelect();
+              if (selected.length > 0) {
+                onSelect(photo.id);
               } else {
                 dispatch(photosSlice.actions.setPreviewIndex(i));
               }
             }}
-            onSelect={onSelect}
-            selected={isSelected}
+            onSelect={() => onSelect(photo.id)}
+            selected={selected.includes(photo.id)}
             photo={photo}
             key={photo.id}
             photoId={photo.id}

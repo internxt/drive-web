@@ -243,26 +243,28 @@ export async function getPhotoPreview(
   },
 ): Promise<string> {
   const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
-  let blob: Blob;
+  let blob: Blob | null = null;
 
   if (previewInCache && previewInCache.preview) blob = previewInCache.preview;
   else {
-    const { previewLink: link, previewIndex: index } = photo;
-    const mnemonic = localStorageService.getUser()?.mnemonic as string;
-    const indexBuf = Buffer.from(index, 'hex');
-    const iv = indexBuf.slice(0, 16);
-    const key = await generateFileKey(mnemonic, bucketId, indexBuf);
-    const readable = await getFileDownloadStream(
-      [link],
-      createDecipheriv('aes-256-ctr', key, iv),
-      opts?.abortController,
-    );
-
-    blob = await binaryStreamToBlob(readable);
-    databaseService.put(DatabaseCollection.Photos, photo.id, { preview: blob });
+    let thumbnailId = '';
+    const { previewId, previews } = photo;
+    if (previewId && String(previewId).trim().length > 0) {
+      thumbnailId = previewId;
+    } else if (previews && Array.isArray(previews) && previews.length > 0) {
+      thumbnailId = previews[0].fileId;
+    }
+    if (thumbnailId.length > 0) {
+      blob = await fetchFileBlob(
+        { fileId: thumbnailId, bucketId },
+        { updateProgressCallback: () => undefined, abortController: opts?.abortController },
+      );
+      if (blob) {
+        databaseService.put(DatabaseCollection.Photos, photo.id, { preview: blob });
+      }
+    }
   }
-
-  return URL.createObjectURL(blob);
+  return blob ? URL.createObjectURL(blob) : '';
 }
 
 export async function getPhotoBlob({

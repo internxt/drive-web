@@ -30,14 +30,6 @@ export async function uploadFile(
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
   try {
-    analyticsService.trackFileUploadStart({
-      file_size: file.size,
-      file_type: file.type,
-      folder_id: file.parentFolderId,
-      email: userEmail,
-      platform: DevicePlatform.Web,
-    });
-
     if (!bucketId) {
       analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
       notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
@@ -92,26 +84,10 @@ export async function uploadFile(
       }
     }
 
-    analyticsService.trackFileUploadFinished({
-      file_size: file.size,
-      file_id: response.id,
-      file_type: file.type,
-      email: userEmail,
-    });
-
     return response;
-  } catch (err: unknown) {
-    const castedError = errorService.castError(err);
-
+  } catch (err: any) {
     if (!abortController?.signal.aborted) {
-      analyticsService.trackFileUploadError({
-        file_size: file.size,
-        file_type: file.type,
-        folder_id: file.parentFolderId,
-        email: userEmail,
-        msg: castedError.message,
-        platform: DevicePlatform.Web,
-      });
+      // analyticsService.trackFileUploadError(err.message, file.type, file.size);
     }
 
     throw err;

@@ -3,18 +3,19 @@ import { Auth, Token } from '@internxt/sdk/dist/auth';
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import packageJson from '../../../../../package.json';
 import { LocalStorageService } from '../../services/local-storage.service';
-import { Workspace } from '../../types';
+import { AppView, Workspace } from '../../types';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { Photos } from '@internxt/sdk/dist/photos';
 import authService from '../../../auth/services/auth.service';
+import navigationService from 'app/core/services/navigation.service';
 
 export class SdkFactory {
   private static sdk: {
-    dispatch: AppDispatch,
-    localStorage: LocalStorageService,
-    instance: SdkFactory,
-    newApiInstance: SdkFactory,
+    dispatch: AppDispatch;
+    localStorage: LocalStorageService;
+    instance: SdkFactory;
+    newApiInstance: SdkFactory;
   };
   private readonly apiUrl: ApiUrl;
 
@@ -130,7 +131,11 @@ export class SdkFactory {
       mnemonic: this.getMnemonic(workspace),
       token: this.getToken(workspace),
       unauthorizedCallback: async () => {
-        SdkFactory.sdk.dispatch(userThunks.logoutThunk());
+        if (!localStorage.getItem('xUser')) {
+          navigationService.push(AppView.Login);
+        } else {
+          await SdkFactory.sdk.dispatch(userThunks.logoutThunk());
+        }
       },
     };
   }

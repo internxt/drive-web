@@ -23,8 +23,8 @@ import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStreng
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
 import { validateFormat } from 'app/crypto/services/keys.service';
-import { decryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 const MAX_PASSWORD_LENGTH = 20;
 
@@ -138,8 +138,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email });
+      analyticsService.trackSignUp(email, xUser.uuid);
 
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({

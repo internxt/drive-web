@@ -28,13 +28,15 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
 import RealtimeService from 'app/core/services/socket.service';
+import LogIn from '../components/LogIn/LogIn';
+import { UnauthorizedCallback } from '@internxt/sdk/dist/shared/http/types';
 
 export async function logOut(): Promise<void> {
-  analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
   navigationService.push(AppView.Login);
+  analyticsService.trackSignOut();
 }
 
 export function cancelAccount(): Promise<void> {
@@ -46,7 +48,6 @@ export function cancelAccount(): Promise<void> {
 export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
-    analyticsService.signInAttempted(email, error.message);
     throw new Error(error.message ?? 'Login error');
   });
 
@@ -96,55 +97,46 @@ export const doLogin = async (
     },
   };
 
-  return authClient
-    .login(loginDetails, cryptoProvider)
-    .then(async (data) => {
-      const { user, token, newToken } = data;
+  return authClient.login(loginDetails, cryptoProvider).then(async (data) => {
+    const { user, token, newToken } = data;
+    const publicKey = user.publicKey;
+    const privateKey = user.privateKey;
+    const revocationCertificate = user.revocationKey;
 
-      const publicKey = user.publicKey;
-      const privateKey = user.privateKey;
-      const revocationCertificate = user.revocationKey;
+    const { update, privkeyDecrypted, newPrivKey } = await validateFormat(privateKey, password);
+    const newKeys: Keys = {
+      privateKeyEncrypted: newPrivKey,
+      publicKey: publicKey,
+      revocationCertificate: revocationCertificate,
+    };
+    if (update) {
+      await authClient.updateKeys(newKeys, token);
+    }
 
-      const { update, privkeyDecrypted, newPrivKey } = await validateFormat(privateKey, password);
-      const newKeys: Keys = {
-        privateKeyEncrypted: newPrivKey,
-        publicKey: publicKey,
-        revocationCertificate: revocationCertificate,
-      };
-      if (update) {
-        await authClient.updateKeys(newKeys, token);
-      }
+    const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
+    const clearPrivateKeyBase64 = Buffer.from(privkeyDecrypted).toString('base64');
 
-      const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
-      const clearPrivateKeyBase64 = Buffer.from(privkeyDecrypted).toString('base64');
+    const clearUser = {
+      ...user,
+      mnemonic: clearMnemonic,
+      privateKey: clearPrivateKeyBase64,
+    };
 
-      const clearUser = {
-        ...user,
-        mnemonic: clearMnemonic,
-        privateKey: clearPrivateKeyBase64,
-      };
+    localStorageService.set('xToken', token);
+    localStorageService.set('xMnemonic', clearMnemonic);
+    localStorageService.set('xNewToken', newToken);
 
-      localStorageService.set('xToken', token);
-      localStorageService.set('xMnemonic', clearMnemonic);
-      localStorageService.set('xNewToken', newToken);
-
-      Sentry.setUser({
-        id: user.uuid,
-        email: user.email,
-        sharedWorkspace: user.sharedWorkspace,
-      });
-
-      return {
-        user: clearUser,
-        token: token,
-      };
-    })
-    .catch((error) => {
-      if (error instanceof UserAccessError) {
-        analyticsService.signInAttempted(email, error.message);
-      }
-      throw error;
+    Sentry.setUser({
+      id: user.uuid,
+      email: user.email,
+      sharedWorkspace: user.sharedWorkspace,
     });
+
+    return {
+      user: clearUser,
+      token: token,
+    };
+  });
 };
 
 export const readReferalCookie = (): string | undefined => {

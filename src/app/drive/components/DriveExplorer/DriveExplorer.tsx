@@ -52,6 +52,8 @@ import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { items as itemUtils } from '@internxt/lib';
+import { renameFile } from 'app/crypto/services/utils';
 
 const PAGINATION_LIMIT = 60;
 

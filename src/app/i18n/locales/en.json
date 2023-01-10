@@ -260,7 +260,7 @@
     },
     "create-folder": {
       "status": {
-        "pending": "Pending to create folder",
+        "pending": "Waiting to create folder",
         "in-process": "Creating folder",
         "success": "Folder created",
         "error": "Error during folder creation",
@@ -270,7 +270,7 @@
     },
     "upload-file": {
       "status": {
-        "pending": "Pending to upload",
+        "pending": "Waiting to upload",
         "encrypting": "Encrypting file",
         "in-process": "{progress}% Uploading file",
         "success": "File uploaded",
@@ -281,9 +281,9 @@
     },
     "upload-folder": {
       "status": {
-        "pending": "Pending to upload",
+        "pending": "Waiting to upload",
         "encrypting": "Encrypting files",
-        "in-process": "{progress}% Uploading folder",
+        "in-process": "{currentProgress} of {totalProgress} items uploaded",
         "success": "Folder uploaded",
         "error": "Error during upload",
         "cancelled": "Upload cancelled"
@@ -292,7 +292,7 @@
     },
     "download-file": {
       "status": {
-        "pending": "Pending to download",
+        "pending": "Waiting to download",
         "decrypting": "Decrypting file",
         "in-process": "{progress}% Downloading file",
         "success": "File downloaded",
@@ -312,7 +312,7 @@
     },
     "download-backup": {
       "status": {
-        "pending": "Pending to download",
+        "pending": "Waiting to download",
         "decrypting": "Decrypting backup",
         "in-process": "{progress}% Downloading backup",
         "success": "Backup downloaded",
@@ -323,7 +323,7 @@
     },
     "download-folder": {
       "status": {
-        "pending": "Pending to download",
+        "pending": "Waiting to download",
         "decrypting": "Decrypting files",
         "in-process": "{progress}% Downloading folder",
         "success": "Folder downloaded",
@@ -334,7 +334,7 @@
     },
     "move-file": {
       "status": {
-        "pending": "Pending to move",
+        "pending": "Waiting to move",
         "in-process": "Moving file",
         "success": "File moved",
         "error": "Error during movement",
@@ -346,7 +346,7 @@
     },
     "move-folder": {
       "status": {
-        "pending": "Pending to move",
+        "pending": "Waiting to move",
         "in-process": "Moving folder",
         "success": "Folder moved",
         "error": "Error during movement",

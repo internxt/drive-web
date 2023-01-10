@@ -21,7 +21,7 @@ export default function PhotoThumbnail({
       style={{ aspectRatio: '1/1' }}
       data-test={'photos-item-' + photoId}
     >
-      {src ? (
+      {src && src.trim().length > 0 ? (
         <img
           onClick={onClick}
           className={`h-full w-full object-cover ${selected && 'rounded-lg brightness-80 filter'} transition-all duration-100 ease-in-out`}
