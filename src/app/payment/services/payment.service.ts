@@ -3,7 +3,8 @@ import { encryptPGP } from '../../crypto/services/utilspgp';
 import httpService from '../../core/services/http.service';
 import envService from '../../core/services/env.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
-import { loadStripe, RedirectToCheckoutServerOptions, Stripe, StripeError } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js/pure';
+import { RedirectToCheckoutServerOptions, Stripe, StripeError } from '@stripe/stripe-js';
 import { SdkFactory } from '../../core/factory/sdk';
 import {
   CreateCheckoutSessionPayload,
