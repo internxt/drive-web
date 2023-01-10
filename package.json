@@ -7,7 +7,7 @@
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
-    "@internxt/sdk": "1.4.17",
+    "@internxt/sdk": "1.4.20",
     "@reduxjs/toolkit": "^1.6.0",
     "@sentry/react": "^7.1.0",
     "@sentry/tracing": "^7.1.0",
@@ -28,7 +28,7 @@
     "js-file-download": "^0.4.12",
     "jszip": "=3.2.2",
     "lodash": "^4.17.21",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "openpgp": "^4.10.10",
     "phosphor-react": "^1.4.1",
     "prettysize": "^2.0.0",
@@ -66,8 +66,8 @@
     "start": "craco start",
     "build": "craco build",
     "test:unit": "jest test/unit/",
-    "test:e2e": "cypress run --project test/e2e",
-    "cypress:open": "cypress open --project test/e2e",
+    "test:e2e": "node ./cypress-transform-dotenv.js && cypress run --project test/e2e",
+    "cypress:open": "node ./cypress-transform-dotenv.js && cypress open --project test/e2e",
     "test": "npm run test:unit && npm run test:e2e",
     "eject": "react-scripts eject",
     "format": "prettier \"{src,test}/**/*.{ts,tsx}\" --write",
@@ -141,6 +141,6 @@
     "webpack-bundle-analyzer": "^4.5.0"
   },
   "engines": {
-    "node": ">=v14.17.0"
+    "node": "v14.17.0 - v16.18.1"
   }
 }

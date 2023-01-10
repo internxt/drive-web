@@ -417,6 +417,11 @@
       "advice": "All items in the Drive Trash will be permanently deleted. This action cannot be undone.",
       "accept": "Empty Trash",
       "progress": "Emptying Trash..."
+    },
+    "uploadItems": {
+      "title": "Maximum file upload",
+      "advice": "The maximum is 1000 files per upload.",
+      "close": "Close"
     }
   },
   "appSumo": {

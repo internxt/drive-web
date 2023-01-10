@@ -10,6 +10,7 @@ import { Iterator } from 'app/core/collections';
 interface FolderRef {
   name: string;
   folderId: number;
+  parentId: number;
 }
 
 type FileType = 'file';
@@ -45,6 +46,7 @@ export async function downloadSharedFolderUsingReadableStream(
   const rootFolder: FolderRef = {
     name: sharedFolderMeta.name,
     folderId: sharedFolderMeta.id,
+    parentId: sharedFolderMeta.id,
   };
 
   const eventBus = new EventEmitter();
@@ -125,6 +127,7 @@ export async function downloadSharedFolderUsingReadableStream(
         {
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
+          parentId: folderToDownload.parentId,
           code: sharedFolderMeta.code,
           password: sharedFolderMeta.password,
         },
@@ -135,6 +138,7 @@ export async function downloadSharedFolderUsingReadableStream(
         {
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
+          parentId: folderToDownload.parentId,
           password: sharedFolderMeta.password,
         },
         options.foldersLimit,
@@ -162,7 +166,7 @@ export async function downloadSharedFolderUsingReadableStream(
             downloadables[id] = { name: fullPath, stream: undefined };
             eventBus.once('task-processed', onFolderDownloaded);
             eventBus.emit('folder-ready', id);
-            pendingFolders.push({ folderId: id, name: fullPath });
+            pendingFolders.push({ folderId: id, parentId: folderToDownload.folderId, name: fullPath });
           },
         })
         .catch((err) => {

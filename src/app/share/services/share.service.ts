@@ -98,6 +98,7 @@ export async function getSharedFolderSize(shareId: string, folderId: string): Pr
 interface SharedDirectoryFoldersPayload {
   token: string;
   directoryId: number;
+  parentId: number;
   offset: number;
   limit: number;
   password?: string;
@@ -106,6 +107,7 @@ interface SharedDirectoryFoldersPayload {
 interface SharedDirectoryFilesPayload {
   token: string;
   directoryId: number;
+  parentId: number;
   offset: number;
   limit: number;
   code: string;
@@ -120,6 +122,7 @@ export function getSharedDirectoryFolders(
     type: 'folder',
     token: payload.token,
     folderId: payload.directoryId,
+    parentId: payload.parentId,
     page: payload.offset / payload.limit,
     perPage: payload.limit,
     password: payload.password,
@@ -135,6 +138,7 @@ export function getSharedDirectoryFiles(
     token: payload.token,
     code: payload.code,
     folderId: payload.directoryId,
+    parentId: payload.parentId,
     page: payload.offset / payload.limit,
     perPage: payload.limit,
     password: payload.password,
