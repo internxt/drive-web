@@ -65,6 +65,7 @@
     "dev": "craco start",
     "start": "craco start",
     "build": "craco build",
+    "vercel:install": "yarn run add:npmrc && yarn install",
     "test:unit": "jest test/unit/",
     "test:e2e": "node ./cypress-transform-dotenv.js && cypress run --project test/e2e",
     "cypress:open": "node ./cypress-transform-dotenv.js && cypress open --project test/e2e",
@@ -77,7 +78,8 @@
     "lint:scss:fix": "yarn run lint:scss --fix",
     "lint": "yarn run lint:ts && yarn run lint:scss",
     "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
-    "analyze": "cross-env ANALYZE=true yarn build"
+    "analyze": "cross-env ANALYZE=true yarn build",
+    "add:npmrc": "echo \"registry=https://registry.yarnpkg.com/\" >> .npmrc && echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=$NPM_TOKEN\" >> .npmrc && echo \"always-auth=true\" >> .npmrc"
   },
   "browserslist": {
     "production": [
