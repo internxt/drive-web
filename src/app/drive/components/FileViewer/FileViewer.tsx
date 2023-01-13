@@ -15,12 +15,14 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import localStorageService from 'app/core/services/local-storage.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
+import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
+import dateService from '../../../core/services/date.service';
 
 interface FileViewerProps {
   file?: DriveFileData;
   onClose: () => void;
   onDownload: () => void;
-  downloader: (abortController: AbortController) => Promise<Blob>
+  downloader: (abortController: AbortController) => Promise<Blob>;
   show: boolean;
 }
 
@@ -53,65 +55,119 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const userEmail: string = localStorageService.getUser()?.email || '';
 
+  const handleFileThumbnail = async (file: DriveFileData, fileBlob: Blob) => {
+    const currentThumbnail = file.thumbnails && file.thumbnails.length > 0 ? file.thumbnails[0] : null;
+    const fileObject = new File([fileBlob], file.name);
+    const fileUpload: FileToUpload = {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      content: fileObject,
+      parentFolderId: file.folderId,
+    };
+
+    const thumbnailGenerated = await getThumbnailFrom(fileUpload);
+
+    if (
+      thumbnailGenerated &&
+      thumbnailGenerated.file &&
+      thumbnailGenerated.type &&
+      (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))
+    ) {
+      const thumbnailToUpload: ThumbnailToUpload = {
+        fileId: file.id,
+        size: thumbnailGenerated.file.size,
+        max_width: thumbnailGenerated.max_width,
+        max_height: thumbnailGenerated.max_height,
+        type: thumbnailGenerated.type,
+        content: thumbnailGenerated.file,
+      };
+      const updateProgressCallback = () => {
+        return;
+      };
+      const abortController = new AbortController();
+
+      const thumbnailUploaded = await uploadThumbnail(
+        userEmail,
+        thumbnailToUpload,
+        isTeam,
+        updateProgressCallback,
+        abortController,
+      );
+
+      if (thumbnailUploaded && thumbnailGenerated.file) {
+        setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, file as DriveItemData, dispatch);
+
+        let newThumbnails: Thumbnail[];
+        if (currentThumbnail) {
+          //Replace existing thumbnail with the new uploadedThumbnail
+          newThumbnails = file.thumbnails?.length > 0 ? [...file.thumbnails] : [thumbnailUploaded];
+          newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
+        } else {
+          newThumbnails =
+            file.thumbnails?.length > 0 ? [...file.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
+        }
+        setThumbnails(newThumbnails, file as DriveItemData, dispatch);
+      }
+    }
+  };
+
+  const checkIfDatabaseBlobIsOlderAngGetFolderBlobs = async (fileToView?: DriveFileData) => {
+    const folderBlobItems = await databaseService.get(DatabaseCollection.LevelsBlobs, fileToView?.folderId as number);
+    const databaseBlob = folderBlobItems?.find((blobItem) => blobItem?.id === fileToView?.id);
+
+    const isDatabaseBlobOlder = !databaseBlob?.updatedAt
+      ? true
+      : dateService.isDateOneBefore({
+          dateOne: databaseBlob?.updatedAt as string,
+          dateTwo: fileToView?.updatedAt as string,
+        });
+
+    if (fileToView && databaseBlob && !isDatabaseBlobOlder) {
+      setBlob(databaseBlob.preview as Blob);
+      await handleFileThumbnail(fileToView, databaseBlob.preview as Blob);
+
+      return { isOlder: false, folderBlobItems };
+    }
+    return { isOlder: true, folderBlobItems };
+  };
+
   useEffect(() => {
     if (isTypeAllowed && show) {
       const abortController = new AbortController();
 
-      downloader(abortController)
-        .then(async (fileBlob) => {
-          setBlob(fileBlob);
-          if (file) {
-            const currentThumbnail = file.thumbnails && file.thumbnails.length > 0 ? file.thumbnails[0] : null;
-            const fileObject = new File([fileBlob], file.name);
-            const fileUpload: FileToUpload = {
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              content: fileObject,
-              parentFolderId: file.folderId,
-            };
+      checkIfDatabaseBlobIsOlderAngGetFolderBlobs(file).then(({ isOlder, folderBlobItems }) => {
+        if (file && isOlder) {
+          downloader(abortController)
+            .then(async (fileBlob) => {
+              setBlob(fileBlob);
 
-            const thumbnailGenerated = await getThumbnailFrom(fileUpload);
+              const folderItemsFiltered = folderBlobItems?.length
+                ? folderBlobItems?.filter((blobItem) => blobItem?.id !== file?.id)
+                : [];
+              folderItemsFiltered.push({
+                id: file?.id as number,
+                preview: fileBlob,
+                updatedAt: file?.updatedAt as string,
+              });
 
-            if (thumbnailGenerated && thumbnailGenerated.file && thumbnailGenerated.type &&
-              (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))) {
+              databaseService.put(DatabaseCollection.LevelsBlobs, file?.folderId as number, folderItemsFiltered);
 
-              const thumbnailToUpload: ThumbnailToUpload = {
-                fileId: file.id,
-                size: thumbnailGenerated.file.size,
-                max_width: thumbnailGenerated.max_width,
-                max_height: thumbnailGenerated.max_height,
-                type: thumbnailGenerated.type,
-                content: thumbnailGenerated.file
-              };
-              const updateProgressCallback = () => { return; };
-              const abortController = new AbortController();
-
-              const thumbnailUploaded = await uploadThumbnail(userEmail, thumbnailToUpload, isTeam, updateProgressCallback, abortController);
-
-              if (thumbnailUploaded && thumbnailGenerated.file) {
-                setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, file as DriveItemData, dispatch);
-
-                let newThumbnails: Thumbnail[];
-                if (currentThumbnail) {
-                  //Replace existing thumbnail with the new uploadedThumbnail
-                  newThumbnails = file.thumbnails?.length > 0 ? [...file.thumbnails] : [thumbnailUploaded];
-                  newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
-                } else {
-                  newThumbnails = file.thumbnails?.length > 0 ? [...file.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
-                }
-                setThumbnails(newThumbnails, file as DriveItemData, dispatch);
+              if (file) {
+                await handleFileThumbnail(file, fileBlob);
               }
-            }
-          }
-        })
-        .catch(() => {
-          if (abortController.signal.aborted) {
-            return;
-          }
-        });
-      return () => abortController.abort();
-    } else if (!show) setBlob(null);
+            })
+            .catch(() => {
+              if (abortController.signal.aborted) {
+                return;
+              }
+            });
+        }
+        return () => abortController.abort();
+      });
+    } else if (!show) {
+      setBlob(null);
+    }
   }, [show]);
 
   return (

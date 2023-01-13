@@ -10,12 +10,22 @@ export enum DatabaseProvider {
 export enum DatabaseCollection {
   Levels = 'levels',
   Photos = 'photos',
+  LevelsBlobs = 'levels_blobs',
 }
 
 export interface AppDatabase extends DBSchema {
   levels: {
     key: number;
     value: DriveItemData[];
+  };
+  levels_blobs: {
+    key: number;
+    value: {
+      id: number;
+      preview?: Blob;
+      source?: Blob;
+      updatedAt?: string;
+    }[];
   };
   photos: {
     key: string;
