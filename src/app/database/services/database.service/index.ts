@@ -13,6 +13,13 @@ export enum DatabaseCollection {
   LevelsBlobs = 'levels_blobs',
 }
 
+export type DriveItemBlobData = {
+  id: number;
+  preview?: Blob;
+  source?: Blob;
+  updatedAt?: string;
+};
+
 export interface AppDatabase extends DBSchema {
   levels: {
     key: number;
@@ -20,12 +27,7 @@ export interface AppDatabase extends DBSchema {
   };
   levels_blobs: {
     key: number;
-    value: {
-      id: number;
-      preview?: Blob;
-      source?: Blob;
-      updatedAt?: string;
-    }[];
+    value: DriveItemBlobData[];
   };
   photos: {
     key: string;
@@ -48,6 +50,7 @@ export interface DatabaseService {
       key: AppDatabase[Name]['key'],
     ) => Promise<AppDatabase[Name]['value'] | undefined>;
     clear: () => Promise<void>;
+    delete: <Name extends DatabaseCollection>(collectionName: Name, key: AppDatabase[Name]['key']) => Promise<void>;
   };
 }
 
