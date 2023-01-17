@@ -51,6 +51,8 @@ import {
 import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
+import LifetimeBanner from 'app/banners/LifetimeBanner';
+import NameCollisionDialog from '../NameCollisionDialog';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import RenameDialog from '../RenameDialog/RenameDialog';
 import {
@@ -403,6 +405,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
+      <NameCollisionDialog items={[{ name: 'Test file', id: '123' }]} operationType="upload" />
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <UploadItemsFailsDialog />
@@ -438,6 +441,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     <MenuItem onClick={onCreateFolderButtonClicked}>
                       <FolderSimplePlus size={20} />
                       <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                    </MenuItem>,
+                    <MenuItem onClick={() => dispatch(uiActions.setIsNameCollisionDialogOpen(true))}>
+                      <p>Test name collision</p>
                     </MenuItem>,
                     separatorH,
                     <MenuItem onClick={onUploadFileButtonClicked}>

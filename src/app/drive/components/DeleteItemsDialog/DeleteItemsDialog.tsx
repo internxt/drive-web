@@ -50,20 +50,20 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
     <BaseDialog
       isOpen={isOpen}
       title="Delete permanently?"
-      panelClasses="w-96 rounded-2xl pt-20px"
+      panelClasses="w-96 rounded-2xl pt-5"
       titleClasses="text-left px-5 text-2xl font-medium"
       onClose={onClose}
       closeClass={'hidden'}
     >
-      <span className="mt-20px block w-full px-5 text-left text-base text-neutral-900">
+      <span className="mt-5 block w-full px-5 text-left text-base text-neutral-900">
         {i18n.get('drive.deleteItems.advice')}
       </span>
 
-      <div className="my-20px flex justify-end bg-white">
-        <Button disabled={isLoading} variant="secondary" onClick={onClose} className="mr-3">
+      <div className="my-5 mr-5 flex justify-end space-x-2 bg-white">
+        <Button disabled={isLoading} variant="secondary" onClick={onClose}>
           {i18n.get('actions.cancel')}
         </Button>
-        <Button disabled={isLoading} variant="accent" className="mr-5" onClick={onAccept} dataTest="delete-button">
+        <Button disabled={isLoading} variant="accent" onClick={onAccept} dataTest="delete-button">
           {isLoading ? 'Deleting...' : 'Delete'}
         </Button>
       </div>

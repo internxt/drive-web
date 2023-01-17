@@ -40,17 +40,23 @@ const ClearTrashDialog = (props: ClearTrashDialogProps): JSX.Element => {
   };
 
   return (
-    <BaseDialog isOpen={isOpen} title={i18n.get('drive.clearTrash.title')} panelClasses='w-96 rounded-2xl pt-20px' titleClasses='text-left px-5 text-2xl font-medium'
-      onClose={onClose} closeClass={'hidden'}>
-      <span className="text-left block w-full text-base px-5 text-neutral-900 mt-20px">
+    <BaseDialog
+      isOpen={isOpen}
+      title={i18n.get('drive.clearTrash.title')}
+      panelClasses="w-96 rounded-2xl pt-5"
+      titleClasses="text-left px-5 text-2xl font-medium"
+      onClose={onClose}
+      closeClass={'hidden'}
+    >
+      <span className="mt-5 block w-full px-5 text-left text-base text-neutral-900">
         {i18n.get('drive.clearTrash.advice')}
       </span>
 
-      <div className="flex justify-end bg-white my-20px">
-        <Button disabled={isLoading} variant="secondary" onClick={onClose} className='mr-3'>
+      <div className="my-5 mr-5 flex justify-end space-x-2 bg-white">
+        <Button disabled={isLoading} variant="secondary" onClick={onClose}>
           {i18n.get('actions.cancel')}
         </Button>
-        <Button disabled={isLoading} variant="accent" className='mr-5' onClick={onAccept}>
+        <Button disabled={isLoading} variant="accent" onClick={onAccept}>
           {isLoading ? i18n.get('drive.clearTrash.progress') : i18n.get('drive.clearTrash.accept')}
         </Button>
       </div>
