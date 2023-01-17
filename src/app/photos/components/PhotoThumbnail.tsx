@@ -5,18 +5,21 @@ export default function PhotoThumbnail({
   src,
   selected,
   onSelect,
-  onClick
+  onClick,
+  photoId,
 }: {
   className?: string;
   src?: string;
   selected: boolean;
   onSelect?: () => void;
   onClick?: () => void;
+  photoId?: string;
 }): JSX.Element {
   return (
     <div
       className={`${className} group relative ${src ? 'cursor-pointer' : ''} ${selected && 'p-1.5'} transition-all duration-100 ease-in-out`}
       style={{ aspectRatio: '1/1' }}
+      data-test={'photos-item-' + photoId}
     >
       {src ? (
         <img
@@ -39,9 +42,10 @@ export default function PhotoThumbnail({
           src
             ? selected
               ? 'flex bg-primary active:bg-primary-dark'
-              : 'hidden  bg-white bg-opacity-25 active:bg-opacity-50 group-hover:flex'
+              : 'hidden bg-white bg-opacity-25 active:bg-opacity-50 group-hover:flex'
             : 'hidden'
         } absolute left-3 top-3 box-content h-6 w-6 items-center justify-center rounded-full border-2 border-white shadow-photo-select`}
+        data-test={'photos-item-selector-' + photoId}
       >
         <Check className={selected ? 'block' : 'hidden'} color="white" weight="bold" size={18} />
       </div>
