@@ -75,7 +75,7 @@ export const handleRepeatedUploadingFiles = (
   if (hasRepeatedNameFiles) {
     dispatch(storageActions.setFilesToRename(filesRepeated));
     dispatch(storageActions.setDriveFilesToRename(repeatedFilesInDrive));
-    dispatch(uiActions.setIsRenameDialogOpen(true));
+    dispatch(uiActions.setIsNameCollisionDialogOpen(true));
   }
   return unrepeatedFiles;
 };
@@ -90,7 +90,7 @@ export const handleRepeatedUploadingFolders = (
   if (hasRepeatedNameFiles) {
     dispatch(storageActions.setFoldersToRename(foldersRepeated));
     dispatch(storageActions.setDriveFoldersToRename(repeatedFoldersInDrive));
-    dispatch(uiActions.setIsRenameDialogOpen(true));
+    dispatch(uiActions.setIsNameCollisionDialogOpen(true));
   }
   return unrepeatedFolders;
 };

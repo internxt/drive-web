@@ -1,4 +1,4 @@
-import { createRef, ReactNode, forwardRef, useState, RefObject, useEffect, useMemo } from 'react';
+import { createRef, ReactNode, forwardRef, useState, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   Trash,
@@ -49,14 +49,14 @@ import {
   transformJsonFilesToItems,
 } from 'app/drive/services/folder.service/uploadFolderInput.service';
 import Dropdown from 'app/shared/components/Dropdown';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import { NameCollisionContainer } from '../NameCollisionDialog/NameCollisionContainer';
+import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
 
 const PAGINATION_LIMIT = 60;
 
@@ -65,11 +65,6 @@ interface DriveExplorerProps {
   titleClassName?: string;
   isLoading: boolean;
   items: DriveItemData[];
-  filesToRename: (File | DriveItemData)[];
-  driveFilesToRename: DriveItemData[];
-  foldersToRename: (IRoot | DriveItemData)[];
-  driveFoldersToRename: DriveItemData[];
-  moveDestinationFolderId: number | null;
   onItemsDeleted?: () => void;
   onItemsMoved?: () => void;
   onFileUploaded?: () => void;
@@ -105,11 +100,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     title,
     titleClassName,
     items,
-    filesToRename,
-    driveFilesToRename,
-    foldersToRename,
-    driveFoldersToRename,
-    moveDestinationFolderId,
     onItemsDeleted,
     onFolderCreated,
     isOver,
@@ -127,12 +117,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
 
-  const [repeatedItemsToUpload, setRepeatedItemsToUpload] = useState<(File | DriveItemData)[]>([]);
-  const [driveRepeatedItems, setDriveRepeatedItems] = useState<DriveItemData[]>([]);
-  const [repeatedFolderToUpload, setRepeatedFolderToUpload] = useState<(IRoot | DriveItemData)[]>([]);
-  const [driveRepeatedFolder, setDriveRepeatedFolder] = useState<DriveItemData[]>([]);
-
-  const isOpen = useAppSelector((state: RootState) => state.ui.isRenameDialogOpen);
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
@@ -141,16 +125,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     deviceService.redirectForMobile();
   }, []);
-
-  useEffect(() => {
-    setRepeatedItemsToUpload(filesToRename);
-    setDriveRepeatedItems(driveFilesToRename);
-  }, [filesToRename, driveFilesToRename]);
-
-  useEffect(() => {
-    setRepeatedFolderToUpload(foldersToRename);
-    setDriveRepeatedFolder(driveFoldersToRename);
-  }, [foldersToRename, driveFoldersToRename]);
 
   const onUploadFileButtonClicked = (): void => {
     fileInputRef.current?.click();
@@ -304,29 +278,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  const handleNewItems = (files: any[], folders: any[]) => [...files, ...folders];
-
-  const newItems = useMemo(
-    () => handleNewItems(repeatedItemsToUpload, repeatedFolderToUpload),
-    [repeatedItemsToUpload, repeatedFolderToUpload],
-  );
-
-  const driveItems = useMemo(
-    () => handleNewItems(driveRepeatedItems, driveRepeatedFolder),
-    [driveRepeatedItems, driveRepeatedFolder],
-  );
-
   const driveExplorer = (
     <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <NameCollisionContainer
-        isOpen={isOpen}
-        newItems={newItems}
-        driveItems={driveItems}
-        currentFolderId={currentFolderId}
-        moveDestinationFolderId={moveDestinationFolderId}
-      />
+      <NameCollisionContainer />
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <UploadItemsFailsDialog />
@@ -352,9 +308,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     <MenuItem onClick={onCreateFolderButtonClicked}>
                       <FolderSimplePlus size={20} />
                       <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
-                    </MenuItem>,
-                    <MenuItem onClick={() => dispatch(uiActions.setIsNameCollisionDialogOpen(true))}>
-                      <p>Test name collision</p>
                     </MenuItem>,
                     separatorH,
                     <MenuItem onClick={onUploadFileButtonClicked}>
@@ -629,10 +582,5 @@ export default connect((state: RootState) => {
     workspace: state.session.workspace,
     planLimit: planSelectors.planLimitToShow(state),
     planUsage: state.plan.planUsage,
-    filesToRename: state.storage.filesToRename,
-    driveFilesToRename: state.storage.driveFilesToRename,
-    foldersToRename: state.storage.foldersToRename,
-    driveFoldersToRename: state.storage.driveFoldersToRename,
-    moveDestinationFolderId: state.storage.moveDestinationFolderId,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));

@@ -1,39 +1,72 @@
-import { FC, useMemo } from 'react';
-import NameCollisionDialog, { NameCollisionDialogProps, OnSubmitPressed, OPERATION_TYPE } from '.';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { connect } from 'react-redux';
+import NameCollisionDialog, { OnSubmitPressed, OPERATION_TYPE } from '.';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
-import { useAppDispatch } from '../../../store/hooks';
-import { storageActions } from '../../../store/slices/storage';
+import { RootState } from '../../../store';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { storageActions, storageSelectors } from '../../../store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
 
-type NameCollisionContainerProps = Pick<NameCollisionDialogProps, 'isOpen' | 'newItems' | 'driveItems'> & {
+type NameCollisionContainerProps = {
   currentFolderId: number;
   moveDestinationFolderId: number | null;
+  filesToRename: (File | DriveItemData)[];
+  driveFilesToRename: DriveItemData[];
+  foldersToRename: (IRoot | DriveItemData)[];
+  driveFoldersToRename: DriveItemData[];
 };
 
 const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
-  isOpen,
-  newItems,
-  driveItems,
   currentFolderId,
   moveDestinationFolderId,
+  filesToRename,
+  driveFilesToRename,
+  foldersToRename,
+  driveFoldersToRename,
 }) => {
   const dispatch = useAppDispatch();
+  const [repeatedItemsToUpload, setRepeatedItemsToUpload] = useState<(File | DriveItemData)[]>([]);
+  const [driveRepeatedItems, setDriveRepeatedItems] = useState<DriveItemData[]>([]);
+  const [repeatedFolderToUpload, setRepeatedFolderToUpload] = useState<(IRoot | DriveItemData)[]>([]);
+  const [driveRepeatedFolder, setDriveRepeatedFolder] = useState<DriveItemData[]>([]);
+
+  const isOpen = useAppSelector((state: RootState) => state.ui.isNameCollisionDialogOpen);
   const isMoveDialog = useMemo(() => !!moveDestinationFolderId, [moveDestinationFolderId]);
   const folderId = useMemo(
     () => moveDestinationFolderId ?? currentFolderId,
     [moveDestinationFolderId, currentFolderId],
   );
+  const handleNewItems = (files: any[], folders: any[]) => [...files, ...folders];
+
+  const newItems = useMemo(
+    () => handleNewItems(repeatedItemsToUpload, repeatedFolderToUpload),
+    [repeatedItemsToUpload, repeatedFolderToUpload],
+  );
+
+  const driveItems = useMemo(
+    () => handleNewItems(driveRepeatedItems, driveRepeatedFolder),
+    [driveRepeatedItems, driveRepeatedFolder],
+  );
+  useEffect(() => {
+    setRepeatedItemsToUpload(filesToRename);
+    setDriveRepeatedItems(driveFilesToRename);
+  }, [filesToRename, driveFilesToRename]);
+
+  useEffect(() => {
+    setRepeatedFolderToUpload(foldersToRename);
+    setDriveRepeatedFolder(driveFoldersToRename);
+  }, [foldersToRename, driveFoldersToRename]);
 
   const closeRenameDialog = () => {
-    dispatch(uiActions.setIsRenameDialogOpen(false));
+    dispatch(uiActions.setIsNameCollisionDialogOpen(false));
     dispatch(storageActions.setMoveDestinationFolderId(null));
   };
 
   const onCancelRenameDialogButtonPressed = () => {
-    dispatch(uiActions.setIsRenameDialogOpen(false));
+    dispatch(uiActions.setIsNameCollisionDialogOpen(false));
     resetPendintToRenameFolders();
     resetPendintToRenameItems();
   };
@@ -161,5 +194,15 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     />
   );
 };
+export default connect((state: RootState) => {
+  const currentFolderId: number = storageSelectors.currentFolderId(state);
 
-export { NameCollisionContainer };
+  return {
+    currentFolderId,
+    filesToRename: state.storage.filesToRename,
+    driveFilesToRename: state.storage.driveFilesToRename,
+    foldersToRename: state.storage.foldersToRename,
+    driveFoldersToRename: state.storage.driveFoldersToRename,
+    moveDestinationFolderId: state.storage.moveDestinationFolderId,
+  };
+})(NameCollisionContainer);

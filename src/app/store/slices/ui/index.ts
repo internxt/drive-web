@@ -26,7 +26,6 @@ interface UISliceState {
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
-  isRenameDialogOpen: boolean;
 }
 
 const initialState: UISliceState = {
@@ -53,7 +52,6 @@ const initialState: UISliceState = {
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
-  isRenameDialogOpen: false,
 };
 
 export const uiSlice = createSlice({
@@ -138,9 +136,6 @@ export const uiSlice = createSlice({
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
     },
-    setIsRenameDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isRenameDialogOpen = action.payload;
-    },
   },
 });
 
@@ -165,7 +160,6 @@ export const {
   setIsGuestInvitationDialogOpen,
   setCurrentEditingNameDriveItem,
   setCurrentEditingNameDirty,
-  setIsRenameDialogOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
