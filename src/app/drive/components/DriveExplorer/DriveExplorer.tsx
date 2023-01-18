@@ -51,14 +51,12 @@ import {
 import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
-import LifetimeBanner from 'app/banners/LifetimeBanner';
-import NameCollisionDialog from '../NameCollisionDialog';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import RenameDialog from '../RenameDialog/RenameDialog';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
+import { NameCollisionContainer } from '../NameCollisionDialog/NameCollisionContainer';
 
 const PAGINATION_LIMIT = 60;
 
@@ -306,89 +304,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  const folderId = useMemo(
-    () => moveDestinationFolderId ?? currentFolderId,
-    [moveDestinationFolderId, currentFolderId],
-  );
-
-  const onReplacingButtonPressed = async (itemsToReplace, itemsToUpload) => {
-    await moveItemsToTrash(itemsToReplace);
-
-    if (moveDestinationFolderId) {
-      dispatch(
-        storageThunks.moveItemsThunk({
-          items: itemsToUpload,
-          destinationFolderId: moveDestinationFolderId,
-        }),
-      );
-    } else {
-      if (itemsToUpload[0].fullPathEdited) {
-        dispatch(
-          storageThunks.uploadFolderThunkNoCheck({
-            root: { ...itemsToUpload[0] },
-            currentFolderId: folderId,
-          }),
-        );
-      } else {
-        dispatch(
-          storageThunks.uploadItemsThunkNoCheck({
-            files: itemsToUpload,
-            parentFolderId: folderId,
-          }),
-        );
-      }
-    }
-  };
-
-  const onKeepingBothButtonPressed = async (itemToUpload) => {
-    if (moveDestinationFolderId) {
-      await dispatch(storageThunks.renameItemsThunk({ items: [itemToUpload], destinationFolderId: folderId }));
-      dispatch(
-        storageThunks.moveItemsThunk({
-          items: [itemToUpload],
-          destinationFolderId: moveDestinationFolderId,
-        }),
-      );
-    } else {
-      if (itemToUpload.fullPathEdited) {
-        dispatch(
-          storageThunks.uploadFolderThunk({
-            root: { ...itemToUpload },
-            currentFolderId: folderId,
-          }),
-        );
-      } else {
-        dispatch(
-          storageThunks.uploadItemsThunk({
-            files: [itemToUpload],
-            parentFolderId: folderId,
-          }),
-        );
-      }
-    }
-  };
-
-  const closeRenameDialog = () => {
-    dispatch(uiActions.setIsRenameDialogOpen(false));
-    dispatch(storageActions.setMoveDestinationFolderId(null));
-  };
-
-  const onCancelRenameDialogButtonPressed = () => {
-    dispatch(uiActions.setIsRenameDialogOpen(false));
-    resetPendintToRenameFolders();
-    resetPendintToRenameItems();
-  };
-
-  const resetPendintToRenameItems = () => {
-    dispatch(storageActions.setFilesToRename([]));
-    dispatch(storageActions.setDriveFilesToRename([]));
-  };
-
-  const resetPendintToRenameFolders = () => {
-    dispatch(storageActions.setFoldersToRename([]));
-    dispatch(storageActions.setDriveFoldersToRename([]));
-  };
-
   const handleNewItems = (files: any[], folders: any[]) => [...files, ...folders];
 
   const newItems = useMemo(
@@ -405,20 +320,16 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <NameCollisionDialog items={[{ name: 'Test file', id: '123' }]} operationType="upload" />
-      <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
-      <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
-      <UploadItemsFailsDialog />
-      <RenameDialog
+      <NameCollisionContainer
         isOpen={isOpen}
         newItems={newItems}
         driveItems={driveItems}
-        onCancelButtonPressed={onCancelRenameDialogButtonPressed}
-        onReplacingButtonPressed={onReplacingButtonPressed}
-        onKeepingBothButtonPressed={onKeepingBothButtonPressed}
-        onCloseDialog={closeRenameDialog}
-        isMoveModal={!!moveDestinationFolderId}
+        currentFolderId={currentFolderId}
+        moveDestinationFolderId={moveDestinationFolderId}
       />
+      <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
+      <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
+      <UploadItemsFailsDialog />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col pt-6">

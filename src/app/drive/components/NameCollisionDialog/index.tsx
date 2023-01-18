@@ -1,85 +1,104 @@
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { RadioGroup } from '@headlessui/react';
-import { connect } from 'react-redux';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
-import { uiActions } from 'app/store/slices/ui';
+
 import i18n from 'app/i18n/services/i18n.service';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
+import { DriveItemData } from '../../types';
+import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 
-interface NameCollisionDialogProps {
-  items: [{ name: string; id: string }];
+export const OPERATION_TYPE = {
+  UPLOAD: 'upload',
+  MOVE: 'move',
+} as const;
+
+export type OnSubmitPressed = {
+  operationType: 'move' | 'upload';
+  operation: 'keep' | 'replace';
+  itemsToUpload: (File | IRoot | DriveItemData)[];
+  itemsToReplace: (DriveItemData | IRoot)[];
+};
+
+export interface NameCollisionDialogProps {
   operationType: 'upload' | 'move';
+  isOpen: boolean;
+  driveItems: (DriveItemData | IRoot)[];
+  newItems: (File | IRoot)[];
+  onCloseDialog(): void;
+  onCancelButtonPressed(): void;
+  onSubmitButtonPressed({ operationType, operation, itemsToUpload, itemsToReplace }: OnSubmitPressed): void;
 }
 
-const NameCollisionDialog = (props: NameCollisionDialogProps) => {
+const options = [
+  {
+    operation: 'replace' as const,
+    name: i18n.get('modals.renameModal.replaceItem'),
+  },
+  {
+    operation: 'keep' as const,
+    name: i18n.get('modals.renameModal.keepBoth'),
+  },
+];
+
+const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
+  isOpen,
+  operationType,
+  newItems,
+  driveItems,
+  onCancelButtonPressed,
+  onCloseDialog,
+  onSubmitButtonPressed,
+}: NameCollisionDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useAppDispatch();
-  const isOpen = useAppSelector((state: RootState) => state.ui.isNameCollisionDialogOpen);
+  const [selectedOption, setSelectedOption] = useState(options[0]);
+
+  const title =
+    newItems?.length > 1 ? i18n.get('modals.renameModal.titleMultipleItems') : i18n.get('modals.renameModal.title');
+  const description =
+    newItems?.length > 1
+      ? i18n.get('modals.renameModal.multipleDescription')
+      : i18n.get('modals.renameModal.description', { itemName: newItems[0]?.name });
+  const primaryButtonText = useMemo(
+    () =>
+      operationType === OPERATION_TYPE.MOVE
+        ? i18n.get('modals.renameModal.move')
+        : i18n.get('modals.renameModal.upload'),
+    [operationType],
+  );
 
   useEffect(() => {
-    // Reset to default values
     if (isOpen) {
       setIsLoading(false);
       setSelectedOption(options[0]);
     }
   }, [isOpen]);
 
-  const options = [
-    {
-      operation: 'replace',
-      name: 'Replace current item',
-    },
-    {
-      operation: 'keep',
-      name: 'Keep both',
-    },
-  ];
-
-  const [selectedOption, setSelectedOption] = useState(options[0]);
-
   const onClose = (): void => {
+    onCloseDialog();
+    onCancelButtonPressed();
+    setSelectedOption(options[0]);
     setIsLoading(false);
-    dispatch(uiActions.setIsNameCollisionDialogOpen(false));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    //! You can access to the item id passed as props (items[X].id)
+    await onSubmitButtonPressed({
+      operationType,
+      operation: selectedOption.operation,
+      itemsToUpload: newItems,
+      itemsToReplace: driveItems,
+    });
 
-    if (props.operationType === 'upload') {
-      if (selectedOption.operation === 'replace') {
-        //TODO  Replace current item for the uploaded item
-      } else {
-        //TODO  Apply rename to uploaded item
-      }
-    } else {
-      if (selectedOption.operation === 'replace') {
-        //TODO  Replace current item for the moved item
-      } else {
-        //TODO  Apply rename to moved item
-      }
-    }
-
-    //! Just for testting purposes, remove when functionality is finished
-    setTimeout(() => {
-      onClose();
-    }, 2000);
+    onClose();
   };
 
   return (
-    <Modal maxWidth="max-w-lg" isOpen={isOpen} onClose={onClose}>
+    <Modal maxWidth="max-w-lg" isOpen={isOpen} onClose={onCloseDialog}>
       <form className="flex flex-col space-y-5" onSubmit={onSubmit}>
-        <p className="text-2xl font-medium text-gray-100">
-          {props.items.length > 1 ? 'Multiple items already exist' : 'Item already exists'}
-        </p>
-        <p className="text-base text-gray-80">
-          {props.items.length > 1 ? 'More than one element' : `"${props.items[0].name}"`} already exists in this
-          location. Do you want to replace it with with the one you're moving?
-        </p>
+        <p className="text-2xl font-medium text-gray-100">{title}</p>
+        <p className="text-base text-gray-80">{description}</p>
 
         <RadioGroup value={selectedOption} onChange={setSelectedOption} disabled={isLoading}>
           <RadioGroup.Label className="sr-only">Select an option</RadioGroup.Label>
@@ -118,7 +137,7 @@ const NameCollisionDialog = (props: NameCollisionDialogProps) => {
             {i18n.get('actions.cancel')}
           </Button>
           <Button type="submit" loading={isLoading} variant="primary">
-            {props.operationType === 'upload' ? 'Upload' : 'Move'}
+            {primaryButtonText}
           </Button>
         </div>
       </form>
@@ -126,6 +145,4 @@ const NameCollisionDialog = (props: NameCollisionDialogProps) => {
   );
 };
 
-export default connect((state: RootState) => ({
-  user: state.user.user,
-}))(NameCollisionDialog);
+export default NameCollisionDialog;

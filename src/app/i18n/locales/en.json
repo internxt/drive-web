@@ -142,7 +142,9 @@
   "modals": {
     "renameModal": {
       "title": "Item already exists",
-      "description": "{itemName} already exists in this location. Do you want to replace it with with the one you’re moving?",
+      "titleMultipleItems": "Multiple items already exist",
+      "description": "{itemName} already exists in this location. Do you want to replace it or you want to keep both?",
+      "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
       "replaceItem": "Replace current item",
       "keepBoth": "Keep both",
       "upload": "Upload",
