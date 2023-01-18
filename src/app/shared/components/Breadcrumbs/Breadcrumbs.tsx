@@ -9,6 +9,7 @@ export interface BreadcrumbItemData {
   icon: JSX.Element | null;
   active: boolean;
   isFirstPath?: boolean;
+  dialog?: boolean;
   onClick?: () => void;
 }
 
@@ -50,6 +51,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
               item={items[i]}
               isHiddenInList
               totalBreadcrumbsLength={items.length}
+              items={items}
             />
           </MenuItem>,
         );
@@ -59,6 +61,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
             key={'breadcrumbItem' + items[i].id}
             item={items[i]}
             totalBreadcrumbsLength={items.length}
+            items={items}
           />,
         );
         if (i < items.length - 1) {
@@ -95,4 +98,4 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
   };
 
   return <>{<div className="flex w-full">{getItemsList()}</div>}</>;
-};
+}
