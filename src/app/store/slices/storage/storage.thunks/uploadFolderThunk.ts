@@ -11,6 +11,7 @@ import errorService from '../../../../core/services/error.service';
 import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import { SdkFactory } from '../../../../core/factory/sdk';
 
 export interface IRoot {
   name: string;
@@ -29,6 +30,16 @@ interface UploadFolderThunkPayload {
   };
 }
 
+const handleFoldersRename = async (root: IRoot, currentFolderId: number) => {
+  const storageClient = SdkFactory.getInstance().createStorageClient();
+  const [parentFolderContentPromise] = storageClient.getFolderContent(currentFolderId);
+  const parentFolderContent = await parentFolderContentPromise;
+  const [, , finalFilename] = renameFolderIfNeeded(parentFolderContent.children, root.name);
+  const fileContent: IRoot = { ...root, name: finalFilename };
+
+  return fileContent;
+};
+
 export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload, { state: RootState }>(
   'storage/createFolderStructure',
   async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
@@ -36,11 +47,14 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
-    const levels = [root];
-    const itemsUnderRoot = countItemsUnderRoot(root);
+
+    const renamedRoot = await handleFoldersRename(root, currentFolderId);
+    const levels = [renamedRoot];
+
+    const itemsUnderRoot = countItemsUnderRoot(renamedRoot);
     const taskId = tasksService.create<UploadFolderTask>({
       action: TaskType.UploadFolder,
-      folderName: root.name,
+      folderName: renamedRoot.name,
       showNotification: !!options.withNotification,
       cancellable: true,
       stop: async () => {
@@ -62,8 +76,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     });
 
     try {
-      root.folderId = currentFolderId;
-
+      renamedRoot.folderId = currentFolderId;
       while (levels.length > 0) {
         const level: IRoot = levels.shift() as IRoot;
         const createdFolder = await dispatch(
@@ -85,7 +98,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
           let currentPackFiles = 0;
 
           for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-            const concurrencyBytesLimitNotReached = accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
+            const concurrencyBytesLimitNotReached =
+              accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
             const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
 
             if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
@@ -106,27 +120,30 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
               uploadItemsParallelThunk({
                 files: pack,
                 parentFolderId: createdFolder.id,
-                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false }
-              })
-            ).unwrap().then(() => {
-              alreadyUploaded += pack.length;
+                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              }),
+            )
+              .unwrap()
+              .then(() => {
+                alreadyUploaded += pack.length;
 
-              tasksService.updateTask({
-                taskId: taskId,
-                merge: {
-                  status: TaskStatus.InProcess,
-                  progress: alreadyUploaded / itemsUnderRoot,
-                },
+                tasksService.updateTask({
+                  taskId: taskId,
+                  merge: {
+                    status: TaskStatus.InProcess,
+                    progress: alreadyUploaded / itemsUnderRoot,
+                  },
+                });
               });
-            });
           }
         }
 
+        const childrenFolders = [] as IRoot[];
         for (const child of level.childrenFolders) {
-          child.folderId = createdFolder.id;
+          childrenFolders.push({ ...child, folderId: createdFolder.id });
         }
 
-        levels.push(...level.childrenFolders);
+        levels.push(...childrenFolders);
       }
 
       tasksService.updateTask({
@@ -154,6 +171,43 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     }
   },
 );
+
+// TODO: Move to SDK
+export default function renameFolderIfNeeded(items: { name: string }[], folderName: string): [boolean, number, string] {
+  const FOLDER_INCREMENT_REGEX = /( \([0-9]+\))$/i;
+  const INCREMENT_INDEX_REGEX = /\(([^)]+)\)/;
+
+  const cleanFilename = folderName.replace(FOLDER_INCREMENT_REGEX, '');
+
+  const infoFoldernames: { name: string; cleanName: string; incrementIndex: number }[] = items
+    .map((item) => {
+      const cleanName = item.name.replace(FOLDER_INCREMENT_REGEX, '');
+      const incrementString = item.name.match(FOLDER_INCREMENT_REGEX)?.pop()?.match(INCREMENT_INDEX_REGEX)?.pop();
+      const incrementIndex = parseInt(incrementString || '0');
+
+      return {
+        name: item.name,
+        cleanName,
+        incrementIndex,
+      };
+    })
+    .filter((item) => item.cleanName === cleanFilename)
+    .sort((a, b) => b.incrementIndex - a.incrementIndex);
+
+  const filenameExists = !!infoFoldernames.length;
+
+  if (filenameExists) {
+    const index = infoFoldernames[0].incrementIndex + 1;
+
+    return [true, index, getNextNewName(cleanFilename, index)];
+  } else {
+    return [false, 0, folderName];
+  }
+}
+
+function getNextNewName(filename: string, i: number): string {
+  return `${filename} (${i})`;
+}
 
 export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunkPayload, { state: RootState }>(
   'storage/createFolderStructure',
@@ -211,7 +265,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
           let currentPackFiles = 0;
 
           for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-            const concurrencyBytesLimitNotReached = accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
+            const concurrencyBytesLimitNotReached =
+              accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
             const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
 
             if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
@@ -232,27 +287,30 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
               uploadItemsParallelThunkNoCheck({
                 files: pack,
                 parentFolderId: createdFolder.id,
-                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false }
-              })
-            ).unwrap().then(() => {
-              alreadyUploaded += pack.length;
+                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              }),
+            )
+              .unwrap()
+              .then(() => {
+                alreadyUploaded += pack.length;
 
-              tasksService.updateTask({
-                taskId: taskId,
-                merge: {
-                  status: TaskStatus.InProcess,
-                  progress: alreadyUploaded / itemsUnderRoot,
-                },
+                tasksService.updateTask({
+                  taskId: taskId,
+                  merge: {
+                    status: TaskStatus.InProcess,
+                    progress: alreadyUploaded / itemsUnderRoot,
+                  },
+                });
               });
-            });
           }
         }
 
+        const childrenFolders = [] as IRoot[];
         for (const child of level.childrenFolders) {
-          child.folderId = createdFolder.id;
+          childrenFolders.push({ ...child, folderId: createdFolder.id });
         }
 
-        levels.push(...level.childrenFolders);
+        levels.push(...childrenFolders);
       }
 
       tasksService.updateTask({
@@ -286,12 +344,14 @@ function countItemsUnderRoot(root: IRoot): number {
 
   const queueOfFolders: Array<IRoot> = [root];
 
-  while (queueOfFolders.length) {
+  while (queueOfFolders.length > 0) {
     const folder = queueOfFolders.shift() as IRoot;
 
     count += folder.childrenFiles?.length ?? 0;
 
-    queueOfFolders.push(...folder.childrenFolders);
+    if (folder.childrenFolders) {
+      queueOfFolders.push(...folder.childrenFolders);
+    }
   }
 
   return count;
