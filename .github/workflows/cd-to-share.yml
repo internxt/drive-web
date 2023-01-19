@@ -1,7 +1,7 @@
 name: CD to share.internxt.com
 on:
   push:
-    branches: [master, chore/share-domain]
+    branches: [master]
 jobs:
   build:
     runs-on: ubuntu-latest
