@@ -56,7 +56,7 @@ const TaskLogger = (): JSX.Element => {
 
   return (
     <div
-      className={`absolute bottom-0 right-0 z-50 mr-6 mb-6 flex w-80 flex-col shadow-subtle-hard transition-all duration-350  ${
+      className={`absolute bottom-0 right-0 z-40 mr-6 mb-6 flex w-80 flex-col shadow-subtle-hard transition-all duration-350  ${
         isMinimized ? 'h-11' : 'h-64'
       } overflow-hidden rounded-lg border border-gray-10 bg-white ${!isOpen ? 'hidden' : ''}`}
     >

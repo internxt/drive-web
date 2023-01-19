@@ -443,7 +443,10 @@
       }
     },
     "deleteItems": {
-      "advice": "This action cannot be undone."
+      "title": "Delete permanently?",
+      "advice": "This action cannot be undone.",
+      "accept": "Delete",
+      "progress": "Deleting..."
     },
     "clearTrash": {
       "title": "Empty Drive Trash?",

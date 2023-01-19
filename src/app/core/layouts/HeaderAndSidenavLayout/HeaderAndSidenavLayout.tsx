@@ -55,7 +55,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
         <div className="flex w-1 flex-grow flex-col bg-white">
           <Navbar hideSearch={hideSearch} />
-          <div className="z-0 flex h-1 w-full flex-grow">
+          <div className="flex h-1 w-full flex-grow">
             {children}
 
             {isDriveItemInfoMenuOpen && driveItemInfo && (
