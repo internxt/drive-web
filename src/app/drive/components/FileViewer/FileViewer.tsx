@@ -17,6 +17,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import dateService from '../../../core/services/date.service';
+import { updateDatabaseFileSourceData } from '../../services/database.service';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -55,27 +56,22 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const userEmail: string = localStorageService.getUser()?.email || '';
 
-  const handleFileThumbnail = async (file: DriveFileData, fileBlob: Blob) => {
-    const currentThumbnail = file.thumbnails && file.thumbnails.length > 0 ? file.thumbnails[0] : null;
-    const fileObject = new File([fileBlob], file.name);
+  const handleFileThumbnail = async (driveFile: DriveFileData, file: File) => {
+    const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
+    const fileObject = new File([file], driveFile.name);
     const fileUpload: FileToUpload = {
-      name: file.name,
-      size: file.size,
-      type: file.type,
+      name: driveFile.name,
+      size: driveFile.size,
+      type: driveFile.type,
       content: fileObject,
-      parentFolderId: file.folderId,
+      parentFolderId: driveFile.folderId,
     };
 
     const thumbnailGenerated = await getThumbnailFrom(fileUpload);
 
-    if (
-      thumbnailGenerated &&
-      thumbnailGenerated.file &&
-      thumbnailGenerated.type &&
-      (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))
-    ) {
+    if (thumbnailGenerated.file && (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))) {
       const thumbnailToUpload: ThumbnailToUpload = {
-        fileId: file.id,
+        fileId: driveFile.id,
         size: thumbnailGenerated.file.size,
         max_width: thumbnailGenerated.max_width,
         max_height: thumbnailGenerated.max_height,
@@ -96,18 +92,18 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
       );
 
       if (thumbnailUploaded && thumbnailGenerated.file) {
-        setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, file as DriveItemData, dispatch);
+        setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
 
         let newThumbnails: Thumbnail[];
         if (currentThumbnail) {
           //Replace existing thumbnail with the new uploadedThumbnail
-          newThumbnails = file.thumbnails?.length > 0 ? [...file.thumbnails] : [thumbnailUploaded];
+          newThumbnails = driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails] : [thumbnailUploaded];
           newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
         } else {
           newThumbnails =
-            file.thumbnails?.length > 0 ? [...file.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
+            driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
         }
-        setThumbnails(newThumbnails, file as DriveItemData, dispatch);
+        setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
       }
     }
   };
@@ -124,8 +120,8 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
         });
 
     if (fileToView && databaseBlob && !isDatabaseBlobOlder) {
-      setBlob(databaseBlob.preview as Blob);
-      await handleFileThumbnail(fileToView, databaseBlob.preview as Blob);
+      setBlob(databaseBlob.source as Blob);
+      await handleFileThumbnail(fileToView, databaseBlob.source as File);
 
       return { isOlder: false, folderBlobItems };
     }
@@ -142,19 +138,16 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
             .then(async (fileBlob) => {
               setBlob(fileBlob);
 
-              const folderItemsFiltered = folderBlobItems?.length
-                ? folderBlobItems?.filter((blobItem) => blobItem?.id !== file?.id)
-                : [];
-              folderItemsFiltered.push({
-                id: file?.id as number,
-                preview: fileBlob,
-                updatedAt: file?.updatedAt as string,
+              updateDatabaseFileSourceData({
+                databaseFolderBlobItems: folderBlobItems,
+                folderId: file?.folderId,
+                sourceBlob: fileBlob,
+                fileId: file?.id,
+                updatedAt: file?.updatedAt,
               });
 
-              databaseService.put(DatabaseCollection.LevelsBlobs, file?.folderId as number, folderItemsFiltered);
-
               if (file) {
-                await handleFileThumbnail(file, fileBlob);
+                await handleFileThumbnail(file, fileBlob as File);
               }
             })
             .catch(() => {
