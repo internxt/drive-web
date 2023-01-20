@@ -39,7 +39,7 @@ describe('databaseService utils', () => {
 
     expect(databaseService.delete).toHaveBeenCalledWith(DatabaseCollection.Photos, 'id1');
     expect(databaseService.delete).toHaveBeenCalledWith(DatabaseCollection.Photos, 'id34');
-    expect(database.photos).toEqual({ id2: { preview: {} } });
+    expect(database.photos).toEqual({ id2: { source: {} } });
   });
 
   it('should correctly delete files from specific folder from database.', async () => {
