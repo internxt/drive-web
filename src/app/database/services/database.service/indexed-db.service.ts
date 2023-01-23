@@ -6,6 +6,7 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
     upgrade: (db, oldVersion) => {
       if (oldVersion === 0) db.createObjectStore('levels');
       if (oldVersion <= 1) db.createObjectStore('photos');
+      if (oldVersion <= 2) db.createObjectStore('levels_blobs');
     },
     blocked: () => undefined,
     blocking: () => undefined,
