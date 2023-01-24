@@ -76,7 +76,6 @@ function getEntriesFromDirectory(entry: FileSystemDirectoryEntry): Promise<FileS
     const reader = entry.createReader();
     function readEntries() {
       reader.readEntries((results: FileSystemEntry[]) => {
-        console.log({ results });
         if (results.length) {
           entries = entries.concat(results);
           readEntries();
