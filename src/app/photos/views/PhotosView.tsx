@@ -13,7 +13,7 @@ import Preview from '../components/Preview';
 import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
-
+import * as Sentry from '@sentry/react';
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useDispatch();
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
@@ -60,26 +60,25 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   const numberOfSelectedItems = photosState.selectedItems.length;
 
-  const toolbarProps = numberOfSelectedItems !== 0 ?
-    {
-      onDeleteClick: () => setDeletePending('selected'),
-      onShareClick: () => setSharePending('selected'),
-      onDownloadClick: () => {
-        const photos = photosState.selectedItems.map(
-          (id) => photosState.items.find((item) => item.id === id) as SerializablePhoto,
-        );
-        dispatch(photosThunks.downloadThunk(photos));
-        dispatch(photosSlice.actions.unselectAll());
-      },
-      onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
-    } : {};
+  const toolbarProps =
+    numberOfSelectedItems !== 0
+      ? {
+          onDeleteClick: () => setDeletePending('selected'),
+          onShareClick: () => setSharePending('selected'),
+          onDownloadClick: () => {
+            const photos = photosState.selectedItems.map(
+              (id) => photosState.items.find((item) => item.id === id) as SerializablePhoto,
+            );
+            dispatch(photosThunks.downloadThunk(photos));
+            dispatch(photosSlice.actions.unselectAll());
+          },
+          onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
+        }
+      : {};
 
   return (
     <>
-      <div
-        className={`${className} flex h-full w-full flex-col overflow-y-hidden`}
-        data-test="photos-gallery"
-      >
+      <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`} data-test="photos-gallery">
         {showEmpty ? (
           <Empty
             title="Your gallery is empty"
@@ -234,11 +233,21 @@ function PhotoItem({
   const bucketId = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
 
   useEffect(() => {
-    if (bucketId) {
+    const photoBucketId = photo.networkBucketId ? photo.networkBucketId : bucketId;
+    if (photoBucketId) {
       getPhotoPreview({
         photo,
-        bucketId,
-      }).then(setSrc);
+        bucketId: photoBucketId,
+      })
+        .then(setSrc)
+        .catch((err) => {
+          Sentry.captureException(err, {
+            extra: {
+              photoId: photo.id,
+              bucketId: photoBucketId,
+            },
+          });
+        });
     }
   }, []);
 
