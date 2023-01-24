@@ -11,6 +11,7 @@ interface UISliceState {
   isDeleteItemsDialogOpen: boolean;
   isMoveItemsDialogOpen: boolean;
   isClearTrashDialogOpen: boolean;
+  isEditFolderNameDialog: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
@@ -25,6 +26,7 @@ interface UISliceState {
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
+  currentEditingBreadcrumbNameDirty: string;
 }
 
 const initialState: UISliceState = {
@@ -36,6 +38,7 @@ const initialState: UISliceState = {
   isDeleteItemsDialogOpen: false,
   isMoveItemsDialogOpen: false,
   isClearTrashDialogOpen: false,
+  isEditFolderNameDialog: false,
   isNewsletterDialogOpen: false,
   isSurveyDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
@@ -50,6 +53,7 @@ const initialState: UISliceState = {
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
+  currentEditingBreadcrumbNameDirty: '',
 };
 
 export const uiSlice = createSlice({
@@ -79,6 +83,9 @@ export const uiSlice = createSlice({
     },
     setIsClearTrashDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isClearTrashDialogOpen = action.payload;
+    },
+    setIsEditFolderNameDialog: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isEditFolderNameDialog = action.payload;
     },
     setIsNewsletterDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isNewsletterDialogOpen = action.payload;
@@ -128,6 +135,12 @@ export const uiSlice = createSlice({
     ) => {
       state.currentEditingNameDirty = action.payload;
     },
+    setCurrentEditingBreadcrumbNameDirty: (
+      state: UISliceState,
+      action: PayloadAction<UISliceState['currentEditingBreadcrumbNameDirty']>,
+    ) => {
+      state.currentEditingBreadcrumbNameDirty = action.payload;
+    },
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
     },
@@ -155,6 +168,7 @@ export const {
   setIsGuestInvitationDialogOpen,
   setCurrentEditingNameDriveItem,
   setCurrentEditingNameDirty,
+  setIsEditFolderNameDialog,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

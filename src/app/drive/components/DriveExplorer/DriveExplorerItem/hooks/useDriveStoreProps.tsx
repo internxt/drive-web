@@ -15,12 +15,18 @@ interface DriveItemStoreProps {
   isDriveItemInfoMenuOpen: boolean;
   isEditingName: (item: DriveItemData) => boolean;
   dirtyName: string;
+  breadcrumbDirtyName: string;
 }
 
 const useDriveItemStoreProps = (): DriveItemStoreProps => {
-  const isEditingNameSelector = (state: RootState) => (item: DriveItemData): boolean => {
-    return item.id === state.ui.currentEditingNameDriveItem?.id && item.isFolder === state.ui.currentEditingNameDriveItem?.isFolder;
-  };
+  const isEditingNameSelector =
+    (state: RootState) =>
+    (item: DriveItemData): boolean => {
+      return (
+        item.id === state.ui.currentEditingNameDriveItem?.id &&
+        item.isFolder === state.ui.currentEditingNameDriveItem?.isFolder
+      );
+    };
 
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const selectedItems = useAppSelector((state: RootState) => state.storage.selectedItems);
@@ -32,6 +38,7 @@ const useDriveItemStoreProps = (): DriveItemStoreProps => {
   const isDriveItemInfoMenuOpen = useAppSelector((state: RootState) => state.ui.isDriveItemInfoMenuOpen);
   const isEditingName = useAppSelector(isEditingNameSelector);
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
+  const breadcrumbDirtyName = useAppSelector((state: RootState) => state.ui.currentEditingBreadcrumbNameDirty);
 
   return {
     isSomeItemSelected,
@@ -44,6 +51,7 @@ const useDriveItemStoreProps = (): DriveItemStoreProps => {
     isDriveItemInfoMenuOpen,
     isEditingName,
     dirtyName,
+    breadcrumbDirtyName,
   };
 };
 

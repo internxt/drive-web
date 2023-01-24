@@ -34,6 +34,7 @@ import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/Cre
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
+import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
@@ -276,6 +277,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
+      <EditFolderNameDialog />
       <UploadItemsFailsDialog />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">

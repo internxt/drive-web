@@ -159,7 +159,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   };
 
   const title = `${props.isTrash ? 'Restore' : 'Move'} ${
-    itemsToMove.length > 1 ? itemsToMove.length + ' items' : '"' + itemsToMove[0]?.name + '"'
+    itemsToMove.length > 1
+      ? itemsToMove.length + ' items'
+      : '"' +
+        (itemsToMove[0]?.name.length > 20 ? itemsToMove[0]?.name.slice(0, 20) + '...' : itemsToMove[0]?.name) +
+        '"'
   }`;
 
   return (
