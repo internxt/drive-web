@@ -26,7 +26,33 @@
       "oneTimePayment": "One-time payment"
     }
   },
-  "shareLayout": {},
+  "shareLayout": {
+    "title": "",
+    "subtitle": "Almacenamiento seguro en la nube",
+    "labels": {
+      "privacy": "Privado por diseño",
+      "end-to-end": "Cifrado de extremo a extremo",
+      "military-grade": "Cifrado de grado militar",
+      "zero-knowledge": "Conocimiento cero"
+    },
+    "tryInternxt": "Prueba Internxt",
+    "topBar": {
+      "drive": "Ir a Internxt Drive",
+      "downloadApp": "Descargar aplicación",
+      "logout": "Cerrar sesión",
+      "login": "Iniciar sesión",
+      "createAccount": "Crear una cuenta",
+      "getStarted": "Empezar"
+    }
+  },
+  "shareItemPwdView": {
+    "title": "Este enlace está protegido con contraseña",
+    "putPwd": "Por favor introduce la contraseña facilitada",
+    "putPwd1": "por el remitente para acceder",
+    "password": "Contraseña",
+    "pwdLayout": "Contraseña",
+    "access": "Acceder"
+  },
   "sideNav": {
     "drive": "Drive",
     "photos": "Photos",
@@ -170,6 +196,7 @@
     }
   },
   "error": {
+    "wrongPassword": "Contraseña incorrecta, inténtalo de nuevo o contacta con el propietario",
     "genericError": "There was an error: {reason}",
     "serverError": "Internal server error. Try again later",
     "deleteTeamMember": "Error deleting team member",
@@ -258,7 +285,7 @@
     "toast": {
       "copy-to-clipboard": "Link copied to clipboard",
       "link-updated": "Link settings updated",
-      "link-deleted": "Link deleted",
+      "link-deleted": "Enlace eliminado",
       "links-deleted": "Link(s) deleted"
     }
   },
@@ -447,7 +474,7 @@
     "download": "Descargar",
     "downloading": "Descargando",
     "downloaded": "Descargado",
-    "view": "View",
+    "view": "Ver",
     "accessFile": "Access File",
     "upgradeNow": "Actualiza ahora",
     "upgrade": "Upgrade",

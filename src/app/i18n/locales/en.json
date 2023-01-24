@@ -26,6 +26,33 @@
       "oneTimePayment": "One-time payment"
     }
   },
+  "shareLayout": {
+    "title": "WE ARE INTERNXT",
+    "subtitle": "Private and secure cloud storage",
+    "labels": {
+      "privacy": "Privacy by design",
+      "end-to-end": "End-to-end encryption",
+      "military-grade": "Military-grade encryption",
+      "zero-knowledge": "Zero-knowledge technology"
+    },
+    "tryInternxt": "Try out Internxt",
+    "topBar": {
+      "drive": "Go to Internxt Drive",
+      "downloadApp": "Download Desktop App",
+      "logout": "Log out",
+      "login": "Login",
+      "createAccount": "Create Account",
+      "getStarted": "Get started"
+    }
+  },
+  "shareItemPwdView": {
+    "title": "This link is password protected",
+    "putPwd": "Please enter the password provided",
+    "putPwd1": "by the sender for access.",
+    "password": "Password",
+    "pwdLayout": "password",
+    "access": "Access"
+  },
   "sideNav": {
     "drive": "Drive",
     "photos": "Photos",
@@ -169,6 +196,7 @@
     }
   },
   "error": {
+    "wrongPassword": "Wrong password, try again or contact link owner",
     "genericError": "There was an error: {reason}",
     "serverError": "Internal server error. Try again later",
     "deleteTeamMember": "Error deleting team member",

@@ -13,6 +13,7 @@ import EyeSlash from 'assets/images/shared-file/icons/eye-slash.png';
 import '../../../share/views/ShareView/ShareView.scss';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import i18n from 'app/i18n/services/i18n.service';
 
 interface ShareLayoutProps {
   children: JSX.Element;
@@ -67,16 +68,16 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
 
             <div className="flex h-full flex-col justify-center space-y-20">
               <div className="flex flex-col space-y-2">
-                <span className="text-xl opacity-60">WE ARE INTERNXT</span>
-                <p className="text-3xl font-semibold leading-none">Private and secure cloud storage</p>
+                <span className="text-xl opacity-60">{i18n.get('shareLayout.title')}</span>
+                <p className="text-3xl font-semibold leading-none">{i18n.get('shareLayout.subtitle')}</p>
               </div>
 
               <div className="flex flex-col space-y-3 text-xl">
                 {[
-                  { icon: Shield, label: 'Privacy by design' },
-                  { icon: EndToEnd, label: 'End-to-end encryption' },
-                  { icon: Lock, label: 'Military-grade encryption' },
-                  { icon: EyeSlash, label: 'Zero-knowledge technology' },
+                  { icon: Shield, label: i18n.get('shareLayout.labels.privacy') },
+                  { icon: EndToEnd, label: i18n.get('shareLayout.labels.end-to-end') },
+                  { icon: Lock, label: i18n.get('shareLayout.labels.military-grade') },
+                  { icon: EyeSlash, label: i18n.get('shareLayout.labels.zero-knowledge') },
                 ].map((item) => (
                   <div className="flex flex-row items-center space-x-3" key={item.icon}>
                     <img src={item.icon} className="h-6 w-6" />
@@ -96,7 +97,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                     className="flex h-12 w-full flex-row items-center justify-center rounded-lg bg-white
                                   px-6 text-xl font-semibold text-blue-70 no-underline"
                   >
-                    <span>Try out Internxt</span>
+                    <span>{i18n.get('shareLayout.tryInternxt')}</span>
                   </div>
                 </div>
               </a>
@@ -152,7 +153,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                               className={`${active && 'bg-cool-gray-5'} group flex w-full items-center rounded-md
                                             px-4 py-2 font-medium`}
                             >
-                              Go to Internxt Drive
+                              {i18n.get('shareLayout.topBar.drive')}
                             </button>
                           </Link>
                         )}
@@ -167,7 +168,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                             className={`${active && 'bg-cool-gray-5'} group flex w-full items-center rounded-md
                                             px-4 py-2 font-medium`}
                           >
-                            Download Desktop App
+                            {i18n.get('shareLayout.topBar.downloadApp')}
                           </button>
                         )}
                       </Menu.Item>
@@ -181,7 +182,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                             className={`${active && 'bg-red-10 bg-opacity-50 text-red-60'} group flex w-full
                                             items-center rounded-md px-4 py-2 font-medium`}
                           >
-                            Log out
+                            {i18n.get('shareLayout.topBar.logout')}
                           </button>
                         )}
                       </Menu.Item>
@@ -198,7 +199,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                       className="flex h-9 cursor-pointer flex-row items-center justify-center rounded-lg px-4
                                     font-medium text-cool-gray-90 no-underline hover:text-cool-gray-90"
                     >
-                      Login
+                      {i18n.get('shareLayout.topBar.login')}
                     </div>
                   </Link>
 
@@ -208,7 +209,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                                     px-4 font-medium text-cool-gray-90 no-underline
                                     hover:text-cool-gray-90"
                     >
-                      Create account
+                      {i18n.get('shareLayout.topBar.createAccount')}
                     </div>
                   </Link>
                 </div>
@@ -224,7 +225,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                                     px-4 font-medium text-primary no-underline
                                     hover:text-primary-dark"
               >
-                Get started
+                {i18n.get('shareLayout.topBar.getStarted')}
               </div>
             </Link>
           </div>
