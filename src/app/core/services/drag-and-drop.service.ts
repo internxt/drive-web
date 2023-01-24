@@ -72,7 +72,20 @@ async function transformEntryToRoot(entry: FileSystemDirectoryEntry, currentPath
 
 function getEntriesFromDirectory(entry: FileSystemDirectoryEntry): Promise<FileSystemEntry[]> {
   return new Promise((resolve, reject) => {
-    entry.createReader().readEntries(resolve, reject);
+    let entries: FileSystemEntry[] = [];
+    const reader = entry.createReader();
+    function readEntries() {
+      reader.readEntries((results: FileSystemEntry[]) => {
+        console.log({ results });
+        if (results.length) {
+          entries = entries.concat(results);
+          readEntries();
+        } else {
+          resolve(entries);
+        }
+      }, reject);
+    }
+    readEntries();
   });
 }
 
