@@ -69,15 +69,16 @@ export default function Preview({
         return setSrc(URL.createObjectURL(blob));
       })
       .catch((err) => {
+        if (abortController.signal.aborted) {
+          return;
+        }
+
         Sentry.captureException(err, {
           extra: {
             photoId: photo.id,
             bucketId: photoBucketId,
           },
         });
-        if (abortController.signal.aborted) {
-          return;
-        }
       });
 
     return () => {
