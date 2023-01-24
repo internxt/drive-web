@@ -17,6 +17,7 @@ import './Sidenav.scss';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import i18n from 'app/i18n/services/i18n.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -87,13 +88,13 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
         </div>
         <div className="flex flex-grow flex-col border-r border-neutral-30 px-2">
           <div className="mt-2">
-            <SidenavItem label="Drive" to="/app" Icon={FolderSimple} />
-            <SidenavItem label="Photos" to="/app/photos" Icon={ImageSquare} showNew />
-            <SidenavItem label="Backups" to="/app/backups" Icon={ClockCounterClockwise} />
-            <SidenavItem label="Shared links" to="/app/shared-links" Icon={Link} />
-            <SidenavItem label="Recents" to="/app/recents" Icon={Clock} />
-            <SidenavItem label="Trash" to="/app/trash" Icon={Trash} />
-            <SidenavItem label="Desktop App" Icon={Desktop} onClick={this.onDownloadAppButtonClicked} />
+            <SidenavItem label={i18n.get('sideNav.drive')} to="/app" Icon={FolderSimple} />
+            <SidenavItem label={i18n.get('sideNav.photos')} to="/app/photos" Icon={ImageSquare} showNew />
+            <SidenavItem label={i18n.get('sideNav.backups')} to="/app/backups" Icon={ClockCounterClockwise} />
+            <SidenavItem label={i18n.get('sideNav.sharedLinks')} to="/app/shared-links" Icon={Link} />
+            <SidenavItem label={i18n.get('sideNav.recents')} to="/app/recents" Icon={Clock} />
+            <SidenavItem label={i18n.get('sideNav.trash')} to="/app/trash" Icon={Trash} />
+            <SidenavItem label={i18n.get('sideNav.desktop')} Icon={Desktop} onClick={this.onDownloadAppButtonClicked} />
           </div>
           {this.props.subscription && this.props.subscription.type === 'free' ? (
             <ReferralsWidget />

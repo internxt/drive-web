@@ -100,7 +100,7 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
       const share = await shareService.createShare(requestPayload);
       const link = shareService.getLinkFromShare(share, code, mnemonic, requestPayload.type);
       navigator.clipboard.writeText(link);
-      notificationsService.show({ text: 'Share link copied to clipboard', type: ToastType.Success });
+      notificationsService.show({ text: i18n.get('notificationMessages.copyLink'), type: ToastType.Success });
 
       const coercedShareLink: unknown = { ...share, isFolder: item.isFolder };
       dispatch(

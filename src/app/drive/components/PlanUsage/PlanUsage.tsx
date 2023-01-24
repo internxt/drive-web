@@ -28,7 +28,7 @@ export default function PlanUsage({
         <p className="text-sm">{i18n.get('general.loading.default')}</p>
       ) : (
         <p className="text-sm font-medium text-gray-60">
-          {bytesToString(usage) || '0'} of {limitService.formatLimit(limit)}
+          {bytesToString(usage) || '0'} {i18n.get('general.of')} {limitService.formatLimit(limit)}
         </p>
       )}
       <div className="mt-1 flex h-1.5 w-full justify-start overflow-hidden rounded-lg bg-gray-5">

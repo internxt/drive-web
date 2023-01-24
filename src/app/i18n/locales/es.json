@@ -1,6 +1,6 @@
 {
   "general": {
-    "of": "of",
+    "of": "de",
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -26,14 +26,15 @@
       "oneTimePayment": "One-time payment"
     }
   },
+  "shareLayout": {},
   "sideNav": {
     "drive": "Drive",
     "photos": "Photos",
-    "backups": "Backups",
-    "sharedLinks": "Shared Links",
-    "recents": "Recents",
-    "trash": "Trash",
-    "desktop": "Desktop"
+    "backups": "Copias de seguridad",
+    "sharedLinks": "Enlaces compartidos",
+    "recents": "Recientes",
+    "trash": "Papelera",
+    "desktop": "Aplicación de escritorio"
   },
   "views": {
     "account": {
@@ -102,7 +103,7 @@
             "description": "Two-factor authentication provides an extra layer of security by requiring an extra verification when you log in. In addition to your password, you’ll also need a generated code."
           },
           "two-factor-auth": {
-            "stepsLabel": "{current} of {total}",
+            "stepsLabel": "{current} de {total}",
             "steps": {
               "download": {
                 "title": "Download Authy",
@@ -400,6 +401,26 @@
       "errors": {}
     }
   },
+  "shareItemDialog": {
+    "title": "Configuración del enlace",
+    "access": "Acceso",
+    "protect": "Proteger con contraseña",
+    "addSecurePassword": "Añade una contraseña al enlace para más seguridad",
+    "password": "Contraseña",
+    "views": "Visitas",
+    "noViewsYet": "Sin visitas",
+    "dateCreated": "Fecha de creación",
+    "buttons": {
+      "copyLink": "Copiar enlace",
+      "linkCopied": "Enlace copiado",
+      "cancel": "Cancelar",
+      "save": "Guardar"
+    }
+  },
+  "notificationMessages": {
+    "copyLink": "Enlace copiado al portapapeles",
+    "linkUpdated": "Enlace actualizado"
+  },
   "success": {
     "passwordChanged": "Password changed successfully",
     "teamInvitationSent": "Invitation email sent to {email}",
@@ -416,39 +437,19 @@
     "inviteAFriend": "An invitation has been sent to {email}",
     "subscribeToNewsletter": "{email} successfully subscribed to newsletter"
   },
-  "shareItemDialog": {
-    "title": "Link settings",
-    "access": "Access",
-    "protect": "Protect with password",
-    "addSecurePassword": "Secure this link by setting up a password",
-    "password": "Password",
-    "views": "Views",
-    "noViewsYet": "No views yet",
-    "dateCreated": "Date created",
-    "buttons": {
-      "copyLink": "Copy link",
-      "linkCopied": "Link copied",
-      "cancel": "Cancel",
-      "save": "Save"
-    }
-  },
-  "notificationMessages": {
-    "copyLink": "Shared link copied to clipboard",
-    "linkUpdated": "Link updated"
-  },
   "actions": {
     "upload": {
-      "new": "New",
-      "folder": "Folder",
-      "uploadFiles": "Upload files",
-      "uploadFolder": "Upload folder"
+      "new": "Nuevo",
+      "folder": "Carpeta",
+      "uploadFiles": "Subir archivos",
+      "uploadFolder": "Subir carpeta"
     },
-    "download": "Download",
-    "downloading": "Downloading",
-    "downloaded": "Downloaded",
+    "download": "Descargar",
+    "downloading": "Descargando",
+    "downloaded": "Descargado",
     "view": "View",
     "accessFile": "Access File",
-    "upgradeNow": "Upgrade now",
+    "upgradeNow": "Actualiza ahora",
     "upgrade": "Upgrade",
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
@@ -456,7 +457,7 @@
     "cancel": "Cancel",
     "sendInvitation": "Send invitation",
     "subscribe": "Subscribe",
-    "moreInfo": "More info",
+    "moreInfo": "Más info",
     "dismiss": "Dismiss"
   },
   "drive": {
@@ -465,23 +466,23 @@
     "loadingFile": "Loading file...",
     "list": {
       "columns": {
-        "type": "Type",
-        "name": "Name",
-        "modified": "Modified",
-        "size": "Size",
-        "actions": "Actions"
+        "type": "Tipo",
+        "name": "Nombre",
+        "modified": "Modificado",
+        "size": "Tamaño",
+        "actions": "Acciones"
       }
     },
     "dropdown": {
-      "getLink": "Get link",
-      "rename": "Rename",
-      "download": "Download",
-      "moveToTrash": "Move to trash",
-      "copyLink": "Copy link",
-      "linkSettings": "Link settings",
-      "deleteLink": "Delete link",
-      "restore": "Restore",
-      "deletePermanently": "Delete permanently"
+      "getLink": "Copiar enlace",
+      "rename": "Renombrar",
+      "download": "Descargar",
+      "moveToTrash": "Mover a la papelera",
+      "copyLink": "Copiar enlace",
+      "linkSettings": "Ajustes del enlace",
+      "deleteLink": "Eliminar enlace",
+      "restore": "Restaurar",
+      "deletePermanently": "Eliminar permanentemente"
     },
     "deleteItems": {
       "title": "Delete permanently?",
@@ -542,19 +543,19 @@
   },
   "referrals": {
     "items": {
-      "create-account": "Create an account",
-      "install-mobile-app": "Install mobile app and upload a file",
-      "share-file": "Share a file via link",
-      "subscribe-to-newsletter": "Subscribe to newsletter",
-      "install-desktop-app": "Install desktop app and upload a file",
-      "invite-friends": "Invite {completedSteps}/{steps} friends",
-      "invite-2-friends": "Invite {completedSteps}/{steps} friends",
-      "complete-survey": "Complete survey"
+      "create-account": "Crea una cuenta",
+      "install-mobile-app": "Instala la app móvil y sube un archivo",
+      "share-file": "Comparte un archivo via enlace",
+      "subscribe-to-newsletter": "Subscríbete al newsletter",
+      "install-desktop-app": "Instala la app de escritorio y sube un archivo",
+      "invite-friends": "Invita {completedSteps}/{steps} amigos",
+      "invite-2-friends": "Invita {completedSteps}/{steps} amigos",
+      "complete-survey": "Completar encuesta"
     },
     "rewards": {
-      "title": "Get {creditSum} for free",
-      "progress": "Unlocked {currentCredit}",
-      "limit": "out of {creditSum}"
+      "title": "¡Obtén {creditSum} gratis!",
+      "progress": "{currentCredit}",
+      "limit": "de {creditSum} desbloqueados"
     }
   }
 }
