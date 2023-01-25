@@ -14,6 +14,7 @@ import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
 import * as Sentry from '@sentry/react';
+
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useDispatch();
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);

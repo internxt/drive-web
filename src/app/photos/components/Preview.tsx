@@ -8,6 +8,7 @@ import { photosSlice, PhotosState } from '../../store/slices/photos';
 import useIdle from '../../core/hooks/useIdle';
 import { PhotosItemType } from '@internxt/sdk/dist/photos';
 import * as Sentry from '@sentry/react';
+
 export default function Preview({
   onDownloadClick,
   onDeleteClick,
@@ -35,6 +36,7 @@ export default function Preview({
     const photo = items[previewIndex];
     const photoBucketId = photo.networkBucketId ? photo.networkBucketId : bucketId;
     if (!photoBucketId) return;
+
     getPhotoPreview({
       photo,
       bucketId: photoBucketId,

@@ -1,3 +1,4 @@
+import { PhotosState } from 'app/store/slices/photos';
 import { useSelector } from 'react-redux';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
@@ -13,6 +14,7 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
   const products: Parameters<typeof UsageDetails>[0]['products'] | null = plan.usageDetails
     ? [
         { name: 'Drive', usageInBytes: plan.usageDetails.drive, color: 'primary' },
+
         { name: 'Backups', usageInBytes: plan.usageDetails.backups, color: 'indigo' },
       ]
     : null;
