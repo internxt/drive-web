@@ -5,7 +5,7 @@ import { Locale } from '../types';
 import locales from '../locales';
 
 class I18nService {
-  currentLocale: string = Locale.English || Locale.Spanish;
+  currentLocale: string = Locale.Spanish;
 
   get(key: string, values = {}): string {
     const messageTemplate = _.get(locales[this.currentLocale], key) || key;

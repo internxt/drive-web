@@ -33,7 +33,9 @@ export default function Features({ className = '' }: { className?: string }): JS
   ];
   return (
     <div className={`${className}`}>
-      <h1 className="text-2xl font-medium text-gray-100 lg:text-center">Features included in all plans</h1>
+      <h1 className="text-2xl font-medium text-gray-100 lg:text-center">
+        {i18n.get('views.account.tabs.plans.features.title')}
+      </h1>
       <div className="mt-7 justify-between space-y-6 lg:flex lg:space-y-0 lg:space-x-6">
         {sections.map((section) => (
           <div key={section.title} className="flex flex-1 flex-col">

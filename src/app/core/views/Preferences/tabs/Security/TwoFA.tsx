@@ -37,25 +37,24 @@ export default function TwoFA({ className = '', password }: { className?: string
   const [disableModalOpen, setDisableModalOpen] = useState(false);
 
   return (
-    <Section className={className} title="Two Factor Authentication (2FA)">
+    <Section className={className} title={i18n.get('views.account.tabs.security.2FA.title')}>
       <Card>
-        <p className="text-gray-60">
-          Two-factor authentication provides an extra layer of security by requiring an extra verification when you log
-          in. In adittion to your password, you'll also need a generated code.
-        </p>
+        <p className="text-gray-60">{i18n.get('views.account.tabs.security.2FA.description')}</p>
         <div className="mt-3">
           {status === 'enabled' ? (
             <div className="flex">
               <div className="flex items-center font-medium text-green">
                 <CheckCircle size={20} weight="fill" />
-                <p className="ml-1">Enabled</p>
+                <p className="ml-1">{i18n.get('views.account.tabs.security.2FA.enabled')}</p>
                 <Button className="ml-4" variant="secondary" onClick={() => setDisableModalOpen(true)}>
-                  Disable
+                  {i18n.get('views.account.tabs.security.2FA.disable')}
                 </Button>
               </div>
             </div>
           ) : status === 'disabled' ? (
-            <Button onClick={() => setEnableModalOpen(true)}>Enable</Button>
+            <Button onClick={() => setEnableModalOpen(true)}>
+              {i18n.get('views.account.tabs.security.2FA.button')}
+            </Button>
           ) : (
             <div className="flex h-10 items-center">
               <Spinner className="block h-5 w-5 text-primary" />

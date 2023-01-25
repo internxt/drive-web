@@ -23,7 +23,7 @@ export default function Preferences(): JSX.Element {
     { id: 'account', label: i18n.get('views.account.tabs.account.label'), component: AccountTab },
     { id: 'billing', label: i18n.get('views.account.tabs.billing.label'), component: BillingTab },
     { id: 'plans', label: i18n.get('views.account.tabs.plans.label'), component: PlansTab },
-    { id: 'security', label: 'Security', component: SecurityTab },
+    { id: 'security', label: i18n.get('views.account.tabs.security.label'), component: SecurityTab },
   ];
 
   const [activeTab, setActiveTab] = useState<PreferencesTabID>('account');

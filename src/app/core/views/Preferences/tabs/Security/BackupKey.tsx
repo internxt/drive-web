@@ -1,3 +1,4 @@
+import i18n from 'app/i18n/services/i18n.service';
 import { saveAs } from 'file-saver';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
@@ -9,22 +10,25 @@ export default function BackupKey({ className = '' }: { className?: string }): J
   function handleExport() {
     const mnemonic = localStorageService.get('xMnemonic');
     if (!mnemonic) {
-      notificationsService.show({ text: 'We could not generate your backup key', type: ToastType.Error });
+      notificationsService.show({
+        text: i18n.get('views.account.tabs.security.backupKey.error'),
+        type: ToastType.Error,
+      });
     } else {
       saveAs(new Blob([mnemonic], { type: 'text/plain' }), 'INTERNXT-BACKUP-KEY.txt');
-      notificationsService.show({ text: 'Backup key downloaded succesfully', type: ToastType.Success });
+      notificationsService.show({
+        text: i18n.get('views.account.tabs.security.backupKey.success'),
+        type: ToastType.Success,
+      });
     }
   }
 
   return (
-    <Section className={className} title="Backup key">
+    <Section className={className} title={i18n.get('views.account.tabs.security.backupKey.title')}>
       <Card>
-        <p className="text-gray-60">
-          In case you forget your password you can use your backup key to recover your account. Never share this code
-          with anyone.
-        </p>
+        <p className="text-gray-60">{i18n.get('views.account.tabs.security.backupKey.description')}</p>
         <Button onClick={handleExport} className="mt-3">
-          Export backup key
+          {i18n.get('views.account.tabs.security.backupKey.button')}
         </Button>
       </Card>
     </Section>

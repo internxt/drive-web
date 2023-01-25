@@ -1,4 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import i18n from 'app/i18n/services/i18n.service';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { areCredentialsCorrect } from '../../../../../auth/services/auth.service';
@@ -33,23 +34,21 @@ export default function Lock({
       if (correctCredentials) {
         onUnlock(password);
       } else {
-        setFormState({ tag: 'error', errorMessage: 'Incorrect password, please try again' });
+        setFormState({ tag: 'error', errorMessage: i18n.get('views.account.tabs.security.lock.errors.incorrect') });
       }
     } catch (err) {
       console.error(err);
-      setFormState({ tag: 'error', errorMessage: 'We could not verify your password' });
+      setFormState({ tag: 'error', errorMessage: i18n.get('views.account.tabs.security.lock.errors.notVerified') });
     }
   }
 
   return (
-    <Section className={className} title="Security">
+    <Section className={className} title={i18n.get('views.account.tabs.security.label')}>
       <Card>
-        <h1 className="text-lg font-medium text-gray-80">Enter your password to continue</h1>
-        <p className="mt-3 text-gray-80">
-          For security reasons, you must enter your password before being able to make any changes on this page.
-        </p>
+        <h1 className="text-lg font-medium text-gray-80">{i18n.get('views.account.tabs.security.lock.title')}</h1>
+        <p className="mt-3 text-gray-80">{i18n.get('views.account.tabs.security.lock.description')}</p>
         <Input
-          label="Password"
+          label={i18n.get('views.account.tabs.security.lock.inputLabel')}
           className="mt-3"
           variant="password"
           onChange={setPassword}
@@ -65,7 +64,7 @@ export default function Lock({
             onClick={onAccess}
             dataTest="access-button"
           >
-            Access
+            {i18n.get('actions.access')}
           </Button>
         </div>
       </Card>

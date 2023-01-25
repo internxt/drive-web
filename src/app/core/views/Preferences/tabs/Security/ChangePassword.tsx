@@ -24,14 +24,11 @@ export default function ChangePassword({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <Section className={className} title="Change password">
+    <Section className={className} title={i18n.get('views.account.tabs.security.changePassword.title')}>
       <Card>
-        <p className="text-gray-60">
-          Remember that if you forget the password, you will lose access to all your files. We recommend using a
-          password manager.
-        </p>
+        <p className="text-gray-60">{i18n.get('views.account.tabs.security.changePassword.description')}</p>
         <Button className="mt-3" onClick={() => setIsModalOpen(true)} dataTest="change-password-button">
-          Change password
+          {i18n.get('views.account.tabs.security.changePassword.button')}
         </Button>
       </Card>
       <ChangePasswordModal
