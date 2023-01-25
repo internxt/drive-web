@@ -63,6 +63,16 @@
     "desktop": "Aplicación de escritorio"
   },
   "views": {
+    "recents": {
+      "head": "Recientes",
+      "empty": {
+        "title": "No hay archivos recientes",
+        "description": "Los archivos que hayas abierto recientemente aparecerán aquí",
+        "folderEmpty": "Esta carpeta está vacía",
+        "folderEmptySubtitle": "Arrastra y suelta los archivos o haz clic para seleccionarlos y cargarlos",
+        "uploadFiles": "Subir archivos"
+      }
+    },
     "photos": {
       "empty": {
         "title": "Tu galería está vacía",
@@ -70,8 +80,51 @@
       }
     },
     "account": {
-      "title": "Account",
+      "title": "Cuenta",
+      "popover": {
+        "downloadApp": "Descargar app",
+        "settings": "Ajustes",
+        "logout": "Cerrar sesión",
+        "spaceUsed": "{space}% espacio usado"
+      },
+
       "tabs": {
+        "account": {
+          "title": "Personal",
+          "usage": "{totalUsed} de {totalSpace} usado",
+          "view": {
+            "backups": "Copias de seguridad",
+            "free": {
+              "planName": "plan gratuito",
+              "button": "Comprar espacio"
+            },
+            "lifetime": {
+              "planName": "Lifetime"
+            },
+            "subscription": {
+              "planName": "Suscripción",
+              "button": "Cambiar",
+              "yearly": "Anual",
+              "monthly": "Mensual"
+            }
+          },
+          "accountDetails": {
+            "head": "Detalles de la cuenta",
+            "card": {
+              "name": "Nombre",
+              "lastname": "Apellido",
+              "edit": "Editar",
+              "email": "Correo electrónico",
+              "resendEmail": "Reenviar corre de verificación"
+            }
+          },
+          "deleteAccount": {
+            "head": "Eliminar cuenta",
+            "description": "Si eliminas tu cuenta, tus datos se eliminarán para siempre. Esta acción no se puede deshacer.",
+            "isSubscribed": "Por favor, cancela tu suscripción primero",
+            "confirmationEmail": "Correo de confirmación enviado"
+          }
+        },
         "info": {
           "title": "Personal",
           "description": "Check your storage user and account details",
@@ -198,14 +251,46 @@
       "multiSharedDescription": "Los usuarios con el enlace perderán acceso al contenido compartido",
       "singleSharedDescription": "Los usuarios con el enlace perderán acceso al contenido compartido",
       "cancel": "Cancelar",
-      "deleteLinks": "Eliminar enlaces",
-      "deleteLink": "Eliminar enlace"
+      "deleteLinks": "Eliminar",
+      "deleteLink": "Eliminar"
     },
     "newFolderModal": {
       "title": "Nueva carpeta",
       "label": "Nombre",
       "placeholder": "Carpeta sin titulo",
       "untitled": "Carpeta sin título"
+    },
+    "deletePhotosModal": {
+      "multiToolBar": "archivos seleccionados",
+      "singleToolBar": "archivo seleccionado",
+      "singleTitle": "Eliminar {item} archivo seleccionado?",
+      "multiTitle": "Eliminar los {item} archivos seleccionados?",
+      "subtitle": "Esta acción no se puede deshacer",
+      "buttons": {
+        "cancel": "Cancelar",
+        "delete": "Eliminar"
+      }
+    },
+    "sharePhotosModal": {
+      "singleTitle": "Compartir {item} foto",
+      "multiTitle": "Compartir {item} fotos",
+      "options": "Opciones del enlace",
+      "limit": "Limita el número de veces que se puede abrir el enlace",
+      "openCount": "Límite de apertura",
+      "times": "veces",
+      "change": "Cambiar",
+      "buttons": {
+        "cancel": "Cancelar",
+        "create": "Crear enlace",
+        "creating": "Creando enlace...",
+        "copyLink": "Copiar enlace"
+      }
+    },
+    "friendsInvited": {
+      "title": "Invitaciones enviadas",
+      "pending": "Pendientes",
+      "accepted": "Aceptadas",
+      "empty": "No has invitado a nadie aún"
     }
   },
   "form": {
@@ -258,21 +343,26 @@
   },
   "backups": {
     "backups-from": "Backups from {deviceName}",
-    "your-devices": "Your devices",
+    "your-devices": "Tus dispositivos",
     "back-to-devices": "Go back to devices",
+    "empty": {
+      "title": "No tienes copias de seguridad",
+      "subtitle": "Configura tus copias de seguridad en la aplicación de escritorio",
+      "downloadApp": "Descarga la aplicación de escritorio"
+    },
     "devices-list": {
       "columns": {
-        "name": "Name",
-        "last-update": "Last update",
+        "name": "Nombre",
+        "last-update": "Última modificación",
         "size": "Tamaño"
       }
     },
     "backups-list": {
       "columns": {
-        "name": "Name",
-        "last-update": "Last update",
+        "name": "Nombre",
+        "last-update": "Última modificación",
         "size": "Tamaño",
-        "actions": "Actions"
+        "actions": "Acciones"
       }
     }
   },
@@ -285,13 +375,15 @@
       "size": "Tamaño"
     },
     "empty-state": {
-      "title": "Nothing shared yet",
-      "subtitle": "Share a folder or a file to get started"
+      "title": "Nada compartido aún",
+      "subtitle": "Comparte un archivo o una carpeta para comenzar"
     },
     "item-menu": {
       "copy-link": "Copiar link",
       "link-settings": "Configuración de enlace",
-      "delete-link": "Eliminar enlace"
+      "delete-link": "Eliminar",
+      "deleteLink": "Eliminar enlace",
+      "deleteLinks": "Eliminar enlaces"
     },
     "link-settings": {
       "share-settings": "Configuración de enlace",
@@ -311,19 +403,19 @@
     }
   },
   "trash": {
-    "trash": "Trash",
+    "trash": "Papelera",
     "list": {
-      "name": "Name",
+      "name": "Nombre",
       "size": "Tamaño",
-      "moved-to-trash": "Moved to trash"
+      "moved-to-trash": "enviado a la papelera"
     },
     "empty-state": {
-      "title": "Drive trash is empty",
-      "subtitle": "Deleted files and folders will appear here"
+      "title": "La papelera de Drive está vacía",
+      "subtitle": "Los archivos y carpetas eliminados aparecerán aquí"
     },
     "item-menu": {
-      "restore": "Restore",
-      "delete-permanently": "Delete permanently"
+      "restore": "Restaurar",
+      "delete-permanently": "Eliminar permanentemente"
     }
   },
   "tasks": {
@@ -387,7 +479,7 @@
     },
     "download-backup": {
       "status": {
-        "pending": "Pending to download",
+        "pending": "descarga pendiente",
         "decrypting": "Decrypting backup",
         "in-process": "{progress}% Downloading backup",
         "success": "Backup downloaded",
@@ -398,7 +490,7 @@
     },
     "download-folder": {
       "status": {
-        "pending": "Pending to download",
+        "pending": "Descarga pendiente",
         "decrypting": "Decrypting files",
         "in-process": "{progress}% Downloading folder",
         "success": "Folder downloaded",
@@ -409,11 +501,11 @@
     },
     "move-file": {
       "status": {
-        "pending": "Pending to move",
-        "in-process": "Moving file",
-        "success": "File moved",
-        "error": "Error during movement",
-        "cancelled": "Cancelled movement"
+        "pending": "Pendiente de trasladar",
+        "in-process": "Transladando archivo",
+        "success": "Archivo movido",
+        "error": "Error durante el translado",
+        "cancelled": "Cancelar movimiento"
       },
       "errors": {
         "409": "A file with that name already exists in the destination folder"
@@ -421,11 +513,11 @@
     },
     "move-folder": {
       "status": {
-        "pending": "Pending to move",
-        "in-process": "Moving folder",
-        "success": "Folder moved",
-        "error": "Error during movement",
-        "cancelled": "Cancelled movement"
+        "pending": "Pendiente de trasladar",
+        "in-process": "Transladando archivo",
+        "success": "Archivo movido",
+        "error": "Error durante el translado",
+        "cancelled": "Cancelar movimiento"
       },
       "errors": {
         "409": "A folder with that name already exists in the destination folder"
@@ -470,25 +562,27 @@
   },
   "notificationMessages": {
     "copyLink": "Enlace copiado al portapapeles",
-    "linkUpdated": "Enlace actualizado"
+    "linkUpdated": "Enlace actualizado",
+    "itemsMovedToTrash": "{item} movido a la papelera"
   },
   "success": {
-    "passwordChanged": "Password changed successfully",
-    "teamInvitationSent": "Invitation email sent to {email}",
-    "referralInvitationSent": "Invitation email sent to {email}",
+    "passwordChanged": "Contraseña actualizada correctamente",
+    "teamInvitationSent": "Invitación enviada a {email}",
+    "referralInvitationSent": "Invitación enviada a {email}",
     "deletedTeamMember": "The {resource} has been successfully deleted",
-    "accountDeactivationEmailSent": "Deactivation email sent!",
+    "accountDeactivationEmailSent": "Email de desactivación enviado!",
     "claimEmailSent": "Claim email sent!",
     "teamsSubscriptionRedeemed": "Your team is ready! Log in again to start using Teams",
-    "linkCopied": "Link copied!",
+    "linkCopied": "Enlace copiado!",
     "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
     "joinedToTheTeam": "You have successfully joined to the team",
-    "done": "Done",
-    "inviteAFriend": "An invitation has been sent to {email}",
-    "subscribeToNewsletter": "{email} successfully subscribed to newsletter"
+    "done": "Hecho",
+    "inviteAFriend": "Una invitación ha sido enviada a {email}",
+    "subscribeToNewsletter": "{email} suscrito con éxito a la newsletter"
   },
   "actions": {
+    "undo": "Deshacer",
     "upload": {
       "new": "Nuevo",
       "folder": "Nueva carpeta",
@@ -500,9 +594,9 @@
     "downloaded": "Descargado",
     "view": "Ver",
     "accessFile": "Access File",
-    "upgradeNow": "Actualiza ahora",
-    "upgrade": "Upgrade",
-    "deleteAccount": "Permanently delete account",
+    "upgradeNow": "Comprar espacio ahora",
+    "upgrade": "Comprar espacio",
+    "deleteAccount": "Eliminar permanentemente la cuenta",
     "changePassword": "Cambiar contraseña",
     "buy": "Comprar",
     "cancel": "Cancelar",
@@ -513,9 +607,9 @@
     "dismiss": "Dismiss"
   },
   "drive": {
-    "usage": "Usage",
-    "currentPlan": "Current plan",
-    "loadingFile": "Loading file...",
+    "usage": "Uso",
+    "currentPlan": "Actual plan",
+    "loadingFile": "Cargando archivo...",
     "list": {
       "columns": {
         "type": "Tipo",
@@ -537,21 +631,21 @@
       "deletePermanently": "Eliminar permanentemente"
     },
     "deleteItems": {
-      "title": "Delete permanently?",
-      "advice": "This action cannot be undone.",
-      "accept": "Delete",
-      "progress": "Deleting..."
+      "title": "Eliminar permanentemente?",
+      "advice": "Esta acción no se puede deshacer.",
+      "accept": "Eliminar",
+      "progress": "Eliminando..."
     },
     "clearTrash": {
-      "title": "Empty Drive Trash?",
+      "title": "Vaciar papelera de Drive?",
       "advice": "All items in the Drive Trash will be permanently deleted. This action cannot be undone.",
-      "accept": "Empty Trash",
-      "progress": "Emptying Trash..."
+      "accept": "Vaciar papelera",
+      "progress": "Vaciando papelera..."
     },
     "uploadItems": {
       "title": "Maximum file upload",
       "advice": "The maximum is 1000 files per upload.",
-      "close": "Close"
+      "close": "Cerrar"
     }
   },
   "appSumo": {
@@ -576,21 +670,21 @@
     }
   },
   "inviteAFriend": {
-    "title": "Invite a friend",
-    "descriptionWidget": "Get up to {N}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Spread the word, get 1GB per friend invited for free. You can get up to {N}GB in total.",
+    "title": "Invita a un amigo",
+    "descriptionWidget": "Consigue hasta {N}GB extra de almacenamiento gratuito invitando a tus amigos (1GB por usuario registrado a través de tu invitación)",
+    "description": "Corre la voz, obtén 1 GB por cada amigo que invites a Internxt. Consigue hasta {N}GB en total.",
     "actions": {
-      "sendInvitation": "Send invitation",
-      "seeInvitations": "See all invitations"
+      "sendInvitation": "Enviar invitación",
+      "seeInvitations": "Ver todas las invitaciones"
     },
     "errors": {
-      "dailyEmailLimit": "You reached the limit of 10 invitations/day"
+      "dailyEmailLimit": "Has alcanzado el límite de 10 invitaciones/día"
     }
   },
   "newsletter": {
     "dialog": {
-      "title": "Subscribe to our newsletter",
-      "message": "Get the last news and updates right in your mail inbox"
+      "title": "Suscríbete a nuestro boletín de noticias",
+      "message": "Recibe las últimas noticias y actualizaciones directamente en tu buzón de correo electrónico"
     }
   },
   "referrals": {

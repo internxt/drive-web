@@ -45,19 +45,19 @@ const DeviceList = (props: Props): JSX.Element => {
         <div className="hidden w-2/12 items-center xl:flex"></div>
         <div className="hidden w-3/12 items-center lg:flex">{i18n.get('backups.devices-list.columns.last-update')}</div>
         <div className="flex w-2/12 items-center">{i18n.get('backups.devices-list.columns.size')}</div>
-        <div className="flex w-1/12 items-center">Actions</div>
+        <div className="flex w-1/12 items-center">{i18n.get('backups.backups-list.columns.actions')}</div>
       </div>
       <div className="h-full overflow-y-auto">{isLoading ? getLoadingSkeleton() : items}</div>
     </div>
   ) : (
     <Empty
       icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-      title="You don't have backups yet"
-      subtitle="Set up your backups on the desktop app"
+      title={i18n.get('backups.empty.title')}
+      subtitle={i18n.get('backups.empty.subtitle')}
       action={{
         icon: DownloadSimple,
         style: 'plain',
-        text: 'Download desktop app',
+        text: i18n.get('backups.empty.downloadApp'),
         onClick: () => {
           getDownloadApp()
             .then((downloaded) => {

@@ -1,3 +1,4 @@
+import i18n from 'app/i18n/services/i18n.service';
 import { DownloadSimple, Share, Trash, X } from 'phosphor-react';
 
 export default function Toolbar({
@@ -20,7 +21,11 @@ export default function Toolbar({
       <div className={`flex items-center ${numberOfSelectedItems === 0 ? 'opacity-0' : ''}`}>
         <Icon Target={X} onClick={onUnselectClick} dataTest="photos-unselect-all" />
         <p style={{ paddingTop: '1px' }} className="ml-2 font-medium text-gray-80">
-          {`${numberOfSelectedItems} ${numberOfSelectedItems > 1 ? 'Items' : 'Item'} selected`}
+          {`${numberOfSelectedItems} ${
+            numberOfSelectedItems > 1
+              ? i18n.get('modals.deletePhotosModal.multiToolBar')
+              : i18n.get('modals.deletePhotosModal.singleToolBar')
+          }`}
         </p>
       </div>
 
@@ -33,7 +38,15 @@ export default function Toolbar({
   );
 }
 
-function Icon({ Target, onClick, dataTest }: { Target: typeof DownloadSimple; onClick?: () => void; dataTest: string }) {
+function Icon({
+  Target,
+  onClick,
+  dataTest,
+}: {
+  Target: typeof DownloadSimple;
+  onClick?: () => void;
+  dataTest: string;
+}) {
   return (
     <div
       className={`${

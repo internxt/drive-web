@@ -245,8 +245,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     [FileViewMode.List]: DriveExplorerList,
     [FileViewMode.Grid]: DriveExplorerGrid,
   };
-  const isRecents = title === 'Recents';
-  const isTrash = title === 'Trash';
+  const isRecents = title === i18n.get('views.recents.head');
+  const isTrash = title === i18n.get('trash.trash');
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
   const itemsList = getLimitedItems();
 
@@ -404,8 +404,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 ) : isRecents ? (
                   <Empty
                     icon={filesEmptyImage}
-                    title="No recents files to show"
-                    subtitle="Recent uploads or files you recently interacted with will show up here automatically"
+                    title={i18n.get('views.recents.empty.title')}
+                    subtitle={i18n.get('views.recents.empty.description')}
                   />
                 ) : isTrash ? (
                   <Empty
@@ -416,12 +416,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 ) : (
                   <Empty
                     icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-                    title="This folder is empty"
-                    subtitle="Drag and drop files or click to select files and upload"
+                    title={i18n.get('views.recents.empty.folderEmpty')}
+                    subtitle={i18n.get('views.recents.empty.folderEmptySubtitle')}
                     action={{
                       icon: UploadSimple,
                       style: 'elevated',
-                      text: 'Upload files',
+                      text: i18n.get('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
                   />

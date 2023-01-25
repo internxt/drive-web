@@ -1,4 +1,5 @@
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import i18n from 'app/i18n/services/i18n.service';
 import { useContext } from 'react';
 import { TabContext } from '..';
 import CurrentPlan from '../../../../shared/components/CurrentPlan';
@@ -31,20 +32,20 @@ export default function CurrentPlanWrapper({
   userSubscription: UserSubscription;
 }): JSX.Element {
   let planName = '';
-  let button: 'upgrade' | 'change' | undefined;
+  let button: string | undefined;
 
   switch (userSubscription.type) {
     case 'free':
-      planName = 'Free plan';
-      button = 'upgrade';
+      planName = i18n.get('views.account.tabs.account.view.free.planName');
+      button = i18n.get('views.account.tabs.account.view.free.button');
       break;
     case 'lifetime':
-      planName = 'Lifetime';
+      planName = i18n.get('views.account.tabs.account.view.lifetime.planName');
       button = undefined;
       break;
     case 'subscription':
-      planName = 'Subscription';
-      button = 'change';
+      planName = i18n.get('views.account.tabs.account.view.subscription.planName');
+      button = i18n.get('views.account.tabs.account.view.subscription.button');
       break;
   }
 
@@ -53,7 +54,11 @@ export default function CurrentPlanWrapper({
   if (userSubscription.type === 'subscription') {
     const currencySymbol =
       CURRENCY_SYMBOLS[userSubscription.currency.toUpperCase()] ?? userSubscription.currency.toUpperCase();
-    const mainLabel = `${userSubscription.amount / 100} ${currencySymbol}/ ${userSubscription.interval}`;
+    const mainLabel = `${userSubscription.amount / 100} ${currencySymbol}/ ${
+      userSubscription.interval === 'year'
+        ? i18n.get('views.account.tabs.account.view.subscription.yearly')
+        : i18n.get('views.account.tabs.account.view.subscription.monthly')
+    }`;
 
     const beforeMainLabelCrossed = userSubscription.amountAfterCoupon
       ? `${userSubscription.amountAfterCoupon / 100} ${currencySymbol}`

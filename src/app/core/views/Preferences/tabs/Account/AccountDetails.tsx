@@ -1,4 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import i18n from 'app/i18n/services/i18n.service';
 import { CheckCircle, Warning } from 'phosphor-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -32,27 +33,31 @@ export default function AccountDetails({ className = '' }: { className?: string 
   const isVerified = user.emailVerified;
 
   return (
-    <Section className={className} title="Account details">
+    <Section className={className} title={i18n.get('views.account.tabs.account.accountDetails.head')}>
       <Card>
         <div className="flex justify-between">
           <div className="flex min-w-0">
-            <Detail label="Name" value={user.name} />
-            <Detail label="Lastname" value={user.lastname} className="ml-8 pr-2" />
+            <Detail label={i18n.get('views.account.tabs.account.accountDetails.card.name')} value={user.name} />
+            <Detail
+              label={i18n.get('views.account.tabs.account.accountDetails.card.lastname')}
+              value={user.lastname}
+              className="ml-8 pr-2"
+            />
           </div>
           <Button className="flex-shrink-0" variant="secondary" onClick={() => setIsModalOpen(true)}>
-            Edit
+            {i18n.get('views.account.tabs.account.accountDetails.card.edit')}
           </Button>
         </div>
         <div className="mt-5 flex items-center justify-between">
           <div>
-            <Detail label="Email" value={user.email} />
+            <Detail label={i18n.get('views.account.tabs.account.accountDetails.card.email')} value={user.email} />
             {!isVerified && (
               <button
                 onClick={onResend}
                 disabled={isSendingVerificationEmail}
                 className="font-medium text-primary hover:text-primary-dark disabled:text-gray-60"
               >
-                Resend verification email
+                {i18n.get('views.account.tabs.account.accountDetails.card.resendEmail')}
               </button>
             )}
           </div>

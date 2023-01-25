@@ -49,7 +49,7 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
   return (
     <Modal maxWidth="max-w-md" isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col space-y-5">
-        <p className="text-2xl font-medium text-gray-100">Delete permanently?</p>
+        <p className="text-2xl font-medium text-gray-100">{i18n.get('drive.deleteItems.title')}</p>
         <p className="text-lg text-gray-80">{i18n.get('drive.deleteItems.advice')}</p>
 
         <div className="flex flex-row items-center justify-end space-x-2">

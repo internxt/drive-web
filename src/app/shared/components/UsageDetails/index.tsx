@@ -1,3 +1,4 @@
+import i18n from 'app/i18n/services/i18n.service';
 import { useEffect, useRef, useState } from 'react';
 import { bytesToString } from '../../../drive/services/size.service';
 import Tooltip from '../Tooltip';
@@ -57,7 +58,10 @@ export default function UsageDetails({
     <div className={`${className}`}>
       <div className="flex justify-between">
         <p className="text-gray-80">
-          Used {bytesToString(totalUsedInBytes)} of {bytesToString(planLimitInBytes)}
+          {i18n.get('views.account.tabs.account.usage', {
+            totalUsed: bytesToString(totalUsedInBytes),
+            totalSpace: bytesToString(planLimitInBytes),
+          })}
         </p>
         <p className="text-gray-50">{percentageUsed}%</p>
       </div>
@@ -71,7 +75,7 @@ export default function UsageDetails({
             popsFrom="top"
           >
             <div
-              style={{ width: `${Math.max(((product.usageInBytes / planLimitInBytes) * barWidth), 12)}px` }}
+              style={{ width: `${Math.max((product.usageInBytes / planLimitInBytes) * barWidth, 12)}px` }}
               className={`${colorMapping[product.color]} h-2 border-r-2 border-white ${i === 0 ? 'rounded-l-sm' : ''}`}
             />
           </Tooltip>

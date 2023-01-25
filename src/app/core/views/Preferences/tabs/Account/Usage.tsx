@@ -1,3 +1,4 @@
+import i18n from 'app/i18n/services/i18n.service';
 import { useSelector } from 'react-redux';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
@@ -13,14 +14,18 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
   const products: Parameters<typeof UsageDetails>[0]['products'] | null = plan.usageDetails
     ? [
         { name: 'Drive', usageInBytes: plan.usageDetails.drive, color: 'primary' },
-        { name: 'Backups', usageInBytes: plan.usageDetails.backups, color: 'indigo' },
+        {
+          name: i18n.get('views.account.tabs.account.view.backups'),
+          usageInBytes: plan.usageDetails.backups,
+          color: 'indigo',
+        },
       ]
     : null;
 
   const userSubscription = plan.subscription;
 
   return (
-    <Section className={className} title="Usage">
+    <Section className={className} title={i18n.get('drive.usage')}>
       <Card>
         {products && plan.planLimit && userSubscription ? (
           <>

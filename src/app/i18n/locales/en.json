@@ -63,6 +63,16 @@
     "desktop": "Desktop"
   },
   "views": {
+    "recents": {
+      "head": "Recents",
+      "empty": {
+        "title": "No recents files to show",
+        "description": "Recent uploads or files you recently interacted with will show up here automatically",
+        "folderEmpty": "This folder is empty",
+        "folderEmptySubtitle": "Drag and drop files or click to select files and upload",
+        "uploadFiles": "Upload files"
+      }
+    },
     "photos": {
       "empty": {
         "title": "Your gallery is empty",
@@ -71,7 +81,49 @@
     },
     "account": {
       "title": "Account",
+      "popover": {
+        "downloadApp": "Download app",
+        "settings": "Settings",
+        "logout": "Log out",
+        "spaceUsed": "{space}% space used"
+      },
       "tabs": {
+        "account": {
+          "title": "Personal",
+          "usage": "Used {totalUsed} of {totalSpace}",
+          "view": {
+            "backups": "Copias de seguridad",
+            "free": {
+              "planName": "Free plan",
+              "button": "upgrade"
+            },
+            "lifetime": {
+              "planName": "Lifetime"
+            },
+            "subscription": {
+              "planName": "Subscription",
+              "button": "change",
+              "yearly": "year",
+              "monthly": "month"
+            }
+          },
+          "accountDetails": {
+            "head": "Account details",
+            "card": {
+              "name": "Name",
+              "lastname": "Lastname",
+              "edit": "Edit",
+              "email": "Email",
+              "resendEmail": "Resend verification email"
+            }
+          },
+          "deleteAccount": {
+            "head": "Delete account",
+            "description": "If you delete your account, your data will be gone forever. This action cannot be undone.",
+            "isSubscribed": "Please, cancel your subscription first",
+            "confirmationEmail": "Confirmation email has been sent"
+          }
+        },
         "info": {
           "title": "Personal",
           "description": "Check your storage user and account details",
@@ -206,6 +258,32 @@
       "label": "Name",
       "placeholder": "Untitled folder",
       "untitled": "Carpeta sin título"
+    },
+    "deletePhotosModal": {
+      "multiToolBar": "items selected",
+      "singleToolBar": "item selected",
+      "multiTitle": "Delete {item} selected items?",
+      "singleTitle": "Delete {item} selected item?",
+      "subtitle": "You can't undo this action",
+      "buttons": {
+        "cancel": "Cancel",
+        "delete": "Delete"
+      }
+    },
+    "sharePhotosModal": {
+      "singleTitle": "Share {item} photo",
+      "multiTitle": "Share {item} photos",
+      "options": "Link options",
+      "limit": "Limit number of time users can open this link",
+      "openCount": "Open count limit",
+      "times": "times",
+      "change": "Change",
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create link",
+        "creating": "Creating link...",
+        "copyLink": "Copy link"
+      }
     }
   },
   "form": {
@@ -260,6 +338,11 @@
     "backups-from": "Backups from {deviceName}",
     "your-devices": "Your devices",
     "back-to-devices": "Go back to devices",
+    "empty": {
+      "title": "You don't have backups yet",
+      "subtitle": "Set up your backups on the desktop app",
+      "downloadApp": "Download desktop app"
+    },
     "devices-list": {
       "columns": {
         "name": "Name",
@@ -489,6 +572,7 @@
     "linkUpdated": "Link updated"
   },
   "actions": {
+    "undo": "Undo",
     "upload": {
       "new": "New",
       "folder": "New folder",

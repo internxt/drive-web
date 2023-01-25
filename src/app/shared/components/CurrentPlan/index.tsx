@@ -13,7 +13,7 @@ export default function CurrentPlan({
   bytesInPlan: number;
   planName: string;
   planSubtitle?: { mainLabel: string; beforeMainLabelCrossed?: string };
-  button?: 'change' | 'upgrade';
+  button?: string;
   onButtonClick?: () => void;
 }): JSX.Element {
   const showInfinite = bytesInPlan >= 108851651149824;
@@ -44,7 +44,7 @@ export default function CurrentPlan({
       </div>
       {button && (
         <Button size="medium" onClick={onButtonClick}>
-          {button === 'change' ? 'Change' : 'Upgrade'}
+          {button}
         </Button>
       )}
     </div>

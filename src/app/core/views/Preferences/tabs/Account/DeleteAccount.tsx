@@ -1,3 +1,4 @@
+import i18n from 'app/i18n/services/i18n.service';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import authService from '../../../../../auth/services/auth.service';
@@ -21,7 +22,10 @@ export default function DeleteAccount({ className = '' }: { className?: string }
 
   function onClick() {
     if (plan.subscription?.type === 'subscription') {
-      notificationsService.show({ text: 'Please, cancel your subscription first', type: ToastType.Info });
+      notificationsService.show({
+        text: i18n.get('views.account.tabs.account.deleteAccount.isSubscribed'),
+        type: ToastType.Info,
+      });
     } else {
       setIsDialogOpen(true);
     }
@@ -31,7 +35,10 @@ export default function DeleteAccount({ className = '' }: { className?: string }
     try {
       setIsLoading(true);
       await authService.cancelAccount();
-      notificationsService.show({ text: 'Confirmation email has been sent', type: ToastType.Success });
+      notificationsService.show({
+        text: i18n.get('views.account.tabs.account.deleteAccount.confirmationEmail'),
+        type: ToastType.Success,
+      });
       onClose();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -42,13 +49,11 @@ export default function DeleteAccount({ className = '' }: { className?: string }
   }
 
   return (
-    <Section className={className} title="Delete account">
+    <Section className={className} title={i18n.get('views.account.tabs.account.deleteAccount.head')}>
       <Card>
-        <p className="text-gray-80">
-          If you delete your account, your data will be gone forever. This action cannot be undone.
-        </p>
+        <p className="text-gray-80">{i18n.get('views.account.tabs.account.deleteAccount.description')}</p>
         <Button className="mt-5" variant="secondary" onClick={onClick}>
-          Delete account
+          {i18n.get('views.account.tabs.account.deleteAccount.head')}
         </Button>
       </Card>
       <Dialog

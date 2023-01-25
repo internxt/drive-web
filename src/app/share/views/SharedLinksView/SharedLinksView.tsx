@@ -216,7 +216,7 @@ export default function SharedLinksView(): JSX.Element {
               defaultDirection: 'ASC',
             },
             {
-              label: 'Size',
+              label: i18n.get('shared-links.list.size'),
               width: 'w-40', //w-1.5/12
               name: 'fileSize',
               orderable: false,
@@ -323,7 +323,11 @@ export default function SharedLinksView(): JSX.Element {
         onClose={closeConfirmDelete}
         onSecondaryAction={closeConfirmDelete}
         secondaryAction={i18n.get('modals.removeSharedLinkModal.cancel')}
-        title={selectedItems.length > 1 ? 'Delete links' : 'Delete link'}
+        title={
+          selectedItems.length > 1
+            ? i18n.get('shared-links.item-menu.deleteLinks')
+            : i18n.get('shared-links.item-menu.deleteLink')
+        }
         subtitle={
           selectedItems.length > 1
             ? i18n.get('modals.removeSharedLinkModal.multiSharedDescription')

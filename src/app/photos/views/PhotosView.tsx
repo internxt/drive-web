@@ -120,11 +120,15 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         onClose={() => setDeletePending(null)}
         onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'selected'}
-        title={`Delete ${numberOfSelectedItems} selected ${numberOfSelectedItems > 1 ? 'items' : 'item'}?`}
-        subtitle="You can't undo this action"
+        title={
+          numberOfSelectedItems > 1
+            ? i18n.get('modals.deletePhotosModal.multiTitle', { item: numberOfSelectedItems })
+            : i18n.get('modals.deletePhotosModal.singleTitle', { item: numberOfSelectedItems })
+        }
+        subtitle={i18n.get('modals.deletePhotosModal.subtitle')}
         onSecondaryAction={() => setDeletePending(null)}
-        primaryAction="Delete"
-        secondaryAction="Cancel"
+        primaryAction={i18n.get('modals.deletePhotosModal.buttons.delete')}
+        secondaryAction={i18n.get('modals.deletePhotosModal.buttons.cancel')}
         primaryActionColor="danger"
       />
       <Dialog
@@ -132,7 +136,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'preview'}
         title="Delete this item?"
-        subtitle="You can't undo this action"
+        subtitle={i18n.get('modals.deletePhotosModal.subtitle')}
         onSecondaryAction={() => setDeletePending(null)}
         primaryAction="Delete"
         secondaryAction="Cancel"

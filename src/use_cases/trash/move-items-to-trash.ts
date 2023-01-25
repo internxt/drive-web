@@ -5,6 +5,7 @@ import notificationsService, { ToastType } from '../../app/notifications/service
 import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import recoverItemsFromTrash from './recover-items-from-trash';
+import i18n from 'app/i18n/services/i18n.service';
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
@@ -22,15 +23,24 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
 
   const id = notificationsService.show({
     type: ToastType.Success,
-    text: `${itemsToTrash.length > 1 ? itemsToTrash.length : ''} Item${itemsToTrash.length > 1 ? 's' : ''
-      } moved to trash`,
+    text: i18n.get('notificationMessages.itemsMovedToTrash', {
+      item:
+        itemsToTrash.length > 1
+          ? 'Archivos'
+          : itemsToTrash.map((item) => {
+              return item.type === 'folder' ? 'Folder' : 'File';
+            }),
+    }),
+
     action: {
-      text: 'Undo',
+      text: i18n.get('actions.undo'),
       onClick: async () => {
         notificationsService.dismiss(id);
         if (itemsToTrash.length > 0) {
           const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentId : itemsToTrash[0].folderId;
-          store.dispatch(storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [destinationId] }));
+          store.dispatch(
+            storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [destinationId] }),
+          );
           store.dispatch(storageActions.clearSelectedItems());
           await recoverItemsFromTrash(itemsToTrash, destinationId);
         }
