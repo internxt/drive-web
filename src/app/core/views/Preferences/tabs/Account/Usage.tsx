@@ -1,4 +1,5 @@
 import i18n from 'app/i18n/services/i18n.service';
+
 import { useSelector } from 'react-redux';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';

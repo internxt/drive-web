@@ -13,6 +13,7 @@ import Preview from '../components/Preview';
 import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
+import * as Sentry from '@sentry/react';
 import i18n from 'app/i18n/services/i18n.service';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
@@ -238,11 +239,21 @@ function PhotoItem({
   const bucketId = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
 
   useEffect(() => {
-    if (bucketId) {
+    const photoBucketId = photo.networkBucketId ? photo.networkBucketId : bucketId;
+    if (photoBucketId) {
       getPhotoPreview({
         photo,
-        bucketId,
-      }).then(setSrc);
+        bucketId: photoBucketId,
+      })
+        .then(setSrc)
+        .catch((err) => {
+          Sentry.captureException(err, {
+            extra: {
+              photoId: photo.id,
+              bucketId: photoBucketId,
+            },
+          });
+        });
     }
   }, []);
 
