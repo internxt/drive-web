@@ -13,6 +13,7 @@ import Preview from '../components/Preview';
 import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
+import i18n from 'app/i18n/services/i18n.service';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useDispatch();
@@ -60,30 +61,29 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   const numberOfSelectedItems = photosState.selectedItems.length;
 
-  const toolbarProps = numberOfSelectedItems !== 0 ?
-    {
-      onDeleteClick: () => setDeletePending('selected'),
-      onShareClick: () => setSharePending('selected'),
-      onDownloadClick: () => {
-        const photos = photosState.selectedItems.map(
-          (id) => photosState.items.find((item) => item.id === id) as SerializablePhoto,
-        );
-        dispatch(photosThunks.downloadThunk(photos));
-        dispatch(photosSlice.actions.unselectAll());
-      },
-      onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
-    } : {};
+  const toolbarProps =
+    numberOfSelectedItems !== 0
+      ? {
+          onDeleteClick: () => setDeletePending('selected'),
+          onShareClick: () => setSharePending('selected'),
+          onDownloadClick: () => {
+            const photos = photosState.selectedItems.map(
+              (id) => photosState.items.find((item) => item.id === id) as SerializablePhoto,
+            );
+            dispatch(photosThunks.downloadThunk(photos));
+            dispatch(photosSlice.actions.unselectAll());
+          },
+          onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
+        }
+      : {};
 
   return (
     <>
-      <div
-        className={`${className} flex h-full w-full flex-col overflow-y-hidden`}
-        data-test="photos-gallery"
-      >
+      <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`} data-test="photos-gallery">
         {showEmpty ? (
           <Empty
-            title="Your gallery is empty"
-            subtitle="Start using Internxt mobile app to sync all your photos"
+            title={i18n.get('views.photos.empty.title')}
+            subtitle={i18n.get('views.photos.empty.description')}
             icon={
               <img className="h-auto w-72" src={EmptyPicture} draggable="false" alt="Photos used in the Internxt app" />
             }

@@ -17,7 +17,7 @@ interface CreateFolderDialogProps {
 }
 
 const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }: CreateFolderDialogProps) => {
-  const [folderName, setFolderName] = useState('');
+  const [folderName, setFolderName] = useState(i18n.get('modals.newFolderModal.untitled'));
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -25,7 +25,6 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
 
   useEffect(() => {
     if (isOpen) {
-      setFolderName('');
       setError('');
     }
   }, [isOpen]);
@@ -38,7 +37,12 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
   const createFolder = async () => {
     if (folderName && folderName.trim().length > 0) {
       setIsLoading(true);
-      await dispatch(storageThunks.createFolderThunk({ folderName, parentFolderId: currentFolderId? currentFolderId : neededFolderId }))
+      await dispatch(
+        storageThunks.createFolderThunk({
+          folderName,
+          parentFolderId: currentFolderId ? currentFolderId : neededFolderId,
+        }),
+      )
         .unwrap()
         .then(() => {
           setIsLoading(false);
@@ -69,14 +73,14 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
   return (
     <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={onClose}>
       <form className="flex flex-col space-y-5" onSubmit={(e) => onCreateButtonClicked(e)}>
-        <p className="text-2xl font-medium text-gray-100">New folder</p>
+        <p className="text-2xl font-medium text-gray-100">{i18n.get('modals.newFolderModal.title')}</p>
 
         <Input
           disabled={isLoading}
           className={`${error !== '' ? 'error' : ''}`}
-          label="Name"
+          label={i18n.get('modals.newFolderModal.label')}
           value={folderName}
-          placeholder="Folder name"
+          placeholder={i18n.get('modals.newFolderModal.placeholder')}
           onChange={(name) => {
             setFolderName(name);
             setError('');
@@ -91,7 +95,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
             {i18n.get('actions.cancel')}
           </Button>
           <Button type="submit" loading={isLoading} variant="primary">
-            Create
+            {i18n.get('actions.create')}
           </Button>
         </div>
       </form>

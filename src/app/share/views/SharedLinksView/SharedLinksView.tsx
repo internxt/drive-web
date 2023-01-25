@@ -322,15 +322,19 @@ export default function SharedLinksView(): JSX.Element {
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}
         onSecondaryAction={closeConfirmDelete}
-        secondaryAction="Cancel"
+        secondaryAction={i18n.get('modals.removeSharedLinkModal.cancel')}
         title={selectedItems.length > 1 ? 'Delete links' : 'Delete link'}
         subtitle={
           selectedItems.length > 1
-            ? 'Users with the links will lose access to the shared content'
-            : 'Users with the link will lose access to the shared content'
+            ? i18n.get('modals.removeSharedLinkModal.multiSharedDescription')
+            : i18n.get('modals.removeSharedLinkModal.singleSharedDescription')
         }
         onPrimaryAction={onDeleteSelectedItems}
-        primaryAction={selectedItems.length > 1 ? 'Delete links' : 'Delete link'}
+        primaryAction={
+          selectedItems.length > 1
+            ? i18n.get('modals.removeSharedLinkModal.deleteLinks')
+            : i18n.get('modals.removeSharedLinkModal.deleteLink')
+        }
         primaryActionColor="danger"
       />
       {/* <UpdateLinkModal

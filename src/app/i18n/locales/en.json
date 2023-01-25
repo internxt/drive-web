@@ -63,6 +63,12 @@
     "desktop": "Desktop"
   },
   "views": {
+    "photos": {
+      "empty": {
+        "title": "Your gallery is empty",
+        "description": "Start using Internxt mobile app to sync all your photos"
+      }
+    },
     "account": {
       "title": "Account",
       "tabs": {
@@ -186,6 +192,20 @@
       "keepBoth": "Keep both",
       "upload": "Upload",
       "move": "Move"
+    },
+    "removeSharedLinkModal": {
+      "title": "Delete link",
+      "multiSharedDescription": "Users with the links will lose access to the shared content",
+      "singleSharedDescription": "Users with the link will lose access to the shared content",
+      "cancel": "Cancel",
+      "deleteLinks": "Delete links",
+      "deleteLink": "Delete link"
+    },
+    "newFolderTitleModal": {
+      "title": "New folder",
+      "label": "Name",
+      "placeholder": "Untitled folder",
+      "untitled": "Carpeta sin título"
     }
   },
   "form": {
@@ -261,7 +281,8 @@
     "list": {
       "link-content": "Link content",
       "shared": "Shared",
-      "created": "Created"
+      "created": "Created",
+      "size": "Size"
     },
     "empty-state": {
       "title": "Nothing shared yet",
@@ -321,7 +342,7 @@
     },
     "upload-file": {
       "status": {
-        "pending": "Pending to upload",
+        "pending": "Waiting to upload",
         "encrypting": "Encrypting file",
         "in-process": "{progress}% Uploading file",
         "success": "File uploaded",
@@ -332,7 +353,7 @@
     },
     "upload-folder": {
       "status": {
-        "pending": "Pending to upload",
+        "pending": "Waiting to upload",
         "encrypting": "Encrypting files",
         "in-process": "{progress}% Uploading folder",
         "success": "Folder uploaded",
@@ -340,6 +361,9 @@
         "cancelled": "Upload cancelled"
       },
       "errors": {}
+    },
+    "taskLogger": {
+      "processing": "Processing {pending} of {finished}"
     },
     "download-file": {
       "status": {
@@ -467,7 +491,7 @@
   "actions": {
     "upload": {
       "new": "New",
-      "folder": "Folder",
+      "folder": "New folder",
       "uploadFiles": "Upload files",
       "uploadFolder": "Upload folder"
     },
@@ -482,6 +506,7 @@
     "changePassword": "Change password",
     "buy": "Buy",
     "cancel": "Cancel",
+    "create": "Create",
     "sendInvitation": "Send invitation",
     "subscribe": "Subscribe",
     "moreInfo": "More info",

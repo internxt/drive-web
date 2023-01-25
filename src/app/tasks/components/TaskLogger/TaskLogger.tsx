@@ -68,7 +68,12 @@ const TaskLogger = (): JSX.Element => {
             <Fragment>
               <CircleNotch size={16} className="mr-2 animate-spin text-gray-60" weight="bold" />
 
-              <span>{`Processing ${Object.values(finishedNotifications).length} of ${allNotifications.length}`}</span>
+              <span>
+                {i18n.get('tasks.create-folder.taskLogger.processing', {
+                  pending: Object.values(finishedNotifications).length,
+                  finished: allNotifications.length,
+                })}
+              </span>
             </Fragment>
           )}
         </div>

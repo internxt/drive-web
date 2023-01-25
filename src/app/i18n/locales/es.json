@@ -6,12 +6,12 @@
       "production": "Production"
     },
     "loading": {
-      "default": "Loading...",
+      "default": "Cargando...",
       "redirecting": "Redirecting..."
     },
     "renewalPeriod": {
-      "monthly": "Monthly",
-      "annually": "Annually",
+      "monthly": "Mensualmente",
+      "annually": "Anualmente",
       "lifetime": "Lifetime"
     },
     "workspaces": {
@@ -19,7 +19,7 @@
       "business": "Business"
     },
     "time": {
-      "month": "month"
+      "month": "mes"
     },
     "billing": {
       "billedEachPeriod": "{price} billed {period}",
@@ -63,6 +63,12 @@
     "desktop": "Aplicación de escritorio"
   },
   "views": {
+    "photos": {
+      "empty": {
+        "title": "Tu galería está vacía",
+        "description": "Usa la app móvil de Internxt para sincronizar tus fotos"
+      }
+    },
     "account": {
       "title": "Account",
       "tabs": {
@@ -186,12 +192,26 @@
       "keepBoth": "Keep both",
       "upload": "Upload",
       "move": "Move"
+    },
+    "removeSharedLinkModal": {
+      "title": "Eliminar enlace",
+      "multiSharedDescription": "Los usuarios con el enlace perderán acceso al contenido compartido",
+      "singleSharedDescription": "Los usuarios con el enlace perderán acceso al contenido compartido",
+      "cancel": "Cancelar",
+      "deleteLinks": "Eliminar enlaces",
+      "deleteLink": "Eliminar enlace"
+    },
+    "newFolderModal": {
+      "title": "Nueva carpeta",
+      "label": "Nombre",
+      "placeholder": "Carpeta sin titulo",
+      "untitled": "Carpeta sin título"
     }
   },
   "form": {
     "fields": {
       "email": {
-        "placeholder": "Email address"
+        "placeholder": "Correo electrónico"
       }
     }
   },
@@ -244,43 +264,44 @@
       "columns": {
         "name": "Name",
         "last-update": "Last update",
-        "size": "Size"
+        "size": "Tamaño"
       }
     },
     "backups-list": {
       "columns": {
         "name": "Name",
         "last-update": "Last update",
-        "size": "Size",
+        "size": "Tamaño",
         "actions": "Actions"
       }
     }
   },
   "shared-links": {
-    "shared-links": "Shared links",
+    "shared-links": "Enlaces compartidos",
     "list": {
-      "link-content": "Link content",
-      "shared": "Shared",
-      "created": "Created"
+      "link-content": "Contenido del enlace",
+      "shared": "Compartido",
+      "created": "Creado",
+      "size": "Tamaño"
     },
     "empty-state": {
       "title": "Nothing shared yet",
       "subtitle": "Share a folder or a file to get started"
     },
     "item-menu": {
-      "copy-link": "Copy link",
-      "link-settings": "Share settings",
-      "delete-link": "Delete link"
+      "copy-link": "Copiar link",
+      "link-settings": "Configuración de enlace",
+      "delete-link": "Eliminar enlace"
     },
     "link-settings": {
-      "share-settings": "Share settings",
-      "views": "Views",
-      "options": "Options",
-      "copy-link": "Copy link",
-      "save": "Save",
-      "saving": "Saving",
-      "save-close": "Save and close",
-      "close": "Close"
+      "share-settings": "Configuración de enlace",
+      "views": "Visitas",
+      "options": "Opciones",
+      "copy-link": "Copiar enlace",
+      "save": "Guardar",
+      "saving": "Guardando",
+      "save-close": "Guardar y cerrar",
+      "close": "Cerrar"
     },
     "toast": {
       "copy-to-clipboard": "Link copied to clipboard",
@@ -293,7 +314,7 @@
     "trash": "Trash",
     "list": {
       "name": "Name",
-      "size": "Size",
+      "size": "Tamaño",
       "moved-to-trash": "Moved to trash"
     },
     "empty-state": {
@@ -307,57 +328,60 @@
   },
   "tasks": {
     "messages": {
-      "allProcessesHaveFinished": "All processes have finished"
+      "allProcessesHaveFinished": "Todos los procesos han finalizado"
     },
     "create-folder": {
       "status": {
-        "pending": "Pending to create folder",
-        "in-process": "Creating folder",
-        "success": "Folder created",
-        "error": "Error during folder creation",
-        "cancelled": "Folder creation cancelled"
+        "pending": "Esperando para completar tarea",
+        "in-process": "Creando carpeta",
+        "success": "Carpeta creada",
+        "error": "Error durante la creación de la carpeta",
+        "cancelled": "Creación de carpeta cancelada"
+      },
+      "taskLogger": {
+        "processing": "Procesando {pending} de {finished}"
       },
       "errors": {}
     },
     "upload-file": {
       "status": {
-        "pending": "Pending to upload",
-        "encrypting": "Encrypting file",
-        "in-process": "{progress}% Uploading file",
-        "success": "File uploaded",
-        "error": "Error during upload",
-        "cancelled": "Upload cancelled"
+        "pending": "Esperando para subir",
+        "encrypting": "Encriptando archivo",
+        "in-process": "{progress}% Subiendo archivo",
+        "success": "Archivo subido",
+        "error": "Error durante la subida",
+        "cancelled": "Subida cancelada"
       },
       "errors": {}
     },
     "upload-folder": {
       "status": {
-        "pending": "Pending to upload",
-        "encrypting": "Encrypting files",
-        "in-process": "{progress}% Uploading folder",
-        "success": "Folder uploaded",
-        "error": "Error during upload",
-        "cancelled": "Upload cancelled"
+        "pending": "Esperando para subir",
+        "encrypting": "Encriptando archivos",
+        "in-process": "{progress}% Subiendo carpeta",
+        "success": "Carpeta subida",
+        "error": "Error durante la subida",
+        "cancelled": "Subida cancelada"
       },
       "errors": {}
     },
     "download-file": {
       "status": {
-        "pending": "Pending to download",
+        "pending": "Pendiente",
         "decrypting": "Decrypting file",
-        "in-process": "{progress}% Downloading file",
-        "success": "File downloaded",
-        "error": "Error during download",
-        "cancelled": "Download cancelled"
+        "in-process": "{progress}% Descargando archivo",
+        "success": "Archivo descargado",
+        "error": "Error durante la descarga",
+        "cancelled": "Descarga cancelada"
       },
       "errors": {}
     },
     "download-photos": {
       "status": {
-        "pending": "Downloading {progress}%",
-        "success": "Downloaded",
-        "error": "Error during download",
-        "cancelled": "Download cancelled"
+        "pending": "Descargando {progress}%",
+        "success": "descargado",
+        "error": "Error durante la descarga",
+        "cancelled": "Descara cancelada"
       },
       "errors": {}
     },
@@ -467,7 +491,7 @@
   "actions": {
     "upload": {
       "new": "Nuevo",
-      "folder": "Carpeta",
+      "folder": "Nueva carpeta",
       "uploadFiles": "Subir archivos",
       "uploadFolder": "Subir carpeta"
     },
@@ -479,11 +503,12 @@
     "upgradeNow": "Actualiza ahora",
     "upgrade": "Upgrade",
     "deleteAccount": "Permanently delete account",
-    "changePassword": "Change password",
-    "buy": "Buy",
-    "cancel": "Cancel",
-    "sendInvitation": "Send invitation",
-    "subscribe": "Subscribe",
+    "changePassword": "Cambiar contraseña",
+    "buy": "Comprar",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "sendInvitation": "Enviar invitación",
+    "subscribe": "Subscribirse",
     "moreInfo": "Más info",
     "dismiss": "Dismiss"
   },
