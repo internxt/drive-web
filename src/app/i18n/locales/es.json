@@ -10,8 +10,8 @@
       "redirecting": "Redirecting..."
     },
     "renewalPeriod": {
-      "monthly": "Mensualmente",
-      "annually": "Anualmente",
+      "monthly": "mensual",
+      "annually": "anual",
       "lifetime": "Lifetime"
     },
     "workspaces": {
@@ -81,21 +81,33 @@
     },
     "account": {
       "title": "Cuenta",
+      "avatar": {
+        "title": "Subir imagen",
+        "removePhoto": "Eliminar imagen",
+        "updatePhoto": "Subir nueva foto",
+        "dragNDrop": "Selecciona o arrastra una imagen",
+        "success": "Imagen actualizada correctamente",
+        "error": "Algo salió mal actualizando la imagen",
+        "removed": "Imagen eliminada correctamente",
+        "underLimitSize": "Por favor selecciona una imagen por debajo de los 10MB de tamaño"
+      },
       "popover": {
         "downloadApp": "Descargar app",
         "settings": "Ajustes",
         "logout": "Cerrar sesión",
         "spaceUsed": "{space}% espacio usado"
       },
-
       "tabs": {
         "account": {
+          "label": "Cuenta",
           "title": "Personal",
           "usage": "{totalUsed} de {totalSpace} usado",
           "view": {
             "backups": "Copias de seguridad",
+            "photos": "Photos",
+            "trash": "Papelera",
             "free": {
-              "planName": "plan gratuito",
+              "planName": "Plan gratuito",
               "button": "Comprar espacio"
             },
             "lifetime": {
@@ -113,9 +125,14 @@
             "card": {
               "name": "Nombre",
               "lastname": "Apellido",
-              "edit": "Editar",
+
               "email": "Correo electrónico",
               "resendEmail": "Reenviar corre de verificación"
+            },
+            "verify": {
+              "verify": "Verifica tu correo",
+              "verified": "Correo verificado",
+              "description": "Revisa tu bandeja de entrada o spam"
             }
           },
           "deleteAccount": {
@@ -123,6 +140,25 @@
             "description": "Si eliminas tu cuenta, tus datos se eliminarán para siempre. Esta acción no se puede deshacer.",
             "isSubscribed": "Por favor, cancela tu suscripción primero",
             "confirmationEmail": "Correo de confirmación enviado"
+          }
+        },
+        "billing": {
+          "label": "Facturación",
+          "currentPlan": "Plan actual",
+          "subsRenew": "La suscripción se renovará dentro de {daysUntilRenewal} días",
+          "cancelSubscription": "Cancelar suscripción",
+          "billed": "Cobro {interval} {renewDate}",
+          "paymentMethod": {
+            "head": "Método de pago",
+            "empty": {
+              "title": "Estás en el plan gratuito",
+              "subtitle": "La información de la tarjeta de crédito aparecerá aquí automáticamente cuando tengas un plan de suscripción de pago."
+            },
+            "title": "Añadir nuevo método de pago",
+            "cardNumber": "Número de tarjeta",
+            "expiration": "Fecha de caducidad",
+            "cvc": "CVC",
+            "pais": "País"
           }
         },
         "info": {
@@ -286,11 +322,21 @@
         "copyLink": "Copiar enlace"
       }
     },
-    "friendsInvited": {
+    "friendsInvitedModal": {
       "title": "Invitaciones enviadas",
+      "email": "Correo electrónico",
       "pending": "Pendientes",
       "accepted": "Aceptadas",
-      "empty": "No has invitado a nadie aún"
+      "empty": "No has invitado a nadie aún",
+      "resend": "Reenviar invitación",
+      "resentInvitation": "Invitación reenviada correctamente",
+      "resendError": "Error al reenviar la invitación: {reason}"
+    },
+    "deleteAccountModal": {
+      "title": "¿Estás seguro?",
+      "subtitle": "Todos tus archivos serán eliminados para siempre y perderás acceso a tu cuenta de Internxt.",
+      "cancel": "cancelar",
+      "confirm": "Confirmar"
     }
   },
   "form": {
@@ -501,45 +547,45 @@
     },
     "move-file": {
       "status": {
-        "pending": "Pendiente de trasladar",
-        "in-process": "Transladando archivo",
+        "pending": "Pendiente",
+        "in-process": "En curso",
         "success": "Archivo movido",
-        "error": "Error durante el translado",
-        "cancelled": "Cancelar movimiento"
+        "error": "Error durante el proceso",
+        "cancelled": "Cancelado"
       },
       "errors": {
-        "409": "A file with that name already exists in the destination folder"
+        "409": "Ya existe un archivo con ese nombre en la carpeta de destino"
       }
     },
     "move-folder": {
       "status": {
-        "pending": "Pendiente de trasladar",
-        "in-process": "Transladando archivo",
+        "pending": "Pendiente",
+        "in-process": "En curso",
         "success": "Archivo movido",
-        "error": "Error durante el translado",
-        "cancelled": "Cancelar movimiento"
+        "error": "Error durante el proceso",
+        "cancelled": "Cancelado"
       },
       "errors": {
-        "409": "A folder with that name already exists in the destination folder"
+        "409": "Ya existe un archivo con ese nombre en la carpeta de destino"
       }
     },
     "rename-file": {
       "status": {
-        "pending": "Pending to rename",
-        "in-process": "Renaming file",
-        "success": "File renamed",
-        "error": "Error during renaming",
-        "cancelled": "Cancelled renaming"
+        "pending": "Pendiente",
+        "in-process": "Renombrar archivo",
+        "success": "Archivo renombrado",
+        "error": "Error durante el proceso",
+        "cancelled": "Cancelado"
       },
       "errors": {}
     },
     "rename-folder": {
       "status": {
-        "pending": "Pending to rename",
-        "in-process": "Renaming folder",
-        "success": "Folder renamed",
-        "error": "Error during renaming",
-        "cancelled": "Cancelled renaming"
+        "pending": "Pendiente",
+        "in-process": "Renombrar carpeta",
+        "success": "Carpeta renombrada",
+        "error": "Error durante el proceso",
+        "cancelled": "Cancelado"
       },
       "errors": {}
     }
@@ -595,7 +641,7 @@
     "view": "Ver",
     "accessFile": "Access File",
     "upgradeNow": "Comprar espacio ahora",
-    "upgrade": "Comprar espacio",
+    "upgrade": "Ampliar",
     "deleteAccount": "Eliminar permanentemente la cuenta",
     "changePassword": "Cambiar contraseña",
     "buy": "Comprar",
@@ -604,7 +650,11 @@
     "sendInvitation": "Enviar invitación",
     "subscribe": "Subscribirse",
     "moreInfo": "Más info",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "save": "Guardar",
+    "back": "Atrás",
+    "edit": "Editar",
+    "submit": "Enviar"
   },
   "drive": {
     "usage": "Uso",

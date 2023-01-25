@@ -45,7 +45,7 @@ export default function AccountDetails({ className = '' }: { className?: string 
             />
           </div>
           <Button className="flex-shrink-0" variant="secondary" onClick={() => setIsModalOpen(true)}>
-            {i18n.get('views.account.tabs.account.accountDetails.card.edit')}
+            {i18n.get('actions.edit')}
           </Button>
         </div>
         <div className="mt-5 flex items-center justify-between">
@@ -63,9 +63,13 @@ export default function AccountDetails({ className = '' }: { className?: string 
           </div>
           <Tooltip
             style="dark"
-            title={isVerified ? 'Verified email' : 'Verify your email'}
+            title={
+              isVerified
+                ? i18n.get('views.account.tabs.account.accountDetails.verify.verified')
+                : i18n.get('views.account.tabs.account.accountDetails.verify.verify')
+            }
             popsFrom="top"
-            subtitle={isVerified ? undefined : 'Check your inbox or spam'}
+            subtitle={isVerified ? undefined : i18n.get('views.account.tabs.account.accountDetails.verify.description')}
           >
             {isVerified ? (
               <CheckCircle weight="fill" className="text-green" size={24} />

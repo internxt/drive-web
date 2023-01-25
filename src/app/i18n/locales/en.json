@@ -10,8 +10,8 @@
       "redirecting": "Redirecting..."
     },
     "renewalPeriod": {
-      "monthly": "Monthly",
-      "annually": "Annually",
+      "monthly": "monthly",
+      "annually": "annually",
       "lifetime": "Lifetime"
     },
     "workspaces": {
@@ -81,6 +81,16 @@
     },
     "account": {
       "title": "Account",
+      "avatar": {
+        "title": "Upload avatar",
+        "removePhoto": "Delete photo",
+        "updatePhoto": "Upload new photo",
+        "dragNDrop": "Select or drop a picture",
+        "success": "Avatar has been successfully updated",
+        "error": "Something happened while uploading your avatar",
+        "removed": "Avatar successfully deleted",
+        "underLimitSize": "Please choose an image under 10MB of size"
+      },
       "popover": {
         "downloadApp": "Download app",
         "settings": "Settings",
@@ -89,10 +99,13 @@
       },
       "tabs": {
         "account": {
+          "label": "Account",
           "title": "Personal",
           "usage": "Used {totalUsed} of {totalSpace}",
           "view": {
-            "backups": "Copias de seguridad",
+            "backups": "Backups",
+            "photos": "Photos",
+            "trash": "Trash",
             "free": {
               "planName": "Free plan",
               "button": "upgrade"
@@ -115,6 +128,11 @@
               "edit": "Edit",
               "email": "Email",
               "resendEmail": "Resend verification email"
+            },
+            "verify": {
+              "verify": "Verify your email",
+              "verified": "Verified email",
+              "description": "Check your inbox or spam"
             }
           },
           "deleteAccount": {
@@ -122,6 +140,25 @@
             "description": "If you delete your account, your data will be gone forever. This action cannot be undone.",
             "isSubscribed": "Please, cancel your subscription first",
             "confirmationEmail": "Confirmation email has been sent"
+          }
+        },
+        "billing": {
+          "label": "Billing",
+          "currentPlan": "Current plan",
+          "subsRenew": "Subscription renews in {daysUntilRenewal} days",
+          "cancelSubscription": "Cancel subscription",
+          "billed": "Billed {interval} {renewDate}",
+          "paymentMethod": {
+            "head": "Payment method",
+            "empty": {
+              "title": "You are on free plan",
+              "subtitle": "Credit card information will appear here automatically when you have a paid subscription plan."
+            },
+            "title": "Add new payment method",
+            "cardNumber": "Card number",
+            "expiration": "Expiration",
+            "cvc": "CVC",
+            "pais": "Country"
           }
         },
         "info": {
@@ -284,6 +321,22 @@
         "creating": "Creating link...",
         "copyLink": "Copy link"
       }
+    },
+    "friendsInvitedModal": {
+      "title": "Friends invited",
+      "email": "Email",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "empty": "You have not invited anyone yet",
+      "resend": "Resend invitation",
+      "resentInvitation": "Invitation resent successfully",
+      "resendError": "Error while resending email: {reason}"
+    },
+    "deleteAccountModal": {
+      "title": "Are you sure?",
+      "subtitle": "All your files will be gone forever and you will lose access to your Internxt account.",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
     }
   },
   "form": {
@@ -594,7 +647,11 @@
     "sendInvitation": "Send invitation",
     "subscribe": "Subscribe",
     "moreInfo": "More info",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "save": "Save",
+    "back": "Back",
+    "edit": "Edit",
+    "submit": "Submit"
   },
   "drive": {
     "usage": "Usage",

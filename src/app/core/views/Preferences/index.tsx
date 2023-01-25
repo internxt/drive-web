@@ -1,3 +1,4 @@
+import i18n from 'app/i18n/services/i18n.service';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import AccountTab from './tabs/Account';
@@ -19,8 +20,8 @@ export default function Preferences(): JSX.Element {
     label: string;
     component: React.FunctionComponent<{ className?: string }>;
   }[] = [
-    { id: 'account', label: 'Account', component: AccountTab },
-    { id: 'billing', label: 'Billing', component: BillingTab },
+    { id: 'account', label: i18n.get('views.account.tabs.account.label'), component: AccountTab },
+    { id: 'billing', label: i18n.get('views.account.tabs.billing.label'), component: BillingTab },
     { id: 'plans', label: 'Plans', component: PlansTab },
     { id: 'security', label: 'Security', component: SecurityTab },
   ];
@@ -59,8 +60,8 @@ export default function Preferences(): JSX.Element {
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
       <TabContext.Provider value={{ activeTab, setActiveTab }}>
         {/* overflow-y-auto and overflow-x-visible is not a valid combination in the same element */}
-        <div className="flex flex-row justify-center flex-grow overflow-y-auto p-8">
-          <div className="overflow-x-visible w-screen max-w-screen-xl">
+        <div className="flex flex-grow flex-row justify-center overflow-y-auto p-8">
+          <div className="w-screen max-w-screen-xl overflow-x-visible">
             {TABS.map(
               ({ component: Component, id }) =>
                 Component && <Component className={`${activeTab !== id ? 'hidden' : ''}`} key={id} />,

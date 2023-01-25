@@ -19,7 +19,7 @@ export default function InviteAFriend({ className = '' }: { className?: string }
 
   const referrals = useAppSelector((state) => state.referrals.list);
 
-  const inviteAFriendReferral = referrals.find(referral => referral.key === ReferralKey.InviteFriends);
+  const inviteAFriendReferral = referrals.find((referral) => referral.key === ReferralKey.InviteFriends);
 
   const [status, setStatus] = useState<'READY' | 'LOADING' | 'CANT_INVITE_MORE'>('READY');
 
@@ -49,9 +49,7 @@ export default function InviteAFriend({ className = '' }: { className?: string }
   return (
     <Section className={className} title={i18n.get('inviteAFriend.title')}>
       <Card>
-        <p className="text-gray-80">
-          {i18n.get('inviteAFriend.description', { N: inviteAFriendReferral?.steps })}
-        </p>
+        <p className="text-gray-80">{i18n.get('inviteAFriend.description', { N: inviteAFriendReferral?.steps })}</p>
         <div className="mt-3">
           {status !== 'CANT_INVITE_MORE' ? (
             <Input
@@ -106,11 +104,16 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
     setResendingEmail(email);
     try {
       await userService.inviteAFriend(email);
-      notificationsService.show({ text: 'Invitation resent successfully', type: ToastType.Info });
+      notificationsService.show({
+        text: i18n.get('modals.friendsInvitedModal.resentInvitation'),
+        type: ToastType.Info,
+      });
     } catch (err) {
       const castedError = errorService.castError(err);
       notificationsService.show({
-        text: `Error while resending email: ${castedError.message}`,
+        text: i18n.get('modals.friendsInvitedModal.resendError', {
+          reason: castedError.message,
+        }),
         type: ToastType.Error,
       });
     } finally {
@@ -121,16 +124,16 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-medium text-gray-80">Friends invited</h1>
+        <h1 className="text-2xl font-medium text-gray-80">{i18n.get('modals.friendsInvitedModal.title')}</h1>
         <div className="flex">
           <div className="flex h-7 items-center rounded-md bg-gray-5 px-2 text-gray-80">
             <Question size={14} />
-            <p className="ml-1 text-xs">Pending</p>
+            <p className="ml-1 text-xs">{i18n.get('modals.friendsInvitedModal.pending')}</p>
             <p className="ml-2 text-sm font-medium">{numberOfPendingInvites}</p>
           </div>
           <div className="ml-2 flex h-7 items-center rounded-md bg-gray-5 px-2 text-gray-80">
             <CheckCircle weight="fill" className="text-green" size={14} />
-            <p className="ml-1 text-xs">Accepted</p>
+            <p className="ml-1 text-xs">{i18n.get('modals.friendsInvitedModal.accepted')}</p>
             <p className="ml-2 text-sm font-medium">{numberOfAcceptedInvites}</p>
           </div>
         </div>
@@ -140,7 +143,7 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
           <div className="mt-4 flex justify-between border-b border-gray-5 px-3 pb-1 font-medium text-gray-80">
             <div className="flex items-center">
               <Info size={20} />
-              <p className="ml-2">Email</p>
+              <p className="ml-2">{i18n.get('modals.friendsInvitedModal.email')}</p>
             </div>
             <p>Total: {invites.length}</p>
           </div>
@@ -160,7 +163,7 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
                   disabled={resendingEmail === invite.guestEmail}
                   onClick={() => onResend(invite.guestEmail)}
                 >
-                  Resend invitation
+                  {i18n.get('modals.friendsInvitedModal.resend')}
                 </button>
               )}
             </div>
@@ -171,7 +174,7 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
           {isLoading ? (
             <Spinner className="h-8 w-8 text-gray-50" />
           ) : (
-            <p className="font-medium text-gray-50">You have not invited anyone yet</p>
+            <p className="font-medium text-gray-50">{i18n.get('modals.friendsInvitedModal.empty')}</p>
           )}
         </div>
       )}

@@ -61,10 +61,10 @@ export default function DeleteAccount({ className = '' }: { className?: string }
         onClose={onClose}
         onSecondaryAction={onClose}
         onPrimaryAction={onConfirm}
-        secondaryAction="Cancel"
-        primaryAction="Confirm"
-        title="Are you sure?"
-        subtitle="All your files will be gone forever and you will lose access to your Internxt account."
+        secondaryAction={i18n.get('modals.deleteAccountModal.cancel')}
+        primaryAction={i18n.get('modals.deleteAccountModal.confirm')}
+        title={i18n.get('modals.deleteAccountModal.title')}
+        subtitle={i18n.get('modals.deleteAccountModal.subtitle')}
         primaryActionColor="danger"
         isLoading={isLoading}
       />
