@@ -145,20 +145,25 @@
         "billing": {
           "label": "Facturación",
           "currentPlan": "Plan actual",
-          "subsRenew": "La suscripción se renovará dentro de {daysUntilRenewal} días",
+          "subsRenew": "La suscripción se renueva en {daysUntilRenewal} días",
           "cancelSubscription": "Cancelar suscripción",
-          "billed": "Cobro {interval} {renewDate}",
+          "billed": "Facturación {interval} {renewDate}",
           "paymentMethod": {
             "head": "Método de pago",
             "empty": {
               "title": "Estás en el plan gratuito",
               "subtitle": "La información de la tarjeta de crédito aparecerá aquí automáticamente cuando tengas un plan de suscripción de pago."
             },
-            "title": "Añadir nuevo método de pago",
-            "cardNumber": "Número de tarjeta",
-            "expiration": "Fecha de caducidad",
-            "cvc": "CVC",
-            "pais": "País"
+            "title": "Añadir nuevo método de pago"
+          },
+          "invoices": {
+            "head": "Facturas",
+            "billingDate": "Fecha de facturación",
+            "empty": {
+              "title": "Estás en el plan gratuito",
+              "subtitle": "Las facturas emitidas aparecerán aquí automáticamente cuando se realice un pago."
+            },
+            "download": "Descargar factura"
           }
         },
         "info": {
@@ -174,27 +179,7 @@
           }
         },
         "plans": {
-          "title": "Plans",
-          "description": "Find the different storage and solution options that Internxt offers",
-          "changeWorkspace": {
-            "personal": "Change to Plans for Individuals",
-            "business": "Change to Plans for Business"
-          },
-          "viewAllFeatures": "View all features",
-          "features": [
-            {
-              "title": "Premium support",
-              "description": "You will always have the best treatment from our customer service, for us you are part of the family."
-            },
-            {
-              "title": "Private",
-              "description": "Internxt is not just another cloud storage solution, we don’t share or sell your data."
-            },
-            {
-              "title": "Secure",
-              "description": "We use zero-knowledge to ensure that your data remains private by client-side encrypting it."
-            }
-          ]
+          "label": "Planes"
         },
         "password": {
           "title": "Password",
@@ -204,7 +189,7 @@
             "description": "Changing your password will sign you out from all your devices. The password introduced will be needed for logging in again."
           },
           "advice2": {
-            "title": "What should you keep in mind so that your pasword is secure?",
+            "title": "What should you keep in mind so that your password is secure?",
             "description": ""
           },
           "advice3": {

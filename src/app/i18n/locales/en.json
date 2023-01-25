@@ -154,11 +154,16 @@
               "title": "You are on free plan",
               "subtitle": "Credit card information will appear here automatically when you have a paid subscription plan."
             },
-            "title": "Add new payment method",
-            "cardNumber": "Card number",
-            "expiration": "Expiration",
-            "cvc": "CVC",
-            "pais": "Country"
+            "title": "Add new payment method"
+          },
+          "invoices": {
+            "head": "Invoices",
+            "billingDate": "Billing date",
+            "empty": {
+              "title": "You are in free plan",
+              "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
+            },
+            "download": "Download invoice"
           }
         },
         "info": {
@@ -174,27 +179,7 @@
           }
         },
         "plans": {
-          "title": "Plans",
-          "description": "Find the different storage and solution options that Internxt offers",
-          "changeWorkspace": {
-            "personal": "Change to Plans for Individuals",
-            "business": "Change to Plans for Business"
-          },
-          "viewAllFeatures": "View all features",
-          "features": [
-            {
-              "title": "Premium support",
-              "description": "You will always have the best treatment from our customer service, for us you are part of the family."
-            },
-            {
-              "title": "Private",
-              "description": "Internxt is not just another cloud storage solution, we don’t share or sell your data."
-            },
-            {
-              "title": "Secure",
-              "description": "We use zero-knowledge to ensure that your data remains private by client-side encrypting it."
-            }
-          ]
+          "label": "Plans"
         },
         "password": {
           "title": "Password",
