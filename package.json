@@ -27,6 +27,7 @@
     "idb": "^6.1.4",
     "js-file-download": "^0.4.12",
     "jszip": "=3.2.2",
+    "lint-staged": "^13.1.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "openpgp": "^4.10.10",
@@ -144,5 +145,10 @@
   },
   "engines": {
     "node": "v14.17.0 - v16.18.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx,tsx,ts}": [
+      "prettier --write"
+    ]
   }
 }
