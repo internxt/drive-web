@@ -14,6 +14,11 @@
       "annually": "annually",
       "lifetime": "Lifetime"
     },
+    "renewal": {
+      "monthly": "Monthly",
+      "annually": "Annually",
+      "lifetime": "Lifetime"
+    },
     "workspaces": {
       "personal": "Individuals",
       "business": "Business"
@@ -179,7 +184,35 @@
           }
         },
         "plans": {
-          "label": "Plans"
+          "label": "Plans",
+          "card": {
+            "annually": "€{amount} billed annually",
+            "monthly": "€{amount} per month",
+            "lifetime": "€{amount}"
+          },
+          "features": {
+            "title": "Features included in all plans",
+            "sections": {
+              "section1": {
+                "title": "Satisfaction guaranteed",
+                "point1": "All subscriptions have 30-day money-back guarantees.",
+                "point2": "Cancel any time, no tricks.",
+                "point3": "Premium support."
+              },
+              "section2": {
+                "title": "Secure by default",
+                "point1": "Military-grade encryption to ensure your privacy.",
+                "point2": "Encrypted file storage and sharing.",
+                "point3": "Zero-knowledge cloud storage."
+              },
+              "section3": {
+                "title": "Unlimited access and sync",
+                "point1": "Access your files, photos, and backups from all your devices.",
+                "point2": "Sync with unlimited bandwidth.",
+                "point3": "Backup any folder on your computer."
+              }
+            }
+          }
         },
         "password": {
           "title": "Password",
@@ -617,6 +650,7 @@
       "uploadFiles": "Upload files",
       "uploadFolder": "Upload folder"
     },
+    "change": "Change",
     "download": "Download",
     "downloading": "Downloading",
     "downloaded": "Downloaded",

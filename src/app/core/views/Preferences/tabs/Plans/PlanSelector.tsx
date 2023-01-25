@@ -1,5 +1,6 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import i18n from 'app/i18n/services/i18n.service';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { bytesToString } from '../../../../../drive/services/size.service';
@@ -79,9 +80,21 @@ export default function PlanSelector({ className = '' }: { className?: string })
     <div className={`${className}`}>
       <div className="flex justify-center">
         <div className="flex flex-row rounded-lg bg-cool-gray-10 p-0.5 text-sm">
-          <IntervalSwitch active={interval === 'month'} text="Monthly" onClick={() => setInterval('month')} />
-          <IntervalSwitch active={interval === 'year'} text="Annually" onClick={() => setInterval('year')} />
-          <IntervalSwitch active={interval === 'lifetime'} text="Lifetime" onClick={() => setInterval('lifetime')} />
+          <IntervalSwitch
+            active={interval === 'month'}
+            text={i18n.get('general.renewal.monthly')}
+            onClick={() => setInterval('month')}
+          />
+          <IntervalSwitch
+            active={interval === 'year'}
+            text={i18n.get('general.renewal.annually')}
+            onClick={() => setInterval('year')}
+          />
+          <IntervalSwitch
+            active={interval === 'lifetime'}
+            text={i18n.get('general.renewal.lifetime')}
+            onClick={() => setInterval('lifetime')}
+          />
         </div>
       </div>
       <div className="mt-5 flex flex-col justify-center gap-y-5 lg:flex-row lg:gap-y-0 lg:gap-x-5">
@@ -152,17 +165,32 @@ function Price({
     return (value / 100).toFixed(2);
   }
 
-  const displayButtonText = button === 'change' ? 'Change' : button === 'current' ? 'Current plan' : 'Upgrade';
+  const displayButtonText =
+    button === 'change'
+      ? i18n.get('actions.change')
+      : button === 'current'
+      ? i18n.get('drive.currentPlan')
+      : i18n.get('actions.upgrade');
 
   return (
     <div className={`${className} w-full rounded-xl border border-gray-10 p-6 lg:w-64`}>
       <h1 className="text-4xl font-medium text-primary">{bytesToString(bytes)}</h1>
       <div className="mt-5 border-t border-gray-10" />
       <p className="mt-5 text-2xl font-medium text-gray-100">
-        {interval === 'lifetime' ? `€${displayAmount(amount)}` : `€${displayAmount(amountMonthly)} per month`}
+        {interval === 'lifetime'
+          ? i18n.get('views.account.tabs.plans.card.lifetime', {
+              amount: displayAmount(amount),
+            })
+          : i18n.get('views.account.tabs.plans.card.monthly', {
+              amount: displayAmount(amountMonthly),
+            })}
       </p>
       {interval !== 'lifetime' && (
-        <p className=" text-gray-50">{`€${displayAmount(amountAnnually)} billed annually`}</p>
+        <p className=" text-gray-50">
+          {i18n.get('views.account.tabs.plans.card.annually', {
+            amount: displayAmount(amountAnnually),
+          })}
+        </p>
       )}
       <Button
         loading={loading}

@@ -14,6 +14,11 @@
       "annually": "anual",
       "lifetime": "Lifetime"
     },
+    "renewal": {
+      "monthly": "Mensual",
+      "annually": "Anual",
+      "lifetime": "Lifetime"
+    },
     "workspaces": {
       "personal": "Individuals",
       "business": "Business"
@@ -179,7 +184,35 @@
           }
         },
         "plans": {
-          "label": "Planes"
+          "label": "Planes",
+          "card": {
+            "annually": "{amount}€ facturado al año",
+            "monthly": "{amount} €/mes",
+            "lifetime": "{amount}€"
+          },
+          "features": {
+            "title": "Funciones incluidas en todos los planes",
+            "sections": {
+              "section1": {
+                "title": "Satisfacción garantizada",
+                "point1": "Todos los planes tienen una garantía de devolución de 30 días",
+                "point2": "Cancela en cualquier momento",
+                "point3": "Atención al cliente premium"
+              },
+              "section2": {
+                "title": "Seguridad por defecto",
+                "point1": "Cifrado de grado militar para asegurar tu privacidad",
+                "point2": "Almacenamiento y uso compartido cifrado en la nube",
+                "point3": "Privacidad de conocimiento cero"
+              },
+              "section3": {
+                "title": "Acceso ilimitado y sincronización",
+                "point1": "Accede a tus archivos, fotos y copias de seguridad desde todos tus dispositivos",
+                "point2": "Sincronización con ancho de banda ilimitado",
+                "point3": "Copia de seguridad de cualquier carpeta en tu ordenador"
+              }
+            }
+          }
         },
         "password": {
           "title": "Password",
@@ -620,6 +653,7 @@
       "uploadFiles": "Subir archivos",
       "uploadFolder": "Subir carpeta"
     },
+    "change": "Cambiar",
     "download": "Descargar",
     "downloading": "Descargando",
     "downloaded": "Descargado",

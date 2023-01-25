@@ -150,7 +150,7 @@ function Empty() {
   return (
     <div className="text-center">
       <h1 className="font-medium text-gray-60">{i18n.get('views.account.tabs.billing.paymentMethod.empty.title')}</h1>
-      <p className="text-sm text-gray-50">{i18n.get('views.account.tabs.billing.paymentMethod.empty.description')}</p>
+      <p className="text-sm text-gray-50">{i18n.get('views.account.tabs.billing.paymentMethod.empty.subtitle')}</p>
     </div>
   );
 }

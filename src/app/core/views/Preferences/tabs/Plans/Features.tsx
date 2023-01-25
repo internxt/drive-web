@@ -1,32 +1,33 @@
+import i18n from 'app/i18n/services/i18n.service';
 import { ArrowsClockwise, Check, LockKey, Shield } from 'phosphor-react';
 
 export default function Features({ className = '' }: { className?: string }): JSX.Element {
   const sections: { title: string; icon: typeof Shield; points: string[] }[] = [
     {
-      title: 'Satisfaction guaranteed',
+      title: i18n.get('views.account.tabs.plans.features.sections.section1.title'),
       icon: Shield,
       points: [
-        'All subscriptions have 30-day money-back guarantees.',
-        'Cancel any time, no tricks.',
-        'Premium support.',
+        i18n.get('views.account.tabs.plans.features.sections.section1.point1'),
+        i18n.get('views.account.tabs.plans.features.sections.section1.point2'),
+        i18n.get('views.account.tabs.plans.features.sections.section1.point3'),
       ],
     },
     {
-      title: 'Secure by default',
+      title: i18n.get('views.account.tabs.plans.features.sections.section2.title'),
       icon: LockKey,
       points: [
-        'Military-grade encryption to ensure your privacy.',
-        'Encrypted file storage and sharing.',
-        'Zero-knowledge cloud storage.',
+        i18n.get('views.account.tabs.plans.features.sections.section2.point1'),
+        i18n.get('views.account.tabs.plans.features.sections.section2.point2'),
+        i18n.get('views.account.tabs.plans.features.sections.section2.point3'),
       ],
     },
     {
-      title: 'Unlimited access and sync',
+      title: i18n.get('views.account.tabs.plans.features.sections.section3.title'),
       icon: ArrowsClockwise,
       points: [
-        'Access your files, photos, and backups from all your devices.',
-        'Sync with unlimited bandwidth.',
-        'Backup any folder on your computer.',
+        i18n.get('views.account.tabs.plans.features.sections.section3.point1'),
+        i18n.get('views.account.tabs.plans.features.sections.section3.point2'),
+        i18n.get('views.account.tabs.plans.features.sections.section3.point3'),
       ],
     },
   ];
