@@ -5,13 +5,11 @@ export async function fetchUsage(): Promise<UsageResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const photosClient = await SdkFactory.getInstance().createPhotosClient();
 
-  console.log('GETTING USAGE');
   const [driveUsage, { usage: photosUsage }] = await Promise.all([
     storageClient.spaceUsage(),
     photosClient.photos.getUsage(),
   ]);
 
-  console.log('USAGE TOTAL', photosUsage);
   driveUsage.total += photosUsage;
 
   return driveUsage;
