@@ -25,6 +25,7 @@ const initialState: StorageState = {
   itemsOnTrash: [],
   viewMode: FileViewMode.List,
   namePath: [],
+  folderPathDialog: [],
 };
 
 export const storageSlice = createSlice({
@@ -109,9 +110,18 @@ export const storageSlice = createSlice({
 
       state.namePath = state.namePath.slice(0, folderIndex + 1);
     },
+    popNamePathDialogUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
+      const folderIndex: number = state.folderPathDialog.map((path) => path.id).indexOf(action.payload.id);
+      state.folderPathDialog = state.folderPathDialog.slice(0, folderIndex + 1);
+    },
     pushNamePath: (state: StorageState, action: PayloadAction<FolderPath>) => {
       if (!state.namePath.map((path) => path.id).includes(action.payload.id)) {
         state.namePath.push(action.payload);
+      }
+    },
+    pushNamePathDialog: (state: StorageState, action: PayloadAction<FolderPath>) => {
+      if (!state.folderPathDialog.map((path) => path.id).includes(action.payload.id)) {
+        state.folderPathDialog.push(action.payload);
       }
     },
     pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {

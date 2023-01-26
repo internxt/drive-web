@@ -8,7 +8,7 @@ import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
-import { DriveItemData, FolderPath } from '../../types';
+import { DriveItemData, FolderPathDialog } from '../../types';
 import i18n from 'app/i18n/services/i18n.service';
 import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
 import folderImage from 'assets/icons/light/folder.svg';
@@ -34,7 +34,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [shownFolders, setShownFolders] = useState(props.items);
   const [currentFolderName, setCurrentFolderName] = useState('');
   const [selectedFolderName, setSelectedFolderName] = useState('');
-  const arrayOfPaths: FolderPath[] = [];
+  const arrayOfPaths: FolderPathDialog[] = [];
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
@@ -49,7 +49,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     const items: BreadcrumbItemData[] = [];
 
     if (currentFolderPaths.length > 0) {
-      currentFolderPaths.forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
+      currentFolderPaths.forEach((path: FolderPathDialog, i: number, namePath: FolderPathDialog[]) => {
         items.push({
           id: path.id,
           label: path.name,
@@ -91,16 +91,16 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             return i.isFolder;
           });
 
-          let auxCurrentPaths: FolderPath[] = [...currentNamePaths];
+          let auxCurrentPaths: FolderPathDialog[] = [...currentNamePaths];
           const currentIndex = auxCurrentPaths.findIndex((i) => {
             return i.id === folderId;
           });
           if (currentIndex > -1) {
             auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex + 1);
-            dispatch(storageActions.popNamePathUpTo({ id: folderId, name: name }));
+            dispatch(storageActions.popNamePathDialogUpTo({ id: folderId, name: name }));
           } else {
             auxCurrentPaths.push({ id: folderId, name: name });
-            dispatch(storageActions.pushNamePath({ id: folderId, name: name }));
+            dispatch(storageActions.pushNamePathDialog({ id: folderId, name: name }));
           }
 
           setCurrentNamePaths(auxCurrentPaths);
