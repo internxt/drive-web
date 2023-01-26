@@ -27,7 +27,6 @@ export default function CheckoutPlanView(): JSX.Element {
       const planId = String(params.get('planId'));
       const coupon = String(params.get('couponCode'));
       const mode = String(params.get('mode') as string | undefined);
-
       checkout(planId, coupon, mode);
     }
   }, [subscription]);
@@ -66,8 +65,8 @@ export default function CheckoutPlanView(): JSX.Element {
     } else {
       try {
         const updatedSubscription = await paymentService.updateSubscriptionPrice(planId);
-        dispatch(planActions.setSubscription(updatedSubscription));
         navigationService.push(AppView.Preferences);
+        dispatch(planActions.setSubscription(updatedSubscription));
       } catch (err) {
         console.error(err);
         notificationsService.show({

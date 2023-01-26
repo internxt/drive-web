@@ -10,6 +10,8 @@ import { Network } from '../../network.service';
 
 interface FolderPackage {
   folderId: number;
+  parentId: number;
+  name: string;
   pack: JSZip;
 }
 
@@ -45,17 +47,18 @@ export async function downloadSharedFolderUsingStreamSaver(
     writer.abort();
   };
 
-  const rootFolder: FolderPackage & { name: string } = {
+  const rootFolder: FolderPackage = {
     name: sharedFolderMeta.name,
     folderId: sharedFolderMeta.id,
+    parentId: sharedFolderMeta.id,
     pack: zip,
   };
-  const pendingFolders: (FolderPackage & { name: string })[] = [rootFolder];
+  const pendingFolders: FolderPackage[] = [rootFolder];
 
   try {
     // * Renames files iterating over folders
     do {
-      const folderToDownload = pendingFolders.shift() as FolderPackage & { name: string };
+      const folderToDownload = pendingFolders.shift() as FolderPackage;
       const currentFolderZip = folderToDownload.pack?.folder(folderToDownload.name) || zip;
 
       let filesDownloadNotFinished = false;
@@ -65,6 +68,7 @@ export async function downloadSharedFolderUsingStreamSaver(
         const { files, last } = await getSharedDirectoryFiles({
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
+          parentId: folderToDownload.parentId,
           offset: filesOffset,
           limit: options.foldersLimit,
           code: sharedFolderMeta.code,
@@ -102,6 +106,7 @@ export async function downloadSharedFolderUsingStreamSaver(
         const { folders, last } = await getSharedDirectoryFolders({
           token: sharedFolderMeta.token,
           directoryId: folderToDownload.folderId,
+          parentId: folderToDownload.parentId,
           offset: foldersOffset,
           limit: options.foldersLimit,
           password: sharedFolderMeta.password,
@@ -110,6 +115,7 @@ export async function downloadSharedFolderUsingStreamSaver(
         folders.map(async ({ id, name }) => {
           pendingFolders.push({
             folderId: id,
+            parentId: folderToDownload.folderId,
             name: name,
             pack: currentFolderZip,
           });

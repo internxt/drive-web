@@ -53,9 +53,15 @@ import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 import { SdkFactory } from '../../../core/factory/sdk';
 import _ from 'lodash';
-import { PAGINATION_LIMIT } from '../../../store/slices/storage/constans';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import {
+  handleRepeatedUploadingFiles,
+  handleRepeatedUploadingFolders,
+} from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
+import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
+
+const PAGINATION_LIMIT = 60;
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -142,10 +148,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onUploadFileInputChanged = (e) => {
-    if (e.target.files.length < 1000) {
+    const files = e.target.files;
+
+    if (files.length < 1000) {
+      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
       dispatch(
         storageThunks.uploadItemsThunk({
-          files: Array.from(e.target.files),
+          files: Array.from(unrepeatedUploadedFiles),
           parentFolderId: currentFolderId,
         }),
       ).then(() => onFileUploaded && onFileUploaded());
@@ -284,6 +293,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
+      <NameCollisionContainer />
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <UploadItemsFailsDialog />
@@ -494,15 +504,16 @@ const countTotalItemsInIRoot = (rootList: IRoot[]) => {
 };
 
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
-  const { dispatch, currentFolderId, onDragAndDropEnd } = props;
+  const { dispatch, currentFolderId, onDragAndDropEnd, items } = props;
   const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
   if (countTotalItemsToUpload < 1000) {
     if (files.length) {
+      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
       // files where dragged directly
       await dispatch(
         storageThunks.uploadItemsThunkNoCheck({
-          files,
+          files: unrepeatedUploadedFiles,
           parentFolderId: currentFolderId,
           options: {
             onSuccess: onDragAndDropEnd,
@@ -511,17 +522,17 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
       );
     }
     if (rootList.length) {
-      for (const root of rootList) {
+      const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch) as IRoot[];
+      if (unrepeatedUploadedFolders.length > 0)
         await dispatch(
           storageThunks.uploadFolderThunkNoCheck({
-            root,
+            root: unrepeatedUploadedFolders[0],
             currentFolderId,
             options: {
               onSuccess: onDragAndDropEnd,
             },
           }),
         );
-      }
     }
   } else {
     dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));

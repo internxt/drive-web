@@ -7,6 +7,7 @@ import { RootState } from '../../store';
 import { photosSlice, PhotosState } from '../../store/slices/photos';
 import useIdle from '../../core/hooks/useIdle';
 import { PhotosItemType } from '@internxt/sdk/dist/photos';
+import * as Sentry from '@sentry/react';
 
 export default function Preview({
   onDownloadClick,
@@ -30,43 +31,61 @@ export default function Preview({
   const [thumbnailSrc, setThumbnailSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    if (previewIndex !== null && bucketId) {
-      setThumbnailSrc(null);
+    if (previewIndex === null) return;
+    setThumbnailSrc(null);
+    const photo = items[previewIndex];
+    const photoBucketId = photo.networkBucketId ? photo.networkBucketId : bucketId;
+    if (!photoBucketId) return;
 
-      const photo = items[previewIndex];
-      getPhotoPreview({
-        photo,
-        bucketId,
-      }).then(setThumbnailSrc);
-    }
+    getPhotoPreview({
+      photo,
+      bucketId: photoBucketId,
+    })
+      .then(setThumbnailSrc)
+      .catch((err) => {
+        Sentry.captureException(err, {
+          extra: {
+            photoId: photo.id,
+            bucketId: photoBucketId,
+          },
+        });
+      });
   }, [previewIndex, items]);
 
   const [src, setSrc] = useState<string | null>(null);
   const [itemType, setItemType] = useState<PhotosItemType>(PhotosItemType.PHOTO);
 
   useEffect(() => {
-    if (previewIndex !== null && bucketId) {
-      setSrc(null);
+    if (previewIndex === null) return;
 
-      const abortController = new AbortController();
-      const photo = items[previewIndex];
-      getPhotoBlob({ photo, bucketId, abortController })
-        .then((blob) => {
-          setItemType(photo.itemType);
-          return setSrc(URL.createObjectURL(blob));
-        })
-        .catch((err) => {
-          if (abortController.signal.aborted) {
-            return;
-          }
+    setSrc(null);
 
-          console.log(err);
+    const abortController = new AbortController();
+    const photo = items[previewIndex];
+    const photoBucketId = photo.networkBucketId ? photo.networkBucketId : bucketId;
+    if (!photoBucketId) return;
+
+    getPhotoBlob({ photo, bucketId: photoBucketId, abortController })
+      .then((blob) => {
+        setItemType(photo.itemType);
+        return setSrc(URL.createObjectURL(blob));
+      })
+      .catch((err) => {
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        Sentry.captureException(err, {
+          extra: {
+            photoId: photo.id,
+            bucketId: photoBucketId,
+          },
         });
+      });
 
-      return () => {
-        abortController.abort();
-      };
-    }
+    return () => {
+      abortController.abort();
+    };
   }, [previewIndex, items]);
 
   const canGoRight = previewIndex !== null && previewIndex < photosState.items.length - 1;
@@ -107,7 +126,7 @@ export default function Preview({
       leaveFrom="opacity-100 scale-100"
       leaveTo="opacity-0 scale-95"
     >
-      <div className="absolute inset-0 isolate">
+      <div className="absolute inset-0 isolate z-50" data-test="photos-preview">
         <Transition.Child
           as={Fragment}
           enter="transition-all duration-200 ease-out"

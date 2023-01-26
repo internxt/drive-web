@@ -6,7 +6,7 @@ export default function Features({ className = '' }: { className?: string }): JS
       title: 'Satisfaction guaranteed',
       icon: Shield,
       points: [
-        'All subscriptions have 30 days money-back guarantee.',
+        'All subscriptions have 30-day money-back guarantees.',
         'Cancel any time, no tricks.',
         'Premium support.',
       ],
@@ -15,7 +15,7 @@ export default function Features({ className = '' }: { className?: string }): JS
       title: 'Secure by default',
       icon: LockKey,
       points: [
-        'Military grade encryption to ensure your privacy.',
+        'Military-grade encryption to ensure your privacy.',
         'Encrypted file storage and sharing.',
         'Zero-knowledge cloud storage.',
       ],
@@ -24,9 +24,9 @@ export default function Features({ className = '' }: { className?: string }): JS
       title: 'Unlimited access and sync',
       icon: ArrowsClockwise,
       points: [
-        'Access your files, photos and backups from all your devices.',
+        'Access your files, photos, and backups from all your devices.',
         'Sync with unlimited bandwidth.',
-        'Backup any folder in your computer.',
+        'Backup any folder on your computer.',
       ],
     },
   ];

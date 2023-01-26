@@ -21,6 +21,8 @@ export enum TaskType {
   MoveFile = 'move-file',
   MoveFolder = 'move-folder',
   DownloadPhotos = 'download-photos',
+  RenameFile = 'rename-file',
+  RenameFolder = 'rename-folder',
 }
 
 export enum TaskProgress {
@@ -107,6 +109,20 @@ export interface DownloadPhotosTask extends BaseTask {
   numberOfPhotos: number;
 }
 
+export interface RenameFileTask extends BaseTask {
+  action: TaskType.RenameFile;
+  cancellable: true;
+  file: DriveFileData;
+  destinationFolderId?: number;
+}
+
+export interface RenameFolderTask extends BaseTask {
+  action: TaskType.RenameFolder;
+  cancellable: true;
+  folder: DriveFolderData;
+  destinationFolderId?: number;
+}
+
 export type TaskData =
   | CreateFolderTask
   | DownloadFileTask
@@ -116,7 +132,9 @@ export type TaskData =
   | UploadFolderTask
   | MoveFileTask
   | MoveFolderTask
-  | DownloadPhotosTask;
+  | DownloadPhotosTask
+  | RenameFileTask
+  | RenameFolderTask;
 
 export interface TaskNotification {
   taskId: string;
