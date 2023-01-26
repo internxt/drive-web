@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
-import { FolderPlus, CaretRight } from 'phosphor-react';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import { FolderSimplePlus, CaretRight } from 'phosphor-react';
+import Modal from 'app/shared/components/Modal';
 import { useState, useEffect } from 'react';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';
@@ -160,105 +160,84 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     }
   };
 
-  const title = `${props.isTrash ? 'Restore' : 'Move'} ${
-    itemsToMove.length > 1
-      ? itemsToMove.length + ' items'
-      : '"' +
-        (itemsToMove[0]?.name.length > 20 ? itemsToMove[0]?.name.slice(0, 20) + '...' : itemsToMove[0]?.name) +
-        '"'
-  }`;
-
   return (
-    <BaseDialog
-      isOpen={isOpen}
-      titleClasses="flex mx-5 text-left font-medium"
-      panelClasses="text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
-        transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-5 rounded-lg overflow-hidden bg-white"
-      title={title}
-      onClose={onClose}
-      closeClass={'hidden'}
-    >
-      <div style={{ width: '512px' }}>
-        <CreateFolderDialog currentFolderId={currentFolderId} />
-      </div>
-      <div className="justify-left w-fill block items-center bg-white py-6 text-left">
-        <div className="ml-5">
-          {isLoading ? <Spinner className="mb-3 h-5 w-5" /> : <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />}
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <div className="flex flex-col space-y-5">
+        {/* Title */}
+        <div className="flex text-2xl font-medium text-gray-100">
+          <span className="flex whitespace-nowrap">{`${props.isTrash ? 'Restore' : 'Move'}`} "</span>
+          <span className="max-w-fit flex-1 truncate">{itemsToMove[0]?.name}</span>
+          <span className="flex">"</span>
         </div>
-        <div className="w-fill hide-scroll mx-5 block h-60 items-center overflow-scroll rounded-md border border-gray-10 bg-white">
-          {isLoading ? (
-            <div className="flex h-full flex-1 items-center">
-              <Spinner className="h-5 w-5 flex-1" />
-            </div>
-          ) : (
-            shownFolders.map((folder) => {
-              return (
-                <div
-                  className={`${
-                    destinationId === folder.id ? 'bg-blue-20 text-primary' : ''
-                  } border border-t-0 border-l-0 border-r-0 border-white`}
-                  key={folder.id.toString()}
-                >
-                  <div
-                    className={`${
-                      destinationId === folder.id ? 'border-none bg-blue-20 text-primary' : ''
-                    } justify-left w-fill mx-4 flex h-12 cursor-pointer items-center border border-t-0 border-r-0 border-l-0 border-gray-10 bg-white align-middle`}
-                    key={folder.id}
-                  >
+
+        {/* Create folder dialog */}
+        <CreateFolderDialog currentFolderId={currentFolderId} />
+
+        {/* Folder list */}
+        <div className="flex flex-col">
+          <div className="flex h-10 items-center">
+            {isLoading ? <Spinner className="h-5 w-5" /> : <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />}
+          </div>
+
+          <div className="h-60 divide-y divide-gray-5 overflow-scroll rounded-md border border-gray-10">
+            {isLoading ? (
+              <div className="flex h-full items-center justify-center">
+                <Spinner className="h-5 w-5" />
+              </div>
+            ) : (
+              shownFolders
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((folder) => {
+                  return (
                     <div
-                      className="flex w-96 cursor-pointer items-center"
+                      className={`cursor-pointer ${
+                        destinationId === folder.id ? 'bg-primary bg-opacity-10 text-primary' : 'hover:bg-gray-1'
+                      } flex h-12 items-center space-x-4 px-4`}
                       onDoubleClick={() => onShowFolderContentClicked(folder.id, folder.name)}
                       onClick={() => onFolderClicked(folder.id, folder.name)}
+                      key={folder.id}
                     >
-                      <img className="h-8 w-8" alt="" src={folderImage} />
-                      <span
-                        className="text-regular ml-4 mt-1 inline-block truncate align-baseline text-base"
-                        style={{ maxWidth: '280px' }}
-                        title={folder.name}
-                      >
+                      <img className="flex h-8 w-8" alt="Folder icon" src={folderImage} />
+                      <span className="w-full flex-1 truncate text-base" title={folder.name}>
                         {folder.name}
                       </span>
-                    </div>
-                    <div className="ml-auto cursor-pointer">
                       <CaretRight
                         onClick={() => onShowFolderContentClicked(folder.id, folder.name)}
-                        className={`h-6 w-6 {${destinationId === folder.id ? 'bg-blue-20 text-primary' : ''}`}
+                        className="h-6 w-6"
                       />
                     </div>
-                  </div>
-                </div>
-              );
-            })
-          )}
+                  );
+                })
+            )}
+          </div>
         </div>
 
-        <div className="ml-auto mt-5 flex">
-          <BaseButton
-            disabled={isLoading}
-            className="tertiary square ml-5 mt-1 mr-auto h-8 w-28"
-            onClick={onCreateFolderButtonClicked}
-          >
-            <div className="text-medium flex cursor-pointer items-center text-base text-primary">
-              <FolderPlus className="mr-2 h-5 w-5 text-primary" />
-              <span className="cursor-pointer text-base font-medium text-primary">New folder</span>
+        {/* Actions */}
+        <div className="flex justify-between">
+          <BaseButton disabled={isLoading} className="tertiary mx-1 h-8" onClick={onCreateFolderButtonClicked}>
+            <div className="flex cursor-pointer items-center text-base font-medium text-primary">
+              <FolderSimplePlus className="mr-2 h-6 w-6" />
+              <span>New folder</span>
             </div>
           </BaseButton>
-          <Button disabled={isLoading} variant="secondary" onClick={onClose} className="mr-3">
-            {i18n.get('actions.cancel')}
-          </Button>
-          <Button
-            disabled={isLoading}
-            variant="primary"
-            className="mr-5"
-            onClick={() =>
-              onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)
-            }
-          >
-            {isLoading ? (!props.isTrash ? 'Moving...' : 'Navigating...') : !props.isTrash ? 'Move' : 'Restore here'}
-          </Button>
+
+          <div className="flex space-x-2">
+            <Button disabled={isLoading} variant="secondary" onClick={onClose}>
+              {i18n.get('actions.cancel')}
+            </Button>
+            <Button
+              disabled={isLoading}
+              variant="primary"
+              onClick={() =>
+                onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)
+              }
+            >
+              {isLoading ? (!props.isTrash ? 'Moving...' : 'Navigating...') : !props.isTrash ? 'Move' : 'Restore here'}
+            </Button>
+          </div>
         </div>
       </div>
-    </BaseDialog>
+    </Modal>
   );
 };
 

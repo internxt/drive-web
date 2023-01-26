@@ -21,7 +21,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const MenuItem = forwardRef(({ children }: { children: ReactNode }, ref) => {
     return (
-      <div className="cursor-pointer items-center py-0.5 px-2 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10">
+      <div className="flex cursor-pointer items-center py-0.5 px-2 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10">
         {children}
       </div>
     );
@@ -75,7 +75,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
         <Dropdown
           key="breadcrumbDropdownItems"
           openDirection="left"
-          classMenuItems="left-0 top-5 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow"
+          classMenuItems="left-0 top-1 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 shadow-subtle-hard"
           menuItems={hiddenItemsList}
         >
           {({ open }) => {
@@ -97,5 +97,5 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     return itemsList;
   };
 
-  return <>{<div className="flex w-full">{getItemsList()}</div>}</>;
+  return <div className="flex w-full items-center">{getItemsList()}</div>;
 }

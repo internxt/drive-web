@@ -208,164 +208,165 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   return (
     <>
       {!props.item.active && !props.item.dialog ? (
-        <div className="relative flex items-center">
-          <Menu>
-            <Menu.Button className={'flex cursor-pointer items-center rounded-md p-1 px-1.5 hover:bg-gray-5'}>
-              <div className="flex items-center">
-                <p title={breadcrumbDirtyName || props.item.label} className="max-w-xs truncate">
-                  {breadcrumbDirtyName || props.item.label}
-                </p>
-                <CaretDown className="ml-1 h-3 w-3" />
-              </div>
-            </Menu.Button>
-            <Transition
-              className={'absolute left-0'}
-              enter="transform transition duration-50 ease-out"
-              enterFrom="scale-98 opacity-0"
-              enterTo="scale-100 opacity-100"
-              leave="transform transition duration-50 ease-out"
-              leaveFrom="scale-98 opacity-100"
-              leaveTo="scale-100 opacity-0"
+        <Menu as="div" className="relative">
+          <Menu.Button
+            className="outline-none max-w-fit flex flex-1 cursor-pointer flex-row items-center truncate rounded-md p-1 px-1.5 font-medium text-gray-100 hover:bg-gray-5  
+        focus-visible:bg-gray-5"
+          >
+            <div className="max-w-fit flex flex-1 flex-row items-center truncate">
+              <span title={breadcrumbDirtyName || props.item.label} className="max-w-sm flex-1 truncate">
+                {breadcrumbDirtyName || props.item.label}
+              </span>
+              <CaretDown weight="fill" className="ml-1 h-3 w-3" />
+            </div>
+          </Menu.Button>
+          <Transition
+            className={'absolute left-0'}
+            enter="transform transition origin-top-left duration-100 ease-out"
+            enterFrom="scale-95 opacity-0"
+            enterTo="scale-100 opacity-100"
+            leave="transform transition origin-top-left duration-100 ease-out"
+            leaveFrom="scale-95 opacity-100"
+            leaveTo="scale-100 opacity-0"
+          >
+            <Menu.Items
+              className={
+                'outline-none absolute mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+              }
             >
-              <Menu.Items
-                className={
-                  'absolute mt-6 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base drop-shadow'
-                }
-              >
+              <Menu.Item>
+                {({ active }) => (
+                  <div
+                    onClick={onCreateFolderButtonClicked}
+                    className={`${
+                      active && 'bg-gray-5'
+                    } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                  >
+                    <FolderSimplePlus size={20} />
+                    <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                  </div>
+                )}
+              </Menu.Item>
+              <div className="my-0.5 mx-3 border-t border-gray-10" />
+              {!isBreadcrumbItemShared ? (
                 <Menu.Item>
                   {({ active }) => (
                     <div
-                      onClick={onCreateFolderButtonClicked}
+                      onClick={onCreateLinkButtonClicked}
                       className={`${
                         active && 'bg-gray-5'
                       } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                     >
-                      <FolderSimplePlus size={20} />
-                      <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                      <Link size={20} />
+                      <p className="ml-3">Get Link</p>
                     </div>
                   )}
                 </Menu.Item>
-                <div className="my-0.5 mx-3 border-t border-gray-10" />
-                {!isBreadcrumbItemShared ? (
+              ) : (
+                <>
                   <Menu.Item>
                     {({ active }) => (
                       <div
-                        onClick={onCreateLinkButtonClicked}
+                        onClick={onCopyLinkButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
-                        <Link size={20} />
-                        <p className="ml-3">Get Link</p>
+                        <Copy size={20} />
+                        <p className="ml-3">Copy link</p>
                       </div>
                     )}
                   </Menu.Item>
-                ) : (
-                  <>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          onClick={onCopyLinkButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <Copy size={20} />
-                          <p className="ml-3">Copy link</p>
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          onClick={onLinkSettingsButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <Gear size={20} />
-                          <p className="ml-3">Link Settings</p>
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          onClick={onDeleteLinkButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <LinkBreak size={20} />
-                          <p className="ml-3">Delete link</p>
-                        </div>
-                      )}
-                    </Menu.Item>
-                  </>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onLinkSettingsButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <Gear size={20} />
+                        <p className="ml-3">Link Settings</p>
+                      </div>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onDeleteLinkButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <LinkBreak size={20} />
+                        <p className="ml-3">Delete link</p>
+                      </div>
+                    )}
+                  </Menu.Item>
+                </>
+              )}
+              <Menu.Item>
+                {({ active }) => (
+                  <div
+                    onClick={onEditButtonClicked}
+                    className={`${
+                      active && 'bg-gray-5'
+                    } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                  >
+                    <PencilSimple size={20} />
+                    <p className="ml-3">Rename</p>
+                  </div>
                 )}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={onEditButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <PencilSimple size={20} />
-                      <p className="ml-3">Rename</p>
-                    </div>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={onMoveButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <ArrowsOutCardinal size={20} />
-                      <p className="ml-3">Move</p>
-                    </div>
-                  )}
-                </Menu.Item>
-                <div className="my-0.5 mx-3 border-t border-gray-10" />
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={onDownloadButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <DownloadSimple size={20} />
-                      <p className="ml-3">Download</p>
-                    </div>
-                  )}
-                </Menu.Item>
-                <div className="my-0.5 mx-3 border-t border-gray-10" />
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={onDeleteButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <Trash size={20} />
-                      <p className="ml-3">Move to Trash</p>
-                    </div>
-                  )}
-                </Menu.Item>
-              </Menu.Items>
-            </Transition>
-          </Menu>
-        </div>
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <div
+                    onClick={onMoveButtonClicked}
+                    className={`${
+                      active && 'bg-gray-5'
+                    } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                  >
+                    <ArrowsOutCardinal size={20} />
+                    <p className="ml-3">Move</p>
+                  </div>
+                )}
+              </Menu.Item>
+              <div className="my-0.5 mx-3 border-t border-gray-10" />
+              <Menu.Item>
+                {({ active }) => (
+                  <div
+                    onClick={onDownloadButtonClicked}
+                    className={`${
+                      active && 'bg-gray-5'
+                    } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                  >
+                    <DownloadSimple size={20} />
+                    <p className="ml-3">Download</p>
+                  </div>
+                )}
+              </Menu.Item>
+              <div className="my-0.5 mx-3 border-t border-gray-10" />
+              <Menu.Item>
+                {({ active }) => (
+                  <div
+                    onClick={onDeleteButtonClicked}
+                    className={`${
+                      active && 'bg-gray-5'
+                    } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                  >
+                    <Trash size={20} />
+                    <p className="ml-3">Move to Trash</p>
+                  </div>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Transition>
+        </Menu>
       ) : (
         <div
           ref={drop}
           className={`max-w-fit flex ${
-            props.item.isFirstPath ?? 'flex-1'
+            props.item.isFirstPath ? 'flex-shrink-0' : 'min-w-breadcrumb flex-1'
           } cursor-pointer flex-row items-center truncate p-1 font-medium ${isDraggingOverClassNames}
         ${
           !props.item.active || (props.item.isFirstPath && props.totalBreadcrumbsLength === 1)
