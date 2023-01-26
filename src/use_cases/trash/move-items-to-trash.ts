@@ -5,15 +5,7 @@ import notificationsService, { ToastType } from '../../app/notifications/service
 import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import recoverItemsFromTrash from './recover-items-from-trash';
-import { deleteDatabaseItemsFromFolder } from '../../app/database/services/database.service/utils';
-
-const getParentIdFromSelectedItems = (itemsToTrash: DriveItemData[]) => {
-  const item = itemsToTrash.find(
-    (itemToTrash) => itemToTrash.parentId !== undefined || itemToTrash.folderId !== undefined,
-  );
-  const parentFolderId = (item?.folderId ?? item?.parentId) as number;
-  return parentFolderId;
-};
+import { deleteDatabaseItems } from '../../app/drive/services/database.service';
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
@@ -23,8 +15,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
     };
   });
 
-  const parentFolderId = getParentIdFromSelectedItems(itemsToTrash);
-  await deleteDatabaseItemsFromFolder(parentFolderId, itemsToTrash);
+  await deleteDatabaseItems(itemsToTrash);
 
   store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
   store.dispatch(storageActions.clearSelectedItems());

@@ -15,9 +15,9 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import localStorageService from 'app/core/services/local-storage.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import dateService from '../../../core/services/date.service';
 import { updateDatabaseFileSourceData } from '../../services/database.service';
+import { SingletonLRUBlob } from '../../../database/services/database.service/SigletonLRUBlobsCache';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -109,8 +109,9 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
   };
 
   const checkIfDatabaseBlobIsOlderAngGetFolderBlobs = async (fileToView?: DriveFileData) => {
-    const folderBlobItems = await databaseService.get(DatabaseCollection.LevelsBlobs, fileToView?.folderId as number);
-    const databaseBlob = folderBlobItems?.find((blobItem) => blobItem?.id === fileToView?.id);
+    const fileId = fileToView?.id;
+    const sLRu = await SingletonLRUBlob.getInstance();
+    const databaseBlob = await sLRu.get(fileId?.toString() as string);
 
     const isDatabaseBlobOlder = !databaseBlob?.updatedAt
       ? true
@@ -123,23 +124,22 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
       setBlob(databaseBlob.source as Blob);
       await handleFileThumbnail(fileToView, databaseBlob.source as File);
 
-      return { isOlder: false, folderBlobItems };
+      return false;
     }
-    return { isOlder: true, folderBlobItems };
+    return true;
   };
 
   useEffect(() => {
     if (isTypeAllowed && show) {
       const abortController = new AbortController();
 
-      checkIfDatabaseBlobIsOlderAngGetFolderBlobs(file).then(({ isOlder, folderBlobItems }) => {
+      checkIfDatabaseBlobIsOlderAngGetFolderBlobs(file).then((isOlder) => {
         if (file && isOlder) {
           downloader(abortController)
             .then(async (fileBlob) => {
               setBlob(fileBlob);
 
               updateDatabaseFileSourceData({
-                databaseFolderBlobItems: folderBlobItems,
                 folderId: file?.folderId,
                 sourceBlob: fileBlob,
                 fileId: file?.id,

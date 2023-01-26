@@ -25,6 +25,7 @@ import SurveyDialog from 'app/survey/components/SurveyDialog/SurveyDialog';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import { pdfjs } from 'react-pdf';
+import { SingletonLRUBlob } from './app/database/services/database.service/SigletonLRUBlobsCache';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -55,6 +56,8 @@ class App extends Component<AppProps> {
     window.addEventListener('online', () => {
       dispatch(sessionActions.setHasConnection(true));
     });
+
+    SingletonLRUBlob.getInstance();
 
     try {
       await this.props.dispatch(
@@ -90,8 +93,15 @@ class App extends Component<AppProps> {
 
   render(): JSX.Element {
     const isDev = !envService.isProduction();
-    const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, isSurveyDialogOpen, fileViewerItem, dispatch } =
-      this.props;
+    const {
+      isInitialized,
+      isAuthenticated,
+      isFileViewerOpen,
+      isNewsletterDialogOpen,
+      isSurveyDialogOpen,
+      fileViewerItem,
+      dispatch,
+    } = this.props;
     const pathName = window.location.pathname.split('/')[1];
     let template = <PreparingWorkspaceAnimation />;
 

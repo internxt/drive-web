@@ -1,4 +1,6 @@
 import databaseService, { DatabaseCollection } from '../../database/services/database.service';
+import { SingletonLRUBlob } from '../../database/services/database.service/SigletonLRUBlobsCache';
+import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 
 const updateDatabaseFilePrewiewData = async ({
   fileId,
@@ -10,49 +12,75 @@ const updateDatabaseFilePrewiewData = async ({
   updatedAt: string;
   previewBlob: Blob;
 }): Promise<void> => {
-  const folderBlobItems = await databaseService.get(DatabaseCollection.LevelsBlobs, folderId);
-  const folderBlobsWithNewThumbnail = folderBlobItems?.map((folderBlobItem) =>
-    folderBlobItem?.id === fileId
-      ? {
-          ...folderBlobItem,
-          preview: previewBlob,
-        }
-      : folderBlobItem,
-  );
-  if (folderBlobsWithNewThumbnail)
-    databaseService.put(DatabaseCollection.LevelsBlobs, folderId as number, folderBlobsWithNewThumbnail);
+  // TODO: THIS WILL BE FINISHED IN THE TASK OF CACHE PREVIEW OF THE EPIC
+  // const sLRu = await SingletonLRUBlob.getInstance();
+  // const folderBlobItem = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
+  // sLRu.set(
+  //   fileId.toString(),
+  //   {
+  //     ...folderBlobItem,
+  //     id: fileId,
+  //     parentId: folderId,
+  //     preview: previewBlob,
+  //   },
+  //   previewBlob.size + (folderBlobItem?.source?.size ?? 0),
+  // );
 };
 
 const updateDatabaseFileSourceData = async ({
-  databaseFolderBlobItems,
   fileId,
   folderId,
   updatedAt,
   sourceBlob,
 }: {
-  databaseFolderBlobItems:
-    | {
-        id: number;
-        preview?: Blob | undefined;
-        source?: Blob | undefined;
-        updatedAt?: string | undefined;
-      }[]
-    | undefined;
   fileId: number;
   folderId: number;
   updatedAt: string;
   sourceBlob: Blob;
 }): Promise<void> => {
-  const folderItemsFiltered = databaseFolderBlobItems?.length
-    ? databaseFolderBlobItems?.filter((blobItem) => blobItem?.id !== fileId)
-    : [];
-  folderItemsFiltered.push({
-    id: fileId,
-    source: sourceBlob,
-    updatedAt: updatedAt,
-  });
+  const sLRu = await SingletonLRUBlob.getInstance();
 
-  databaseService.put(DatabaseCollection.LevelsBlobs, folderId, folderItemsFiltered);
+  sLRu.set(
+    fileId.toString(),
+    {
+      id: fileId,
+      source: sourceBlob,
+      updatedAt: updatedAt,
+      parentId: folderId,
+    },
+    sourceBlob.size,
+  );
 };
 
-export { updateDatabaseFilePrewiewData, updateDatabaseFileSourceData };
+const deleteDatabasePhotos = async (photosId: string[]): Promise<void> => {
+  photosId.forEach(async (photoId) => await databaseService.delete(DatabaseCollection.Photos, photoId));
+};
+
+const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
+  const sLRu = await SingletonLRUBlob.getInstance();
+
+  const filesToRemove = [] as DriveFileData[];
+  const foldersInFolder = items.filter((item) => {
+    if (!(item as DriveFolderData)?.isFolder) {
+      filesToRemove.push(item as DriveFileData);
+      return false;
+    }
+    return true;
+  });
+
+  if (foldersInFolder.length) {
+    await foldersInFolder.forEach(async (folder) => {
+      const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.id as number);
+
+      if (folderItems) {
+        deleteDatabaseItems(folderItems as DriveItemData[]);
+      }
+    });
+  }
+
+  filesToRemove.forEach((item) => {
+    sLRu.delete(item.id.toString(), item.size);
+  });
+};
+
+export { updateDatabaseFilePrewiewData, updateDatabaseFileSourceData, deleteDatabasePhotos, deleteDatabaseItems };
