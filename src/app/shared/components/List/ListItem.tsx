@@ -35,7 +35,7 @@ export default function ListItem<T extends { id: string }>({
       onDoubleClick={onDoubleClick}
       onClick={onClick}
       className={`group relative flex h-14 flex-row items-center pl-14 pr-5 ${
-        selected ? 'bg-primary bg-opacity-10 text-primary' : 'focus-within:bg-gray-1 hover:bg-gray-1'
+        selected ? 'bg-primary bg-opacity-10 text-gray-100' : 'focus-within:bg-gray-1 hover:bg-gray-1'
       }`}
     >
       <div
@@ -68,8 +68,8 @@ export default function ListItem<T extends { id: string }>({
       >
         <Menu as="div" className="relative">
           <Menu.Button
-            className={`focus-within:outline-primary flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
-              selected ? 'text-primary hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'
+            className={`outline-none focus-visible:outline-primary flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
+              selected ? 'text-gray-80 hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'
             }`}
           >
             <DotsThree size={24} weight="bold" />
@@ -97,10 +97,10 @@ export default function ListItem<T extends { id: string }>({
                           }}
                           className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
                             active
-                              ? 'bg-primary text-white'
+                              ? 'bg-gray-5 text-gray-100'
                               : disabled
                               ? 'pointer-events-none text-gray-40'
-                              : 'text-gray-60'
+                              : 'text-gray-80'
                           }`}
                         >
                           <div className="flex flex-row items-center space-x-2">

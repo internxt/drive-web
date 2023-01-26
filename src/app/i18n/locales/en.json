@@ -139,6 +139,18 @@
       "goToApp": "Go back to app"
     }
   },
+  "modals": {
+    "renameModal": {
+      "title": "Item already exists",
+      "titleMultipleItems": "Multiple items already exist",
+      "description": "{itemName} already exists in this location. Do you want to replace it or you want to keep both?",
+      "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
+      "replaceItem": "Replace current item",
+      "keepBoth": "Keep both",
+      "upload": "Upload",
+      "move": "Move"
+    }
+  },
   "form": {
     "fields": {
       "email": {
@@ -173,6 +185,7 @@
     "downloadingItems": "Some of the elements could not be downloaded",
     "movingItemInsideItself": "You can't move a folder inside itself",
     "movingItem": "Error when moving item/s",
+    "renamingItem": "Error when renaming item/s",
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent",
     "noSpaceAvailable": "Your Internxt Drive is full. Get more space upgrading your account.",
@@ -355,6 +368,26 @@
       "errors": {
         "409": "A folder with that name already exists in the destination folder"
       }
+    },
+    "rename-file": {
+      "status": {
+        "pending": "Pending to rename",
+        "in-process": "Renaming file",
+        "success": "File renamed",
+        "error": "Error during renaming",
+        "cancelled": "Cancelled renaming"
+      },
+      "errors": {}
+    },
+    "rename-folder": {
+      "status": {
+        "pending": "Pending to rename",
+        "in-process": "Renaming folder",
+        "success": "Folder renamed",
+        "error": "Error during renaming",
+        "cancelled": "Cancelled renaming"
+      },
+      "errors": {}
     }
   },
   "success": {
@@ -410,13 +443,21 @@
       }
     },
     "deleteItems": {
-      "advice": "This action cannot be undone."
+      "title": "Delete permanently?",
+      "advice": "This action cannot be undone.",
+      "accept": "Delete",
+      "progress": "Deleting..."
     },
     "clearTrash": {
       "title": "Empty Drive Trash?",
       "advice": "All items in the Drive Trash will be permanently deleted. This action cannot be undone.",
       "accept": "Empty Trash",
       "progress": "Emptying Trash..."
+    },
+    "uploadItems": {
+      "title": "Maximum file upload",
+      "advice": "The maximum is 1000 files per upload.",
+      "close": "Close"
     }
   },
   "appSumo": {

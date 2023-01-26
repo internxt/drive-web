@@ -15,13 +15,13 @@ export interface DriveFolderData {
   icon_id: number | null;
   isFolder: boolean;
   name: string;
+  plain_name: string;
   parentId: number;
   parent_id: number | null;
   updatedAt: string;
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
-  plain_name: string;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -42,6 +42,7 @@ export interface DriveFileData {
   folder_id: number;
   id: number;
   name: string;
+  plain_name: string | null;
   size: number;
   type: string;
   updatedAt: string;

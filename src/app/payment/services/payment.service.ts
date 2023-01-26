@@ -3,7 +3,8 @@ import { encryptPGP } from '../../crypto/services/utilspgp';
 import httpService from '../../core/services/http.service';
 import envService from '../../core/services/env.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
-import { loadStripe, RedirectToCheckoutServerOptions, Stripe, StripeError } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js/pure';
+import { RedirectToCheckoutServerOptions, Stripe, StripeError } from '@stripe/stripe-js';
 import { SdkFactory } from '../../core/factory/sdk';
 import {
   CreateCheckoutSessionPayload,
@@ -93,7 +94,9 @@ const paymentService = {
     return paymentsClient.cancelSubscription();
   },
 
-  async createCheckoutSession(payload: CreateCheckoutSessionPayload): Promise<{ sessionId: string }> {
+  async createCheckoutSession(
+    payload: CreateCheckoutSessionPayload & { mode?: string },
+  ): Promise<{ sessionId: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
     return paymentsClient.createCheckoutSession(payload);

@@ -81,6 +81,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             onBlur={onNameBlurred}
             onKeyDown={onNameEnterKeyDown}
             autoFocus
+            name="fileName"
           />
           <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
         </div>}

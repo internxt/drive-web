@@ -1,0 +1,18 @@
+{
+    "bucket": "a528a6f703f27784eb101875",
+    "index": "4956e3ee0c76e38d19c824a2d1d5c71e27c3fa2ced467de61bee7c5d589d5d42",
+    "size": 3457139,
+    "version": 2,
+    "created": "2022-11-23T15:39:30.084Z",
+    "renewal": "2023-02-21T15:39:30.084Z",
+    "mimetype": "application/octet-stream",
+    "filename": "502050eb-5e80-48c5-9650-9f0e79c7a1e8",
+    "id": "637e3eb2e616ee0007f34d9c",
+    "shards": [
+        {
+            "index": 0,
+            "hash": "7112175f0bfb2d2999d29059480453fffa075b13",
+            "url": "https://storage.gra.cloud.ovh.net/mock/637e3eb2e616ee0007f34d9c"
+        }
+    ]
+}

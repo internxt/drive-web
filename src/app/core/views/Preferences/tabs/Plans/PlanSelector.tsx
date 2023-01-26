@@ -23,7 +23,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const priceButtons = subscription?.type === 'subscription' ? 'change' : 'upgrade';
 
   const [prices, setPrices] = useState<DisplayPrice[] | null>(null);
-  const [interval, setInterval] = useState<'month' | 'year'>('year');
+  const [interval, setInterval] = useState<DisplayPrice['interval']>('year');
 
   useEffect(() => {
     paymentService.getPrices().then(setPrices);
@@ -45,6 +45,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           success_url: `${window.location.origin}/checkout/success`,
           cancel_url: window.location.href,
           customer_email: user.email,
+          mode: interval === 'lifetime' ? 'payment' : 'subscription',
         });
         localStorage.setItem('sessionId', response.sessionId);
         await paymentService.redirectToCheckout(response);
@@ -77,16 +78,10 @@ export default function PlanSelector({ className = '' }: { className?: string })
   return (
     <div className={`${className}`}>
       <div className="flex justify-center">
-        <div className="relative flex h-9 w-56 rounded-lg bg-gray-5">
-          <div
-            className={`absolute h-full w-1/2 transform p-0.5 transition-transform ${
-              interval === 'month' ? 'translate-x-0' : 'translate-x-full'
-            }`}
-          >
-            <div className="h-full w-full rounded-lg bg-white" />
-          </div>
+        <div className="flex flex-row rounded-lg bg-cool-gray-10 p-0.5 text-sm">
           <IntervalSwitch active={interval === 'month'} text="Monthly" onClick={() => setInterval('month')} />
           <IntervalSwitch active={interval === 'year'} text="Annually" onClick={() => setInterval('year')} />
+          <IntervalSwitch active={interval === 'lifetime'} text="Lifetime" onClick={() => setInterval('lifetime')} />
         </div>
       </div>
       <div className="mt-5 flex flex-col justify-center gap-y-5 lg:flex-row lg:gap-y-0 lg:gap-x-5">
@@ -118,7 +113,7 @@ function IntervalSwitch({
 }): JSX.Element {
   return (
     <button
-      className={`${active ? 'text-gray-100' : 'text-gray-50'} relative h-full w-1/2 font-medium`}
+      className={`${active ? 'bg-white text-gray-100 shadow-sm' : 'text-gray-50'} rounded-lg py-1.5 px-6 font-medium`}
       onClick={onClick}
     >
       {text}
@@ -142,13 +137,13 @@ function Price({
   disabled: boolean;
   loading: boolean;
 }): JSX.Element {
-  let amountMonthly: number;
-  let amountAnnually: number;
+  let amountMonthly: number | null = null;
+  let amountAnnually: number | null = null;
 
   if (interval === 'month') {
     amountMonthly = amount;
     amountAnnually = amount * 12;
-  } else {
+  } else if (interval === 'year') {
     amountMonthly = amount / 12;
     amountAnnually = amount;
   }
@@ -163,8 +158,12 @@ function Price({
     <div className={`${className} w-full rounded-xl border border-gray-10 p-6 lg:w-64`}>
       <h1 className="text-4xl font-medium text-primary">{bytesToString(bytes)}</h1>
       <div className="mt-5 border-t border-gray-10" />
-      <p className="mt-5 text-2xl font-medium text-gray-100">{`€${displayAmount(amountMonthly)} per month`}</p>
-      <p className=" text-gray-50">{`€${displayAmount(amountAnnually)} billed annually`}</p>
+      <p className="mt-5 text-2xl font-medium text-gray-100">
+        {interval === 'lifetime' ? `€${displayAmount(amount)}` : `€${displayAmount(amountMonthly)} per month`}
+      </p>
+      {interval !== 'lifetime' && (
+        <p className=" text-gray-50">{`€${displayAmount(amountAnnually)} billed annually`}</p>
+      )}
       <Button
         loading={loading}
         onClick={onClick}

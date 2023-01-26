@@ -15,7 +15,6 @@ export type ToastShowProps = {
   action?: { text: string; to?: string; onClick: () => void };
   duration?: number;
   closable?: boolean;
-
 };
 
 const notificationsService = {

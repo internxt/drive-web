@@ -13,6 +13,7 @@ import Preview from '../components/Preview';
 import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
+import * as Sentry from '@sentry/react';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useDispatch();
@@ -78,7 +79,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   return (
     <>
-      <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`}>
+      <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`} data-test="photos-gallery">
         {showEmpty ? (
           <Empty
             title="Your gallery is empty"
@@ -187,6 +188,7 @@ function Grid({
       className="grid gap-1 overflow-y-auto px-5"
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
       ref={listRef}
+      data-test="photos-grid"
     >
       {photos.map((photo, i) => {
         const isSelected = selected.some((el) => photo.id === el);
@@ -207,6 +209,7 @@ function Grid({
             selected={isSelected}
             photo={photo}
             key={photo.id}
+            photoId={photo.id}
           />
         );
       })}
@@ -219,23 +222,35 @@ function PhotoItem({
   onSelect,
   selected,
   photo,
+  photoId,
 }: {
   onClick: () => void;
   onSelect: () => void;
   selected: boolean;
   photo: SerializablePhoto;
+  photoId: string;
 }) {
   const [src, setSrc] = useState<string | undefined>(undefined);
   const bucketId = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
 
   useEffect(() => {
-    if (bucketId) {
+    const photoBucketId = photo.networkBucketId ? photo.networkBucketId : bucketId;
+    if (photoBucketId) {
       getPhotoPreview({
         photo,
-        bucketId,
-      }).then(setSrc);
+        bucketId: photoBucketId,
+      })
+        .then(setSrc)
+        .catch((err) => {
+          Sentry.captureException(err, {
+            extra: {
+              photoId: photo.id,
+              bucketId: photoBucketId,
+            },
+          });
+        });
     }
   }, []);
 
-  return <PhotoThumbnail onClick={onClick} onSelect={onSelect} selected={selected} src={src} />;
+  return <PhotoThumbnail onClick={onClick} onSelect={onSelect} selected={selected} src={src} photoId={photoId} />;
 }

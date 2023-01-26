@@ -1,0 +1,72 @@
+{
+    "results": [
+        {
+            "_id": "637e3eecd77420b8a8e5cca5",
+            "takenAt": "2022-11-17T10:44:47.835Z",
+            "deviceId": "637e3ee4d8426672d93a336d",
+            "height": 4000,
+            "name": "IMG20221117114447",
+            "size": 2637043,
+            "type": "jpg",
+            "userId": "637e3ee3d8426672d93a336b",
+            "width": 3008,
+            "fileId": "637e3ee9f338d10007d10e5f",
+            "previewId": "637e3ee65cec070007e3efcf",
+            "previews": [
+                {
+                    "width": 512,
+                    "height": 681,
+                    "size": 26233,
+                    "fileId": "637e3ee65cec070007e3efcf",
+                    "type": "JPEG"
+                }
+            ],
+            "hash": "1f932d36edc791f4990a7261c6a20ed4edd81cca04d79aa18c86801a867293aa",
+            "networkBucketId": "a528a6f703f27784eb101875",
+            "itemType": "PHOTO",
+            "duration": 0,
+            "status": "EXISTS",
+            "statusChangedAt": "2022-11-23T15:40:27.110Z",
+            "createdAt": "2022-11-23T15:40:28.105Z",
+            "updatedAt": "2022-11-23T15:40:28.105Z",
+            "id": "637e3eecd77420b8a8e5cca5",
+            "previewLink": "https://storage.gra.cloud.ovh.net/mock/637e3ee65cec070007e3efcf",
+            "previewIndex": "bc2200ec14d9bbdc82fb8ce3db62de27337f9437d785bd8ce95c73088ce7db4f"
+        },
+        {
+            "_id": "637e3ef1d8426672d93a336e",
+            "takenAt": "2022-11-17T10:44:46.245Z",
+            "deviceId": "637e3ee4d8426672d93a336d",
+            "height": 4000,
+            "name": "IMG20221117114446",
+            "size": 3457139,
+            "type": "jpg",
+            "userId": "637e3ee3d8426672d93a336b",
+            "width": 3008,
+            "fileId": "637e3eb2e616ee0007f34d9c",
+            "previewId": "637e3eedf338d10007d10e64",
+            "previews": [
+                {
+                    "width": 512,
+                    "height": 681,
+                    "size": 40816,
+                    "fileId": "637e3eedf338d10007d10e64",
+                    "type": "JPEG"
+                }
+            ],
+            "hash": "d717ba704e8c1ca3212bbf0e9b7643f3e3d9474b00b57ec462215cecf7f96c21",
+            "networkBucketId": "a528a6f703f27784eb101875",
+            "itemType": "PHOTO",
+            "duration": 0,
+            "status": "EXISTS",
+            "statusChangedAt": "2022-11-23T15:40:32.851Z",
+            "createdAt": "2022-11-23T15:40:33.865Z",
+            "updatedAt": "2022-11-23T15:40:33.865Z",
+            "id": "637e3ef1d8426672d93a336e",
+            "previewLink": "https://storage.gra.cloud.ovh.net/mock/637e3eedf338d10007d10e64",
+            "previewIndex": "9c7a2bc51ffd1f3a7fc17e435b7cb6ebd56670a335554ef8ee0622d8d7789ebb"
+        }
+    ],
+    "count": 2,
+    "bucketId": "a528a6f703f27784eb101875"
+}

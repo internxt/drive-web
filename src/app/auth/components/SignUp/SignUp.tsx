@@ -22,6 +22,11 @@ import Button from '../../components/Button/Button';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
+import { validateFormat } from 'app/crypto/services/keys.service';
+import { decryptTextWithKey } from 'app/crypto/services/utils';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+
+const MAX_PASSWORD_LENGTH = 20;
 
 export interface SignUpProps {
   location: {
@@ -77,6 +82,11 @@ function SignUp(props: SignUpProps): JSX.Element {
   }, [password]);
 
   function onChangeHandler(input: string) {
+    if (input.length > MAX_PASSWORD_LENGTH) {
+      setPasswordState({ tag: 'error', label: 'Password is too long' });
+      return;
+    }
+
     const result = testPasswordStrength(input, (qs.email as string) === undefined ? '' : (qs.email as string));
     if (!result.valid) {
       setPasswordState({
@@ -93,20 +103,33 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   }
 
+  async function clearKey(privateKey: string, password: string) {
+    const { privkeyDecrypted } = await validateFormat(privateKey, password);
+
+    return Buffer.from(privkeyDecrypted).toString('base64');
+  }
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoading(true);
 
     try {
       const { isNewUser } = props;
       const { email, password, token } = formData;
-      const { xUser, xToken, mnemonic } = isNewUser ? 
-        await doRegister(email, password, token) : 
-        await updateInfo(email, password);
+      const { xUser, xToken, mnemonic } = isNewUser
+        ? await doRegister(email, password, token)
+        : await updateInfo(email, password);
 
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
 
-      dispatch(userActions.setUser(xUser));
+      const privateKey = xUser.privateKey ? await clearKey(xUser.privateKey, password) : undefined;
+
+      const user = {
+        ...xUser,
+        privateKey,
+      } as UserSettings;
+
+      dispatch(userActions.setUser(user));
       await dispatch(userThunks.initializeUserThunk());
       dispatch(productsThunks.initializeThunk());
       dispatch(planThunks.initializeThunk());
@@ -117,7 +140,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email });
-      
+
       // analyticsService.trackPaymentConversion();
       // analyticsService.trackSignUp({
       //   userId: xUser.uuid,
@@ -198,6 +221,7 @@ function SignUp(props: SignUpProps): JSX.Element {
               className={passwordState ? passwordState.tag : ''}
               placeholder="Password"
               label="password"
+              maxLength={MAX_PASSWORD_LENGTH}
               register={register}
               onFocus={() => setShowPasswordIndicator(true)}
               required={true}
