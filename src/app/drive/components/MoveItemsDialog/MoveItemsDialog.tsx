@@ -118,7 +118,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           setCurrentFolderName(name);
           setDestinationId(folderId);
 
-          const folders = items?.filter((i) => { return i.isFolder; });
+          const files: DriveItemData[] = [];
+          const folders = items?.filter((i) => {
+            if (!i.isFolder) files.push(i);
+            return i.isFolder;
+          });
 
           let auxCurrentPaths: FolderPath[] = [...currentNamePaths];
           const currentIndex = auxCurrentPaths.findIndex((i) => { return i.id === folderId; });

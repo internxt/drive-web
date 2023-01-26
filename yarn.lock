@@ -1345,10 +1345,12 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@headlessui/react@^1.6.6":
-  version "1.6.6"
-  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.6.6.tgz#3073c066b85535c9d28783da0a4d9288b5354d0c"
-  integrity sha512-MFJtmj9Xh/hhBMhLccGbBoSk+sk61BlP6sJe4uQcVMtXZhCgGqd2GyIQzzmsdPdTEWGSF434CBi8mnhR6um46Q==
+"@headlessui/react@1.7.5":
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.7.5.tgz#c8864b0731d95dbb34aa6b3a60d0ee9ae6f8a7ca"
+  integrity sha512-UZSxOfA0CYKO7QDT5OGlFvesvlR1SKkawwSjwQJwt7XQItpzRKdE3ZUQxHcg4LEz3C0Wler2s9psdb872ynwrQ==
+  dependencies:
+    client-only "^0.0.1"
 
 "@humanwhocodes/config-array@^0.5.0":
   version "0.5.0"
@@ -1406,10 +1408,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/9a19de23e3330a81c0e2bace1a6a0325fc8633197cf677e44ea75e54df315b5e"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@1.4.20":
-  version "1.4.20"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.20/81a001c41ce0f909b52091c40302a87938611a8f#81a001c41ce0f909b52091c40302a87938611a8f"
-  integrity sha512-ZiTZbiX0SczypjraXCFIkpVf3vICGu2i7WgaCP4KU+9+FK7A6CDn1FYYWYPDY8GeoD9eTvJOeqlx3XBROKK2/Q==
+"@internxt/sdk@^1.4.23":
+  version "1.4.23"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.23/82bdc9c36c43344aff3741bca2c44065ba650bd9#82bdc9c36c43344aff3741bca2c44065ba650bd9"
+  integrity sha512-wC6Ph4E85ibITM2iui/NRfS5okMsSwIbmF1u91rYDkQ2CPpF56k59RJeENb66Mowoa0r/kOh0TcTQdPn8CXGTg==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -4222,6 +4224,11 @@ cli-truncate@^2.1.0:
   dependencies:
     slice-ansi "^3.0.0"
     string-width "^4.2.0"
+
+client-only@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/client-only/-/client-only-0.0.1.tgz#38bba5d403c41ab150bff64a95c85013cf73bca1"
+  integrity sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==
 
 cliui@^5.0.0:
   version "5.0.0"
@@ -8471,9 +8478,9 @@ json5@2.x, json5@^2.1.2:
     minimist "^1.2.5"
 
 json5@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/json5/-/json5-1.0.1.tgz"
-  integrity sha512-aKS4WQjPenRxiQsC93MNfjx+nbF4PAdYzmd/1JIj8HYzqfbu86beTuNgXDzPknWk0n0uARlyewZo4s++ES36Ow==
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-1.0.2.tgz#63d98d60f21b313b77c4d6da18bfa69d80e1d593"
+  integrity sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==
   dependencies:
     minimist "^1.2.0"
 

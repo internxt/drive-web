@@ -67,15 +67,15 @@ export default function List<T extends { id: string }, F extends keyof T>({
   hasMoreItems,
   menu,
   className,
- // keyboardShortcuts,
- // disableKeyboardShortcuts,
-}: ListProps<T, F>): JSX.Element {
+}: // keyboardShortcuts,
+// disableKeyboardShortcuts,
+ListProps<T, F>): JSX.Element {
   const [isScrollable, ref, node] = useIsScrollable([items]);
   const isItemSelected = (item: T) => {
     return selectedItems.some((i) => item.id === i.id);
   };
 
-  const loader = new Array(8)
+  const loader = new Array(25)
     .fill(0)
     .map((col, i) => (
       <SkinSkeletonItem
