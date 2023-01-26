@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import i18n from 'app/i18n/services/i18n.service';
 import Button from 'app/shared/components/Button/Button';
 import Input from 'app/shared/components/Input';
@@ -12,7 +10,7 @@ import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
 import { DriveFolderMetadataPayload } from 'app/drive/types/index';
 
-const CreateFolderDialog = () => {
+const CreateFolderDialog = (): JSX.Element => {
   const allItems = useAppSelector((state) => state.storage.levels);
   const namePath = useAppSelector((state) => state.storage.namePath);
   const currentBreadcrumb = namePath.slice(-1);
@@ -115,7 +113,4 @@ const CreateFolderDialog = () => {
   );
 };
 
-export default connect((state: RootState) => ({
-  user: state.user.user,
-  neededFolderId: storageSelectors.currentFolderId(state),
-}))(CreateFolderDialog);
+export default CreateFolderDialog;
