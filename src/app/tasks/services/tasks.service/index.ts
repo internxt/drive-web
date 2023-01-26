@@ -180,6 +180,14 @@ class TaskManagerService {
         title = `${numberOfPhotos} ${numberOfPhotos > 1 ? 'Photos' : 'Photo'}`;
         break;
       }
+      case TaskType.RenameFile: {
+        title = itemsLib.getItemDisplayName(task.file);
+        break;
+      }
+      case TaskType.RenameFolder: {
+        title = itemsLib.getItemDisplayName(task.folder);
+        break;
+      }
     }
 
     return title;
@@ -229,6 +237,14 @@ class TaskManagerService {
       }
       case TaskType.DownloadPhotos: {
         icon = iconService.getItemIcon(false, 'jpeg');
+        break;
+      }
+      case TaskType.RenameFile: {
+        icon = iconService.getItemIcon(false, task.file.type);
+        break;
+      }
+      case TaskType.RenameFolder: {
+        icon = iconService.getItemIcon(true, '');
         break;
       }
     }

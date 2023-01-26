@@ -87,7 +87,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
             </div>
 
             {!isAuthenticated && (
-              <Link to="https://internxt.com" className="no-underline">
+              <a href="https://internxt.com" className="no-underline" target="_blank" rel="noopener noreferrer">
                 <div
                   className="flex cursor-pointer flex-row items-center justify-center rounded-xl p-1 no-underline
                                 ring-3 ring-blue-30"
@@ -99,7 +99,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                     <span>Try out Internxt</span>
                   </div>
                 </div>
-              </Link>
+              </a>
             )}
           </div>
         </div>

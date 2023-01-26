@@ -1,4 +1,4 @@
-import { PhotoStatus, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
+import { PhotosSortBy, PhotoStatus, PhotoWithDownloadLink } from '@internxt/sdk/dist/photos';
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { photosSlice, PhotosState, SerializablePhoto } from '..';
 
@@ -19,10 +19,14 @@ export const fetchThunk = createAsyncThunk<void, void, { state: RootState }>(
 
     const { photos } = await SdkFactory.getInstance().createPhotosClient();
 
-    const data = await photos.getPhotos({ status: PhotoStatus.Exists }, skipped, PAGE_SIZE, true);
-
+    const data = await photos.getPhotosSorted(
+      { status: PhotoStatus.Exists },
+      { sortBy: PhotosSortBy.TakenAt, sortType: 'DESC' },
+      skipped,
+      PAGE_SIZE,
+      true,
+    );
     dispatch(photosSlice.actions.setBucketId(data.bucketId));
-
     const serializablePhotos = makePhotosSerializable(data.results);
     dispatch(photosSlice.actions.push(serializablePhotos));
 

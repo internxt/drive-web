@@ -87,7 +87,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           setCurrentFolderName(name);
           setDestinationId(folderId);
 
+          const files: DriveItemData[] = [];
           const folders = items?.filter((i) => {
+            if (!i.isFolder) files.push(i);
             return i.isFolder;
           });
 

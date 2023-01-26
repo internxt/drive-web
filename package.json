@@ -3,11 +3,11 @@
   "version": "1.1.0",
   "private": true,
   "dependencies": {
-    "@headlessui/react": "^1.6.6",
+    "@headlessui/react": "1.7.5",
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
-    "@internxt/sdk": "1.4.19",
+    "@internxt/sdk": "^1.4.23",
     "@reduxjs/toolkit": "^1.6.0",
     "@sentry/react": "^7.1.0",
     "@sentry/tracing": "^7.1.0",
@@ -27,6 +27,7 @@
     "idb": "^6.1.4",
     "js-file-download": "^0.4.12",
     "jszip": "=3.2.2",
+    "lint-staged": "^13.1.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "openpgp": "^4.10.10",
@@ -65,9 +66,10 @@
     "dev": "craco start",
     "start": "craco start",
     "build": "craco build",
+    "vercel:install": "yarn run add:npmrc && yarn install",
     "test:unit": "jest test/unit/",
-    "test:e2e": "cypress run --project test/e2e",
-    "cypress:open": "cypress open --project test/e2e",
+    "test:e2e": "node ./cypress-transform-dotenv.js && cypress run --project test/e2e",
+    "cypress:open": "node ./cypress-transform-dotenv.js && cypress open --project test/e2e",
     "test": "npm run test:unit && npm run test:e2e",
     "eject": "react-scripts eject",
     "format": "prettier \"{src,test}/**/*.{ts,tsx}\" --write",
@@ -77,7 +79,8 @@
     "lint:scss:fix": "yarn run lint:scss --fix",
     "lint": "yarn run lint:ts && yarn run lint:scss",
     "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
-    "analyze": "cross-env ANALYZE=true yarn build"
+    "analyze": "cross-env ANALYZE=true yarn build",
+    "add:npmrc": "echo \"registry=https://registry.yarnpkg.com/\" >> .npmrc && echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=$NPM_TOKEN\" >> .npmrc && echo \"always-auth=true\" >> .npmrc"
   },
   "browserslist": {
     "production": [
@@ -141,6 +144,11 @@
     "webpack-bundle-analyzer": "^4.5.0"
   },
   "engines": {
-    "node": ">=v14.17.0"
+    "node": "v14.17.0 - v16.18.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx,tsx,ts}": [
+      "prettier --write"
+    ]
   }
 }
