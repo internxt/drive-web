@@ -21,7 +21,6 @@ export class LRUCache<T> {
     this.lruList = lRUCacheStruture?.lruKeyList ?? [];
     this.size = size;
     this.currentSize = lRUCacheStruture?.itemsListSize ?? 0;
-    console.log({ lRUCacheStruture });
   }
 
   async get(key: string): Promise<T | undefined> {
@@ -31,7 +30,7 @@ export class LRUCache<T> {
     }
 
     this.updateLRU(key);
-    return await this.cache.get(key);
+    return this.cache.get(key);
   }
 
   async set(key: string, value: T, size: number): Promise<void> {
@@ -40,23 +39,24 @@ export class LRUCache<T> {
 
       if (existsItem) {
         this.updateLRU(key);
-      } else {
-        while (this.currentSize + size > this.size) {
-          const evictedKey = this.lruList.shift();
-
-          if (evictedKey !== undefined) {
-            this.currentSize -= await this.cache.getSize(evictedKey);
-            this.cache.delete(evictedKey);
-          }
-        }
-        this.lruList.push(key);
-        this.currentSize += size;
-        this.cache.set(key, value, size);
-        this.cache.updateLRUState({
-          lruKeyList: this.lruList.slice(),
-          itemsListSize: this.currentSize,
-        });
+        return;
       }
+
+      while (this.currentSize + size > this.size) {
+        const evictedKey = this.lruList.shift();
+
+        if (evictedKey !== undefined) {
+          this.currentSize -= await this.cache.getSize(evictedKey);
+          this.cache.delete(evictedKey);
+        }
+      }
+      this.lruList.push(key);
+      this.currentSize += size;
+      this.cache.set(key, value, size);
+      this.cache.updateLRUState({
+        lruKeyList: this.lruList.slice(),
+        itemsListSize: this.currentSize,
+      });
     }
   }
 

@@ -7,8 +7,9 @@ class LevelsBlobsCache implements ICacheStorage<DriveItemBlobData> {
     return blobItem?.source?.size || 0;
   }
 
-  async get(key: string): Promise<DriveItemBlobData | undefined> {
-    const blobItem = await databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key));
+  get(key: string): Promise<DriveItemBlobData | undefined> {
+    const blobItem = databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key));
+    console.log({ blobItem });
     return blobItem;
   }
 
@@ -34,9 +35,6 @@ const MB_450_IN_BYTES = 471859200;
 
 export class LRUFilesCacheManager {
   private static instance: LRUCache<DriveItemBlobData>;
-  private constructor() {
-    //EMPTY constructor
-  }
 
   public static getInstance(): LRUCache<DriveItemBlobData> {
     if (!LRUFilesCacheManager.instance) {
