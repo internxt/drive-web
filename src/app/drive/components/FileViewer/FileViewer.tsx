@@ -108,7 +108,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
     }
   };
 
-  const checkIfDatabaseBlobIsOlderAngGetFolderBlobs = async (fileToView?: DriveFileData) => {
+  const checkIfDatabaseBlobIsOlder = async (fileToView?: DriveFileData) => {
     const fileId = fileToView?.id;
     const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
     const databaseBlob = await lruFilesCacheManager.get(fileId?.toString() as string);
@@ -133,7 +133,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
     if (isTypeAllowed && show) {
       const abortController = new AbortController();
 
-      checkIfDatabaseBlobIsOlderAngGetFolderBlobs(file).then((isOlder) => {
+      checkIfDatabaseBlobIsOlder(file).then((isOlder) => {
         if (file && isOlder) {
           downloader(abortController)
             .then(async (fileBlob) => {
