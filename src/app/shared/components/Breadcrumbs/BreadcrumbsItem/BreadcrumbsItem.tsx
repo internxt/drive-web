@@ -198,7 +198,6 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const onMoveButtonClicked = () => {
     dispatch(storageActions.setItemsToMove(currentFolder));
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-    onItemClicked(props.items[0]);
   };
 
   const onEditButtonClicked = () => {

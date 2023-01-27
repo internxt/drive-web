@@ -135,6 +135,14 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(setItemsToMove([]));
   };
 
+  const setDriveBreadcrumb = () => {
+    const driveBreadcrumbPath = [...currentNamePaths, { id: itemsToMove[0].id, name: itemsToMove[0].name }];
+    dispatch(storageActions.popNamePathUpTo({ id: currentNamePaths[0].id, name: currentNamePaths[0].name }));
+    driveBreadcrumbPath.forEach((item) => {
+      dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
+    });
+  };
+
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
     try {
       setIsLoading(true);
@@ -153,6 +161,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
       setIsLoading(false);
       onClose();
+      setDriveBreadcrumb();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       setIsLoading(false);
