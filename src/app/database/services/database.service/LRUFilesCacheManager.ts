@@ -9,7 +9,6 @@ class LevelsBlobsCache implements ICacheStorage<DriveItemBlobData> {
 
   get(key: string): Promise<DriveItemBlobData | undefined> {
     const blobItem = databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key));
-    console.log({ blobItem });
     return blobItem;
   }
 
