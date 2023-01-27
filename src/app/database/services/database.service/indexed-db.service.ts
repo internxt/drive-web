@@ -28,6 +28,11 @@ const indexedDBService: DatabaseService = (databaseName, databaseVersion) => ({
     return content;
   },
   clear: () => idb.deleteDB(databaseName),
+  delete: async (collectionName, key) => {
+    const db = await open(databaseName, databaseVersion);
+    await db.delete(collectionName, key);
+    db.close();
+  },
 });
 
 export default indexedDBService;
