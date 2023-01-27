@@ -9,6 +9,7 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
       if (oldVersion <= 2) {
         const objectStore = db.createObjectStore('levels_blobs');
         objectStore.createIndex('parent_index' as never, 'parentId', { unique: false });
+        db.createObjectStore('lru_cache');
       }
     },
     blocked: () => undefined,

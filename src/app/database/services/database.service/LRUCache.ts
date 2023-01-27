@@ -5,6 +5,7 @@ export interface ICacheStorage<T> {
   delete(key: string): void;
   has(key: string): Promise<boolean>;
   getSize(key: string): Promise<number>;
+  updateLRUState(lruState: LRUCacheStruture): void;
 }
 
 export type LRUCacheStruture = { lruKeyList: string[]; itemsListSize: number };
@@ -20,6 +21,7 @@ export class LRUCache<T> {
     this.lruList = lRUCacheStruture?.lruKeyList ?? [];
     this.size = size;
     this.currentSize = lRUCacheStruture?.itemsListSize ?? 0;
+    console.log({ lRUCacheStruture });
   }
 
   async get(key: string): Promise<T | undefined> {
@@ -49,8 +51,12 @@ export class LRUCache<T> {
         }
         this.lruList.push(key);
         this.currentSize += size;
+        this.cache.set(key, value, size);
+        this.cache.updateLRUState({
+          lruKeyList: this.lruList.slice(),
+          itemsListSize: this.currentSize,
+        });
       }
-      this.cache.set(key, value, size);
     }
   }
 
@@ -67,6 +73,10 @@ export class LRUCache<T> {
 
     this.currentSize -= size;
     this.cache.delete(key);
+    this.cache.updateLRUState({
+      lruKeyList: this.lruList.slice(),
+      itemsListSize: this.currentSize,
+    });
   }
 
   private updateLRU(key: string) {
@@ -75,5 +85,9 @@ export class LRUCache<T> {
       this.lruList.splice(index, 1);
     }
     this.lruList.push(key);
+    this.cache.updateLRUState({
+      lruKeyList: this.lruList.slice(),
+      itemsListSize: this.currentSize,
+    });
   }
 }

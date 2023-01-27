@@ -2,6 +2,7 @@ import { DBSchema } from 'idb';
 import configService from '../../../core/services/config.service';
 import { DriveItemData } from '../../../drive/types';
 import indexedDBService from './indexed-db.service';
+import { LRUCacheStruture } from './LRUCache';
 
 export enum DatabaseProvider {
   IndexedDB = 'indexed-db',
@@ -10,6 +11,11 @@ export enum DatabaseProvider {
 export enum DatabaseCollection {
   Levels = 'levels',
   Photos = 'photos',
+  LevelsBlobs = 'levels_blobs',
+  LRU_cache = 'lru_cache',
+}
+
+export enum LRUCacheTypes {
   LevelsBlobs = 'levels_blobs',
 }
 
@@ -31,6 +37,10 @@ export interface AppDatabase extends DBSchema {
     key: number;
     value: DriveItemBlobData;
     indexes?: Record<string, IDBValidKey>;
+  };
+  lru_cache: {
+    key: LRUCacheTypes;
+    value: LRUCacheStruture;
   };
   photos: {
     key: string;

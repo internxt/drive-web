@@ -107,6 +107,7 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
               <RadioGroup.Option
                 value={option}
                 className="outline-none rounded-md ring-2 ring-primary ring-opacity-0 ring-offset-2 focus-visible:ring-opacity-50"
+                key={option.operation}
               >
                 <div className="group flex cursor-pointer flex-row items-center space-x-1.5">
                   <div
