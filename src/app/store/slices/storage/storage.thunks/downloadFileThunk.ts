@@ -11,6 +11,8 @@ import i18n from 'app/i18n/services/i18n.service';
 import errorService from 'app/core/services/error.service';
 import { TaskStatus } from 'app/tasks/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { LRUFilesCacheManager } from '../../../../database/services/database.service/LRUFilesCacheManager';
+import { saveAs } from 'file-saver';
 
 interface DownloadFileThunkOptions {
   taskId: string;
@@ -59,11 +61,19 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
         taskId: options.taskId,
         merge: {
           status: TaskStatus.Decrypting,
-          stop: async () => (abortController as { abort: (reason?: string) => void }).abort('Download cancelled')
+          stop: async () => (abortController as { abort: (reason?: string) => void }).abort('Download cancelled'),
         },
       });
 
-      await downloadService.downloadFile(file, isTeam, updateProgressCallback, abortController);
+      const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+      const cachedFile = await lruFilesCacheManager.get(file.id.toString());
+
+      if (cachedFile?.source) {
+        updateProgressCallback(100);
+        saveAs(cachedFile?.source, file.name);
+      } else {
+        await downloadService.downloadFile(file, isTeam, updateProgressCallback, abortController);
+      }
 
       tasksService.updateTask({
         taskId: options.taskId,
