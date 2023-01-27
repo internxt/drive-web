@@ -17,7 +17,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import dateService from '../../../core/services/date.service';
 import { updateDatabaseFileSourceData } from '../../services/database.service';
-import { SingletonLRUBlob } from '../../../database/services/database.service/SigletonLRUBlobsCache';
+import { LRUFilesCacheManager } from '../../../database/services/database.service/LRUFilesCacheManager';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -110,8 +110,8 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
 
   const checkIfDatabaseBlobIsOlderAngGetFolderBlobs = async (fileToView?: DriveFileData) => {
     const fileId = fileToView?.id;
-    const sLRu = await SingletonLRUBlob.getInstance();
-    const databaseBlob = await sLRu.get(fileId?.toString() as string);
+    const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+    const databaseBlob = await lruFilesCacheManager.get(fileId?.toString() as string);
 
     const isDatabaseBlobOlder = !databaseBlob?.updatedAt
       ? true

@@ -23,28 +23,28 @@ class LevelsBlobsCache implements ICacheStorage<DriveItemBlobData> {
 }
 const MB_450_IN_BYTES = 471859200;
 
-export class SingletonLRUBlob {
+export class LRUFilesCacheManager {
   private static instance: LRUCache<DriveItemBlobData>;
   private constructor() {
     //EMPTY constructor
   }
 
   public static getInstance(): LRUCache<DriveItemBlobData> {
-    if (!SingletonLRUBlob.instance) {
+    if (!LRUFilesCacheManager.instance) {
       const levelsBlobsCache = new LevelsBlobsCache();
       databaseService.getAll(DatabaseCollection.LevelsBlobs).then((allBlobs) => {
         if (allBlobs) {
           const blobsKeys = (allBlobs as DriveItemBlobData[])?.map((blobItem) => blobItem.id.toString());
           const size = (allBlobs as DriveItemBlobData[])?.reduce((acc, blob) => acc + (blob?.source?.size || 0), 0);
-          SingletonLRUBlob.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_450_IN_BYTES, {
+          LRUFilesCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_450_IN_BYTES, {
             lruKeyList: blobsKeys,
             itemsListSize: size,
           });
         } else {
-          SingletonLRUBlob.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_450_IN_BYTES);
+          LRUFilesCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_450_IN_BYTES);
         }
       });
     }
-    return SingletonLRUBlob.instance;
+    return LRUFilesCacheManager.instance;
   }
 }

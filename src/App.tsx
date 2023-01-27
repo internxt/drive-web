@@ -25,7 +25,7 @@ import SurveyDialog from 'app/survey/components/SurveyDialog/SurveyDialog';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import { pdfjs } from 'react-pdf';
-import { SingletonLRUBlob } from './app/database/services/database.service/SigletonLRUBlobsCache';
+import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -57,7 +57,7 @@ class App extends Component<AppProps> {
       dispatch(sessionActions.setHasConnection(true));
     });
 
-    SingletonLRUBlob.getInstance();
+    await LRUFilesCacheManager.getInstance();
 
     try {
       await this.props.dispatch(

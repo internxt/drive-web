@@ -1,5 +1,5 @@
 import databaseService, { DatabaseCollection } from '../../database/services/database.service';
-import { SingletonLRUBlob } from '../../database/services/database.service/SigletonLRUBlobsCache';
+import { LRUFilesCacheManager } from '../../database/services/database.service/LRUFilesCacheManager';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 
 const updateDatabaseFilePrewiewData = async ({
@@ -13,9 +13,9 @@ const updateDatabaseFilePrewiewData = async ({
   previewBlob: Blob;
 }): Promise<void> => {
   // TODO: THIS WILL BE FINISHED IN THE TASK OF CACHE PREVIEW OF THE EPIC
-  // const sLRu = await SingletonLRUBlob.getInstance();
+  // const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
   // const folderBlobItem = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
-  // sLRu.set(
+  // lruFilesCacheManager.set(
   //   fileId.toString(),
   //   {
   //     ...folderBlobItem,
@@ -23,7 +23,7 @@ const updateDatabaseFilePrewiewData = async ({
   //     parentId: folderId,
   //     preview: previewBlob,
   //   },
-  //   previewBlob.size + (folderBlobItem?.source?.size ?? 0),
+  //   previewBlob.size,
   // );
 };
 
@@ -38,9 +38,9 @@ const updateDatabaseFileSourceData = async ({
   updatedAt: string;
   sourceBlob: Blob;
 }): Promise<void> => {
-  const sLRu = await SingletonLRUBlob.getInstance();
+  const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
 
-  sLRu.set(
+  lruFilesCacheManager.set(
     fileId.toString(),
     {
       id: fileId,
@@ -57,7 +57,7 @@ const deleteDatabasePhotos = async (photosId: string[]): Promise<void> => {
 };
 
 const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
-  const sLRu = await SingletonLRUBlob.getInstance();
+  const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
 
   const filesToRemove = [] as DriveFileData[];
   const foldersInFolder = items.filter((item) => {
@@ -79,7 +79,7 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
   }
 
   filesToRemove.forEach((item) => {
-    sLRu.delete(item.id.toString(), item.size);
+    lruFilesCacheManager.delete(item.id.toString(), item.size);
   });
 };
 
