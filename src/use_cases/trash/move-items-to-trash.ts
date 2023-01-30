@@ -21,7 +21,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
   store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
   store.dispatch(storageActions.clearSelectedItems());
 
-  const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
+  const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
   await trashClient.addItemsToTrash({ items } as AddItemsToTrashPayload);
 
   const id = notificationsService.show({

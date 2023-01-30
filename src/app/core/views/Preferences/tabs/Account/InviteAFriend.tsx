@@ -56,8 +56,8 @@ export default function InviteAFriend({ className = '' }: { className?: string }
               disabled={status === 'LOADING'}
               value={email}
               onChange={setEmail}
-              label="Friend email address"
-              placeholder="Enter friend email"
+              label={i18n.get('inviteAFriend.label')}
+              placeholder={i18n.get('inviteAFriend.placeholder')}
             />
           ) : (
             <div className="flex h-9 items-center rounded-lg bg-gray-5 px-3 py-2.5 text-gray-80">

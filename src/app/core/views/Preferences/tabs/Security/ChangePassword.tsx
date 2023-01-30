@@ -84,11 +84,11 @@ function ChangePasswordModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">Change password</h1>
+      <h1 className="text-2xl font-medium text-gray-80">{i18n.get('modals.changePasswordModal.title')}</h1>
       <ValidPassword
         username={email}
         className="mt-4"
-        label="New password"
+        label={i18n.get('modals.changePasswordModal.newPassword')}
         value={passwordPayload.password}
         onChange={setPasswordPayload}
         disabled={isLoading}
@@ -99,15 +99,15 @@ function ChangePasswordModal({
         onChange={setPasswordConfirmation}
         variant="password"
         className="mt-3"
-        label="Confirm new password"
+        label={i18n.get('modals.changePasswordModal.confirmPassword')}
         accent={isConfirmationWrong ? 'error' : undefined}
-        message={isConfirmationWrong ? 'Password confirmation does not match the password' : undefined}
+        message={isConfirmationWrong ? i18n.get('modals.changePasswordModal.errors.doesntMatch') : undefined}
         disabled={isLoading}
         dataTest="new-password-confirmation"
       />
       <div className="mt-3 flex justify-end">
         <Button variant="secondary" disabled={isLoading} onClick={onClose}>
-          Cancel
+          {i18n.get('actions.cancel')}
         </Button>
         <Button
           loading={isLoading}
@@ -116,7 +116,7 @@ function ChangePasswordModal({
           className="ml-2"
           dataTest="next-button"
         >
-          Next
+          {i18n.get('actions.next')}
         </Button>
       </div>
     </Modal>
