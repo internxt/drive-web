@@ -9,18 +9,28 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import spinnerIcon from '../../../../assets/icons/spinner.svg';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { compareThumbnail, getThumbnailFrom, setCurrentThumbnail, setThumbnails, ThumbnailToUpload, uploadThumbnail } from 'app/drive/services/thumbnail.service';
+import {
+  compareThumbnail,
+  getThumbnailFrom,
+  setCurrentThumbnail,
+  setThumbnails,
+  ThumbnailToUpload,
+  uploadThumbnail,
+} from 'app/drive/services/thumbnail.service';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import localStorageService from 'app/core/services/local-storage.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
+import dateService from '../../../core/services/date.service';
+import { updateDatabaseFileSourceData } from '../../services/database.service';
+import { LRUFilesCacheManager } from '../../../database/services/database.service/LRUFilesCacheManager';
 
 interface FileViewerProps {
   file?: DriveFileData;
   onClose: () => void;
   onDownload: () => void;
-  downloader: (abortController: AbortController) => Promise<Blob>
+  downloader: (abortController: AbortController) => Promise<Blob>;
   show: boolean;
 }
 
@@ -53,65 +63,111 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const userEmail: string = localStorageService.getUser()?.email || '';
 
+  const handleFileThumbnail = async (driveFile: DriveFileData, file: File) => {
+    const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
+    const fileObject = new File([file], driveFile.name);
+    const fileUpload: FileToUpload = {
+      name: driveFile.name,
+      size: driveFile.size,
+      type: driveFile.type,
+      content: fileObject,
+      parentFolderId: driveFile.folderId,
+    };
+
+    const thumbnailGenerated = await getThumbnailFrom(fileUpload);
+
+    if (thumbnailGenerated.file && (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))) {
+      const thumbnailToUpload: ThumbnailToUpload = {
+        fileId: driveFile.id,
+        size: thumbnailGenerated.file.size,
+        max_width: thumbnailGenerated.max_width,
+        max_height: thumbnailGenerated.max_height,
+        type: thumbnailGenerated.type,
+        content: thumbnailGenerated.file,
+      };
+      const updateProgressCallback = () => {
+        return;
+      };
+      const abortController = new AbortController();
+
+      const thumbnailUploaded = await uploadThumbnail(
+        userEmail,
+        thumbnailToUpload,
+        isTeam,
+        updateProgressCallback,
+        abortController,
+      );
+
+      if (thumbnailUploaded && thumbnailGenerated.file) {
+        setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
+
+        let newThumbnails: Thumbnail[];
+        if (currentThumbnail) {
+          //Replace existing thumbnail with the new uploadedThumbnail
+          newThumbnails = driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails] : [thumbnailUploaded];
+          newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
+        } else {
+          newThumbnails =
+            driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
+        }
+        setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
+      }
+    }
+  };
+
+  const checkIfDatabaseBlobIsOlder = async (fileToView?: DriveFileData) => {
+    const fileId = fileToView?.id;
+    const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+    const databaseBlob = await lruFilesCacheManager.get(fileId?.toString() as string);
+
+    const isDatabaseBlobOlder = !databaseBlob?.updatedAt
+      ? true
+      : dateService.isDateOneBefore({
+          dateOne: databaseBlob?.updatedAt as string,
+          dateTwo: fileToView?.updatedAt as string,
+        });
+
+    if (fileToView && databaseBlob && !isDatabaseBlobOlder) {
+      setBlob(databaseBlob.source as Blob);
+      await handleFileThumbnail(fileToView, databaseBlob.source as File);
+
+      return false;
+    }
+    return true;
+  };
+
   useEffect(() => {
     if (isTypeAllowed && show) {
       const abortController = new AbortController();
 
-      downloader(abortController)
-        .then(async (fileBlob) => {
-          setBlob(fileBlob);
-          if (file) {
-            const currentThumbnail = file.thumbnails && file.thumbnails.length > 0 ? file.thumbnails[0] : null;
-            const fileObject = new File([fileBlob], file.name);
-            const fileUpload: FileToUpload = {
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              content: fileObject,
-              parentFolderId: file.folderId,
-            };
+      checkIfDatabaseBlobIsOlder(file).then((isOlder) => {
+        if (file && isOlder) {
+          downloader(abortController)
+            .then(async (fileBlob) => {
+              setBlob(fileBlob);
 
-            const thumbnailGenerated = await getThumbnailFrom(fileUpload);
+              updateDatabaseFileSourceData({
+                folderId: file?.folderId,
+                sourceBlob: fileBlob,
+                fileId: file?.id,
+                updatedAt: file?.updatedAt,
+              });
 
-            if (thumbnailGenerated && thumbnailGenerated.file && thumbnailGenerated.type &&
-              (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))) {
-
-              const thumbnailToUpload: ThumbnailToUpload = {
-                fileId: file.id,
-                size: thumbnailGenerated.file.size,
-                max_width: thumbnailGenerated.max_width,
-                max_height: thumbnailGenerated.max_height,
-                type: thumbnailGenerated.type,
-                content: thumbnailGenerated.file
-              };
-              const updateProgressCallback = () => { return; };
-              const abortController = new AbortController();
-
-              const thumbnailUploaded = await uploadThumbnail(userEmail, thumbnailToUpload, isTeam, updateProgressCallback, abortController);
-
-              if (thumbnailUploaded && thumbnailGenerated.file) {
-                setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, file as DriveItemData, dispatch);
-
-                let newThumbnails: Thumbnail[];
-                if (currentThumbnail) {
-                  //Replace existing thumbnail with the new uploadedThumbnail
-                  newThumbnails = file.thumbnails?.length > 0 ? [...file.thumbnails] : [thumbnailUploaded];
-                  newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
-                } else {
-                  newThumbnails = file.thumbnails?.length > 0 ? [...file.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
-                }
-                setThumbnails(newThumbnails, file as DriveItemData, dispatch);
+              if (file) {
+                await handleFileThumbnail(file, fileBlob as File);
               }
-            }
-          }
-        })
-        .catch(() => {
-          if (abortController.signal.aborted) {
-            return;
-          }
-        });
-      return () => abortController.abort();
-    } else if (!show) setBlob(null);
+            })
+            .catch(() => {
+              if (abortController.signal.aborted) {
+                return;
+              }
+            });
+        }
+        return () => abortController.abort();
+      });
+    } else if (!show) {
+      setBlob(null);
+    }
   }, [show]);
 
   return (

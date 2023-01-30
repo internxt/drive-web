@@ -6,6 +6,7 @@ import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import recoverItemsFromTrash from './recover-items-from-trash';
 import i18n from 'app/i18n/services/i18n.service';
+import { deleteDatabaseItems } from '../../app/drive/services/database.service';
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
@@ -14,6 +15,8 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
       type: item.isFolder ? 'folder' : 'file',
     };
   });
+
+  await deleteDatabaseItems(itemsToTrash);
 
   store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
   store.dispatch(storageActions.clearSelectedItems());
@@ -41,6 +44,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
           store.dispatch(
             storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [destinationId] }),
           );
+
           store.dispatch(storageActions.clearSelectedItems());
           await recoverItemsFromTrash(itemsToTrash, destinationId);
         }
