@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import AccountDetails from './AccountDetails';
 import DeleteAccount from './DeleteAccount';
 import InviteAFriend from './InviteAFriend';
+import Language from './Language';
 import Usage from './Usage';
 import UserHeader from './UserHeader';
 
@@ -23,6 +24,7 @@ export default function AccountTab({ className = '' }: { className?: string }): 
             </div>
             <div className="flex flex-1 flex-col space-y-8">
               <AccountDetails />
+              <Language />
               <DeleteAccount />
             </div>
           </div>
@@ -41,6 +43,7 @@ export default function AccountTab({ className = '' }: { className?: string }): 
             </div>
             <div className="flex flex-1 flex-col space-y-8">
               <DeleteAccount />
+              <Language />
             </div>
           </div>
         </div>

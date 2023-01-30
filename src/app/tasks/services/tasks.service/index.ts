@@ -16,7 +16,9 @@ import {
   DownloadPhotosTask,
 } from '../../types';
 import iconService from 'app/drive/services/icon.service';
-import i18n from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
+
+const { t } = useTranslation();
 
 class TaskManagerService {
   private tasks: TaskData[];
@@ -194,7 +196,7 @@ class TaskManagerService {
   }
 
   private getTaskNotificationSubtitle(task: TaskData): string {
-    return i18n.get(`tasks.${task.action}.status.${task.status}`, {
+    return t(`tasks.${task.action}.status.${task.status}`, {
       progress: task.progress ? (task.progress * 100).toFixed(0) : 0,
     });
   }

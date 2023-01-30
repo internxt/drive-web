@@ -38,7 +38,7 @@ import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
-import i18n from '../../../i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
@@ -57,6 +57,8 @@ import {
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
+
+const { t } = useTranslation();
 
 const PAGINATION_LIMIT = 60;
 
@@ -245,8 +247,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     [FileViewMode.List]: DriveExplorerList,
     [FileViewMode.Grid]: DriveExplorerGrid,
   };
-  const isRecents = title === i18n.get('views.recents.head');
-  const isTrash = title === i18n.get('trash.trash');
+  const isRecents = title === t('views.recents.head');
+  const isTrash = title === t('trash.trash');
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
   const itemsList = getLimitedItems();
 
@@ -307,22 +309,22 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   menuItems={[
                     <MenuItem onClick={onCreateFolderButtonClicked}>
                       <FolderSimplePlus size={20} />
-                      <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                      <p className="ml-3">{t('actions.upload.folder')}</p>
                     </MenuItem>,
                     separatorH,
                     <MenuItem onClick={onUploadFileButtonClicked}>
                       <FileArrowUp size={20} />
-                      <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
+                      <p className="ml-3">{t('actions.upload.uploadFiles')}</p>
                     </MenuItem>,
                     <MenuItem onClick={onUploadFolderButtonClicked}>
                       <UploadSimple size={20} />
-                      <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
+                      <p className="ml-3">{t('actions.upload.uploadFolder')}</p>
                     </MenuItem>,
                   ]}
                 >
                   <>
                     <div className="flex flex-row items-center space-x-2.5">
-                      <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                      <span className="font-medium">{t('actions.upload.new')}</span>
                       <Plus weight="bold" className="h-4 w-4" />
                     </div>
                   </>
@@ -404,24 +406,24 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 ) : isRecents ? (
                   <Empty
                     icon={filesEmptyImage}
-                    title={i18n.get('views.recents.empty.title')}
-                    subtitle={i18n.get('views.recents.empty.description')}
+                    title={t('views.recents.empty.title')}
+                    subtitle={t('views.recents.empty.description')}
                   />
                 ) : isTrash ? (
                   <Empty
                     icon={<EmptyTrash />}
-                    title={i18n.get('trash.empty-state.title')}
-                    subtitle={i18n.get('trash.empty-state.subtitle')}
+                    title={t('trash.empty-state.title')}
+                    subtitle={t('trash.empty-state.subtitle')}
                   />
                 ) : (
                   <Empty
                     icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-                    title={i18n.get('views.recents.empty.folderEmpty')}
-                    subtitle={i18n.get('views.recents.empty.folderEmptySubtitle')}
+                    title={t('views.recents.empty.folderEmpty')}
+                    subtitle={t('views.recents.empty.folderEmptySubtitle')}
                     action={{
                       icon: UploadSimple,
                       style: 'elevated',
-                      text: i18n.get('views.recents.empty.uploadFiles'),
+                      text: t('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
                   />

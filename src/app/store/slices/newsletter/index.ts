@@ -1,10 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import i18n from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 import newsletterService from 'app/newsletter/services/newsletterService';
 
 import { RootState } from '../..';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { referralsThunks } from '../referrals';
+
+const { t } = useTranslation();
 
 interface NewsletterState {
   isSubscribing: boolean;
@@ -35,7 +37,7 @@ export const newsletterSlice = createSlice({
         state.isSubscribing = false;
 
         notificationsService.show({
-          text: i18n.get('success.subscribeToNewsletter', { email: action.meta.arg.email }),
+          text: t('success.subscribeToNewsletter', { email: action.meta.arg.email }),
 
           type: ToastType.Info,
         });
@@ -44,7 +46,7 @@ export const newsletterSlice = createSlice({
         state.isSubscribing = false;
 
         notificationsService.show({
-          text: i18n.get('error.subscribeToNewsletter', { message: action.error.message }),
+          text: t('error.subscribeToNewsletter', { message: action.error.message }),
           type: ToastType.Error,
         });
       });

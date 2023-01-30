@@ -3,7 +3,7 @@ import { Copy, Link, XCircle } from 'phosphor-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { SdkFactory } from '../../core/factory/sdk';
-import i18n from '../../i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { RootState } from '../../store';
 import crypto from 'crypto';
@@ -12,6 +12,8 @@ import { aes } from '@internxt/lib';
 import { Network } from '../../drive/services/network.service';
 import { Transition } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+
+const { t } = useTranslation();
 
 export default function ShareDialog({
   onClose,
@@ -81,7 +83,7 @@ export default function ShareDialog({
   function onCopy() {
     if (status.tag === 'done') {
       navigator.clipboard.writeText(status.link);
-      notificationsService.show({ text: i18n.get('success.linkCopied'), type: ToastType.Success });
+      notificationsService.show({ text: t('success.linkCopied'), type: ToastType.Success });
       onClose();
     }
   }
@@ -115,13 +117,13 @@ export default function ShareDialog({
         />
         <h1 className="mt-4 text-xl font-semibold text-gray-80">
           {numberOfSelectedItems > 1
-            ? i18n.get('modals.sharePhotosModal.multiTitle', { item: numberOfSelectedItems })
-            : i18n.get('modals.sharePhotosModal.singleTitle', { item: numberOfSelectedItems })}
+            ? t('modals.sharePhotosModal.multiTitle', { item: numberOfSelectedItems })
+            : t('modals.sharePhotosModal.singleTitle', { item: numberOfSelectedItems })}
         </h1>
-        <p className="mt-3 ml-5 text-left font-medium text-gray-80">{i18n.get('modals.sharePhotosModal.options')}</p>
+        <p className="mt-3 ml-5 text-left font-medium text-gray-80">{t('modals.sharePhotosModal.options')}</p>
         <div className="mt-1 rounded-lg bg-gray-5 p-4 text-left">
           <div className="flex font-medium text-gray-80">
-            <p>{i18n.get('modals.sharePhotosModal.openCount')}</p>
+            <p>{t('modals.sharePhotosModal.openCount')}</p>
             <input
               disabled={status.tag !== 'ready'}
               className="outline-none mx-2 inline-block w-12 rounded-md border border-transparent bg-white px-1 font-medium text-gray-80 focus:border-primary-dark focus:ring-2 focus:ring-primary focus:ring-opacity-10 disabled:bg-gray-10"
@@ -130,14 +132,14 @@ export default function ShareDialog({
               value={views}
               onChange={(e) => setViews(parseInt(e.target.value))}
             />
-            <p>{i18n.get('modals.sharePhotosModal.times')}</p>
+            <p>{t('modals.sharePhotosModal.times')}</p>
             {status.tag === 'done' && (
               <button className="ml-4 text-sm font-medium text-primary" onClick={goBackToStart}>
-                {i18n.get('modals.sharePhotosModal.change')}
+                {t('modals.sharePhotosModal.change')}
               </button>
             )}
           </div>
-          <p className="text-sm text-gray-40">{i18n.get('modals.sharePhotosModal.limit')}</p>
+          <p className="text-sm text-gray-40">{t('modals.sharePhotosModal.limit')}</p>
         </div>
         <div className="mt-3 flex h-10 space-x-2">
           {status.tag === 'ready' ? (
@@ -146,25 +148,25 @@ export default function ShareDialog({
                 onClick={onClose}
                 className="flex-1 rounded-lg bg-gray-5 font-medium text-gray-80 active:bg-gray-10"
               >
-                {i18n.get('modals.sharePhotosModal.buttons.cancel')}
+                {t('modals.sharePhotosModal.buttons.cancel')}
               </button>
               <button
                 onClick={onCreateShare}
                 className="flex flex-1 items-center justify-center rounded-lg bg-primary font-medium text-white active:bg-primary-dark"
               >
-                <p>{i18n.get('modals.sharePhotosModal.buttons.create')}</p> <Link className="ml-3" size={20} />
+                <p>{t('modals.sharePhotosModal.buttons.create')}</p> <Link className="ml-3" size={20} />
               </button>
             </>
           ) : status.tag === 'loading' ? (
             <button disabled className="flex-1 rounded-lg bg-gray-5 font-medium text-gray-80 active:bg-gray-10">
-              {i18n.get('modals.sharePhotosModal.buttons.creating')}
+              {t('modals.sharePhotosModal.buttons.creating')}
             </button>
           ) : (
             <button
               onClick={onCopy}
               className="flex flex-1 items-center justify-center rounded-lg bg-primary font-medium text-white active:bg-primary-dark"
             >
-              <p>{i18n.get('modals.sharePhotosModal.buttons.copyLink')}</p> <Copy className="ml-3" size={20} />
+              <p>{t('modals.sharePhotosModal.buttons.copyLink')}</p> <Copy className="ml-3" size={20} />
             </button>
           )}
         </div>

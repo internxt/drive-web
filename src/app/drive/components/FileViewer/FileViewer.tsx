@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from '../../types/file-types';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
-import i18n from '../../../i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
@@ -25,6 +25,8 @@ import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import dateService from '../../../core/services/date.service';
 import { updateDatabaseFileSourceData } from '../../services/database.service';
 import { LRUFilesCacheManager } from '../../../database/services/database.service/LRUFilesCacheManager';
+
+const { t } = useTranslation();
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -212,7 +214,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
                       space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
                   >
                     <img className="mr-2 animate-spin" src={spinnerIcon} alt="" />
-                    <span>{i18n.get('drive.loadingFile')}</span>
+                    <span>{t('drive.loadingFile')}</span>
                   </div>
                 )}
               </div>
@@ -223,7 +225,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
               className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
                           space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
             >
-              <span>{i18n.get('error.noFilePreview')}</span>
+              <span>{t('error.noFilePreview')}</span>
             </div>
           )}
 
@@ -261,7 +263,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
                           ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
               >
                 <UilImport height="20" width="20" />
-                <span className="font-medium">{i18n.get('actions.download')}</span>
+                <span className="font-medium">{t('actions.download')}</span>
               </button>
             </div>
           </div>

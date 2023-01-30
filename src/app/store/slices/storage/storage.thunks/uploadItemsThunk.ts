@@ -9,7 +9,7 @@ import { uiActions } from '../../ui';
 import { TaskStatus, TaskType, UploadFileTask } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'app/core/services/error.service';
-import i18n from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 import { renameFile } from 'app/crypto/services/utils';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
@@ -18,6 +18,8 @@ import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import fileService from 'app/drive/services/file.service';
 import { SdkFactory } from '../../../../core/factory/sdk';
+
+const { t } = useTranslation();
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -228,7 +230,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
-      throw new Error(i18n.get('error.uploadingItems'));
+      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -396,7 +398,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
       for (const error of errors) {
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
-      throw new Error(i18n.get('error.uploadingItems'));
+      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -590,7 +592,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
-      throw new Error(i18n.get('error.uploadingItems'));
+      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -774,7 +776,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
-      throw new Error(i18n.get('error.uploadingItems'));
+      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -788,7 +790,7 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
 
       if (requestOptions?.showErrors) {
         notificationsService.show({
-          text: i18n.get('error.uploadingFile', { reason: action.error.message || '' }),
+          text: t('error.uploadingFile', { reason: action.error.message || '' }),
           type: ToastType.Error,
         });
       }

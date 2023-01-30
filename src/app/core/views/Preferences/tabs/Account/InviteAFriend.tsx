@@ -4,7 +4,7 @@ import { useAppSelector } from 'app/store/hooks';
 import { CheckCircle, Info, Question } from 'phosphor-react';
 import { useEffect, useState } from 'react';
 import userService from '../../../../../auth/services/user.service';
-import i18n from '../../../../../i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
@@ -13,6 +13,8 @@ import Modal from '../../../../../shared/components/Modal';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import errorService from '../../../../services/error.service';
 import Section from '../../components/Section';
+
+const { t } = useTranslation();
 
 export default function InviteAFriend({ className = '' }: { className?: string }): JSX.Element {
   const [email, setEmail] = useState('');
@@ -30,13 +32,13 @@ export default function InviteAFriend({ className = '' }: { className?: string }
       setStatus('LOADING');
       await userService.inviteAFriend(email);
       setEmail('');
-      notificationsService.show({ text: i18n.get('success.inviteAFriend', { email }), type: ToastType.Info });
+      notificationsService.show({ text: t('success.inviteAFriend', { email }), type: ToastType.Info });
       setStatus('READY');
     } catch (err) {
       const castedError = errorService.castError(err);
       if (castedError.message !== 'Mail invitation daily limit reached') {
         notificationsService.show({
-          text: i18n.get('error.inviteAFriend', { message: castedError.message }),
+          text: t('error.inviteAFriend', { message: castedError.message }),
           type: ToastType.Error,
         });
         setStatus('READY');
@@ -47,33 +49,33 @@ export default function InviteAFriend({ className = '' }: { className?: string }
   }
 
   return (
-    <Section className={className} title={i18n.get('inviteAFriend.title')}>
+    <Section className={className} title={t('inviteAFriend.title')}>
       <Card>
-        <p className="text-gray-80">{i18n.get('inviteAFriend.description', { N: inviteAFriendReferral?.steps })}</p>
+        <p className="text-gray-80">{t('inviteAFriend.description', { N: inviteAFriendReferral?.steps })}</p>
         <div className="mt-3">
           {status !== 'CANT_INVITE_MORE' ? (
             <Input
               disabled={status === 'LOADING'}
               value={email}
               onChange={setEmail}
-              label={i18n.get('inviteAFriend.label')}
-              placeholder={i18n.get('inviteAFriend.placeholder')}
+              label={t('inviteAFriend.label') as string}
+              placeholder={t('inviteAFriend.placeholder') as string}
             />
           ) : (
             <div className="flex h-9 items-center rounded-lg bg-gray-5 px-3 py-2.5 text-gray-80">
               <Info size={18} />
-              <p className="ml-1.5 text-sm">{i18n.get('inviteAFriend.errors.dailyEmailLimit')}</p>
+              <p className="ml-1.5 text-sm">{t('inviteAFriend.errors.dailyEmailLimit')}</p>
             </div>
           )}
         </div>
         <div className="mt-5 flex">
           {status !== 'CANT_INVITE_MORE' && (
             <Button loading={status === 'LOADING'} onClick={onInvite} className="mr-4" variant="secondary">
-              {i18n.get('inviteAFriend.actions.sendInvitation')}
+              {t('inviteAFriend.actions.sendInvitation')}
             </Button>
           )}
           <button onClick={() => setModalOpen(true)} className="font-medium text-primary underline">
-            {i18n.get('inviteAFriend.actions.seeInvitations')}
+            {t('inviteAFriend.actions.seeInvitations')}
           </button>
         </div>
       </Card>
@@ -105,13 +107,13 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
     try {
       await userService.inviteAFriend(email);
       notificationsService.show({
-        text: i18n.get('modals.friendsInvitedModal.resentInvitation'),
+        text: t('modals.friendsInvitedModal.resentInvitation'),
         type: ToastType.Info,
       });
     } catch (err) {
       const castedError = errorService.castError(err);
       notificationsService.show({
-        text: i18n.get('modals.friendsInvitedModal.resendError', {
+        text: t('modals.friendsInvitedModal.resendError', {
           reason: castedError.message,
         }),
         type: ToastType.Error,
@@ -124,16 +126,16 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-medium text-gray-80">{i18n.get('modals.friendsInvitedModal.title')}</h1>
+        <h1 className="text-2xl font-medium text-gray-80">{t('modals.friendsInvitedModal.title')}</h1>
         <div className="flex">
           <div className="flex h-7 items-center rounded-md bg-gray-5 px-2 text-gray-80">
             <Question size={14} />
-            <p className="ml-1 text-xs">{i18n.get('modals.friendsInvitedModal.pending')}</p>
+            <p className="ml-1 text-xs">{t('modals.friendsInvitedModal.pending')}</p>
             <p className="ml-2 text-sm font-medium">{numberOfPendingInvites}</p>
           </div>
           <div className="ml-2 flex h-7 items-center rounded-md bg-gray-5 px-2 text-gray-80">
             <CheckCircle weight="fill" className="text-green" size={14} />
-            <p className="ml-1 text-xs">{i18n.get('modals.friendsInvitedModal.accepted')}</p>
+            <p className="ml-1 text-xs">{t('modals.friendsInvitedModal.accepted')}</p>
             <p className="ml-2 text-sm font-medium">{numberOfAcceptedInvites}</p>
           </div>
         </div>
@@ -143,7 +145,7 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
           <div className="mt-4 flex justify-between border-b border-gray-5 px-3 pb-1 font-medium text-gray-80">
             <div className="flex items-center">
               <Info size={20} />
-              <p className="ml-2">{i18n.get('modals.friendsInvitedModal.email')}</p>
+              <p className="ml-2">{t('modals.friendsInvitedModal.email')}</p>
             </div>
             <p>Total: {invites.length}</p>
           </div>
@@ -163,7 +165,7 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
                   disabled={resendingEmail === invite.guestEmail}
                   onClick={() => onResend(invite.guestEmail)}
                 >
-                  {i18n.get('modals.friendsInvitedModal.resend')}
+                  {t('modals.friendsInvitedModal.resend')}
                 </button>
               )}
             </div>
@@ -174,7 +176,7 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
           {isLoading ? (
             <Spinner className="h-8 w-8 text-gray-50" />
           ) : (
-            <p className="font-medium text-gray-50">{i18n.get('modals.friendsInvitedModal.empty')}</p>
+            <p className="font-medium text-gray-50">{t('modals.friendsInvitedModal.empty')}</p>
           )}
         </div>
       )}

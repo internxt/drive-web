@@ -4,11 +4,13 @@ import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
 import { TaskStatus } from '../../types';
 import { useTaskManagerGetNotifications } from '../../hooks';
 import tasksService from '../../services/tasks.service';
-import i18n from '../../../i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 import { uiActions } from '../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { CaretDown, CircleNotch, X } from 'phosphor-react';
+
+const { t } = useTranslation();
 
 const TaskLogger = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -63,13 +65,13 @@ const TaskLogger = (): JSX.Element => {
       <div className="flex select-none justify-between border-b border-gray-10 bg-gray-5 px-3 py-2.5">
         <div className="flex w-max items-center text-sm font-medium text-gray-60">
           {hasFinished ? (
-            <span>{i18n.get('tasks.messages.allProcessesHaveFinished')}</span>
+            <span>{t('tasks.messages.allProcessesHaveFinished')}</span>
           ) : (
             <Fragment>
               <CircleNotch size={16} className="mr-2 animate-spin text-gray-60" weight="bold" />
 
               <span>
-                {i18n.get('tasks.create-folder.taskLogger.processing', {
+                {t('tasks.create-folder.taskLogger.processing', {
                   pending: Object.values(finishedNotifications).length,
                   finished: allNotifications.length,
                 })}

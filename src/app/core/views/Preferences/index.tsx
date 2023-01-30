@@ -1,10 +1,10 @@
-import i18n from 'app/i18n/services/i18n.service';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
 import PlansTab from './tabs/Plans';
 import SecurityTab from './tabs/Security';
+import { useTranslation } from 'react-i18next';
 
 const PREFERENCES_TABS = ['account', 'billing', 'plans', 'security'] as const;
 type PreferencesTabID = typeof PREFERENCES_TABS[number];
@@ -15,15 +15,17 @@ export const TabContext = createContext<{
 }>({ activeTab: 'account', setActiveTab: () => undefined });
 
 export default function Preferences(): JSX.Element {
+  const { t } = useTranslation();
+
   const TABS: {
     id: PreferencesTabID;
     label: string;
     component: React.FunctionComponent<{ className?: string }>;
   }[] = [
-    { id: 'account', label: i18n.get('views.account.tabs.account.label'), component: AccountTab },
-    { id: 'billing', label: i18n.get('views.account.tabs.billing.label'), component: BillingTab },
-    { id: 'plans', label: i18n.get('views.account.tabs.plans.label'), component: PlansTab },
-    { id: 'security', label: i18n.get('views.account.tabs.security.label'), component: SecurityTab },
+    { id: 'account', label: t('views.account.tabs.account.label'), component: AccountTab },
+    { id: 'billing', label: t('views.account.tabs.billing.label'), component: BillingTab },
+    { id: 'plans', label: t('views.account.tabs.plans.label'), component: PlansTab },
+    { id: 'security', label: t('views.account.tabs.security.label'), component: SecurityTab },
   ];
 
   const [activeTab, setActiveTab] = useState<PreferencesTabID>('account');

@@ -5,8 +5,10 @@ import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import { uiActions } from 'app/store/slices/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import i18n from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 import { newsletterThunks } from 'app/store/slices/newsletter';
+
+const { t } = useTranslation();
 
 const NewsletterDialog = (props: { isOpen: boolean }): JSX.Element => {
   const user = useAppSelector((state) => state.user.user);
@@ -25,18 +27,18 @@ const NewsletterDialog = (props: { isOpen: boolean }): JSX.Element => {
   return (
     <BaseDialog
       isOpen={props.isOpen}
-      title={i18n.get('newsletter.dialog.title')}
+      title={t('newsletter.dialog.title')}
       panelClasses="px-6 py-8 w-156"
       onClose={onClose}
     >
       <span className="newsletter mt-2 block w-full px-8 text-center text-sm text-neutral-100">
-        {i18n.get('newsletter.dialog.message')}
+        {t('newsletter.dialog.message')}
       </span>
 
       <div className="mt-6 flex">
         <input
           className="no-ring semi-dense mr-2 flex-grow border border-neutral-30"
-          placeholder={i18n.get('form.fields.email.placeholder')}
+          placeholder={t('form.fields.email.placeholder') as string}
           type="email"
           value={email}
           disabled={true}
@@ -48,7 +50,7 @@ const NewsletterDialog = (props: { isOpen: boolean }): JSX.Element => {
           className="primary"
           onClick={onSubscribeButtonClicked}
         >
-          {i18n.get('actions.subscribe')}
+          {t('actions.subscribe') as string}
         </BaseButton>
       </div>
     </BaseDialog>

@@ -11,9 +11,11 @@ import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks
 import { uiActions } from '../../../store/slices/ui';
 import BackupsAsFoldersListItem from './BackupsAsFoldersListItem';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
-import i18n from '../../../i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { deleteFile } from '../../../drive/services/file.service';
+
+const { t } = useTranslation();
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -80,10 +82,10 @@ export default function BackupsAsFoldersList({
        bg-white py-3 text-sm font-semibold text-neutral-400"
         >
           <div className="box-content flex w-0.5/12 items-center justify-start pl-3"></div>
-          <div className="flex flex-grow items-center px-3">{i18n.get('drive.list.columns.name')}</div>
+          <div className="flex flex-grow items-center px-3">{t('drive.list.columns.name')}</div>
           <div className="hidden w-2/12 items-center xl:flex"></div>
-          <div className="hidden w-3/12 items-center lg:flex">{i18n.get('drive.list.columns.modified')}</div>
-          <div className="flex w-2/12 items-center">{i18n.get('drive.list.columns.size')}</div>
+          <div className="hidden w-3/12 items-center lg:flex">{t('drive.list.columns.modified')}</div>
+          <div className="flex w-2/12 items-center">{t('drive.list.columns.size')}</div>
           <div className="flex w-1/12 items-center">Actions</div>
         </div>
       )}
