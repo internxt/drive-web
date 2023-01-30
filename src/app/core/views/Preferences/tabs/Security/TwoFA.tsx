@@ -96,13 +96,16 @@ function EnableModal({
   }, [isOpen]);
 
   const [step, setStep] = useState(0);
-  const steps = ['Download Authy', 'Scan QR with the 2FA app', 'Save backup key', 'Confirm 2FA activation'];
+  const steps = [
+    i18n.get('views.account.tabs.security.2FA.modal.steps.download.title'),
+    i18n.get('views.account.tabs.security.2FA.modal.steps.qr.title'),
+    i18n.get('views.account.tabs.security.2FA.modal.steps.backup-key.title'),
+    i18n.get('views.account.tabs.security.2FA.modal.steps.enable.title'),
+  ];
 
   const downloadStep = (
     <div className="pt-2 pb-5">
-      <p className="text-gray-80">
-        We recomend using Authy, but you can setup the 2FA process with any other 2FA of your choice
-      </p>
+      <p className="text-gray-80">{i18n.get('views.account.tabs.security.2FA.modal.steps.download.description')}</p>
       <div className="mt-2 flex flex-row items-center justify-center space-x-4">
         <a href="https://apps.apple.com/us/app/authy/id494168017" target="_blank" rel="noreferrer">
           <img src={appStoreIcon} height={40} width={135} alt="App Store" />
@@ -129,11 +132,11 @@ function EnableModal({
       {qr ? (
         <>
           <img className="-m-3" src={qr.img} alt="Bidi code" />
-          <p className="ml-8 text-gray-50">OR</p>
+          <p className="ml-8 text-gray-50">{i18n.get('views.account.tabs.security.2FA.modal.or')}</p>
           <div className="ml-8 flex flex-col items-center">
             <Copyable className="w-60" text={qr.key} />
             <p className="mt-2 px-2 text-center text-sm text-gray-60">
-              If you are unable to scan the QR, insert this code into the app
+              {i18n.get('views.account.tabs.security.2FA.modal.steps.qr.description')}
             </p>
           </div>
         </>
@@ -149,7 +152,7 @@ function EnableModal({
       <div className="mt-2 flex items-center">
         <Warning size={24} className="text-yellow" style={{ marginLeft: '83px' }} weight="fill" />
         <p className="ml-2 w-64 text-sm text-gray-60">
-          Copy this code and keep it secure, you will need it in case you lose your device.
+          {i18n.get('views.account.tabs.security.2FA.modal.steps.backup-key.description')}
         </p>
       </div>
     </div>
@@ -175,12 +178,14 @@ function EnableModal({
   const activateStep = (
     <div className="py-5">
       <Input
-        label="Two-factor authenticacion code"
+        label={i18n.get('views.account.tabs.security.2FA.modal.2FALabelCode')}
         value={activateValue}
         disabled={activateState === 'loading'}
         accent={activateState === 'error' ? 'error' : undefined}
         onChange={setActivateValue}
-        message={activateState === 'error' ? 'Incorrect authentication code, please try again' : undefined}
+        message={
+          activateState === 'error' ? i18n.get('views.account.tabs.security.2FA.modal.errors.incorrect') : undefined
+        }
       />
     </div>
   );
@@ -189,10 +194,13 @@ function EnableModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">Two factor authentication</h1>
+      <h1 className="text-2xl font-medium text-gray-80">{i18n.get('views.account.tabs.security.2FA.modal.title')}</h1>
       <h2 className="mt-5 flex items-center">
         <p className="mt-0.5 text-gray-50">
-          {step + 1} of {steps.length}
+          {i18n.get('views.account.tabs.security.2FA.modal.stepsLabel', {
+            current: step + 1,
+            total: steps.length,
+          })}
         </p>
         <p className="ml-2 text-xl font-medium text-gray-80">{steps[step]}</p>
       </h2>
@@ -203,16 +211,16 @@ function EnableModal({
           onClick={step === 0 ? onClose : () => setStep(step - 1)}
           disabled={activateState === 'loading'}
         >
-          {step === 0 ? 'Cancel' : 'Back'}
+          {step === 0 ? i18n.get('actions.cancel') : i18n.get('actions.back')}
         </Button>
         <div className="ml-2">
           {step !== steps.length - 1 ? (
             <Button onClick={() => setStep(step + 1)} disabled={qr === null && step === 1}>
-              Next
+              {i18n.get('actions.next')}
             </Button>
           ) : (
             <Button onClick={handleActivate} disabled={activateValue.length < 6} loading={activateState === 'loading'}>
-              Enable 2FA
+              {i18n.get('views.account.tabs.security.2FA.modal.button')}
             </Button>
           )}
         </div>
@@ -262,22 +270,22 @@ function DisableModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">Disable Two-Factor Authentication</h1>
+      <h1 className="text-2xl font-medium text-gray-80">{i18n.get('views.account.tabs.security.2FA.titleDisable')}</h1>
       <Input
         className="mt-4"
-        label="Two-Factor Authentication code"
+        label={i18n.get('views.account.tabs.security.2FA.modal.2FALabelCode')}
         disabled={status === 'loading'}
         accent={status === 'error' ? 'error' : undefined}
-        message={status === 'error' ? 'The code is not correct, try again' : undefined}
+        message={status === 'error' ? i18n.get('views.account.tabs.security.2FA.modal.errors.incorrect') : undefined}
         value={authCode}
         onChange={setAuthCode}
       />
       <div className="mt-4 flex justify-end">
         <Button onClick={onClose} variant="secondary" disabled={status === 'loading'}>
-          Cancel
+          {i18n.get('actions.cancel')}
         </Button>
         <Button className="ml-2" loading={status === 'loading'} onClick={handleDisable} disabled={authCode.length < 6}>
-          Disable
+          {i18n.get('actions.disable')}
         </Button>
       </div>
     </Modal>
