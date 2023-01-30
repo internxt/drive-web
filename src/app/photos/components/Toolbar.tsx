@@ -33,7 +33,15 @@ export default function Toolbar({
   );
 }
 
-function Icon({ Target, onClick, dataTest }: { Target: typeof DownloadSimple; onClick?: () => void; dataTest: string }) {
+function Icon({
+  Target,
+  onClick,
+  dataTest,
+}: {
+  Target: typeof DownloadSimple;
+  onClick?: () => void;
+  dataTest: string;
+}) {
   return (
     <div
       className={`${

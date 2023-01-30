@@ -128,6 +128,11 @@ export interface FolderPath {
   id: number;
 }
 
+export interface FolderPathDialog {
+  name: string;
+  id: number;
+}
+
 export enum FileViewMode {
   List = 'list',
   Grid = 'grid',

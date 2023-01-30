@@ -17,14 +17,18 @@ export default function PhotoThumbnail({
 }): JSX.Element {
   return (
     <div
-      className={`${className} group relative ${src ? 'cursor-pointer' : ''} ${selected && 'p-1.5'} transition-all duration-100 ease-in-out`}
+      className={`${className} group relative ${src ? 'cursor-pointer' : ''} ${
+        selected && 'p-1.5'
+      } transition-all duration-100 ease-in-out`}
       style={{ aspectRatio: '1/1' }}
       data-test={'photos-item-' + photoId}
     >
       {src ? (
         <img
           onClick={onClick}
-          className={`h-full w-full object-cover ${selected && 'rounded-lg brightness-80 filter'} transition-all duration-100 ease-in-out`}
+          className={`h-full w-full object-cover ${
+            selected && 'rounded-lg brightness-80 filter'
+          } transition-all duration-100 ease-in-out`}
           src={src}
           draggable="false"
         />

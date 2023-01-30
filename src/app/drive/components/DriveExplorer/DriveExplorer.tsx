@@ -12,6 +12,7 @@ import {
   ClockCounterClockwise,
   Link,
   PencilSimple,
+  CaretDown,
 } from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -34,6 +35,7 @@ import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/Cre
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
+import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
@@ -285,6 +287,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <NameCollisionContainer />
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
+      <EditFolderNameDialog />
       <UploadItemsFailsDialog />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
@@ -301,9 +304,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
                   }
                   openDirection={'right'}
-                  classMenuItems={
-                    'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow mt-6'
-                  }
+                  classMenuItems={'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 mt-1'}
                   menuItems={[
                     <MenuItem onClick={onCreateFolderButtonClicked}>
                       <FolderSimplePlus size={20} />
@@ -320,12 +321,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     </MenuItem>,
                   ]}
                 >
-                  <>
-                    <div className="flex flex-row items-center space-x-2.5">
-                      <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                  <div className="flex flex-row items-center space-x-2.5">
+                    <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                    <div className="flex items-center space-x-0.5">
                       <Plus weight="bold" className="h-4 w-4" />
+                      <CaretDown weight="fill" className="h-3 w-3" />
                     </div>
-                  </>
+                  </div>
                 </Dropdown>
                 {hasAnyItemSelected && (
                   <>
