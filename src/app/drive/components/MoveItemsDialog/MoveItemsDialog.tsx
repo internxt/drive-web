@@ -20,7 +20,6 @@ import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
 
-
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
   isTrash?: boolean;
@@ -41,7 +40,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const newFolderIsOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
-
 
   const onClose = (): void => {
     dispatch(uiActions.setIsMoveItemsDialogOpen(false));
@@ -77,7 +75,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     }
   };
 
-
   const breadcrumbItems = (currentFolderPaths): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
 
@@ -110,10 +107,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   }, [newFolderIsOpen]);
 
   const onShowFolderContentClicked = (folderId: number, name: string): void => {
-    dispatch(fetchFolderContentThunk(folderId)).unwrap().then(() => {
-      setIsLoading(true);
-      databaseService.get(DatabaseCollection.Levels, folderId).then(
-        (items) => {
+    dispatch(fetchFolderContentThunk(folderId))
+      .unwrap()
+      .then(() => {
+        setIsLoading(true);
+        databaseService.get(DatabaseCollection.Levels, folderId).then((items) => {
           setCurrentFolderId(folderId);
           setCurrentFolderName(name);
           setDestinationId(folderId);
@@ -125,7 +123,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           });
 
           let auxCurrentPaths: FolderPath[] = [...currentNamePaths];
-          const currentIndex = auxCurrentPaths.findIndex((i) => { return i.id === folderId; });
+          const currentIndex = auxCurrentPaths.findIndex((i) => {
+            return i.id === folderId;
+          });
           if (currentIndex > -1) {
             auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex + 1);
             dispatch(storageActions.popNamePathUpTo({ id: folderId, name: name }));
@@ -144,9 +144,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             setCurrentFolderName(name);
           }
           setIsLoading(false);
-        }
-      );
-    });
+        });
+      });
   };
 
   const onFolderClicked = (folderId: number, name?: string): void => {
@@ -158,57 +157,106 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     name && setSelectedFolderName(name);
   };
 
-  const title = `${props.isTrash ? 'Restore' : 'Move'} ${itemsToMove.length > 1 ? (itemsToMove.length) + ' items' : ('"' + itemsToMove[0]?.name + '"')}`;
+  const title = `${props.isTrash ? i18n.get('drive.dropdown.restore') : i18n.get('actions.move')} ${
+    itemsToMove.length > 1 ? itemsToMove.length + ' items' : '"' + itemsToMove[0]?.name + '"'
+  }`;
 
   return (
-    <BaseDialog isOpen={isOpen} titleClasses='flex mx-5 text-left font-medium' panelClasses='text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
-        transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-5 rounded-lg overflow-hidden bg-white' title={title}
-      onClose={onClose} closeClass={'hidden'}>
+    <BaseDialog
+      isOpen={isOpen}
+      titleClasses="flex mx-5 text-left font-medium"
+      panelClasses="text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
+        transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-5 rounded-lg overflow-hidden bg-white"
+      title={title}
+      onClose={onClose}
+      closeClass={'hidden'}
+    >
       <div style={{ width: '512px' }}>
         <CreateFolderDialog currentFolderId={currentFolderId} />
       </div>
-      <div className="block text-left justify-left items-center w-fill bg-white py-6">
-        <div className='ml-5'>{isLoading ? <Spinner className="h-5 w-5 mb-3" /> : <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />}
+      <div className="justify-left w-fill block items-center bg-white py-6 text-left">
+        <div className="ml-5">
+          {isLoading ? <Spinner className="mb-3 h-5 w-5" /> : <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />}
         </div>
-        <div className="block w-fill h-60 border border-gray-10 rounded-md mx-5 items-center overflow-scroll hide-scroll bg-white">
-          {isLoading ?
-            <div className='flex flex-1 h-full items-center'>
+        <div className="w-fill hide-scroll mx-5 block h-60 items-center overflow-scroll rounded-md border border-gray-10 bg-white">
+          {isLoading ? (
+            <div className="flex h-full flex-1 items-center">
               <Spinner className="h-5 w-5 flex-1" />
             </div>
-            :
-            props.isTrash && shownFolders.map((folder) => {
+          ) : (
+            props.isTrash &&
+            shownFolders.map((folder) => {
               return (
-                <div className={`${destinationId === folder.id ? 'bg-blue-20 text-primary' : ''} border border-t-0 border-l-0 border-r-0 border-white`} key={folder.id.toString()}>
-                  <div className={`${destinationId === folder.id ? 'bg-blue-20 border-none text-primary' : ''} flex justify-left align-middle w-fill h-12 border border-t-0 border-r-0 border-l-0 border-gray-10 items-center mx-4 bg-white cursor-pointer`} key={folder.id}>
-                    <div className='flex cursor-pointer w-96 items-center'
+                <div
+                  className={`${
+                    destinationId === folder.id ? 'bg-blue-20 text-primary' : ''
+                  } border border-t-0 border-l-0 border-r-0 border-white`}
+                  key={folder.id.toString()}
+                >
+                  <div
+                    className={`${
+                      destinationId === folder.id ? 'border-none bg-blue-20 text-primary' : ''
+                    } justify-left w-fill mx-4 flex h-12 cursor-pointer items-center border border-t-0 border-r-0 border-l-0 border-gray-10 bg-white align-middle`}
+                    key={folder.id}
+                  >
+                    <div
+                      className="flex w-96 cursor-pointer items-center"
                       onDoubleClick={() => onShowFolderContentClicked(folder.id, folder.name)}
-                      onClick={() => onFolderClicked(folder.id, folder.name)}>
+                      onClick={() => onFolderClicked(folder.id, folder.name)}
+                    >
                       <img className="h-8 w-8" alt="" src={folderImage} />
-                      <span className='inline-block ml-4 text-base text-regular align-baseline mt-1 truncate' style={{ maxWidth: '280px' }} title={folder.name}>
+                      <span
+                        className="text-regular ml-4 mt-1 inline-block truncate align-baseline text-base"
+                        style={{ maxWidth: '280px' }}
+                        title={folder.name}
+                      >
                         {folder.name}
                       </span>
                     </div>
-                    <div className='ml-auto cursor-pointer'>
-                      <CaretRight onClick={() => onShowFolderContentClicked(folder.id, folder.name)} className={`h-6 w-6 {${destinationId === folder.id ? 'bg-blue-20 text-primary' : ''}`} />
+                    <div className="ml-auto cursor-pointer">
+                      <CaretRight
+                        onClick={() => onShowFolderContentClicked(folder.id, folder.name)}
+                        className={`h-6 w-6 {${destinationId === folder.id ? 'bg-blue-20 text-primary' : ''}`}
+                      />
                     </div>
                   </div>
-                </div>);
-            })}
+                </div>
+              );
+            })
+          )}
         </div>
 
-        <div className="flex ml-auto mt-5">
-          <BaseButton disabled={isLoading} className="tertiary square w-28 h-8 ml-5 mt-1 mr-auto" onClick={onCreateFolderButtonClicked}>
-            <div className='flex text-primary text-base text-medium cursor-pointer items-center'>
-              <FolderPlus className="h-5 w-5 text-primary mr-2" />
-              <span className='text-primary text-base font-medium cursor-pointer'>New folder</span>
+        <div className="ml-auto mt-5 flex">
+          <BaseButton
+            disabled={isLoading}
+            className="tertiary square ml-5 mt-1 mr-auto h-8 w-28"
+            onClick={onCreateFolderButtonClicked}
+          >
+            <div className="text-medium flex cursor-pointer items-center text-base text-primary">
+              <FolderPlus className="mr-2 h-5 w-full text-primary" />
+              <span className="cursor-pointer whitespace-nowrap text-base font-medium text-primary">
+                {i18n.get('actions.upload.folder')}
+              </span>
             </div>
           </BaseButton>
-          <Button disabled={isLoading} variant="secondary" onClick={onClose} className='mr-3'>
+          <Button disabled={isLoading} variant="secondary" onClick={onClose} className="mr-3">
             {i18n.get('actions.cancel')}
           </Button>
-          <Button disabled={isLoading} variant="primary" className='mr-5'
-            onClick={() => onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)}>
-            {isLoading ? (!props.isTrash ? 'Moving...' : 'Navigating...') : (!props.isTrash ? 'Move' : 'Restore here')}
+          <Button
+            disabled={isLoading}
+            variant="primary"
+            className="mr-5"
+            onClick={() =>
+              onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)
+            }
+          >
+            {isLoading
+              ? !props.isTrash
+                ? i18n.get('actions.moving')
+                : i18n.get('actions.navigating')
+              : !props.isTrash
+              ? i18n.get('actions.move')
+              : i18n.get('actions.restoreHere')}
           </Button>
         </div>
       </div>

@@ -29,10 +29,11 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
     text: i18n.get('notificationMessages.itemsMovedToTrash', {
       item:
         itemsToTrash.length > 1
-          ? 'Archivos'
-          : itemsToTrash.map((item) => {
-              return item.type === 'folder' ? 'Folder' : 'File';
-            }),
+          ? i18n.get('general.files')
+          : itemsToTrash[0].isFolder === true
+          ? i18n.get('general.folder')
+          : i18n.get('general.file'),
+      s: itemsToTrash.length > 1 ? 's' : '',
     }),
 
     action: {

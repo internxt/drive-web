@@ -29,7 +29,10 @@
     "billing": {
       "billedEachPeriod": "{price} billed {period}",
       "oneTimePayment": "One-time payment"
-    }
+    },
+    "files": "Files",
+    "file": "File",
+    "folder": "Folder"
   },
   "shareLayout": {
     "title": "WE ARE INTERNXT",
@@ -730,7 +733,11 @@
     "submit": "Submit",
     "access": "Access",
     "next": "Next",
-    "disable": "Disable"
+    "disable": "Disable",
+    "move": "Move",
+    "moving": "Moving...",
+    "navigating": "Navigating...",
+    "restoreHere": "Restore here"
   },
   "drive": {
     "usage": "Usage",

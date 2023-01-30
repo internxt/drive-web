@@ -29,7 +29,10 @@
     "billing": {
       "billedEachPeriod": "{price} billed {period}",
       "oneTimePayment": "One-time payment"
-    }
+    },
+    "files": "Archivos",
+    "file": "Archivo",
+    "folder": "Carpeta"
   },
   "shareLayout": {
     "title": "",
@@ -132,7 +135,7 @@
               "lastname": "Apellido",
 
               "email": "Correo electrónico",
-              "resendEmail": "Reenviar corre de verificación"
+              "resendEmail": "Reenviar correo de verificación"
             },
             "verify": {
               "verify": "Verifica tu correo",
@@ -684,7 +687,7 @@
   "notificationMessages": {
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
-    "itemsMovedToTrash": "{item} movido a la papelera"
+    "itemsMovedToTrash": "{item} movido{s} a la papelera"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
@@ -733,7 +736,11 @@
     "submit": "Enviar",
     "access": "Acceder",
     "next": "Siguiente",
-    "disable": "Desactivar"
+    "disable": "Desactivar",
+    "move": "Mover",
+    "moving": "Moviendo...",
+    "navigating": "Navigating...",
+    "restoreHere": "Restaurar aquí"
   },
   "drive": {
     "usage": "Uso",
