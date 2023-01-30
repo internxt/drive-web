@@ -225,6 +225,27 @@
         },
         "plans": {
           "label": "Planes",
+          "title": "Planes",
+          "description": "Descubre las diferentes opciones de almacenamiento y soluciones que ofrece Internxt",
+          "changeWorkspace": {
+            "personal": "Cambiar a Planes Individuales",
+            "business": "Cambiar a Planes para Empresas"
+          },
+          "viewAllFeatures": "View all features",
+          "features": [
+            {
+              "title": "Premium support",
+              "description": "You will always have the best treatment from our customer service, for us you are part of the family."
+            },
+            {
+              "title": "Private",
+              "description": "Internxt is not just another cloud storage solution, we don’t share or sell your data."
+            },
+            {
+              "title": "Secure",
+              "description": "We use zero-knowledge to ensure that your data remains private by client-side encrypting it."
+            }
+          ],
           "card": {
             "annually": "{amount}€ facturado al año",
             "monthly": "{amount} €/mes",
