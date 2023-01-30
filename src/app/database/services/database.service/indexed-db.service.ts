@@ -6,6 +6,11 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
     upgrade: (db, oldVersion) => {
       if (oldVersion === 0) db.createObjectStore('levels');
       if (oldVersion <= 1) db.createObjectStore('photos');
+      if (oldVersion <= 2) {
+        const objectStore = db.createObjectStore('levels_blobs');
+        objectStore.createIndex('parent_index' as never, 'parentId', { unique: false });
+        db.createObjectStore('lru_cache');
+      }
     },
     blocked: () => undefined,
     blocking: () => undefined,
@@ -27,6 +32,23 @@ const indexedDBService: DatabaseService = (databaseName, databaseVersion) => ({
     return content;
   },
   clear: () => idb.deleteDB(databaseName),
+  delete: async (collectionName, key) => {
+    const db = await open(databaseName, databaseVersion);
+    await db.delete(collectionName, key);
+    db.close();
+  },
+  getAll: async (collectionName) => {
+    const db = await open(databaseName, databaseVersion);
+    const data = await db.getAll(collectionName);
+    db.close();
+    return data;
+  },
+  getAllFromIndex: async (collectionName, indexName, key) => {
+    const db = await open(databaseName, databaseVersion);
+    const data = await db.getAllFromIndex(collectionName, indexName as never, IDBKeyRange.only(key));
+    db.close();
+    return data;
+  },
 });
 
 export default indexedDBService;
