@@ -49,7 +49,8 @@ function moveFile(
     bucketId: bucketId,
     destinationPath: uuid.v4(),
   };
-  return storageClient.moveFile(payload)
+  return storageClient
+    .moveFile(payload)
     .then((response) => trackMove(response, 'file'))
     .catch((error) => {
       failedItems.push(item);
@@ -66,10 +67,11 @@ function moveFolder(
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.MoveFolderPayload = {
     folderId: folderId,
-    destinationFolderId: destination
+    destinationFolderId: destination,
   };
-  return storageClient.moveFolder(payload)
-    .then(response => trackMove(response, 'folder'))
+  return storageClient
+    .moveFolder(payload)
+    .then((response) => trackMove(response, 'folder'))
     .catch((error) => {
       failedItems.push(item);
       handleError(error);
@@ -84,10 +86,7 @@ async function afterMoving(
   itemsToRecover = itemsToRecover.filter((el) => !failedItems.includes(el));
 
   if (itemsToRecover.length > 0) {
-    const destinationLevelDatabaseContent = await databaseService.get(
-      DatabaseCollection.Levels,
-      destinationId,
-    );
+    const destinationLevelDatabaseContent = await databaseService.get(DatabaseCollection.Levels, destinationId);
     if (destinationLevelDatabaseContent) {
       databaseService.put(
         DatabaseCollection.Levels,
@@ -100,7 +99,9 @@ async function afterMoving(
 
     notificationsService.show({
       type: ToastType.Success,
-      text: `Item${itemsToRecover.length > 1 ? 's' : ''} restored`,
+      text: i18n.get('notificationMessage.restoreItems', {
+        itemsToRecover: itemsToRecover.length > 1 ? 's' : '',
+      }),
     });
   }
 

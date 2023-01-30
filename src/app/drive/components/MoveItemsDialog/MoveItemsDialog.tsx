@@ -234,7 +234,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           >
             <div className="text-medium flex cursor-pointer items-center text-base text-primary">
               <FolderPlus className="mr-2 h-5 w-full text-primary" />
-              <span className="cursor-pointer whitespace-nowrap text-base font-medium text-primary">
+              <span className="cursor-pointer whitespace-pre text-base font-medium text-primary">
                 {i18n.get('actions.upload.folder')}
               </span>
             </div>

@@ -22,6 +22,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
+import i18n from 'app/i18n/services/i18n.service';
 
 export default function LogIn(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -124,13 +125,13 @@ export default function LogIn(): JSX.Element {
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <h1 className="text-2xl font-medium">Log in</h1>
+        <h1 className="text-2xl font-medium">{i18n.get('auth.login.title')}</h1>
 
         <div className="flex flex-col space-y-3">
           <label className="space-y-0.5">
-            <span>Email</span>
+            <span>{i18n.get('auth.email')}</span>
             <TextInput
-              placeholder="Email"
+              placeholder={i18n.get('auth.email')}
               label="email"
               type="email"
               register={register}
@@ -141,7 +142,7 @@ export default function LogIn(): JSX.Element {
 
           <label className="space-y-0.5">
             <div className="flex flex-row items-center justify-between">
-              <span className="font-normal">Password</span>
+              <span className="font-normal">{i18n.get('auth.password')}</span>
               <Link
                 onClick={(): void => {
                   // analyticsService.trackUserResetPasswordRequest();
@@ -149,13 +150,13 @@ export default function LogIn(): JSX.Element {
                 to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
               >
-                Forgot your password?
+                {i18n.get('auth.login.forgotPwd')}
               </Link>
             </div>
 
             <PasswordInput
-              placeholder="Password"
-              label={'password'}
+              placeholder={i18n.get('auth.password')}
+              label="password"
               register={register}
               required={true}
               minLength={{ value: 1, message: 'Password must not be empty' }}
@@ -165,11 +166,11 @@ export default function LogIn(): JSX.Element {
 
           {showTwoFactor && (
             <label className="space-y-0.5">
-              <span>Two factor code</span>
+              <span>{i18n.get('auth.login.2FA')}</span>
               <PasswordInput
                 className="mb-3"
                 label="twoFactorCode"
-                placeholder="Two factor authentication code"
+                placeholder={i18n.get('auth.login.2FAPwd')}
                 error={errors.twoFactorCode}
                 register={register}
                 required={true}
@@ -190,7 +191,7 @@ export default function LogIn(): JSX.Element {
 
           <Button
             disabled={isLoggingIn}
-            text="Log in"
+            text={i18n.get('auth.login.title')}
             disabledText={isValid ? 'Decrypting...' : 'Log in'}
             loading={isLoggingIn}
             style="button-primary"
@@ -201,12 +202,12 @@ export default function LogIn(): JSX.Element {
 
       <div className="mt-4 flex w-full justify-center text-sm">
         <span>
-          Don't have an account?{' '}
+          {i18n.get('auth.login.dontHaveAccount')}{' '}
           <Link
             to="/new"
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
-            Create account
+            {i18n.get('auth.login.createAccount')}
           </Link>
         </span>
       </div>

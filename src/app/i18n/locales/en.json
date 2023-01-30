@@ -1,6 +1,26 @@
 {
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "terms": "By creating an account, you accept the terms and conditions",
+    "login": {
+      "title": "Log in",
+      "forgotPwd": "Forgot your password?",
+      "dontHaveAccount": "Don't have an account?",
+      "createAccount": "Create account",
+      "2FA": "Two factor code",
+      "2FAPwd": "Two factor authentication code"
+    },
+    "signup": {
+      "title": "Create account",
+      "haveAccount": "already have an account?",
+      "login": "Log in"
+    }
+  },
   "general": {
     "of": "of",
+    "terms": "Terms and conditions",
+    "help": "Need help?",
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -700,7 +720,9 @@
   },
   "notificationMessages": {
     "copyLink": "Shared link copied to clipboard",
-    "linkUpdated": "Link updated"
+    "linkUpdated": "Link updated",
+    "itemsMovedToTrash": "{item} moved to trash",
+    "restoreItems": "Item${itemsToRecover} restored"
   },
   "actions": {
     "undo": "Undo",

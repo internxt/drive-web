@@ -1,6 +1,27 @@
 {
+  "auth": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "terms1": "Creando una cuenta, aceptas los",
+    "terms2": "términos y condiciones.",
+    "login": {
+      "title": "Iniciar sesión",
+      "forgotPwd": "¿Has olvidado tu contraseña?",
+      "dontHaveAccount": "¿No tienes una cuenta?",
+      "createAccount": "Crear una cuenta",
+      "2FA": "Código de autenticación de dos factores",
+      "2FAPwd": "Código de autenticación de dos factores"
+    },
+    "signup": {
+      "title": "Crear una cuenta",
+      "haveAccount": "¿Ya tienes una cuenta?",
+      "login": "Iniciar sesión"
+    }
+  },
   "general": {
     "of": "de",
+    "terms": "Términos y condiciones",
+    "help": "¿Necesitas ayuda?",
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -687,7 +708,8 @@
   "notificationMessages": {
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
-    "itemsMovedToTrash": "{item} movido{s} a la papelera"
+    "itemsMovedToTrash": "{item} movido{s} a la papelera",
+    "restoreItems": "Item${itemsToRecover} restablecidos"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
