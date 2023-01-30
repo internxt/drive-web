@@ -149,9 +149,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     const foldersList: DriveItemData[] = [];
 
     for (const itemsInAllitems in allItems) {
-      const selectedFolder = allItems[itemsInAllitems].find(
-        (item) => item.id === currentBreadcrumb.id && item.name === currentBreadcrumb.name,
-      );
+      const selectedFolder = allItems[itemsInAllitems].find((item) => item.id === currentBreadcrumb.id);
       if (selectedFolder) foldersList.push(selectedFolder as DriveItemData);
     }
     return foldersList;
@@ -366,7 +364,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
           ref={drop}
           className={`max-w-fit flex ${
             props.item.isFirstPath ? 'flex-shrink-0' : 'min-w-breadcrumb flex-1'
-          } cursor-pointer flex-row items-center truncate p-1 font-medium ${isDraggingOverClassNames}
+          } cursor-pointer flex-row items-center truncate py-1.5 px-3 font-medium ${isDraggingOverClassNames}
         ${
           !props.item.active || (props.item.isFirstPath && props.totalBreadcrumbsLength === 1)
             ? 'text-gray-80'

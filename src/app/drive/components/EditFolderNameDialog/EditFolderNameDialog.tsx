@@ -25,9 +25,7 @@ const CreateFolderDialog = (): JSX.Element => {
     const foldersList: DriveItemData[] = [];
 
     for (const itemsInAllitems in allItems) {
-      const selectedFolder = allItems[itemsInAllitems].find(
-        (item) => item.id === currentBreadcrumb[0].id && item.name === currentBreadcrumb[0].name,
-      );
+      const selectedFolder = allItems[itemsInAllitems].find((item) => item.id === currentBreadcrumb[0].id);
       if (selectedFolder) foldersList.push(selectedFolder as DriveItemData);
     }
     return foldersList;
@@ -36,10 +34,8 @@ const CreateFolderDialog = (): JSX.Element => {
   const currentFolder = findCurrentFolder(currentBreadcrumb);
 
   useEffect(() => {
-    if (isOpen) {
-      setFolderName(currentBreadcrumb[0].name);
-    }
-  }, [isOpen]);
+    setFolderName(currentBreadcrumb[0].name);
+  }, [namePath]);
 
   const onClose = (): void => {
     setIsLoading(false);
@@ -50,7 +46,9 @@ const CreateFolderDialog = (): JSX.Element => {
     const item = currentFolder[0];
     const metadata: DriveFolderMetadataPayload = { itemName: folderName };
 
-    if (folderName && folderName.trim().length > 0) {
+    if (folderName === item.name) {
+      onClose();
+    } else if (folderName && folderName.trim().length > 0) {
       setIsLoading(true);
       await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }))
         .unwrap()
@@ -60,9 +58,7 @@ const CreateFolderDialog = (): JSX.Element => {
           onClose();
         })
         .catch((e) => {
-          const errorMessage = e?.message?.includes('already exists')
-            ? i18n.get('error.folderAlreadyExists')
-            : i18n.get('error.creatingFolder');
+          const errorMessage = e?.message?.includes('already exists') && i18n.get('error.creatingFolder');
           setError(errorMessage);
           setIsLoading(false);
           return e;
