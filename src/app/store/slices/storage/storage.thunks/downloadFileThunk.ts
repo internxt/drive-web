@@ -11,6 +11,10 @@ import i18n from 'app/i18n/services/i18n.service';
 import errorService from 'app/core/services/error.service';
 import { TaskStatus } from 'app/tasks/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { LRUFilesCacheManager } from '../../../../database/services/database.service/LRUFilesCacheManager';
+import { saveAs } from 'file-saver';
+import dateService from '../../../../core/services/date.service';
+import { DriveItemBlobData } from '../../../../database/services/database.service';
 
 interface DownloadFileThunkOptions {
   taskId: string;
@@ -26,6 +30,23 @@ interface DownloadFileThunkPayload {
 const defaultDownloadFileThunkOptions = {
   showNotifications: true,
   showErrors: true,
+};
+
+const checkIfCachedSourceIsOlder = ({
+  cachedFile,
+  file,
+}: {
+  cachedFile: DriveItemBlobData | undefined;
+  file: DriveFileData;
+}) => {
+  const isCachedFileOlder = !cachedFile?.updatedAt
+    ? true
+    : dateService.isDateOneBefore({
+        dateOne: cachedFile?.updatedAt as string,
+        dateTwo: file?.updatedAt as string,
+      });
+
+  return isCachedFileOlder;
 };
 
 export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload, { state: RootState }>(
@@ -59,11 +80,21 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
         taskId: options.taskId,
         merge: {
           status: TaskStatus.Decrypting,
-          stop: async () => (abortController as { abort: (reason?: string) => void }).abort('Download cancelled')
+          stop: async () => (abortController as { abort: (reason?: string) => void }).abort('Download cancelled'),
         },
       });
 
-      await downloadService.downloadFile(file, isTeam, updateProgressCallback, abortController);
+      const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+      const cachedFile = await lruFilesCacheManager.get(file.id.toString());
+      const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+
+      if (cachedFile?.source && !isCachedFileOlder) {
+        updateProgressCallback(100);
+        const completeFileName = file.type ? `${file.name}.${file.type}` : file.name;
+        saveAs(cachedFile?.source, completeFileName);
+      } else {
+        await downloadService.downloadFile(file, isTeam, updateProgressCallback, abortController);
+      }
 
       tasksService.updateTask({
         taskId: options.taskId,
