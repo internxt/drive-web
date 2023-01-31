@@ -13,10 +13,12 @@ export enum DatabaseCollection {
   Photos = 'photos',
   LevelsBlobs = 'levels_blobs',
   LRU_cache = 'lru_cache',
+  Account_settings = 'account_settings',
 }
 
 export enum LRUCacheTypes {
-  LevelsBlobs = 'levels_blobs',
+  LevelsBlobs = 'levels_blobs', //cambiar por source?
+  LevelsBlobsPreview = 'levels_blobs_preview',
 }
 
 export type DriveItemBlobData = {
@@ -25,6 +27,12 @@ export type DriveItemBlobData = {
   preview?: Blob;
   source?: Blob;
   updatedAt?: string;
+};
+
+export type AvatarBlobData = {
+  srcURL: string;
+  avatarBlob: Blob;
+  expirationDate: string;
 };
 
 export interface AppDatabase extends DBSchema {
@@ -49,6 +57,10 @@ export interface AppDatabase extends DBSchema {
       source?: Blob;
       indexes?: Record<string, IDBValidKey>;
     };
+  };
+  account_settings: {
+    key: string;
+    value: AvatarBlobData;
   };
 }
 

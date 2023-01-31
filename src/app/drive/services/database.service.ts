@@ -1,6 +1,29 @@
-import databaseService, { DatabaseCollection } from '../../database/services/database.service';
+import databaseService, { AvatarBlobData, DatabaseCollection } from '../../database/services/database.service';
 import { LRUFilesCacheManager } from '../../database/services/database.service/LRUFilesCacheManager';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
+
+const updateDatabaseProfileAvatar = async ({
+  sourceURL,
+  avatarBlob,
+  expirationDate,
+}: {
+  sourceURL: string;
+  expirationDate: string;
+  avatarBlob: Blob;
+}): Promise<void> => {
+  databaseService.put(DatabaseCollection.Account_settings, 'profile_avatar', {
+    srcURL: sourceURL,
+    avatarBlob,
+    expirationDate,
+  });
+};
+
+const getDatabaseProfileAvatar = async (): Promise<AvatarBlobData | undefined> =>
+  databaseService.get(DatabaseCollection.Account_settings, 'profile_avatar');
+
+const deleteDatabaseProfileAvatar = async (): Promise<void> => {
+  databaseService.delete(DatabaseCollection.Account_settings, 'profile_avatar');
+};
 
 const updateDatabaseFilePrewiewData = async ({
   fileId,
@@ -39,14 +62,15 @@ const updateDatabaseFileSourceData = async ({
   sourceBlob: Blob;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
 
   lruFilesCacheManager.set(
     fileId.toString(),
     {
+      ...fileData,
       id: fileId,
-      source: sourceBlob,
-      updatedAt: updatedAt,
       parentId: folderId,
+      updatedAt: updatedAt,
     },
     sourceBlob.size,
   );
@@ -83,4 +107,12 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
   });
 };
 
-export { updateDatabaseFilePrewiewData, updateDatabaseFileSourceData, deleteDatabasePhotos, deleteDatabaseItems };
+export {
+  getDatabaseProfileAvatar,
+  updateDatabaseProfileAvatar,
+  deleteDatabaseProfileAvatar,
+  updateDatabaseFilePrewiewData,
+  updateDatabaseFileSourceData,
+  deleteDatabasePhotos,
+  deleteDatabaseItems,
+};
