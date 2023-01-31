@@ -5,16 +5,16 @@ import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 const updateDatabaseProfileAvatar = async ({
   sourceURL,
   avatarBlob,
-  expirationDate,
+  uuid,
 }: {
   sourceURL: string;
-  expirationDate: string;
+  uuid: string;
   avatarBlob: Blob;
 }): Promise<void> => {
   databaseService.put(DatabaseCollection.Account_settings, 'profile_avatar', {
     srcURL: sourceURL,
     avatarBlob,
-    expirationDate,
+    uuid,
   });
 };
 

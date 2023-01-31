@@ -32,7 +32,7 @@ export type DriveItemBlobData = {
 export type AvatarBlobData = {
   srcURL: string;
   avatarBlob: Blob;
-  expirationDate: string;
+  uuid: string;
 };
 
 export interface AppDatabase extends DBSchema {

@@ -1,10 +1,8 @@
-import dayjs from 'dayjs';
 import { memo, useEffect, useState } from 'react';
 import { deleteDatabaseProfileAvatar, getDatabaseProfileAvatar } from '../../../../../drive/services/database.service';
 import Avatar from '../../../../../shared/components/Avatar';
 import { useAppDispatch } from '../../../../../store/hooks';
 import { updateUserAvatarThunk } from '../../../../../store/slices/user';
-import dateService from '../../../../services/date.service';
 
 export const extractExpiresValue = (url: string): number | null => {
   const regex = /Expires=(\d+)/;
@@ -16,14 +14,6 @@ export const extractAvatarURLID = (url: string): string | null => {
   const regex = /internxt\.com\/(.*?)[?&]/;
   const match = url.match(regex);
   return match ? match[1] : null;
-};
-
-const checkIsAvatarURLExpired = (url) => {
-  const expiresValue = extractExpiresValue(url);
-  if (!expiresValue) return false;
-
-  const expirationDate = dateService.getExpirationDate(expiresValue);
-  return dayjs().isAfter(expirationDate);
 };
 
 const AvatarWrapper = memo(
@@ -68,11 +58,9 @@ const AvatarWrapper = memo(
         return;
       }
 
-      const existsNewAvatar =
-        !!databaseAvatarData && extractAvatarURLID(databaseAvatarData?.srcURL) !== extractAvatarURLID(url);
-      const hasAvatarExpired = checkIsAvatarURLExpired(url);
+      const existsNewAvatar = databaseAvatarData.uuid !== extractAvatarURLID(url);
 
-      if (existsNewAvatar || hasAvatarExpired) {
+      if (existsNewAvatar) {
         return downloadAndSaveAvatar(url);
       }
 

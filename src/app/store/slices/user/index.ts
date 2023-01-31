@@ -19,8 +19,7 @@ import { referralsActions } from '../referrals';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import RealtimeService from 'app/core/services/socket.service';
 import { deleteDatabaseProfileAvatar, updateDatabaseProfileAvatar } from '../../../drive/services/database.service';
-import dateService from '../../../core/services/date.service';
-import { extractExpiresValue } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
+import { extractAvatarURLID } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
 
 interface UserState {
   isInitializing: boolean;
@@ -129,12 +128,11 @@ export const updateUserAvatarThunk = createAsyncThunk<void, { avatar: Blob }, { 
 
     const { avatar } = await userService.updateUserAvatar(payload);
 
-    const expiresValue = extractExpiresValue(avatar);
-    const expirationDate = dateService.getExpirationDate(expiresValue as number);
+    const uuid = extractAvatarURLID(avatar);
     await updateDatabaseProfileAvatar({
       sourceURL: avatar,
       avatarBlob: payload.avatar,
-      expirationDate: expirationDate.format(),
+      uuid: uuid ?? '',
     });
     dispatch(userActions.setUser({ ...currentUser, avatar }));
   },
