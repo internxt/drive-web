@@ -3,18 +3,20 @@ import { deleteDatabaseProfileAvatar, getDatabaseProfileAvatar } from '../../../
 import Avatar from '../../../../../shared/components/Avatar';
 import { useAppDispatch } from '../../../../../store/hooks';
 import { updateUserAvatarThunk } from '../../../../../store/slices/user';
-
-export const extractExpiresValue = (url: string): number | null => {
-  const regex = /Expires=(\d+)/;
-  const match = url.match(regex);
-  return match ? parseInt(match[1]) : null;
-};
+import * as Sentry from '@sentry/react';
+import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 
 export const extractAvatarURLID = (url: string): string | null => {
   const regex = /internxt\.com\/(.*?)[?&]/;
   const match = url.match(regex);
   return match ? match[1] : null;
 };
+
+const showUpdateProfilePhotoErrorToast = () =>
+  notificationsService.show({
+    text: 'Error updating profile photo',
+    type: ToastType.Error,
+  });
 
 const AvatarWrapper = memo(
   ({
@@ -32,12 +34,22 @@ const AvatarWrapper = memo(
 
     useEffect(() => {
       const handleAvatarData = async () => {
-        if (avatarSrcURL) {
-          await handleDownload(avatarSrcURL);
-          return;
+        try {
+          if (avatarSrcURL) {
+            await handleDownload(avatarSrcURL);
+            return;
+          }
+          deleteDatabaseProfileAvatar();
+          setAvatarBlob(null);
+        } catch (error) {
+          Sentry.captureException(error, {
+            extra: {
+              avatarURL: avatarSrcURL,
+            },
+          });
+          showUpdateProfilePhotoErrorToast();
+          setAvatarBlob(null);
         }
-        deleteDatabaseProfileAvatar();
-        setAvatarBlob(null);
       };
 
       handleAvatarData();
