@@ -34,7 +34,7 @@ const CreateFolderDialog = (): JSX.Element => {
   const currentFolder = findCurrentFolder(currentBreadcrumb);
 
   useEffect(() => {
-    setFolderName(currentBreadcrumb[0].name);
+    setFolderName(currentBreadcrumb[0]?.name);
   }, [namePath]);
 
   const onClose = (): void => {
@@ -46,7 +46,7 @@ const CreateFolderDialog = (): JSX.Element => {
     const item = currentFolder[0];
     const metadata: DriveFolderMetadataPayload = { itemName: folderName };
 
-    if (folderName === item.name) {
+    if (folderName === item?.name) {
       onClose();
     } else if (folderName && folderName.trim().length > 0) {
       setIsLoading(true);
