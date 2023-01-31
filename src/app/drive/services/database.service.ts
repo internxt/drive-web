@@ -58,8 +58,8 @@ const updateDatabaseFileSourceData = async ({
 }: {
   fileId: number;
   folderId: number;
-  updatedAt: string;
   sourceBlob: Blob;
+  updatedAt: string;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
   const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
@@ -70,6 +70,7 @@ const updateDatabaseFileSourceData = async ({
       ...fileData,
       id: fileId,
       parentId: folderId,
+      source: sourceBlob,
       updatedAt: updatedAt,
     },
     sourceBlob.size,
