@@ -1,4 +1,8 @@
 {
+  "lang": {
+    "es": "Español",
+    "en": "Inglés"
+  },
   "auth": {
     "email": "Correo electrónico",
     "password": "Contraseña",
@@ -48,7 +52,7 @@
       "month": "mes"
     },
     "billing": {
-      "billedEachPeriod": "{price} billed {period}",
+      "billedEachPeriod": "{{price}} billed {{period}}",
       "oneTimePayment": "One-time payment"
     },
     "files": "Archivos",
@@ -124,13 +128,13 @@
         "downloadApp": "Descargar app",
         "settings": "Ajustes",
         "logout": "Cerrar sesión",
-        "spaceUsed": "{space}% espacio usado"
+        "spaceUsed": "{{space}}% espacio usado"
       },
       "tabs": {
         "account": {
           "label": "Cuenta",
           "title": "Personal",
-          "usage": "{totalUsed} de {totalSpace} usado",
+          "usage": "{{totalUsed}} de {{totalSpace}} usado",
           "view": {
             "backups": "Copias de seguridad",
             "photos": "Photos",
@@ -174,9 +178,9 @@
         "billing": {
           "label": "Facturación",
           "currentPlan": "Plan actual",
-          "subsRenew": "La suscripción se renueva en {daysUntilRenewal} días",
+          "subsRenew": "La suscripción se renueva en {{daysUntilRenewal}} días",
           "cancelSubscription": "Cancelar suscripción",
-          "billed": "Facturación {interval} {renewDate}",
+          "billed": "Facturación {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "Método de pago",
             "empty": {
@@ -218,9 +222,9 @@
           "viewAllFeatures": "View all features",
 
           "card": {
-            "annually": "{amount}€ facturado al año",
-            "monthly": "{amount} €/mes",
-            "lifetime": "{amount}€"
+            "annually": "{{amount}}€ facturado al año",
+            "monthly": "{{amount}} €/mes",
+            "lifetime": "{{amount}}€"
           },
           "features": {
             "title": "Funciones incluidas en todos los planes",
@@ -291,7 +295,7 @@
             "disabled": "Desactivado",
             "modal": {
               "title": "Autenticación en dos pasos",
-              "stepsLabel": "{current} de {total}",
+              "stepsLabel": "{{current}} de {{total}}",
               "button": "Activar 2FA",
               "2FALabelCode": "Código de autenticación",
               "or": "O",
@@ -359,14 +363,14 @@
   },
   "modals": {
     "renameModal": {
-      "title": "Item already exists",
-      "titleMultipleItems": "Multiple items already exist",
-      "description": "{itemName} already exists in this location. Do you want to replace it or you want to keep both?",
-      "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
-      "replaceItem": "Replace current item",
-      "keepBoth": "Keep both",
-      "upload": "Upload",
-      "move": "Move"
+      "title": "El item ya existe",
+      "titleMultipleItems": "Multiples archivos existen",
+      "description": "{{itemName}} ya existe en esta localización. Deseas reemplazarlo o mantener los dos?",
+      "multipleDescription": "Más de un elemento existe en esta localización. Deseas reemplazarlos o mantenerlos?",
+      "replaceItem": "Reemplazar el item",
+      "keepBoth": "mantener los dos",
+      "upload": "Subir",
+      "move": "Mover"
     },
     "removeSharedLinkModal": {
       "title": "Eliminar enlace",
@@ -385,8 +389,8 @@
     "deletePhotosModal": {
       "multiToolBar": "archivos seleccionados",
       "singleToolBar": "archivo seleccionado",
-      "singleTitle": "Eliminar {item} archivo seleccionado?",
-      "multiTitle": "Eliminar los {item} archivos seleccionados?",
+      "singleTitle": "Eliminar {{item}} archivo seleccionado?",
+      "multiTitle": "Eliminar los {{item}} archivos seleccionados?",
       "subtitle": "Esta acción no se puede deshacer",
       "buttons": {
         "cancel": "Cancelar",
@@ -394,8 +398,8 @@
       }
     },
     "sharePhotosModal": {
-      "singleTitle": "Compartir {item} foto",
-      "multiTitle": "Compartir {item} fotos",
+      "singleTitle": "Compartir {{item}} foto",
+      "multiTitle": "Compartir {{item}} fotos",
       "options": "Opciones del enlace",
       "limit": "Limita el número de veces que se puede abrir el enlace",
       "openCount": "Límite de apertura",
@@ -416,7 +420,7 @@
       "empty": "No has invitado a nadie aún",
       "resend": "Reenviar invitación",
       "resentInvitation": "Invitación reenviada correctamente",
-      "resendError": "Error al reenviar la invitación: {reason}"
+      "resendError": "Error al reenviar la invitación: {{reason}}"
     },
     "deleteAccountModal": {
       "title": "¿Estás seguro?",
@@ -447,7 +451,7 @@
   },
   "error": {
     "wrongPassword": "Contraseña incorrecta, inténtalo de nuevo o contacta con el propietario",
-    "genericError": "There was an error: {reason}",
+    "genericError": "There was an error: {{reason}}",
     "serverError": "Internal server error. Try again later",
     "deleteTeamMember": "Error deleting team member",
     "changingName": "Error during name change",
@@ -462,14 +466,14 @@
     "shareLinkMissingBucket": "Cannot generate share link due to missing bucket",
     "unavailableLink": "Unavailable link",
     "invalidActivationCode": "Your activation code is invalid. Maybe you have used this link before and your account is already activated",
-    "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {reason}",
+    "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {{reason}}",
     "deactivatingAccount": "Error deactivating account. Please contact us.",
     "fetchingFolderContent": "Error fetching folder content",
     "uploadingFolder": "Error uploading folder",
-    "uploadingFile": "Error uploading file: {reason}",
+    "uploadingFile": "Error uploading file: {{reason}}",
     "uploadingItems": "Some of the elements could not be uploaded",
-    "downloadingFile": "Error downloading file: {message}",
-    "downloadingFolder": "Error downloading folder: {message}",
+    "downloadingFile": "Error downloading file: {{message}}",
+    "downloadingFolder": "Error downloading folder: {{message}}",
     "downloadingItems": "Some of the elements could not be downloaded",
     "movingItemInsideItself": "You can't move a folder inside itself",
     "movingItem": "Error when moving item/s",
@@ -481,13 +485,13 @@
     "titleSharedFolderTooBig": "Unsupported Action",
     "workingOnIt": "We are working to bring you a better experience.",
     "noFilePreview": "No file preview available",
-    "browserNotSupported": "Browser not supported ({userAgent})",
-    "inviteAFriend": "Error sending the invitation to a friend: {message}",
-    "subscribeToNewsletter": "Error subscribing to newsletter: {message}",
+    "browserNotSupported": "Browser not supported ({{userAgent}})",
+    "inviteAFriend": "Error sending the invitation to a friend: {{message}}",
+    "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
     "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support."
   },
   "backups": {
-    "backups-from": "Backups from {deviceName}",
+    "backups-from": "Copias de seguridad de {{deviceName}}",
     "your-devices": "Tus dispositivos",
     "back-to-devices": "Go back to devices",
     "empty": {
@@ -576,7 +580,7 @@
         "cancelled": "Creación de carpeta cancelada"
       },
       "taskLogger": {
-        "processing": "Procesando {pending} de {finished}"
+        "processing": "Procesando {{pending}} de {{finished}}"
       },
       "errors": {}
     },
@@ -584,7 +588,7 @@
       "status": {
         "pending": "Esperando para subir",
         "encrypting": "Encriptando archivo",
-        "in-process": "{progress}% Subiendo archivo",
+        "in-process": "{{progress}}% Subiendo archivo",
         "success": "Archivo subido",
         "error": "Error durante la subida",
         "cancelled": "Subida cancelada"
@@ -595,7 +599,7 @@
       "status": {
         "pending": "Esperando para subir",
         "encrypting": "Encriptando archivos",
-        "in-process": "{progress}% Subiendo carpeta",
+        "in-process": "{{progress}}% Subiendo carpeta",
         "success": "Carpeta subida",
         "error": "Error durante la subida",
         "cancelled": "Subida cancelada"
@@ -606,7 +610,7 @@
       "status": {
         "pending": "Pendiente",
         "decrypting": "Decrypting file",
-        "in-process": "{progress}% Descargando archivo",
+        "in-process": "{{progress}}% Descargando archivo",
         "success": "Archivo descargado",
         "error": "Error durante la descarga",
         "cancelled": "Descarga cancelada"
@@ -615,7 +619,7 @@
     },
     "download-photos": {
       "status": {
-        "pending": "Descargando {progress}%",
+        "pending": "Descargando {{progress}}%",
         "success": "descargado",
         "error": "Error durante la descarga",
         "cancelled": "Descara cancelada"
@@ -626,7 +630,7 @@
       "status": {
         "pending": "Descarga pendiente",
         "decrypting": "Decrypting backup",
-        "in-process": "{progress}% Downloading backup",
+        "in-process": "{{progress}}% Downloading backup",
         "success": "Copia de seguridad descargada",
         "error": "Error durante la descarga",
         "cancelled": "Descarga cancelada"
@@ -637,7 +641,7 @@
       "status": {
         "pending": "Descarga pendiente",
         "decrypting": "Decrypting files",
-        "in-process": "{progress}% carpeta descargada",
+        "in-process": "{{progress}}% carpeta descargada",
         "success": "Carpeta descargada",
         "error": "Error durante la descarga",
         "cancelled": "Descarga cancelada"
@@ -708,14 +712,14 @@
   "notificationMessages": {
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
-    "itemsMovedToTrash": "{item} movido{s} a la papelera",
-    "restoreItems": "Item${itemsToRecover} restablecidos"
+    "itemsMovedToTrash": "{{item}} movido{{s}} a la papelera",
+    "restoreItems": "Item {{itemsToRecover}} restablecidos"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
-    "teamInvitationSent": "Invitación enviada a {email}",
-    "referralInvitationSent": "Invitación enviada a {email}",
-    "deletedTeamMember": "The {resource} has been successfully deleted",
+    "teamInvitationSent": "Invitación enviada a {{email}}",
+    "referralInvitationSent": "Invitación enviada a {{email}}",
+    "deletedTeamMember": "The {{resource}} has been successfully deleted",
     "accountDeactivationEmailSent": "Email de desactivación enviado!",
     "claimEmailSent": "Claim email sent!",
     "teamsSubscriptionRedeemed": "Your team is ready! Log in again to start using Teams",
@@ -724,8 +728,8 @@
     "twoFactorAuthDisabled": "Su autenticación de dos factores ha sido desactivada.",
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Hecho",
-    "inviteAFriend": "Una invitación ha sido enviada a {email}",
-    "subscribeToNewsletter": "{email} suscrito con éxito a la newsletter"
+    "inviteAFriend": "Una invitación ha sido enviada a {{email}}",
+    "subscribeToNewsletter": "{{email}} suscrito con éxito a la newsletter"
   },
   "actions": {
     "undo": "Deshacer",
@@ -796,7 +800,7 @@
     },
     "clearTrash": {
       "title": "Vaciar papelera de Drive?",
-      "advice": "All items in the Drive Trash will be permanently deleted. This action cannot be undone.",
+      "advice": "Todos los archivos y carpetas de la papelera serán eliminados permanentemente. Esta acción no se puede deshacer.",
       "accept": "Vaciar papelera",
       "progress": "Vaciando papelera..."
     },
@@ -821,7 +825,7 @@
       "internxt_tier3": "Team members: 10",
       "internxt_tier4": "Team members: 25",
       "internxt_tier5": "Team members: 100",
-      "unlimited": "Team members: {total}"
+      "unlimited": "Team members: {{total}}"
     },
     "plans": {
       "advice": "You will be redirected to your AppSumo account"
@@ -829,8 +833,8 @@
   },
   "inviteAFriend": {
     "title": "Invita a un amigo",
-    "descriptionWidget": "Consigue hasta {N}GB extra de almacenamiento gratuito invitando a tus amigos (1GB por usuario registrado a través de tu invitación)",
-    "description": "Corre la voz, obtén 1 GB por cada amigo que invites a Internxt. Consigue hasta {N}GB en total.",
+    "descriptionWidget": "Consigue hasta {{N}}GB extra de almacenamiento gratuito invitando a tus amigos (1GB por usuario registrado a través de tu invitación)",
+    "description": "Corre la voz, obtén 1 GB por cada amigo que invites a Internxt. Consigue hasta {{N}}GB en total.",
     "label": "Invitar a",
     "placeholder": "Correo electrónico",
     "actions": {
@@ -854,14 +858,14 @@
       "share-file": "Comparte un archivo via enlace",
       "subscribe-to-newsletter": "Subscríbete al newsletter",
       "install-desktop-app": "Instala la app de escritorio y sube un archivo",
-      "invite-friends": "Invita {completedSteps}/{steps} amigos",
-      "invite-2-friends": "Invita {completedSteps}/{steps} amigos",
+      "invite-friends": "Invita {{completedSteps}}/{{steps}} amigos",
+      "invite-2-friends": "Invita {{completedSteps}}/{{steps}} amigos",
       "complete-survey": "Completar encuesta"
     },
     "rewards": {
-      "title": "¡Obtén {creditSum} gratis!",
-      "progress": "{currentCredit}",
-      "limit": "de {creditSum} desbloqueados"
+      "title": "¡Obtén {{creditSum}} gratis!",
+      "progress": "{{currentCredit}}",
+      "limit": "de {{creditSum}} desbloqueados"
     }
   }
 }

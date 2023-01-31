@@ -17,9 +17,10 @@ import { decryptTextWithKey } from '../../../crypto/services/utils';
 import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Link } from 'react-router-dom';
-import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 export default function RecoverView(): JSX.Element {
+  const { t } = useTranslation();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   if (!isAuthenticated) {
     navigationService.push(AppView.Login);
@@ -198,7 +199,7 @@ export default function RecoverView(): JSX.Element {
 
             {showLastPasswordError && (
               <div className="my-1 flex">
-                <span className="w-56 text-sm font-medium text-red-60">{get('error.lastPasswordError')}</span>
+                <span className="w-56 text-sm font-medium text-red-60">{t('error.lastPasswordError')}</span>
               </div>
             )}
             {showCurrentPasswordError && (

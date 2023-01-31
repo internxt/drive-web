@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { get } from 'app/i18n/services/i18n.service';
 import { CheckCircle, Warning } from 'phosphor-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import userService from '../../../../../auth/services/user.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
@@ -16,6 +16,7 @@ import { updateUserProfileThunk } from '../../../../../store/slices/user';
 import Section from '../../components/Section';
 
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false);
@@ -33,31 +34,31 @@ export default function AccountDetails({ className = '' }: { className?: string 
   const isVerified = user.emailVerified;
 
   return (
-    <Section className={className} title={get('views.account.tabs.account.accountDetails.head')}>
+    <Section className={className} title={t('views.account.tabs.account.accountDetails.head')}>
       <Card>
         <div className="flex justify-between">
           <div className="flex min-w-0">
-            <Detail label={get('views.account.tabs.account.accountDetails.card.name')} value={user.name} />
+            <Detail label={t('views.account.tabs.account.accountDetails.card.name')} value={user.name} />
             <Detail
-              label={get('views.account.tabs.account.accountDetails.card.lastname')}
+              label={t('views.account.tabs.account.accountDetails.card.lastname')}
               value={user.lastname}
               className="ml-8 pr-2"
             />
           </div>
           <Button className="flex-shrink-0" variant="secondary" onClick={() => setIsModalOpen(true)}>
-            {get('actions.edit')}
+            {t('actions.edit')}
           </Button>
         </div>
         <div className="mt-5 flex items-center justify-between">
           <div>
-            <Detail label={get('views.account.tabs.account.accountDetails.card.email')} value={user.email} />
+            <Detail label={t('views.account.tabs.account.accountDetails.card.email')} value={user.email} />
             {!isVerified && (
               <button
                 onClick={onResend}
                 disabled={isSendingVerificationEmail}
                 className="font-medium text-primary hover:text-primary-dark disabled:text-gray-60"
               >
-                {get('views.account.tabs.account.accountDetails.card.resendEmail')}
+                {t('views.account.tabs.account.accountDetails.card.resendEmail')}
               </button>
             )}
           </div>
@@ -65,11 +66,13 @@ export default function AccountDetails({ className = '' }: { className?: string 
             style="dark"
             title={
               isVerified
-                ? get('views.account.tabs.account.accountDetails.verify.verified')
-                : get('views.account.tabs.account.accountDetails.verify.verify')
+                ? t('views.account.tabs.account.accountDetails.verify.verified')
+                : t('views.account.tabs.account.accountDetails.verify.verify')
             }
             popsFrom="top"
-            subtitle={isVerified ? undefined : get('views.account.tabs.account.accountDetails.verify.description')}
+            subtitle={
+              isVerified ? undefined : (t('views.account.tabs.account.accountDetails.verify.description') as string)
+            }
           >
             {isVerified ? (
               <CheckCircle weight="fill" className="text-green" size={24} />

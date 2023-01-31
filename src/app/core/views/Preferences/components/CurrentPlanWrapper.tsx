@@ -1,6 +1,6 @@
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
-import { get } from 'app/i18n/services/i18n.service';
 import { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TabContext } from '..';
 import CurrentPlan from '../../../../shared/components/CurrentPlan';
 
@@ -31,21 +31,22 @@ export default function CurrentPlanWrapper({
   bytesInPlan: number;
   userSubscription: UserSubscription;
 }): JSX.Element {
+  const { t } = useTranslation();
   let planName = '';
   let button: string | undefined;
 
   switch (userSubscription.type) {
     case 'free':
-      planName = get('views.account.tabs.account.view.free.planName');
-      button = get('views.account.tabs.account.view.free.button');
+      planName = t('views.account.tabs.account.view.free.planName');
+      button = t('views.account.tabs.account.view.free.button') as string;
       break;
     case 'lifetime':
-      planName = get('views.account.tabs.account.view.lifetime.planName');
+      planName = t('views.account.tabs.account.view.lifetime.planName');
       button = undefined;
       break;
     case 'subscription':
-      planName = get('views.account.tabs.account.view.subscription.planName');
-      button = get('views.account.tabs.account.view.subscription.button');
+      planName = t('views.account.tabs.account.view.subscription.planName');
+      button = t('views.account.tabs.account.view.subscription.button') as string;
       break;
   }
 
@@ -56,8 +57,8 @@ export default function CurrentPlanWrapper({
       CURRENCY_SYMBOLS[userSubscription.currency.toUpperCase()] ?? userSubscription.currency.toUpperCase();
     const mainLabel = `${userSubscription.amount / 100} ${currencySymbol}/ ${
       userSubscription.interval === 'year'
-        ? get('views.account.tabs.account.view.subscription.yearly')
-        : get('views.account.tabs.account.view.subscription.monthly')
+        ? t('views.account.tabs.account.view.subscription.yearly')
+        : t('views.account.tabs.account.view.subscription.monthly')
     }`;
 
     const beforeMainLabelCrossed = userSubscription.amountAfterCoupon

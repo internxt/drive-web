@@ -1,4 +1,8 @@
 {
+  "lang": {
+    "es": "Spanish",
+    "en": "English"
+  },
   "auth": {
     "email": "Email",
     "password": "Password",
@@ -47,7 +51,7 @@
       "month": "month"
     },
     "billing": {
-      "billedEachPeriod": "{price} billed {period}",
+      "billedEachPeriod": "{{price}} billed {{period}}",
       "oneTimePayment": "One-time payment"
     },
     "files": "Files",
@@ -123,13 +127,13 @@
         "downloadApp": "Download app",
         "settings": "Settings",
         "logout": "Log out",
-        "spaceUsed": "{space}% space used"
+        "spaceUsed": "{{space}}% space used"
       },
       "tabs": {
         "account": {
           "label": "Account",
           "title": "Personal",
-          "usage": "Used {totalUsed} of {totalSpace}",
+          "usage": "Used {{totalUsed}} of {{totalSpace}}",
           "view": {
             "backups": "Backups",
             "photos": "Photos",
@@ -173,9 +177,9 @@
         "billing": {
           "label": "Billing",
           "currentPlan": "Current plan",
-          "subsRenew": "Subscription renews in {daysUntilRenewal} days",
+          "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
           "cancelSubscription": "Cancel subscription",
-          "billed": "Billed {interval} {renewDate}",
+          "billed": "Billed {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "Payment method",
             "empty": {
@@ -217,9 +221,9 @@
           "viewAllFeatures": "View all features",
 
           "card": {
-            "annually": "€{amount} billed annually",
-            "monthly": "€{amount} per month",
-            "lifetime": "€{amount}"
+            "annually": "€{{amount}} billed annually",
+            "monthly": "€{{amount}} per month",
+            "lifetime": "€{{amount}}"
           },
           "features": {
             "title": "Features included in all plans",
@@ -290,7 +294,7 @@
             "disabled": "Disabled",
             "modal": {
               "title": "Two Factor Authentication",
-              "stepsLabel": "{current} of {total}",
+              "stepsLabel": "{{current}} of {{total}}",
               "button": "Enable 2FA",
               "2FALabelCode": "Two-Factor Authentication code",
               "or": "OR",
@@ -360,7 +364,7 @@
     "renameModal": {
       "title": "Item already exists",
       "titleMultipleItems": "Multiple items already exist",
-      "description": "{itemName} already exists in this location. Do you want to replace it or you want to keep both?",
+      "description": "{{itemName}} already exists in this location. Do you want to replace it or you want to keep both?",
       "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
       "replaceItem": "Replace current item",
       "keepBoth": "Keep both",
@@ -375,17 +379,17 @@
       "deleteLinks": "Delete links",
       "deleteLink": "Delete link"
     },
-    "newFolderTitleModal": {
+    "newFolderModal": {
       "title": "New folder",
       "label": "Name",
       "placeholder": "Untitled folder",
-      "untitled": "Carpeta sin título"
+      "untitled": "Untitled folder"
     },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
       "singleToolBar": "item selected",
-      "multiTitle": "Delete {item} selected items?",
-      "singleTitle": "Delete {item} selected item?",
+      "multiTitle": "Delete {{item}} selected items?",
+      "singleTitle": "Delete {{item}} selected item?",
       "subtitle": "You can't undo this action",
       "buttons": {
         "cancel": "Cancel",
@@ -393,8 +397,8 @@
       }
     },
     "sharePhotosModal": {
-      "singleTitle": "Share {item} photo",
-      "multiTitle": "Share {item} photos",
+      "singleTitle": "Share {{item}} photo",
+      "multiTitle": "Share {{item}} photos",
       "options": "Link options",
       "limit": "Limit number of time users can open this link",
       "openCount": "Open count limit",
@@ -415,7 +419,7 @@
       "empty": "You have not invited anyone yet",
       "resend": "Resend invitation",
       "resentInvitation": "Invitation resent successfully",
-      "resendError": "Error while resending email: {reason}"
+      "resendError": "Error while resending email: {{reason}}"
     },
     "deleteAccountModal": {
       "title": "Are you sure?",
@@ -446,7 +450,7 @@
   },
   "error": {
     "wrongPassword": "Wrong password, try again or contact link owner",
-    "genericError": "There was an error: {reason}",
+    "genericError": "There was an error: {{reason}}",
     "serverError": "Internal server error. Try again later",
     "deleteTeamMember": "Error deleting team member",
     "changingName": "Error during name change",
@@ -461,14 +465,14 @@
     "shareLinkMissingBucket": "Cannot generate share link due to missing bucket",
     "unavailableLink": "Unavailable link",
     "invalidActivationCode": "Your activation code is invalid. Maybe you have used this link before and your account is already activated",
-    "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {reason}",
+    "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {{reason}}",
     "deactivatingAccount": "Error deactivating account. Please contact us.",
     "fetchingFolderContent": "Error fetching folder content",
     "uploadingFolder": "Error uploading folder",
-    "uploadingFile": "Error uploading file: {reason}",
+    "uploadingFile": "Error uploading file: {{reason}}",
     "uploadingItems": "Some of the elements could not be uploaded",
-    "downloadingFile": "Error downloading file: {message}",
-    "downloadingFolder": "Error downloading folder: {message}",
+    "downloadingFile": "Error downloading file: {{message}}",
+    "downloadingFolder": "Error downloading folder: {{message}}",
     "downloadingItems": "Some of the elements could not be downloaded",
     "movingItemInsideItself": "You can't move a folder inside itself",
     "movingItem": "Error when moving item/s",
@@ -480,13 +484,13 @@
     "titleSharedFolderTooBig": "Unsupported Action",
     "workingOnIt": "We are working to bring you a better experience.",
     "noFilePreview": "No file preview available",
-    "browserNotSupported": "Browser not supported ({userAgent})",
-    "inviteAFriend": "Error sending the invitation to a friend: {message}",
-    "subscribeToNewsletter": "Error subscribing to newsletter: {message}",
+    "browserNotSupported": "Browser not supported ({{userAgent}})",
+    "inviteAFriend": "Error sending the invitation to a friend: {{message}}",
+    "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
     "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support."
   },
   "backups": {
-    "backups-from": "Backups from {deviceName}",
+    "backups-from": "Backups from {{deviceName}}",
     "your-devices": "Your devices",
     "back-to-devices": "Go back to devices",
     "empty": {
@@ -578,7 +582,7 @@
       "status": {
         "pending": "Waiting to upload",
         "encrypting": "Encrypting file",
-        "in-process": "{progress}% Uploading file",
+        "in-process": "{{progress}}% Uploading file",
         "success": "File uploaded",
         "error": "Error during upload",
         "cancelled": "Upload cancelled"
@@ -589,7 +593,7 @@
       "status": {
         "pending": "Waiting to upload",
         "encrypting": "Encrypting files",
-        "in-process": "{progress}% Uploading folder",
+        "in-process": "{{progress}}% Uploading folder",
         "success": "Folder uploaded",
         "error": "Error during upload",
         "cancelled": "Upload cancelled"
@@ -597,13 +601,13 @@
       "errors": {}
     },
     "taskLogger": {
-      "processing": "Processing {pending} of {finished}"
+      "processing": "Processing {{pending}} of {{finished}}"
     },
     "download-file": {
       "status": {
         "pending": "Pending to download",
         "decrypting": "Decrypting file",
-        "in-process": "{progress}% Downloading file",
+        "in-process": "{{progress}}% Downloading file",
         "success": "File downloaded",
         "error": "Error during download",
         "cancelled": "Download cancelled"
@@ -612,7 +616,7 @@
     },
     "download-photos": {
       "status": {
-        "pending": "Downloading {progress}%",
+        "pending": "Downloading {{progress}}%",
         "success": "Downloaded",
         "error": "Error during download",
         "cancelled": "Download cancelled"
@@ -623,7 +627,7 @@
       "status": {
         "pending": "Pending to download",
         "decrypting": "Decrypting backup",
-        "in-process": "{progress}% Downloading backup",
+        "in-process": "{{progress}}% Downloading backup",
         "success": "Backup downloaded",
         "error": "Error during download",
         "cancelled": "Download cancelled"
@@ -634,7 +638,7 @@
       "status": {
         "pending": "Pending to download",
         "decrypting": "Decrypting files",
-        "in-process": "{progress}% Downloading folder",
+        "in-process": "{{progress}}% Downloading folder",
         "success": "Folder downloaded",
         "error": "Error during download",
         "cancelled": "Download cancelled"
@@ -688,9 +692,9 @@
   },
   "success": {
     "passwordChanged": "Password changed successfully",
-    "teamInvitationSent": "Invitation email sent to {email}",
-    "referralInvitationSent": "Invitation email sent to {email}",
-    "deletedTeamMember": "The {resource} has been successfully deleted",
+    "teamInvitationSent": "Invitation email sent to {{email}}",
+    "referralInvitationSent": "Invitation email sent to {{email}}",
+    "deletedTeamMember": "The {{resource}} has been successfully deleted",
     "accountDeactivationEmailSent": "Deactivation email sent!",
     "claimEmailSent": "Claim email sent!",
     "teamsSubscriptionRedeemed": "Your team is ready! Log in again to start using Teams",
@@ -699,8 +703,8 @@
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Done",
-    "inviteAFriend": "An invitation has been sent to {email}",
-    "subscribeToNewsletter": "{email} successfully subscribed to newsletter"
+    "inviteAFriend": "An invitation has been sent to {{email}}",
+    "subscribeToNewsletter": "{{email}} successfully subscribed to newsletter"
   },
   "shareItemDialog": {
     "title": "Link settings",
@@ -721,8 +725,8 @@
   "notificationMessages": {
     "copyLink": "Shared link copied to clipboard",
     "linkUpdated": "Link updated",
-    "itemsMovedToTrash": "{item} moved to trash",
-    "restoreItems": "Item${itemsToRecover} restored"
+    "itemsMovedToTrash": "{{item}} moved to trash",
+    "restoreItems": "Item {{itemsToRecover}} restored"
   },
   "actions": {
     "undo": "Undo",
@@ -818,7 +822,7 @@
       "internxt_tier3": "Team members: 10",
       "internxt_tier4": "Team members: 25",
       "internxt_tier5": "Team members: 100",
-      "unlimited": "Team members: {total}"
+      "unlimited": "Team members: {{total}}"
     },
     "plans": {
       "advice": "You will be redirected to your AppSumo account"
@@ -826,8 +830,8 @@
   },
   "inviteAFriend": {
     "title": "Invite a friend",
-    "descriptionWidget": "Get up to {N}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Spread the word, get 1GB per friend invited for free. You can get up to {N}GB in total.",
+    "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
+    "description": "Spread the word, get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
     "label": "Friend email address",
     "placeholder": "Enter friend email",
     "actions": {
@@ -851,14 +855,14 @@
       "share-file": "Share a file via link",
       "subscribe-to-newsletter": "Subscribe to newsletter",
       "install-desktop-app": "Install desktop app and upload a file",
-      "invite-friends": "Invite {completedSteps}/{steps} friends",
-      "invite-2-friends": "Invite {completedSteps}/{steps} friends",
+      "invite-friends": "Invite {{completedSteps}}/{{steps}} friends",
+      "invite-2-friends": "Invite {{completedSteps}}/{{steps}} friends",
       "complete-survey": "Complete survey"
     },
     "rewards": {
-      "title": "Get {creditSum} for free",
-      "progress": "Unlocked {currentCredit}",
-      "limit": "out of {creditSum}"
+      "title": "Get {{creditSum}} for free",
+      "progress": "Unlocked {{currentCredit}}",
+      "limit": "out of {{creditSum}}"
     }
   }
 }

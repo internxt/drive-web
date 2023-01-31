@@ -7,11 +7,12 @@ import userService from '../../services/user.service';
 
 import { IFormValues } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { get } from 'app/i18n/services/i18n.service';
 import TextInput from '../TextInput/TextInput';
 import Button from '../Button/Button';
+import { useTranslation } from 'react-i18next';
 
 function ForgotPassword(): JSX.Element {
+  const { t } = useTranslation();
   const {
     register,
     formState: { errors },
@@ -28,13 +29,13 @@ function ForgotPassword(): JSX.Element {
     try {
       setIsLoading(true);
       await userService.sendDeactivationEmail(email);
-      notificationsService.show({ text: get('success.accountDeactivationEmailSent'), type: ToastType.Success });
+      notificationsService.show({ text: t('success.accountDeactivationEmailSent'), type: ToastType.Success });
       if (showErrors === false) {
         setStep(2);
       }
     } catch (err: unknown) {
-      //notificationsService.show({ text: get('error.deactivatingAccount'), type: ToastType.Error });
-      setEmailErrors(get('error.deactivatingAccount'));
+      notificationsService.show({ text: t('error.deactivatingAccount'), type: ToastType.Error });
+      setEmailErrors(t('error.deactivatingAccount') as string);
       setShowErrors(true);
     } finally {
       setIsLoading(false);

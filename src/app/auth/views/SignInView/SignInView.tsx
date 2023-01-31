@@ -1,5 +1,5 @@
-import { get } from 'app/i18n/services/i18n.service';
 import bigLogo from 'assets/icons/big-logo.svg';
+import { useTranslation } from 'react-i18next';
 import LogIn from '../../components/LogIn/LogIn';
 
 interface SignInProps {
@@ -7,6 +7,7 @@ interface SignInProps {
 }
 
 export default function SignInView(props: SignInProps): JSX.Element {
+  const { t } = useTranslation();
   return (
     <div className={`flex h-full w-full flex-col bg-white ${props.displayIframe ? '' : 'overflow-auto sm:bg-gray-5'}`}>
       {!props.displayIframe && (
@@ -26,14 +27,14 @@ export default function SignInView(props: SignInProps): JSX.Element {
             target="_blank"
             className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
           >
-            {get('general.terms')}
+            {t('general.terms')}
           </a>
           <a
             href="https://help.internxt.com"
             target="_blank"
             className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
           >
-            {get('general.help')}
+            {t('general.help')}
           </a>
         </div>
       )}

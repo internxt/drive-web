@@ -25,7 +25,7 @@ import { useSignUp } from './useSignUp';
 import { validateFormat } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 const MAX_PASSWORD_LENGTH = 20;
 
@@ -37,6 +37,7 @@ export interface SignUpProps {
 }
 
 function SignUp(props: SignUpProps): JSX.Element {
+  const { t } = useTranslation();
   const qs = queryString.parse(navigationService.history.location.search);
   const hasReferrer = !!qs.ref;
   const { updateInfo, doRegister } = useSignUp(
@@ -199,13 +200,13 @@ function SignUp(props: SignUpProps): JSX.Element {
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <span className="text-2xl font-medium">{get('auth.signup.title')}</span>
+        <span className="text-2xl font-medium">{t('auth.signup.title')}</span>
 
         <div className="flex flex-col space-y-3">
           <label className="space-y-0.5">
-            <span>{get('auth.email')}</span>
+            <span>{t('auth.email')}</span>
             <TextInput
-              placeholder={get('auth.email')}
+              placeholder={t('auth.email') as string}
               label="email"
               type="email"
               disabled={hasEmailParam}
@@ -217,10 +218,10 @@ function SignUp(props: SignUpProps): JSX.Element {
           </label>
 
           <label className="space-y-0.5">
-            <span>{get('auth.password')}</span>
+            <span>{t('auth.password')}</span>
             <PasswordInput
               className={passwordState ? passwordState.tag : ''}
-              placeholder={get('auth.password')}
+              placeholder={t('auth.password')}
               label="password"
               maxLength={MAX_PASSWORD_LENGTH}
               register={register}
@@ -243,7 +244,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
           <Button
             disabled={isLoading}
-            text={get('auth.signup.title')}
+            text={t('auth.signup.title')}
             disabledText={isValid ? 'Encrypting...' : 'Create account'}
             loading={isLoading}
             style="button-primary"
@@ -252,20 +253,20 @@ function SignUp(props: SignUpProps): JSX.Element {
         </div>
       </form>
       <span className="mt-2 w-full text-xs text-gray-50">
-        {get('auth.terms1')}{' '}
+        {t('auth.terms1')}{' '}
         <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-80">
-          {get('auth.terms2')}
+          {t('auth.terms2')}
         </a>
       </span>
 
       <div className="mt-4 flex w-full items-center justify-center">
         <span className="select-none text-sm text-gray-80">
-          {get('auth.signup.haveAccount')}{' '}
+          {t('auth.signup.haveAccount')}{' '}
           <Link
             to="/login"
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
-            {get('auth.signup.login')}
+            {t('auth.signup.login')}
           </Link>
         </span>
       </div>

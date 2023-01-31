@@ -13,10 +13,11 @@ import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import { deleteUserAvatarThunk, updateUserAvatarThunk } from '../../../../../store/slices/user';
 import { useAppDispatch } from '../../../../../store/hooks';
 import Dropdown from '../../../../../shared/components/Dropdown';
-import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 const AvatarEditor = lazy(() => import('react-avatar-editor'));
 
 export default function UserHeader({ className = '' }: { className?: string }): JSX.Element {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   if (!user) throw new Error('User is not defined');
@@ -27,13 +28,13 @@ export default function UserHeader({ className = '' }: { className?: string }): 
 
   async function deleteAvatar() {
     await dispatch(deleteUserAvatarThunk()).unwrap();
-    notificationsService.show({ type: ToastType.Success, text: get('views.account.avatar.removed') });
+    notificationsService.show({ type: ToastType.Success, text: t('views.account.avatar.removed') });
   }
 
-  const dropdownOptions = [{ text: get('views.account.avatar.updatePhoto'), onClick: () => setOpenModal(true) }];
+  const dropdownOptions = [{ text: t('views.account.avatar.updatePhoto'), onClick: () => setOpenModal(true) }];
 
   if (user.avatar) {
-    dropdownOptions.push({ text: get('views.account.avatar.removePhoto'), onClick: deleteAvatar });
+    dropdownOptions.push({ text: t('views.account.avatar.removePhoto'), onClick: deleteAvatar });
   }
 
   return (
@@ -61,6 +62,7 @@ export default function UserHeader({ className = '' }: { className?: string }): 
 }
 
 function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const inputRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<AvatarEditorType>(null);
@@ -74,7 +76,7 @@ function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 
   function validateFile(file: File) {
     if (file.size > 1024 * 1024 * 10) {
-      notificationsService.show({ type: ToastType.Error, text: get('views.account.avatar.underLimitSize') });
+      notificationsService.show({ type: ToastType.Error, text: t('views.account.avatar.underLimitSize') });
     } else {
       setState({ tag: 'editing', source: file, zoom: 1 });
     }
@@ -109,17 +111,17 @@ function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 
       await dispatch(updateUserAvatarThunk({ avatar: avatarBlob })).unwrap();
 
-      notificationsService.show({ type: ToastType.Success, text: get('views.account.avatar.success') });
+      notificationsService.show({ type: ToastType.Success, text: t('views.account.avatar.success') });
       onClose();
     } catch (err) {
       console.error(err);
-      notificationsService.show({ type: ToastType.Error, text: get('views.account.avatar.error') });
+      notificationsService.show({ type: ToastType.Error, text: t('views.account.avatar.error') });
     }
   }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">{get('views.account.avatar.title')}</h1>
+      <h1 className="text-2xl font-medium text-gray-80">{t('views.account.avatar.title')}</h1>
       <div className="mt-4">
         {state.tag !== 'empty' ? (
           <div>
@@ -161,7 +163,7 @@ function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
             >
               <div className="text-gray-20 hover:text-gray-30">
                 <Image className="mx-auto" weight="light" size={80} />
-                <p className="font-medium">{get('views.account.avatar.dragNDrop')}</p>
+                <p className="font-medium">{t('views.account.avatar.dragNDrop')}</p>
               </div>
             </div>
           </>
@@ -171,16 +173,16 @@ function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
         <div className="flex">
           {state.tag === 'empty' ? (
             <Button variant="secondary" onClick={onClose}>
-              {get('actions.cancel')}
+              {t('actions.cancel')}
             </Button>
           ) : (
             <Button variant="secondary" onClick={() => setState({ tag: 'empty' })} disabled={state.tag === 'loading'}>
-              {get('actions.back')}
+              {t('actions.back')}
             </Button>
           )}
           {state.tag !== 'empty' && (
             <Button loading={state.tag === 'loading'} className="ml-2" onClick={onSave}>
-              {get('actions.save')}
+              {t('actions.save')}
             </Button>
           )}
         </div>

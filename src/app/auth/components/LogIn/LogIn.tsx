@@ -22,9 +22,10 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
-import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 export default function LogIn(): JSX.Element {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const {
     register,
@@ -125,13 +126,13 @@ export default function LogIn(): JSX.Element {
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <h1 className="text-2xl font-medium">{get('auth.login.title')}</h1>
+        <h1 className="text-2xl font-medium">{t('auth.login.title')}</h1>
 
         <div className="flex flex-col space-y-3">
           <label className="space-y-0.5">
-            <span>{get('auth.email')}</span>
+            <span>{t('auth.email')}</span>
             <TextInput
-              placeholder={get('auth.email')}
+              placeholder={t('auth.email')}
               label="email"
               type="email"
               register={register}
@@ -142,7 +143,7 @@ export default function LogIn(): JSX.Element {
 
           <label className="space-y-0.5">
             <div className="flex flex-row items-center justify-between">
-              <span className="font-normal">{get('auth.password')}</span>
+              <span className="font-normal">{t('auth.password')}</span>
               <Link
                 onClick={(): void => {
                   // analyticsService.trackUserResetPasswordRequest();
@@ -150,12 +151,12 @@ export default function LogIn(): JSX.Element {
                 to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
               >
-                {get('auth.login.forgotPwd')}
+                {t('auth.login.forgotPwd')}
               </Link>
             </div>
 
             <PasswordInput
-              placeholder={get('auth.password')}
+              placeholder={t('auth.password')}
               label="password"
               register={register}
               required={true}
@@ -166,11 +167,11 @@ export default function LogIn(): JSX.Element {
 
           {showTwoFactor && (
             <label className="space-y-0.5">
-              <span>{get('auth.login.2FA')}</span>
+              <span>{t('auth.login.2FA')}</span>
               <PasswordInput
                 className="mb-3"
                 label="twoFactorCode"
-                placeholder={get('auth.login.2FAPwd')}
+                placeholder={t('auth.login.2FAPwd')}
                 error={errors.twoFactorCode}
                 register={register}
                 required={true}
@@ -191,7 +192,7 @@ export default function LogIn(): JSX.Element {
 
           <Button
             disabled={isLoggingIn}
-            text={get('auth.login.title')}
+            text={t('auth.login.title')}
             disabledText={isValid ? 'Decrypting...' : 'Log in'}
             loading={isLoggingIn}
             style="button-primary"
@@ -202,12 +203,12 @@ export default function LogIn(): JSX.Element {
 
       <div className="mt-4 flex w-full justify-center text-sm">
         <span>
-          {get('auth.login.dontHaveAccount')}{' '}
+          {t('auth.login.dontHaveAccount')}{' '}
           <Link
             to="/new"
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
-            {get('auth.login.createAccount')}
+            {t('auth.login.createAccount')}
           </Link>
         </span>
       </div>
